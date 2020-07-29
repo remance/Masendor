@@ -1,0 +1,13 @@
+gradeid,grade,atk_bonus,def_bonus,speed_bonus,accuracy_bonus,reload_bonus,charge_bonus,health_bonus,stamina_bonus,morale_bonus,discipline_bonus,grade_property
+0,Novice,90,95,90,80,85,80,100,90,85,80,"3,5"
+1,Militant,100,100,100,95,100,100,105,100,95,90,3
+2,Professional,105,105,110,105,105,105,110,110,110,100,0
+3,Veteran,105,105,115,110,110,110,110,120,125,115,1
+4,Elite,110,115,120,120,115,115,115,130,150,120,1
+5,Champion,115,130,125,135,120,120,120,150,170,140,1
+6,Hero,135,160,130,155,125,140,130,200,200,170,2
+7,Religious Militant,105,105,100,100,100,110,105,105,120,120,1
+8,Religious Warrior,105,105,105,105,105,120,110,110,130,135,4
+9,Religious Warrior Elite,110,120,115,115,110,130,115,115,150,150,4
+10,Mercenary,105,105,110,105,105,105,105,105,110,105,3
+11,Noble,110,110,100,110,105,105,110,110,130,90,1

@@ -1,0 +1,12 @@
+typeid,type,description
+1,Melee Infantry,
+2,Range Infantry,
+3,Flying Cavalry,"While it is true than range cavalry is the tool of conquerors, flying cavalry is the force that can turn over the principle of warfare. When air superiority come into existence, the force that achieve such superiority can almost effortlessly dominate its opponent."
+4,Range Cavalry,"The tool of the conquerors of the known world. Fast and vicious,range cavalry are unmatched force in the plain. As long as they do not fight in unsuitable terrain or situation, it is almost impossible to destroy them. "
+5,Light Cavalry,"Light cavalry has many roles, either scouting, skirmishing, harassing or pursue fleeing enemies. They are less suited for direct melee combat, so use their superb mobility to avoid that situation."
+6,Heavy Cavalry,Heavy or shock cavalry is the domination force in old battlefield. Their charge can pierce through even shieldwall. The only few downsides are that they are slower than lighter cavalry and much more difficult to employ in the field in large number.
+7,Chariot,"Chariot used to be master of the battlefield before the invention of cavalry. Although less used now, their presence can still instill fear into enemy while crushing through enemy squads. Chariot unit usually also carry range weapon with good amount of ammunition, which make it a decent skirmish unit as well."
+8,Mage,"Mage is one of the most fearsome existence in the battlefield known to men. A group of them can render entire squad into ash or obliterate entire battalion with magic. Protect them at all cost if they are your allies, otherwise kill them as quickly as possible."
+9,Siege Machine,"Siege unit exist in many forms depending on its use. Some siege machine is more effective against infantry unit such as scorpion or hwacha, while some others are more suitable for damaging structure likes trebuchet."
+10,War Beast,War beast is something one shouldn't want to face in the battlefield. The face of terror cast down upon those who dare to look at it. 
+11,Titan,"This unit is gigantic enough to be classified as titan. No matter what type of weapon it use or what role it has, they can cause massive damage more than other class."

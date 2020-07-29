@@ -1,0 +1,676 @@
+id,propertyname,buff_range,target,atk_effect,def_melee_effect,def_range_effect,armour_buff,speed_effect,accuracy_effect,range_effect,reload_effect,charge_effect,charge_def_effect,health_regen_bonus,stamina_regen_bonus,morale_bonus,discipline_bonus,critical_bonus,status,siege_effect,hidden_bonus,description
+1,Bonus Morale,1,1,,,,,,,,,,,0,0,110,,,,,,More morale is always preferable. This squad is less likely to flee or surrender in losing fight.
+2,Heroic,1,1,,,,,,,,,,,0,0,150,,,,,,"Heroes do not fear failure or death, but that does not mean they welcome it."
+3,Varied Training,1,1,,,,,,,,,,,0,0,,,,,,,The lack of standardised training for this unit make the troops' fighting ability wildly diverse.
+4,Zealous,1,1,,,,,,,,,,,0,0,130,,,,,,Being zealous for one's belief can make soldier less susceptible to fear.
+5,Poor Morale,1,1,,,,,,,,,,,0,0,80,,,,,,"Either from poor training or by its nature, this squad has poorer morale making it unfit for prolong or serious engagement."
+6,Black Boar's Guidance,Accuracy +30%,,,,,,,,,,,,0,0,,,,,,,
+7,Great Wings' Protection,All defense +15% against frontal and flank attack,,,,,,,,,,,,0,0,,,,,,,
+8,Tough Painting,Armour +10,,,,,,,,,,,,0,0,,,,,,,Orc Berserkers usuall wear no armour at all and paint their naked body into battle. What littile known is that the paint materials used is so tough when harden that it can actually stop a sword or arrow.
+9,Impregnable Shield,1,1,,125,125,,,,,,,,0,0,,,,,,,One of the most basic equipment to keep one alive in a chaotic battle. Having one is almost always better than having none but having one that of superb quality is the best of all.
+10,Protective Fur,"Armour +7, cold damange -50%",,,,,,,,,,,,0,0,,,,,,,"Some breastman or creature may have fur thick enough to protect against some attack to a degree. Additonally, it can help against cold too."
+11,Charge Expert,1,1,,,,,,,,,125,,0,0,,,,,,,
+12,Charge Defense Expert,1,1,,,,,,,,,,135,0,0,,,,,,,
+13,Weapon Expert,,,120,115,,,,115,,115,,,0,0,,,,,,,Decades of perfection the weapon make this squad a pinnacle of all warriors. 
+14,Evasive,Melee and range defense bonus +30% for loose and spread formation,,,,,,,,,,,,0,0,,,,,,,This squad can dodge melee and range attack when fighting in loose formation.
+15,Divine Connection,"Morale always at 100%, all debuff effect -95%, all buff effect +100%",,,,,,,,,,,,0,0,,,,,,,
+16,Arc Shot,,,,,,,,,,,,,0,0,,,,,,,This squad can shoot pass wall and bonus chance to bypass fortification defense.
+17,Agile Aims,,,,,,,,,,,,,0,0,,,,,,,This squad can shoot while moving and at moving enemy without penalty.
+18,Can Shoot While Moving,,,,,,,,,,,,,0,0,,,,,,,This squad can shoot while moving but will some accuracy penalty.
+19,Concentrated Aims,,,,,,,,,,,,,0,0,,,,,,,This squad accuracy is not affected by morale (It still cannot shoot when broken).
+20,Concentrated Chant,,,,,,,,,,,,,0,0,,,,,,,This squad magic casting is not affected by morale (It still cannot cast magic when broken).
+21,Anti-Machine,1,1,,,,,,,,,,,0,0,,,,,,,This squad is specialised in combat against machine squads. Neither Iron or wood can not stop this squad attack.
+22,Anti-Cavalry,1,1,,,,,,,,,,,0,0,,,,,,,This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.
+23,Anti-Armoured,1,1,,,,,,,,,,,0,0,,,,,,,This squad is specialised in combat against armoured squads. Not even the heaviest armoured knight can stand against this squad's devastating blow.
+24,Anti-Infantry,1,1,,,,,,,,,,,0,0,,,,,,,This squad is specialised in combat against infantry squads.
+25,Anti-Flyer,1,1,,,,,,,,,,,0,0,,,,,,,What goes up must come down. This squad is specialised in combat against flyer squads.
+26,Anti-Shielded,1,1,,,,,,,,,,,0,0,,,,,,,This squad is specialised in combat against shielded squads. The cowardly enemy cannot hide behind their shield anymore.
+27,Anti-Large,1,1,,,,,,,,,,,0,0,,,,,,,"The bigger they are, the harder the fall. This squad is specialised in combat against large squads."
+28,Ignore Shield,1,1,,,,,,,,,,,0,0,,,,,,,This squad attack ignore shield entirely.
+29,Ignore Charge Defence,1,1,,,,,,,,,,,0,0,,,,,,,This squad attack ignore charge defence entirely.
+30,Ignore Defense,1,1,,,,,,,,,,,0,0,,,,,,,This squad attack ignore defense entirely.
+31,Cannibal,,,,,,,,,,,,,0,0,,,,,,,
+32,Defiant Defense,,,,,,,,,,,,,0,0,,,,,,,
+33,Backstaber,1,1,,,,,,,,,,,0,0,,,,,,,This squad deals bonus damage to enemy squad with rear attack.
+34,Battle Master,1,1,,,,,,,,,,,0,0,,,,,,,This squad can fully attack enemy squads in all direction with no penalty.
+35,Absolute Defense,1,1,,,,,,,,,,,0,0,,,,,,,This squad does not suffer bonus damage from being flanked.
+36,Great Saint,5,1,,,,,,,,,,,0,0,10000,,,,,,The best of the best in the realm. This squad help nearby ally squads to be at maximum morale and cannot be decreased.
+37,Battle Saint,,,,,,,,,,,,,0,0,,,,,,,
+38,No Hunger,Food meter will never decrease,,,,,,,,,,,,0,0,,,,,,,This squad cannot get hungry which means it does not need food supply to maintain at all.
+39,Patriotic,"All stat +10% in friendly territory, upkeep -50%",,,,,,,,,,,,0,0,,,,,,,It is the duty of every citizen to fight for the country they live in. This squad fight much better in friendly territory and require less upkeep.
+40,Siege Expert,1,1,,,,,,,,,,,0,0,,,,,150,,"No wall is safe from this squad! It can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%."
+41,Unadvancable,Experience gain -100%,,,,,,,,,,,,0,0,,,,,,,This squad cannot gain experience from normal means.
+42,Hunger Instinct,"Melee attack +40%, all defense -20%, speed +30%, morale +15%",,,,,,,,,,,,0,0,,,,,,,"Hunger is one of the most important factor for the aggressivity in many animal. If this squad is in hunger stage, it will fight much harder than usual to obtain the food which in this case is the enemy in front of it."
+43,Famed,3,1,,,,,,,,,,,0,0,40,10,,,,,"This squad have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for ally squads nearby while reducing for enemy."
+44,Armistice Bringer,10,3,30,,,,,,,,,,0,0,-50,,,,,,
+45,Shield Expert,All defense +20% against frontal attack,,,,,,,,,,,,0,0,,,,,,,
+46,Crumble,1,1,60,60,100,,60,60,,60,60,100,0,0,60,100,100,,,,"Nothing last forever, even for an inanimate material creature. Time has render this squad much less powerful compare to its former glory."
+47,Superb Flanker,This squad fight better against enemy squad from flanking position.,,,,,,,,,,,,0,0,,,,,,,
+48,Bandit Honour,,,,,,,,,,,,,0,0,,,,,,,The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to.
+49,Indomitable,,1,,,,,,,,,,,0,0,,,,,,,
+50,Endearing Performance,,,,,,,,,,,,,0,0,,,,,,,
+51,True Hero,"Ally friendly squads nearby receive Strong Will, and can not be broken, morale +10% for entire battalion",,,,,,,,,,,,0,0,,,,,,,"Being true hero, this squad has manifestly inspiring aura for nearby ally squads."
+52,Legendary Might,,1,150,130,,,120,,,,150,,0,0,,,,,,,The might of the legends cannot be subdued. Beware the enemy for the death to come.
+53,Innocence Grace,,,70,130,130,,,,,70,,,0,0,,,,,,,
+54,Magical Weapon,All attack deals additonnal 50% magic damage of total damage,,,,,,,,,,,,0,0,,,,,,,This squad weapon has magic property which deals additional magic damage and can deals damage to Incorporeal squads.
+55,Oblivious To Unexpected,,,,,,,,,,,,,0,0,,,,,,,This squad is completely unadaptable to new warfare making it receive defense penalty for any thing other than normal charge and attack. It also receive additional flanking penalty.
+56,Causes Fear,5,2,,,,,,,,,,,0,0,,,,2,,,
+57,Causes Terror,15,2,,,,,,,,,,,0,0,,,,2,,,
+58,Inspires Hope,5,1,,,,,,,,,,,0,0,,,,3,,,"Being the bringer of hope, this squad can boost surrounding ally squads'morale. "
+59,Inspires Bravery,15,1,,,,,,,,,,,0,0,,,,3,,,
+60,Heart Of Steel,,1,,,,,,,,,,,0,0,,,,,,,
+61,Hope And Despair,,,,,,,,,,,,,0,0,,,,,,,
+62,Healing Mucus,,,,,,,,,,,,,0.5,0,,,,,,,
+63,Ancestral Bond,,,,,,,,,,,,,0,0,,,,,,,
+64,True Chosen,,,,,,,,,,,,,0,0,,,,,,,
+65,The War Of Love,,,,,,,,,,,,,0,0,,,,,,,
+66,Final Flame,,,,,,,,,,,,,0,0,,,,,,,
+67,Glorious Appearance,,,,,,,,,,,,,0,0,,,,,,,This squad appearance is so dashing and inspiring that neaby friendly squads will be in awe while leaving enemy squads in fear.
+68,Holy Defense,,1,,110,110,20,,,,,,,0,0,,,,,,,The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching.
+69,Vile Veil,,1,,,,,,,,,,,0,0,,,,,,,There are none without sin and their sins will make them blind.
+70,Xenophobic Bunch,"Discipline -70%, Morale -50% when being near friendly squads from other race",,,,,,,,,,,,0,0,,,,,,,This squad cannot fight together with squads from other race than themselves. 
+71,Eyes Of Satiens,,,,,,,,,125,,,,0,0,,,,,,,This squad suffer no range penalty and can shoot even turther than usual.
+72,Farsight,,,,,110,,,,,,,,0,0,,,,,,,Farsight reduce accuracy penalty from long range shooting and also make squad see enemy projectile earlier.
+73,No Range Penalty,,,,,,,,,,,,,0,0,,,,,,,This squad suffer no range penalty.
+74,Long Range Accuracy,,,,,,,,,,,,,0,0,,,,,,,
+75,Entertainer,3,1,,,,,,,,,,,0,0,15,,,,,,
+76,Virtue Of Honour,,1,,,,,,,,,,,0,0,,,,,,,
+77,Kings Banner,,,,,,,,,,,,,0,0,,,,,,,
+78,Missile Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+79,Pain Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+80,Poison Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+81,Cold Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+82,Heat Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+83,Fire Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+84,Water Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+85,Air Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+86,Earth Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+87,Fatigue Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+88,Magic Resistance,,1,,,,,,,,,,,0,0,,,,,,,
+89,Swamp Dweller,,,,,,,,,,,,,0,0,,,,,,,Bonus combat and movement for this squads in swamp terrain and also use less supply as well.
+90,Sylvan,,,,,,,,,,,,,0,0,,,,,,,Bonus combat and movement for this squads in forest terrain and also use less supply as well.
+91,Blight Habitat,,,,,,,,,,,,,0,0,,,,,,,Bonus combat and movement for this squads in blight terrain and also use less supply as well.
+92,Aquatic,,,,,,,,,,,,,0,0,,,,,,,Bonus combat and movement for this squads in water terrain and also use less supply as well.
+93,Urban Guerrilla,,,,,,,,,,,,,0,0,,,,,,,Bonus combat and movement for this squads in urban terrain and also use less supply as well.
+94,Lance Charge,,,,,,,,,,,,,0,0,,,,,,,
+95,First Blood,Melee damage +60%,,,,,,,,,,,,0,0,,,,,,,This squad will deals bonus damage to enemy squad if it and enemy squad both have no injury or death.
+96,Fervent Devotion,All stat +15% when near commander squad,,,,,,,,,,,,0,0,,,,,,,This squad fight better when being near the commander squad.
+97,Horror Of War,Every nearby squad's morale -50%,,,,,,,,,,,,0,0,,,,,,,
+98,No Morale,Morale always at 50% and cannot be changed.,,,,,,,,,,,,0,0,,,,,,,This squad has no morale thus can not be motivated or broken.
+99,Unholy Valour,Nearby enemy morale -30%,,,,,,,,,,,,0,0,,,,,,,
+100,Knightly Valour,"Nearby friendly squads morale +20%, enemy morale -15%",,,,,,,,,,,,0,0,,,,,,,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from this squad's presence."
+101,Thorny Armour,,,,,,,,,,,,,0,0,,,,,,,Unit that attack this squad in melee combat will also receive damage in return.
+102,Unstoppable,,,,150,150,,,,,,130,120,0,0,50,,,,,,
+103,Battle Preparation,All attack and defense +15%,,,,,,,,,,,,0,0,,,,,,,This squad receives combat bonus when the stamina is at fresh level.
+104,Blessed,1,1,,,,,,,,,,,0,0,,,,18,,,
+105,Cursed,1,1,,,,,,,,,,,0,0,,,,19,,,"A cursed being either by means of magic or nature, this squad will always be cursed and cannot be cured by normal means."
+106,Lucky,1,1,,,,,,,,,,,0,0,,,,,,,
+107,Unlucky,1,1,,,,,,,,,,,0,0,,,,,,,
+108,Inner Demon,,,,,,,,,,,,,0,0,,,,,,,
+109,Frantical Backstabbing,Flank attack bonus +50%,,,,,,,,,,,,0,0,,,,,,,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them."
+110,Tireless,1,1,,,,,,,,,,,0,100,,,,,,,Absolute killing machine! This squad's fatigue cannot be decreased making its combat effectiveness stay at best condition for the whole fight.
+111,Unbreakable,,,,150,150,,,,,,,,0,0,50,10,,,,,
+112,Savage Looter,,,,,,,,,,,,,0,0,,,,,,,"This squad know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army."
+113,Catcher Expert,,,,,,,,,,,,,0,0,,,,,,, A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble.
+114,Marvelous Athletic,,,,,,,,,,,,,0,1,,,,,,,This squad being athletic superior makes them much more effective in long activity such as fighting.
+115,Iron Discipline,,,,,,,,,,,,,0,0,,20,,,,,This squad receives further bonus effect from discipline.
+116,Sticky Attack,1,2,,,,,,,,,,,0,0,,,,24,,,
+117,Curse Strike,1,2,,,,,,,,,,,0,0,,,,19,,,
+118,Infective Touch,1,2,,,,,,,,,,,0,0,,,,,,,
+119,Stunning Blast,1,2,,,,,,,,,,,0,0,,,,23,,,
+120,Mana Stealer,,,,,,,,,,,,,0,0,,,,,,,
+121,Maiden Of Meldolea,"All stat -10%, nearby enemy squads stat -10%",,,,,,,,,,,,0,0,,,,,,,
+122,Perverted Agony,,,,,,,,,,,,,0,0,,,,,,,
+123,Battlelust,,,,,,,,,,,,,0,0,,,,,,,
+124,Justice Order,,,,,,,,,,,,,0,0,,,,,,,
+125,Unbreakable Bond,,,,,,,,,,,,,0,0,,,,,,,
+126,Dread Challenger,"Morale +50%, morale -25% to every nearby squad ",,,,,,,,,,,,0,0,,,,,,,
+127,Headtaker,,,,,,,,,,,,,0,0,,,,,,,This squad often decapitates enemies' head in combat as tokens. This will decrease its combat by a bit but reduce enemy morale from damage further.
+128,Nasty Smell,,,,,,,,,,,,,0,0,,,,,,,This squad has disgusting stench that make anyone that not familiar with it want to throw up. every nearby squads receive combat penalty.
+129,Scourge Of The Land,"Attack +20%, speed +80%, morale -30% to nearby enemy squad, cannot be slowed, supply consumption rate -50%",,,,,,,,,,,,0,0,,,,,,,
+130,Poison Blood,"Immune to poison damage, poison damage heal 50% of the damage to this squad",,,,,,,,,,,,0,0,,,,,,,
+131,Mirage Trickery,,,,135,150,,,,,,,,0,0,,,,,,,
+132,Martial Perfection ,,,150,150,150,,110,150,,150,150,150,0,0,,50,,,,,
+133,Unparalleled Mind,,,,,,,,,,,,,0,0,,,,,,,
+134,Forgetful,,,,,,,,,,,,,0,0,,,,,,,Forget order sometimes.
+135,Joyful Departure,,,,,,,,,,,,,0,0,,,,,,,"Stemming from their peculiar tradition, this squad gain more morale when nearby friendly squad is destroyed."
+136,High Jumper,,,,,,,,,,,,,0,0,,,,,,,This squad can jump quite high when attacking making them negate height penalty from critical by one level
+137,Unkillable,,,,,,,,,,,,,0,0,,,,,,,This squad cannot be killed by normal means.
+138,Panic Rampage,,,,,,,,,,,,,0,0,,,,,,,
+139,Life Steal,Heal 50% of damage deals,,,,,,,,,,,,0,0,,,,,,,
+140,Epic Esoteric,2,1,,,,,,,,,,,0,0,50,,,,,,
+141,Death Bound,,,,,,,,,,,,,0,0,,,,,,,
+142,Lone Wolf,"All stat +15% when not near friendly squad, all stat -20% when near friendly squad",,,,,,,,,,,,0,0,,,,,,,
+143,Jolly Flock,"All stat +15% when near friendly squad, all stat -20% when not near friendly squad",,,,,,,,,,,,0,0,,,,,,,
+144,Great Eater,,,,,,,,,,,,,0,0,,,,,,,
+145,Rotten Smell,Morale -20% to every nearby squad that are not immune to smell,,,,,,,,,,,,0,0,,,,,,,
+146,Wall Climbing,,,,,,,,,,,,,0,0,,,,,,,This squad can bypass wall easily. It does not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and does not receive any defense bonus from siege equipment.
+147,Hero Killer,,,,,,,,,,,,,0,0,,,,,,,This squad deals more damage to champion and hero grade squad.
+148,Command Independent,,,,,,,,,,,,,0,0,,,,,,,This squad morale will not be affected by commander's death or retreat.
+149,Impetuous,,,,,,,,,,,,,0,0,,-20,,,,,"Whether from pride or arrogance, this squad has tendency to not follow order making them have less discipline."
+150,Greslanoul's Mastery,,,,,,,,,,,,,0,0,,,,,,,
+151,Hearty Competition,Morale and nearby friendly squads morale +10% for each enemy squad kill,,,,,,,,,,,,0,0,,,,,,,"Being the elite of elite, this squad sees battle as a game who kill the most enemy. The more this squad kills the higher its morale including nearby ally squads."
+152,Battle Juggernaut,,,130,150,150,,,,,,,,0,200,25,,,,,,
+153,Fury Of Abalkael,"Defense -100%, morale +1000% to all squad nearby, every nearby friendly squad become berserk",,,,,,,,,,,,0,0,,,,,,,
+154,Kelsilious's Zeal,"Morale +15%, postivie morale bonus +10%",,,,,,,,,,,,0,0,,,,,,,
+155,Epganates's Persistence,,,,,,,,,,,,,0,0,,,,,,,
+156,Arcane Protection,All magic effect reduce by 50%,,,,,,,,,,,,0,0,,,,,,,
+157,Heroic Spirit,10,1,120,120,,,120,120,,120,120,120,0,0,100,20,,,,,This squad is being led by a heroic spirit from the past. This make the troop in high spirit to follow their great hero.
+158,Deathwish,,,,,,,,,,,,,0,0,,,,,,,This squad fights like it seeks death itself. Morale can never be decreased for this squad.
+159,Algolga's Disciple,,,,,,,,,,,,,0,0,,,,,,,
+160,Troll Blood,,,,,,,,,,,,,0,0,,,,,,,Troll blood help its body to heal any wound it receives much faster than other creatures even during combat. 
+161,Hope Crusher,,,,,,,,,,,,,0,0,,,,,,,"When there is despair, there is hope. And it is the duty of this squad to crush that whatever tiny hope the enemies still have left."
+162,Merciless,,,,,,,,,,,,,0,0,,,,,,,This squad cannot capture running enemies as it always prefer killing them instead.
+163,Fragile Will,,,,,,,,,,,,,0,0,,,,,,,This squad will be affected by negative psychological effect even more than usual.
+164,Overwhelming Presence,,,,,,,,,,,,,0,0,,,,,,,This squad appearance is so overwhelming that leave both friendly and enemy squads in fear and worry.
+165,Headshotter,,,,,,,,,,,,,0,0,,,25,,,,
+166,,,,,,,,,,,,,,0,0,,,,,,,
+167,,,,,,,,,,,,,,0,0,,,,,,,
+168,Domination Aura,,,,,,,,,,,,,0,0,,,,,,,"When enemy squad becomes broken near this squad, it will join this squad's side instead of freeing."
+169,Fire Being,,,,,,,,,,,,,0,0,,,,,,,Fire damage actually heal this squad instead of damaging them.
+170,Water Being,,,,,,,,,,,,,0,0,,,,,,,Water damage actually heal this squad instead of damaging them.
+171,Air Being,,,,,,,,,,,,,0,0,,,,,,,Air damage actually heal this squad instead of damaging them.
+172,Earth Being,,,,,,,,,,,,,0,0,,,,,,,Earth damage actually heal this squad instead of damaging them.
+173,Icy Being,,,,,,,,,,,,,0,0,,,,,,,"Being made of ice, this squad receive healing instead of damage from frozen status"
+174,Righteous Might,"All damage +20%, morale +10%, damage cannot be decreased from debuff",,,,,,,,,,,,0,0,,,,,,,
+175,Calming Berserk,Covert berserk to calming berserk,,,,,,,,,,,,0,0,,,,,,,
+176,Spectacle Equipment,"Morale +10% to nearby friendly squads, morale -10% to nearby enemy squads, effect deactivate when health lower than 50%",,,,,,,,,,,,0,0,,,,,,,
+177,Pantheon's Favour,,,,,,,,,,,,,0,0,,,,,,,
+178,,,,,,,,,,,,,,0,0,,,,,,,
+179,,,,,,,,,,,,,,0,0,,,,,,,
+180,Penetration Shots,,,,,,,,,,,,,0,0,,,,,,,This squad's range attack is so powerful that it can penetrate enemy body and kill more than one per shot. This squad can also shot through weak obstacle and deals minor damage to major obstacle.
+181,Gallant Example,,,,,,,,,,,,,0,0,,,,,,,
+182,Unholy Flesh,,,,,,,,,,,,,0,0,,,,,,,This squad can not be healed and will actually receive damage from healing magic.
+183,Field Medic,,,,,,,,,,,,,0,0,,,,,,,This squad can heal other squad when both are not in melee combat.
+184,Divine Presence,,,,,,,,,,,,,0,0,,,,,,,This squad is divine or considered to be divine by its followers. This squad will make every ally squad in battlefield at maximum morale and cannot be broken.
+185,Plague Carrier,,,,,,,,,,,,,0,0,,,,20,,,
+186,Blight Bearer,,,,,,,,,,,,,0,0,,,,21,,,
+187,Antarndenxor,"Cannot be affected by debuff, all buff effect +50%",,,,,,,,,,,,0,0,,,,,,,
+188,Dawn Hum,,,,,,,,,,,,,0,0,,,,,,,
+189,Sunset Beginning,,,,,,,,,,,,,0,0,,,,,,,
+190,Forestry,No movement penalty in forest terrain,,,,,,,,,,,,0,0,,,,,,,No penalty in forest terrain for this squad.
+191,Seamate,Movement and combat penalty -50% on sea terrain,,,,,,,,,,,,0,0,,,,,,,Ahoy matey! Less movement and combat penalty on sea terrain for this squad.
+192,Mountaineer,Penalty -50% for mountain terrain,,,,,,,,,,,,0,0,,,,,,,Less movement and combat penalty from mountain terrain for this squad.
+193,Cave Crawling,Penalty -50% for underground terrain,,,,,,,,,,,,0,0,,,,,,,Less movement and combat penalty in underground terrain for this squad.
+194,Pathfinder,All movement penalty -50%,,,,,,,,,,,,0,0,,,,,,,Half Movement penalty in every terrain type and height for this squad.
+195,Night Vision,No vision penalty at night time,,,,,,,,,,,,0,0,,,,,,,Hunter of the night. This squad suffer no vision loss at night at all.
+196,Heat Aura,,,,,,,,,,,,,0,0,,,,,,,
+197,Cold Aura,,,,,,,,,,,,,0,0,,,,,,,
+198,Pain Weakness,,,,,,,,,,,,,0,0,,,,,,,This squad is completely unfit for any direct battle! Any injury cause the squad to fight less effectively.
+199,Cold Weakness,,,,,,,,,,,,,0,0,,,,,,,
+200,Heat Weakness,,,,,,,,,,,,,0,0,,,,,,,
+201,Fire Weakness,Earth damage +30%,,,,,,,,,,,,0,0,,,,,,,
+202,Water Weakness,Water damage +30%,,,,,,,,,,,,0,0,,,,,,,
+203,Air Weakness,Air damage +30%,,,,,,,,,,,,0,0,,,,,,,
+204,Earth Weakness,Fire damage +30%,,,,,,,,,,,,0,0,,,,,,,
+205,Fatigue Weakness,,,,,,,,,,,,,0,0,,,,,,,
+206,Magic Weakness,Magic damage +30%,,,,,,,,,,,,0,0,,,,,,,
+207,Poison Weakness,Poison damage +30%,,,,,,,,,,,,,,,,,,,,
+208,Cowardice,Negative morale effect +50%,,,,,,,,,,,,,,,,,,,,"Craven!, Useless! This squad is comprised of cowards and its morale will decrease even more from any factors."
+209,Treachery,,,,,,,,,,,,,,,,,,,,,"Betrayal! This squad is more likely to surrender and change side right away in dire situation. But, it will still try to flee instead if enemy force will not accept surrender."
+210,Sadism,,,,,,,,,,,,,,,,,,,,,"This squad is addicted to inflicting pain and death. The more injury and death it does, the higher the morale."
+211,Masochism,,,,,,,,,,,,,,,,,,,,,"This squad is addicted to receiving pain and death. The more injury and death it suffer, the higher the morale."
+212,Loves Fear,,,,,,,,,,,,,,,,,,,,,This squad actually love to feel fear. Being near other squads that causes or being affected by terror and fear regardless of their' side increase its morale instead.
+213,Seductive Charm,,,,,,,,,,,,,,,,,,,,,"This squad appearance charms enemy squads, making them become distracted and less effective in combat."
+214,Disgusting Taste,Morale -100% for any squad that consume this squad or it's corpse,,,,,,,,,,,,,,,,,,,,The worst taste of meat ever exist. No one will ever want to devour this unit even if they have no taste buds. 
+215,Rusty And Dirty,,,,,,,,,,,,,,,,,,,,,"This squad's weapons are covered with nasty rust making its less effective overall. However, this squad's attack can cause infection to injured enemy making them recover slower and harder to heal."
+216,Thrist For Blood,,,,,,,,,,,,,,,,,,,,,"This squad thrists for blood, literally! The longer it fight the better its morale. It also suffers incrasing morale penalty the longer it stay out of combat."
+217,Tainted Blood,,,,,,,,,,,,,,,,,,,,,"Tainted blood is very dangerous if it come into contact with any untainted creature. Hence, melee combat against enemy squad with tainted blood is extrememly inadvisable."
+218,Acid Blood,,,,,,,,,,,,,,,,,,,,,Bad news for everyone! Acid is raining down on whoever harm this squad. squad that is affected by acid blood suffer combat penalty and also injury. 
+219,Fantastic Beard,,,,,,,,,,,,,,,,,,,,,This squad has impressive beard that inspires all other dwarfs in the realm and battle.
+220,,,,,,,,,,,,,,,,,,,,,,
+221,,,,,,,,,,,,,,,,,,,,,,
+222,,,,,,,,,,,,,,,,,,,,,,
+223,Mountain Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in mountain terrain.
+224,Hill Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in hill terrain.
+225,Forest Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in forest terrain.
+226,Cloud Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in sky.
+227,Desert Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in desert terrain.
+228,Snow Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in snow terrain.
+229,Water Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in water terrain.
+230,Plain Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in plain terrain.
+231,Swamp Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in swamp terrain.
+232,Urban Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in urban terrain.
+233,Blight Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in blight terrain.
+234,Underground Hiding,,,,,,,,,,,,,,,,,,,,,This squad can hide better in underground terrain.
+235,Night Stalking,,,,,,,,,,,,,,,,,,,,,This squad can hide better at night.
+236,Ambush Expert,,,,,,,,,,,,,,,,,,,,50,"This squad can hide in any terrain, nowhere is truly safe for the enemy."
+237,Immortal,Immune to all damage,,,,,,,,,,,,,,,,,,,,"This squad is immortal and cannot be killed by any means, not even magic can harm them."
+238,Battle Frenzy,"Melee attack +30%, all defense -50%, speed +20%, charge bonus +10%, Uncontrollable",,,,,,,,,,,,,,,,,,,,KILL! This squad can go into frenzy state similar to orc wrath that is even crazier than normal berserk.
+239,Immune To Silence,,,,,,,,,,,,,,,,,,,,,
+240,Immune To Blind,,,,,,,,,,,,,,,,,,,,,
+241,Immune To Fear,,,,,,,,,,,,,,,,,,,,,
+242,Immune To Magic,,,,,,,,,,,,,,,,,,,,,
+243,Immune To Air,"Being creature of air, this squad completely immue to air damage. ",,,,,,,,,,,,,,,,,,,,
+244,Immune To Fire,"Being creature of fire, this squad completely immue to fire damage.",,,,,,,,,,,,,,,,,,,,
+245,Immune To Water,"Being creature of water, this squad completely immue to water damage.",,,,,,,,,,,,,,,,,,,,
+246,Immune To Earth,"Being creature of earth, this squad completely immue to earth damage.",,,,,,,,,,,,,,,,,,,,
+247,Immune To Mind Magic,"The protection for the mind is as important as protection for the body, and this squad has such perfect protection against any mind magic.",,,,,,,,,,,,,,,,,,,,
+248,Immune To Body Magic,,,,,,,,,,,,,,,,,,,,,
+249,Immune To Manipulation Magic,,,,,,,,,,,,,,,,,,,,,
+250,Immune To Poison,,,,,,,,,,,,,,,,,,,,,
+251,Vulnurable To Air,,,,,,,,,,,,,,,,,,,,,
+252,Vulnurable To Fire,,,,,,,,,,,,,,,,,,,,,
+253,Vulnurable To Water,,,,,,,,,,,,,,,,,,,,,
+254,Vulnurable To Earth,,,,,,,,,,,,,,,,,,,,,
+255,Vulnurable To Mind Magic,,,,,,,,,,,,,,,,,,,,,
+256,Vulnurable To Magic,,,,,,,,,,,,,,,,,,,,,
+257,Vulnurable To Body Magic,,,,,,,,,,,,,,,,,,,,,
+258,Vulnurable To Manipulation Magic,,,,,,,,,,,,,,,,,,,,,
+259,Vulnurable To Posion,,,,,,,,,,,,,,,,,,,,,
+260,Fear Ice,,,,,,,,,,,,,,,,,,,,,
+261,Fear Fire,,,,,,,,,,,,,,,,,,,,,
+262,Fear Air,,,,,,,,,,,,,,,,,,,,,
+263,Fear Earth,,,,,,,,,,,,,,,,,,,,,
+264,Fear Magic,,,,,,,,,,,,,,,,,,,,,
+265,Scare Mount,,,,,,,,,,,,,,,,,,,,,This squad can cause mount to panic or scare which reduce enemy squad's combat effectiveness and morale.
+266,Fearless Mount,,,,,,,,,,,,,,,,,,,,,This squad's mount cannot be panicked or broken and immune to Scare Mount.
+267,Human Killer,"Melee attack +25%, melee defense +15% against enemy human squad",,,,,,,,,,,,,,,,,,,,"Human, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all."
+268,Elf Murderer,"Melee attack +25%, melee defense +15% against enemy elf squad",,,,,,,,,,,,,,,,,,,,"Those damn arrogant gaze! Those damn annoying sneer! Darn elves think they are above every other races, let's show those sharp ears the death they deserve!"
+269,Dwarf Exterminator,"Melee attack +25%, melee defense +15% against enemy dwarf squad",,,,,,,,,,,,,,,,,,,,Short and stink! What good does dwarf bring to the world anyway? Useless sods they all are. 
+270,Orc Destroyer,"Melee attack +25%, melee defense +15% against enemy orc squad",,,,,,,,,,,,,,,,,,,,Orc Is nothing but a blight on civilisation.Its extinction will be another cornerstone of progress.
+271,Goblin Eradicator,"Melee attack +25%, melee defense +15% against enemy goblin squad",,,,,,,,,,,,,,,,,,,,Nasty little thing like this deserve to be eradicated. Kill them all and be rid of these pests for good or they will come back even more.
+272,Halfling Annihilator,"Melee attack +25%, melee defense +15% against enemy halfling squad",,,,,,,,,,,,,,,,,,,,"Peace this, squady that. Those who are not ready for war will never see peace."
+273,Animal Butcher,"Melee attack +25%, melee defense +15% against enemy animal squad",,,,,,,,,,,,,,,,,,,,Look at those valuable fang and fur! Whoever deals the killing blow get the prize!
+274,Lizardman Eraser,"Melee attack +25%, melee defense +15% against enemy lizardman squad",,,,,,,,,,,,,,,,,,,,Them scaly skins always are up to no good. We must erase them from the face of the earth so our children can live safely. 
+275,Beastman Eliminator,"Melee attack +25%, melee defense +15% against enemy beastman squad",,,,,,,,,,,,,,,,,,,,Higher than mere beast but lower than man. These creatures deserve no better! The hunt is on!
+276,Giant Terminator,"Melee attack +25%, melee defense +15% against enemy giant squad",,,,,,,,,,,,,,,,,,,,Big and brutish. Truly the greatest challenge for the greatest warrior. 
+277,Dragon Slayer,"Melee attack +25%, melee defense +15% against enemy dragon squad",,,,,,,,,,,,,,,,,,,,"Some say dragons were the sole ruler of the world in the age of origin, the true symbol of power. Not for us of course."
+278,Demon Banisher,"Melee attack +25%, melee defense +15% against enemy demon squad",,,,,,,,,,,,,,,,,,,,How dare those vile demons invade our world! Go back to whatever the hell you all came from!
+279,Undead Liberator,"Melee attack +25%, melee defense +15% against enemy undead squad",,,,,,,,,,,,,,,,,,,,"Nothing less than blasphemy, the existance of these undeads. It is our duty to free them of these miserable state they are in."
+280,Fairy Crusher,"Melee attack +25%, melee defense +15% against enemy fairy squad",,,,,,,,,,,,,,,,,,,,"Pure and innocence, is it? Those who say that obviously never meet the real one. It's always fun to crush annoying flies!"
+281,Gremlin Bankrupter,"Melee attack +25%, melee defense +15% against enemy gremlin squad",,,,,,,,,,,,,,,,,,,,To be the slave to money is make money your biggest weak point. Just make them lose all the money and watch them kill themselves over that.
+282,Wizard Hunters,"Melee attack +25%, melee defense +15% against enemy mage and sub mage squad, receive -30% magic damage",,,,,,,,,,,,,,,,,,,,"""The unnatural of magecraft is too dangerous for any person to possess. Therefore, any person who practice the art of magic is punishable by death."" The Absolute Law of Mortal Life, Fifth Act:Third Article"
+283,Vindictive,All attack +30% against enemy squad that deals damage more than 10% health to this squad,,,,,,,,,,,,,,,,,,,,Revenge is best served cold is what they often say. Well someone also like to have it hot!
+284,Animal Instinct,,,,,,,,,,,,,,,,,,,,,"The basic of every animal is to survive. Based on that instinct, this squad will flee much faster in losing fight but will give it all when it cannot escape and less likely to surrender."
+285,Phoenix Blood,"natural healing +50%, can resurrect once in one battle",,,,,,,,,,,,,,,,,,,,"Blood of immortal bird while not making one immunable to damage and disease, can help improve regenerative ability greatly while also allow the body to resurrect with enough energy."
+286,Incorporeal,,,,,,,,,,,,,,,,,,,,,"""How can we kill this thing!?"", An unknown soldier before being struck down, this squad cannot be damaged by normal weapon only from magic and magical weapon but also fight less effective."
+287,Oath Of The Eternal,Become spirit troop when dead which has incorporeal property but fight less effective,,,,,,,,,,,,,,,,,,,,"Bound by the Eternal Oath, this squad will fight on even in death."
+288,Light Vision Intolerance,All stat -55% at day,,,,,,,,,,,,,,,,,,,,"Blind by the light!, this squad cannot withstand the sight of sunlight making them unsuitable for daytime combat."
+289,Night Vision Intolerance,All stat -55% at night,,,,,,,,,,,,,,,,,,,,This squad cannot see well in the night at all which reducing their combat effectiveness greatly.
+290,Nocturnal,"All stat +35% at night, all stat -35% at day",,,,,,,,,,,,,,,,,,,,This squad fight better at night but worse at day.
+291,Willbreaker,All morale effect status -50% effect for nearby enemy,,,,,,,,,,,,,,,,,,,,Even the strongest will can be broken. This squad can make psychological resistance properties and abilities such as Strong Will of nearby enemy squads less effective.
+292,Adore Melody,"All stat +10%, morale double from melody effect",,,,,,,,,,,,,,,,,,,,"This squad loves music dearly and will receive better combat bonus from music. However if the music stop, this squads will then receive combat penalty."
+293,Loathe Melody,"All stat -10%, morale -20%",,,,,,,,,,,,,,,,,,,,"This squad hates music and will receive combat penalty from music. If the music stop, this squads will receive combat bonus after."
+294,Salted Phase,"Cannot get seasick debuff, morale +30% in naval combat, movement +50% in sea",,,,,,,,,,,,,,,,,,,,The salted sea requires unconditional allegiance from those who wish to pass it. Only those with strongest will can survive in this unforgiving above the true abyss.
+295,Sorrow Of Battle ,"Morale +20%, enemy morale -30%, melee attack -20%, melee defense -10%",,,,,,,,,,,,,,,,,,,,Woe for the world to see war and not peace. Our enemy too suffer the same fate as us.
+296,Smokey Wings At The Ground,"Active when 10% of this squad dies, affect everyone in nearby radius.",,,,,,,,,,,,,,,,,,,,"When this squad suffer casulty, the Smokey Wings on the dead troops will drop to the ground. The smoke rising from the ground up will every squads without anti-smokey mask. "
+297,Anti-Smokey Mask,No effect from any smoke,,,,,,,,,,,,,,,,,,,,This squad cannot be affected by Smokey ability.
+298,Strong Will,"A strong warrior requires a strong will, this squad cannot be affected by negative psychological effect.",,,,,,,,,,,,,,,,,22,,,
+299,Fullmoon Jubilance,"Attack +30%, all defense -10%, always in berserk status",,,,,,,,,,,,,,,,,,,,The fateful day! This squad will fight firecely to the death to fulfill the prophecy.
+300,Halfmoon Preparation,"Attack -30%, all defense +35%, morale -50%, speed +20%",,,,,,,,,,,,,,,,,,,,"There are no glory yet in battle before full moon, This squad will fight more reservely and more likely to retreat In losing fight."
+301,Crescentmoon Sacrifice,"Attack +20%, morale +15%, speed +10%",,,,,,,,,,,,,,,,,,,,The rites must be made to hasten the arrival of the true moon! Sacrifices must be chosen!
+302,Darkmoon Melancholy,This squad's morale always stay at broken and cannot be raised until the property no longer applies,,,,,,,,,,,,,,,,,,,,The darkest day! It is forbidden to die on this day at all cost.
+303,Bloodmoon Coming,"Attack +50%, all defense -50%, speed +20%, receive berserk status",,,,,,,,,,,,,,,,,,,,The prophecy has been fulfilled! The gate of heaven is openned at last!
+304,,,,,,,,,,,,,,,,,,,,,,
+305,,,,,,,,,,,,,,,,,,,,,,
+306,,,,,,,,,,,,,,,,,,,,,,
+307,,,,,,,,,,,,,,,,,,,,,,
+308,,,,,,,,,,,,,,,,,,,,,,
+309,,,,,,,,,,,,,,,,,,,,,,
+310,,,,,,,,,,,,,,,,,,,,,,
+311,,,,,,,,,,,,,,,,,,,,,,
+312,,,,,,,,,,,,,,,,,,,,,,
+313,,,,,,,,,,,,,,,,,,,,,,
+314,,,,,,,,,,,,,,,,,,,,,,
+315,,,,,,,,,,,,,,,,,,,,,,
+316,,,,,,,,,,,,,,,,,,,,,,
+317,,,,,,,,,,,,,,,,,,,,,,
+318,,,,,,,,,,,,,,,,,,,,,,
+319,,,,,,,,,,,,,,,,,,,,,,
+320,,,,,,,,,,,,,,,,,,,,,,
+321,,,,,,,,,,,,,,,,,,,,,,
+322,,,,,,,,,,,,,,,,,,,,,,
+323,,,,,,,,,,,,,,,,,,,,,,
+324,,,,,,,,,,,,,,,,,,,,,,
+325,,,,,,,,,,,,,,,,,,,,,,
+326,,,,,,,,,,,,,,,,,,,,,,
+327,,,,,,,,,,,,,,,,,,,,,,
+328,,,,,,,,,,,,,,,,,,,,,,
+329,,,,,,,,,,,,,,,,,,,,,,
+330,,,,,,,,,,,,,,,,,,,,,,
+331,,,,,,,,,,,,,,,,,,,,,,
+332,,,,,,,,,,,,,,,,,,,,,,
+333,,,,,,,,,,,,,,,,,,,,,,
+334,,,,,,,,,,,,,,,,,,,,,,
+335,,,,,,,,,,,,,,,,,,,,,,
+336,,,,,,,,,,,,,,,,,,,,,,
+337,,,,,,,,,,,,,,,,,,,,,,
+338,,,,,,,,,,,,,,,,,,,,,,
+339,,,,,,,,,,,,,,,,,,,,,,
+340,,,,,,,,,,,,,,,,,,,,,,
+341,,,,,,,,,,,,,,,,,,,,,,
+342,,,,,,,,,,,,,,,,,,,,,,
+343,,,,,,,,,,,,,,,,,,,,,,
+344,,,,,,,,,,,,,,,,,,,,,,
+345,,,,,,,,,,,,,,,,,,,,,,
+346,,,,,,,,,,,,,,,,,,,,,,
+347,,,,,,,,,,,,,,,,,,,,,,
+348,,,,,,,,,,,,,,,,,,,,,,
+349,,,,,,,,,,,,,,,,,,,,,,
+350,,,,,,,,,,,,,,,,,,,,,,
+351,,,,,,,,,,,,,,,,,,,,,,
+352,,,,,,,,,,,,,,,,,,,,,,
+353,,,,,,,,,,,,,,,,,,,,,,
+354,,,,,,,,,,,,,,,,,,,,,,
+355,,,,,,,,,,,,,,,,,,,,,,
+356,,,,,,,,,,,,,,,,,,,,,,
+357,,,,,,,,,,,,,,,,,,,,,,
+358,,,,,,,,,,,,,,,,,,,,,,
+359,,,,,,,,,,,,,,,,,,,,,,
+360,,,,,,,,,,,,,,,,,,,,,,
+361,,,,,,,,,,,,,,,,,,,,,,
+362,,,,,,,,,,,,,,,,,,,,,,
+363,,,,,,,,,,,,,,,,,,,,,,
+364,,,,,,,,,,,,,,,,,,,,,,
+365,,,,,,,,,,,,,,,,,,,,,,
+366,,,,,,,,,,,,,,,,,,,,,,
+367,,,,,,,,,,,,,,,,,,,,,,
+368,,,,,,,,,,,,,,,,,,,,,,
+369,,,,,,,,,,,,,,,,,,,,,,
+370,,,,,,,,,,,,,,,,,,,,,,
+371,,,,,,,,,,,,,,,,,,,,,,
+372,,,,,,,,,,,,,,,,,,,,,,
+373,,,,,,,,,,,,,,,,,,,,,,
+374,,,,,,,,,,,,,,,,,,,,,,
+375,,,,,,,,,,,,,,,,,,,,,,
+376,,,,,,,,,,,,,,,,,,,,,,
+377,,,,,,,,,,,,,,,,,,,,,,
+378,,,,,,,,,,,,,,,,,,,,,,
+379,,,,,,,,,,,,,,,,,,,,,,
+380,,,,,,,,,,,,,,,,,,,,,,
+381,,,,,,,,,,,,,,,,,,,,,,
+382,,,,,,,,,,,,,,,,,,,,,,
+383,,,,,,,,,,,,,,,,,,,,,,
+384,,,,,,,,,,,,,,,,,,,,,,
+385,,,,,,,,,,,,,,,,,,,,,,
+386,,,,,,,,,,,,,,,,,,,,,,
+387,,,,,,,,,,,,,,,,,,,,,,
+388,,,,,,,,,,,,,,,,,,,,,,
+389,,,,,,,,,,,,,,,,,,,,,,
+390,,,,,,,,,,,,,,,,,,,,,,
+391,,,,,,,,,,,,,,,,,,,,,,
+392,,,,,,,,,,,,,,,,,,,,,,
+393,,,,,,,,,,,,,,,,,,,,,,
+394,,,,,,,,,,,,,,,,,,,,,,
+395,,,,,,,,,,,,,,,,,,,,,,
+396,,,,,,,,,,,,,,,,,,,,,,
+397,,,,,,,,,,,,,,,,,,,,,,
+398,,,,,,,,,,,,,,,,,,,,,,
+399,,,,,,,,,,,,,,,,,,,,,,
+400,,,,,,,,,,,,,,,,,,,,,,
+401,,,,,,,,,,,,,,,,,,,,,,
+402,,,,,,,,,,,,,,,,,,,,,,
+403,,,,,,,,,,,,,,,,,,,,,,
+404,,,,,,,,,,,,,,,,,,,,,,
+405,,,,,,,,,,,,,,,,,,,,,,
+406,,,,,,,,,,,,,,,,,,,,,,
+407,,,,,,,,,,,,,,,,,,,,,,
+408,,,,,,,,,,,,,,,,,,,,,,
+409,,,,,,,,,,,,,,,,,,,,,,
+410,,,,,,,,,,,,,,,,,,,,,,
+411,,,,,,,,,,,,,,,,,,,,,,
+412,,,,,,,,,,,,,,,,,,,,,,
+413,,,,,,,,,,,,,,,,,,,,,,
+414,,,,,,,,,,,,,,,,,,,,,,
+415,,,,,,,,,,,,,,,,,,,,,,
+416,,,,,,,,,,,,,,,,,,,,,,
+417,,,,,,,,,,,,,,,,,,,,,,
+418,,,,,,,,,,,,,,,,,,,,,,
+419,,,,,,,,,,,,,,,,,,,,,,
+420,,,,,,,,,,,,,,,,,,,,,,
+421,,,,,,,,,,,,,,,,,,,,,,
+422,,,,,,,,,,,,,,,,,,,,,,
+423,,,,,,,,,,,,,,,,,,,,,,
+424,,,,,,,,,,,,,,,,,,,,,,
+425,,,,,,,,,,,,,,,,,,,,,,
+426,,,,,,,,,,,,,,,,,,,,,,
+427,,,,,,,,,,,,,,,,,,,,,,
+428,,,,,,,,,,,,,,,,,,,,,,
+429,,,,,,,,,,,,,,,,,,,,,,
+430,,,,,,,,,,,,,,,,,,,,,,
+431,,,,,,,,,,,,,,,,,,,,,,
+432,,,,,,,,,,,,,,,,,,,,,,
+433,,,,,,,,,,,,,,,,,,,,,,
+434,,,,,,,,,,,,,,,,,,,,,,
+435,,,,,,,,,,,,,,,,,,,,,,
+436,,,,,,,,,,,,,,,,,,,,,,
+437,,,,,,,,,,,,,,,,,,,,,,
+438,,,,,,,,,,,,,,,,,,,,,,
+439,,,,,,,,,,,,,,,,,,,,,,
+440,,,,,,,,,,,,,,,,,,,,,,
+441,,,,,,,,,,,,,,,,,,,,,,
+442,,,,,,,,,,,,,,,,,,,,,,
+443,,,,,,,,,,,,,,,,,,,,,,
+444,,,,,,,,,,,,,,,,,,,,,,
+445,,,,,,,,,,,,,,,,,,,,,,
+446,,,,,,,,,,,,,,,,,,,,,,
+447,,,,,,,,,,,,,,,,,,,,,,
+448,,,,,,,,,,,,,,,,,,,,,,
+449,,,,,,,,,,,,,,,,,,,,,,
+450,,,,,,,,,,,,,,,,,,,,,,
+451,,,,,,,,,,,,,,,,,,,,,,
+452,,,,,,,,,,,,,,,,,,,,,,
+453,,,,,,,,,,,,,,,,,,,,,,
+454,,,,,,,,,,,,,,,,,,,,,,
+455,,,,,,,,,,,,,,,,,,,,,,
+456,,,,,,,,,,,,,,,,,,,,,,
+457,,,,,,,,,,,,,,,,,,,,,,
+458,,,,,,,,,,,,,,,,,,,,,,
+459,,,,,,,,,,,,,,,,,,,,,,
+460,,,,,,,,,,,,,,,,,,,,,,
+461,,,,,,,,,,,,,,,,,,,,,,
+462,,,,,,,,,,,,,,,,,,,,,,
+463,,,,,,,,,,,,,,,,,,,,,,
+464,,,,,,,,,,,,,,,,,,,,,,
+465,,,,,,,,,,,,,,,,,,,,,,
+466,,,,,,,,,,,,,,,,,,,,,,
+467,,,,,,,,,,,,,,,,,,,,,,
+468,,,,,,,,,,,,,,,,,,,,,,
+469,,,,,,,,,,,,,,,,,,,,,,
+470,,,,,,,,,,,,,,,,,,,,,,
+471,,,,,,,,,,,,,,,,,,,,,,
+472,,,,,,,,,,,,,,,,,,,,,,
+473,,,,,,,,,,,,,,,,,,,,,,
+474,,,,,,,,,,,,,,,,,,,,,,
+475,,,,,,,,,,,,,,,,,,,,,,
+476,,,,,,,,,,,,,,,,,,,,,,
+477,,,,,,,,,,,,,,,,,,,,,,
+478,,,,,,,,,,,,,,,,,,,,,,
+479,,,,,,,,,,,,,,,,,,,,,,
+480,,,,,,,,,,,,,,,,,,,,,,
+481,,,,,,,,,,,,,,,,,,,,,,
+482,,,,,,,,,,,,,,,,,,,,,,
+483,,,,,,,,,,,,,,,,,,,,,,
+484,,,,,,,,,,,,,,,,,,,,,,
+485,,,,,,,,,,,,,,,,,,,,,,
+486,,,,,,,,,,,,,,,,,,,,,,
+487,,,,,,,,,,,,,,,,,,,,,,
+488,,,,,,,,,,,,,,,,,,,,,,
+489,,,,,,,,,,,,,,,,,,,,,,
+490,,,,,,,,,,,,,,,,,,,,,,
+491,,,,,,,,,,,,,,,,,,,,,,
+492,,,,,,,,,,,,,,,,,,,,,,
+493,,,,,,,,,,,,,,,,,,,,,,
+494,,,,,,,,,,,,,,,,,,,,,,
+495,,,,,,,,,,,,,,,,,,,,,,
+496,,,,,,,,,,,,,,,,,,,,,,
+497,,,,,,,,,,,,,,,,,,,,,,
+498,,,,,,,,,,,,,,,,,,,,,,
+499,,,,,,,,,,,,,,,,,,,,,,
+500,,,,,,,,,,,,,,,,,,,,,,
+501,,,,,,,,,,,,,,,,,,,,,,
+502,,,,,,,,,,,,,,,,,,,,,,
+503,,,,,,,,,,,,,,,,,,,,,,
+504,,,,,,,,,,,,,,,,,,,,,,
+505,,,,,,,,,,,,,,,,,,,,,,
+506,,,,,,,,,,,,,,,,,,,,,,
+507,,,,,,,,,,,,,,,,,,,,,,
+508,,,,,,,,,,,,,,,,,,,,,,
+509,,,,,,,,,,,,,,,,,,,,,,
+510,,,,,,,,,,,,,,,,,,,,,,
+511,,,,,,,,,,,,,,,,,,,,,,
+512,,,,,,,,,,,,,,,,,,,,,,
+513,,,,,,,,,,,,,,,,,,,,,,
+514,,,,,,,,,,,,,,,,,,,,,,
+515,,,,,,,,,,,,,,,,,,,,,,
+516,,,,,,,,,,,,,,,,,,,,,,
+517,,,,,,,,,,,,,,,,,,,,,,
+518,,,,,,,,,,,,,,,,,,,,,,
+519,,,,,,,,,,,,,,,,,,,,,,
+520,,,,,,,,,,,,,,,,,,,,,,
+521,,,,,,,,,,,,,,,,,,,,,,
+522,,,,,,,,,,,,,,,,,,,,,,
+523,,,,,,,,,,,,,,,,,,,,,,
+524,,,,,,,,,,,,,,,,,,,,,,
+525,,,,,,,,,,,,,,,,,,,,,,
+526,,,,,,,,,,,,,,,,,,,,,,
+527,,,,,,,,,,,,,,,,,,,,,,
+528,,,,,,,,,,,,,,,,,,,,,,
+529,,,,,,,,,,,,,,,,,,,,,,
+530,,,,,,,,,,,,,,,,,,,,,,
+531,,,,,,,,,,,,,,,,,,,,,,
+532,,,,,,,,,,,,,,,,,,,,,,
+533,,,,,,,,,,,,,,,,,,,,,,
+534,,,,,,,,,,,,,,,,,,,,,,
+535,,,,,,,,,,,,,,,,,,,,,,
+536,,,,,,,,,,,,,,,,,,,,,,
+537,,,,,,,,,,,,,,,,,,,,,,
+538,,,,,,,,,,,,,,,,,,,,,,
+539,,,,,,,,,,,,,,,,,,,,,,
+540,,,,,,,,,,,,,,,,,,,,,,
+541,,,,,,,,,,,,,,,,,,,,,,
+542,,,,,,,,,,,,,,,,,,,,,,
+543,,,,,,,,,,,,,,,,,,,,,,
+544,,,,,,,,,,,,,,,,,,,,,,
+545,,,,,,,,,,,,,,,,,,,,,,
+546,,,,,,,,,,,,,,,,,,,,,,
+547,,,,,,,,,,,,,,,,,,,,,,
+548,,,,,,,,,,,,,,,,,,,,,,
+549,,,,,,,,,,,,,,,,,,,,,,
+550,,,,,,,,,,,,,,,,,,,,,,
+551,,,,,,,,,,,,,,,,,,,,,,
+552,,,,,,,,,,,,,,,,,,,,,,
+553,,,,,,,,,,,,,,,,,,,,,,
+554,,,,,,,,,,,,,,,,,,,,,,
+555,,,,,,,,,,,,,,,,,,,,,,
+556,,,,,,,,,,,,,,,,,,,,,,
+557,,,,,,,,,,,,,,,,,,,,,,
+558,,,,,,,,,,,,,,,,,,,,,,
+559,,,,,,,,,,,,,,,,,,,,,,
+560,,,,,,,,,,,,,,,,,,,,,,
+561,,,,,,,,,,,,,,,,,,,,,,
+562,,,,,,,,,,,,,,,,,,,,,,
+563,,,,,,,,,,,,,,,,,,,,,,
+564,,,,,,,,,,,,,,,,,,,,,,
+565,,,,,,,,,,,,,,,,,,,,,,
+566,,,,,,,,,,,,,,,,,,,,,,
+567,,,,,,,,,,,,,,,,,,,,,,
+568,,,,,,,,,,,,,,,,,,,,,,
+569,,,,,,,,,,,,,,,,,,,,,,
+570,,,,,,,,,,,,,,,,,,,,,,
+571,,,,,,,,,,,,,,,,,,,,,,
+572,,,,,,,,,,,,,,,,,,,,,,
+573,,,,,,,,,,,,,,,,,,,,,,
+574,,,,,,,,,,,,,,,,,,,,,,
+575,,,,,,,,,,,,,,,,,,,,,,
+576,,,,,,,,,,,,,,,,,,,,,,
+577,,,,,,,,,,,,,,,,,,,,,,
+578,,,,,,,,,,,,,,,,,,,,,,
+579,,,,,,,,,,,,,,,,,,,,,,
+580,,,,,,,,,,,,,,,,,,,,,,
+581,,,,,,,,,,,,,,,,,,,,,,
+582,,,,,,,,,,,,,,,,,,,,,,
+583,,,,,,,,,,,,,,,,,,,,,,
+584,,,,,,,,,,,,,,,,,,,,,,
+585,,,,,,,,,,,,,,,,,,,,,,
+586,,,,,,,,,,,,,,,,,,,,,,
+587,,,,,,,,,,,,,,,,,,,,,,
+588,,,,,,,,,,,,,,,,,,,,,,
+589,,,,,,,,,,,,,,,,,,,,,,
+590,,,,,,,,,,,,,,,,,,,,,,
+591,,,,,,,,,,,,,,,,,,,,,,
+592,,,,,,,,,,,,,,,,,,,,,,
+593,,,,,,,,,,,,,,,,,,,,,,
+594,,,,,,,,,,,,,,,,,,,,,,
+595,,,,,,,,,,,,,,,,,,,,,,
+596,,,,,,,,,,,,,,,,,,,,,,
+597,,,,,,,,,,,,,,,,,,,,,,
+598,,,,,,,,,,,,,,,,,,,,,,
+599,,,,,,,,,,,,,,,,,,,,,,
+600,,,,,,,,,,,,,,,,,,,,,,
+601,,,,,,,,,,,,,,,,,,,,,,
+602,,,,,,,,,,,,,,,,,,,,,,
+603,,,,,,,,,,,,,,,,,,,,,,
+604,,,,,,,,,,,,,,,,,,,,,,
+605,,,,,,,,,,,,,,,,,,,,,,
+606,,,,,,,,,,,,,,,,,,,,,,
+607,,,,,,,,,,,,,,,,,,,,,,
+608,,,,,,,,,,,,,,,,,,,,,,
+609,,,,,,,,,,,,,,,,,,,,,,
+610,,,,,,,,,,,,,,,,,,,,,,
+611,,,,,,,,,,,,,,,,,,,,,,
+612,,,,,,,,,,,,,,,,,,,,,,
+613,,,,,,,,,,,,,,,,,,,,,,
+614,,,,,,,,,,,,,,,,,,,,,,
+615,,,,,,,,,,,,,,,,,,,,,,
+616,,,,,,,,,,,,,,,,,,,,,,
+617,,,,,,,,,,,,,,,,,,,,,,
+618,,,,,,,,,,,,,,,,,,,,,,
+619,,,,,,,,,,,,,,,,,,,,,,
+620,,,,,,,,,,,,,,,,,,,,,,
+621,,,,,,,,,,,,,,,,,,,,,,
+622,,,,,,,,,,,,,,,,,,,,,,
+623,,,,,,,,,,,,,,,,,,,,,,
+624,,,,,,,,,,,,,,,,,,,,,,
+625,,,,,,,,,,,,,,,,,,,,,,
+626,,,,,,,,,,,,,,,,,,,,,,
+627,,,,,,,,,,,,,,,,,,,,,,
+628,,,,,,,,,,,,,,,,,,,,,,
+629,,,,,,,,,,,,,,,,,,,,,,
+630,,,,,,,,,,,,,,,,,,,,,,
+631,,,,,,,,,,,,,,,,,,,,,,
+632,,,,,,,,,,,,,,,,,,,,,,
+633,,,,,,,,,,,,,,,,,,,,,,
+634,,,,,,,,,,,,,,,,,,,,,,
+635,,,,,,,,,,,,,,,,,,,,,,
+636,,,,,,,,,,,,,,,,,,,,,,
+637,,,,,,,,,,,,,,,,,,,,,,
+638,,,,,,,,,,,,,,,,,,,,,,
+639,,,,,,,,,,,,,,,,,,,,,,
+640,,,,,,,,,,,,,,,,,,,,,,
+641,,,,,,,,,,,,,,,,,,,,,,
+642,,,,,,,,,,,,,,,,,,,,,,
+643,,,,,,,,,,,,,,,,,,,,,,
+644,,,,,,,,,,,,,,,,,,,,,,
+645,,,,,,,,,,,,,,,,,,,,,,
+646,,,,,,,,,,,,,,,,,,,,,,
+647,,,,,,,,,,,,,,,,,,,,,,
+648,,,,,,,,,,,,,,,,,,,,,,
+649,,,,,,,,,,,,,,,,,,,,,,
+650,,,,,,,,,,,,,,,,,,,,,,
+651,,,,,,,,,,,,,,,,,,,,,,
+652,,,,,,,,,,,,,,,,,,,,,,
+653,,,,,,,,,,,,,,,,,,,,,,
+654,,,,,,,,,,,,,,,,,,,,,,
+655,,,,,,,,,,,,,,,,,,,,,,
+656,,,,,,,,,,,,,,,,,,,,,,
+657,,,,,,,,,,,,,,,,,,,,,,
+658,,,,,,,,,,,,,,,,,,,,,,
+659,,,,,,,,,,,,,,,,,,,,,,
+660,,,,,,,,,,,,,,,,,,,,,,
+661,,,,,,,,,,,,,,,,,,,,,,
+662,,,,,,,,,,,,,,,,,,,,,,
+663,,,,,,,,,,,,,,,,,,,,,,
+664,,,,,,,,,,,,,,,,,,,,,,
+665,,,,,,,,,,,,,,,,,,,,,,
+666,,,,,,,,,,,,,,,,,,,,,,
+667,,,,,,,,,,,,,,,,,,,,,,
+668,,,,,,,,,,,,,,,,,,,,,,
+669,,,,,,,,,,,,,,,,,,,,,,
+670,,,,,,,,,,,,,,,,,,,,,,
+671,,,,,,,,,,,,,,,,,,,,,,
+672,,,,,,,,,,,,,,,,,,,,,,
+673,,,,,,,,,,,,,,,,,,,,,,
+674,,,,,,,,,,,,,,,,,,,,,,
+675,,,,,,,,,,,,,,,,,,,,,,

@@ -1,0 +1,1 @@
+['white_king.png', 'white_queen.png', 'white_rook.png', 'white_knight_left.png', 'white_knight_right.png' ,'white_bishop.png','crown.png','black_king.png', 'black_queen.png', 'black_rook.png', 'black_knight_left.png', 'black_knight_right.png' ,'black_bishop.png']
