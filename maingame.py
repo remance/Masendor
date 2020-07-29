@@ -13,10 +13,6 @@ import ast
 from collections import defaultdict
 import numpy as np
 
-#see if we can load more than standard BMP
-if not pygame.image.get_extended():
-    raise SystemExit("Sorry, extended image module required")
-
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
