@@ -10,37 +10,6 @@ import math
 #     )
 
 
-#Resizes an image and keeps aspect ratio. Set mywidth to the desired with in pixels.
-
-# import PIL
-# from PIL import Image
-#
-# mywidth = 300
-#
-# img = Image.open('someimage.jpg')
-# wpercent = (mywidth/float(img.size[0]))
-# hsize = int((float(img.size[1])*float(wpercent)))
-# img = img.resize((mywidth,hsize), PIL.Image.ANTIALIAS)
-# img.save('resized.jpg')
-
-"""next goal: moving army with mouse click, config file, sound volume adjust """
-
-#!/usr/bin/env python
-
-"""An zoomed image viewer that demonstrates Surface.scroll
-
-This example shows a scrollable image that has a zoom factor of eight.
-It uses the Surface.scroll function to shift the image on the display
-surface. A clip rectangle protects a margin area. If called as a function,
-the example accepts an optional image file path. If run as a program
-it takes an optional file path command line argument. If no file
-is provided a default image file is used.
-
-When running click on a black triangle to move one pixel in the direction
-the triangle points. Or use the arrow keys. Close the window or press ESC
-to quit.
-
-"""
 import random
 import sys
 import os

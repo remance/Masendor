@@ -16,9 +16,6 @@ ScreenWidth = int(config['DEFAULT']['ScreenWidth'])
 FULLSCREEN = int(config['DEFAULT']['Fullscreen'])
 SoundVolume = float(config['DEFAULT']['SoundVolume'])
 
-if not pygame.image.get_extended():
-    raise SystemExit("Sorry, extended image module required")
-
 SCREENRECT = Rect(0, 0, ScreenWidth, ScreenHeight)
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -236,10 +233,10 @@ def game_intro(screen,clock,introoption):
         timer+=1
         if timer == 1000: intro = False
 
-def encyclopedia(screen):
-    gamearmy.leader
-    gamearmy.weaponstat
-    gamearmy.unitstat
+# def encyclopedia(screen):
+#     gamearmy.leader
+#     gamearmy.weaponstat
+#     gamearmy.unitstat
 
 class mainmenu():
     def __init__(self):
