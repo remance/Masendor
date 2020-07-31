@@ -558,12 +558,13 @@ class unitsquad(pygame.sprite.Sprite):
 
 class unitarmy(pygame.sprite.Sprite):
     images = []
-    def __init__(self, startposition, gameid, leaderlist, statlist, leader, squadlist,imgsize,colour,control,coa):
+    def __init__(self, startposition, gameid, leaderlist, statlist, leader, squadlist,imgsize,colour,control,coa,commander=False):
         # super().__init__()
         self._layer = 3
         pygame.sprite.Sprite.__init__(self, self.containers)
         # self.unitarray = unitarray
         self.armysquad = squadlist
+        self.commander = commander
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
         self.squadalive = np.where(self.squadalive > 0, 2,self.squadalive)
@@ -1005,7 +1006,7 @@ class unitarmy(pygame.sprite.Sprite):
                     self.retreattimer = 0
                     self.retreatstart = 0
             """Rotate Function"""
-            if self.angle != round(self.newangle) and self.stamina>0:
+            if self.angle != round(self.newangle) and self.stamina > 0 and ((self.hitbox[0].collide == 0 and self.hitbox[3].collide == 0) or (self.preparetimer > 0 and self.preparetimer < 4)):
                 self.rotatecal = abs(round(self.newangle) - self.angle)
                 self.rotatecheck = 360-self.rotatecal
                 self.moverotate = 1
@@ -1044,7 +1045,7 @@ class unitarmy(pygame.sprite.Sprite):
                 # """Setup target to move to give position command, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
                 """Chase target and rotate accordingly"""
-                if self.state in [3, 4, 5, 6] and self.target != self.attacktarget.pos:
+                if self.state in [3,4,5,6,7,8] and self.target != self.attacktarget.pos:
                     # print(self.attacktarget.pos,self.target)
                     self.target = self.attacktarget.pos
                     self.setrotate(self.target, instant=True)
@@ -1053,7 +1054,7 @@ class unitarmy(pygame.sprite.Sprite):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.target)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
-                    if (self.hitbox[list(side2.keys())[0]].collide == 0 or (self.preparetimer > 0 and self.preparetimer < 4)) and self.moverotate == 0 and self.rotateonly != True:
+                    if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[list(side2.keys())[1]].collide == 0) or (self.preparetimer > 0 and self.preparetimer < 4)) and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = False
                         move = self.target - self.allsidepos[0]
                         move_length = move.length()
@@ -1065,8 +1066,9 @@ class unitarmy(pygame.sprite.Sprite):
                         elif move_length > 1:
                             # if self.state != 3 and self.retreatcommand == 1:
                             move.normalize_ip()
-                            if self.state in [2,4,6,96,98,99] and move_length >= move.length(): move = move * self.runspeed * dt * 50
-                            elif self.state in [1,3,5,10] and move_length >= move.length(): move = move * self.walkspeed * dt * 50
+                            if self.state in [2,4,6,96,98,99]: move = move * self.runspeed * dt * 50
+                            elif self.state in [1,3,5]: move = move * self.walkspeed * dt * 50
+                            elif self.state in [10]: move = move * 3 * dt * 50
                             self.pos += move
                         self.rect.center = list(int(v) for v in self.pos)
                         self.makeallsidepos()

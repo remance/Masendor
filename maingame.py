@@ -1,4 +1,4 @@
-"""next goal: dynamic authority(0.2.4), skill usage limit option (0.2.3), menu in main game(0.3), proper broken retreat after map function (0.4)
+"""next goal: dynamic authority and leader function(0.2.4), skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
 FIX
 recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
@@ -81,27 +81,15 @@ class Gameui(pygame.sprite.Sprite):
                 self.image.blit(ic, self.iconimagerect)
                 position += 90
             self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)", 7: "Forced Walk", 8:"Forced Run",
-                             10: "Fighting", 11:"shooting", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
+                             10: "Fighting", 11:"shooting", 68:"Dancing", 69:"Partying" ,96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                        6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
         elif self.uitype == "commandbar":
-            self.iconimagerect = self.icon[1].get_rect(
+            self.iconimagerect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
             self.image.blit(self.icon[6], self.iconimagerect)
-            self.iconimagerect = self.icon[0].get_rect(
-                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
-            self.image.blit(self.icon[0], self.iconimagerect)
-            self.iconimagerect = self.icon[0].get_rect(center=(
-            self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
-            self.image.get_rect()[1] + self.image.get_size()[1] / 2.2))
-            self.image.blit(self.icon[3], self.iconimagerect)
-            self.iconimagerect = self.icon[0].get_rect(center=(
-            self.image.get_rect()[0] + self.image.get_size()[0] / 1.4,
-            self.image.get_rect()[1] + self.image.get_size()[1] / 2.2))
-            self.image.blit(self.icon[4], self.iconimagerect)
-            self.iconimagerect = self.icon[0].get_rect(
-                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
-            self.image.blit(self.icon[5], self.iconimagerect)
+            self.white = [self.icon[0],self.icon[1],self.icon[2],self.icon[3],self.icon[4],self.icon[5]]
+            self.black = [self.icon[7],self.icon[8],self.icon[9],self.icon[10],self.icon[11],self.icon[12]]
         elif self.uitype == "unitcard":
             self.fonthead = pygame.font.SysFont("helvetica", textsize + 2)
             self.fonthead.set_italic(1)
@@ -151,10 +139,34 @@ class Gameui(pygame.sprite.Sprite):
                 self.lastvalue = self.value
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
-
         elif self.uitype == "commandbar":
+            usecolour = self.white
             self.leaderpiclist = []
             self.image = self.image_original.copy()
+            if who.gameid >= 2000:
+                usecolour = self.black
+            if who.commander == True:
+                self.iconimagerect = usecolour[0].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
+                self.image.blit(usecolour[0], self.iconimagerect)
+                self.iconimagerect = usecolour[1].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
+                self.image.blit(usecolour[1], self.iconimagerect)
+            else:
+                self.iconimagerect = usecolour[2].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
+                self.image.blit(usecolour[2], self.iconimagerect)
+                self.iconimagerect = usecolour[5].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
+                self.image.blit(usecolour[5], self.iconimagerect)
+            self.iconimagerect = usecolour[3].get_rect(center=(
+                self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
+                self.image.get_rect()[1] + self.image.get_size()[1] / 2.2))
+            self.image.blit(usecolour[3], self.iconimagerect)
+            self.iconimagerect = usecolour[0].get_rect(center=(
+                self.image.get_rect()[0] + self.image.get_size()[0] / 1.4,
+                self.image.get_rect()[1] + self.image.get_size()[1] / 2.2))
+            self.image.blit(usecolour[4], self.iconimagerect)
             for thisleader in who.leaderwho:
                 self.leaderpiclist.append(thisleader[1])
             """put leader image into leader slot"""
@@ -264,18 +276,78 @@ class Gameui(pygame.sprite.Sprite):
                     self.lastvalue = self.value[0]
                 self.lastvalue = self.value
 
-def addarmy(squadlist, position, gameid,colour,imagesize,leader, leaderstat,unitstat,control,coa):
+def addarmy(squadlist, position, gameid,colour,imagesize,leader, leaderstat,unitstat,control,coa,command=False):
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamearmy.unitarmy(startposition=position, gameid=gameid,
                                    leaderlist=leaderstat, statlist=unitstat, leader=leader,
                                    squadlist=squadlist, imgsize=imagesize,
-                                   colour=colour,control=control,coa=coa)
+                                   colour=colour,control=control,coa=coa,commander=command)
     army.hitbox = [gamearmy.hitbox(army, 0, army.rect.width, 5),
-                          gamearmy.hitbox(army, 1, 5, army.rect.height),
-                          gamearmy.hitbox(army, 2, 5, army.rect.height),
+                          gamearmy.hitbox(army, 1, 5, army.rect.height-5),
+                          gamearmy.hitbox(army, 2, 5, army.rect.height-5),
                           gamearmy.hitbox(army, 3, army.rect.width, 5)]
     return army
+
+def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,allleader,gameunitstat,coa,squad,enactment=False):
+    """squadindexlist is list of every squad index in the game for indexing the squad group"""
+    # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+    squadindexlist = []
+    unitlist = []
+    playercolour = (144, 167, 255)
+    enemycolour = (255,114,114)
+    """army num is list index for battalion in either player or enemy group"""
+    playerarmynum, enemyarmynum,playerstart,enemystart = {}, {}, 0, 0
+    """squadindex is list index for all squad group"""
+    squadindex = 0
+    """firstsquad check if it the first ever in group"""
+    squadgameid = 10000
+    with open(main_dir + "\data" + "\map" + battle + '.csv', 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        for row in rd:
+            for n, i in enumerate(row):
+                if i.isdigit():
+                    row[n] = int(i)
+                if n in range(1, 11):
+                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+            if row[0] < 2000:
+                if row[0] == 1:
+                    """First player battalion as commander"""
+                    army = addarmy(np.array([row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]]), (row[9][0], row[9][1]), row[0], playercolour, (imagewidth, imageheight), row[10], allleader,gameunitstat, True, coa[row[11]],True)
+                else:
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                                   playercolour, (imagewidth, imageheight), row[10], allleader, gameunitstat, True, coa[row[11]])
+                playerarmy.append(army)
+                playerarmynum[row[0]] = playerstart
+                playerstart += 1
+            elif row[0] >= 2000:
+                if row[0] == 2000:
+                    """First enemy battalion as commander"""
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0], enemycolour,
+                                   (imagewidth, imageheight), row[10], allleader, gameunitstat, enactment, coa[row[11]], True)
+                elif row[0] > 2000:
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                                   enemycolour,
+                                   (imagewidth, imageheight), row[10], allleader, gameunitstat, enactment, coa[row[11]])
+                enemyarmy.append(army)
+                enemyarmynum[row[0]] = enemystart
+                enemystart+=1
+            """armysquadindex is list index for squad list in a specific army"""
+            armysquadindex = 0
+            """Setup squad in army to squad group"""
+            for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
+                if squadnum != 0:
+                    addsquad = gamearmy.unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=allweapon, statlist=gameunitstat,
+                                               battalion=army, position=army.squadpositionlist[armysquadindex])
+                    squad.append(addsquad)
+                    squadnum[...] = squadgameid
+                    army.groupsquadindex.append(squadindex)
+                    squadindexlist.append(squadgameid)
+                    squadgameid += 1
+                    squadindex += 1
+                armysquadindex += 1
+    unitfile.close()
+    return playerarmynum, enemyarmynum, squadindexlist
 
 class battle():
     def __init__(self):
@@ -404,108 +476,12 @@ class battle():
         self.dt=0
         self.combattimer = 0
         self.clock = pygame.time.Clock()
-        """squadindexlist is list of every squad index in the game for indexing the squad group"""
-        self.squadindexlist = []
         self.lastmouseover = 0
         """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
         self.battlesidecal = [1,0.8,0.6,0.8]
-        """initialize starting sprites"""
-        gameid = 1
-        """army num is list index for battalion in either player or enemy group"""
-        self.playerarmynum={}
-        start = 0
-        # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-        squadlist = np.array([[38,38,38,38,38,38,38,38],[42,42,42,42,2,2,2,2],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-        playercolour = (144,167,255)
-        army= addarmy(squadlist.copy(), (400,100), gameid, playercolour, (self.imagewidth,self.imageheight), [1, 4, 0, 0], self.allleader, self.gameunitstat, True,self.coa[0])
-        self.playerarmy = [army]
-        self.playerarmynum[gameid] = start
-        start+=1
-        gameid += 1
-        squadlist = np.array([[38, 38, 38, 38, 38, 38, 38, 38], [2, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 2],
-                              [2, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 2],
-                              [2, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 2]])
-        army= addarmy(squadlist.copy(), (900, 300), gameid, playercolour, (self.imagewidth, self.imageheight),
-                [1, 0, 0, 0], self.allleader, self.gameunitstat, True, self.coa[0])
-        self.playerarmy.append(army)
-        self.playerarmynum[gameid] = start
-        start += 1
-        gameid += 1
-        squadlist = np.array([[180, 180, 180, 180, 180, 0, 0, 0], [180, 180, 180, 180, 180, 0, 0, 0], [183,183,183,183,183,0,0,0],
-                              [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0],
-                              [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]])
-        army = addarmy(squadlist.copy(), (700, 600), gameid, playercolour, (self.imagewidth, self.imageheight),
-                       [1, 2, 4, 0], self.allleader, self.gameunitstat, True, self.coa[0])
-        self.playerarmy.append(army)
-        self.playerarmynum[gameid] = start
-        start += 1
-        gameid += 1
-        # squadlist = np.array([[38,38,0,0,0,0,0,0],[42,42,0,0,0,0,0,0],[2,2,0,0,0,0,0,0],[2,2,0,0,0,0,0,0],[2,2,0,0,0,0,0,0],[2,2,0,0,0,0,0,0],[2,2,0,0,0,0,0,0],[2,2,0,0,0,0,0,0]])
-        # army = addarmy(squadlist.copy(), (900, 400), gameid, playercolour, (self.imagewidth, self.imageheight),
-        #                [1, 0, 0, 0], self.allleader, self.gameunitstat)
-        # self.playerarmy.append(army)
-        # armynum.append(gameid)
-        gameid += 1
-        gameid = 10000
-        """squadindex is list index for all squad group"""
-        squadindex = 0
-        """firstsquad check if it the first ever in group"""
-        firstsquad=0
-        """armysquadindex is list index for squad list in a specific army"""
-        armysquadindex = 0
-        for armynumber in range(len(self.playerarmy)):
-            for squadnum in np.nditer(self.playerarmy[armynumber].armysquad, op_flags=['readwrite'],order='C'):
-                if squadnum !=0:
-                    if firstsquad == 0:
-                        self.squad = [gamearmy.unitsquad(unitid=squadnum, gameid=gameid, weaponlist=self.allweapon, statlist = self.gameunitstat, battalion = self.playerarmy[armynumber], position=self.playerarmy[armynumber].squadpositionlist[armysquadindex])]
-                        firstsquad+=1
-                    else:
-                        squad = gamearmy.unitsquad(unitid=squadnum, gameid=gameid, weaponlist=self.allweapon, statlist = self.gameunitstat, battalion = self.playerarmy[armynumber],position=self.playerarmy[armynumber].squadpositionlist[armysquadindex])
-                        self.squad.append(squad)
-                    squadnum[...] = gameid
-                    self.playerarmy[armynumber].groupsquadindex.append(squadindex)
-                    self.squadindexlist.append(gameid)
-                    gameid += 1
-                    squadindex += 1
-                armysquadindex +=1
-            armysquadindex = 0
-        """enemy army"""
-        self.enemyarmynum={}
-        start = 0
-        gameid = 2000
-        enemycolour = (255,114,114)
-        squadlist = np.array(
-            [[2, 2, 2, 2, 2, 0, 0, 0], [2, 2, 2, 2, 2, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]])
-        squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
-        squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
-        army = addarmy(squadlist.copy(), (300, 550), gameid, enemycolour, (self.imagewidth, self.imageheight), [2, 0, 0, 0], self.allleader,
-                       self.gameunitstat, True, self.coa[1])
-        self.enemyarmy = [army]
-        self.enemyarmynum[gameid] = start
-        start+=1
-        armysquadindex = 0
-        gameid = 20000
-        for armynumber in range(len(self.enemyarmy)):
-            for squadnum in np.nditer(self.enemyarmy[armynumber].armysquad, op_flags=['readwrite'],order='C'):
-                if firstsquad == 0:
-                    self.squad = [gamearmy.unitsquad(unitid=squadnum, gameid=gameid, weaponlist=self.allweapon,
-                                                     statlist=self.gameunitstat, battalion=self.enemyarmy[armynumber],
-                                                     position=self.enemyarmy[armynumber].squadpositionlist[
-                                                         armysquadindex])]
-                    firstsquad += 1
-                else:
-                    squad = gamearmy.unitsquad(unitid=squadnum, gameid=gameid, weaponlist=self.allweapon,
-                                               statlist=self.gameunitstat, battalion=self.enemyarmy[armynumber],
-                                               position=self.enemyarmy[armynumber].squadpositionlist[armysquadindex])
-                    self.squad.append(squad)
-                squadnum[...] = gameid
-                self.enemyarmy[armynumber].groupsquadindex.append(squadindex)
-                self.squadindexlist.append(gameid)
-                gameid += 1
-                squadindex += 1
-                armysquadindex += 1
-            armysquadindex = 0
+        """initialize starting unit sprites"""
+        self.playerarmy, self.enemyarmy, self.squad = [],[],[]
+        self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy,self.enemyarmy,'\\test', self.imagewidth, self.imageheight, self.allweapon, self.allleader, self.gameunitstat, self.coa, self.squad,enactment=True)
         self.deadarmynum = {}
         self.deadindex = 0
         """create game ui"""

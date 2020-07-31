@@ -120,7 +120,16 @@ list = {0:1,1:2,2:3,3:4}
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-
-a = {1:[0,1,2,3,4]}
-a = {key: val for key, val in a.items() if val[0] > 0}
-print(a)
+mapname = '\\test'
+unitlist = []
+with open(main_dir + "\data" + "\map" + mapname + '.csv', 'r') as unitfile:
+       rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+       for row in rd:
+              for n, i in enumerate(row):
+                     if i.isdigit():
+                            row[n] = int(i)
+                     if n in range(1,11):
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                            # print(row[n])
+              unitlist.append(row)
+print(unitlist)

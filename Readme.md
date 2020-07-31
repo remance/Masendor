@@ -1,6 +1,4 @@
-Medieval battle simulation game. There is no main name for the game but rather the name will be based on major update.
-
-The data folder is not up to date with the maingame function. Will update them later when there is sufficient progress.
+Medieval battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update.
 
 Plan
 
