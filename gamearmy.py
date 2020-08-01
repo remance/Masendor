@@ -89,7 +89,7 @@ class unitstat():
                 self.abilitylist[row[0]] = row[1:]
         unitfile.close()
         """Unit property list"""
-        self.proplist = {}
+        self.traitlist = {}
         with open(main_dir + "\data" + '\\unit_property.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -100,7 +100,7 @@ class unitstat():
                         if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit(): row[n] = [int(i)]
                     # elif i.isdigit(): row[n] = [int(i)]
-                self.proplist[row[0]] = row[1:]
+                self.traitlist[row[0]] = row[1:]
         unitfile.close()
         """unit role list"""
         self.role = {}
@@ -217,7 +217,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.unitclass = self.stat[2]
         self.grade = self.stat[3]
         self.race = self.stat[4]
-        self.prop = self.stat[5]
+        self.trait = self.stat[5]
+        self.trait = {x: statlist.traitlist[x] for x in self.trait}
         self.skill = self.stat[6]
         self.skillcooldown = {}
         self.cost = self.stat[7]
@@ -234,6 +235,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.basecharge = self.stat[17]
         self.basechargedef = 100
         self.chargeskill = self.stat[18]
+        self.charging = False
         self.skill.insert(0, self.chargeskill)
         self.skill = {x: statlist.abilitylist[x] for x in self.skill}
         self.troophealth = int(self.stat[19] * statlist.gradelist[self.grade][7]/100)
@@ -246,6 +248,12 @@ class unitsquad(pygame.sprite.Sprite):
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
         self.description = self.stat[32]
+        self.criteffect = 100
+        self.dmgeffect = 100
+        """Add trait to base stat"""
+        # if 0 not in self.trait:
+        #     for trait in self.trait:
+        #
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
         """1 = Offensive, 2 = Defensive, 3 = Skirmisher, 4 = Shock, 5 = Support, 6 = Magic, 7 = Ambusher, 8 = Sniper , 9 = Recon, 10 = Command"""
         # self.role =
@@ -310,8 +318,7 @@ class unitsquad(pygame.sprite.Sprite):
         ##other skill
         else:
             skillstat = self.skill[whichskill].copy()
-            if skillstat[1] in [1,3]:
-                self.skilleffect[whichskill] = skillstat
+            self.skilleffect[whichskill] = skillstat
             self.skillcooldown[whichskill] = skillstat[4]
         self.stamina -= skillstat[9]
         # self.skillcooldown[whichskill] =
@@ -336,6 +343,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.chargedef = round(((self.basechargedef + (self.discipline/10)) * ((self.moralestate/100)+0.1)) * (self.staminastate/100), 0)
         self.speed = round(self.basespeed * self.staminastate/100, 0)
         self.charge = round(((self.basecharge + (self.discipline/10)) * ((self.moralestate/100)+0.1)) * (self.staminastate/100), 0)
+        self.criteffect = 100
+        self.dmgeffect = 100
         """apply effect from skill"""
         if len(self.skilleffect) > 0:
             for status in self.skilleffect:
@@ -354,10 +363,14 @@ class unitsquad(pygame.sprite.Sprite):
                 self.discipline = self.discipline + self.skilleffect[status][22]
                 #self.sight += self.skilleffect[status][18]
                 #self.hidden += self.skilleffect[status][19]
+                self.criteffect = round(self.criteffect * (self.skilleffect[status][24] / 100), 0)
+                self.dmgeffect = round(self.dmgeffect*(self.skilleffect[status][24]/100), 0)
                 """Apply status to self if there is one in skill effect"""
                 if self.skilleffect[status][27] != [0]:
                     for effect in self.skilleffect[status][27]:
                         self.statuseffect[effect] = statuslist[effect]
+            if self.chargeskill in self.skilleffect: self.charging = True
+            else: self.charging = False
         """apply effect from status effect"""
         """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 
         7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""
@@ -493,16 +506,19 @@ class unitsquad(pygame.sprite.Sprite):
             """Using skill condition"""
             self.checkskillcondition()
             if self.state in [3,4]:
-                if self.attackpos.distance_to(self.combatpos) < 300 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown:
+                if self.attackpos.distance_to(self.combatpos) < 300 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                     self.useskill(0)
             skillchance = random.randint(0,10)
             if skillchance >= 6 and len(self.availableskill) > 0:
                 # print('use', self.gameid)
                 self.useskill(self.availableskill[random.randint(0, len(self.availableskill)-1)])
+            """Melee combat act"""
             if self.battalion.state == 10 and self.state not in [97]:
                 self.state = 0
                 if any(battle > 0 for battle in self.battleside) == True:
                     self.state = 10
+                elif self.ammo > 0 and 16 in self.trait: ##help range attack when battalion in melee combat
+                    self.state = 11
             if self.battalion.state == 11:
                 self.state = 0
                 if self.ammo >0 and self.range+150 >= self.attackpos.distance_to(self.combatpos):
@@ -538,7 +554,7 @@ class unitsquad(pygame.sprite.Sprite):
                               self.discipline, self.attack, self.meleedef, self.rangedef, self.armour, self.speed, self.accuracy,
                               self.range, self.ammo, str(int(self.reloadtime)) + " ("  + str(self.reload) + ")", self.charge, self.description]
 
-        self.unitcardvalue2 = [self.prop, self.skill, self.skillcooldown, self.skilleffect, self.statuseffect]
+        self.unitcardvalue2 = [self.trait, self.skill, self.skillcooldown, self.skilleffect, self.statuseffect]
 
     def rotate(self):
         self.image = pygame.transform.rotate(self.image_original, self.angle)
@@ -564,6 +580,7 @@ class unitarmy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         # self.unitarray = unitarray
         self.armysquad = squadlist
+        self.squadsprite = []
         self.commander = commander
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
@@ -714,7 +731,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.moralestate = round((self.morale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
-    def setupfrontline(self):
+    def setupfrontline(self,specialcall = False):
         """def to setup frontline"""
         gotanother = 0
         startwhere = 0
@@ -726,7 +743,7 @@ class unitarmy(pygame.sprite.Sprite):
                     fullwhoarray[3][0]]
         # print('sub', whoarray)
         for index, whofrontline in enumerate(whoarray):
-            if self.gamestart == 0:
+            if self.gamestart == 0 and specialcall == False:
                 """Add zero to the frontline so it become 8 row array"""
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """Adjust the position of frontline to center of empty 8 array"""
@@ -737,12 +754,12 @@ class unitarmy(pygame.sprite.Sprite):
                 emptyarray[int(whocenter):int(len(whofrontline) + whocenter)] = whofrontline
                 newwhofrontline = emptyarray.copy()
                 self.startwhere.append(int(whocenter))
-            else:
+            elif self.gamestart == 1 or specialcall == True:
                 newwhofrontline = whofrontline.copy()
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """replace the dead in frontline with other squad in the same column"""
                 # print('whofront', whofrontline)
-                dead = np.where(newwhofrontline == 1)
+                dead = np.where((newwhofrontline == 0) | (newwhofrontline == 1))
                 # print('list', dead)
                 for deadsquad in dead[0]:
                     run = 0
@@ -756,7 +773,7 @@ class unitarmy(pygame.sprite.Sprite):
                             run+=1
                             if len(fullwhoarray[index]) == run:
                                 # print('fullreach', len(fullwhoarray[index]))
-                                newwhofrontline[deadsquad] = 1
+                                newwhofrontline[deadsquad] = 0
                                 gotanother = 1
                     gotanother = 0
                 whocenter = self.startwhere[startwhere]
@@ -847,8 +864,8 @@ class unitarmy(pygame.sprite.Sprite):
         # else:
         #     self.morale = round(self.basemorale, 0)
         if self.troopnumber>0:
-            self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
-            self.rotatespeed = round(self.runspeed + self.discipline)  / (self.troopnumber/100)
+            self.walkspeed, self.runspeed = (self.speed + self.discipline/100) / 15, (self.speed + self.discipline/100) / 10
+            self.rotatespeed = round(self.runspeed*4) / (self.troopnumber/100)
             if self.rotatespeed < 1: self.rotatespeed = 1
 
     def combatprepare(self,enemyhitbox):
@@ -880,6 +897,7 @@ class unitarmy(pygame.sprite.Sprite):
         if self.gamestart == 0:
             self.setuparmy(squadgroup)
             self.setupfrontline()
+            self.setupfrontline(specialcall=True)
             self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
             self.rotate()
             self.makeallsidepos()

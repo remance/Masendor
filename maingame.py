@@ -342,6 +342,7 @@ def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,alll
                     squad.append(addsquad)
                     squadnum[...] = squadgameid
                     army.groupsquadindex.append(squadindex)
+                    army.squadsprite.append(addsquad)
                     squadindexlist.append(squadgameid)
                     squadgameid += 1
                     squadindex += 1
@@ -501,7 +502,6 @@ class battle():
         self.unitposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
-        self.showingsquadindex = []
         self.removesquadlist = []
         self.unitviewmode = 0
 
@@ -542,6 +542,7 @@ class battle():
         squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
         squadtargetside = [2 if targetside==3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
         sortmidfront = [who.frontline[whoside][3],who.frontline[whoside][4],who.frontline[whoside][2],who.frontline[whoside][5],who.frontline[whoside][1],who.frontline[whoside][6],who.frontline[whoside][0],who.frontline[whoside][7]]
+        # print(who.frontline,target.frontline)
         for squad in self.squad[who.groupsquadindex[0]:who.groupsquadindex[-1]+1]:
             squad.battleside = [-1 if i in self.removesquadlist else i for i in squad.battleside]
         for squad in self.squad[target.groupsquadindex[0]:target.groupsquadindex[-1] + 1]:
@@ -655,10 +656,15 @@ class battle():
         elif hitchance > 20 and hitchance <= 40:combatscore = 0.5
         elif hitchance > 40 and hitchance <= 80:combatscore = 1
         elif hitchance > 80: combatscore = 1.5
-        if type == "melee": dmg = round(((who.dmg * who.troopnumber) - ((target.armour * who.penetrate) / 100)) * combatscore)
+        if type == "melee":
+            dmg = who.dmg
+            if who.charging == True: dmg = round(dmg + (who.charge/10) - (who.chargedef/10))
+            if target.charging == True: dmg =  round(dmg + (who.chargedef/10) - (target.charge/10))
+            dmg = round(((who.dmg * who.troopnumber) - ((target.armour * who.penetrate) / 100)) * combatscore * (who.dmgeffect/100))
         elif type == "range": dmg = round(((who.rangedmg * who.troopnumber) - ((target.armour * who.rangepenetrate) / 100)) * combatscore)
-        moraledmg = round(dmg / 100)
         if dmg > target.unithealth: dmg = target.unithealth
+        elif dmg < 0 : dmg = 0
+        moraledmg = round(dmg / 100)
         return dmg, moraledmg
 
     def dmgcal(self, who, target, whoside, targetside):
@@ -690,10 +696,8 @@ class battle():
 
     def rungame(self):
         self.gamestate = 1
-        """For checking if unit or ui is clicked"""
-        self.check = 0
-        """For checking if another unit is clicked when inspect ui open"""
-        self.check2 = 0
+        self.check = 0 ## For checking if unit or ui is clicked
+        self.check2 = 0 ##  For checking if another unit is clicked when inspect ui open"
         self.inspectui = 0
         self.lastselected = 0
         self.squadlastselected = None
@@ -705,18 +709,16 @@ class battle():
             mouse_up = False
             mouse_right = False
             double_mouse_right = False
-            """get event input"""
-            for event in pygame.event.get():
+            for event in pygame.event.get(): ## get event input
                 if event.type == QUIT or \
                     (event.type == KEYDOWN and event.key == K_ESCAPE):
                         self.all.clear(self.screen, self.background)
                         return
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1: mouse_up = True
-                """Right Click"""
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    mouse_up = True
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 3: ## Right Click
                     mouse_right = True
-                    """Start timer after first mouse click"""
-                    if self.timer == 0: self.timer = 0.001
+                    if self.timer == 0: self.timer = 0.001 ##Start timer after first mouse click
                     elif self.timer < 0.3:
                         double_mouse_right = True
                         self.timer = 0
@@ -724,8 +726,7 @@ class battle():
                     if event.key == pygame.K_TAB:
                         if self.unitviewmode == 1: self.unitviewmode = 0
                         else: self.unitviewmode = 1
-                    """Pause Button"""
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_SPACE: ## Pause Button
                         if self.gamestate == 1: self.gamestate = 0
                         else:self.gamestate = 1
 
@@ -746,13 +747,8 @@ class battle():
                 self.timer += self.dt
                 if self.timer >= 0.5:
                     self.timer = 0
-            # clear/erase the last drawn sprites
-            self.all.clear(self.screen, self.background)
-            #update all the sprites
-            # if lastselected != "":
-            #     currenttoppop.draw(screen)
-            #handle player input
-            self.uiupdater.update()
+            self.all.clear(self.screen, self.background) ##clear sprite before update new one
+            self.uiupdater.update() #update ui outside of combat loop so it update even when game pause
             # directionX = keystate[K_RIGHT] - keystate[K_LEFT]
             # directionY = keystate[K_DOWN] - keystate[K_UP]
             self.lastmouseover = 0
@@ -771,9 +767,6 @@ class battle():
                                 self.lastselected = thisenemy.gameid
                                 self.check = 1
                     except:thisenemy.mouse_over = False
-                    # except: pass
-                # if pygame.sprite.spritecollideany(thisenemy,self.playerarmy) == None and thisenemy.state == 10:
-                #     thisenemy.state,thisenemy.combatcheck = 0, 0
                 if thisenemy.state == 100 and thisenemy.gotkilled == 0:
                     self.die(thisenemy, self.enemyarmy, self.deadunit, self.all, self.hitboxs)
             for army in self.playerarmy:
@@ -785,13 +778,12 @@ class battle():
                     try:
                         if army.mask.get_at(posmask) == 1:
                             army.mouse_over = True
+                            self.lastmouseover = army
                             if mouse_up:
                                 self.lastselected = army.gameid
                                 self.check = 1
                     except: army.mouse_over = False
                 else: army.mouse_over = False
-                # if pygame.sprite.spritecollideany(army,self.enemyarmy, collided=pygame.sprite.collide_mask) == None and army.state == 10:
-                #     army.state,army.combatcheck = 0, 0
                 if army.state == 100 and army.gotkilled == 0:
                     self.die(army, self.playerarmy, self.deadunit, self.all)
                 # pygame.draw.aaline(screen, (100, 0, 0), army.pos, army.target, 10)
@@ -816,7 +808,7 @@ class battle():
                 elif self.beforeselected != self.lastselected and self.inspectui == 1:
                     self.check2 = 1
                     self.all.remove(*self.showingsquad)
-                    self.showingsquadindex = []
+                    self.showingsquad = []
                 self.gameui[0].valueinput(who=whoinput, leader=self.allleader)
                 self.gameui[1].valueinput(who=whoinput, leader=self.allleader)
                 if (self.buttonui[2].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up==True and self.inspectui == 0) or (mouse_up == True and self.inspectui == 1 and self.check2 == 1):
@@ -825,8 +817,8 @@ class battle():
                     self.all.add(*self.gameui[2:4])
                     self.all.add(*self.buttonui[0:2])
                     self.check = 1
-                    self.showingsquad = self.squad[whoinput.groupsquadindex[0]:whoinput.groupsquadindex[-1]+1]
-                    self.squadlastselected = self.showingsquad[0].gameid
+                    self.showingsquad = whoinput.squadsprite
+                    self.squadlastselected = self.showingsquad[0]
                 elif self.buttonui[2].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 1:
                     """remove when click again and the ui already open"""
                     self.all.remove(*self.showingsquad)
@@ -837,22 +829,18 @@ class battle():
                     self.check = 1
                     self.check2 = 0
                 if self.inspectui == 1:
-                    if self.showingsquad[0] not in self.all:
-                        for squad in self.showingsquad:
-                            self.showingsquadindex.append(squad.gameid)
-                            # squad.rect = squad.image.get_rect(topleft=squad.inspposition)
-                            self.all.add(squad)
-                        # squad.draw(gamescreen=self.screen)
+                    # if self.showingsquad[0] not in self.all:
+                    self.all.add(*self.showingsquad)
                     """Update value of the clicked squad"""
-                    # if self.squadlastselected == squad.wholastselect:
-                    self.gameui[2].valueinput(who=self.showingsquad[self.showingsquadindex.index(self.squadlastselected)], leader=self.allleader)
+                    if self.squadlastselected != None:
+                        self.gameui[2].valueinput(who=self.squadlastselected, leader=self.allleader)
                     """Change showing stat to the clicked squad one"""
                     if mouse_up==True:
                         for squad in self.showingsquad:
                             if squad.rect.collidepoint(pygame.mouse.get_pos()) == True:
                                 self.check = 1
-                                squad.command(pygame.mouse.get_pos(), mouse_up, mouse_right, self.squadlastselected)
-                                self.squadlastselected = squad.wholastselect
+                                squad.command(pygame.mouse.get_pos(), mouse_up, mouse_right, self.squadlastselected.wholastselect)
+                                self.squadlastselected = squad
                                 self.gameui[2].valueinput(who=squad, leader=self.allleader)
                             """Change unit card option based on button clicking"""
                             for button in self.buttonui:
@@ -888,11 +876,11 @@ class battle():
                                 hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
                                 """set up army position to the enemyside"""
-                                if hitbox.side == 0 and hitbox.who.state not in [95, 96, 97, 98, 99, 100] and hitbox.who.combatpreparestate == 0:
+                                if hitbox.side == 0 and hitbox.who.state not in [95, 96, 97, 98, 99, 100] and hitbox.who.combatpreparestate == 0 and hitbox2.who.combatpreparestate != 1:
                                     hitbox.who.combatprepare(hitbox2)
                                     hitbox.who.preparetimer = 0
                                 elif hitbox2.side == 0 and hitbox2.who.state not in [95, 96, 97, 98, 99, 100] and hitbox2.who.combatpreparestate == 0 and hitbox.who.combatpreparestate != 1:
-                                    hitbox2.who.combatprepare(hitbox.who)
+                                    hitbox2.who.combatprepare(hitbox)
                                     hitbox2.who.preparetimer = 0
                                 for battle in hitbox.who.battleside:
                                     if battle != 0:
@@ -921,7 +909,6 @@ class battle():
                         elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000) or (hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):
                             # if pygame.sprite.collide_mask(hitbox, hitbox2) is not None:
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
-
                 """Calculate squad combat dmg"""
                 if self.combattimer >= 0.5:
                     for thissquad in self.squad:
