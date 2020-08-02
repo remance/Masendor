@@ -1,13 +1,13 @@
-gradeid,grade,atk_bonus,def_bonus,speed_bonus,accuracy_bonus,reload_bonus,charge_bonus,health_bonus,stamina_bonus,morale_bonus,discipline_bonus,grade_property
-0,Novice,90,95,90,80,85,80,100,90,85,80,"3,5"
-1,Militant,100,100,100,95,100,100,105,100,95,90,3
-2,Professional,105,105,110,105,105,105,110,110,110,100,0
-3,Veteran,105,105,115,110,110,110,110,120,125,115,1
-4,Elite,110,115,120,120,115,115,115,130,150,120,1
-5,Champion,115,130,125,135,120,120,120,150,170,140,1
-6,Hero,135,160,130,155,125,140,130,200,200,170,2
-7,Religious Militant,105,105,100,100,100,110,105,105,120,120,1
-8,Religious Warrior,105,105,105,105,105,120,110,110,130,135,4
-9,Religious Warrior Elite,110,120,115,115,110,130,115,115,150,150,4
-10,Mercenary,105,105,110,105,105,105,105,105,110,105,3
-11,Noble,110,110,100,110,105,105,110,110,130,90,1
+"gradeid","grade","atk_bonus","def_bonus","speed_bonus","accuracy_bonus","reload_bonus","charge_bonus","health_effect","stamina_effect","morale_bonus","discipline_bonus","grade_property"
+0,"Novice",-10,-5,-10,-20,-15,-20,100,90,-10,-10,"3,5"
+1,"Militant",0,0,0,-5,0,0,105,100,-5,-5,3
+2,"Professional",5,5,10,5,5,5,110,110,5,0,0
+3,"Veteran",5,10,15,10,10,10,110,120,15,10,1
+4,"Elite",10,15,20,20,15,15,115,130,20,15,1
+5,"Champion",15,30,25,35,20,20,120,150,30,25,1
+6,"Hero",35,60,30,55,25,40,130,200,50,40,2
+7,"Religious Militant",5,0,0,0,0,10,105,105,20,15,1
+8,"Religious Warrior",5,5,5,5,5,20,110,110,30,25,4
+9,"Religious Warrior Elite",10,15,15,15,10,30,115,115,50,35,4
+10,"Mercenary",5,5,10,5,5,5,105,105,10,5,3
+11,"Noble",10,10,0,10,5,5,110,110,30,-10,1

@@ -34,10 +34,11 @@ class weaponstat():
         unitfile.close()
 
 class unitstat():
-    def __init__(self):
+    def __init__(self,statusicon,abilityicon,traiticon,roleicon):
         """Stat data read"""
         """status effect list"""
         self.statuslist = {}
+        self.statusicon = statusicon
         with open(main_dir + "\data" + '\\unit_status.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -70,6 +71,7 @@ class unitstat():
         unitfile.close()
         """Unit skill list"""
         self.abilitylist = {}
+        self.abilityicon = abilityicon
         with open(main_dir + "\data" + '\\unit_ability.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -90,6 +92,7 @@ class unitstat():
         unitfile.close()
         """Unit property list"""
         self.traitlist = {}
+        self.traiticon = traiticon
         with open(main_dir + "\data" + '\\unit_property.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -104,6 +107,7 @@ class unitstat():
         unitfile.close()
         """unit role list"""
         self.role = {}
+        self.roleicon = roleicon
         with open(main_dir + "\data" + '\\unit_type.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -218,15 +222,14 @@ class unitsquad(pygame.sprite.Sprite):
         self.grade = self.stat[3]
         self.race = self.stat[4]
         self.trait = self.stat[5]
-        self.trait = {x: statlist.traitlist[x] for x in self.trait}
         self.skill = self.stat[6]
         self.skillcooldown = {}
         self.cost = self.stat[7]
-        self.baseattack = int(self.stat[8] * statlist.gradelist[self.grade][1]/100)
-        self.basemeleedef = int(self.stat[9] * statlist.gradelist[self.grade][2] / 100)
-        self.baserangedef = int(self.stat[10] * statlist.gradelist[self.grade][2]/100)
+        self.baseattack = round(self.stat[8] + int(statlist.gradelist[self.grade][1]), 0)
+        self.basemeleedef = round(self.stat[9] + int(statlist.gradelist[self.grade][2]), 0)
+        self.baserangedef = round(self.stat[10] + int(statlist.gradelist[self.grade][2]), 0)
         self.basearmour = self.stat[11]
-        self.basespeed = int(self.stat[12] * statlist.gradelist[self.grade][3]/100)
+        self.basespeed = round(self.stat[12] + int(statlist.gradelist[self.grade][3]), 0)
         self.baseaccuracy = self.stat[13]
         self.baserange = self.stat[14] * 20
         self.ammo = self.stat[15]
@@ -238,28 +241,59 @@ class unitsquad(pygame.sprite.Sprite):
         self.charging = False
         self.skill.insert(0, self.chargeskill)
         self.skill = {x: statlist.abilitylist[x] for x in self.skill}
-        self.troophealth = int(self.stat[19] * statlist.gradelist[self.grade][7]/100)
-        self.stamina = int(self.stat[20] * statlist.gradelist[self.grade][8]/100)*10
+        self.troophealth = round(self.stat[19] * (int(statlist.gradelist[self.grade][7])/100))
+        self.stamina = int(self.stat[20] * (int(statlist.gradelist[self.grade][8])/100))*10
         self.mana = self.stat[21]
         self.meleeweapon = self.stat[22]
         self.rangeweapon = self.stat[23]
-        self.basemorale = int(self.stat[24] * statlist.gradelist[self.grade][9] / 100 * self.authority / 100)
-        self.basediscipline = int(self.stat[25] * statlist.gradelist[self.grade][10] / 100 * self.authority / 100)
+        self.basemorale = int(self.stat[24] + int(statlist.gradelist[self.grade][9]))
+        self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
         self.description = self.stat[32]
         self.criteffect = 100
         self.dmgeffect = 100
+        self.hpregen = 0
+        self.staminaregen = 1
+        self.statuseffect = {}
+        self.skilleffect = {}
         """Add trait to base stat"""
-        # if 0 not in self.trait:
-        #     for trait in self.trait:
-        #
+        if 0 not in self.trait:
+            self.trait = {x: statlist.traitlist[x] for x in self.trait}
+            for trait in self.trait.values():
+                self.baseattack *= (trait[3]/100)
+                self.basemeleedef *= (trait[4]/100)
+                self.baserangedef *= (trait[5]/100)
+                self.basearmour *= (trait[6]/100)
+                self.basespeed *= (trait[7]/100)
+                self.baseaccuracy *= (trait[8]/100)
+                self.baserange *= (trait[9]/100)
+                self.basereload *= (trait[10]/100)
+                self.basecharge *= (trait[11]/100)
+                self.basechargedef *= (trait[12]/100)
+                self.hpregen += trait[13]
+                self.staminaregen += trait[14]
+                self.basemorale += trait[15]
+                self.basediscipline += trait[16]
+                self.criteffect += trait[17]
+            if 3 in self.trait:
+                self.baseattack *= (random.randint(80,120)/100)
+                self.basemeleedef *= (random.randint(80,120)/100)
+                self.baserangedef *= (random.randint(80,120)/100)
+                self.basearmour *= (random.randint(80,120)/100)
+                self.basespeed *= (random.randint(80,120)/100)
+                self.baseaccuracy *= (random.randint(80,120)/100)
+                self.baserange *= (random.randint(80,120)/100)
+                self.basereload *= (random.randint(80,120)/100)
+                self.basecharge *= (random.randint(80,120)/100)
+                self.basechargedef *= (random.randint(80,120)/100)
+                self.basemorale += random.randint(-10, 10)
+                self.basediscipline += random.randint(-10, 10)
+                # self.statuseffect[trait]
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
         """1 = Offensive, 2 = Defensive, 3 = Skirmisher, 4 = Shock, 5 = Support, 6 = Magic, 7 = Ambusher, 8 = Sniper , 9 = Recon, 10 = Command"""
         # self.role =
         # self.loyalty
-        self.statuseffect = {}
-        self.skilleffect = {}
         self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75/100), round(self.stamina * 50/100), round(self.stamina * 25/100)
         self.unithealth = self.troophealth * self.troopnumber
         self.lasthealthstate, self.laststaminastate = 4, 4
@@ -298,7 +332,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
         """position in inspect ui"""
-        self.inspposition = (position[0]+993, position[1]+41)
+        self.inspposition = (position[0]+988, position[1]+37)
         self.rect = self.image.get_rect(topleft=self.inspposition)
         """self.pos is pos for army inspect ui"""
         self.pos = pygame.Vector2(self.rect.centerx, self.rect.centery)
@@ -332,13 +366,13 @@ class unitsquad(pygame.sprite.Sprite):
 
     def statusupdate(self,statuslist,dt):
         """calculate stat from stamina and morale state"""
-        self.moralestate  = round((self.basemorale * 100)/self.maxmorale)
-        self.staminastate = round((self.stamina * 100)/self.maxstamina)
-        self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100), 0)
+        self.moralestate  = round(((self.basemorale * 100)/self.maxmorale) * (self.authority / 100), 0)
+        self.staminastate = round((self.stamina * 100) / self.maxstamina)
+        self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) + (self.authority / 10), 0)
         self.attack = round(((self.baseattack + (self.discipline/10)) * ((self.moralestate/100)+0.1)) * (self.staminastate/100), 0)
         self.meleedef = round(((self.basemeleedef + (self.discipline/10)) * ((self.moralestate/100)+0.1)) * (self.staminastate/100), 0)
         self.rangedef = round(((self.baserangedef + (self.discipline/10)) * ((self.moralestate/100)+0.1)) * (self.staminastate/100), 0)
-        self.accuracy = round(self.baseaccuracy * (self.staminastate/100))
+        self.accuracy = round(self.baseaccuracy * (self.staminastate/100), 0)
         self.reload = round(self.basereload * ((200 - self.staminastate)/100), 0)
         self.chargedef = round(((self.basechargedef + (self.discipline/10)) * ((self.moralestate/100)+0.1)) * (self.staminastate/100), 0)
         self.speed = round(self.basespeed * self.staminastate/100, 0)
@@ -372,7 +406,7 @@ class unitsquad(pygame.sprite.Sprite):
             if self.chargeskill in self.skilleffect: self.charging = True
             else: self.charging = False
         """apply effect from status effect"""
-        """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 
+        """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 7 no exp gain, 
         7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""
         if len(self.statuseffect) > 0:
             for status in self.statuseffect:
@@ -690,14 +724,14 @@ class unitarmy(pygame.sprite.Sprite):
                 squadnum = 0
 
     def setuparmy(self,squadgroup):
-        self.stat = {'troop':[],'stamina':[],'morale':[],'speed':[],'discl':[], 'ammo': [], 'range':[], 'novice':[],'militant':[],'pro':[],'vet':[],'elite':[],'champ':[],'hero':[],'religmili':[],'religelite':[],'merc':[],'noble':[]}
+        self.stat = {'troop':[],'stamina':[],'morale':[],'speed':[],'disci':[], 'ammo': [], 'range':[], 'novice':[],'militant':[],'pro':[],'vet':[],'elite':[],'champ':[],'hero':[],'religmili':[],'religelite':[],'merc':[],'noble':[]}
         for squad in self.groupsquadindex:
             self.stat['troop'].append(squadgroup[squad].troopnumber)
             if squadgroup[squad].state != 100:
                 self.stat['stamina'].append(squadgroup[squad].stamina)
                 self.stat['morale'].append(squadgroup[squad].morale)
                 self.stat['speed'].append(squadgroup[squad].speed)
-                self.stat['discl'].append(squadgroup[squad].discipline)
+                self.stat['disci'].append(squadgroup[squad].discipline)
                 self.stat['ammo'].append(squadgroup[squad].ammo)
                 self.stat['range'].append(squadgroup[squad].range)
                 squadgroup[squad].combatpos = self.pos
@@ -717,7 +751,7 @@ class unitarmy(pygame.sprite.Sprite):
             self.stamina = int(mean(self.stat['stamina']))
             self.morale = int(mean(self.stat['morale']))
             self.speed = mean(self.stat['speed'])
-            self.discipline = mean(self.stat['discl'])
+            self.discipline = mean(self.stat['disci'])
             self.ammo = int(sum(self.stat['ammo']))
             self.maxrange = max(self.stat['range'])
             self.minrange = min(self.stat['range'])

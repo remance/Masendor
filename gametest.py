@@ -133,6 +133,7 @@ list = {0:1,1:2,2:3,3:4}
 #                             # print(row[n])
 #               unitlist.append(row)
 # print(unitlist)
-a = {1:0,55:3}
-if 0 in a:
-       print(a)
+# a = {22: ['Anti-Cavalry', 1.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0.0, 0.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 'This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.', 100]}
+# for d in a.items():
+#        print(d)
+print(random.randint(-10,0))

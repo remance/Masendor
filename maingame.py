@@ -3,12 +3,12 @@ FIX
 recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 """
-import random, os.path, glob, csv, math
+import random, os, os.path, glob, csv, math
 import pygame
 from pygame.transform import scale
 from pygame.locals import *
 import pygame.freetype
-from RTS import mainmenu, gamearmy
+from RTS import mainmenu, gamearmy, gameui
 import ast
 from collections import defaultdict
 import numpy as np
@@ -25,256 +25,30 @@ def load_image(file, subfolder=""):
         raise SystemExit('Could not load image "%s" %s'%(file, pygame.get_error()))
     return surface.convert_alpha()
 
-def load_images(subfolder1="", subfolder2="", subfolder3=""):
-    """loads all images(files) in folder using loadorder list file"""
+def load_images(subfolder1="", subfolder2="", subfolder3="", loadorder = True):
+    """loads all images(files) in folder using loadorder list file use only png file"""
+    imgs = []
     if subfolder1 != "":
         dirpath = os.path.join(main_dir, 'data', subfolder1)
         if subfolder2 != "":
             dirpath = os.path.join(dirpath, subfolder2)
             if subfolder3 != "":
                 dirpath = os.path.join(dirpath, subfolder3)
-    loadorder = open(dirpath+"/load_order.txt","r")
-    loadorder = ast.literal_eval(loadorder.read())
-    imgs = []
-    for file in loadorder:
-        imgs.append(load_image(dirpath + "/" + file))
+    if loadorder == True:
+        loadorder = open(dirpath+"/load_order.txt","r")
+        loadorder = ast.literal_eval(loadorder.read())
+        for file in loadorder:
+            imgs.append(load_image(dirpath + "/" + file))
+    else:
+        loadorder = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")] ## read all file
+        for file in loadorder:
+            imgs.append(load_image(dirpath + "/" + file))
     return imgs
 
 def load_sound(file):
     file = os.path.join(main_dir, 'data/sound/', file)
     sound = pygame.mixer.Sound(file)
     return sound
-
-class uibutton(pygame.sprite.Sprite):
-    def __init__(self, X, Y, image,event):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.X, self.Y = X, Y
-        self.image = image
-        self.event = event
-        self._layer = 5
-        self.rect = self.image.get_rect(center=(self.X, self.Y))
-        self.mouse_over = False
-
-    def draw(self, gamescreen):
-        gamescreen.blit(self.image, self.rect)
-
-class Gameui(pygame.sprite.Sprite):
-    def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
-        # super().__init__()
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", textsize)
-        self.X, self.Y = X, Y
-        self.text = text
-        self.image = image
-        self.icon = icon
-        self._layer = 5
-        self.uitype = uitype
-        self.value = [-1, -1]
-        self.lastvalue = 0
-        self.option = 0
-        self.rect = self.image.get_rect(center=(self.X, self.Y))
-        if self.uitype == "topbar":
-            position = 10
-            for ic in self.icon:
-                self.iconimagerect = ic.get_rect(
-                    topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
-                self.image.blit(ic, self.iconimagerect)
-                position += 90
-            self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)", 7: "Forced Walk", 8:"Forced Run",
-                             10: "Fighting", 11:"shooting", 68:"Dancing", 69:"Partying" ,96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
-            self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                       6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
-        elif self.uitype == "commandbar":
-            self.iconimagerect = self.icon[6].get_rect(
-                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-            self.image.blit(self.icon[6], self.iconimagerect)
-            self.white = [self.icon[0],self.icon[1],self.icon[2],self.icon[3],self.icon[4],self.icon[5]]
-            self.black = [self.icon[7],self.icon[8],self.icon[9],self.icon[10],self.icon[11],self.icon[12]]
-        elif self.uitype == "unitcard":
-            self.fonthead = pygame.font.SysFont("helvetica", textsize + 2)
-            self.fonthead.set_italic(1)
-            self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
-        #     self.iconimagerect = self.icon[0].get_rect(
-        #         center=(
-        #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))
-        self.image_original = self.image.copy()
-
-    def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
-        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
-        space = font.size(' ')[0]  # The width of a space.
-        max_width, max_height = surface.get_size()
-        x, y = pos
-        for line in words:
-            for word in line:
-                word_surface = font.render(word, 0, color)
-                word_width, word_height = word_surface.get_size()
-                if x + word_width >= max_width:
-                    x = pos[0]  # Reset the x.
-                    y += word_height  # Start on new row.
-                surface.blit(word_surface, (x, y))
-                x += word_width + space
-            x = pos[0]  # Reset the x.
-            y += word_height  # Start on new row.
-
-    def valueinput(self,who, leader="",button="", changeoption=0):
-        for thisbutton in button:
-            thisbutton.draw(self.image)
-        position = 65
-        if self.uitype == "topbar":
-            self.value = who.valuefortopbar
-            if self.value[3] in self.options1:
-                self.value[3] = self.options1[self.value[3]]
-            if type(self.value[2]) != str:self.value[2] = round(self.value[2] / 10)
-            if self.value[2] in self.options2:
-                self.value[2] = self.options2[self.value[2]]
-            if self.value != self.lastvalue:
-                self.image = self.image_original.copy()
-                for value in self.value:
-                    self.textsurface = self.font.render(str(value), 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        center=(self.image.get_rect()[0] + position, self.image.get_rect()[1] + 25))
-                    self.image.blit(self.textsurface, self.textrect)
-                    if position >= 200: position +=50
-                    else: position += 95
-                self.lastvalue = self.value
-        # for line in range(len(label)):
-        #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
-        elif self.uitype == "commandbar":
-            usecolour = self.white
-            self.leaderpiclist = []
-            self.image = self.image_original.copy()
-            if who.gameid >= 2000:
-                usecolour = self.black
-            if who.commander == True:
-                self.iconimagerect = usecolour[0].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
-                self.image.blit(usecolour[0], self.iconimagerect)
-                self.iconimagerect = usecolour[1].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
-                self.image.blit(usecolour[1], self.iconimagerect)
-            else:
-                self.iconimagerect = usecolour[2].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
-                self.image.blit(usecolour[2], self.iconimagerect)
-                self.iconimagerect = usecolour[5].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
-                self.image.blit(usecolour[5], self.iconimagerect)
-            self.iconimagerect = usecolour[3].get_rect(center=(
-                self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
-                self.image.get_rect()[1] + self.image.get_size()[1] / 2.2))
-            self.image.blit(usecolour[3], self.iconimagerect)
-            self.iconimagerect = usecolour[0].get_rect(center=(
-                self.image.get_rect()[0] + self.image.get_size()[0] / 1.4,
-                self.image.get_rect()[1] + self.image.get_size()[1] / 2.2))
-            self.image.blit(usecolour[4], self.iconimagerect)
-            for thisleader in who.leaderwho:
-                self.leaderpiclist.append(thisleader[1])
-            """put leader image into leader slot"""
-            self.leaderpiclistrect = leader.imgs[self.leaderpiclist[0]].get_rect(
-                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 65))
-            self.image.blit(leader.imgs[self.leaderpiclist[0]], self.leaderpiclistrect)
-            self.leaderpiclistrect = leader.imgs[self.leaderpiclist[1]].get_rect(center=(
-            self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
-            self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
-            self.image.blit(leader.imgs[self.leaderpiclist[1]], self.leaderpiclistrect)
-            self.leaderpiclistrect = leader.imgs[self.leaderpiclist[2]].get_rect(center=(
-            self.image.get_rect()[0] + self.image.get_size()[0] / 1.4,
-            self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
-            self.image.blit(leader.imgs[self.leaderpiclist[2]], self.leaderpiclistrect)
-            self.leaderpiclistrect = leader.imgs[self.leaderpiclist[3]].get_rect(
-                center=(self.image.get_size()[0] / 2, self.image.get_rect()[1] + 172))
-            self.image.blit(leader.imgs[self.leaderpiclist[3]], self.leaderpiclistrect)
-            self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
-            self.textrect = self.textsurface.get_rect(
-                midleft=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.3+20, self.image.get_rect()[1] + 40))
-            self.image.blit(self.textsurface, self.textrect)
-
-        elif self.uitype == "unitcard":
-            position = 15
-            positionx = 45
-            self.value = who.unitcardvalue
-            self.value2 = who.unitcardvalue2
-            self.description = self.value[-1]
-            if type(self.description)== list: self.description = self.description[0]
-            # options = {2: "Skirmish is a light infantry that served as harassment or flanking unit. They can move fast and often carry range weapon. They can be good in melee combat but their lack of heavy armour mean that they cannot withstand more overwhelming force.",
-            #            5: "Support is unit that can be essential in drawn out war. They can offer spiritual help to the other squad in the battalion, perform first aids or post battle surgery. In other words, support unit help other unit fight and survive better in this hell that people often refer as field of glory.",
-            # 10:"This is command unit for this battalion. Do not let them get destroyed or your battalion will receive huge penalty to morale and all other undesirable status penalty. However putting this unit on frontline will also provide large bonus to the entire battalion, so use consider this option carefully."}
-            text = ["","Troop: ", "Stamina: ", "Morale: ", "Discipline: ", 'Melee Attack: ',
-                    'Melee Defense: ', 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                    "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: "]
-            if self.value != self.lastvalue or changeoption == 1:
-                self.image = self.image_original.copy()
-                """Stat card"""
-                if self.option == 1:
-                    row = 0
-                    # self.iconimagerect = self.icon[0].get_rect(
-                    #     center=(
-                    #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
-                    # deletelist = [i for i,x in enumerate(self.value) if x == 0]
-                    # if len(deletelist) != 0:
-                    #     for i in sorted(deletelist, reverse = True):
-                    #         self.value.pop(i)
-                    #         text.pop(i)
-                    self.value, text = self.value[0:-1], text[1:]
-                    self.textsurface = self.fonthead.render(self.value[0], 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    position += 20
-                    row+=1
-                    for n, value in enumerate(self.value[1:]):
-                        self.textsurface = self.font.render(text[n] + str(value), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft =(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        position += 20
-                        row += 1
-                        if row == 9: positionx,position = 200,35
-                    position2 = positionx
-                    """skill list and cooldown"""
-                    for skill in self.value2[1]:
-                        if skill in self.value2[2] : cd = int(self.value2[2][skill])
-                        else: cd = 0
-                        self.textsurface = self.font.render(str(skill) + ":" + str(cd), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        position2 += 45
-                    position += 20
-                    position2 = positionx
-                    """skill list"""
-                    for status in self.value2[3]:
-                        self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[3][status][3])), 1,(0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        position2 += 15
-                        if position2 >= 90:
-                            position2 = 10
-                            position += 20
-                    """status list"""
-                    for status in self.value2[4]:
-                        self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[4][status][3])), 1,(0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        position2 += 15
-                        if position2 >= 90:
-                            position2 = 10
-                            position += 20
-                else:
-                    """Description card"""
-                    # self.iconimagerect = self.icon[0].get_rect(
-                    #     center=(
-                    #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
-                    # self.image.blit(self.icon[0], self.iconimagerect)
-                    self.textsurface = self.fonthead.render(self.value[0], 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + 42, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    self.blit_text(self.image, self.description, (42, 25), self.fontlong)
-                    self.lastvalue = self.value[0]
-                self.lastvalue = self.value
 
 def addarmy(squadlist, position, gameid,colour,imagesize,leader, leaderstat,unitstat,control,coa,command=False):
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
@@ -382,8 +156,6 @@ class battle():
         imgs=[]
         imgsold = load_images('unit', 'unit_ui','battalion')
         for img in imgsold:
-            x, y = img.get_width(), img.get_height()
-            # img = pygame.transform.scale(img, (int(x),int(y)))
             imgs.append(img)
         gamearmy.unitarmy.images = imgs
     #create weapon icon
@@ -394,7 +166,11 @@ class battle():
             img = pygame.transform.scale(img, (int(x/1.7),int(y/1.7)))
             imgs.append(img)
         self.allweapon = gamearmy.weaponstat(imgs)
-        self.gameunitstat = gamearmy.unitstat()
+        imgsold = load_images('ui', 'skill_icon',loadorder=False)
+        imgs = []
+        for img in imgsold:
+            imgs.append(img)
+        self.gameunitstat = gamearmy.unitstat(imgs,imgs,imgs,imgs)
         #create leader list
         imgsold = load_images('leader','historic')
         imgs=[]
@@ -407,8 +183,6 @@ class battle():
         imgsold = load_images('leader', 'historic','coa')
         imgs = []
         for img in imgsold:
-            x, y = img.get_width(), img.get_height()
-            img = pygame.transform.scale(img, (int(x), int(y)))
             imgs.append(img)
         self.coa = imgs
         """Game Effect"""
@@ -470,8 +244,8 @@ class battle():
         gamearmy.hitbox.containers = self.hitboxs, self.unitupdater, self.all
         gamearmy.arrow.containers = self.arrows, self.all, self.effectupdater
         gamearmy.directionarrow.containers = self.directionarrows, self.all, self.effectupdater
-        Gameui.containers = self.gameui, self.uiupdater
-        uibutton.containers = self.buttonui, self.uiupdater
+        gameui.Gameui.containers = self.gameui, self.uiupdater
+        gameui.uibutton.containers = self.buttonui, self.uiupdater
         """Create Starting Values"""
         self.timer = 0
         self.dt=0
@@ -488,16 +262,17 @@ class battle():
         """create game ui"""
         topimage = load_images('ui', 'battle_ui')
         iconimage = load_images('ui', 'battle_ui', 'topbar_icon')
-        self.gameui = [Gameui(screen=self.screen, X=SCREENRECT.width-topimage[0].get_size()[0]/2, Y=topimage[0].get_size()[1]/2, image=topimage[0], icon=iconimage, uitype="topbar")]
+        self.gameui = [gameui.Gameui(screen=self.screen, X=SCREENRECT.width-topimage[0].get_size()[0]/2, Y=topimage[0].get_size()[1]/2, image=topimage[0], icon=iconimage, uitype="topbar")]
         iconimage = load_images('ui', 'battle_ui', 'commandbar_icon')
-        self.gameui.append(Gameui(screen=self.screen, X=topimage[1].get_size()[0]/2, Y=topimage[1].get_size()[1]/2, image=topimage[1], icon=iconimage, uitype="commandbar"))
+        self.gameui.append(gameui.Gameui(screen=self.screen, X=topimage[1].get_size()[0]/2, Y=topimage[1].get_size()[1]/2, image=topimage[1], icon=iconimage, uitype="commandbar"))
         iconimage = load_images('ui', 'battle_ui', 'unitcard_icon')
-        self.gameui.append(Gameui(screen=self.screen, X=SCREENRECT.width-topimage[2].get_size()[0]/2, Y=SCREENRECT.height-310, image=topimage[2], icon="", uitype="unitcard"))
+        self.gameui.append(gameui.Gameui(screen=self.screen, X=SCREENRECT.width-topimage[2].get_size()[0]/2, Y=SCREENRECT.height-310, image=topimage[2], icon="", uitype="unitcard"))
         self.gameui.append(
-            Gameui(screen=self.screen, X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y= topimage[0].get_size()[1]+150,
+            gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y= topimage[0].get_size()[1]+150,
                    image=topimage[5], icon="", uitype="armybox"))
         self.popgameui = self.gameui
-        self.buttonui = [uibutton(self.gameui[2].X-170, self.gameui[2].Y-12,topimage[3],0), uibutton(self.gameui[2].X-170, self.gameui[2].Y-65, topimage[4],1),uibutton(self.gameui[0].X-206, self.gameui[0].Y, topimage[6],1)]
+        self.buttonui = [gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y+41,topimage[3],0), gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y-65, topimage[4],1),
+                         gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y-12, topimage[7],2) ,gameui.uibutton(self.gameui[0].X-206, self.gameui[0].Y, topimage[6],1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1,(0,0,0))
         self.unitposlist = {}
         self.enemyposlist = {}
@@ -804,27 +579,27 @@ class battle():
                 if self.beforeselected == 0:
                     self.gameui = self.popgameui
                     self.all.add(*self.gameui[0:2])
-                    self.all.add(self.buttonui[2])
+                    self.all.add(self.buttonui[3])
                 elif self.beforeselected != self.lastselected and self.inspectui == 1:
                     self.check2 = 1
                     self.all.remove(*self.showingsquad)
                     self.showingsquad = []
                 self.gameui[0].valueinput(who=whoinput, leader=self.allleader)
                 self.gameui[1].valueinput(who=whoinput, leader=self.allleader)
-                if (self.buttonui[2].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up==True and self.inspectui == 0) or (mouse_up == True and self.inspectui == 1 and self.check2 == 1):
+                if (self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up==True and self.inspectui == 0) or (mouse_up == True and self.inspectui == 1 and self.check2 == 1):
                     """Add army inspect ui when left click at ui button)"""
                     self.inspectui = 1
                     self.all.add(*self.gameui[2:4])
-                    self.all.add(*self.buttonui[0:2])
+                    self.all.add(*self.buttonui[0:3])
                     self.check = 1
                     self.showingsquad = whoinput.squadsprite
                     self.squadlastselected = self.showingsquad[0]
-                elif self.buttonui[2].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 1:
+                elif self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 1:
                     """remove when click again and the ui already open"""
                     self.all.remove(*self.showingsquad)
                     self.showingsquad = []
                     for ui in self.gameui[2:4]: ui.kill()
-                    for button in self.buttonui[0:2]: button.kill()
+                    for button in self.buttonui[0:3]: button.kill()
                     self.inspectui = 0
                     self.check = 1
                     self.check2 = 0
@@ -833,7 +608,7 @@ class battle():
                     self.all.add(*self.showingsquad)
                     """Update value of the clicked squad"""
                     if self.squadlastselected != None:
-                        self.gameui[2].valueinput(who=self.squadlastselected, leader=self.allleader)
+                        self.gameui[2].valueinput(who=self.squadlastselected, leader=self.allleader, gameunitstat=self.gameunitstat)
                     """Change showing stat to the clicked squad one"""
                     if mouse_up==True:
                         for squad in self.showingsquad:
@@ -841,14 +616,14 @@ class battle():
                                 self.check = 1
                                 squad.command(pygame.mouse.get_pos(), mouse_up, mouse_right, self.squadlastselected.wholastselect)
                                 self.squadlastselected = squad
-                                self.gameui[2].valueinput(who=squad, leader=self.allleader)
+                                self.gameui[2].valueinput(who=squad, leader=self.allleader, gameunitstat=self.gameunitstat)
                             """Change unit card option based on button clicking"""
                             for button in self.buttonui:
                                 if button.rect.collidepoint(pygame.mouse.get_pos()):
                                     self.check = 1
                                     if self.gameui[2].option != button.event:
                                         self.gameui[2].option = button.event
-                                        self.gameui[2].valueinput(who=squad, leader=self.allleader, changeoption=1)
+                                        self.gameui[2].valueinput(who=squad, leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat)
                     self.squadbeforeselected = self.squadlastselected
                 self.beforeselected = self.lastselected
             """remove the pop up ui when click at no group"""

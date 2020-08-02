@@ -10,7 +10,7 @@ Ver 0.3: More complex control and UI function
 
 Ver 0.4: Game map, terrain and camera
 
-Ver 0.5: Optimise for larger battle
+Ver 0.5: Optimise for larger battle (Also proper code documentation + formal structure)
 
 Ver 0.6: Battle selection, preparation and result screen
 
