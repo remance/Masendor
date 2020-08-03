@@ -1,4 +1,4 @@
-"""next goal: dynamic authority and leader function(0.2.4), skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
+"""next goal: dynamic authority and leader function(0.2.4), detach/split function, skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
 FIX
 recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
@@ -211,15 +211,15 @@ class battle():
                 self.background.blit(bgdtile, (x, y))
         self.screen.blit(self.background, (0,0))
         pygame.display.flip()
-
         # #load the sound effects
         # boom_sound = load_sound('boom.wav')
         # shoot_sound = load_sound('car_door.wav')
+        """Random music played from list"""
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
             # musiclist = os.path.join(main_dir, 'data/sound/')
             self.musiclist = glob.glob(main_dir + '/data/sound/*.mp3')
-            self.pickmusic=random.randint(1,4)
+            self.pickmusic=random.randint(1,1)
             pygame.mixer.music.set_endevent(self.SONG_END)
             pygame.mixer.music.load(self.musiclist[self.pickmusic])
             pygame.mixer.music.play(0)

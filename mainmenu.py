@@ -106,7 +106,6 @@ class menuicon(pygame.sprite.Sprite):
             self.rects = self.images[0].get_rect(center=(self.X, self.Y))
             self.image = self.images[0]
 
-
 class slidermenu(pygame.sprite.Sprite):
     def __init__(self, barimage, buttonimage, textimage , X, Y, gamescreen, value, text="", imageresize=0, min_value=0, max_value=100, size=16):
         self.X, self.Y = X, Y

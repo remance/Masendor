@@ -899,7 +899,8 @@ class unitarmy(pygame.sprite.Sprite):
         #     self.morale = round(self.basemorale, 0)
         if self.troopnumber>0:
             self.walkspeed, self.runspeed = (self.speed + self.discipline/100) / 15, (self.speed + self.discipline/100) / 10
-            self.rotatespeed = round(self.runspeed*4) / (self.troopnumber/100)
+            self.rotatespeed = round(self.runspeed*6) / (self.troopnumber/100)
+            if self.state in [1,3,5]: self.rotatespeed = round(self.walkspeed*6) / (self.troopnumber/100)
             if self.rotatespeed < 1: self.rotatespeed = 1
 
     def combatprepare(self,enemyhitbox):
