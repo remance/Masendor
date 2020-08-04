@@ -96,16 +96,12 @@ class arrow(pygame.sprite.Sprite):
     def update(self,who,target,hitbox,squadlist,squadindexlist,dt):
         """Who is the player battalion group, target is the enemy battalion group"""
         move = self.target - self.pos
-        # if self.state == 5: self.target = self.pos
-            # if self.state != 3 and self.retreatcommand == 1:
         move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""
         for hitbox in pygame.sprite.spritecollide(self, hitbox, 0, collided=pygame.sprite.collide_mask):
             if hitbox.who.gameid != self.shooter.battalion.gameid:
                 self.passwho = hitbox.who
-                # if self.passwho != self.lastpasswho:
                 self.side = hitbox.side
-                # self.lastpasswho = hitbox.who.gameid
                 if self.arcshot == False:
                     print('id',self.passwho.gameid)
                     self.registerhit(who, target, squadlist, squadindexlist)
