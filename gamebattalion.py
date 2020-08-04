@@ -377,11 +377,9 @@ class unitarmy(pygame.sprite.Sprite):
                     run = 0
                     while gotanother == 0:
                         if fullwhoarray[index][run, deadsquad] not in [0, 1]:
-                            # print('gotit', fullwhoarray[index][run, deadsquad], 'index', index)
                             newwhofrontline[deadsquad] = fullwhoarray[index][run, deadsquad]
                             gotanother = 1
                         else:
-                            # print('notyet', run, fullwhoarray[index][run, deadsquad])
                             run+=1
                             if len(fullwhoarray[index]) == run:
                                 newwhofrontline[deadsquad] = 1 # Only use number 1 for dead squad (0 mean not existed in the first place)

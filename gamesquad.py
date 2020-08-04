@@ -159,10 +159,6 @@ class unitsquad(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(self.rect.centerx, self.rect.centery)
         """self.pos is pos of battalion"""
         self.combatpos = 0
-    #
-    # def draw(self, gamescreen):
-    #     self.rect = self.image_original.get_rect(topleft=self.inspposition)
-    #     gamescreen.blit(self.image, self.rect)
 
     def useskill(self,whichskill):
         ##charge skill need to seperate since charge power will be used only for charge skill

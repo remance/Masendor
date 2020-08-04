@@ -298,7 +298,6 @@ class battle():
                 thisposition += 1
         if thisposition < 0: thisposition = 0
         elif thisposition > 7: thisposition = 7
-        # if thisposition != max:
         if targetside[thisposition] != 0:
             fronttarget = targetside[thisposition]
         else: fronttarget = 0

@@ -34,7 +34,6 @@ class iconpopup(pygame.sprite.Sprite):
 
 class Gameui(pygame.sprite.Sprite):
     def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
-        # super().__init__()
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.X, self.Y = X, Y
