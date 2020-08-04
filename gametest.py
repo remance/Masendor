@@ -136,4 +136,7 @@ list = {0:1,1:2,2:3,3:4}
 # a = {22: ['Anti-Cavalry', 1.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0.0, 0.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 'This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.', 100]}
 # for d in a.items():
 #        print(d)
-print(random.randint(-10,0))
+calsquadlist = np.array([0,0,0,0,1,2,0,0])
+calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
+                (np.count_nonzero(calsquadlist <= 1)) * 70 / 100)])
+print(calsquadlist)

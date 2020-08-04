@@ -319,7 +319,7 @@ class mainmenu():
                 self.menubutton3.update(pygame.mouse.get_pos(), mouse_up)
                 self.menubutton3.draw(self.screen)
                 if self.menubutton.event == True:
-                    self.battlegame = maingamefunc.battle()
+                    self.battlegame = maingamefunc.battle(self.winstyle)
                     self.battlegame.rungame()
                     self.menubutton.event = False
                 if self.menubutton3.event == True:

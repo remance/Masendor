@@ -175,8 +175,8 @@ class Gameui(pygame.sprite.Sprite):
             #            5: "Support is unit that can be essential in drawn out war. They can offer spiritual help to the other squad in the battalion, perform first aids or post battle surgery. In other words, support unit help other unit fight and survive better in this hell that people often refer as field of glory.",
             # 10:"This is command unit for this battalion. Do not let them get destroyed or your battalion will receive huge penalty to morale and all other undesirable status penalty. However putting this unit on frontline will also provide large bonus to the entire battalion, so use consider this option carefully."}
             text = ["","Troop: ", "Stamina: ", "Morale: ", "Discipline: ", 'Melee Attack: ',
-                    'Melee Defense: ', 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                    "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: "]
+                    'Melee Defence: ', 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
+                    "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
             if self.value != self.lastvalue or self.value2 != self.lastvalue2 or changeoption == 1:
                 self.image = self.image_original.copy()
                 """Stat card"""
@@ -223,19 +223,26 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.blit(self.textsurface, self.textrect)
                     position += 30
                     position2 = positionx+20
-                    """skill list and cooldown"""
+                    """property list"""
+                    # for trait in self.value2[1]:
+                    #     if trait in self.value2[2] : cd = int(self.value2[2][trait])
+                    #     else: cd = 0
+                    self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
+                    self.textrect = self.textsurface.get_rect(
+                        midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                    self.image.blit(self.textsurface, self.textrect)
+                    position += 50
+                    """skill cooldown"""
                     for skill in self.value2[1]:
                         if skill in self.value2[2] : cd = int(self.value2[2][skill])
                         else: cd = 0
-                        self.iconrect = gameunitstat.abilityicon[0].get_rect(center=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(gameunitstat.abilityicon[0], self.iconrect)
                         self.textsurface = self.font.render(str(skill) + ":" + str(cd), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
                         position2 += 55
                     position += 50
-                    """skill list"""
+                    """skill effect list"""
                     for status in self.value2[3]:
                         self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[3][status][3])), 1,(0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
@@ -257,4 +264,20 @@ class Gameui(pygame.sprite.Sprite):
                             position += 20
                 self.lastvalue = self.value
                 self.lastvalue2 != self.value2
+
+class fpscount(pygame.sprite.Sprite):
+    def __init__(self):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
+        self.image_original = self.image.copy()
+        self.font = pygame.font.SysFont("Arial", 18)
+        self.rect = self.image.get_rect(center=(30, 30))
+
+    def fpsshow(self,clock):
+        self.image = self.image_original.copy()
+        fps = str(int(clock.get_fps()))
+        fps_text = self.font.render(fps, 1, pygame.Color("black"))
+        self.textrect = fps_text.get_rect(center=(25,25))
+        self.image.blit(fps_text, self.textrect)
 

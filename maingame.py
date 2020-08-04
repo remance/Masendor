@@ -1,4 +1,4 @@
-"""next goal: dynamic authority and leader function(0.2.4), detach/split function, skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
+"""next goal: dynamic authority and leader function(0.2.4), detach/split function (0.2.5), skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
 FIX
 recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
@@ -8,7 +8,7 @@ import pygame
 from pygame.transform import scale
 from pygame.locals import *
 import pygame.freetype
-from RTS import mainmenu, gamearmy, gameui
+from RTS import mainmenu, gamebattalion, gamesquad, gameui, rangeattack
 import ast
 from collections import defaultdict
 import numpy as np
@@ -53,17 +53,17 @@ def load_sound(file):
 def addarmy(squadlist, position, gameid,colour,imagesize,leader, leaderstat,unitstat,control,coa,command=False):
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
-    army = gamearmy.unitarmy(startposition=position, gameid=gameid,
-                                   leaderlist=leaderstat, statlist=unitstat, leader=leader,
-                                   squadlist=squadlist, imgsize=imagesize,
-                                   colour=colour,control=control,coa=coa,commander=command)
-    army.hitbox = [gamearmy.hitbox(army, 0, army.rect.width, 5),
-                          gamearmy.hitbox(army, 1, 5, army.rect.height-5),
-                          gamearmy.hitbox(army, 2, 5, army.rect.height-5),
-                          gamearmy.hitbox(army, 3, army.rect.width, 5)]
+    army = gamebattalion.unitarmy(startposition=position, gameid=gameid,
+                                  leaderlist=leaderstat, statlist=unitstat, leader=leader,
+                                  squadlist=squadlist, imgsize=imagesize,
+                                  colour=colour, control=control, coa=coa, commander=command)
+    army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
+                   gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
+                   gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
+                   gamebattalion.hitbox(army, 3, army.rect.width, 5)]
     return army
 
-def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,allleader,gameunitstat,coa,squad,enactment=False):
+def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,allleader,gameunitstat,coa,squad,inspectuipos,enactment=False):
     """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
     squadindexlist = []
@@ -87,7 +87,8 @@ def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,alll
             if row[0] < 2000:
                 if row[0] == 1:
                     """First player battalion as commander"""
-                    army = addarmy(np.array([row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]]), (row[9][0], row[9][1]), row[0], playercolour, (imagewidth, imageheight), row[10], allleader,gameunitstat, True, coa[row[11]],True)
+                    army = addarmy(np.array([row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]]), (row[9][0], row[9][1]), row[0], playercolour,
+                                   (imagewidth, imageheight), row[10], allleader,gameunitstat, True, coa[row[11]],True)
                 else:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    playercolour, (imagewidth, imageheight), row[10], allleader, gameunitstat, True, coa[row[11]])
@@ -111,8 +112,8 @@ def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,alll
             """Setup squad in army to squad group"""
             for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
-                    addsquad = gamearmy.unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=allweapon, statlist=gameunitstat,
-                                               battalion=army, position=army.squadpositionlist[armysquadindex])
+                    addsquad = gamesquad.unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=allweapon, statlist=gameunitstat,
+                                                   battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=inspectuipos)
                     squad.append(addsquad)
                     squadnum[...] = squadgameid
                     army.groupsquadindex.append(squadindex)
@@ -125,15 +126,14 @@ def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,alll
     return playerarmynum, enemyarmynum, squadindexlist
 
 class battle():
-    def __init__(self):
+    def __init__(self,winstyle):
         # Initialize pygame
         pygame.init()
         if pygame.mixer and not pygame.mixer.get_init():
             pygame.mixer = None
         # Set the display mode
-        winstyle = 0
-        bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)
-        self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle, bestdepth)
+        self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)
+        self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)
         # for when implement game and map camera
         # self.battle_surf = pygame.surface.Surface(width, height)
         # in your main loop
@@ -151,13 +151,13 @@ class battle():
             x, y = img.get_width(), img.get_height()
             # img = pygame.transform.scale(img, (int(x),int(y/2)))
             imgs.append(img)
-        gamearmy.unitsquad.images = imgs
+        gamesquad.unitsquad.images = imgs
         self.imagewidth, self.imageheight = imgs[0].get_width(), imgs[0].get_height()
         imgs=[]
         imgsold = load_images('unit', 'unit_ui','battalion')
         for img in imgsold:
             imgs.append(img)
-        gamearmy.unitarmy.images = imgs
+        gamebattalion.unitarmy.images = imgs
     #create weapon icon
         imgsold = load_images('unit', 'unit_ui', 'weapon')
         imgs=[]
@@ -165,12 +165,12 @@ class battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x/1.7),int(y/1.7)))
             imgs.append(img)
-        self.allweapon = gamearmy.weaponstat(imgs)
+        self.allweapon = gamebattalion.weaponstat(imgs)
         imgsold = load_images('ui', 'skill_icon',loadorder=False)
         imgs = []
         for img in imgsold:
             imgs.append(img)
-        self.gameunitstat = gamearmy.unitstat(imgs,imgs,imgs,imgs)
+        self.gameunitstat = gamebattalion.unitstat(imgs, imgs, imgs, imgs)
         #create leader list
         imgsold = load_images('leader','historic')
         imgs=[]
@@ -178,7 +178,7 @@ class battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x/2),int(y/2)))
             imgs.append(img)
-        self.allleader = gamearmy.leader(imgs,option="\historic")
+        self.allleader = gamebattalion.leader(imgs, option="\historic")
         #coa imagelist
         imgsold = load_images('leader', 'historic','coa')
         imgs = []
@@ -193,7 +193,7 @@ class battle():
             # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
             imgs.append(img)
         self.gameeffect = imgs
-        gamearmy.arrow.images = [self.gameeffect[0]]
+        rangeattack.arrow.images = [self.gameeffect[0]]
         #decorate the game window
         # icon = load_image('sword.jpg')
         # icon = pygame.transform.scale(icon, (32, 32))
@@ -237,14 +237,16 @@ class battle():
         self.deadunit = pygame.sprite.Group()
         self.gameui = pygame.sprite.Group()
         self.buttonui = pygame.sprite.Group()
+        self.fpscount = pygame.sprite.Group()
         """assign default groups"""
-        gamearmy.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.all, self.squad
-        gamearmy.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
-        gamearmy.deadarmy.containers = self.deadunit, self.unitupdater, self.all
-        gamearmy.hitbox.containers = self.hitboxs, self.unitupdater, self.all
-        gamearmy.arrow.containers = self.arrows, self.all, self.effectupdater
-        gamearmy.directionarrow.containers = self.directionarrows, self.all, self.effectupdater
+        gamebattalion.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.all, self.squad
+        gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
+        gamebattalion.deadarmy.containers = self.deadunit, self.unitupdater, self.all
+        gamebattalion.hitbox.containers = self.hitboxs, self.unitupdater, self.all
+        rangeattack.arrow.containers = self.arrows, self.all, self.effectupdater
+        gamebattalion.directionarrow.containers = self.directionarrows, self.all, self.effectupdater
         gameui.Gameui.containers = self.gameui, self.uiupdater
+        gameui.fpscount.containers = self.all
         gameui.uibutton.containers = self.buttonui, self.uiupdater
         """Create Starting Values"""
         self.timer = 0
@@ -252,13 +254,6 @@ class battle():
         self.combattimer = 0
         self.clock = pygame.time.Clock()
         self.lastmouseover = 0
-        """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
-        self.battlesidecal = [1,0.8,0.6,0.8]
-        """initialize starting unit sprites"""
-        self.playerarmy, self.enemyarmy, self.squad = [],[],[]
-        self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy,self.enemyarmy,'\\test', self.imagewidth, self.imageheight, self.allweapon, self.allleader, self.gameunitstat, self.coa, self.squad,enactment=True)
-        self.deadarmynum = {}
-        self.deadindex = 0
         """create game ui"""
         topimage = load_images('ui', 'battle_ui')
         iconimage = load_images('ui', 'battle_ui', 'topbar_icon')
@@ -274,6 +269,16 @@ class battle():
         self.buttonui = [gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y+41,topimage[3],0), gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y-65, topimage[4],1),
                          gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y-12, topimage[7],2) ,gameui.uibutton(self.gameui[0].X-206, self.gameui[0].Y, topimage[6],1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1,(0,0,0))
+        self.fpscount = gameui.fpscount()
+        """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
+        self.battlesidecal = [1,0.8,0.6,0.8]
+        """initialise starting unit sprites"""
+        self.playerarmy, self.enemyarmy, self.squad = [],[],[]
+        self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy,self.enemyarmy,'\\test',
+            self.imagewidth, self.imageheight, self.allweapon, self.allleader, self.gameunitstat, self.coa, self.squad,
+            [self.gameui[0].rect.bottomleft[0]-self.imagewidth/1.25,self.gameui[0].rect.bottomleft[1]-self.imageheight/3], enactment=True)
+        self.deadarmynum = {}
+        self.deadindex = 0
         self.unitposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
@@ -479,6 +484,7 @@ class battle():
         self.beforeselected = None
         self.squadbeforeselected = None
         while True:
+            self.fpscount.fpsshow(self.clock)
             keystate = pygame.key.get_pressed()
             self.mousepos = pygame.mouse.get_pos()
             mouse_up = False
@@ -574,7 +580,7 @@ class battle():
                     whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
                                              self.lastselected,self.lastmouseover, self.enemyposlist,keystate)
                     if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.directionarrow == False:
-                        gamearmy.directionarrow(whoinput)
+                        gamebattalion.directionarrow(whoinput)
                 """add back the pop up ui to group so it get shown"""
                 if self.beforeselected == 0:
                     self.gameui = self.popgameui
@@ -682,7 +688,6 @@ class battle():
                                         self.squadcombatcal(hitbox.who, hitbox2.who, hitbox.who.battleside.index(battle), hitbox2.who.battleside.index(hitbox.who.gameid))
                                 hitbox.who.recalsquadcombat, hitbox2.who.recalsquadcombat = False, False
                         elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000) or (hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):
-                            # if pygame.sprite.collide_mask(hitbox, hitbox2) is not None:
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
                 """Calculate squad combat dmg"""
                 if self.combattimer >= 0.5:
@@ -699,9 +704,9 @@ class battle():
                                         self.removesquadlist.append(thissquad.gameid)
                                     if self.squad[np.where(self.squadindexlist == combat)[0][0]].unithealth <= 0:
                                         self.removesquadlist.append(self.squad[np.where(self.squadindexlist == combat)[0][0]].gameid)
-                        if thissquad.state == 11 and thissquad.battalion.attacktarget.state != 100:
+                        if thissquad.state == 11 and thissquad.battalion.attacktarget != 0 and thissquad.battalion.attacktarget.state != 100:
                             if thissquad.reloadtime >= thissquad.reload:
-                                gamearmy.arrow(thissquad, thissquad.attackpos.distance_to(thissquad.combatpos),thissquad.range)
+                                rangeattack.arrow(thissquad, thissquad.attackpos.distance_to(thissquad.combatpos), thissquad.range)
                                 thissquad.ammo -= 1
                                 thissquad.reloadtime = 0
                         elif thissquad.state == 11 and thissquad.battalion.state == 100:
