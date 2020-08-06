@@ -45,7 +45,7 @@ class unitstat():
                     if i.isdigit():
                         row[n] = int(i)
                     elif i == "":
-                        row[n] = 1
+                        row[n] = 100
                         if n in [2,3]:
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -98,7 +98,7 @@ class unitstat():
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = float(i)
                     elif i == "": row[n] = 100
-                    if n in [19]:
+                    if n in [19,33]:
                         if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit(): row[n] = [int(i)]
                     # elif i.isdigit(): row[n] = [int(i)]
@@ -192,7 +192,6 @@ class unitarmy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         # self.unitarray = unitarray
         self.armysquad = squadlist
-        self.squadsprite = []
         self.commander = commander
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
@@ -513,6 +512,11 @@ class unitarmy(pygame.sprite.Sprite):
             self.makeallsidepos()
             self.target = self.allsidepos[0]
             self.commandtarget = self.allsidepos[0]
+            self.squadsprite = self.armysquad
+            for squad in squadgroup:
+                for rowindex, squadindex in enumerate(self.squadsprite):
+                    if squadindex == squad.gameid:
+                        self.squadsprite[rowindex][self.squadsprite[rowindex].index(squadindex)] = squad
             self.gamestart = 1
         if self.state != 100:
             self.offsetx = self.rect.x

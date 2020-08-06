@@ -136,7 +136,40 @@ list = {0:1,1:2,2:3,3:4}
 # a = {22: ['Anti-Cavalry', 1.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0.0, 0.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 'This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.', 100]}
 # for d in a.items():
 #        print(d)
-calsquadlist = np.array([0,0,0,0,1,2,0,0])
-calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
-                (np.count_nonzero(calsquadlist <= 1)) * 70 / 100)])
-print(calsquadlist)
+# calsquadlist = np.array([0,0,0,1,1,2,0,0],[0,0,0,1,1,2,0,0])
+# calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
+#                 (np.count_nonzero(calsquadlist <= 1)) * 70 / 100)])
+# print(calsquadlist)
+a = [[10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007],
+ [10008, 10009, 10010, 10011, 10012, 10013, 10014, 10015]]
+# print(len(a))
+nearbysquadlist = []
+cornersquad = []
+for rowindex, rowlist in enumerate(a):
+       for squad in rowlist:
+              if squad == 10008:
+                     if rowlist.index(10008) - 1 != -1:  # get squad from left if not at first column
+                            nearbysquadlist.append(a[rowindex][rowlist.index(10008) - 1])
+                     else:
+                            nearbysquadlist.append(0)
+                     if rowlist.index(10008) + 1 != 8:  # get squad from right if not at last column
+                            nearbysquadlist.append(a[rowindex][rowlist.index(10008) + 1])
+                     else:
+                            nearbysquadlist.append(0)
+                     if rowindex != 0:  # get bottom squad
+                            nearbysquadlist.append(a[rowindex - 1][rowlist.index(10008)])
+                            if rowlist.index(10008) - 1 != -1:
+                                   cornersquad.append(a[rowindex - 1][rowlist.index(10008) - 1])
+                            else:
+                                   cornersquad.append(0)
+                            if rowlist.index(10008) + 1 != 8:
+                                   cornersquad.append(a[rowindex - 1][rowlist.index(10008) + 1])
+                            else:
+                                   cornersquad.append(0)
+                     else:
+                            nearbysquadlist.append(0)
+                     if rowindex != len(a) - 1:  # get above squad
+                            nearbysquadlist.append(a[rowindex + 1][rowlist.index(10008)])
+                     else:
+                            nearbysquadlist.append(0)
+print(nearbysquadlist, cornersquad)

@@ -60,7 +60,7 @@ class arrow(pygame.sprite.Sprite):
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck
         if targetdefense < 0: targetdefense = 0
-        whodmg, whomoraledmg = maingame.battle.losscal(maingame.battle, who=who, target=target, hit=whohit, defense=targetdefense, type='range')
+        whodmg, whomoraledmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
 
@@ -103,7 +103,6 @@ class arrow(pygame.sprite.Sprite):
                 self.passwho = hitbox.who
                 self.side = hitbox.side
                 if self.arcshot == False:
-                    print('id',self.passwho.gameid)
                     self.registerhit(who, target, squadlist, squadindexlist)
                     self.kill()
         if move_length >= self.speed:

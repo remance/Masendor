@@ -148,12 +148,12 @@ class Gameui(pygame.sprite.Sprite):
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 65))
             self.image.blit(leader.imgs[self.leaderpiclist[0]], self.leaderpiclistrect)
             self.leaderpiclistrect = leader.imgs[self.leaderpiclist[1]].get_rect(center=(
-            self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
-            self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
+                self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
+                self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
             self.image.blit(leader.imgs[self.leaderpiclist[1]], self.leaderpiclistrect)
             self.leaderpiclistrect = leader.imgs[self.leaderpiclist[2]].get_rect(center=(
-            self.image.get_rect()[0] + self.image.get_size()[0] / 1.4,
-            self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
+                self.image.get_rect()[0] + self.image.get_size()[0] / 1.4,
+                self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
             self.image.blit(leader.imgs[self.leaderpiclist[2]], self.leaderpiclistrect)
             self.leaderpiclistrect = leader.imgs[self.leaderpiclist[3]].get_rect(
                 center=(self.image.get_size()[0] / 2, self.image.get_rect()[1] + 172))
@@ -169,7 +169,7 @@ class Gameui(pygame.sprite.Sprite):
             self.value = who.unitcardvalue
             self.value2 = who.unitcardvalue2
             self.description = self.value[-1]
-            if type(self.description)== list: self.description = self.description[0]
+            if type(self.description) == list: self.description = self.description[0]
             # options = {2: "Skirmish is a light infantry that served as harassment or flanking unit. They can move fast and often carry range weapon. They can be good in melee combat but their lack of heavy armour mean that they cannot withstand more overwhelming force.",
             #            5: "Support is unit that can be essential in drawn out war. They can offer spiritual help to the other squad in the battalion, perform first aids or post battle surgery. In other words, support unit help other unit fight and survive better in this hell that people often refer as field of glory.",
             # 10:"This is command unit for this battalion. Do not let them get destroyed or your battalion will receive huge penalty to morale and all other undesirable status penalty. However putting this unit on frontline will also provide large bonus to the entire battalion, so use consider this option carefully."}
@@ -216,12 +216,13 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.blit(self.textsurface, self.textrect)
                     self.blit_text(self.image, self.description, (42, 25), self.fontlong)
                 elif self.option == 2:
+                    """unit name at the top"""
                     self.textsurface = self.fonthead.render(self.value[0], 1, (0, 0, 0))
                     self.textrect = self.textsurface.get_rect(
                         midleft=(self.image.get_rect()[0] + 42, self.image.get_rect()[1] + position))
                     self.image.blit(self.textsurface, self.textrect)
-                    position += 30
-                    position2 = positionx+20
+                    position += 20
+                    position2 = positionx + 20
                     """property list"""
                     # for trait in self.value2[1]:
                     #     if trait in self.value2[2] : cd = int(self.value2[2][trait])
@@ -230,7 +231,7 @@ class Gameui(pygame.sprite.Sprite):
                     self.textrect = self.textsurface.get_rect(
                         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                     self.image.blit(self.textsurface, self.textrect)
-                    position += 50
+                    position += 20
                     """skill cooldown"""
                     for skill in self.value2[1]:
                         if skill in self.value2[2] : cd = int(self.value2[2][skill])
@@ -239,27 +240,33 @@ class Gameui(pygame.sprite.Sprite):
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
-                        position2 += 55
-                    position += 50
+                        position2 += 25
+                        if position2 >= 90:
+                            position2 = positionx + 20
+                            position += 20
+                    position += 20
                     """skill effect list"""
+                    position2 = positionx + 20
                     for status in self.value2[3]:
                         self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[3][status][3])), 1,(0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
-                        position2 += 15
+                        position2 += 25
                         if position2 >= 90:
-                            position2 = 10
+                            position2 = positionx + 20
                             position += 20
+                    position += 20
                     """status list"""
+                    position2 = positionx + 20
                     for status in self.value2[4]:
                         self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[4][status][3])), 1,(0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
-                        position2 += 15
+                        position2 += 25
                         if position2 >= 90:
-                            position2 = 10
+                            position2 = positionx + 20
                             position += 20
                 self.lastvalue = self.value
                 self.lastvalue2 != self.value2

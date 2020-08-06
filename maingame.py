@@ -2,6 +2,8 @@
 FIX
 recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
+Optimise list
+remove index and change call to the sprite itself
 """
 import random, os, os.path, glob, csv, math
 import pygame
@@ -25,15 +27,13 @@ def load_image(file, subfolder=""):
         raise SystemExit('Could not load image "%s" %s'%(file, pygame.get_error()))
     return surface.convert_alpha()
 
-def load_images(subfolder1="", subfolder2="", subfolder3="", loadorder = True):
+def load_images(subfolder=[], loadorder = True):
     """loads all images(files) in folder using loadorder list file use only png file"""
     imgs = []
-    if subfolder1 != "":
-        dirpath = os.path.join(main_dir, 'data', subfolder1)
-        if subfolder2 != "":
-            dirpath = os.path.join(dirpath, subfolder2)
-            if subfolder3 != "":
-                dirpath = os.path.join(dirpath, subfolder3)
+    dirpath = os.path.join(main_dir, 'data')
+    if subfolder != []:
+        for folder in subfolder:
+            dirpath = os.path.join(dirpath, folder)
     if loadorder == True:
         loadorder = open(dirpath+"/load_order.txt","r")
         loadorder = ast.literal_eval(loadorder.read())
@@ -117,7 +117,7 @@ def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,alll
                     squad.append(addsquad)
                     squadnum[...] = squadgameid
                     army.groupsquadindex.append(squadindex)
-                    army.squadsprite.append(addsquad)
+                    # army.squadsprite.append(addsquad)
                     squadindexlist.append(squadgameid)
                     squadgameid += 1
                     squadindex += 1
@@ -145,34 +145,34 @@ class battle():
     #(do this before the classes are used, after screen setup)
 
     #create unit
-        imgsold = load_images('unit', 'unit_ui')
+        imgsold = load_images(['unit', 'unit_ui'])
         imgs=[]
         for img in imgsold:
-            x, y = img.get_width(), img.get_height()
+            # x, y = img.get_width(), img.get_height()
             # img = pygame.transform.scale(img, (int(x),int(y/2)))
             imgs.append(img)
         gamesquad.unitsquad.images = imgs
         self.imagewidth, self.imageheight = imgs[0].get_width(), imgs[0].get_height()
         imgs=[]
-        imgsold = load_images('unit', 'unit_ui','battalion')
+        imgsold = load_images(['unit', 'unit_ui','battalion'])
         for img in imgsold:
             imgs.append(img)
         gamebattalion.unitarmy.images = imgs
     #create weapon icon
-        imgsold = load_images('unit', 'unit_ui', 'weapon')
+        imgsold = load_images(['unit', 'unit_ui', 'weapon'])
         imgs=[]
         for img in imgsold:
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x/1.7),int(y/1.7)))
             imgs.append(img)
         self.allweapon = gamebattalion.weaponstat(imgs)
-        imgsold = load_images('ui', 'skill_icon',loadorder=False)
+        imgsold = load_images(['ui', 'skill_icon'],loadorder=False)
         imgs = []
         for img in imgsold:
             imgs.append(img)
         self.gameunitstat = gamebattalion.unitstat(imgs, imgs, imgs, imgs)
         #create leader list
-        imgsold = load_images('leader','historic')
+        imgsold = load_images(['leader','historic'])
         imgs=[]
         for img in imgsold:
             x, y = img.get_width(), img.get_height()
@@ -180,13 +180,13 @@ class battle():
             imgs.append(img)
         self.allleader = gamebattalion.leader(imgs, option="\historic")
         #coa imagelist
-        imgsold = load_images('leader', 'historic','coa')
+        imgsold = load_images(['leader', 'historic','coa'])
         imgs = []
         for img in imgsold:
             imgs.append(img)
         self.coa = imgs
         """Game Effect"""
-        imgsold = load_images('effect')
+        imgsold = load_images(['effect'])
         imgs = []
         for img in imgsold:
             x, y = img.get_width(), img.get_height()
@@ -254,13 +254,16 @@ class battle():
         self.combattimer = 0
         self.clock = pygame.time.Clock()
         self.lastmouseover = 0
+        self.unitviewmode = 0
+        """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
+        self.battlesidecal = [1,0.5,0.1,0.5]
         """create game ui"""
-        topimage = load_images('ui', 'battle_ui')
-        iconimage = load_images('ui', 'battle_ui', 'topbar_icon')
+        topimage = load_images(['ui', 'battle_ui'])
+        iconimage = load_images(['ui', 'battle_ui', 'topbar_icon'])
         self.gameui = [gameui.Gameui(screen=self.screen, X=SCREENRECT.width-topimage[0].get_size()[0]/2, Y=topimage[0].get_size()[1]/2, image=topimage[0], icon=iconimage, uitype="topbar")]
-        iconimage = load_images('ui', 'battle_ui', 'commandbar_icon')
+        iconimage = load_images(['ui', 'battle_ui', 'commandbar_icon'])
         self.gameui.append(gameui.Gameui(screen=self.screen, X=topimage[1].get_size()[0]/2, Y=topimage[1].get_size()[1]/2, image=topimage[1], icon=iconimage, uitype="commandbar"))
-        iconimage = load_images('ui', 'battle_ui', 'unitcard_icon')
+        iconimage = load_images(['ui', 'battle_ui', 'unitcard_icon'])
         self.gameui.append(gameui.Gameui(screen=self.screen, X=SCREENRECT.width-topimage[2].get_size()[0]/2, Y=SCREENRECT.height-310, image=topimage[2], icon="", uitype="unitcard"))
         self.gameui.append(
             gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y= topimage[0].get_size()[1]+150,
@@ -270,8 +273,6 @@ class battle():
                          gameui.uibutton(self.gameui[2].X-170, self.gameui[2].Y-12, topimage[7],2) ,gameui.uibutton(self.gameui[0].X-206, self.gameui[0].Y, topimage[6],1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1,(0,0,0))
         self.fpscount = gameui.fpscount()
-        """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
-        self.battlesidecal = [1,0.8,0.6,0.8]
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [],[],[]
         self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy,self.enemyarmy,'\\test',
@@ -283,7 +284,6 @@ class battle():
         self.enemyposlist = {}
         self.showingsquad = []
         self.removesquadlist = []
-        self.unitviewmode = 0
 
     def squadselectside(self,targetside,side,position):
         """side 0 is left 1 is right"""
@@ -435,32 +435,52 @@ class battle():
         elif hitchance > 20 and hitchance <= 40:combatscore = 0.5
         elif hitchance > 40 and hitchance <= 80:combatscore = 1
         elif hitchance > 80: combatscore = 1.5
-        if type == "melee":
+        if type == 0:
             dmg = who.dmg
             if who.charging == True: dmg = round(dmg + (who.charge/10) - (who.chargedef/10))
             if target.charging == True: dmg =  round(dmg + (who.chargedef/10) - (target.charge/10))
             dmg = round(((who.dmg * who.troopnumber) - ((target.armour * who.penetrate) / 100)) * combatscore * (who.dmgeffect/100))
-        elif type == "range": dmg = round(((who.rangedmg * who.troopnumber) - ((target.armour * who.rangepenetrate) / 100)) * combatscore)
+        elif type == 1: dmg = round(((who.rangedmg * who.troopnumber) - ((target.armour * who.rangepenetrate) / 100)) * combatscore)
         if dmg > target.unithealth: dmg = target.unithealth
         elif dmg < 0 : dmg = 0
         moraledmg = round(dmg / 100)
         return dmg, moraledmg
 
     def dmgcal(self, who, target, whoside, targetside):
-        """target position 0 = Front, 1 = Side, 3 = Rear"""
+        """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
         # print(target.gameid, target.battleside)
         wholuck, wholuck2 = random.randint(0, 50), random.randint(0, 50)
         targetluck, targetluck2 = random.randint(0, 50), random.randint(0, 50)
         whopercent = self.battlesidecal[whoside]
         targetpercent = self.battlesidecal[targetside]
+        """if attack or defend from side will use discipline to help reduce penalty"""
+        if whoside != 0:
+            whopercent = self.battlesidecal[whoside] + (who.discipline/300)
+            if whopercent > 1: whopercent = 1
+        if targetside != 0:
+            targetpercent = self.battlesidecal[targetside] + (target.discipline/300)
+            if targetpercent > 1: targetpercent = 1
         whohit, whodefense = float(who.attack*whopercent) - wholuck + wholuck2, float(who.meleedef*whopercent) - wholuck + wholuck2
         targethit, targetdefense = float(who.attack*targetpercent) - targetluck + targetluck2, float(target.meleedef*targetpercent) - targetluck + targetluck2
-        whodmg, whomoraledmg = self.losscal(who,target,whohit,targetdefense,'melee')
-        targetdmg, targetmoraledmg = self.losscal(target,who,targethit, whodefense,'melee')
+        whodmg, whomoraledmg = self.losscal(who,target,whohit,targetdefense,0)
+        targetdmg, targetmoraledmg = self.losscal(target,who,targethit,whodefense,0)
         who.unithealth -= targetdmg
         who.basemorale -= targetmoraledmg
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
+        """inflict status based on aoe 1 = front only 2 = all 4 side"""
+        if who.inflictstatus != {}:
+            for index, aoe in enumerate(who.inflictstatus):
+                if aoe == 1 and whoside == 0:
+                    target.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
+                elif aoe == 2:
+                    target.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
+        if target.inflictstatus != {}:
+            for index, aoe in enumerate(target.inflictstatus):
+                if aoe == 1 and targetside == 0:
+                    who.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
+                elif aoe == 2:
+                    who.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         self.deadarmynum[who.gameid] = self.deadindex
@@ -638,7 +658,6 @@ class battle():
                 for button in self.buttonui: button.kill()
                 self.all.remove(*self.showingsquad)
                 self.showingsquad = []
-                self.showingsquadindex = []
                 self.inspectui = 0
                 self.squadbeforeselected = 0
                 self.beforeselected = 0
@@ -694,7 +713,6 @@ class battle():
                         if any(battle > 1 for battle in thissquad.battleside) == True:
                             for index, combat in enumerate(thissquad.battleside):
                                 if combat > 1:
-                                    # print(thissquad.gameid, thissquad.battleside, combat, self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside)
                                     if thissquad.gameid not in self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside:
                                         thissquad.battleside[index] = -1
                                     else:
@@ -714,13 +732,11 @@ class battle():
                 self.combattimer += self.dt
                 self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.unitviewmode)
                 self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt)
-                #cap the framerate
             elif self.gamestate == 0:
                 self.screen.blit(self.pause_text, (600, 600))
             self.clock.tick(60)
             self.dt = self.clock.tick(60) / 1000
-            # draw the scene
-            dirty = self.all.draw(self.screen)
+            dirty = self.all.draw(self.screen) # draw the scene
             pygame.display.update(dirty)
         if pygame.mixer:
             pygame.mixer.music.fadeout(1000)
