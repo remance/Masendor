@@ -192,6 +192,7 @@ class unitarmy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         # self.unitarray = unitarray
         self.armysquad = squadlist
+        self.squadsprite = [] ##list of squad sprite(not index)
         self.commander = commander
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
@@ -476,6 +477,7 @@ class unitarmy(pygame.sprite.Sprite):
             self.rotatespeed = round(self.runspeed*6) / (self.troopnumber/100)
             if self.state in [1,3,5]: self.rotatespeed = round(self.walkspeed*6) / (self.troopnumber/100)
             if self.rotatespeed < 1: self.rotatespeed = 1
+            elif self.rotatespeed > 5: self.rotatespeed = 5
 
     def combatprepare(self,enemyhitbox):
         self.combatpreparestate = 1
@@ -512,11 +514,9 @@ class unitarmy(pygame.sprite.Sprite):
             self.makeallsidepos()
             self.target = self.allsidepos[0]
             self.commandtarget = self.allsidepos[0]
-            self.squadsprite = self.armysquad
+            self.spritearray = self.armysquad
             for squad in squadgroup:
-                for rowindex, squadindex in enumerate(self.squadsprite):
-                    if squadindex == squad.gameid:
-                        self.squadsprite[rowindex][self.squadsprite[rowindex].index(squadindex)] = squad
+                self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
             self.gamestart = 1
         if self.state != 100:
             self.offsetx = self.rect.x

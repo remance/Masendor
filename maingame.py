@@ -117,7 +117,7 @@ def unitsetup(playerarmy,enemyarmy,battle,imagewidth, imageheight,allweapon,alll
                     squad.append(addsquad)
                     squadnum[...] = squadgameid
                     army.groupsquadindex.append(squadindex)
-                    # army.squadsprite.append(addsquad)
+                    army.squadsprite.append(addsquad)
                     squadindexlist.append(squadgameid)
                     squadgameid += 1
                     squadindex += 1

@@ -187,35 +187,47 @@ class unitsquad(pygame.sprite.Sprite):
         """Find nearby friendly squads in the same battalion for applying buff"""
         self.nearbysquadlist = []
         cornersquad = []
-        for rowindex, rowlist in enumerate(self.battalion.squadsprite):
-            for squad in rowlist:
-                if squad.gameid == self.gameid:
-                    if rowlist.index(self.gameid) - 1 != -1: #get squad from left if not at first column
-                        self.nearbysquadlist.append(self.battalion.squadsprite[rowindex][rowlist.index(self.gameid) - 1])
-                    else: self.nearbysquadlist.append(0)
-                    if rowlist.index(self.gameid) + 1 != 8: #get squad from right if not at last column
-                        self.nearbysquadlist.append(self.battalion.squadsprite[rowindex][rowlist.index(self.gameid) + 1])
-                    else: self.nearbysquadlist.append(0)
-                    if rowindex != 0: #get bottom squad
-                        self.nearbysquadlist.append(self.battalion.squadsprite[rowindex-1][rowlist.index(self.gameid)])
-                        if rowlist.index(self.gameid) - 1 != -1:
-                            cornersquad.append(self.battalion.squadsprite[rowindex-1][rowlist.index(self.gameid) - 1])
-                        else: cornersquad.append(0)
-                        if rowlist.index(self.gameid) + 1 != 8:
-                            cornersquad.append(self.battalion.squadsprite[rowindex-1][rowlist.index(self.gameid) + 1])
-                        else: cornersquad.append(0)
-                    else: self.nearbysquadlist.append(0)
-                    if rowindex != len(self.battalion.squadsprite) - 1: #get above squad
-                        self.nearbysquadlist.append(self.battalion.squadsprite[rowindex + 1][rowlist.index(self.gameid)])
-                        if rowlist.index(self.gameid) - 1 != -1:
-                            cornersquad.append(self.battalion.squadsprite[rowindex + 1][rowlist.index(self.gameid) - 1])
-                        else: cornersquad.append(0)
-                        if rowlist.index(self.gameid) + 1 != 8:
-                            cornersquad.append(self.battalion.squadsprite[rowindex + 1][rowlist.index(self.gameid) + 1])
-                        else: cornersquad.append(0)
-                    else: self.nearbysquadlist.append(0)
+        for rowindex, rowlist in enumerate(self.battalion.armysquad.tolist()):
+            if self.gameid in rowlist:
+                if rowlist.index(self.gameid) - 1 != -1: ##get squad from left if not at first column
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) - 1])
+                else: self.nearbysquadlist.append(0)
+                if rowlist.index(self.gameid) + 1 != len(rowlist): ##get squad from right if not at last column
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) + 1])
+                else: self.nearbysquadlist.append(0)
+                if rowindex != 0: ##get top squad
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex-1][rowlist.index(self.gameid)])
+                    if rowlist.index(self.gameid) - 1 != -1: ##get top left squad
+                        cornersquad.append(self.battalion.spritearray[rowindex-1][rowlist.index(self.gameid) - 1])
+                    else: cornersquad.append(0)
+                    if rowlist.index(self.gameid) + 1 != len(rowlist): ## get top right
+                        cornersquad.append(self.battalion.spritearray[rowindex-1][rowlist.index(self.gameid) + 1])
+                    else: cornersquad.append(0)
+                else: self.nearbysquadlist.append(0)
+                if rowindex != len(self.battalion.spritearray) - 1: ##get bottom squad
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid)])
+                    if rowlist.index(self.gameid) - 1 != -1: ##get bottom left squad
+                        cornersquad.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid) - 1])
+                    else: cornersquad.append(0)
+                    if rowlist.index(self.gameid) + 1 != len(rowlist): ## get bottom  right squad
+                        cornersquad.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid) + 1])
+                    else: cornersquad.append(0)
+                else: self.nearbysquadlist.append(0)
         self.nearbysquadlist = self.nearbysquadlist + cornersquad
 
+    def statustonearby(self,aoe,id,statuslist):
+        """apply status effect to nearby unit depending on aoe stat"""
+        if aoe in [2, 3]:
+            if aoe > 1:
+                for squad in self.nearbysquadlist[0:4]:
+                    if squad != 0: squad.statuseffect[id] = statuslist[id].copy()
+            if aoe > 2:
+                for squad in self.nearbysquadlist[4:]:
+                    if squad != 0: squad.statuseffect[id] = statuslist[id].copy()
+        elif aoe == 4:
+            for squad in self.battalion.spritearray.flat:
+                if squad.state != 100:
+                    squad.statuseffect[id] = statuslist[id].copy()
 
     def statusupdate(self,statuslist,dt):
         """calculate stat from stamina and morale state"""
@@ -242,6 +254,9 @@ class unitsquad(pygame.sprite.Sprite):
                 if trait[18] != [0]:
                     for effect in trait[18]:
                         self.statuseffect[effect] = statuslist[effect].copy()
+                        if self.statuseffect[effect][2] > 1:
+                            self.statustonearby(self.statuseffect[effect][2], effect, statuslist)
+
         """apply effect from skill"""
         if len(self.skilleffect) > 0:
             for status in self.skilleffect:
@@ -266,6 +281,8 @@ class unitsquad(pygame.sprite.Sprite):
                 if self.skilleffect[status][27] != [0]:
                     for effect in self.skilleffect[status][27]:
                         self.statuseffect[effect] = statuslist[effect].copy()
+                        if self.statuseffect[effect][2] > 1:
+                            self.statustonearby(self.statuseffect[effect][2], effect, statuslist)
                         # if status[2] > 1:
                         #     self.battalion.armysquad
                         # if status[2] > 2:
@@ -324,6 +341,7 @@ class unitsquad(pygame.sprite.Sprite):
     def update(self,statuslist,squadgroup,dt,viewmode):
         if self.gamestart == 0:
             self.rotate()
+            self.findnearbysquad()
             self.gamestart = 1
         self.statusupdate(statuslist,dt)
         self.oldlasthealth,self.oldlaststamina = self.lasthealthstate, self.laststaminastate

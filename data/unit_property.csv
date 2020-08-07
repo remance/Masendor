@@ -1,319 +1,319 @@
-"id","propertyname","buff_range","target","atk_effect","def_melee_effect","def_range_effect","armour_buff","speed_effect","accuracy_effect","range_effect","reload_effect","charge_effect","charge_def_effect","health_regen_bonus","stamina_regen_bonus","morale_bonus","discipline_bonus","critical_bonus","status","siege_effect","hidden_bonus","fireres","waterres","airres","earthres","magicres","heatres","coldres","poisonres","supplyuse","upkeep","specialeffect","enemystatus","description","Notimplementyet"
-1,"Bonus Morale",1,1,,,,,,,,,,,0,0,10,0,,0,,,0,0,0,0,0,0,0,0,,,,0,"More morale is always preferable. This squad is less likely to flee or surrender in losing fight.",
-2,"Heroic",1,1,,,,,,,,,,,0,0,50,0,,0,,,,,,,,,,,,,,0,"Heroes do not fear failure or death, but that does not mean they welcome it.",
-3,"Varied Training",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"The lack of standardised training for this unit make the troops' fighting ability wildly diverse.",
-4,"Zealous",1,1,,,,,,,,,,,0,0,30,0,,0,,,,,,,,,,,,,,0,"Being zealous for one's belief can make soldier less susceptible to fear.",
-5,"Poor Morale",1,1,,,,,,,,,,,0,0,-20,0,,0,,,,,,,,,,,,,,0,"Either from poor training or by its nature, this squad has poorer morale making it unfit for prolong or serious engagement.",
-6,"Black Boar's Guidance",,,,,,,,130,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-7,"Great Wings' Protection",,,,115,115,110,,,,,,110,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-8,"Tough Painting",,,,,,110,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"Orc Berserkers usually wear no armour at all and paint their naked body into battle. What littile known is that the paint materials used is so tough when harden that it can actually stop a sword or arrow.",
-9,"Impregnable Shield",1,1,,125,125,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"One of the most basic equipment to keep one alive in a chaotic battle. Having one is almost always better than having none but having one that of superb quality is the best of all.",
-10,"Protective Fur",,1,,,,107,,,,,,,0,0,0,0,,,,,,,,,,-40,50,,,,,0,"Some breastman or creature may have fur thick enough to protect against some attack to a degree. Additionally, it can help against cold too.",
-11,"Charge Expert",1,1,,,,,,,,,125,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-12,"Charge Defense Expert",1,1,,,,,,,,,,135,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-13,"Weapon Expert",,,120,115,,,,115,,115,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"Decades of perfection the weapon make this squad a pinnacle of all warriors. ",
-14,"Evasive",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad can dodge melee and range attack when fighting in loose formation.","Melee and range defense bonus +30% for loose and spread formation"
-15,"Divine Connection",,,,,,,,,,,,,0,0,100,0,,,,,,,,,,,,,,,,0,,"Morale always at 100%, all debuff effect -95%, all buff effect +100%"
-16,"Arc Shot",,,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad can shoot pass wall and bonus chance to bypass fortification defense.",
-17,"Agile Aims",,,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty.",
-18,"Can Shoot While Moving",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad can shoot while moving but will some accuracy penalty.",
-19,"Concentrated Aims",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken).",
-20,"Concentrated Chant",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad magic casting is not affected by morale (It still cannot cast magic when broken).",
-21,"Anti-Machine",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against machine squads. Neither Iron or wood can not stop this squad attack.",
-22,"Anti-Cavalry",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.",
-23,"Anti-Mage",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against armoured squads. Not even the heaviest armoured knight can stand against this squad's devastating blow.",
-24,"Anti-Infantry",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against infantry squads.",
-25,"Anti-Flyer",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"What goes up must come down. This squad is specialised in combat against flyer squads.",
-26,"Anti-Shielded",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against shielded squads. The cowardly enemy cannot hide behind their shield anymore.",
-27,"Anti-Large",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"The bigger they are, the harder the fall. This squad is specialised in combat against large squads.",
-28,"Ignore Shield",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad attack ignore shield entirely.",
-29,"Ignore Charge Defense",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad attack ignore charge defence entirely.",
-30,"Ignore Defense",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad attack ignore defense entirely.",
-31,"Cannibal",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-32,"Defiant Defense",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-33,"Backstaber",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad deals bonus damage to enemy squad with rear attack.",
-34,"Battle Master",1,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad can fully attack enemy squads in all direction with no penalty.",
-35,"Absolute Defense",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad does not suffer bonus damage from being flanked.",
-36,"Great Saint",1,1,,,,,,,,,,,0,0,10000,0,,,,,,,,,,,,,,,,0,"The best of the best in the realm. This squad help nearby ally squads to be at maximum morale and cannot be decreased.",
-37,"Battle Saint",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-38,"No Hunger",1,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,-100,30,,,0,"This squad cannot get hungry which means it does not need food supply to maintain at all.",
-39,"Patriotic",,,,,,,,,,,,,0,0,30,0,,,,,,,,,,,,,50,,,0,"It is the duty of every citizen to fight for the country they live in. This squad fight much better in friendly territory and require less upkeep.",
-40,"Siege Expert",1,1,,,,,,,,,,,0,0,0,0,,0,150,,,,,,,,,,,,,0,"No wall is safe from this squad! It can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%.",
-41,"Unadvancable",,,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,"This squad cannot gain experience from normal means.","Experience gain -100%"
-42,"Hunger Instinct",,,140,80,80,,130,,,,,,0,0,-10,0,,,,,,,,,,,,,,,,0,"Hunger is one of the most important factor for the aggressivity in many animal. If this squad is in hunger stage, it will fight much harder than usual to obtain the food which in this case is the enemy in front of it.",
-43,"Famed",2,1,,,,,,,,,,,0,0,10,10,,3,,,,,,,,,,,,,,0,"This squad have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for ally squads nearby while reducing for enemy.",
-44,"Armistice Bringer",4,3,,,,,,,,,,,0,0,-50,0,,,,,,,,,,,,,,,,0,,
-45,"Shield Expert",,,,120,120,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-46,"Crumble",1,1,60,60,100,,60,60,,60,60,100,0,0,60,0,,,,,,,,,,,,,,,,0,"Nothing last forever, even for an inanimate material creature. Time has render this squad much less powerful compare to its former glory.",
-47,"Superb Flanker",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"This squad fight better against enemy squad from flanking position."
-48,"Bandit Honour",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to.",
-49,"Indomitable",,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-50,"Endearing Performance",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-51,"True Hero",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Being true hero, this squad has manifestly inspiring aura for nearby ally squads.","Ally friendly squads nearby receive Strong Will, and can not be broken, morale +10% for entire battalion"
-52,"Legendary Might",,1,150,130,,,120,,,,150,,0,0,0,0,,,,,,,,,,,,,,,,0,"The might of the legends cannot be subdued. Beware the enemy for the death to come.",
-53,"Innocence Grace",,,70,130,130,,,,,70,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-54,"Magical Weapon",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad weapon has magic property which deals additional magic damage and can deals damage to Incorporeal squads.","All attack deals additonnal 50% magic damage of total damage"
-55,"Oblivious To Unexpected",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad is completely unadaptable to new warfare making it receive defense penalty for any thing other than normal charge and attack. It also receive additional flanking penalty.",
-56,"Causes Fear",1,2,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,2,,
-57,"Causes Terror",3,2,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,2,,
-58,"Inspires Hope",1,2,,,,,,,,,,,0,0,0,0,,3,,,,,,,,,,,,,,0,"Being the bringer of hope, this squad can boost surrounding ally squads'morale. ",
-59,"Inspires Bravery",3,2,,,,,,,,,,,0,0,0,0,,3,,,,,,,,,,,,,,0,,
-60,"Heart Of Steel",,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-61,"Hope And Despair",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-62,"Healing Mucus",,,,,,,,,,,,,0.5,0,0,0,,,,,,,,,,,,,,,,0,,
-63,"Ancestral Bond",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-64,"True Chosen",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-65,"The War Of Love",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-66,"Final Flame",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-67,"Glorious Appearance",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad appearance is so dashing and inspiring that neaby friendly squads will be in awe while leaving enemy squads in fear.",
-68,"Holy Defense",,1,,110,110,20,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching.",
-69,"Vile Veil",,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"There are none without sin and their sins will make them blind.",
-70,"Xenophobic Bunch",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad loathe to fight together with squads from other race than themselves. ","Discipline -70%, Morale -50% when being near friendly squads from other race"
-71,"Eyes Of Satiens",,,,,,,,,125,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad suffer no range penalty and can shoot even turther than usual.",
-72,"Farsight",,,,,110,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Farsight reduce accuracy penalty from long range shooting and also make squad see enemy projectile earlier.",
-73,"No Range Penalty",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad suffer no range penalty.",
-74,"Long Range Accuracy",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-75,"Entertainer",3,1,,,,,,,,,,,0,0,15,0,,,,,,,,,,,,,,,,0,,
-76,"Virtue Of Honour",,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-77,"Kings Banner",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-78,"Missile Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-79,"Pain Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-80,"Poison Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-81,"Cold Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-82,"Heat Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-83,"Fire Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-84,"Water Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-85,"Air Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-86,"Earth Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-87,"Fatigue Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-88,"Magic Resistance",,1,,,,,,,,,,,0,0,0,0,,0,,,,,,,,,,,,,,0,,
-89,"Swamp Dweller",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in swamp terrain and also use less supply as well.",
-90,"Sylvan",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in forest terrain and also use less supply as well.",
-91,"Blight Habitat",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in blight terrain and also use less supply as well.",
-92,"Aquatic",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in water terrain and also use less supply as well.",
-93,"Urban Guerrilla",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in urban terrain and also use less supply as well.",
-94,"Lance Charge",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-95,"First Blood",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad will deals bonus damage to enemy squad if it and enemy squad both have no injury or death.","Melee damage +60%"
-96,"Fervent Devotion",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad fight better when being near the commander squad.","All stat +15% when near commander squad"
-97,"Horror Of War",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Every nearby squad's morale -50%"
-98,"No Morale",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad has no morale thus can not be motivated or broken.","Morale always at 50% and cannot be changed."
-99,"Unholy Valour",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Nearby enemy morale -30%"
-100,"Knightly Valour",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from this squad's presence.","Nearby friendly squads morale +20%, enemy morale -15%"
-101,"Thorny Armour",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Unit that attack this squad in melee combat will also receive damage in return.",
-102,"Unstoppable",,,,150,150,,,,,,130,120,0,0,50,0,,0,,,,,,,,,,,,,,0,,
-103,"Battle Preparation",,,115,115,115,,110,,,115,115,,0,0,20,10,,0,15,,,,,,,,,,,,,0,"This squad receives combat bonus when the stamina is at fresh level.",
-104,"Blessed",1,1,,,,,,,,,,,0,0,0,0,,18,,,,,,,,,,,,,,0,,
-105,"Cursed",1,1,,,,,,,,,,,0,0,0,0,,19,,,,,,,,,,,,,,0,"A cursed being either by means of magic or nature, this squad will always be cursed and cannot be cured by normal means.",
-106,"Lucky",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-107,"Unlucky",1,1,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-108,"Inner Demon",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-109,"Frantical Backstabbing",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them.","Flank attack bonus +50%"
-110,"Tireless",1,1,,,,,,,,,,,0,100,0,0,,,,,,,,,,,,,,,,0,"Absolute killing machine! This squad's fatigue cannot be decreased making its combat effectiveness stay at best condition for the whole fight.",
-111,"Unbreakable",,,,150,150,,,,,,,,0,0,50,10,,,,,,,,,,,,,,,,0,,
-112,"Savage Looter",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army.",
-113,"Catcher Expert",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0," A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble.",
-114,"Marvelous Athletic",,,,,,,,,,,,,0,1,0,0,,,,,,,,,,,,,,,,0,"This squad being athletic superior makes them much more effective in long activity such as fighting.",
-115,"Iron Discipline",,,,,,,,,,,,,0,0,0,20,,,,,,,,,,,,,,,,0,"This squad receives further bonus effect from discipline.",
-116,"Sticky Attack",1,2,,,,,,,,,,,0,0,0,0,,24,,,,,,,,,,,,,,0,,
-117,"Curse Strike",1,2,,,,,,,,,,,0,0,0,0,,19,,,,,,,,,,,,,,0,,
-118,"Infective Touch",1,2,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-119,"Stunning Blast",1,2,,,,,,,,,,,0,0,0,0,,23,,,,,,,,,,,,,,0,,
-120,"Mana Stealer",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-121,"Maiden Of Meldolea",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"All stat -10%, nearby enemy squads stat -10%"
-122,"Perverted Agony",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-123,"Battlelust",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-124,"Justice Order",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-125,"Unbreakable Bond",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-126,"Dread Challenger",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Morale +50%, morale -25% to every nearby squad "
-127,"Headtaker",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad often decapitates enemies' head in combat as tokens. This will decrease its combat by a bit but reduce enemy morale from damage further.",
-128,"Nasty Smell",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad has disgusting stench that make anyone that not familiar with it want to throw up. every nearby squads receive combat penalty.",
-129,"Scourge Of The Land",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Attack +20%, speed +80%, morale -30% to nearby enemy squad, cannot be slowed, supply consumption rate -50%"
-130,"Poison Blood",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Immune to poison damage, poison damage heal 50% of the damage to this squad"
-131,"Mirage Trickery",,,,135,150,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-132,"Martial Perfection ",,,150,150,150,,110,150,,150,150,150,0,0,0,50,,,,,,,,,,,,,,,,0,,
-133,"Unparalleled Mind",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-134,"Forgetful",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Forget order sometimes.",
-135,"Joyful Departure",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Stemming from their peculiar tradition, this squad gain more morale when nearby friendly squad is destroyed.",
-136,"High Jumper",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad can jump quite high when attacking making them negate height penalty from critical by one level",
-137,"Unkillable",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad cannot be killed by normal means.",
-138,"Panic Rampage",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-139,"Life Steal",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Heal 50% of damage deals"
-140,"Epic Esoteric",,1,,,,,,,,,,,0,0,50,0,,,,,,,,,,,,,,,,0,,2
-141,"Death Bound",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-142,"Lone Wolf",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"All stat +15% when not near friendly squad, all stat -20% when near friendly squad"
-143,"Jolly Flock",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"All stat +15% when near friendly squad, all stat -20% when not near friendly squad"
-144,"Great Eater",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-145,"Rotten Smell",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Morale -20% to every nearby squad that are not immune to smell"
-146,"Wall Climbing",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad can bypass wall easily. It does not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and does not receive any defense bonus from siege equipment.",
-147,"Hero Killer",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad deals more damage to champion and hero grade squad.",
-148,"Command Independent",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad morale will not be affected by commander's death or retreat.",
-149,"Impetuous",,,,,,,,,,,,,0,0,0,-20,,,,,,,,,,,,,,,,0,"Whether from pride or arrogance, this squad has tendency to not follow order making them have less discipline.",
-150,"Greslanoul's Mastery",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-151,"Hearty Competition",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Being the elite of elite, this squad sees battle as a game who kill the most enemy. The more this squad kills the higher its morale including nearby ally squads.","Morale and nearby friendly squads morale +10% for each enemy squad kill"
-152,"Battle Juggernaut",,,130,150,150,,,,,,,,0,200,25,0,,,,,,,,,,,,,,,,0,,
-153,"Fury Of Abalkael",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Defense -100%, morale +1000% to all squad nearby, every nearby friendly squad become berserk"
-154,"Kelsilious's Zeal",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Morale +15%, postivie morale bonus +10%"
-155,"Epganates's Persistence",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-156,"Arcane Protection",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"All magic effect reduce by 50%"
-157,"Heroic Spirit",10,1,120,120,,,120,120,,120,120,120,0,0,100,20,,,,,,,,,,,,,,,,0,"This squad is being led by a heroic spirit from the past. This make the troop in high spirit to follow their great hero.",
-158,"Deathwish",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad fights like it seeks death itself. Morale can never be decreased for this squad.",
-159,"Algolga's Disciple",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-160,"Troll Blood",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Troll blood help its body to heal any wound it receives much faster than other creatures even during combat. ",
-161,"Hope Crusher",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"When there is despair, there is hope. And it is the duty of this squad to crush that whatever tiny hope the enemies still have left.",
-162,"Merciless",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad cannot capture running enemies as it always prefer killing them instead.",
-163,"Fragile Will",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad will be affected by negative psychological effect even more than usual.",
-164,"Overwhelming Presence",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad appearance is so overwhelming that leave both friendly and enemy squads in fear and worry.",
+"id","propertyname","buff_range","buff_mod","atk_effect","def_melee_effect","def_range_effect","armour_bonus","speed_effect","accuracy_effect","range_effect","reload_effect","charge_effect","charge_def_effect","health_regen_bonus","stamina_regen_bonus","morale_bonus","discipline_bonus","critical_bonus","status","siege_effect","hidden_bonus","fireres","waterres","airres","earthres","magicres","heatres","coldres","poisonres","supplyuse","upkeepmod","specialeffect","enemystatus","description","Notimplementyet"
+1,"Bonus Morale",1,,,,,0,,,,,,,0,0,10,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"More morale is always preferable. This squad is less likely to flee or surrender in losing fight.",
+2,"Heroic",1,,,,,0,,,,,,,0,0,50,0,0,0,,,,,,,,,,,,,,0,"Heroes do not fear failure or death, but that does not mean they welcome it.",
+3,"Varied Training",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"The lack of standardised training for this unit make the troops' fighting ability wildly diverse.",
+4,"Zealous",1,,,,,0,,,,,,,0,0,30,0,0,0,,,,,,,,,,,,,,0,"Being zealous for one's belief can make soldier less susceptible to fear.",
+5,"Poor Morale",1,,,,,0,,,,,,,0,0,-20,0,0,0,,,,,,,,,,,,,,0,"Either from poor training or by its nature, this squad has poorer morale making it unfit for prolong or serious engagement.",
+6,"Black Boar's Guidance",1,,,,,0,,130,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+7,"Great Wings' Protection",1,,,115,115,10,,,,,,110,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+8,"Tough Painting",1,,,,,10,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Orc Berserkers usually wear no armour at all and paint their naked body into battle. What littile known is that the paint materials used is so tough when harden that it can actually stop a sword or arrow.",
+9,"Impregnable Shield",1,,,125,125,5,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"One of the most basic equipment to keep one alive in a chaotic battle. Having one is almost always better than having none but having one that of superb quality is the best of all.",
+10,"Protective Fur",1,,,,,7,,,,,,,0,0,0,0,0,0,,,,,,,,-40,50,,,,,0,"Some breastman or creature may have fur thick enough to protect against some attack to a degree. Additionally, it can help against cold too.",
+11,"Charge Expert",1,,,,,0,,,,,125,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+12,"Charge Defense Expert",1,,,,,0,,,,,,135,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+13,"Weapon Expert",1,,120,115,,0,,115,,115,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Decades of perfection the weapon make this squad a pinnacle of all warriors. ",
+14,"Evasive",1,,,130,130,0,,,,,,130,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can dodge melee and range attack when fighting in loose formation.",
+15,"Divine Connection",1,90,,,,0,,,,,,,0,0,100,0,0,,,,,,,,,,,,,,,0,,
+16,"Arc Shot",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot pass wall and bonus chance to bypass fortification defense.",
+17,"Agile Aims",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty.",
+18,"Can Shoot While Moving",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving but will some accuracy penalty.",
+19,"Concentrated Aims",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken).",
+20,"Concentrated Chant",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad magic casting is not affected by morale (It still cannot cast magic when broken).",
+21,"Anti-Machine",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against machine squads. Neither Iron or wood can not stop this squad attack.",
+22,"Anti-Cavalry",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.",
+23,"Anti-Mage",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against armoured squads. Not even the heaviest armoured knight can stand against this squad's devastating blow.",
+24,"Anti-Infantry",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against infantry squads.",
+25,"Anti-Flyer",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"What goes up must come down. This squad is specialised in combat against flyer squads.",
+26,"Anti-Shielded",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against shielded squads. The cowardly enemy cannot hide behind their shield anymore.",
+27,"Anti-Large",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"The bigger they are, the harder the fall. This squad is specialised in combat against large squads.",
+28,"Anti-Structure",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad attack ignore shield entirely.",
+29,"Ignore Charge Defense",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad attack ignore charge defence entirely.",
+30,"Ignore Defense",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad attack ignore defense entirely.",
+31,"Cannibal",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+32,"Defiant Defense",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+33,"Backstaber",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad deals bonus damage to enemy squad with rear attack.",
+34,"Battle Master",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can fully attack enemy squads in all direction with no penalty.",
+35,"Absolute Defense",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad does not suffer bonus damage from being flanked.",
+36,"Great Saint",1,,,,,,,,,,,,0,0,10000,0,0,,,,,,,,,,,,,,,0,"The best of the best in the realm. This squad help nearby ally squads to be at maximum morale and cannot be decreased.",
+37,"Battle Saint",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+38,"No Hunger",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,-100,30,,,0,"This squad cannot get hungry which means it does not need food supply to maintain at all.",
+39,"Patriotic",1,,,,,0,,,,,,,0,0,30,0,0,,,,,,,,,,,,50,,,0,"It is the duty of every citizen to fight for the country they live in. This squad fight much better in friendly territory and require less upkeep.",
+40,"Siege Expert",1,,,,,0,,,,,,,0,0,0,0,0,0,150,,,,,,,,,,,,,0,"No wall is safe from this squad! It can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%.",
+41,"Unadvancable",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad cannot gain experience from normal means.","Experience gain -100%"
+42,"Hunger Instinct",1,,140,80,80,0,130,,,,,,0,0,-10,0,0,,,,,,,,,,,,,,,0,"Hunger is one of the most important factor for the aggressivity in many animal. If this squad is in hunger stage, it will fight much harder than usual to obtain the food which in this case is the enemy in front of it.",
+43,"Famed",2,,,,,0,,,,,,,0,0,10,10,0,3,,,,,,,,,,,,,,0,"This squad have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for ally squads nearby while reducing for enemy.",
+44,"Armistice Bringer",4,,,,,0,,,,,,,0,0,-50,0,0,,,,,,,,,,,,,,,0,,
+45,"Shield Expert",1,,,120,120,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+46,"Crumble",1,,60,60,100,-70,60,60,,60,60,100,0,0,60,0,0,,,,,,,,,,,,,,,0,"Nothing last forever, even for an inanimate material creature. Time has render this squad much less powerful compare to its former glory.",
+47,"Superb Flanker",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"This squad fight better against enemy squad from flanking position."
+48,"Bandit Honour",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to.",
+49,"Indomitable",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+50,"Endearing Performance",3,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+51,"True Hero",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"Being true hero, this squad has manifestly inspiring aura for nearby ally squads.","Ally friendly squads nearby receive Strong Will, and can not be broken, morale +10% for entire battalion"
+52,"Legendary Might",1,,150,130,,,120,,,,150,,0,0,0,0,0,,,,,,,,,,,,,,,0,"The might of the legends cannot be subdued. Beware the enemy for the death to come.",
+53,"Innocence Grace",,,70,130,130,,,,,70,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+54,"Magical Weapon",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad weapon has magic property which deals additional magic damage and can deals damage to Incorporeal squads.","All attack deals additonnal 50% magic damage of total damage"
+55,"Oblivious To Unexpected",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad is completely unadaptable to new warfare making it receive defense penalty for any thing other than normal charge and attack. It also receive additional flanking penalty.",
+56,"Causes Fear",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,2,,
+57,"Causes Terror",3,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,2,,
+58,"Inspires Hope",1,,,,,0,,,,,,,0,0,0,0,0,3,,,,,,,,,,,,,,0,"Being the bringer of hope, this squad can boost surrounding ally squads'morale. ",
+59,"Inspires Bravery",3,,,,,0,,,,,,,0,0,0,0,0,3,,,,,,,,,,,,,,0,,
+60,"Heart Of Steel",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+61,"Hope And Despair",,,,,,0,,,,,,,0,0,0,0,0,3,,,,,,,,,,,,,,2,,
+62,"Healing Mucus",1,,,,,0,,,,,,,0.5,0,0,0,0,,,,,,,,,,,,,,,0,,
+63,"Ancestral Bond",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+64,"True Chosen",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+65,"The War Of Love",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+66,"Final Flame",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+67,"Glorious Appearance",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad appearance is so dashing and inspiring that neaby friendly squads will be in awe while leaving enemy squads in fear.",
+68,"Holy Defense",,,,110,110,20,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching.",
+69,"Vile Veil",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"There are none without sin and their sins will make them blind.",
+70,"Xenophobic Bunch",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad loathe to fight together with squads from other race than themselves. ","Discipline -70%, Morale -50% when being near friendly squads from other race"
+71,"Eyes Of Satiens",,,,,,0,,,125,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad suffer no range penalty and can shoot even turther than usual.",
+72,"Farsight",1,,,,110,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Farsight reduce accuracy penalty from long range shooting and also make squad see enemy projectile earlier.",
+73,"No Range Penalty",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad suffer no range penalty.",
+74,"Long Range Accuracy",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+75,"Entertainer",3,,,,,0,,,,,,,0,0,15,0,0,,,,,,,,,,,,,,,0,,
+76,"Virtue Of Honour",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+77,"Kings Banner",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+78,"Missile Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+79,"Pain Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+80,"Poison Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+81,"Cold Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+82,"Heat Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+83,"Fire Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+84,"Water Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+85,"Air Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+86,"Earth Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+87,"Fatigue Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+88,"Magic Resistance",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+89,"Swamp Dweller",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in swamp terrain and also use less supply as well.",
+90,"Sylvan",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in forest terrain and also use less supply as well.",
+91,"Blight Habitat",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in blight terrain and also use less supply as well.",
+92,"Aquatic",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in water terrain and also use less supply as well.",
+93,"Urban Guerrilla",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Bonus combat and movement for this squads in urban terrain and also use less supply as well.",
+94,"Sand Scavenger",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+95,"First Blood",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad will deals bonus damage to enemy squad if it and enemy squad both have no injury or death.","Melee damage +60%"
+96,"Fervent Devotion",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad fight better when being near the commander squad.","All stat +15% when near commander squad"
+97,"Horror Of War",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Every nearby squad's morale -50%"
+98,"No Morale",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad has no morale thus can not be motivated or broken.","Morale always at 50% and cannot be changed."
+99,"Unholy Valour",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Nearby enemy morale -30%"
+100,"Knightly Valour",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from this squad's presence.","Nearby friendly squads morale +20%, enemy morale -15%"
+101,"Thorny Armour",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"Unit that attack this squad in melee combat will also receive damage in return.",
+102,"Unstoppable",,,,150,150,,,,,,130,120,0,0,50,0,0,0,,,,,,,,,,,,,,0,,
+103,"Battle Preparation",,,115,115,115,0,110,,,115,115,,0,0,20,10,0,0,15,,,,,,,,,,,,,0,"This squad receives combat bonus when the stamina is at fresh level.",
+104,"Blessed",1,,,,,0,,,,,,,0,0,0,0,0,18,,,,,,,,,,,,,,0,,
+105,"Cursed",1,,,,,0,,,,,,,0,0,0,0,0,19,,,,,,,,,,,,,,0,"A cursed being either by means of magic or nature, this squad will always be cursed and cannot be cured by normal means.",
+106,"Lucky",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+107,"Unlucky",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+108,"Inner Demon",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+109,"Fanatical Backstabbing",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them.","Flank attack bonus +50%"
+110,"Tireless",1,,,,,0,,,,,,,0,100,0,0,0,0,,,,,,,,,,,,,,0,"Absolute killing machine! This squad's fatigue cannot be decreased making its combat effectiveness stay at best condition for the whole fight.",
+111,"Unbreakable",1,,,150,150,0,,,,,,,0,0,50,10,0,0,,,,,,,,,,,,,,0,,
+112,"Savage Looter",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army.",
+113,"Catcher Expert",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0," A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble.",
+114,"Marvelous Athletic",1,,,,,0,,,,,,,0,1,0,0,0,,,,,,,,,,,,,,,0,"This squad being athletic superior makes them much more effective in long activity such as fighting.",
+115,"Iron Discipline",1,,,,,0,,,,,,,0,0,0,20,0,0,,,,,,,,,,,,,,0,"This squad receives further bonus effect from discipline.",
+116,"Sticky Attack",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,24,,
+117,"Curse Strike",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,19,,
+118,"Infective Touch",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+119,"Stunning Blast",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,23,,
+120,"Mana Stealer",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+121,"Maiden Of Meldolea",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"All stat -10%, nearby enemy squads stat -10%"
+122,"Perverted Agony",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+123,"Battlelust",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+124,"Justice Order",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+125,"Unbreakable Bond",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+126,"Dread Challenger",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"Morale +50%, morale -25% to every nearby squad "
+127,"Headtaker",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad often decapitates enemies' head in combat as tokens. This will decrease its combat by a bit but reduce enemy morale from damage further.",
+128,"Nasty Smell",2,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad has disgusting stench that make anyone that not familiar with it want to throw up. every nearby squads receive combat penalty.",
+129,"Scourge Of The Land",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Attack +20%, speed +80%, morale -30% to nearby enemy squad, cannot be slowed, supply consumption rate -50%"
+130,"Poison Blood",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,26,,"Immune to poison damage, poison damage heal 50% of the damage to this squad"
+131,"Mirage Trickery",1,,,135,150,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+132,"Martial Perfection ",1,,150,150,150,,110,150,,150,150,150,0,0,0,50,0,0,,,,,,,,,,,,,,0,,
+133,"Unparalleled Mind",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+134,"Forgetful",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"Forget order sometimes.",
+135,"Joyful Departure",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Stemming from their peculiar tradition, this squad gain more morale when nearby friendly squad is destroyed.",
+136,"High Jumper",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad can jump quite high when attacking making them negate height penalty from critical by one level",
+137,"Unkillable",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad cannot be killed by normal means.",
+138,"Panic Rampage",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+139,"Life Steal",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Heal 50% of damage deals"
+140,"Epic Esoteric",,,,,,,,,,,,,0,0,50,0,0,,,,,,,,,,,,,,,0,,2
+141,"Death Bound",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+142,"Lone Wolf",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"All stat +15% when not near friendly squad, all stat -20% when near friendly squad"
+143,"Jolly Flock",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"All stat +15% when near friendly squad, all stat -20% when not near friendly squad"
+144,"Great Eater",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+145,"Rotten Smell",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Morale -20% to every nearby squad that are not immune to smell"
+146,"Wall Climbing",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad can bypass wall easily. It does not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and does not receive any defense bonus from siege equipment.",
+147,"Hero Killer",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad deals more damage to champion and hero grade squad.",
+148,"Command Independent",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad morale will not be affected by commander's death or retreat.",
+149,"Impetuous",1,,,,,,,,,,,,0,0,0,-20,0,,,,,,,,,,,,,,,0,"Whether from pride or arrogance, this squad has tendency to not follow order making them have less discipline.",
+150,"Greslanoul's Mastery",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+151,"Hearty Competition",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"Being the elite of elite, this squad sees battle as a game who kill the most enemy. The more this squad kills the higher its morale including nearby ally squads.","Morale and nearby friendly squads morale +10% for each enemy squad kill"
+152,"Battle Juggernaut",,,130,150,150,,,,,,,,0,200,25,0,0,,,,,,,,,,,,,,,0,,
+153,"Fury Of Abalkael",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Defense -100%, morale +1000% to all squad nearby, every nearby friendly squad become berserk"
+154,"Kelsilious's Zeal",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Morale +15%, postivie morale bonus +10%"
+155,"Epganates's Persistence",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+156,"Arcane Protection",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"All magic effect reduce by 50%"
+157,"Heroic Spirit",10,,120,120,,,120,120,,120,120,120,0,0,100,20,0,,,,,,,,,,,,,,,0,"This squad is being led by a heroic spirit from the past. This make the troop in high spirit to follow their great hero.",
+158,"Deathwish",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad fights like it seeks death itself. Morale can never be decreased for this squad.",
+159,"Algolga's Disciple",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+160,"Troll Blood",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Troll blood help its body to heal any wound it receives much faster than other creatures even during combat. ",
+161,"Hope Crusher",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"When there is despair, there is hope. And it is the duty of this squad to crush that whatever tiny hope the enemies still have left.",
+162,"Merciless",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad cannot capture running enemies as it always prefer killing them instead.",
+163,"Fragile Will",1,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad will be affected by negative psychological effect even more than usual.",
+164,"Overwhelming Presence",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad appearance is so overwhelming that leave both friendly and enemy squads in fear and worry.",
 165,"Headshotter",,,,,,,,,,,,,0,0,0,0,25,,,,,,,,,,,,,,,0,,
-166,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-167,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-168,"Domination Aura",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"When enemy squad becomes broken near this squad, it will join this squad's side instead of freeing.",
-169,"Fire Being",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Fire damage actually heal this squad instead of damaging them.",
-170,"Water Being",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Water damage actually heal this squad instead of damaging them.",
-171,"Air Being",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Air damage actually heal this squad instead of damaging them.",
-172,"Earth Being",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Earth damage actually heal this squad instead of damaging them.",
-173,"Icy Being",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Being made of ice, this squad receive healing instead of damage from frozen status",
-174,"Righteous Might",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"All damage +20%, morale +10%, damage cannot be decreased from debuff"
-175,"Calming Berserk",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Covert berserk to calming berserk"
-176,"Spectacle Equipment",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Morale +10% to nearby friendly squads, morale -10% to nearby enemy squads, effect deactivate when health lower than 50%"
-177,"Pantheon's Favour",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-178,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-179,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-180,"Penetration Shots",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad's range attack is so powerful that it can penetrate enemy body and kill more than one per shot. This squad can also shot through weak obstacle and deals minor damage to major obstacle.",
-181,"Gallant Example",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-182,"Unholy Flesh",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad can not be healed and will actually receive damage from healing magic.",
-183,"Field Medic",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad can heal other squad when both are not in melee combat.",
-184,"Divine Presence",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad is divine or considered to be divine by its followers. This squad will make every ally squad in battlefield at maximum morale and cannot be broken.",
-185,"Plague Carrier",,,,,,,,,,,,,0,0,0,0,,20,,,,,,,,,,,,,,0,,
-186,"Blight Bearer",,,,,,,,,,,,,0,0,0,0,,21,,,,,,,,,,,,,,0,,
-187,"Antarndenxor",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Cannot be affected by debuff, all buff effect +50%"
-188,"Dawn Hum",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-189,"Sunset Beginning",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-190,"Forestry",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"No penalty in forest terrain for this squad.","No movement penalty in forest terrain"
-191,"Seamate",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Ahoy matey! Less movement and combat penalty on sea terrain for this squad.","Movement and combat penalty -50% on sea terrain"
-192,"Mountaineer",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Less movement and combat penalty from mountain terrain for this squad.","Penalty -50% for mountain terrain"
-193,"Cave Crawling",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Less movement and combat penalty in underground terrain for this squad.","Penalty -50% for underground terrain"
-194,"Pathfinder",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Half Movement penalty in every terrain type and height for this squad.","All movement penalty -50%"
-195,"Night Vision",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"Hunter of the night. This squad suffer no vision loss at night at all.","No vision penalty at night time"
-196,"Heat Aura",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-197,"Cold Aura",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-198,"Pain Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,"This squad is completely unfit for any direct battle! Any injury cause the squad to fight less effectively.",
-199,"Cold Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-200,"Heat Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-201,"Fire Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Earth damage +30%"
-202,"Water Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Water damage +30%"
-203,"Air Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Air damage +30%"
-204,"Earth Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Fire damage +30%"
-205,"Fatigue Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,
-206,"Magic Weakness",,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,,,0,,"Magic damage +30%"
-207,"Poison Weakness",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,"Poison damage +30%"
-208,"Cowardice",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Craven!, Useless! This squad is comprised of cowards and its morale will decrease even more from any factors.","Negative morale effect +50%"
-209,"Treachery",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Betrayal! This squad is more likely to surrender and change side right away in dire situation. But, it will still try to flee instead if enemy force will not accept surrender.",
-210,"Sadism",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad is addicted to inflicting pain and death. The more injury and death it does, the higher the morale.",
-211,"Masochism",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad is addicted to receiving pain and death. The more injury and death it suffer, the higher the morale.",
-212,"Loves Fear",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad actually love to feel fear. Being near other squads that causes or being affected by terror and fear regardless of their' side increase its morale instead.",
-213,"Seductive Charm",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad appearance charms enemy squads, making them become distracted and less effective in combat.",
-214,"Disgusting Taste",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The worst taste of meat ever exist. No one will ever want to devour this unit even if they have no taste buds. ","Morale -100% for any squad that consume this squad or it's corpse"
-215,"Rusty And Dirty",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad's weapons are covered with nasty rust making its less effective overall. However, this squad's attack can cause infection to injured enemy making them recover slower and harder to heal.",
-216,"Thrist For Blood",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad thrists for blood, literally! The longer it fight the better its morale. It also suffers incrasing morale penalty the longer it stay out of combat.",
-217,"Tainted Blood",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Tainted blood is very dangerous if it come into contact with any untainted creature. Hence, melee combat against enemy squad with tainted blood is extrememly inadvisable.",
-218,"Acid Blood",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Bad news for everyone! Acid is raining down on whoever harm this squad. squad that is affected by acid blood suffer combat penalty and also injury. ",
-219,"Fantastic Beard",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad has impressive beard that inspires all other dwarfs in the realm and battle.",
-220,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-221,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-222,"Plain Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-223,"Mountain Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in mountain terrain.",
-224,"Hill Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in hill terrain.",
-225,"Forest Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in forest terrain.",
-226,"Cloud Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in sky.",
-227,"Desert Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in desert terrain.",
-228,"Snow Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in snow terrain.",
-229,"Water Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in water terrain.",
-230,"Plain Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in plain terrain.",
-231,"Swamp Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in swamp terrain.",
-232,"Urban Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in urban terrain.",
-233,"Blight Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in blight terrain.",
-234,"Underground Hiding",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better in underground terrain.",
-235,"Night Stalking",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can hide better at night.",
-236,"Ambush Expert",,,,,,,,,,,,,,,0,0,,,,50,,,,,,,,,,,,0,"This squad can hide in any terrain, nowhere is truly safe for the enemy.",
-237,"Immortal",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad is immortal and cannot be killed by any means, not even magic can harm them.","Immune to all damage"
-238,"Battle Frenzy",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"KILL! This squad can go into frenzy state similar to orc wrath that is even crazier than normal berserk.","Melee attack +30%, all defense -50%, speed +20%, charge bonus +10%, Uncontrollable"
-239,"Immune To Silence",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-240,"Immune To Blind",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-241,"Immune To Fear",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-242,"Immune To Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-243,"Immune To Air",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,"Being creature of air, this squad completely immue to air damage. "
-244,"Immune To Fire",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,"Being creature of fire, this squad completely immue to fire damage."
-245,"Immune To Water",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,"Being creature of water, this squad completely immue to water damage."
-246,"Immune To Earth",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,"Being creature of earth, this squad completely immue to earth damage."
-247,"Immune To Mind Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,"The protection for the mind is as important as protection for the body, and this squad has such perfect protection against any mind magic."
-248,"Immune To Body Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-249,"Immune To Manipulation Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-250,"Immune To Poison",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-251,"Vulnurable To Air",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-252,"Vulnurable To Fire",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-253,"Vulnurable To Water",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-254,"Vulnurable To Earth",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-255,"Vulnurable To Mind Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-256,"Vulnurable To Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-257,"Vulnurable To Body Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-258,"Vulnurable To Manipulation Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-259,"Vulnurable To Posion",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-260,"Fear Ice",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-261,"Fear Fire",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-262,"Fear Air",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-263,"Fear Earth",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-264,"Fear Magic",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,,
-265,"Scare Mount",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad can cause mount to panic or scare which reduce enemy squad's combat effectiveness and morale.",
-266,"Fearless Mount",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad's mount cannot be panicked or broken and immune to Scare Mount.",
-267,"Human Killer",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Human, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all.","Melee attack +25%, melee defense +15% against enemy human squad"
-268,"Elf Murderer",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Those damn arrogant gaze! Those damn annoying sneer! Darn elves think they are above every other races, let's show those sharp ears the death they deserve!","Melee attack +25%, melee defense +15% against enemy elf squad"
-269,"Dwarf Exterminator",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Short and stink! What good does dwarf bring to the world anyway? Useless sods they all are. ","Melee attack +25%, melee defense +15% against enemy dwarf squad"
-270,"Orc Destroyer",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Orc Is nothing but a blight on civilisation.Its extinction will be another cornerstone of progress.","Melee attack +25%, melee defense +15% against enemy orc squad"
-271,"Goblin Eradicator",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Nasty little thing like this deserve to be eradicated. Kill them all and be rid of these pests for good or they will come back even more.","Melee attack +25%, melee defense +15% against enemy goblin squad"
-272,"Halfling Annihilator",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Peace this, squady that. Those who are not ready for war will never see peace.","Melee attack +25%, melee defense +15% against enemy halfling squad"
-273,"Animal Butcher",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Look at those valuable fang and fur! Whoever deals the killing blow get the prize!","Melee attack +25%, melee defense +15% against enemy animal squad"
-274,"Lizardman Eraser",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Them scaly skins always are up to no good. We must erase them from the face of the earth so our children can live safely. ","Melee attack +25%, melee defense +15% against enemy lizardman squad"
-275,"Beastman Eliminator",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Higher than mere beast but lower than man. These creatures deserve no better! The hunt is on!","Melee attack +25%, melee defense +15% against enemy beastman squad"
-276,"Giant Terminator",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Big and brutish. Truly the greatest challenge for the greatest warrior. ","Melee attack +25%, melee defense +15% against enemy giant squad"
-277,"Dragon Slayer",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Some say dragons were the sole ruler of the world in the age of origin, the true symbol of power. Not for us of course.","Melee attack +25%, melee defense +15% against enemy dragon squad"
-278,"Demon Banisher",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"How dare those vile demons invade our world! Go back to whatever the hell you all came from!","Melee attack +25%, melee defense +15% against enemy demon squad"
-279,"Undead Liberator",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Nothing less than blasphemy, the existance of these undeads. It is our duty to free them of these miserable state they are in.","Melee attack +25%, melee defense +15% against enemy undead squad"
-280,"Fairy Crusher",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Pure and innocence, is it? Those who say that obviously never meet the real one. It's always fun to crush annoying flies!","Melee attack +25%, melee defense +15% against enemy fairy squad"
-281,"Gremlin Bankrupter",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"To be the slave to money is make money your biggest weak point. Just make them lose all the money and watch them kill themselves over that.","Melee attack +25%, melee defense +15% against enemy gremlin squad"
-282,"Wizard Hunters",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"""The unnatural of magecraft is too dangerous for any person to possess. Therefore, any person who practice the art of magic is punishable by death."" The Absolute Law of Mortal Life, Fifth Act:Third Article","Melee attack +25%, melee defense +15% against enemy mage and sub mage squad, receive -30% magic damage"
-283,"Vindictive",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Revenge is best served cold is what they often say. Well someone also like to have it hot!","All attack +30% against enemy squad that deals damage more than 10% health to this squad"
-284,"Animal Instinct",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The basic of every animal is to survive. Based on that instinct, this squad will flee much faster in losing fight but will give it all when it cannot escape and less likely to surrender.",
-285,"Phoenix Blood",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Blood of immortal bird while not making one immunable to damage and disease, can help improve regenerative ability greatly while also allow the body to resurrect with enough energy.","natural healing +50%, can resurrect once in one battle"
-286,"Incorporeal",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"""How can we kill this thing!?"", An unknown soldier before being struck down, this squad cannot be damaged by normal weapon only from magic and magical weapon but also fight less effective.",
-287,"Oath Of The Eternal",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Bound by the Eternal Oath, this squad will fight on even in death.","Become spirit troop when dead which has incorporeal property but fight less effective"
-288,"Light Vision Intolerance",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Blind by the light!, this squad cannot withstand the sight of sunlight making them unsuitable for daytime combat.","All stat -55% at day"
-289,"Night Vision Intolerance",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad cannot see well in the night at all which reducing their combat effectiveness greatly.","All stat -55% at night"
-290,"Nocturnal",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad fight better at night but worse at day.","All stat +35% at night, all stat -35% at day"
-291,"Willbreaker",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Even the strongest will can be broken. This squad can make psychological resistance properties and abilities such as Strong Will of nearby enemy squads less effective.","All morale effect status -50% effect for nearby enemy"
-292,"Adore Melody",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad loves music dearly and will receive better combat bonus from music. However if the music stop, this squads will then receive combat penalty.","All stat +10%, morale double from melody effect"
-293,"Loathe Melody",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad hates music and will receive combat penalty from music. If the music stop, this squads will receive combat bonus after.","All stat -10%, morale -20%"
-294,"Salted Phase",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The salted sea requires unconditional allegiance from those who wish to pass it. Only those with strongest will can survive in this unforgiving above the true abyss.","Cannot get seasick debuff, morale +30% in naval combat, movement +50% in sea"
-295,"Sorrow Of Battle ",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"Woe for the world to see war and not peace. Our enemy too suffer the same fate as us.","Morale +20%, enemy morale -30%, melee attack -20%, melee defense -10%"
-296,"Smokey Wings At The Ground",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"When this squad suffer casulty, the Smokey Wings on the dead troops will drop to the ground. The smoke rising from the ground up will every squads without anti-smokey mask. ","Active when 10% of this squad dies, affect everyone in nearby radius."
-297,"Anti-Smokey Mask",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"This squad cannot be affected by Smokey ability.","No effect from any smoke"
-298,"Strong Will",,,,,,,,,,,,,,,0,0,,22,,,,,,,,,,,,,,0,,"A strong warrior requires a strong will, this squad cannot be affected by negative psychological effect."
-299,"Fullmoon Jubilance",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The fateful day! This squad will fight firecely to the death to fulfill the prophecy.","Attack +30%, all defense -10%, always in berserk status"
-300,"Halfmoon Preparation",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"There are no glory yet in battle before full moon, This squad will fight more reservely and more likely to retreat In losing fight.","Attack -30%, all defense +35%, morale -50%, speed +20%"
-301,"Crescentmoon Sacrifice",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The rites must be made to hasten the arrival of the true moon! Sacrifices must be chosen!","Attack +20%, morale +15%, speed +10%"
-302,"Darkmoon Melancholy",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The darkest day! It is forbidden to die on this day at all cost.","This squad's morale always stay at broken and cannot be raised until the property no longer applies"
-303,"Bloodmoon Coming",,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,,0,"The prophecy has been fulfilled! The gate of heaven is openned at last!","Attack +50%, all defense -50%, speed +20%, receive berserk status"
-304,"Assassination",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can stay hidden while attacking if no enemy squad can spot it.","Hidden does not reset when squad perform attack"
-305,"Sniping",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can stay hidden while shooting.","Hidden does not reset when squad perform range attack"
-306,"Invisible",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can stay hidden until fighting in melee.","Hidden +100%"
-307,"Full Awareness",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can detect enemy from any direction at all time.","Detect +10%, no line of sight limit"
-308,"Partial Awareness",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can detect enemy from any direction when not fighting.","Detect +100%, no line of sight limit when not in combat"
-309,"True Sight",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can always detect any hidden enemy and trap.","Detect +100%, no line of sight limit"
-310,"Third Eye",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,,"Detect +100%, no line of sight limit, line of sight +50%"
-311,"True Aims",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad will always hit enemy regardless of range and bypass obstacle defense by half. ","Accuracy +1000%, obstacle penalty -50%"
-312,"Regenerating Limb",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can regenerate their lost limbs making them able to completely become combat ready again after resting.","Can cure maimed status from resting outside of combat"
-313,"Regeneration",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can heal itself in time without needing medical assistant.","Heal 2% of total hp every minute/turn"
-314,"Fast Regeneration",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad can heal itself even in battle as long as it is not attacked.","Heal 1% of total hp every minute/turn when not in combat"
-315,"Limb Regeneration",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"This squad will not lose soldier count from injury after battle.","No injury penalty after battle"
+166,,,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+167,,,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+168,"Domination Aura",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"When enemy squad becomes broken near this squad, it will join this squad's side instead of freeing.",
+169,"Fire Being",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Fire damage actually heal this squad instead of damaging them.",
+170,"Water Being",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Water damage actually heal this squad instead of damaging them.",
+171,"Air Being",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Air damage actually heal this squad instead of damaging them.",
+172,"Earth Being",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Earth damage actually heal this squad instead of damaging them.",
+173,"Icy Being",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Being made of ice, this squad receive healing instead of damage from frozen status",
+174,"Righteous Might",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"All damage +20%, morale +10%, damage cannot be decreased from debuff"
+175,"Calming Berserk",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Covert berserk to calming berserk"
+176,"Spectacle Equipment",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Morale +10% to nearby friendly squads, morale -10% to nearby enemy squads, effect deactivate when health lower than 50%"
+177,"Pantheon's Favour",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+178,,,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+179,,,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+180,"Penetration Shots",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad's range attack is so powerful that it can penetrate enemy body and kill more than one per shot. This squad can also shot through weak obstacle and deals minor damage to major obstacle.",
+181,"Gallant Example",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+182,"Unholy Flesh",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad can not be healed and will actually receive damage from healing magic.",
+183,"Field Medic",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can heal other squad when both are not in melee combat.",
+184,"Divine Presence",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad is divine or considered to be divine by its followers. This squad will make every ally squad in battlefield at maximum morale and cannot be broken.",
+185,"Plague Carrier",,,,,,,,,,,,,0,0,0,0,0,20,,,,,,,,,,,,,,0,,
+186,"Blight Bearer",,,,,,,,,,,,,0,0,0,0,0,21,,,,,,,,,,,,,,0,,
+187,"Antarndenxor",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,"Cannot be affected by debuff, all buff effect +50%"
+188,"Dawn Hum",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+189,"Sunset Beginning",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
+190,"Forestry",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"No penalty in forest terrain for this squad.","No movement penalty in forest terrain"
+191,"Seamate",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Ahoy matey! Less movement and combat penalty on sea terrain for this squad.","Movement and combat penalty -50% on sea terrain"
+192,"Mountaineer",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Less movement and combat penalty from mountain terrain for this squad.","Penalty -50% for mountain terrain"
+193,"Cave Crawling",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Less movement and combat penalty in underground terrain for this squad.","Penalty -50% for underground terrain"
+194,"Pathfinder",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Half Movement penalty in every terrain type and height for this squad.","All movement penalty -50%"
+195,"Night Vision",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Hunter of the night. This squad suffer no vision loss at night at all.","No vision penalty at night time"
+196,"Heat Aura",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+197,"Cold Aura",,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+198,"Pain Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is completely unfit for any direct battle! Any injury cause the squad to fight less effectively.",
+199,"Cold Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+200,"Heat Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+201,"Fire Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"Earth damage +30%"
+202,"Water Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"Water damage +30%"
+203,"Air Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"Air damage +30%"
+204,"Earth Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"Fire damage +30%"
+205,"Fatigue Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,
+206,"Magic Weakness",1,,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,,"Magic damage +30%"
+207,"Poison Weakness",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,"Poison damage +30%"
+208,"Cowardice",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Craven!, Useless! This squad is comprised of cowards and its morale will decrease even more from any factors.","Negative morale effect +50%"
+209,"Treachery",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Betrayal! This squad is more likely to surrender and change side right away in dire situation. But, it will still try to flee instead if enemy force will not accept surrender.",
+210,"Sadism",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad is addicted to inflicting pain and death. The more injury and death it does, the higher the morale.",
+211,"Masochism",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad is addicted to receiving pain and death. The more injury and death it suffer, the higher the morale.",
+212,"Loves Fear",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad actually love to feel fear. Being near other squads that causes or being affected by terror and fear regardless of their' side increase its morale instead.",
+213,"Seductive Charm",,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad appearance charms enemy squads, making them become distracted and less effective in combat.",
+214,"Disgusting Taste",,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"The worst taste of meat ever exist. No one will ever want to devour this unit even if they have no taste buds. ","Morale -100% for any squad that consume this squad or it's corpse"
+215,"Rusty And Dirty",,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,26,"This squad's weapons are covered with nasty rust making its less effective overall. However, this squad's attack can cause infection to injured enemy making them recover slower and harder to heal.",
+216,"Thrist For Blood",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"This squad thrists for blood, literally! The longer it fight the better its morale. It also suffers incrasing morale penalty the longer it stay out of combat.",
+217,"Tainted Blood",,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,90,"Tainted blood is very dangerous if it come into contact with any untainted creature. Hence, melee combat against enemy squad with tainted blood is extrememly inadvisable.",
+218,"Acid Blood",,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Bad news for everyone! Acid is raining down on whoever harm this squad. squad that is affected by acid blood suffer combat penalty and also injury. ",
+219,"Fantastic Beard",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"This squad has impressive beard that inspires all other dwarfs in the realm and battle.",
+220,,,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,,
+221,,,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,,
+222,"Plain Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+223,"Mountain Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in mountain terrain.",
+224,"Hill Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in hill terrain.",
+225,"Forest Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in forest terrain.",
+226,"Cloud Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in sky.",
+227,"Desert Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in desert terrain.",
+228,"Snow Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in snow terrain.",
+229,"Water Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in water terrain.",
+230,"Plain Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in plain terrain.",
+231,"Swamp Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in swamp terrain.",
+232,"Urban Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in urban terrain.",
+233,"Blight Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in blight terrain.",
+234,"Underground Hiding",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better in underground terrain.",
+235,"Night Stalking",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can hide better at night.",
+236,"Ambush Expert",1,,,,,,,,,,,,,,0,0,0,0,,50,,,,,,,,,,,,0,"This squad can hide in any terrain, nowhere is truly safe for the enemy.",
+237,"Champion's Crest",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad is immortal and cannot be killed by any means, not even magic can harm them.","Immune to all damage"
+238,"Battle Frenzy",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"KILL! This squad can go into frenzy state similar to orc wrath that is even crazier than normal berserk.","Melee attack +30%, all defense -50%, speed +20%, charge bonus +10%, Uncontrollable"
+239,"Immune To Silence",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+240,"Immune To Blind",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+241,"Immune To Fear",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+242,"Immune To Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+243,"Immune To Air",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,"Being creature of air, this squad completely immue to air damage. "
+244,"Immune To Fire",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,"Being creature of fire, this squad completely immue to fire damage."
+245,"Immune To Water",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,"Being creature of water, this squad completely immue to water damage."
+246,"Immune To Earth",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,"Being creature of earth, this squad completely immue to earth damage."
+247,"Immune To Mind Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,"The protection for the mind is as important as protection for the body, and this squad has such perfect protection against any mind magic."
+248,"Immune To Body Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+249,"Immune To Manipulation Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+250,"Immune To Poison",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+251,"Vulnurable To Air",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+252,"Vulnurable To Fire",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+253,"Vulnurable To Water",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+254,"Vulnurable To Earth",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+255,"Vulnurable To Mind Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+256,"Vulnurable To Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+257,"Vulnurable To Body Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+258,"Vulnurable To Manipulation Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+259,"Vulnurable To Posion",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+260,"Fear Ice",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+261,"Fear Fire",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+262,"Fear Air",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+263,"Fear Earth",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+264,"Fear Magic",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,,
+265,"Scare Mount",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad can cause mount to panic or scare which reduce enemy squad's combat effectiveness and morale.",
+266,"Fearless Mount",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad's mount cannot be panicked or broken and immune to Scare Mount.",
+267,"Human Killer",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Human, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all.","Melee attack +25%, melee defense +15% against enemy human squad"
+268,"Elf Murderer",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Those damn arrogant gaze! Those damn annoying sneer! Darn elves think they are above every other races, let's show those sharp ears the death they deserve!","Melee attack +25%, melee defense +15% against enemy elf squad"
+269,"Dwarf Exterminator",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Short and stink! What good does dwarf bring to the world anyway? Useless sods they all are. ","Melee attack +25%, melee defense +15% against enemy dwarf squad"
+270,"Orc Destroyer",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Orc Is nothing but a blight on civilisation.Its extinction will be another cornerstone of progress.","Melee attack +25%, melee defense +15% against enemy orc squad"
+271,"Goblin Eradicator",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Nasty little thing like this deserve to be eradicated. Kill them all and be rid of these pests for good or they will come back even more.","Melee attack +25%, melee defense +15% against enemy goblin squad"
+272,"Halfling Annihilator",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Peace this, squady that. Those who are not ready for war will never see peace.","Melee attack +25%, melee defense +15% against enemy halfling squad"
+273,"Animal Butcher",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Look at those valuable fang and fur! Whoever deals the killing blow get the prize!","Melee attack +25%, melee defense +15% against enemy animal squad"
+274,"Lizardman Eraser",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Them scaly skins always are up to no good. We must erase them from the face of the earth so our children can live safely. ","Melee attack +25%, melee defense +15% against enemy lizardman squad"
+275,"Beastman Eliminator",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Higher than mere beast but lower than man. These creatures deserve no better! The hunt is on!","Melee attack +25%, melee defense +15% against enemy beastman squad"
+276,"Giant Terminator",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Big and brutish. Truly the greatest challenge for the greatest warrior. ","Melee attack +25%, melee defense +15% against enemy giant squad"
+277,"Dragon Slayer",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Some say dragons were the sole ruler of the world in the age of origin, the true symbol of power. Not for us of course.","Melee attack +25%, melee defense +15% against enemy dragon squad"
+278,"Demon Banisher",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"How dare those vile demons invade our world! Go back to whatever the hell you all came from!","Melee attack +25%, melee defense +15% against enemy demon squad"
+279,"Undead Liberator",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Nothing less than blasphemy, the existance of these undeads. It is our duty to free them of these miserable state they are in.","Melee attack +25%, melee defense +15% against enemy undead squad"
+280,"Fairy Crusher",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Pure and innocence, is it? Those who say that obviously never meet the real one. It's always fun to crush annoying flies!","Melee attack +25%, melee defense +15% against enemy fairy squad"
+281,"Gremlin Bankrupter",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"To be the slave to money is make money your biggest weak point. Just make them lose all the money and watch them kill themselves over that.","Melee attack +25%, melee defense +15% against enemy gremlin squad"
+282,"Wizard Hunters",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"""The unnatural of magecraft is too dangerous for any person to possess. Therefore, any person who practice the art of magic is punishable by death."" The Absolute Law of Mortal Life, Fifth Act:Third Article","Melee attack +25%, melee defense +15% against enemy mage and sub mage squad, receive -30% magic damage"
+283,"Vindictive",1,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"Revenge is best served cold is what they often say. Well someone also like to have it hot!","All attack +30% against enemy squad that deals damage more than 10% health to this squad"
+284,"Animal Instinct",1,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"The basic of every animal is to survive. Based on that instinct, this squad will flee much faster in losing fight but will give it all when it cannot escape and less likely to surrender.",
+285,"Phoenix Blood",1,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"Blood of immortal bird while not making one immunable to damage and disease, can help improve regenerative ability greatly while also allow the body to resurrect with enough energy.","natural healing +50%, can resurrect once in one battle"
+286,"Incorporeal",1,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"""How can we kill this thing!?"", An unknown soldier before being struck down, this squad cannot be damaged by normal weapon only from magic and magical weapon but also fight less effective.",
+287,"Oath Of The Eternal",1,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"Bound by the Eternal Oath, this squad will fight on even in death.","Become spirit troop when dead which has incorporeal property but fight less effective"
+288,"Light Vision Intolerance",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Blind by the light!, this squad cannot withstand the sight of sunlight making them unsuitable for daytime combat.","All stat -55% at day"
+289,"Night Vision Intolerance",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad cannot see well in the night at all which reducing their combat effectiveness greatly.","All stat -55% at night"
+290,"Nocturnal",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad fight better at night but worse at day.","All stat +35% at night, all stat -35% at day"
+291,"Willbreaker",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"Even the strongest will can be broken. This squad can make psychological resistance properties and abilities such as Strong Will of nearby enemy squads less effective.","All morale effect status -50% effect for nearby enemy"
+292,"Adore Melody",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad loves music dearly and will receive better combat bonus from music. However if the music stop, this squads will then receive combat penalty.","All stat +10%, morale double from melody effect"
+293,"Loathe Melody",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"This squad hates music and will receive combat penalty from music. If the music stop, this squads will receive combat bonus after.","All stat -10%, morale -20%"
+294,"Salted Phase",1,,,,,,,,,,,,,,0,0,0,0,,,,,,,,,,,,,,0,"The salted sea requires unconditional allegiance from those who wish to pass it. Only those with strongest will can survive in this unforgiving above the true abyss.","Cannot get seasick debuff, morale +30% in naval combat, movement +50% in sea"
+295,"Sorrow Of Battle ",1,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"Woe for the world to see war and not peace. Our enemy too suffer the same fate as us.","Morale +20%, enemy morale -30%, melee attack -20%, melee defense -10%"
+296,"Smokey Wings At The Ground",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"When this squad suffer casulty, the Smokey Wings on the dead troops will drop to the ground. The smoke rising from the ground up will every squads without anti-smokey mask. ","Active when 10% of this squad dies, affect everyone in nearby radius."
+297,"Anti-Smokey Mask",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"This squad cannot be affected by Smokey ability.","No effect from any smoke"
+298,"Strong Will",,,,,,,,,,,,,,,0,0,0,22,,,,,,,,,,,,,,0,,"A strong warrior requires a strong will, this squad cannot be affected by negative psychological effect."
+299,"Fullmoon Jubilance",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"The fateful day! This squad will fight firecely to the death to fulfill the prophecy.","Attack +30%, all defense -10%, always in berserk status"
+300,"Halfmoon Preparation",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"There are no glory yet in battle before full moon, This squad will fight more reservely and more likely to retreat In losing fight.","Attack -30%, all defense +35%, morale -50%, speed +20%"
+301,"Crescentmoon Sacrifice",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"The rites must be made to hasten the arrival of the true moon! Sacrifices must be chosen!","Attack +20%, morale +15%, speed +10%"
+302,"Darkmoon Melancholy",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"The darkest day! It is forbidden to die on this day at all cost.","This squad's morale always stay at broken and cannot be raised until the property no longer applies"
+303,"Bloodmoon Coming",,,,,,,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,"The prophecy has been fulfilled! The gate of heaven is openned at last!","Attack +50%, all defense -50%, speed +20%, receive berserk status"
+304,"Assassination",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can stay hidden while attacking if no enemy squad can spot it.","Hidden does not reset when squad perform attack"
+305,"Sniping",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can stay hidden while shooting.","Hidden does not reset when squad perform range attack"
+306,"Invisible",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can stay hidden until fighting in melee.","Hidden +100%"
+307,"Full Awareness",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can detect enemy from any direction at all time.","Detect +10%, no line of sight limit"
+308,"Partial Awareness",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can detect enemy from any direction when not fighting.","Detect +100%, no line of sight limit when not in combat"
+309,"True Sight",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can always detect any hidden enemy and trap.","Detect +100%, no line of sight limit"
+310,"Third Eye",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,,"Detect +100%, no line of sight limit, line of sight +50%"
+311,"True Aims",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad will always hit enemy regardless of range and bypass obstacle defense by half. ","Accuracy +1000%, obstacle penalty -50%"
+312,"Regenerating Limb",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can regenerate their lost limbs making them able to completely become combat ready again after resting.","Can cure maimed status from resting outside of combat"
+313,"Regeneration",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can heal itself in time without needing medical assistant.","Heal 2% of total hp every minute/turn"
+314,"Fast Regeneration",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad can heal itself even in battle as long as it is not attacked.","Heal 1% of total hp every minute/turn when not in combat"
+315,"Limb Regeneration",1,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,0,"This squad will not lose soldier count from injury after battle.","No injury penalty after battle"
 316,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 317,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 318,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

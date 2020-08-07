@@ -224,50 +224,51 @@ class Gameui(pygame.sprite.Sprite):
                     position += 20
                     position2 = positionx + 20
                     """property list"""
-                    # for trait in self.value2[1]:
-                    #     if trait in self.value2[2] : cd = int(self.value2[2][trait])
-                    #     else: cd = 0
-                    self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    position += 20
+                    for trait in self.value2[0]:
+                        # if trait in self.value2[2] : cd = int(self.value2[2][trait])
+                    # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
+                        if trait != 0:
+                            self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
+                            self.textrect = self.textsurface.get_rect(
+                                midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                            self.image.blit(self.textsurface, self.textrect)
+                            position += 20
                     """skill cooldown"""
                     for skill in self.value2[1]:
                         if skill in self.value2[2] : cd = int(self.value2[2][skill])
                         else: cd = 0
-                        self.textsurface = self.font.render(str(skill) + ":" + str(cd), 1, (0, 0, 0))
+                        self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
-                        position2 += 25
-                        if position2 >= 90:
-                            position2 = positionx + 20
-                            position += 20
-                    position += 20
+                        # position2 += 25
+                        # if position2 >= 90:
+                        #     position2 = positionx + 20
+                        position += 20
+                    # position += 20
                     """skill effect list"""
                     position2 = positionx + 20
                     for status in self.value2[3]:
-                        self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[3][status][3])), 1,(0, 0, 0))
+                        self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1,(0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
-                        position2 += 25
-                        if position2 >= 90:
-                            position2 = positionx + 20
-                            position += 20
-                    position += 20
+                        # position2 += 25
+                        # if position2 >= 90:
+                        #     position2 = positionx + 20
+                        position += 20
+                    # position += 20
                     """status list"""
                     position2 = positionx + 20
                     for status in self.value2[4]:
-                        self.textsurface = self.font.render(str(status) + ": " + str(int(self.value2[4][status][3])), 1,(0, 0, 0))
+                        self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1,(0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
-                        position2 += 25
-                        if position2 >= 90:
-                            position2 = positionx + 20
-                            position += 20
+                        # position2 += 25
+                        # if position2 >= 90:
+                        #     position2 = positionx + 20
+                        position += 20
                 self.lastvalue = self.value
                 self.lastvalue2 != self.value2
 
