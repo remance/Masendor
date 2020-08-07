@@ -39,7 +39,7 @@
 38,"No Hunger",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,-100,30,,,0,"This squad cannot get hungry which means it does not need food supply to maintain at all.",
 39,"Patriotic",1,,,,,0,,,,,,,0,0,30,0,0,,,,,,,,,,,,50,,,0,"It is the duty of every citizen to fight for the country they live in. This squad fight much better in friendly territory and require less upkeep.",
 40,"Siege Expert",1,,,,,0,,,,,,,0,0,0,0,0,0,150,,,,,,,,,,,,,0,"No wall is safe from this squad! It can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%.",
-41,"Unadvancable",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad cannot gain experience from normal means.","Experience gain -100%"
+41,"Unadvancable",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad cannot gain experience from normal means.","Experience gain none"
 42,"Hunger Instinct",1,,140,80,80,0,130,,,,,,0,0,-10,0,0,,,,,,,,,,,,,,,0,"Hunger is one of the most important factor for the aggressivity in many animal. If this squad is in hunger stage, it will fight much harder than usual to obtain the food which in this case is the enemy in front of it.",
 43,"Famed",2,,,,,0,,,,,,,0,0,10,10,0,3,,,,,,,,,,,,,,0,"This squad have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for ally squads nearby while reducing for enemy.",
 44,"Armistice Bringer",4,,,,,0,,,,,,,0,0,-50,0,0,,,,,,,,,,,,,,,0,,
@@ -52,7 +52,7 @@
 51,"True Hero",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"Being true hero, this squad has manifestly inspiring aura for nearby ally squads.","Ally friendly squads nearby receive Strong Will, and can not be broken, morale +10% for entire battalion"
 52,"Legendary Might",1,,150,130,,,120,,,,150,,0,0,0,0,0,,,,,,,,,,,,,,,0,"The might of the legends cannot be subdued. Beware the enemy for the death to come.",
 53,"Innocence Grace",,,70,130,130,,,,,70,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,
-54,"Magical Weapon",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad weapon has magic property which deals additional magic damage and can deals damage to Incorporeal squads.","All attack deals additonnal 50% magic damage of total damage"
+54,"Magical Weapon",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad weapon has magic property which deals additional magic damage and can deals damage to Incorporeal squads.","All attack deals additonal 50% magic damage of total damage"
 55,"Oblivious To Unexpected",1,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad is completely unadaptable to new warfare making it receive defense penalty for any thing other than normal charge and attack. It also receive additional flanking penalty.",
 56,"Causes Fear",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,2,,
 57,"Causes Terror",3,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,2,,
@@ -68,7 +68,7 @@
 67,"Glorious Appearance",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad appearance is so dashing and inspiring that neaby friendly squads will be in awe while leaving enemy squads in fear.",
 68,"Holy Defense",,,,110,110,20,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching.",
 69,"Vile Veil",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,"There are none without sin and their sins will make them blind.",
-70,"Xenophobic Bunch",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad loathe to fight together with squads from other race than themselves. ","Discipline -70%, Morale -50% when being near friendly squads from other race"
+70,"Xenophobic Bunch",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad loathe to fight together with squads from other race than themselves. ","Discipline minus 70%, Morale minus 50% when being near friendly squads from other race"
 71,"Eyes Of Satiens",,,,,,0,,,125,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad suffer no range penalty and can shoot even turther than usual.",
 72,"Farsight",1,,,,110,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Farsight reduce accuracy penalty from long range shooting and also make squad see enemy projectile earlier.",
 73,"No Range Penalty",1,,,,,0,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad suffer no range penalty.",

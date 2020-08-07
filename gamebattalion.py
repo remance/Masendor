@@ -42,7 +42,7 @@ class unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit():
+                    if (i.isdigit() or "-" in i and n not in [1,20]):
                         row[n] = int(i)
                     elif i == "":
                         row[n] = 100
@@ -96,7 +96,7 @@ class unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = float(i)
+                    if (i.isdigit() or "-" in i) and n not in [1,34,35]: row[n] = float(i)
                     elif i == "": row[n] = 100
                     if n in [19,33]:
                         if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -630,7 +630,7 @@ class unitarmy(pygame.sprite.Sprite):
                 self.retreattimer += dt
                 # print(self.retreatmax, self.retreattimer, self.retreatstart,self.target)
             if self.retreatstart == 1:
-                self.retreatmax = len([item for item in self.battleside if item > 0]) * 2 + round(4 - self.preparetimer)
+                self.retreatmax = len([item for item in self.battleside if item > 0]) * 2 + round(5 - self.preparetimer)
                 if self.retreattimer > self.retreatmax:
                     if self.state == 98: self.set_target((self.allsidepos[0][0], self.allsidepos[0][1] - 300))
                     else: self.state = 96
@@ -638,7 +638,7 @@ class unitarmy(pygame.sprite.Sprite):
                     self.retreattimer = 0
                     self.retreatstart = 0
             """Rotate Function"""
-            if self.angle != round(self.newangle) and self.stamina > 0 and ((self.hitbox[0].collide == 0 and self.hitbox[3].collide == 0) or (self.preparetimer > 0 and self.preparetimer < 4)):
+            if self.angle != round(self.newangle) and self.stamina > 0 and ((self.hitbox[0].collide == 0 and self.hitbox[3].collide == 0) or (self.preparetimer > 0 and self.preparetimer < 5)):
                 self.rotatecal = abs(round(self.newangle) - self.angle)
                 self.rotatecheck = 360-self.rotatecal
                 self.moverotate = 1
@@ -686,7 +686,7 @@ class unitarmy(pygame.sprite.Sprite):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.target)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
-                    if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[list(side2.keys())[1]].collide == 0) or (self.preparetimer > 0 and self.preparetimer < 4)) and self.moverotate == 0 and self.rotateonly != True:
+                    if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[list(side2.keys())[1]].collide == 0) or (self.preparetimer > 0 and self.preparetimer < 5)) and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = False
                         move = self.target - self.allsidepos[0]
                         move_length = move.length()
@@ -700,7 +700,7 @@ class unitarmy(pygame.sprite.Sprite):
                             move.normalize_ip()
                             if self.state in [2,4,6,96,98,99]: move = move * self.runspeed * dt * 50
                             elif self.state in [1,3,5]: move = move * self.walkspeed * dt * 50
-                            elif self.state in [10]: move = move * 3 * dt * 50
+                            elif self.state in [10]: move = move * 3.5 * dt * 50
                             self.pos += move
                         self.rect.center = list(int(v) for v in self.pos)
                         self.makeallsidepos()

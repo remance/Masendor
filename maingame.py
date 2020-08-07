@@ -1,6 +1,6 @@
 """next goal: dynamic authority and leader function(0.2.4), detach/split function (0.2.5), skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
 FIX
-recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side)
+recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side) also enemy attack not work properly after some player unit die (not attack new target)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
 remove index and change call to the sprite itself
@@ -446,6 +446,21 @@ class battle():
         moraledmg = round(dmg / 100)
         return dmg, moraledmg
 
+    def applystatustoenemy(self,inflictstatus,receiver,attackerside):
+        for status in inflictstatus.items():
+            if status[1] == 1 and attackerside == 0:
+                receiver.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
+            elif status[1] in [2, 3]:
+                receiver.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
+                if status[1] == 3:
+                    for squad in receiver.nearbysquadlist[0:2]:
+                        if squad != 0:
+                            squad.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
+            elif status[1] == 4:
+                for squad in receiver.battalion.spritearray.flat:
+                    if squad.state != 100:
+                        squad.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
+
     def dmgcal(self, who, target, whoside, targetside):
         """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
         # print(target.gameid, target.battleside)
@@ -468,20 +483,11 @@ class battle():
         who.basemorale -= targetmoraledmg
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
-        """inflict status based on aoe 1 = front only 2 = all 4 side"""
+        """inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion"""
         if who.inflictstatus != {}:
-            for index, aoe in enumerate(who.inflictstatus):
-                if aoe == 1 and whoside == 0:
-                    target.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
-                elif aoe == 2:
-                    target.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
+            self.applystatustoenemy(who.inflictstatus,target,whoside)
         if target.inflictstatus != {}:
-            for index, aoe in enumerate(target.inflictstatus):
-                if aoe == 1 and targetside == 0:
-                    who.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
-                elif aoe == 2:
-                    who.statuseffect[index] = self.gameunitstat.statuslist[index].copy()
-
+            self.applystatustoenemy(target.inflictstatus,who,targetside)
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         self.deadarmynum[who.gameid] = self.deadindex
         self.deadindex+=1
@@ -690,14 +696,14 @@ class battle():
                                 if hitbox.who.preparetimer == 0: hitbox.who.preparetimer = 0.1
                                 if hitbox.who.preparetimer != 0:
                                     hitbox.who.preparetimer += self.dt
-                                    if hitbox.who.preparetimer < 4: hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)
-                                    else: hitbox.who.preparetimer = 4
+                                    if hitbox.who.preparetimer < 5: hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)
+                                    else: hitbox.who.preparetimer = 5
                             if hitbox2.who.combatpreparestate == 1:
                                 if hitbox2.who.preparetimer == 0: hitbox2.who.preparetimer = 0.1
                                 if hitbox2.who.preparetimer != 0:
                                     hitbox2.who.preparetimer += self.dt
-                                    if hitbox2.who.preparetimer < 4: hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
-                                    else: hitbox.who.preparetimer = 4
+                                    if hitbox2.who.preparetimer < 5: hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
+                                    else: hitbox.who.preparetimer = 5
                             """calculate battalion and squad if in combat"""
                             if hitbox.who.recalsquadcombat == True or hitbox2.who.recalsquadcombat == True:
                                 for battle in hitbox.who.battleside:

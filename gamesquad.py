@@ -132,7 +132,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.image = self.images[0]
         """squad block colour"""
-        if self.gameid >= 20000:
+        if self.battalion.gameid >= 2000:
             self.image = self.images[19]
         """armour circle colour"""
         image1 = self.images[1]

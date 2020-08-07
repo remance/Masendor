@@ -1,5 +1,5 @@
 "statusid","name","special_effect","status_conflict","duration","atk_effect","def_melee_effect","def_range_effect","armour_effect","speed_effect","accuracy_effect","reload_effect","charge_effect","charge_def_effect","health_regen_buff","stamina_regen_buff","morale_bonus","discipline_bonus","sight_bonus","hidden_bonus","description"
-1,"Fearless",,0,10,,,,,,,,,,0,0,200,0,0,,"Being fearless is a beneficial trait in a place of life and dead in battle. Although fear allows person to survive longer to fight another day so being fearless is more of a double-edge sword."
+1,"Fearless",,0,10,,,,,,,,,,0,0,200,0,0,,"Being fearless is a beneficial trait in a place of life and dead in battle. Although fear allows person to survive longer to fight another day, so being fearless is more of a double-edge sword."
 2,"Fear",,"1,3",10,,,,,,,,,,0,0,-30,0,0,,
 3,"Hope",,2,10,,,,,,,,,,0,0,30,0,0,,
 4,"Stampede",,,10,,85,85,,,,,,,0,0,0,0,0,,
