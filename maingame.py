@@ -1,5 +1,6 @@
 """next goal: dynamic authority and leader function(0.2.4), detach/split function (0.2.5), skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
 FIX
+still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
 recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side) also enemy attack not work properly after some player unit die (not attack new target)
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
@@ -12,7 +13,6 @@ from pygame.locals import *
 import pygame.freetype
 from RTS import mainmenu, gamebattalion, gamesquad, gameui, rangeattack
 import ast
-from collections import defaultdict
 import numpy as np
 
 SCREENRECT = mainmenu.SCREENRECT
@@ -435,12 +435,13 @@ class battle():
         elif hitchance > 20 and hitchance <= 40:combatscore = 0.5
         elif hitchance > 40 and hitchance <= 80:combatscore = 1
         elif hitchance > 80: combatscore = 1.5
-        if type == 0:
+        if type == 0: ##melee dmg
             dmg = who.dmg
             if who.charging == True: dmg = round(dmg + (who.charge/10) - (who.chargedef/10))
             if target.charging == True: dmg =  round(dmg + (who.chargedef/10) - (target.charge/10))
-            dmg = round(((who.dmg * who.troopnumber) - ((target.armour * who.penetrate) / 100)) * combatscore * (who.dmgeffect/100))
-        elif type == 1: dmg = round(((who.rangedmg * who.troopnumber) - ((target.armour * who.rangepenetrate) / 100)) * combatscore)
+            dmg = round(((dmg * who.troopnumber) - ((target.armour * who.penetrate) / 100)) * combatscore)
+        elif type == 1: ##range dmg
+            dmg = round(((who.rangedmg * who.troopnumber) - ((target.armour * who.rangepenetrate) / 100)) * combatscore)
         if dmg > target.unithealth: dmg = target.unithealth
         elif dmg < 0 : dmg = 0
         moraledmg = round(dmg / 100)
@@ -464,30 +465,46 @@ class battle():
     def dmgcal(self, who, target, whoside, targetside):
         """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
         # print(target.gameid, target.battleside)
-        wholuck, wholuck2 = random.randint(0, 50), random.randint(0, 50)
-        targetluck, targetluck2 = random.randint(0, 50), random.randint(0, 50)
+        wholuck= random.randint(-50, 50)
+        targetluck = random.randint(-50, 50)
         whopercent = self.battlesidecal[whoside]
         targetpercent = self.battlesidecal[targetside]
+        dmgeffect = who.frontdmgeffect
+        targetdmgeffect = target.frontdmgeffect
         """if attack or defend from side will use discipline to help reduce penalty"""
         if whoside != 0:
             whopercent = self.battlesidecal[whoside] + (who.discipline/300)
+            dmgeffect = who.sidedmgeffect
             if whopercent > 1: whopercent = 1
         if targetside != 0:
             targetpercent = self.battlesidecal[targetside] + (target.discipline/300)
+            targetdmgeffect = target.sidedmgeffect
             if targetpercent > 1: targetpercent = 1
-        whohit, whodefense = float(who.attack*whopercent) - wholuck + wholuck2, float(who.meleedef*whopercent) - wholuck + wholuck2
-        targethit, targetdefense = float(who.attack*targetpercent) - targetluck + targetluck2, float(target.meleedef*targetpercent) - targetluck + targetluck2
+        whohit, whodefense = float(who.attack*whopercent) + wholuck, float(who.meleedef*whopercent) + wholuck
+        targethit, targetdefense = float(who.attack*targetpercent) + targetluck, float(target.meleedef*targetpercent) + targetluck
         whodmg, whomoraledmg = self.losscal(who,target,whohit,targetdefense,0)
         targetdmg, targetmoraledmg = self.losscal(target,who,targethit,whodefense,0)
-        who.unithealth -= targetdmg
+        who.unithealth -= round(targetdmg*(dmgeffect/100))
         who.basemorale -= targetmoraledmg
-        target.unithealth -= whodmg
+        target.unithealth -= round(whodmg*(targetdmgeffect/100))
         target.basemorale -= whomoraledmg
+        if who.corneratk == True: ##attack corner (side) of the target with aoe attack
+            if targetside in [0,2]:
+                listloop = target.nearbysquadlist[0:2]
+            else:
+                listloop = target.nearbysquadlist[2:4]
+            for squad in listloop:
+                if squad != 0 and squad.state != 100:
+                    targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
+                    whodmg, whomoraledmg = self.losscal(who,squad,whohit,targetdefense,0)
+                    squad.unithealth -= round(whodmg * (dmgeffect / 100))
+                    squad.basemorale -= whomoraledmg
         """inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion"""
         if who.inflictstatus != {}:
             self.applystatustoenemy(who.inflictstatus,target,whoside)
         if target.inflictstatus != {}:
             self.applystatustoenemy(target.inflictstatus,who,targetside)
+
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         self.deadarmynum[who.gameid] = self.deadindex
         self.deadindex+=1
@@ -681,10 +698,10 @@ class battle():
                                 hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
                                 """set up army position to the enemyside"""
-                                if hitbox.side == 0 and hitbox.who.state not in [95, 96, 97, 98, 99, 100] and hitbox.who.combatpreparestate == 0 and hitbox2.who.combatpreparestate != 1:
+                                if hitbox.who.state in [1,2,3,4,5,6]:
                                     hitbox.who.combatprepare(hitbox2)
                                     hitbox.who.preparetimer = 0
-                                elif hitbox2.side == 0 and hitbox2.who.state not in [95, 96, 97, 98, 99, 100] and hitbox2.who.combatpreparestate == 0 and hitbox.who.combatpreparestate != 1:
+                                elif hitbox2.who.state in [1,2,3,4,5,6]:
                                     hitbox2.who.combatprepare(hitbox)
                                     hitbox2.who.preparetimer = 0
                                 for battle in hitbox.who.battleside:

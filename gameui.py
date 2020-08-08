@@ -1,7 +1,4 @@
-import random, os.path, glob, csv, math
 import pygame
-from pygame.transform import scale
-from pygame.locals import *
 import pygame.freetype
 from RTS import mainmenu
 

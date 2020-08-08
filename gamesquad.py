@@ -73,7 +73,9 @@ class unitsquad(pygame.sprite.Sprite):
         self.type = self.stat[29]
         self.description = self.stat[33]
         self.criteffect = 100
-        self.dmgeffect = 100
+        self.frontdmgeffect = 100
+        self.sidedmgeffect = 100
+        self.corneratk = False
         self.basehpregen = 0
         self.basestaminaregen = 1
         self.statuseffect = {}
@@ -244,7 +246,9 @@ class unitsquad(pygame.sprite.Sprite):
         self.speed = round(self.basespeed * self.staminastate / 100, 0)
         self.charge = round((self.basecharge  * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
         self.criteffect = 100
-        self.dmgeffect = 100
+        self.frontdmgeffect = 100
+        self.sidedmgeffect = 100
+        self.corneratk = False
         self.hpregen = self.basehpregen
         self.staminaregen = self.basestaminaregen
         self.inflictstatus = self.baseinflictstatus
@@ -275,8 +279,11 @@ class unitsquad(pygame.sprite.Sprite):
                 self.discipline = self.discipline + self.skilleffect[status][22]
                 #self.sight += self.skilleffect[status][18]
                 #self.hidden += self.skilleffect[status][19]
-                self.criteffect = round(self.criteffect *(self.skilleffect[status][23]/100), 0)
-                self.dmgeffect = round(self.dmgeffect * (self.skilleffect[status][24]/100), 0)
+                self.criteffect = round(self.criteffect * (self.skilleffect[status][23]/100), 0)
+                self.frontdmgeffect = round(self.frontdmgeffect * (self.skilleffect[status][24]/100), 0)
+                if self.skilleffect[status][2] in [2,3] and self.skilleffect[status][24] != 100:
+                    self.sidedmgeffect = round(self.sidedmgeffect * (self.skilleffect[status][24] / 100), 0)
+                    if self.skilleffect[status][2] == 3: self.corneratk = True
                 """Apply status to self if there is one in skill effect"""
                 if self.skilleffect[status][27] != [0]:
                     for effect in self.skilleffect[status][27]:

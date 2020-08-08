@@ -1,13 +1,10 @@
 import random, os.path, glob, csv, math
 import pygame
 from pygame.transform import scale
-from pygame.locals import *
 import pygame.freetype
 from RTS import mainmenu
 from statistics import mean
 from RTS import maingame
-import ast
-from collections import defaultdict
 import numpy as np
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
@@ -157,7 +154,7 @@ class directionarrow(pygame.sprite.Sprite):
                               self.image.get_height() / 2 - (self.who.pos[1] - self.who.commandtarget[1])), 5)
             self.rect = self.image.get_rect(center=self.who.pos)
             self.previouslength = self.length
-        else:
+        elif self.length < 2 or self.who.state == 0:
             self.who.directionarrow = False
             self.kill()
 
@@ -495,10 +492,10 @@ class unitarmy(pygame.sprite.Sprite):
 
     def makeallsidepos(self):
         """generate all four side position"""
-        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2)),
-                           ((self.rect.center[0] - self.widthbox / 2), self.rect.center[1]),
-                           ((self.rect.center[0] + self.widthbox / 2), self.rect.center[1]),
-                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2))]
+        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2)-5),
+                           ((self.rect.center[0] - self.widthbox / 2)-5, self.rect.center[1]),
+                           ((self.rect.center[0] + self.widthbox / 2)+5, self.rect.center[1]),
+                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2)+5)]
         """generate again but with rotation in calculation"""
         self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle),
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
