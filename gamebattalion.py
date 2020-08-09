@@ -75,10 +75,10 @@ class unitstat():
                 for n, i in enumerate(row):
                     # print(n, type(n))
                     if run != 0:
-                        if n in [2,3,4,5,7,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,30]:
+                        if n in [2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,30]:
                             if i == "": row[n] = 100
                             else: row[n] = float(i)
-                        elif n in [6,8,28,31]:
+                        elif n in [6,7,28,31]:
                             """Convert all condition and status to list"""
                             if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit(): row[n] = [int(i)]
@@ -194,7 +194,6 @@ class unitarmy(pygame.sprite.Sprite):
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
         self.squadalive = np.where(self.squadalive > 0, 2,self.squadalive)
-        self.recalsquadcombat = False
         self.groupsquadindex = []
         self.startwhere = []
         self.imgsize = imgsize
@@ -592,7 +591,6 @@ class unitarmy(pygame.sprite.Sprite):
                 for squad in self.groupsquadindex:
                     squadgroup[squad].basemorale -= 20
                 self.deadchange = 0
-                self.recalsquadcombat = True
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
             # """Stamina and Health Function"""
             # if self.troopnumber < 0: self.troopnumber = 0

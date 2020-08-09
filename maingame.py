@@ -1,7 +1,7 @@
-"""next goal: dynamic authority and leader function(0.2.4), detach/split function (0.2.5), skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4), enactment mode (0.9)
+"""next goal: skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4)
 FIX
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
-recheck melee combat cal (still problem when 2 or more unit attack and squad not register being attack on all side) also enemy attack not work properly after some player unit die (not attack new target)
+Change when click ui so it will not count as click unit under it only ui
 add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
 remove index and change call to the sprite itself
@@ -278,6 +278,8 @@ class battle():
         self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy,self.enemyarmy,'\\test',
             self.imagewidth, self.imageheight, self.allweapon, self.allleader, self.gameunitstat, self.coa, self.squad,
             [self.gameui[0].rect.bottomleft[0]-self.imagewidth/1.25,self.gameui[0].rect.bottomleft[1]-self.imageheight/3], enactment=True)
+        self.allunitlist = self.playerarmy.copy()
+        self.allunitlist = self.allunitlist + self.enemyarmy
         self.deadarmynum = {}
         self.deadindex = 0
         self.unitposlist = {}
@@ -290,11 +292,11 @@ class battle():
         thisposition = position
         if side == 0:
             max = 0
-            while targetside[thisposition] == 0 and thisposition != max:
+            while targetside[thisposition] <= 1 and thisposition != max:
                 thisposition -= 1
         else:
             max = 7
-            while targetside[thisposition] == 0 and thisposition != max:
+            while targetside[thisposition] <= 1 and thisposition != max:
                 thisposition += 1
         if thisposition < 0: thisposition = 0
         elif thisposition > 7: thisposition = 7
@@ -309,11 +311,61 @@ class battle():
         subposition = position
         if subposition == 2: subposition = 3
         elif subposition == 3: subposition = 2
-        finalposition = subposition + 1
-        if side == 0: finalposition = subposition - 1
+        changepos = 1
+        if subposition == 2:
+            changepos = -1
+        finalposition = subposition + changepos ## right
+        if side == 0: finalposition = subposition - changepos ## left
         if finalposition == -1: finalposition = 3
         elif finalposition == 4: finalposition = 0
         return finalposition
+
+    def combatpositioncal(self,sortmidfront,attacker,receiver,attackerside,receiverside,squadside):
+        for thiswho in sortmidfront:
+            if thiswho > 1:
+                position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
+                fronttarget = receiver.frontline[receiverside][position]
+                """check if squad not already fighting if true skip picking new enemy """
+                if any(battle > 1 for battle in self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside) == False:
+                    """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
+                    if fronttarget > 1:
+                        """only attack if the side is already free else just wait until it free"""
+                        if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] in [-1, 0]:
+                            self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
+                            self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] = thiswho
+                            # print('front', self.squad[np.where(self.squadindexlist == thiswho)[0][0]].gameid,
+                            #       self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside, fronttarget)
+                            # print('front', self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].gameid,
+                            #       self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside, fronttarget)
+                    else:
+                        """pick flank attack if no enemy already fighting and not already fighting"""
+                        chance = random.randint(0, 1)
+                        secondpick = 0
+                        if chance == 0: secondpick = 1
+                        """attack left array side of the squad if get random 0, right if 1"""
+                        truetargetside = self.changeside(chance, receiverside)
+                        fronttarget = self.squadselectside(receiver.frontline[receiverside], chance, position)
+                        """attack if the found defender at that side is free if not check other side"""
+                        if fronttarget > 1:
+                            if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1, 0]:
+                                self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
+                                self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
+                                print('side', self.squad[np.where(self.squadindexlist == thiswho)[0][0]].gameid,
+                                      self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside, fronttarget)
+                                print('side', self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].gameid,
+                                      self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside, fronttarget)
+                        else:
+                            """Switch to another side if above not found"""
+                            truetargetside = self.changeside(secondpick, receiverside)
+                            fronttarget = self.squadselectside(receiver.frontline[receiverside], secondpick, position)
+                            if fronttarget > 1:
+                                if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1, 0]:
+                                    self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
+                                    self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
+                                print('side2', self.squad[np.where(self.squadindexlist == thiswho)[0][0]].gameid, self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside, fronttarget)
+                                print('side2', self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].gameid, self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside, fronttarget)
+                            else:
+                                self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[receiverside] = 0
 
     def squadcombatcal(self,who, target, whoside, targetside):
         """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
@@ -321,59 +373,13 @@ class battle():
         squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
         squadtargetside = [2 if targetside==3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
         sortmidfront = [who.frontline[whoside][3],who.frontline[whoside][4],who.frontline[whoside][2],who.frontline[whoside][5],who.frontline[whoside][1],who.frontline[whoside][6],who.frontline[whoside][0],who.frontline[whoside][7]]
-        # print(who.frontline,target.frontline)
         for squad in self.squad[who.groupsquadindex[0]:who.groupsquadindex[-1]+1]:
             squad.battleside = [-1 if i in self.removesquadlist else i for i in squad.battleside]
         for squad in self.squad[target.groupsquadindex[0]:target.groupsquadindex[-1] + 1]:
             squad.battleside = [-1 if i in self.removesquadlist else i for i in squad.battleside]
         """only calculate if the attack is attack with the front side"""
         if whoside == 0:
-            for thiswho in sortmidfront:
-                if thiswho > 1:
-                    position = np.where(who.frontline[whoside] == thiswho)[0][0]
-                    fronttarget = target.frontline[targetside][position]
-                    """check if squad not already fighting if true skip picking new enemy """
-                    if any(battle > 1 for battle in self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside) == False:
-                        """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
-                        if fronttarget > 1:
-                            """only attack if the side is already free else just wait until it free"""
-                            if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadtargetside] in [-1, 0]:
-                                self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[whoside] = fronttarget
-                                self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadtargetside] = thiswho
-                                # print('front', self.squad[np.where(self.squadindexlist == thiswho)[0][0]].gameid,
-                                #       self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside, fronttarget)
-                                # print('front', self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].gameid,
-                                #       self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside, fronttarget)
-                        else:
-                            """pick flank attack if no enemy already fighting and not already fighting"""
-                            chance = random.randint(0, 1)
-                            secondpick = 0
-                            if chance == 0: secondpick = 1
-                            """attack left array side of the squad if get random 0, right if 1"""
-                            truetargetside = self.changeside(chance, targetside)
-                            fronttarget = self.squadselectside(target.frontline[targetside],chance,position)
-                            """attack if the found defender at that side is free if not check other side"""
-                            if fronttarget > 1:
-                                if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1, 0]:
-                                    self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[whoside] = fronttarget
-                                    self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
-                                    # print('side', self.squad[np.where(self.squadindexlist == thiswho)[0][0]].gameid,
-                                    #       self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside, fronttarget)
-                                    # print('side', self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].gameid,
-                                    #       self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside, fronttarget)
-                            else:
-                                """Switch to another side if above not found"""
-                                truetargetside = self.changeside(secondpick, targetside)
-                                fronttarget = self.squadselectside(target.frontline[targetside],secondpick,position)
-                                if fronttarget > 1:
-                                    if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1,0]:
-                                        self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[whoside] = fronttarget
-                                        self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
-                                    # print('side2', self.squad[np.where(self.squadindexlist == thiswho)[0][0]].gameid, self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside, fronttarget)
-                                    # print('side2', self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].gameid, self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside, fronttarget)
-                                else:
-                                    self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[
-                                        targetside] = 0
+            self.combatpositioncal(sortmidfront,who,target,whoside,targetside,squadtargetside)
         """only calculate if the target is attacked on the front side"""
         if targetside == 0:
             sortmidfront = [target.frontline[targetside][3], target.frontline[targetside][4],
@@ -381,45 +387,7 @@ class battle():
                             target.frontline[targetside][5], target.frontline[targetside][1],
                             target.frontline[targetside][6],
                             target.frontline[targetside][0], target.frontline[targetside][7]]
-            for thiswho in sortmidfront:
-                if thiswho > 1:
-                    position = np.where(target.frontline[targetside] == thiswho)[0][0]
-                    fronttarget = who.frontline[whoside][position]
-                    """check if squad not already fighting if true skip picking new enemy """
-                    if any(battle > 1 for battle in
-                           self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside) == False:
-                        """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
-                        if fronttarget > 1:
-                            if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadwhoside] in [-1, 0]:
-                                self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[targetside] = fronttarget
-                                self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[
-                                    squadwhoside] = thiswho
-                        else:
-                            """pick flank attack if no enemy already fighting and not already fighting"""
-                            chance = random.randint(0, 1)
-                            secondpick = 0
-                            if chance == 0: secondpick = 1
-                            """attack left array side of the squad if get random 0, right if 1"""
-                            truetargetside = self.changeside(chance, whoside)
-                            fronttarget = self.squadselectside(who.frontline[whoside], chance, position)
-                            """attack if the found defender side is free if not check other side"""
-                            if fronttarget > 1:
-                                if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[
-                                    truetargetside] in [-1, 0]:
-                                    self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[
-                                        targetside] = fronttarget
-                                    self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[
-                                        truetargetside] = thiswho
-                            else:
-                                """Switch to another side if above not found"""
-                                truetargetside = self.changeside(secondpick, whoside)
-                                fronttarget = self.squadselectside(who.frontline[whoside], secondpick, position)
-                                if fronttarget > 1:
-                                    if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1, 0]:
-                                        self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[targetside] = fronttarget
-                                        self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
-                                else:
-                                    self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[whoside] = 0
+            self.combatpositioncal(sortmidfront, target, who, targetside, whoside, squadwhoside)
         self.removesquadlist = []
         # print('endhere')
 
@@ -441,7 +409,7 @@ class battle():
             if target.charging == True: dmg =  round(dmg + (who.chargedef/10) - (target.charge/10))
             dmg = round(((dmg * who.troopnumber) - ((target.armour * who.penetrate) / 100)) * combatscore)
         elif type == 1: ##range dmg
-            dmg = round(((who.rangedmg * who.troopnumber) - ((target.armour * who.rangepenetrate) / 100)) * combatscore)
+            dmg = round((who.rangedmg - ((target.armour * who.rangepenetrate) / 100)) * combatscore * who.troopnumber)
         if dmg > target.unithealth: dmg = target.unithealth
         elif dmg < 0 : dmg = 0
         moraledmg = round(dmg / 100)
@@ -484,10 +452,10 @@ class battle():
         targethit, targetdefense = float(who.attack*targetpercent) + targetluck, float(target.meleedef*targetpercent) + targetluck
         whodmg, whomoraledmg = self.losscal(who,target,whohit,targetdefense,0)
         targetdmg, targetmoraledmg = self.losscal(target,who,targethit,whodefense,0)
-        who.unithealth -= round(targetdmg*(dmgeffect/100))
-        who.basemorale -= targetmoraledmg
-        target.unithealth -= round(whodmg*(targetdmgeffect/100))
-        target.basemorale -= whomoraledmg
+        who.unithealth -= round(targetdmg * (dmgeffect/100))
+        who.basemorale -= round(targetmoraledmg * (dmgeffect/100))
+        target.unithealth -= round(whodmg * (targetdmgeffect/100))
+        target.basemorale -= round(whomoraledmg * (targetdmgeffect/100))
         if who.corneratk == True: ##attack corner (side) of the target with aoe attack
             if targetside in [0,2]:
                 listloop = target.nearbysquadlist[0:2]
@@ -552,7 +520,6 @@ class battle():
                     if event.key == pygame.K_SPACE: ## Pause Button
                         if self.gamestate == 1: self.gamestate = 0
                         else:self.gamestate = 1
-
             # if keystate[K_s]:
             #     scroll_view(screen, background, DIR_DOWN, view_rect)
             # elif keystate[K_w]:
@@ -578,21 +545,7 @@ class battle():
             if mouse_up == True:
                 self.check = 0
                 self.check2 = 0
-            for thisenemy in self.enemyarmy:
-                self.enemyposlist[thisenemy.gameid] = thisenemy.pos
-                posmask = self.mousepos[0] - thisenemy.rect.x, self.mousepos[1] - thisenemy.rect.y
-                if thisenemy.rect.collidepoint(self.mousepos):
-                    try:
-                        if thisenemy.mask.get_at(posmask) == 1:
-                            thisenemy.mouse_over = True
-                            self.lastmouseover = thisenemy
-                            if mouse_up:
-                                self.lastselected = thisenemy.gameid
-                                self.check = 1
-                    except:thisenemy.mouse_over = False
-                if thisenemy.state == 100 and thisenemy.gotkilled == 0:
-                    self.die(thisenemy, self.enemyarmy, self.deadunit, self.all, self.hitboxs)
-            for army in self.playerarmy:
+            for army in self.allunitlist:
                 self.unitposlist[army.gameid] = army.pos
                 posmask = self.mousepos[0] - army.rect.x, self.mousepos[1] - army.rect.y
                 #     army.mouse_over = True
@@ -608,8 +561,13 @@ class battle():
                     except: army.mouse_over = False
                 else: army.mouse_over = False
                 if army.state == 100 and army.gotkilled == 0:
-                    self.die(army, self.playerarmy, self.deadunit, self.all)
+                    if army.gameid < 2000:
+                        self.die(army, self.playerarmy, self.deadunit, self.all)
+                    else:self.die(army, self.enemyarmy, self.deadunit, self.all)
                 # pygame.draw.aaline(screen, (100, 0, 0), army.pos, army.target, 10)
+            for ui in self.gameui:
+                if ui.rect.collidepoint(self.mousepos) and mouse_up:
+                    self.check = 1
             if self.lastselected != 0:
                 if self.lastselected < 2000:
                     """if not found in army class then it is in dead class"""
@@ -698,10 +656,10 @@ class battle():
                                 hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
                                 """set up army position to the enemyside"""
-                                if hitbox.who.state in [1,2,3,4,5,6]:
+                                if hitbox.side == 0 and hitbox.who.state in [1,2,3,4,5,6]:
                                     hitbox.who.combatprepare(hitbox2)
                                     hitbox.who.preparetimer = 0
-                                elif hitbox2.who.state in [1,2,3,4,5,6]:
+                                elif hitbox2.side == 0 and hitbox2.who.state in [1,2,3,4,5,6]:
                                     hitbox2.who.combatprepare(hitbox)
                                     hitbox2.who.preparetimer = 0
                                 for battle in hitbox.who.battleside:
@@ -721,17 +679,11 @@ class battle():
                                     hitbox2.who.preparetimer += self.dt
                                     if hitbox2.who.preparetimer < 5: hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
                                     else: hitbox.who.preparetimer = 5
-                            """calculate battalion and squad if in combat"""
-                            if hitbox.who.recalsquadcombat == True or hitbox2.who.recalsquadcombat == True:
-                                for battle in hitbox.who.battleside:
-                                    if battle != 0:
-                                # self.battalionengage(army,thisenemy,army.battleside.index(battle),thisenemy.battleside.index(army.gameid))
-                                        self.squadcombatcal(hitbox.who, hitbox2.who, hitbox.who.battleside.index(battle), hitbox2.who.battleside.index(hitbox.who.gameid))
-                                hitbox.who.recalsquadcombat, hitbox2.who.recalsquadcombat = False, False
-                        elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000) or (hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):
+                        elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000)
+                            or (hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)): ##colide battalion in same faction
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
                 """Calculate squad combat dmg"""
-                if self.combattimer >= 0.5:
+                if self.combattimer >= 1:
                     for thissquad in self.squad:
                         if any(battle > 1 for battle in thissquad.battleside) == True:
                             for index, combat in enumerate(thissquad.battleside):

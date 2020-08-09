@@ -1,1 +1,1 @@
-['topbar.png', 'commandbar.png','unitcard.png','unitcard_button1.png','unitcard_button2.png','armyinspect.png','armyinspect_button.png','unitcard_button3.png']
+['topbar.png', 'commandbar.png','unitcard.png','unitcard_button1.png','unitcard_button2.png','armyinspect.png','armyinspect_button.png','unitcard_button3.png','ui_squad_clicked.png']

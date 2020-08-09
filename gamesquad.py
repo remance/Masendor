@@ -6,9 +6,22 @@ from RTS import mainmenu
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
 
+class selectedborder(pygame.sprite.Sprite):
+    ##add this in 3.0
+    images = []
+    def __init__(self,x,y,whichsquad):
+        self._layer = 7
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = self.images[0]
+        self.whichsquad = whichsquad
+        self.X,self.Y = x,y
+        self.rect = self.image.get_rect(mid=(self.X, self.Y))
+
+    def update(self):
+        self.rect.center = list(int(v) for v in self.pos)
+
 class unitsquad(pygame.sprite.Sprite):
     images = []
-
     def __init__(self, unitid, gameid, weaponlist, statlist, battalion, position,inspectuipos):
         # super().__init__()
         self._layer = 6
@@ -182,7 +195,7 @@ class unitsquad(pygame.sprite.Sprite):
     def checkskillcondition(self):
         self.availableskill = []
         for skill in self.skill:
-            if skill not in self.skillcooldown.keys() and skill not in self.skilleffect.keys() and self.state in self.skill[skill][7] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][9]:
+            if skill not in self.skillcooldown.keys() and skill not in self.skilleffect.keys() and self.state in self.skill[skill][6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][9]:
                 self.availableskill.append(skill)
 
     def findnearbysquad(self):
