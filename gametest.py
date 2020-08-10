@@ -140,5 +140,5 @@ list = {0:1,1:2,2:3,3:4}
 # calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
 #                 (np.count_nonzero(calsquadlist <= 1)) * 70 / 100)])
 # print(calsquadlist)
-b = "-1"
-print("-" in b)
+b = 1
+print(b == 4 or 1)

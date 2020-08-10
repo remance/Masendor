@@ -1,13 +1,14 @@
-import random, os.path
-import glob
-#import basic pygame modules
-import pygame
-from pygame.locals import *
-import pygame.freetype
-from RTS import maingame
-import csv
 import configparser
+import glob
+import os.path
 import sys
+
+# import basic pygame modules
+import pygame
+import pygame.freetype
+from pygame.locals import *
+
+from RTS import maingame
 
 config = configparser.ConfigParser()
 config.read_file(open('configuration.ini'))

@@ -1,57 +1,57 @@
 "id","name","class","grade","race","properties","abilities","cost","melee_atk","melee_def","range_def","armour","speed","accuracy","range","ammunition","reload","charge","charge_type","health","stamina","mana","meleeweapon","rangeweapon","morale","discipline","sight","size","troop","type","upkeep","spell","item","description"
 1,"Testdummy",1,1,1,"34,57,58","36,48",,1,100,3,100,100,6,7,0,9,10,21,100000,100,0,1,0,90,80,,1,1,1,,,,"Test"
-2,"Swordsmen",1,1,1,"0","36",,55,35,15,30,40,0,0,0,0,40,21,100,100,0,1,0,100,35,5,1,200,1,,,,"Swordsmen are the most basic and balanced unit in most armies. They can fight well in most situation and can hold their lines well enough. Truly the Jack of all trade of all units that are safest to pick in unknown situations. But of course, jacks of all trade lack specialities that make them stand out in a specific situation. If you by some means manage to learn the enemy composition from in and out, it will be better to employed troops that are more specialised or you can still pick Swordsmen if you like well-balanced units."
-3,"Swordsmasters",1,5,1,"34,35","43,48",,80,80,25,40,55,0,0,0,0,82,21,120,130,0,1,0,125,70,7,1,10,1,,,,"Swordmasters are the finest master who dedicates their entire lives to the way of the sword. The rumour is that each of them can easily defeat 10 opponents at once with a single stoke. Regardless of whether the rumour is true or not, there is no denying that these Swordmasters can not only fight against a much larger force, they can defeat a monster or even a giant. But being so few in number, they are vulnerable to magic or pinpoint range attack."
-4,"Sword Saints",1,5,1,"35,37,59","61,95",,75,60,40,30,64,0,0,0,0,90,21,120,130,20,1,0,140,85,7,1,6,1,,,,"Sword Saints are the greatest exemplar of all fighters in the realm under the heaven. Not only exceptional fighters but also extraordinary leaders who inspire all those that follow them. Additionally, they can also use magic to boost their fighting capability, which makes them extremely versatile in almost every scenario. Even though they are well-versed in melee combat, it may be better to place them in the centre of the battalion so they can keep boosting the morale of nearby squads for the entire battle."
-5,"Footmen",1,2,1,"0","36",,50,50,20,40,34,0,0,0,0,30,21,100,100,0,1,0,100,40,,1,150,1,,,,"Footmen are professional soldiers who served as the core of the well-trained army. With better training than common Swordsmen, they possess much higher melee combat proficiency along with greater discipline. Choosing them as frontline units is never the wrong choice but do expect some difficulty when facing against charging cavalry battalion."
-6,"Desert Swordsmen",1,1,1,"82","36",,55,35,15,20,48,0,0,0,0,50,21,100,100,0,1,0,100,35,,1,150,1,,,,"Desert is no place for armours used in other regions. Due to the extreme heat, Desert Swordsmen are equipped with hardened leather armours and desert clothing such as the turban and loose cloth to protect against the heat and desert winds. This makes Desert Swordsmen a variant of swordsmen that are specialised in desert warfare that sacrifice armour for more heat resistance and movement speed. "
-7,"Mirage Sword Warriors",1,1,1,"131","36",,60,30,30,10,60,0,0,0,0,60,21,100,100,0,1,0,100,45,,1,100,1,,,,"The worst desert folktale comes true. When the City of Mirage decide that you are a threat they will send an army of Mirage Sword Warriors to annihilate your very home. Even though, they lack decent armours, their mirage trickery can fool the enemies' eyes which make them extremely hard to hit. They are also much faster than common Swordsmen of the same grade, so try to use heavy units to hold them down and flank them with another melee units."
-8,"Band of Brotherhood",1,10,1,"24,93","36",,60,30,20,45,33,0,0,0,0,70,21,100,110,0,1,0,110,70,,1,50,1,,,,"Band of Brotherhood is a group of mercenary led by General Ogiyus that travel across the continent for employment in war. Anyone that can pay a quite steep price will be ensured of getting the ""finest"" infantry in the land (According to the general himself). All in all, they are one of the biggest and most infamous mercenary band out there and their ability does match their reputation. Though their combat capability is not that much higher than common light sword infantry units, they have confidently excellent morale and discipline, along with better armour and charge power."
-9,"Slaves",6,0,1,"163",,,13,6,0,0,40,0,0,0,0,20,19,100,70,0,6,0,70,15,7,1,250,1,,,,"Slavery often has a complex relationship with warfare in many cultures including the real-world historical societies. Slave labours either from war prisoners or criminals were often forced into battle as cheap meatshields for the main troop or as desperate measure. As good as any other malnourished worker slaves and with absurdly poor equipment, they are not that fitted for combat against any well-armed foes. Their morale is also extremely low so they will run the first chance they get. "
-10,"Slave Warriors",3,0,1,"0",,,38,26,0,14,50,0,0,0,0,37,21,100,100,0,3,0,95,15,5,1,150,1,,,,"Slaves are not only useful for forced labours. In some cultures, there are actually slaves trained for combat and warfare with even promising opportunity to rise the rank of the social hierarchy if they manage to display extraordinary feats. A good example of this would be Janissaries of the Ottoman empire that consist mostly of enslaved Christians. However, the example is in somewhat rare cases, most Slave Warriors are usually of lower quality due to their quality of life and existed mostly to enlarge the troop number.  "
-11,"Slave Gladiators",3,1,1,"0",,,55,55,5,20,59,0,0,0,0,50,21,100,110,0,3,0,100,20,5,1,100,1,,,,"Gladiators are martial athletes of the ancient world. The most famous example and of course the unit's name origin is the Gladiators of the Roman Empire. Similar to other kinds of athlete, Gladiators use martial ability to entertain the spectators. Although Gladiators can volunteer, some are forced to be a gladiator by slavery in order to earn their ""promised"" freedom. And since martial ability can be used in warfare, Slave Gladiators can be employed to fight for the nation's demands as well. "
-12,"Yalak Chosens",1,7,1,"56,148",,,80,20,0,45,55,0,0,0,0,59,4,100,115,0,1,0,100,35,5,1,20,1,,,,"These Yalak Chosens were war prisoners that are bought to be trained as slave warrior to the Martial deity, ""Yalak the Almighty"". The priests of Coduikewq then ""educate"" them to become terrifying and fierce warriors that devote their entire life to the teaching of Mokudun, ""Only Will of Battle"". Only a few selected can become the chosen and the rest are discarded. Donned in specially made buffalo leather armours and iron khopeshes, their only weakness is the lack of shield to block missile attack. They are good for both frontal and flank assaults but avoid using them for the main defensive role as they are still a light unit in all things."
-13,"Gosunma Servants",1,1,1,"81,96",,,80,50,30,10,66,0,0,0,0,60,1,105,115,0,1,0,,65,6,1,80,1,,,,"The Servants of Gosunma are ""slaves"" by their wills. They dedicate their whole life following the bidding of their master without a shred of disobedience. For the words of Gosunma, ""The Legal Masters"", are absolute. Although classified as ""Slave"", Servants of Gosunma are extremely well trained in the art of combat and devoted to their masters. they can decently hold up in the frontline with their steel bucklers and swords. They are also good shock units that can charge from both the front and flank positions. However, they only wear light fur armours to protect against the cold weather and do not have any special ability, so avoid using them as main tank units if possible."
+2,"Swordsmen",1,1,1,"0","36",,45,35,15,30,35,0,0,0,0,40,21,100,100,0,1,0,100,35,5,1,200,1,,,,"Swordsmen are the most basic and balanced unit in most armies. They can fight well in most situation and can hold their lines well enough. Truly the Jack of all trade of all units that are safest to pick in unknown situations. But of course, jacks of all trade lack specialities that make them stand out in a specific situation. If you by some means manage to learn the enemy composition from in and out, it will be better to employed troops that are more specialised or you can still pick Swordsmen if you like well-balanced units."
+3,"Swordsmasters",1,5,1,"34,35","43,48",,70,80,25,40,45,0,0,0,0,75,21,120,130,0,1,0,125,70,7,1,10,1,,,,"Swordmasters are the finest master who dedicates their entire lives to the way of the sword. The rumour is that each of them can easily defeat 10 opponents at once with a single stoke. Regardless of whether the rumour is true or not, there is no denying that these Swordmasters can not only fight against a much larger force, they can defeat a monster or even a giant. But being so few in number, they are vulnerable to magic or pinpoint range attack."
+4,"Sword Saints",1,5,1,"35,37,59","61,95",,65,60,40,30,53,0,0,0,0,70,21,120,130,20,1,0,140,85,7,1,6,1,,,,"Sword Saints are the greatest exemplar of all fighters in the realm under the heaven. Not only exceptional fighters but also extraordinary leaders who inspire all those that follow them. Additionally, they can also use magic to boost their fighting capability, which makes them extremely versatile in almost every scenario. Even though they are well-versed in melee combat, it may be better to place them in the centre of the battalion so they can keep boosting the morale of nearby squads for the entire battle."
+5,"Footmen",1,2,1,"0","36",,40,50,20,40,39,0,0,0,0,30,21,100,100,0,1,0,100,40,,1,150,1,,,,"Footmen are professional soldiers who served as the core of the well-trained army. With better training than common Swordsmen, they possess much higher melee combat proficiency along with greater discipline. Choosing them as frontline units is never the wrong choice but do expect some difficulty when facing against charging cavalry battalion."
+6,"Desert Swordsmen",1,1,1,"82","36",,45,35,15,20,42,0,0,0,0,50,21,100,100,0,1,0,100,35,,1,150,1,,,,"Desert is no place for armours used in other regions. Due to the extreme heat, Desert Swordsmen are equipped with hardened leather armours and desert clothing such as the turban and loose cloth to protect against the heat and desert winds. This makes Desert Swordsmen a variant of swordsmen that are specialised in desert warfare that sacrifice armour for more heat resistance and movement speed. "
+7,"Mirage Sword Warriors",1,1,1,"131","36",,50,30,30,10,55,0,0,0,0,60,21,100,100,0,1,0,100,45,,1,100,1,,,,"The worst desert folktale comes true. When the City of Mirage decide that you are a threat they will send an army of Mirage Sword Warriors to annihilate your very home. Even though, they lack decent armours, their mirage trickery can fool the enemies' eyes which make them extremely hard to hit. They are also much faster than common Swordsmen of the same grade, so try to use heavy units to hold them down and flank them with another melee units."
+8,"Band of Brotherhood",1,10,1,"24,93","36",,50,30,20,45,28,0,0,0,0,60,21,100,110,0,1,0,110,70,,1,50,1,,,,"Band of Brotherhood is a group of mercenary led by General Ogiyus that travel across the continent for employment in war. Anyone that can pay a quite steep price will be ensured of getting the ""finest"" infantry in the land (According to the general himself). All in all, they are one of the biggest and most infamous mercenary band out there and their ability does match their reputation. Though their combat capability is not that much higher than common light sword infantry units, they have confidently excellent morale and discipline, along with better armour and charge power."
+9,"Slaves",6,0,1,"163",,,12,6,0,0,34,0,0,0,0,20,19,100,70,0,6,0,70,15,7,1,250,1,,,,"Slavery often has a complex relationship with warfare in many cultures including the real-world historical societies. Slave labours either from war prisoners or criminals were often forced into battle as cheap meatshields for the main troop or as desperate measure. As good as any other malnourished worker slaves and with absurdly poor equipment, they are not that fitted for combat against any well-armed foes. Their morale is also extremely low so they will run the first chance they get. "
+10,"Slave Warriors",3,0,1,"0",,,28,26,0,14,40,0,0,0,0,37,21,100,100,0,3,0,95,15,5,1,150,1,,,,"Slaves are not only useful for forced labours. In some cultures, there are actually slaves trained for combat and warfare with even promising opportunity to rise the rank of the social hierarchy if they manage to display extraordinary feats. A good example of this would be Janissaries of the Ottoman empire that consist mostly of enslaved Christians. However, the example is in somewhat rare cases, most Slave Warriors are usually of lower quality due to their quality of life and existed mostly to enlarge the troop number.  "
+11,"Slave Gladiators",3,1,1,"0",,,45,55,5,20,42,0,0,0,0,50,21,100,110,0,3,0,100,20,5,1,100,1,,,,"Gladiators are martial athletes of the ancient world. The most famous example and of course the unit's name origin is the Gladiators of the Roman Empire. Similar to other kinds of athlete, Gladiators use martial ability to entertain the spectators. Although Gladiators can volunteer, some are forced to be a gladiator by slavery in order to earn their ""promised"" freedom. And since martial ability can be used in warfare, Slave Gladiators can be employed to fight for the nation's demands as well. "
+12,"Yalak Chosens",1,7,1,"56,148",,,70,20,0,45,47,0,0,0,0,59,4,100,115,0,1,0,100,35,5,1,20,1,,,,"These Yalak Chosens were war prisoners that are bought to be trained as slave warrior to the Martial deity, ""Yalak the Almighty"". The priests of Coduikewq then ""educate"" them to become terrifying and fierce warriors that devote their entire life to the teaching of Mokudun, ""Only Will of Battle"". Only a few selected can become the chosen and the rest are discarded. Donned in specially made buffalo leather armours and iron khopeshes, their only weakness is the lack of shield to block missile attack. They are good for both frontal and flank assaults but avoid using them for the main defensive role as they are still a light unit in all things."
+13,"Gosunma Servants",1,1,1,"81,96",,,66,50,30,10,50,0,0,0,0,60,1,105,115,0,1,0,,65,6,1,80,1,,,,"The Servants of Gosunma are ""slaves"" by their wills. They dedicate their whole life following the bidding of their master without a shred of disobedience. For the words of Gosunma, ""The Legal Masters"", are absolute. Although classified as ""Slave"", Servants of Gosunma are extremely well trained in the art of combat and devoted to their masters. they can decently hold up in the frontline with their steel bucklers and swords. They are also good shock units that can charge from both the front and flank positions. However, they only wear light fur armours to protect against the cold weather and do not have any special ability, so avoid using them as main tank units if possible."
 14,"Mob",6,0,1,"163","0",,18,12,0,3,36,20,10,3,1,5,19,100,80,0,6,,80,15,4,1,300,1,,,,"Mob groups may often be seen as easy targets in warfare. But when it comes to rebellion, a group of peasants is often the bane of tyrants. Although a bit better equipped than slaves and have better morale, mobs are still not well-versed in combat as common soldiers due to the lack of training. Their only advantage is huge troop number and low cost so their main tactic is to swarm the enemies from all sides."
-15,"Tribespeople",3,0,1,"0","0",,26,15,0,4,50,25,10,5,1,8,19,100,90,0,3,,85,10,5,1,200,1,,,,"A mob of tribe people is much more well-versed in combat than city-dwelling people due to the strength requires to survive in an uncivilised world. With a hunting tool in hands, they will pull any haughty blue-blooded noble down from their throne and flatten the wall of stone to the last piece. All in all, a mob of untrained peasants can still no way match with the better-trained soldiers, so use them wisely. "
+15,"Tribespeople",3,0,1,"0","0",,26,15,0,4,44,25,10,5,1,8,19,100,90,0,3,,85,10,5,1,200,1,,,,"A mob of tribe people is much more well-versed in combat than city-dwelling people due to the strength requires to survive in an uncivilised world. With a hunting tool in hands, they will pull any haughty blue-blooded noble down from their throne and flatten the wall of stone to the last piece. All in all, a mob of untrained peasants can still no way match with the better-trained soldiers, so use them wisely. "
 16,"Citizen Mobs",6,0,1,"163","0",,11,9,0,3,31,20,10,1,1,3,19,100,60,0,6,,75,20,3,1,300,1,,,,
-17,"Swashbucklers",1,2,1,"93","42",,61,44,12,24,53,0,0,0,0,40,21,100,110,0,1,0,100,30,5,1,40,1,,,,
-18,"Gemmius Sicsalus",1,4,1,"93,140","42,68",,77,60,15,22,65,0,0,0,0,41,21,100,110,0,1,0,110,40,5,1,30,1,,,,
-19,"Amlagances",1,5,1,"43,93","44,65,97",,71,81,15,24,68,0,0,0,0,40,21,100,110,0,1,0,110,20,4,1,10,1,,,,
-20,"Duelists",1,2,1,"13","62",,70,58,0,22,70,0,0,0,0,47,21,100,105,0,1,0,100,55,6,1,30,1,,,,"Duelists are fighters that train in martial arts to perfection. They test out their martial proficiency by performing duel with other duelists to improve their skills even further. As their lives involve around combat activities, this also makes them somewhat suitable for battle. But because duelling is not really a common pastime activity, it is quite difficult to employ Duelists in large number for the entire army."
-21,"Gladiators",3,1,1,"13,148,149","62",,68,55,5,20,64,0,0,0,0,61,21,100,110,0,3,0,100,25,5,1,50,1,,,,"Arena! The place where real fighters fight for their lives and of course the entertainment of the viewers. Gladiators are warriors that can fight foe of any type or race. They have fought another gladiator, animal likes lions, a rare creature such as troll and even minotaur! They even have experience fighting in a group so this makes them truly fearsome addition to any army. There is one flaw however, Gladiators are unruly bunches with no experience in the art of warfare nor fighting along with other people different than themselves. "
-22,"Fencers",1,2,1,"13,14","44,62",,75,60,0,13,73,0,0,0,0,32,21,100,110,0,1,0,100,65,6,1,20,1,,,,"The art of fencing is not about force, it is about form. Each movement must be precise and compact. As such, Fencers are extremely versatile units that are exceptional in both offence and defence. Although fencing is often considered to be an subset activity for nobles and full-time martial artists, this means that only a few manage to master this art enough to be used primarily in warfare."
-23,"Duel Masters",1,5,1,"13,14,24,35","62,95",,80,85,0,18,86,0,0,0,0,67,21,100,130,0,1,0,130,70,7,1,10,1,,,,
-24,"Poliamascs",1,4,1,"13,24,87","62,95",,84,66,0,31,58,90,8,2,3,55,21,100,125,0,1,,115,55,5,1,10,1,,,,
-25,"Avolinas's Hammers",10,8,1,"13,70","62,107",,85,74,0,40,36,0,0,0,0,75,21,130,130,0,10,0,130,70,4,1,15,1,,,,"The Hammers of Avolinas can not be stopped by force alone. With faith in mind and strength in hand, They carry on the final will of Avolinas, God of Dark Sun, to eliminate any impure being that will consume the world whole if left unconstrained. Their proficiency in martial arts allow them to engage in melee combat and come out victorious in almost every condition and foes, Don't put them in the same battalion as unit from other races though since their teaching also make them consider other races less pure than they are to promote group unity. "
-26,"Tribal Warriors",1,0,1,"0",,,40,20,0,18,60,0,0,0,0,40,21,100,100,0,1,0,95,20,6,1,250,1,,,,
-27,"Desert Warriors",1,0,1,"82",,,40,20,0,16,60,0,0,0,0,40,21,100,100,0,1,0,95,20,6,1,200,1,,,,
-28,"Islandic Warriors",1,0,1,"191",,,45,15,0,10,64,0,0,0,0,40,21,100,100,0,1,0,95,20,7,1,150,1,,,,
-29,"Gamanja Warriors",1,1,1,"56,191",,,40,30,0,13,71,0,0,0,0,55,4,110,100,0,1,0,110,10,6,1,140,1,,,,
-30,"Kumarl Milgels",1,1,1,"47,81,200","58",,60,0,0,36,54,0,0,0,0,62,21,100,115,0,1,0,110,35,4,1,120,1,,,,
-31,"Bigejta Tamuloa",1,0,1,,,,34,37,15,22,53,,,,,,21,100,105,0,1,,,10,,1,,1,,,,
-32,"Foot Knights",1,2,1,"0","36",,60,50,51,75,24,0,0,0,0,36,21,100,100,0,1,0,100,45,2,1,50,1,,,,"The ultimate infantry until the modernisation of weaponry, foot knights wear heavy plate armours that can withstand almost every medieval weapons in existence. In combat ground, foot knights stand so above most other infantries that the only way to win melee combat against them is to field foot knights of your own. Foot knights are not without weakness however, for example, it is extremely difficult to amass them in a huge number due to the extensive training requirement and huge cost for the armour. They are also very slow making them ill-suited for manoeuvre tactics."
-33,"Golden Knights",1,4,1,"67","36",,82,71,61,75,25,0,0,0,0,32,21,100,120,0,1,0,120,65,2,1,30,1,,,,"What metal can ever be more glorious and beautiful than gold? While not purely made of gold, Golden Knights' armours are made from the finest steel and plated with a layer of gold. Only the most distinguishable knights in the realm can earn the honour of joining the Golden Knight Rank. Just from their presence alone, they can exert a change in both allies and enemies' mind alike. Their combat capability also ensures that they are really the elite of the elites so best overwhelm them with a superior number since very few can match them one-on-one. "
-34,"King's Companions",1,5,1,,"40,53",,70,50,50,80,21,0,0,0,0,35,21,100,120,0,1,0,130,65,2,1,30,1,,,,"Every leader in the battlefield needs a group of elite bodyguards to protect him in case of combat. This is even more so for the sovereign of a nation. King's Companions is a group of exceptionally selected warriors that swear an oath to protect the crown and its wearer with their lives. They themselves are heavily armed and possess a strong defensive ability. When picking a bodyguard unit for your commander consider this unit as one of the solid choices for infantry orient battalion. "
-35,"Flower Protectors",1,2,1,"115","40,94",,63,68,42,70,30,0,0,0,0,40,8,100,100,0,1,0,110,75,2,1,70,1,,,,
-36,"Pelmessos Sik Arlmerdans",1,6,1,"111","36,92",,76,43,34,74,34,0,0,0,0,50,3,115,130,0,1,0,135,55,,1,40,1,,,,
-37,"Planeltas Champions",1,5,1,"35,43","36,104",,71,60,71,86,15,0,0,0,0,45,21,110,120,0,1,0,120,70,,1,10,1,,,,
-38,"Heavy Swordsmen",1,1,1,"0","36",,55,45,25,51,33,0,0,0,0,26,8,100,100,0,1,0,100,35,4,1,150,1,,,,"Heavy Swordsmen, similar to its counterpart, Swordsmen, are the basic frontline units of many armies. With better-equipped armours such as chain mail to resist enemies' weapons and decent melee combat capability, they can hold up at the frontline for long enough for other units to perform flanking manoeuvre on the enemies. However, with less troop number, higher cost, and significantly slower speed than other lighter units, Heavy Swordsmen not the best choice for the purely offensive situations."
+17,"Swashbucklers",1,2,1,"93","42",,51,44,12,24,48,0,0,0,0,40,21,100,110,0,1,0,100,30,5,1,40,1,,,,
+18,"Gemmius Sicsalus",1,4,1,"93,140","42,68",,67,60,15,22,59,0,0,0,0,41,21,100,110,0,1,0,110,40,5,1,30,1,,,,
+19,"Amlagances",1,5,1,"43,93","44,65,97",,61,81,15,24,62,0,0,0,0,40,21,100,110,0,1,0,110,20,4,1,10,1,,,,
+20,"Duelists",1,2,1,"13","62",,60,58,0,22,50,0,0,0,0,47,21,100,105,0,1,0,100,55,6,1,30,1,,,,"Duelists are fighters that train in martial arts to perfection. They test out their martial proficiency by performing duel with other duelists to improve their skills even further. As their lives involve around combat activities, this also makes them somewhat suitable for battle. But because duelling is not really a common pastime activity, it is quite difficult to employ Duelists in large number for the entire army."
+21,"Gladiators",3,1,1,"13,148,149","62",,58,55,5,20,48,0,0,0,0,61,21,100,110,0,3,0,100,25,5,1,50,1,,,,"Arena! The place where real fighters fight for their lives and of course the entertainment of the viewers. Gladiators are warriors that can fight foe of any type or race. They have fought another gladiator, animal likes lions, a rare creature such as troll and even minotaur! They even have experience fighting in a group so this makes them truly fearsome addition to any army. There is one flaw however, Gladiators are unruly bunches with no experience in the art of warfare nor fighting along with other people different than themselves. "
+22,"Fencers",1,2,1,"13,14","44,62",,65,60,0,13,50,0,0,0,0,32,21,100,110,0,1,0,100,65,6,1,20,1,,,,"The art of fencing is not about force, it is about form. Each movement must be precise and compact. As such, Fencers are extremely versatile units that are exceptional in both offence and defence. Although fencing is often considered to be an subset activity for nobles and full-time martial artists, this means that only a few manage to master this art enough to be used primarily in warfare."
+23,"Duel Masters",1,5,1,"13,14,24,35","62,95",,70,85,0,18,55,0,0,0,0,67,21,100,130,0,1,0,130,70,7,1,10,1,,,,
+24,"Poliamascs",1,4,1,"13,24,87","62,95",,74,66,0,31,58,90,8,2,3,55,21,100,125,0,1,,115,55,5,1,10,1,,,,
+25,"Avolinas's Hammers",10,8,1,"13,70","62,107",,75,74,0,40,36,0,0,0,0,75,21,130,130,0,10,0,130,70,4,1,15,1,,,,"The Hammers of Avolinas can not be stopped by force alone. With faith in mind and strength in hand, They carry on the final will of Avolinas, God of Dark Sun, to eliminate any impure being that will consume the world whole if left unconstrained. Their proficiency in martial arts allow them to engage in melee combat and come out victorious in almost every condition and foes, Don't put them in the same battalion as unit from other races though since their teaching also make them consider other races less pure than they are to promote group unity. "
+26,"Tribal Warriors",1,0,1,"0",,,40,20,0,18,39,0,0,0,0,40,21,100,100,0,1,0,95,20,6,1,250,1,,,,
+27,"Desert Warriors",1,0,1,"82",,,40,20,0,16,39,0,0,0,0,40,21,100,100,0,1,0,95,20,6,1,200,1,,,,
+28,"Islandic Warriors",1,0,1,"191",,,45,15,0,10,42,0,0,0,0,40,21,100,100,0,1,0,95,20,7,1,150,1,,,,
+29,"Gamanja Warriors",1,1,1,"56,191",,,40,30,0,13,54,0,0,0,0,55,4,110,100,0,1,0,110,10,6,1,140,1,,,,
+30,"Kumarl Milgels",1,1,1,"47,81,200","58",,55,0,0,36,48,0,0,0,0,62,21,100,115,0,1,0,110,35,4,1,120,1,,,,
+31,"Bigejta Tamuloa",1,0,1,,,,34,37,15,22,46,,,,,,21,100,105,0,1,,,10,,1,,1,,,,
+32,"Foot Knights",1,2,1,"0","36",,50,50,51,75,22,0,0,0,0,36,21,100,100,0,1,0,100,45,2,1,50,1,,,,"The ultimate infantry until the modernisation of weaponry, foot knights wear heavy plate armours that can withstand almost every medieval weapons in existence. In combat ground, foot knights stand so above most other infantries that the only way to win melee combat against them is to field foot knights of your own. Foot knights are not without weakness however, for example, it is extremely difficult to amass them in a huge number due to the extensive training requirement and huge cost for the armour. They are also very slow making them ill-suited for manoeuvre tactics."
+33,"Golden Knights",1,4,1,"67","36",,62,71,61,75,23,0,0,0,0,32,21,100,120,0,1,0,120,65,2,1,30,1,,,,"What metal can ever be more glorious and beautiful than gold? While not purely made of gold, Golden Knights' armours are made from the finest steel and plated with a layer of gold. Only the most distinguishable knights in the realm can earn the honour of joining the Golden Knight Rank. Just from their presence alone, they can exert a change in both allies and enemies' mind alike. Their combat capability also ensures that they are really the elite of the elites so best overwhelm them with a superior number since very few can match them one-on-one. "
+34,"King's Companions",1,5,1,,"40,53",,60,50,50,80,21,0,0,0,0,35,21,100,120,0,1,0,130,65,2,1,30,1,,,,"Every leader in the battlefield needs a group of elite bodyguards to protect him in case of combat. This is even more so for the sovereign of a nation. King's Companions is a group of exceptionally selected warriors that swear an oath to protect the crown and its wearer with their lives. They themselves are heavily armed and possess a strong defensive ability. When picking a bodyguard unit for your commander consider this unit as one of the solid choices for infantry orient battalion. "
+35,"Flower Protectors",1,2,1,"115","40,94",,53,68,42,70,30,0,0,0,0,40,8,100,100,0,1,0,110,75,2,1,70,1,,,,
+36,"Pelmessos Sik Arlmerdans",1,6,1,"111","36,92",,66,43,34,74,34,0,0,0,0,50,3,115,130,0,1,0,135,55,,1,40,1,,,,
+37,"Planeltas Champions",1,5,1,"35,43","36,104",,61,60,71,86,15,0,0,0,0,45,21,110,120,0,1,0,120,70,,1,10,1,,,,
+38,"Heavy Swordsmen",1,1,1,"0","36",,45,45,25,51,24,0,0,0,0,26,8,100,100,0,1,0,100,35,4,1,150,1,,,,"Heavy Swordsmen, similar to its counterpart, Swordsmen, are the basic frontline units of many armies. With better-equipped armours such as chain mail to resist enemies' weapons and decent melee combat capability, they can hold up at the frontline for long enough for other units to perform flanking manoeuvre on the enemies. However, with less troop number, higher cost, and significantly slower speed than other lighter units, Heavy Swordsmen not the best choice for the purely offensive situations."
 39,"Desert Heavy Swordsmen",1,1,1,,"36",,,,,,,,,,,,8,,,0,1,0,100,35,5,1,150,1,,,,"lamellar armour"
 40,"Legionaries",1,2,1,,,,,,,,,,,,,,21,,,0,1,0,100,55,4,1,150,1,,,,
-41,"Cramiel Sulamans",1,5,1,"40,93","36",,82,76,60,77,47,0,0,0,0,34,21,100,120,0,1,0,130,80,5,1,50,1,,,,
-42,"Spearmen",5,1,1,"22","33",,50,25,0,25,43,0,0,0,0,44,21,100,100,0,5,0,100,35,5,1,200,1,,,,"Spearmen are the foundation of most armies since ancient time. Using the oldest hunting tool for war, spearmen dominate the battlefield for thousands of year. Spear is very easy to train and use as its main attack is simply thrusting the pointy tip at the enemy. It also has the advantage of being long for a melee weapon, which makes it a better choice against charging enemy. The only weaknesses are that spearmen do not have a shield and are less effective in melee combat than other melee weapons."
-43,"Spearmasters",5,5,1,"22,34","34,43,49",,76,64,25,40,59,0,0,0,0,88,21,120,130,0,5,0,125,85,,1,10,1,,,,"Who can say the easiest weapon has no need to be mastered? These Spear Masters practice with their spears for decades and completely eliminate any weakness spear normally has. They can fight against both infantry and cavalry units alike without fear of losing, unlike other weapon masters. More than offense, Spear Masters excel in defence against charge attack and can hold their place much longer than other spear units despite low number. They are still venerable to range attack though."
+41,"Cramiel Sulamans",1,5,1,"40,93","36",,72,76,60,77,28,0,0,0,0,34,21,100,120,0,1,0,130,80,5,1,50,1,,,,
+42,"Spearmen",5,1,1,"22","33",,40,25,0,25,38,0,0,0,0,44,21,100,100,0,5,0,100,35,5,1,200,1,,,,"Spearmen are the foundation of most armies since ancient time. Using the oldest hunting tool for war, spearmen dominate the battlefield for thousands of year. Spear is very easy to train and use as its main attack is simply thrusting the pointy tip at the enemy. It also has the advantage of being long for a melee weapon, which makes it a better choice against charging enemy. The only weaknesses are that spearmen do not have a shield and are less effective in melee combat than other melee weapons."
+43,"Spearmasters",5,5,1,"22,34","34,43,49",,76,64,25,40,50,0,0,0,0,88,21,120,130,0,5,0,125,85,,1,10,1,,,,"Who can say the easiest weapon has no need to be mastered? These Spear Masters practice with their spears for decades and completely eliminate any weakness spear normally has. They can fight against both infantry and cavalry units alike without fear of losing, unlike other weapon masters. More than offense, Spear Masters excel in defence against charge attack and can hold their place much longer than other spear units despite low number. They are still venerable to range attack though."
 44,"Desert Spearmen",5,1,1,"22,82","33",,,,,,,,,,,,,,,,5,0,,35,,1,150,1,,,,
 45,"Gionirlamals",5,2,1,"12,22","33",,,,,,,,,,,,,,,,5,0,,45,,1,100,1,,,,
 46,"Mirage Spearwarriors",5,1,1,"22,131","33",,,,,,,,,,,,,,,,5,0,,45,,1,100,1,,,,
-47,"Pikemen",15,1,1,"22","54",,65,6,0,30,16,0,0,0,0,34,17,100,100,0,15,0,100,40,,1,200,1,,,,"Pike is the obvious answer to the dominance of shock cavalry. They can't hurt us if they can't even reach us without dying first right? A pike wall can completely halt and even annihilate any unit that dares to charge at their front. Do consider that Pikemen cannot form a pike wall formation while running around, this makes them somewhat a poor offensive unit. Moreover, they are completely vulnerable to the range and rear attack even more than other melee infantry units."
-48,"Highland Pikemen",15,1,1,"22,81,192","54",,65,10,0,24,20,0,0,0,0,36,17,100,110,0,15,0,110,25,,1,150,1,,,,
-49,"Mresna Phalanxs",15,2,1,"22,32","54",,75,29,5,44,10,0,0,0,0,50,17,100,100,0,15,0,100,60,,1,150,1,,,,
-50,"Dilkmerg Warriors",15,0,1,"22,58,82","54",,60,0,0,20,30,0,0,0,0,45,21,100,120,0,15,0,120,30,,1,100,1,,,,
-51,"High Hill Guards",15,2,1,"22,81,115,192","54",,70,22,0,69,10,0,0,0,0,30,17,100,110,0,15,0,125,70,,1,150,1,,,,
-52,"Heavy Spearmen",5,1,1,"22","33",,50,30,0,51,33,0,0,0,0,29,21,,,,,,100,40,,1,150,1,,,,"As Spearmen usually have trouble holding a shield, the best way for them to survive combat is to wear good armour. Heavy Spearmen somewhat eliminate the main weakness of spear weapon by allowing them to take more punishment from both melee and range hits. Nevertheless, they still are not that great in the long-term combat against other melee infantry units. So only consider employing them if the enemy employs a large number of shock troop or cavalry units."
-53,"Desert Heavy Spearmen",5,1,1,"22","33",,,,,,,,,,,,,,,,,,,40,,1,150,1,,,,
+47,"Pikemen",15,1,1,"22","54",,55,6,0,30,16,0,0,0,0,34,17,100,100,0,15,0,100,40,,1,200,1,,,,"Pike is the obvious answer to the dominance of shock cavalry. They can't hurt us if they can't even reach us without dying first right? A pike wall can completely halt and even annihilate any unit that dares to charge at their front. Do consider that Pikemen cannot form a pike wall formation while running around, this makes them somewhat a poor offensive unit. Moreover, they are completely vulnerable to the range and rear attack even more than other melee infantry units."
+48,"Highland Pikemen",15,1,1,"22,81,192","54",,55,10,0,24,20,0,0,0,0,36,17,100,110,0,15,0,110,25,,1,150,1,,,,
+49,"Mresna Phalanxs",15,2,1,"22,32","54",,65,29,5,44,10,0,0,0,0,50,17,100,100,0,15,0,100,60,,1,150,1,,,,
+50,"Dilkmerg Warriors",15,0,1,"22,58,82","54",,50,0,0,20,30,0,0,0,0,45,21,100,120,0,15,0,120,30,,1,100,1,,,,
+51,"High Hill Guards",15,2,1,"22,81,115,192","54",,60,22,0,69,10,0,0,0,0,30,17,100,110,0,15,0,125,70,,1,150,1,,,,
+52,"Heavy Spearmen",5,1,1,"22","33",,40,30,0,51,33,0,0,0,0,29,21,,,,,,100,40,,1,150,1,,,,"As Spearmen usually have trouble holding a shield, the best way for them to survive combat is to wear good armour. Heavy Spearmen somewhat eliminate the main weakness of spear weapon by allowing them to take more punishment from both melee and range hits. Nevertheless, they still are not that great in the long-term combat against other melee infantry units. So only consider employing them if the enemy employs a large number of shock troop or cavalry units."
+53,"Desert Heavy Spearmen",5,1,1,"22","33",,40,,,,,,,,,,,,,,,,,40,,1,150,1,,,,
 54,"Nakta Singmorns",5,4,1,"22,49","33,111",,,,,,,,,,,,,,,,,,,50,,1,,1,,,,
 55,"Garssia Doroses",5,2,1,"11,22","33",,,,,,,,,,,,,,,,,,,35,,1,,1,,,,
 56,"Heavy Pikemen",15,1,1,"22","54",,,,,,,,,,,,,,,,,,100,45,,1,150,1,,,,
@@ -63,62 +63,62 @@
 62,"Protectors of Alardell",1,2,1,"45,58","38",,27,86,85,70,15,0,0,0,0,23,20,,,,,,,75,,1,15,1,,,,
 63,"Greatwall Defenders",1,2,1,"45","40",,30,80,80,55,20,0,0,0,0,22,20,,,,,,,80,,1,40,1,,,,
 64,"Knowledge Protectors",1,4,1,"35,45","39",,20,90,90,70,10,0,0,0,0,8,20,,,,,,,80,,1,10,1,,,,
-65,"Macemen",7,1,1,"0","36",,58,48,15,30,38,0,0,0,0,45,21,100,100,0,7,0,100,35,,1,200,1,,,,"Macemen are not a common sight in the battlefield until the invent of heavy plate armour. Equipped with either Winged Maces or Morning Stars, Macemen are best suited against heavy infantry units due to its high armour penetration. Aside from this superb advantage, they are still no less effective than other melee infantry units, which makes them a strong choice in most situations. "
-66,"Macemasters",7,5,1,"34,35",,,85,65,25,40,50,0,0,0,0,80,21,120,,0,7,0,130,85,,1,10,1,,,,"Even a brute weapon such as mace can be used elegantly. Macemasters are the banes of all knights on the battlefield with their crushing and precise blows that no armour can resist. If only they exist in large number, the vile existence of heavy knight would be obsolete as soon as it got invented and existed only as an inconsequential point in the history of warfare."
-67,"Desert Macemen",7,1,1,"82","36",,55,50,15,24,50,0,0,0,0,50,21,100,,0,7,0,100,35,,1,150,1,,,,
+65,"Macemen",7,1,1,"0","36",,41,48,15,30,32,0,0,0,0,45,21,100,100,0,7,0,100,35,,1,200,1,,,,"Macemen are not a common sight in the battlefield until the invent of heavy plate armour. Equipped with either Winged Maces or Morning Stars, Macemen are best suited against heavy infantry units due to its high armour penetration. Aside from this superb advantage, they are still no less effective than other melee infantry units, which makes them a strong choice in most situations. "
+66,"Macemasters",7,5,1,"34,35",,,65,65,25,40,42,0,0,0,0,70,21,120,,0,7,0,130,85,,1,10,1,,,,"Even a brute weapon such as mace can be used elegantly. Macemasters are the banes of all knights on the battlefield with their crushing and precise blows that no armour can resist. If only they exist in large number, the vile existence of heavy knight would be obsolete as soon as it got invented and existed only as an inconsequential point in the history of warfare."
+67,"Desert Macemen",7,1,1,"82","36",,41,50,15,24,48,0,0,0,0,50,21,100,,0,7,0,100,35,,1,150,1,,,,
 68,"Sarnghadis",7,2,1,"23",,,,,,,,0,0,0,0,,,,,0,7,0,115,45,,1,100,1,,,,
 69,"Lutang Facebashers",7,4,1,"56",,,,,,,,0,0,0,0,,,,,0,7,0,120,15,,1,120,1,,,,
-70,"Billmen",14,1,1,"22",,,59,25,0,20,20,0,0,0,0,22,21,100,100,,14,0,100,35,5,1,100,1,,,,"Bill or Billhook is a polearm weapon originated from a cutting tool of the same name. Although also existed in a smaller form, Pole Bill was a popular weapon in the European middle age that share similar purpose as halberd and other glaive type weapons. Effective for both long-range piercing and slashing manoeuvres, while being lightweight makes Billhook much more flexible and easier to adapt than other polearms. As a result, Billmen is positively versatile polearm unit that exudes almost no apparent weakness."
-71,"Masendor Guards",14,1,1,"22",,,62,25,0,31,18,0,0,0,0,20,21,100,110,,14,0,100,40,4,1,150,1,,,,
-72,"Bournliedels",14,10,1,"22",,,63,20,0,28,26,0,0,0,0,35,21,100,100,,14,0,130,40,5,1,200,1,,,,
-73,"Axemen",12,1,1,,"36",,59,28,15,30,39,0,0,0,0,47,21,100,100,,12,0,100,35,,1,200,1,,,,"Axe is one of the very first cutting tools that existed since the stone age. Simple to create and use, yet capable of producing powerful blow from it monstrous momentum. Axemen is no surprise a common sight in armies throughout history and the world. Fortunately, their amazing offensive performance does outshine their slightly poorer defence, which means that they can be employed for both offensive and defensive purposes."
-74,"Shield Breakers",12,2,1,,,,70,30,15,22,55,0,0,0,0,70,21,100,,,12,0,110,50,,1,150,1,,,,
-75,"Axemasters",12,5,1,"123","36",,85,50,20,37,58,0,0,0,0,90,,120,,,12,0,125,85,,1,10,1,,,,"Although considered to a less romantic weapon than a sword and even less than a mace, axe still has its appeal (mostly in brute strength) enough for people to practice it until achieving complete mastery. Who need other weapons in hands when an axe cleave through anyone standing discriminately. With the combination of preciseness and pure brute force, Axemasters truly have no equal. Well except for a charging heavy cavalry unit perhaps. "
-76,"Delpiborhs",12,1,1,,,,70,60,35,40,40,0,0,0,0,,21,,,,12,0,100,55,,1,150,1,,,,
-77,"Bodibars",12,2,1,,,,,,,,,,,,,68,,,,,12,0,,50,,1,150,1,,,,
-78,"Kunbann Woodbreakers",12,10,1,"56,149",,,80,19,0,22,60,0,0,0,0,80,1,,,,12,0,100,25,,1,100,1,,,,
-79,"Cultists",3,7,1,,,,64,10,0,0,65,0,0,0,0,55,21,100,95,0,3,,105,65,4,1,100,1,,,,"There is nothing worse than facing a group of cultists in battle. They keep chanting incomprehensible words and keep fighting without fear of dying. Whatever dark god they worship, it is for certain that they are up to no good. Good news is they usually wear robes or light armours at best so they are easy targets for range attack, which means we can kill them without having to hear their annoying chant too! It is almost like killing two birds with one stone."
-80,"Zealots",3,8,1,"298",,,70,10,0,5,80,0,0,0,0,75,1,100,110,13,3,,115,80,4,1,50,1,,,,"Well, this is even worse than Cultists, these zealots are so far gone that there can be no reasoning with them. Whatever fault heresy they believe, it is true in their hearts and they are more than willing to sacrifice themselves for it. Well no point talking where there is killing to do. For the words of our lord is the only truth and we should believe in him in our hearts. "
-81,"Maiga Jijasses",9,7,1,"58,79,86,298",,,76,15,10,10,80,0,0,0,0,86,,100,105,7,9,,130,80,3,1,50,1,,,,
-82,"Nalan Worshippers",3,8,1,"210,212,298","131,158",,68,28,5,5,85,0,0,0,0,83,,100,110,27,3,,125,65,2,1,50,1,,,,
-83,"Royal Guards",1,4,1,"115","39",,60,80,40,70,25,0,0,0,0,21,21,100,100,0,1,0,110,60,,1,50,1,,,"Healing Potion,Bandage",
-84,"Palace Guards",14,4,1,"115","39",,75,60,0,68,20,0,0,0,0,21,21,100,100,0,14,0,110,65,,1,50,1,,,,
-85,"Jeweled Guards",1,4,1,"115","39",,66,75,34,75,15,0,0,0,0,30,21,100,110,0,1,0,120,75,,1,30,1,,,"Healing Potion,Bandage",
-86,"Milingrels",1,5,1,"111,115","38 ,111",,74,91,50,60,31,0,0,0,0,17,21,100,120,15,1,0,125,82,,1,10,1,,"Smoke Screen","Healing Scroll,Healing Potion,Speed Potion","Milingrels are elite knight squads that is assigned to protect royalty at all time from any danger including in battle. They will not break, they will not yield and they will never fail. They are equipped with multiple tools and can use some magic to fulfill those mission. The leader of this unit is bestowed with the title ""Royal Knight""."
+70,"Billmen",14,1,1,"22","34",,49,25,0,20,20,0,0,0,0,22,21,100,100,,14,0,100,35,5,1,100,1,,,,"Bill or Billhook is a polearm weapon originated from a cutting tool of the same name. Although also existed in a smaller form, Pole Bill was a popular weapon in the European middle age that share similar purpose as halberd and other glaive type weapons. Effective for both long-range piercing and slashing manoeuvres, while being lightweight makes Billhook much more flexible and easier to adapt than other polearms. As a result, Billmen is positively versatile polearm unit that exudes almost no apparent weakness."
+71,"Masendor Guards",14,1,1,"22","34",,52,25,0,31,18,0,0,0,0,20,21,100,110,,14,0,100,40,4,1,150,1,,,,
+72,"Bournliedels",14,10,1,"22","34",,53,20,0,28,26,0,0,0,0,35,21,100,100,,14,0,130,40,5,1,200,1,,,,
+73,"Axemen",12,1,1,,"36",,49,28,15,30,39,0,0,0,0,47,21,100,100,,12,0,100,35,,1,200,1,,,,"Axe is one of the very first cutting tools that existed since the stone age. Simple to create and use, yet capable of producing powerful blow from it monstrous momentum. Axemen is no surprise a common sight in armies throughout history and the world. Fortunately, their amazing offensive performance does outshine their slightly poorer defence, which means that they can be employed for both offensive and defensive purposes."
+74,"Shield Breakers",12,2,1,,,,60,30,15,22,55,0,0,0,0,70,21,100,,,12,0,110,50,,1,150,1,,,,
+75,"Axemasters",12,5,1,"123","36",,75,50,20,37,58,0,0,0,0,80,,120,,,12,0,125,85,,1,10,1,,,,"Although considered to a less romantic weapon than a sword and even less than a mace, axe still has its appeal (mostly in brute strength) enough for people to practice it until achieving complete mastery. Who need other weapons in hands when an axe cleave through anyone standing discriminately. With the combination of preciseness and pure brute force, Axemasters truly have no equal. Well except for a charging heavy cavalry unit perhaps. "
+76,"Delpiborhs",12,1,1,,,,60,60,35,40,40,0,0,0,0,,21,,,,12,0,100,55,,1,150,1,,,,
+77,"Bodibars",12,2,1,,,,,,,,,,,,,67,,,,,12,0,,50,,1,150,1,,,,
+78,"Kunbann Woodbreakers",12,10,1,"56,149",,,70,19,0,22,60,0,0,0,0,75,1,,,,12,0,100,25,,1,100,1,,,,
+79,"Cultists",3,7,1,,,,54,10,0,0,65,0,0,0,0,55,21,100,95,0,3,,105,65,4,1,100,1,,,,"There is nothing worse than facing a group of cultists in battle. They keep chanting incomprehensible words and keep fighting without fear of dying. Whatever dark god they worship, it is for certain that they are up to no good. Good news is they usually wear robes or light armours at best so they are easy targets for range attack, which means we can kill them without having to hear their annoying chant too! It is almost like killing two birds with one stone."
+80,"Zealots",3,8,1,"298",,,60,10,0,5,80,0,0,0,0,75,1,100,110,13,3,,115,80,4,1,50,1,,,,"Well, this is even worse than Cultists, these zealots are so far gone that there can be no reasoning with them. Whatever fault heresy they believe, it is true in their hearts and they are more than willing to sacrifice themselves for it. Well no point talking where there is killing to do. For the words of our lord is the only truth and we should believe in him in our hearts. "
+81,"Maiga Jijasses",9,7,1,"58,79,86,298",,,66,15,10,10,80,0,0,0,0,83,,100,105,7,9,,130,80,3,1,50,1,,,,
+82,"Nalan Worshippers",3,8,1,"210,212,298","131,158",,58,28,5,5,85,0,0,0,0,80,,100,110,27,3,,125,65,2,1,50,1,,,,
+83,"Royal Guards",1,4,1,"115","39",,50,80,40,70,25,0,0,0,0,21,21,100,100,0,1,0,110,60,,1,50,1,,,"Healing Potion,Bandage",
+84,"Palace Guards",14,4,1,"115","39",,65,60,0,68,20,0,0,0,0,21,21,100,100,0,14,0,110,65,,1,50,1,,,,
+85,"Jeweled Guards",1,4,1,"115","39",,56,75,34,75,15,0,0,0,0,30,21,100,110,0,1,0,120,75,,1,30,1,,,"Healing Potion,Bandage",
+86,"Milingrels",1,5,1,"111,115","38 ,111",,64,91,50,60,31,0,0,0,0,17,21,100,120,15,1,0,125,82,,1,10,1,,"Smoke Screen","Healing Scroll,Healing Potion,Speed Potion","Milingrels are elite knight squads that is assigned to protect royalty at all time from any danger including in battle. They will not break, they will not yield and they will never fail. They are equipped with multiple tools and can use some magic to fulfill those mission. The leader of this unit is bestowed with the title ""Royal Knight""."
 87,"Heavy Axemen",12,1,1,,,,,,,,,,,,,,,,,,,,100,40,,1,150,1,,,,
 88,"Marain Suxor Welliors",12,,1,,,,,,,,,,,,,,,,,,,,,50,,1,,1,,,,
 89,"Avantafes",12,,1,"12",,,,,,,,,,,,,,,,,,,,65,,1,,1,,,,
 90,"Happy Executioners",12,2,1,"56,135",,,,,,,,,,,,,,,,,,,,35,,1,,1,,,,
-91,"Heavy Flailmen",9,1,1,,,,53,45,15,35,30,0,0,0,0,35,,,,,,,100,40,,1,150,1,,,,
+91,"Heavy Flailmen",9,1,1,,,,53,35,15,50,30,0,0,0,0,35,,,,,,,100,40,,1,150,1,,,,
 92,"Milana Dumoigs",9,1,1,,,,,,,,,,,,,,,,,,,,,65,,1,,1,,,,
 93,"Ladies Of Sentrors",9,2,1,"53",,,,,,,,,,,,,,,,,,,,75,,1,,1,,,,
 94,"Gilbei Niegralks",9,3,1,"54","128",,,,,,,,,,,,,,,,,,,70,,1,,1,,,,
-95,"Heavy Billmen",16,1,1,"22","54",,64,27,0,48,13,0,0,0,0,16,,100,100,,,,100,40,,1,100,1,,,,
-96,"Appointed Billguards",16,2,1,"22","54",,76,34,0,60,15,0,0,0,0,25,,100,110,,,,110,65,,1,,1,,,,
-97,"Flailmen",9,1,1,,"54",,55,47,0,27,38,0,0,0,0,40,,100,100,,,,100,35,,1,200,1,,,,
-98,"Flailmasters",9,5,1,"35,103",,,76,60,10,30,53,0,0,0,0,50,,,,,,,,85,,1,10,1,,,,
-99,"Martyrs Of War",9,2,1,,,,65,70,0,16,67,0,0,0,0,65,,,,,,,,40,,1,100,1,,,,
-100,"Bodi Skullcrushers",9,1,1,"56,123",,,70,40,0,33,57,0,0,0,0,80,5,,,,,,,20,,1,70,1,,,,
-101,"Monk Warriors",30,8,1,"115,298","105",,60,35,10,2,75,0,0,0,0,30,1,100,130,0,,,120,75,7,1,50,1,,,,
-102,"Holy Fists",18,9,1,"34,115,298","43,105",,73,50,10,2,78,0,0,0,0,43,1,110,140,17,,,130,80,7,1,20,1,,,,
-103,"Sacred Robes",18,9,1,"68,115,298","105",,68,45,30,23,75,0,0,0,0,34,1,,130,38,,,130,85,7,1,15,1,,,,
-104,"Temple Guards",30,8,1,"24,115,298","94,105",,65,60,5,28,65,0,0,0,0,67,1,,,5,,,120,75,5,1,70,1,,,,
-105,"Halrasarms",18,9,1,"115,298","105,143",,,,,10,80,0,0,0,0,,1,,,,,,135,80,8,1,25,1,,,,
-106,"Tranquility Monks",30,9,1,"37,115,247,298","75,105",,,,,1,70,0,0,0,0,,1,,,,,,150,85,9,1,10,1,,,,
-107,"Pigrims Of Kobandang",30,8,1,"115,298","90,105,193",,,,,12,85,0,0,0,0,,1,,,,,,135,70,7,1,35,1,,,,
+95,"Heavy Billmen",16,1,1,"22","34",,54,27,0,48,13,0,0,0,0,16,,100,100,,,,100,40,,1,100,1,,,,
+96,"Appointed Billguards",16,2,1,"22","34",,66,34,0,60,15,0,0,0,0,25,,100,110,,,,110,65,,1,,1,,,,
+97,"Flailmen",9,1,1,,"34",,53,30,0,27,35,0,0,0,0,40,,100,100,,,,100,35,,1,200,1,,,,
+98,"Flailmasters",9,5,1,"35,103",,,76,60,10,30,45,0,0,0,0,50,,,,,,,,85,,1,10,1,,,,
+99,"Martyrs Of War",9,2,1,,,,65,70,0,16,47,0,0,0,0,65,,,,,,,,40,,1,100,1,,,,
+100,"Bodi Skullcrushers",9,1,1,"56,123",,,70,40,0,33,39,0,0,0,0,80,5,,,,,,,20,,1,70,1,,,,
+101,"Monk Warriors",30,8,1,"115,298","105",,60,35,10,2,58,0,0,0,0,30,1,100,130,0,,,120,75,7,1,50,1,,,,
+102,"Holy Fists",18,9,1,"34,115,298","43,105",,73,50,10,2,62,0,0,0,0,43,1,110,140,17,,,130,80,7,1,20,1,,,,
+103,"Sacred Robes",18,9,1,"68,115,298","105",,68,45,30,23,55,0,0,0,0,34,1,,130,38,,,130,85,7,1,15,1,,,,
+104,"Temple Guards",30,8,1,"24,115,298","94,105",,65,60,5,28,45,0,0,0,0,67,1,,,5,,,120,75,5,1,70,1,,,,
+105,"Halrasarms",18,9,1,"115,298","105,143",,,,,10,60,0,0,0,0,,1,,,,,,135,80,8,1,25,1,,,,
+106,"Tranquility Monks",30,9,1,"37,115,247,298","75,105",,,,,1,60,0,0,0,0,,1,,,,,,150,85,9,1,10,1,,,,
+107,"Pigrims Of Kobandang",30,8,1,"115,298","90,105,193",,,,,12,65,0,0,0,0,,1,,,,,,135,70,7,1,35,1,,,,
 108,"Divine Champions",1,9,1,"27,111,115,298","105,136",,,,,,,,,,,,1,,,,,,145,85,5,1,10,1,,,,
-109,"Nun Warriors",30,8,1,"115,298",,,53,42,8,1,75,0,0,0,0,26,1,100,,,30,0,120,90,7,1,50,1,,,,
-110,"Enlightened Nuns",18,9,1,"115,298","88",,,,10,1,75,0,0,0,0,35,1,100,,,18,0,130,100,9,1,20,1,,,,
-111,"Pure Minds And Bodies",18,9,1,"115,248,298","61",,,,,0,80,0,0,0,0,22,1,120,,,18,0,145,100,9,1,35,1,,,,
+109,"Nun Warriors",30,8,1,"115,298",,,53,42,8,1,55,0,0,0,0,26,1,100,,,30,0,120,90,7,1,50,1,,,,
+110,"Enlightened Nuns",18,9,1,"115,298","88",,,,10,1,64,0,0,0,0,35,1,100,,,18,0,130,100,9,1,20,1,,,,
+111,"Pure Minds And Bodies",18,9,1,"115,248,298","61",,,,,0,68,0,0,0,0,22,1,120,,,18,0,145,100,9,1,35,1,,,,
 112,"Baladoi Kilkoes",30,9,1,"115,298","195",,,,,,,0,0,0,0,,1,,,,30,0,125,95,7,1,60,1,,,,
 113,"Nalan Preachers",30,9,1,"58,115,298","189,193",,,,,,,0,0,0,0,,1,,,,30,0,115,90,6,1,,1,,,,
-114,"War Assassins",4,2,1,"33,232,304","44,196",,72,40,10,26,85,,,,,43,21,100,120,0,2,,100,75,5,1,30,1,,,,
-115,"Hashshashin",1,2,1,"33,56,227,232,304","44,96,196",,80,34,10,20,90,,,,,64,,100,130,0,2,,105,80,5,1,20,1,,,,
+114,"War Assassins",4,2,1,"33,232,304","44,196",,68,40,10,26,65,,,,,43,21,100,120,0,2,,100,75,5,1,30,1,,,,
+115,"Hashshashin",1,2,1,"33,56,227,232,304","44,96,196",,73,34,10,20,67,,,,,64,,100,130,0,2,,105,80,5,1,20,1,,,,
 116,"Golanggas",4,2,1,"33,56,194,232,304","44,196",,,,,,,,,,,,,,,2,2,,110,80,4,1,15,1,,,,
 117,"Shadow Lawmakers",3,4,1,"14,56,33,232,304","44,196",,,,,,,,,,,,,,,0,2,,135,95,4,1,10,1,,,,
-118,"Scouts",3,1,1,"190,225,308","160,196",,42,35,3,16,80,,,,,,21,100,115,0,,,100,50,8,1,10,1,,,,
-119,"Mountaineer Scouts",3,1,1,"192,223,308","160,196",,41,35,3,15,80,,,,,,21,,130,0,,,100,55,7,1,10,1,,,,
-120,"Border Patrols",3,1,1,"308","160",,55,52,5,29,65,60,30,3,60,,21,,115,0,,,100,65,7,1,30,1,,,,
+118,"Scouts",3,1,1,"190,225,308","160,196",,32,35,3,16,62,,,,,,21,100,115,0,,,100,50,8,1,10,1,,,,
+119,"Mountaineer Scouts",3,1,1,"192,223,308","160,196",,31,35,3,15,62,,,,,,21,,130,0,,,100,55,7,1,10,1,,,,
+120,"Border Patrols",3,1,1,"308","160",,45,52,5,29,54,60,30,3,60,,21,,115,0,,,100,65,7,1,30,1,,,,
 121,"Giseras",3,1,1,"194,308","44,160",,,,,,,,,,,,21,,,0,,,105,,6,1,15,1,,,,
 122,"Lagoinu Watchers",3,1,1,"308","160,196",,,,,,,,,,,,21,,,0,,,100,,8,1,20,1,,,,
 123,"Foe Seekers",3,2,1,"16,236,305,307","160,196",,,,,,,,,,,,21,,,0,,,110,,9,1,10,1,,,,
@@ -132,13 +132,13 @@
 131,"Flower Guards",14,2,1,"93",,,,,,,,,,,,,21,,,,,,,,,1,100,1,,,,
 132,"Medals Carriers",14,4,1,"93",,,,,,,,,,,,,,,,,,,,,,1,30,1,,,,
 133,"Peace Holders",5,3,1,"93",,,,,,,,,,,,,,,,,,,,,,1,50,1,,,,
-134,"Halberdiers",14,2,1,"22","54",,74,20,0,24,18,,,,,,,100,100,,,,100,,,1,100,1,,,,
-135,"Wardens",14,2,1,"22","54",,71,25,0,39,15,,,,,,,,,,,,,,,1,100,1,,,,
-136,"Landguards",14,1,1,"22","54",,70,22,0,34,17,,,,,,,,,,,,,,,1,200,1,,,,
-137,"Tiger Troops",14,2,1,"22","54",,78,20,0,30,16,,,,,,,,,,,,,,,1,150,1,,,,
-138,"Guardmen Of Sopust",14,1,1,"12,22","54",,63,30,0,27,15,,,,,,,,,,,,,,,1,200,1,,,,
-139,"Kubala Halbarses",14,5,1,"22,43","54",,,,10,41,13,,,,,,,,,,,,,,,1,100,1,,,,
-140,"Law Enforcers",14,3,1,"22,115,124","54",,,,0,25,23,,,,,,,,,,,,,,,1,80,1,,,,
+134,"Halberdiers",14,2,1,"22","34",,64,20,0,24,18,,,,,,,100,100,,,,100,,,1,100,1,,,,
+135,"Wardens",14,2,1,"22","34",,61,25,0,39,15,,,,,,,,,,,,,,,1,100,1,,,,
+136,"Landguards",14,1,1,"22","34",,60,22,0,34,17,,,,,,,,,,,,,,,1,200,1,,,,
+137,"Tiger Troops",14,2,1,"22","34",,68,20,0,30,16,,,,,,,,,,,,,,,1,150,1,,,,
+138,"Guardmen Of Sopust",14,1,1,"12,22","34",,58,30,0,27,15,,,,,,,,,,,,,,,1,200,1,,,,
+139,"Kubala Halbarses",14,5,1,"22,43","34",,,,10,41,13,,,,,,,,,,,,,,,1,100,1,,,,
+140,"Law Enforcers",14,3,1,"22,115,124","34",,,,0,25,23,,,,,,,,,,,,,,,1,80,1,,,,
 141,"Paladins",1,8,1,"54,100","161",,,,,,,,,,,,,,,,,,120,85,,1,40,1,,"Blessing","Elixir",
 142,"Crusader",7,8,1,"54,100,298","161",,,,,,,,,,,,,,,,,,,85,,1,40,1,,"Blessing","Healing Potion",
 143,"Templar",1,8,1,"54,100,298","161",,,,,,,,,,,,,,,,,,,90,,1,40,1,,"Blessing","Healing Potion",
@@ -159,10 +159,10 @@
 158,"Great Mountain Children",13,0,1,"24,192,265",,,,,0,,,,,,,,,,,,,,,20,,1,,1,,,,
 159,"Savage Defilers",13,1,1,"11,24,112,162",,,,,0,,,,,,,,4,,,,,,,,,1,,1,,,,
 160,"Swift Marauders",13,2,1,"24,112",,,,,0,,,,,,,,1,,,,,,,,,1,,1,,,,
-161,"Berserkers",12,1,1,"11,24",,,,5,0,20,60,0,0,0,0,,4,,,,,,,,,1,50,1,,,,
-162,"Naked Warriors",12,1,1,"11,24",,,,5,0,0,66,0,0,0,0,,4,,,,,,,,,1,,1,,,,
+161,"Berserkers",12,1,1,"11,24",,,,5,0,20,50,0,0,0,0,,4,,,,,,,,,1,50,1,,,,
+162,"Naked Warriors",12,1,1,"11,24",,,,5,0,0,56,0,0,0,0,,4,,,,,,,,,1,,1,,,,
 163,"Aggressive Tranquils",7,3,1,"11,24",,,,15,0,16,55,0,0,0,0,,4,,,,,,,35,,1,,1,,,,
-164,"Stone Dwelling Banishers",10,2,1,"11,24",,,,10,15,34,64,0,0,0,0,,4,,,,,,,20,,1,,1,,,"Juicy Meat",
+164,"Stone Dwelling Banishers",10,2,1,"11,24",,,,10,15,34,54,0,0,0,0,,4,,,,,,,20,,1,,1,,,"Juicy Meat",
 165,"Greatswordsmen",2,1,1,"22,24",,,,,,,,,,,,,21,,,,,,,40,,1,100,1,,,,
 166,"Zweihanders",2,2,1,"22,24","98",,,,,,,,,,,,21,,,,,,,45,,1,,1,,,,
 167,"Greatswords Of Tasadun",2,3,1,"11,22,24","48,58",,,,,,,,,,,,3,,,,,,,65,,1,,1,,,,
@@ -178,58 +178,58 @@
 177,"Great Hammer Warriors",10,2,1,,"123",,,,,,,,,,,,21,,,,,,,40,,1,,1,,,,
 178,"Instruments Of War",10,2,1,,"134",,,,,,,,,,,,21,,,,,,,65,,1,,1,,,,
 179,"Shaairebriels",10,4,1,,"94",,,,,80,,,,,,,20,,,,,,,25,,1,,1,,,,
-180,"Archers",24,1,1,"16","82",,13,22,0,17,63,45,40,40,5,5,19,100,100,0,3,24,100,35,6,1,200,2,,,,"In ancient time, archery is everything. It is survival, it is tradition, it is honour and it is victory. Archery allows human more chance to survive in a dangerous hunt than the other primitive hunting tool due to its long-range. Often time society creates a tradition for practising archery since childhood as its mastery is extremely difficult to achieve. Unsurprisingly, the most efficient tool to hunt animals become the most efficient tool to kill another human in warfare. Capable of loosing arrows with short bows, archers are superb additions in any army."
-181,"Foot Archers",24,1,1,"16","82",,19,29,0,28,59,45,40,45,5,10,19,100,105,0,3,24,100,35,5,1,200,2,,,,
-182,"Steppe Light Bows",24,0,1,"16","82",,14,24,0,5,70,50,47,46,4,4,19,100,110,0,3,24,100,30,7,1,150,2,,,,
-183,"Shortbow Archers",24,1,1,"16","78,82",,12,22,0,17,67,43,35,50,4,5,19,100,100,0,3,24,100,35,6,1,200,2,,,,
-184,"Noble Archers",24,11,1,"16","82",,19,35,0,40,55,55,44,50,4,25,19,100,105,0,2,24,110,45,5,1,50,2,,,,
-185,"Huludtees",24,1,1,"16","82",,36,42,0,30,56,45,47,45,4,6,19,100,,0,,24,100,50,5,1,100,2,,,,
-186,"Flying arrow of Meln",24,2,1,"16","41,82",,10,15,0,5,72,50,50,50,2,2,19,100,,0,,24,110,55,7,1,180,2,,,,
-187,"Mollittian Archers",24,1,1,"16,112","61,82",,25,24,5,13,68,40,45,40,3,12,19,100,,0,,24,110,50,6,1,80,2,,,,
-188,"Radalliel Gondels",24,11,1,"16","82,87",,14,28,5,35,55,65,52,60,3,16,19,100,,0,,24,115,60,5,1,60,2,,,,
-189,"Light Crossbowmen",26,1,1,"0","0",,12,21,0,15,58,45,30,45,9,5,19,100,100,0,3,26,100,50,6,1,200,2,,,,
-190,"Crossbowmen",26,1,1,,,,11,18,0,20,55,,38,35,9,7,19,100,100,0,3,26,100,50,5,1,150,2,,,,
+180,"Archers",24,1,1,"16","82",,13,22,0,17,48,45,40,40,5,5,19,100,100,0,3,24,100,35,6,1,200,2,,,,"In ancient time, archery is everything. It is survival, it is tradition, it is honour and it is victory. Archery allows human more chance to survive in a dangerous hunt than the other primitive hunting tool due to its long-range. Often time society creates a tradition for practising archery since childhood as its mastery is extremely difficult to achieve. Unsurprisingly, the most efficient tool to hunt animals become the most efficient tool to kill another human in warfare. Capable of loosing arrows with short bows, archers are superb additions in any army."
+181,"Foot Archers",24,1,1,"16","82",,19,29,0,28,39,45,40,45,5,10,19,100,105,0,3,24,100,35,5,1,200,2,,,,
+182,"Steppe Light Bows",24,0,1,"16","82",,14,24,0,5,53,50,47,46,4,4,19,100,110,0,3,24,100,30,7,1,150,2,,,,
+183,"Shortbow Archers",24,1,1,"16","78,82",,12,22,0,17,51,43,35,50,4,5,19,100,100,0,3,24,100,35,6,1,200,2,,,,
+184,"Noble Archers",24,11,1,"16","82",,19,35,0,40,38,55,44,50,4,25,19,100,105,0,2,24,110,45,5,1,50,2,,,,
+185,"Huludtees",24,1,1,"16","82",,36,42,0,30,42,45,47,45,4,6,19,100,,0,,24,100,50,5,1,100,2,,,,
+186,"Flying arrow of Meln",24,2,1,"16","41,82",,10,15,0,5,64,50,50,50,2,2,19,100,,0,,24,110,55,7,1,180,2,,,,
+187,"Mollittian Archers",24,1,1,"16,112","61,82",,25,24,5,13,60,40,45,40,3,12,19,100,,0,,24,110,50,6,1,80,2,,,,
+188,"Radalliel Gondels",24,11,1,"16","82,87",,14,28,5,35,52,65,52,60,3,16,19,100,,0,,24,115,60,5,1,60,2,,,,
+189,"Light Crossbowmen",26,1,1,"0","0",,12,21,0,15,45,45,30,45,9,5,19,100,100,0,3,26,100,50,6,1,200,2,,,,
+190,"Crossbowmen",26,1,1,,,,11,18,0,20,42,,38,35,9,7,19,100,100,0,3,26,100,50,5,1,150,2,,,,
 191,"Gettiles",26,1,1,,,,30,32,16,30,45,,37,30,8,,19,100,,0,,26,,,5,1,130,2,,,,
 192,"Gemmius Sicsalus",26,2,1,,"41",,,,,,,,38,40,7,,19,100,,0,,26,,,6,1,70,2,,,,
-193,"Songes ",26,1,1,"194,225","44",,10,13,0,10,75,,40,30,8,,19,100,,0,,26,,,8,1,30,2,,,,"This light crossbow ranger unit"
-194,"Longbowmen",23,1,1,"16","82",,7,17,0,14,55,60,65,45,45,3,19,100,110,0,4,23,100,60,7,1,100,2,,,,
-195,"Greatbowmen",25,2,1,"16","82",,4,12,0,12,46,60,70,40,40,1,19,100,110,0,4,25,100,65,7,1,80,2,,,,
-196,"Greatbows Of Kobala",25,4,1,"16,74,305","82,101",,5,11,5,5,50,65,75,50,45,6,19,100,125,0,4,25,,77,8,1,30,2,,,,
+193,"Songes ",26,1,1,"194,225","44",,10,13,0,10,64,,40,30,8,,19,100,,0,,26,,,8,1,30,2,,,,"This light crossbow ranger unit"
+194,"Longbowmen",23,1,1,"16","82",,7,17,0,14,40,60,65,45,45,3,19,100,110,0,4,23,100,60,7,1,100,2,,,,
+195,"Greatbowmen",25,2,1,"16","82",,4,12,0,12,34,60,70,40,40,1,19,100,110,0,4,25,100,65,7,1,80,2,,,,
+196,"Greatbows Of Kobala",25,4,1,"16,74,305","82,101",,5,11,5,5,38,65,75,50,45,6,19,100,125,0,4,25,,77,8,1,30,2,,,,
 197,"Barlisia",25,1,1,"16,74,224","82,196",,,19,2,18,40,65,70,50,45,12,19,100,115,0,4,25,,80,7,1,60,2,,,,
-198,"Sogellel Itina",23,4,1,"16,19,74,241","82",,,10,4,12,68,60,65,30,50,4,19,100,105,0,4,23,,70,7,1,60,2,,,,
-199,"Mulugar Practitioners",23,3,1,"13,16,19,111","45,83",,14,36,35,11,88,90,73,25,85,,19,100,130,0,4,23,,85,6,1,40,2,,,,
-200,"Heavy Crossbowmen",27,1,1,,,,8,14,0,22,46,45,41,35,40,8,17,100,100,0,3,27,100,55,4,1,150,2,,,,
-201,"Arbalesters",29,1,1,,,,3,10,0,22,38,50,48,30,35,2,17,100,120,0,3,29,100,60,5,1,100,2,,,,
-202,"Armoured Crossbowmen",27,1,1,,,,15,21,0,40,35,45,40,30,40,5,17,100,115,0,3,27,100,55,4,1,150,2,,,,
-203,"Knightslayers",29,2,1,,,,9,28,0,21,44,60,41,30,35,,17,100,125,0,3,29,105,60,5,1,80,2,,,,
-204,"Pavise Crossbowmen",27,1,1,,"46",,5,5,50,29,38,45,39,30,40,,17,100,110,0,3,27,100,60,5,1,150,2,,,,
-205,"Adrianlow Company",29,10,1,,"41,46",,15,13,62,33,28,50,40,30,45,,17,100,,0,3,29,120,70,5,1,70,2,,,,
-206,"Migais",27,2,1,"74","45",,6,12,0,25,45,65,45,35,30,,17,100,,0,3,27,110,65,5,1,40,2,,,,
-207,"Dragon Slayers",29,4,1,"25,58,74,83","45",,4,13,17,37,42,70,65,30,25,,17,100,,10,4,29,115,80,7,1,20,2,,,,"To be a killer of greatest creature in the world is the highest glory one can possibly get. The Dragon Slayers are the most well trained and equiped groups to accomplish just that."
-208,"Slingers",19,1,1,"16","0",,12,25,0,13,75,,40,60,70,,19,100,105,0,4,19,100,50,7,,200,2,,,,"Who would expect a piece of stone can be so devastating even for those in armour? Sling remain one of the most effective way to kill enemies in skirmish battle even today ."
-209,"Zolunz Mikezs",19,1,1,"16","44",,,,,,,,,,75,,19,100,,0,4,19,,,7,,150,2,,,,
-210,"Malorn Patrols",19,2,1,"16,194,307",,,20,44,23,,,,,,70,,19,100,,0,4,19,,,7,,100,2,,,,"Patrols of Malorn mountain paths use slingshot as their main weapon due to the abundance of small rock."
-211,"Magic Archers",23,2,1,"16","86",,16,30,,25,70,,60,60,50,,19,100,100,16,,,,80,7,,50,2,,,,
-212,"Roya Magic Archers",23,11,1,"16,19","86",,21,40,0,46,50,60,50,50,60,30,19,100,105,,,,,85,5,,20,2,,,,
-213,"White Chartars",23,2,1,"16","86",,,,,,,,,,50,,19,100,100,28,,,,95,7,,30,2,,,,
-214,"Laigaras",23,3,1,"16","86",,,,,,,,,,50,,19,100,100,24,,,,90,7,,10,2,,,,
-215,"Dalinars Kilans",23,11,1,"16,19,39","86",,33,50,5,40,50,60,50,50,60,30,19,100,,,,,,85,5,,10,2,,,,
-216,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-217,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-218,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-219,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-220,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-221,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-222,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-223,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-224,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-225,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-226,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-227,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-228,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-229,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-230,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-231,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+198,"Sogellel Itina",23,4,1,"16,19,74,241","82",,,10,4,12,54,60,65,30,50,4,19,100,105,0,4,23,,70,7,1,60,2,,,,
+199,"Mulugar Practitioners",23,3,1,"13,16,19,111","45,83",,14,36,35,11,57,90,73,25,85,,19,100,130,0,4,23,,85,6,1,40,2,,,,
+200,"Heavy Crossbowmen",27,1,1,,,,8,14,0,22,27,45,41,35,40,8,17,100,100,0,3,27,100,55,4,1,150,2,,,,
+201,"Arbalesters",29,1,1,,,,3,10,0,22,19,50,48,30,35,2,17,100,120,0,3,29,100,60,5,1,100,2,,,,
+202,"Armoured Crossbowmen",27,1,1,,,,15,21,0,40,20,45,40,30,40,5,17,100,115,0,3,27,100,55,4,1,150,2,,,,
+203,"Knightslayers",29,2,1,,,,9,28,0,21,22,60,41,30,35,,17,100,125,0,3,29,105,60,5,1,80,2,,,,
+204,"Pavise Crossbowmen",27,1,1,,"46",,5,5,50,29,19,45,39,30,40,,17,100,110,0,3,27,100,60,5,1,150,2,,,,
+205,"Adrianlow Company",29,10,1,,"41,46",,15,13,62,33,25,50,40,30,45,,17,100,,0,3,29,120,70,5,1,70,2,,,,
+206,"Migais",27,2,1,"74","45",,6,12,0,25,31,65,45,35,30,,17,100,,0,3,27,110,65,5,1,40,2,,,,
+207,"Dragon Slayers",29,4,1,"25,58,74,83","45",,4,13,17,37,28,70,65,30,25,,17,100,,10,4,29,115,80,7,1,20,2,,,,"To be a killer of greatest creature in the world is the highest glory one can possibly get. The Dragon Slayers are the most well trained and equiped groups to accomplish just that."
+208,"Slingers",19,1,1,"16","0",,12,25,0,13,57,,40,60,70,,19,100,105,0,4,19,100,50,7,1,200,2,,,,"Who would expect a piece of stone can be so devastating even for those in armour? Sling remain one of the most effective way to kill enemies in skirmish battle even today ."
+209,"Zolunz Mikezs",19,1,1,"16","44",,,,,,,,,,75,,19,100,,0,4,19,,,7,1,150,2,,,,
+210,"Malorn Patrols",19,2,1,"16,194,307",,,20,44,23,,,,,,70,,19,100,,0,4,19,,,7,1,100,2,,,,"Patrols of Malorn mountain paths use slingshot as their main weapon due to the abundance of small rock."
+211,"Magic Archers",23,2,1,"16","86",,16,30,,25,50,,60,60,50,,19,100,100,16,,23,,80,7,1,50,2,,,,
+212,"Roya Magic Archers",23,11,1,"16,19","86",,21,40,0,46,41,60,50,50,60,30,19,100,105,,,23,,85,5,1,20,2,,,,
+213,"White Chartars",23,2,1,"16","86",,,,,,,,,,50,,19,100,100,28,,23,,95,7,1,30,2,,,,
+214,"Laigaras",23,3,1,"16","86",,,,,,,,,,50,,19,100,100,24,,23,,90,7,1,10,2,,,,
+215,"Dalinars Kilans",23,11,1,"16,19,39","86",,33,50,5,40,50,60,50,50,60,30,19,100,,,,23,,85,5,1,10,2,,,,
+216,"Snipers",23,2,1,"16,74,236","101,196",,10,20,15,10,62,80,72,25,50,,19,100,110,0,4,23,100,75,9,1,20,2,,,,
+217,"Bowmasters",23,5,1,"16,74,236","101",,15,30,31,26,67,90,70,25,80,,19,100,130,0,4,23,125,100,10,1,10,2,,,,
+218,"Chosen Eyes",23,3,1,"16,74,236","101,196",,8,20,22,8,61,85,80,25,55,,19,100,115,0,4,23,110,90,10,1,10,2,,,,
+219,"Gelvos Snipers",23,4,1,"16,74,236","101,196",,44,43,20,36,44,80,70,20,55,,19,100,,0,4,23,,75,9,1,15,2,,,,
+220,"Swift And Steady Bows",23,4,1,"16,74,194,236","41,45,101,196",,8,15,17,10,70,75,70,25,60,,19,100,,0,4,23,,80,9,1,10,2,,,,
+221,"Celbesnos Bandits",23,10,1,"16,74,112,236","101,196",,24,29,20,5,64,80,70,15,45,,19,100,,0,3,23,110,50,8,1,20,2,,,,
+222,"Rangers",24,1,1,"16,194,225","196",,16,25,10,10,70,60,46,30,65,17,21,100,120,0,,24,100,65,8,1,20,2,,,,
+223,"Hunters",24,1,1,"16,190,194,225","196",,10,24,7,8,68,60,44,25,65,12,21,100,120,0,,24,100,65,8,1,20,2,,,,
+224,"Night Hunters",24,1,1,"16,194,225,235","196",,18,30,5,8,69,65,43,25,60,10,21,100,120,0,,24,100,70,8,1,15,2,,,,
+225,"Black Forest Rangers",24,5,1,"16,190,194,225,308","196",,35,40,6,15,64,75,55,25,70,20,21,100,150,0,,24,130,80,8,1,10,2,,,,
+226,"Tellas Huntmen",24,1,1,"16,194,225","196",,22,28,8,10,70,60,46,25,70,14,21,100,130,0,,24,110,70,9,1,20,2,,,,
+227,"Nehel Followers",24,1,1,"16,90,194,225","196",,48,45,10,1,75,65,47,30,65,32,21,100,130,0,,24,120,50,8,1,15,2,,,,
+228,"Light Horsemen",3,1,1,,"0",,50,28,15,28,90,0,0,0,0,60,21,200,200,0,,,,,,,,5,,,,
+229,"Night Riders",3,1,1,,"160",,,,,25,88,0,0,0,0,63,21,200,200,0,,,,,,,,5,,,,
+230,"Steppe Horsemen",3,1,1,,"0",,,,,11,94,0,0,0,0,65,21,200,220,0,,,,,,,,5,,,,
+231,"Calandels",3,2,1,,,,,,,,,,,,,,,,,,,,,,,,,5,,,,
 232,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 233,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 234,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

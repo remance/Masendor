@@ -4,14 +4,15 @@ The current code structure and documentation follows no standard guideline whats
 Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
+2.3: make more unit and ability workable, also add unit type
 2.4: Dynamic authority stat (authority reduce and increase depending on activity)
 2.5: detach/split battalion
 2.6: Leader squad and personal stat+combat dmg chance
 2.7: battalion command (raise flag,forced march,decimation,duel,change skill usage,change stance)
 2.8: commander and strategist function
-2.9: make more unit and ability workable, also unit type
+2.9: leader social class, move while shooting, equipment quality, unit card weapon 
 
-Ver 0.3: More complex UI function
+Ver 0.3: More complex UI function (Event log, popup box)
 
 Ver 0.4: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
 

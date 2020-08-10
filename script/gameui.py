@@ -1,9 +1,9 @@
 import pygame
 import pygame.freetype
-from RTS import mainmenu
+
 
 class uibutton(pygame.sprite.Sprite):
-    def __init__(self, X, Y, image,event):
+    def __init__(self, X, Y, image, event):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
@@ -15,8 +15,9 @@ class uibutton(pygame.sprite.Sprite):
     def draw(self, gamescreen):
         gamescreen.blit(self.image, self.rect)
 
+
 class iconpopup(pygame.sprite.Sprite):
-    def __init__(self, X, Y, image, event, gameui, itemid = ""):
+    def __init__(self, X, Y, image, event, gameui, itemid=""):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
@@ -28,6 +29,7 @@ class iconpopup(pygame.sprite.Sprite):
 
     def draw(self, gamescreen):
         gamescreen.blit(self.image, self.rect)
+
 
 class Gameui(pygame.sprite.Sprite):
     def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
@@ -51,16 +53,18 @@ class Gameui(pygame.sprite.Sprite):
                     topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
                 self.image.blit(ic, self.iconimagerect)
                 position += 90
-            self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)", 7: "Forced Walk", 8:"Forced Run",
-                             10: "Fighting", 11:"shooting", 68:"Dancing", 69:"Partying" ,96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
+            self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
+                             7: "Forced Walk", 8: "Forced Run",
+                             10: "Fighting", 11: "shooting", 68: "Dancing", 69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating",
+                             99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                       6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
+                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
         elif self.uitype == "commandbar":
             self.iconimagerect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
             self.image.blit(self.icon[6], self.iconimagerect)
-            self.white = [self.icon[0],self.icon[1],self.icon[2],self.icon[3],self.icon[4],self.icon[5]]
-            self.black = [self.icon[7],self.icon[8],self.icon[9],self.icon[10],self.icon[11],self.icon[12]]
+            self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]]
+            self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]]
         elif self.uitype == "unitcard":
             self.fonthead = pygame.font.SysFont("helvetica", textsize + 2)
             self.fonthead.set_italic(1)
@@ -87,7 +91,7 @@ class Gameui(pygame.sprite.Sprite):
             x = pos[0]  # Reset the x.
             y += word_height  # Start on new row.
 
-    def valueinput(self,who, leader="",button="", changeoption=0, gameunitstat = ""):
+    def valueinput(self, who, leader="", button="", changeoption=0, gameunitstat=""):
         for thisbutton in button:
             thisbutton.draw(self.image)
         position = 65
@@ -95,7 +99,7 @@ class Gameui(pygame.sprite.Sprite):
             self.value = who.valuefortopbar
             if self.value[3] in self.options1:
                 self.value[3] = self.options1[self.value[3]]
-            if type(self.value[2]) != str:self.value[2] = round(self.value[2] / 10)
+            if type(self.value[2]) != str: self.value[2] = round(self.value[2] / 10)
             if self.value[2] in self.options2:
                 self.value[2] = self.options2[self.value[2]]
             if self.value != self.lastvalue:
@@ -105,8 +109,10 @@ class Gameui(pygame.sprite.Sprite):
                     self.textrect = self.textsurface.get_rect(
                         center=(self.image.get_rect()[0] + position, self.image.get_rect()[1] + 25))
                     self.image.blit(self.textsurface, self.textrect)
-                    if position >= 200: position +=50
-                    else: position += 95
+                    if position >= 200:
+                        position += 50
+                    else:
+                        position += 95
                 self.lastvalue = self.value
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
@@ -157,7 +163,7 @@ class Gameui(pygame.sprite.Sprite):
             self.image.blit(leader.imgs[self.leaderpiclist[3]], self.leaderpiclistrect)
             self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
             self.textrect = self.textsurface.get_rect(
-                midleft=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.3+20, self.image.get_rect()[1] + 40))
+                midleft=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.3 + 20, self.image.get_rect()[1] + 40))
             self.image.blit(self.textsurface, self.textrect)
 
         elif self.uitype == "unitcard":
@@ -170,7 +176,7 @@ class Gameui(pygame.sprite.Sprite):
             # options = {2: "Skirmish is a light infantry that served as harassment or flanking unit. They can move fast and often carry range weapon. They can be good in melee combat but their lack of heavy armour mean that they cannot withstand more overwhelming force.",
             #            5: "Support is unit that can be essential in drawn out war. They can offer spiritual help to the other squad in the battalion, perform first aids or post battle surgery. In other words, support unit help other unit fight and survive better in this hell that people often refer as field of glory.",
             # 10:"This is command unit for this battalion. Do not let them get destroyed or your battalion will receive huge penalty to morale and all other undesirable status penalty. However putting this unit on frontline will also provide large bonus to the entire battalion, so use consider this option carefully."}
-            text = ["","Troop: ", "Stamina: ", "Morale: ", "Discipline: ", 'Melee Attack: ',
+            text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", 'Melee Attack: ',
                     'Melee Defence: ', 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
                     "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
             if self.value != self.lastvalue or self.value2 != self.lastvalue2 or changeoption == 1:
@@ -192,16 +198,16 @@ class Gameui(pygame.sprite.Sprite):
                         midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                     self.image.blit(self.textsurface, self.textrect)
                     position += 20
-                    row+=1
+                    row += 1
                     for n, value in enumerate(self.value[1:]):
                         self.textsurface = self.font.render(text[n] + str(value), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
-                            midleft =(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
+                            midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
                         position += 20
                         row += 1
-                        if row == 9: positionx,position = 200,35
-                elif self.option == 0 :
+                        if row == 9: positionx, position = 200, 35
+                elif self.option == 0:
                     """Description card"""
                     # self.iconimagerect = self.icon[0].get_rect(
                     #     center=(
@@ -223,7 +229,7 @@ class Gameui(pygame.sprite.Sprite):
                     """property list"""
                     for trait in self.value2[0]:
                         # if trait in self.value2[2] : cd = int(self.value2[2][trait])
-                    # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
+                        # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
                         if trait != 0:
                             self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
                             self.textrect = self.textsurface.get_rect(
@@ -232,8 +238,10 @@ class Gameui(pygame.sprite.Sprite):
                             position += 20
                     """skill cooldown"""
                     for skill in self.value2[1]:
-                        if skill in self.value2[2] : cd = int(self.value2[2][skill])
-                        else: cd = 0
+                        if skill in self.value2[2]:
+                            cd = int(self.value2[2][skill])
+                        else:
+                            cd = 0
                         self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
@@ -246,7 +254,7 @@ class Gameui(pygame.sprite.Sprite):
                     """skill effect list"""
                     position2 = positionx + 20
                     for status in self.value2[3]:
-                        self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1,(0, 0, 0))
+                        self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
@@ -258,7 +266,7 @@ class Gameui(pygame.sprite.Sprite):
                     """status list"""
                     position2 = positionx + 20
                     for status in self.value2[4]:
-                        self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1,(0, 0, 0))
+                        self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
@@ -269,6 +277,7 @@ class Gameui(pygame.sprite.Sprite):
                 self.lastvalue = self.value
                 self.lastvalue2 != self.value2
 
+
 class fpscount(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 10
@@ -278,10 +287,9 @@ class fpscount(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("Arial", 18)
         self.rect = self.image.get_rect(center=(30, 30))
 
-    def fpsshow(self,clock):
+    def fpsshow(self, clock):
         self.image = self.image_original.copy()
         fps = str(int(clock.get_fps()))
         fps_text = self.font.render(fps, 1, pygame.Color("black"))
-        self.textrect = fps_text.get_rect(center=(25,25))
+        self.textrect = fps_text.get_rect(center=(25, 25))
         self.image.blit(fps_text, self.textrect)
-

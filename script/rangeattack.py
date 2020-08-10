@@ -1,13 +1,18 @@
-import random, os.path, glob, csv, math
-import pygame
-from pygame.transform import scale
-import pygame.freetype
-from RTS import maingame
+import math
+import random
+
 import numpy as np
+import pygame
+import pygame.freetype
+from pygame.transform import scale
+
+from RTS import maingame
+
 
 class arrow(pygame.sprite.Sprite):
     speed = 8
     images = []
+
     def __init__(self, shooter, range, maxrange):
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -20,12 +25,15 @@ class arrow(pygame.sprite.Sprite):
         self.passwho = 0
         self.side = None
         # self.lastpasswho = 0
-        randomposition1, randomposition2 = random.randint(0,1), random.randint(0,20)
-        hitchance = round((100 - self.accuracy * random.randint(1,5)) / (maxrange / range))
+        randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 20)
+        hitchance = round((100 - self.accuracy * random.randint(1, 5)) / (maxrange / range))
+        """73 no range penalty, 74 long rance accuracy"""
+        if 73 in self.shooter.trait: hitchance = round(100 - self.accuracy * random.randint(1, 5))
+        elif 74 in self.shooter.trait: hitchance = round((100 - self.accuracy * random.randint(1, 5)) / ((maxrange / range)*2))
         if randomposition1 == 0:
-            self.target = pygame.Vector2(shooter.attackpos[0]-hitchance, shooter.attackpos[1]-hitchance)
+            self.target = pygame.Vector2(shooter.attackpos[0] - hitchance, shooter.attackpos[1] - hitchance)
         else:
-            self.target = pygame.Vector2(shooter.attackpos[0]+hitchance, shooter.attackpos[1]+hitchance)
+            self.target = pygame.Vector2(shooter.attackpos[0] + hitchance, shooter.attackpos[1] + hitchance)
         myradians = math.atan2(self.target[1] - shooter.combatpos[1], self.target[0] - shooter.combatpos[0])
         self.angle = math.degrees(myradians)
         # """upper left -"""
@@ -42,20 +50,22 @@ class arrow(pygame.sprite.Sprite):
             self.angle = 270 - self.angle
         self.image = pygame.transform.rotate(self.image, self.angle)
         if randomposition1 == 0:
-            self.rect = self.image.get_rect(midbottom=(shooter.combatpos[0]-randomposition2,shooter.combatpos[1]-randomposition2))
-            self.pos = pygame.Vector2(shooter.combatpos[0]-randomposition2,shooter.combatpos[1]-randomposition2)
+            self.rect = self.image.get_rect(midbottom=(shooter.combatpos[0] - randomposition2, shooter.combatpos[1] - randomposition2))
+            self.pos = pygame.Vector2(shooter.combatpos[0] - randomposition2, shooter.combatpos[1] - randomposition2)
         else:
-            self.rect = self.image.get_rect(midbottom=(shooter.combatpos[0]+randomposition2,shooter.combatpos[1]+randomposition2))
-            self.pos = pygame.Vector2(shooter.combatpos[0]+randomposition2,shooter.combatpos[1]+randomposition2)
+            self.rect = self.image.get_rect(midbottom=(shooter.combatpos[0] + randomposition2, shooter.combatpos[1] + randomposition2))
+            self.pos = pygame.Vector2(shooter.combatpos[0] + randomposition2, shooter.combatpos[1] + randomposition2)
         self.mask = pygame.mask.from_surface(self.image)
 
     def rangedmgcal(self, who, target, targetside):
         """Calculate hitchance and defense chance"""
-        if targetside == 2: targetside = 3
-        elif targetside == 3: targetside = 2
-        wholuck= random.randint(-20, 20)
+        if targetside == 2:
+            targetside = 3
+        elif targetside == 3:
+            targetside = 2
+        wholuck = random.randint(-20, 20)
         targetluck = random.randint(-20, 20)
-        targetpercent = [1,0.7,0.4,0.7][targetside]
+        targetpercent = [1, 0.7, 0.4, 0.7][targetside]
         whohit = float(self.accuracy) + wholuck
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck
@@ -64,9 +74,10 @@ class arrow(pygame.sprite.Sprite):
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
 
-    def registerhit(self,who,target,squadlist,squadindexlist):
+    def registerhit(self, who, target, squadlist, squadindexlist):
         """Calculatte damage when arrow reach target"""
         if self.arcshot == True:
+            if self.side == None: self.side = random.randint(0, 3)
             for unit in pygame.sprite.spritecollide(self, who, 0, collided=pygame.sprite.collide_mask):
                 calsquadlist = np.where(unit.squadalive > 1, unit.armysquad, unit.squadalive).flat
                 calsquadlist = np.delete(calsquadlist,
@@ -93,7 +104,7 @@ class arrow(pygame.sprite.Sprite):
                 squadhit = np.where(squadindexlist == squadhit)[0][0]
                 self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
 
-    def update(self,who,target,hitbox,squadlist,squadindexlist,dt):
+    def update(self, who, target, hitbox, squadlist, squadindexlist, dt):
         """Who is the player battalion group, target is the enemy battalion group"""
         move = self.target - self.pos
         move_length = move.length()
