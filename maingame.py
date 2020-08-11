@@ -306,9 +306,10 @@ class battle():
                                                                                enactment=True)
         self.allunitlist = self.playerarmy.copy()
         self.allunitlist = self.allunitlist + self.enemyarmy
+        self.allunitindex = [army.gameid for army in self.allunitlist]
         self.deadarmynum = {}
         self.deadindex = 0
-        self.unitposlist = {}
+        self.playerposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
         self.removesquadlist = []
@@ -439,12 +440,13 @@ class battle():
             if who.charging == True and 29 not in who.trait: dmg = round(dmg + (who.charge / 10) - (who.chargedef / 10))
             elif who.charging == True and 29 in who.trait: dmg = round(dmg + (who.charge / 10))
             if target.charging == True: dmg = round(dmg + (who.chargedef / 10) - (target.charge / 10))
-            dmg = round(dmg  * (target.armour * ((100 - who.penetrate) / 100) / 100) * combatscore * who.troopnumber)
+            dmg = round(dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore * who.troopnumber)
         elif type == 1:  ##range dmg
-            dmg = round(who.rangedmg * (target.armour * ((100 - who.rangepenetrate) / 100) / 100) * combatscore * who.troopnumber)
+            print(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100),combatscore,who.troopnumber)
+            dmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore * who.troopnumber)
         """Anti trait dmg bonus"""
         if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]):
-            dmg = dmg * 125/100
+            dmg = dmg * 1.25
         if dmg > target.unithealth:
             dmg = target.unithealth
         elif dmg <= 0:
@@ -493,7 +495,6 @@ class battle():
         if (33 in target.trait and whoside == 2) or (55 in who.trait and whoside == 2) or (47 in who.trait and targetside in [1,3]): whodefense = 0
         targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
         if (33 in who.trait and targetside == 2) or (55 in target.trait and targetside == 2) or (47 in target.trait and whoside in [1,3]): targetdefense = 0
-        print(whoside,targetside)
         whodmg, whomoraledmg = self.losscal(who, target, whohit, targetdefense, 0)
         targetdmg, targetmoraledmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
@@ -595,7 +596,10 @@ class battle():
                 self.check = 0
                 self.check2 = 0
             for army in self.allunitlist:
-                self.unitposlist[army.gameid] = army.pos
+                if army.gameid < 2000:
+                    self.playerposlist[army.gameid] = army.pos
+                else:
+                    self.enemyposlist[army.gameid] = army.pos
                 posmask = self.mousepos[0] - army.rect.x, self.mousepos[1] - army.rect.y
                 #     army.mouse_over = True
                 # except: self.mouse_over = False
@@ -759,16 +763,17 @@ class battle():
                                         self.removesquadlist.append(thissquad.gameid)
                                     if self.squad[np.where(self.squadindexlist == combat)[0][0]].unithealth <= 0:
                                         self.removesquadlist.append(self.squad[np.where(self.squadindexlist == combat)[0][0]].gameid)
-                        if thissquad.state == 11 and thissquad.battalion.attacktarget != 0 and thissquad.battalion.attacktarget.state != 100:
-                            if thissquad.reloadtime >= thissquad.reload:
+                        if thissquad.state in [11,12,13] and thissquad.attacktarget != 0:
+                            if type(thissquad.attacktarget) == int: thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                            if thissquad.reloadtime >= thissquad.reload and thissquad.attacktarget.state != 100:
                                 rangeattack.arrow(thissquad, thissquad.attackpos.distance_to(thissquad.combatpos), thissquad.range)
                                 thissquad.ammo -= 1
                                 thissquad.reloadtime = 0
-                        elif thissquad.state == 11 and thissquad.battalion.state == 100:
-                            thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
+                            elif thissquad.attacktarget.state == 100:
+                                thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
                         self.combattimer = 0
                 self.combattimer += self.dt
-                self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.unitviewmode)
+                self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.unitviewmode, self.playerposlist, self.enemyposlist)
                 self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt)
             elif self.gamestate == 0:
                 self.screen.blit(self.pause_text, (600, 600))

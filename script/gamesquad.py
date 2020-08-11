@@ -73,6 +73,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.basemeleedef = round(self.stat[9] + int(statlist.gradelist[self.grade][2]), 0)
         self.baserangedef = round(self.stat[10] + int(statlist.gradelist[self.grade][2]), 0)
         self.basearmour = self.stat[11]
+        print(self.basearmour)
         self.basespeed = round(self.stat[12] + int(statlist.gradelist[self.grade][3]), 0)
         self.baseaccuracy = self.stat[13]
         self.baserange = self.stat[14] * 20
@@ -115,7 +116,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.baseattack *= (trait[3] / 100)
                 self.basemeleedef *= (trait[4] / 100)
                 self.baserangedef *= (trait[5] / 100)
-                self.basearmour *= (trait[6] / 100)
+                self.basearmour += trait[6]
                 self.basespeed *= (trait[7] / 100)
                 self.baseaccuracy *= (trait[8] / 100)
                 self.baserange *= (trait[9] / 100)
@@ -148,9 +149,9 @@ class unitsquad(pygame.sprite.Sprite):
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
         """1 = Offensive, 2 = Defensive, 3 = Skirmisher, 4 = Shock, 5 = Support, 6 = Magic, 7 = Ambusher, 8 = Sniper , 9 = Recon, 10 = Command"""
         self.role = []
-        if self.basearmour > 60 and self.meleedef > 60: self.role.append(2)
+        if self.basearmour > 60 and self.basemeleedef > 60: self.role.append(2)
         if self.baseattack > 60: self.role.append(1)
-        if self.basespeed > 80 and self.armour < 30: self.role.append(3)
+        if self.basespeed > 80 and self.basearmour < 30: self.role.append(3)
         if self.basecharge > 70: self.role.append(4)
         self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
             self.stamina * 50 / 100), round(self.stamina * 25 / 100)
@@ -196,8 +197,9 @@ class unitsquad(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.inspposition)
         """self.pos is pos for army inspect ui"""
         self.pos = pygame.Vector2(self.rect.centerx, self.rect.centery)
-        """self.pos is pos of battalion"""
+        """self.combatpos is pos of battalion"""
         self.combatpos = 0
+        self.attackpos = self.battalion.attackpos
 
     def useskill(self, whichskill):
         if whichskill == 0:  ##charge skill need to seperate since charge power will be used only for charge skill
@@ -387,7 +389,7 @@ class unitsquad(pygame.sprite.Sprite):
             b[3] -= dt
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
 
-    def update(self, statuslist, squadgroup, dt, viewmode):
+    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, poslist):
         if self.gamestart == 0:
             self.rotate()
             self.findnearbysquad()
@@ -476,6 +478,8 @@ class unitsquad(pygame.sprite.Sprite):
             # # """lower left +"""
             # elif self.newangle > 90 and self.newangle <= 180:
             #     self.newangle = 270 - self.newangle
+            self.attackpos = self.battalion.attackpos
+            self.attacktarget = self.battalion.attacktarget
             if self.battalion.state in [0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100]:
                 self.state = self.battalion.state
             """Using skill condition"""
@@ -499,12 +503,21 @@ class unitsquad(pygame.sprite.Sprite):
                 self.state = 0
                 if self.ammo > 0 and self.range + 150 >= self.attackpos.distance_to(self.combatpos):
                     self.state = 11
-            if self.state == 11 and self.reloadtime < self.reload:
+            elif 18 in self.trait and self.battalion.state in [1,2,3,4,5,6] and self.ammo > 0: # and self.bahaviour == 1
+                if self.attackpos == 0:
+                    self.attackpos = list(self.battalion.neartarget.values())[0]
+                    self.attacktarget = list(self.battalion.neartarget.keys())[0]
+                if self.range + 150 >= self.attackpos.distance_to(self.combatpos):
+                    if self.battalion.state in [1, 3, 5]:
+                        self.state = 12
+                    elif self.battalion.state in [2, 4, 6]:
+                        self.state = 13
+            if self.state in [11,12,13] and self.reloadtime < self.reload:
                 self.reloadtime += dt
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
-            self.stamina = self.stamina - (dt * 4) if self.state in [1, 3, 5, 11] and self.battalion.pause == False else self.stamina - (
+            self.stamina = self.stamina - (dt * 3) if self.state in [1, 3, 5, 11] and self.battalion.pause == False else self.stamina - (
                         dt * 7) if self.state in [2, 4, 6, 10, 96, 98, 99] and self.battalion.pause == False \
-                else self.stamina + (dt * 2) if self.state == 97 else self.stamina
+                else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale: self.basemorale += dt
             if self.unithealth < 0: self.unithealth = 0
             if self.unithealth > self.maxhealth: self.unithealth = self.maxhealth

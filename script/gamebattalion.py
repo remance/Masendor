@@ -192,7 +192,7 @@ class hitbox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.who.allsidepos[self.side])
         self.mask = pygame.mask.from_surface(self.image)
 
-    def update(self, who, enmy, squad, squadindex):
+    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.oldpos != self.who.allsidepos[self.side]:
             self.image = pygame.transform.rotate(self.image_original, self.who.angle)
             self.rect = self.image.get_rect(center=self.who.allsidepos[self.side])
@@ -234,6 +234,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.combatcheck = 0
         self.rangecombatcheck = 0
         self.attacktarget = 0
+        self.neartarget = 0
         self.gotkilled = 0
         self.combatpreparestate = 0
         self.ammo = 0
@@ -332,7 +333,6 @@ class unitarmy(pygame.sprite.Sprite):
                 self.stat['ammo'].append(squadgroup[squad].ammo)
                 self.stat['range'].append(squadgroup[squad].range)
                 squadgroup[squad].combatpos = self.pos
-                squadgroup[squad].attackpos = self.attackpos
             # self.stat['speed'].append(squad.troopnumber)
             # self.stat['speed'].append(squad.troopnumber)
             else:
@@ -532,7 +532,7 @@ class unitarmy(pygame.sprite.Sprite):
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
 
-    def update(self, statuslist, squadgroup, dt, viewmode):
+    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.setuparmy(squadgroup)
             self.setupfrontline()
@@ -634,6 +634,14 @@ class unitarmy(pygame.sprite.Sprite):
             #     self.target = self.attackpos
             #     if self.attackpos.distance_to(self.pos) < 200 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown:
             #         self.useskill(0)
+            """near target is enemy that is nearest for aggressive auto shooting"""
+            thisposlist = enemyposlist.copy()
+            if self.gameid >= 2000: thisposlist = playerposlist.copy()
+            self.neartarget = {}
+            for n, thisside in thisposlist.items(): self.neartarget[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
+            self.neartarget  = {k: v for k, v in sorted(self.neartarget.items(), key=lambda item: item[1])}
+            for n in thisposlist:
+                self.neartarget[n] = thisposlist[n]
             if self.battleside != [0, 0, 0, 0]:
                 """can not use range attack in melee combat"""
                 self.rangecombatcheck = 0
