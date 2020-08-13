@@ -144,6 +144,18 @@ class leader():
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
 
+        self.leaderclass = {}
+        with open(main_dir + "\data\leader" + '\\leader_class.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit(): row[n] = int(i)
+                    # if and n in []:
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    # else: row[n] = [int(i)]
+                self.leaderclass[row[0]] = row[1:]
+        unitfile.close()
+
 
 class directionarrow(pygame.sprite.Sprite):
     def __init__(self, who):
@@ -164,16 +176,16 @@ class directionarrow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.who.pos)
 
     def update(self, who, enmy, squad, hitbox, squadindex, dt):
-        self.length = self.who.allsidepos[0].distance_to(self.who.commandtarget) + self.lengthgap
+        self.length = self.who.allsidepos[0].distance_to(self.who.target) + self.lengthgap
         if self.length != self.previouslength and self.length > 2 and self.who.state != 0:
             self.image = pygame.Surface((self.length * 2, self.length * 2), pygame.SRCALPHA)
             self.image.fill((255, 255, 255, 0))
             pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width() / 2, self.image.get_height() / 2),
-                             (self.image.get_width() / 2 - (self.who.pos[0] - self.who.commandtarget[0]),
-                              self.image.get_height() / 2 - (self.who.pos[1] - self.who.commandtarget[1])), 5)
+                             (self.image.get_width() / 2 - (self.who.pos[0] - self.who.target[0]),
+                              self.image.get_height() / 2 - (self.who.pos[1] - self.who.target[1])), 5)
             self.rect = self.image.get_rect(center=self.who.pos)
             self.previouslength = self.length
-        elif self.length < 2 or self.who.state == 0:
+        elif self.length < 2 or self.who.state in [0,10,11]:
             self.who.directionarrow = False
             self.kill()
 
@@ -250,6 +262,7 @@ class unitarmy(pygame.sprite.Sprite):
         """leaderwholist is list of 4 leader in 1 battalion. Based on list order: 1st = general, 
         2nd and 3rd = subgeneral, 4th = special role likes advisor, shaman, priest, mage, supporter"""
         self.leaderwho = [leaderlist.leaderlist[oneleader] for oneleader in leader]
+        self.leadersocial = leaderlist.leaderclass[self.leaderwho[0][7]]
         self.authority = round(self.leaderwho[0][3] + self.leaderwho[1][3] / 2 + self.leaderwho[2][3] / 2 + self.leaderwho[3][3] / 4)
         self.tacticeffect = {}
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
@@ -715,9 +728,9 @@ class unitarmy(pygame.sprite.Sprite):
                 # """Setup target to move to give position command, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
                 """Chase target and rotate accordingly"""
-                if self.state in [3, 4, 5, 6, 7, 8] and self.target != self.attacktarget.pos:
+                if self.state in [3, 4, 5, 6] and self.target != self.attacktarget.pos:
                     # print(self.attacktarget.pos,self.target)
-                    self.target = self.attacktarget.pos
+                    self.target = pygame.Vector2(self.attacktarget.pos[0],self.attacktarget.pos[1])
                     self.setrotate(self.target, instant=True)
                 """check for hitbox collide according to which ever closest to the target position"""
                 if self.state not in [0, 97] and self.stamina > 0 and self.target != self.allsidepos[0] and self.retreattimer == 0:
@@ -822,19 +835,8 @@ class unitarmy(pygame.sprite.Sprite):
                                 self.state = 5
                             self.attacktarget = whomouseover
                             self.attackpos = whomouseover.pos
-                        # else: self.attacktarget = 0
                         if double_mouse_right:
-                            # if self.combatcheck == 0:
-                            self.state = 2
-                            if whomouseover != 0:
-                                if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
-                                    self.state = 4
-                                elif self.ammo > 0:
-                                    self.state = 6
-                                self.attacktarget = whomouseover
-                                self.attackpos = whomouseover.pos
-                            # else:
-                            #     self.attacktarget = 0
+                            self.state += 1
                         self.rangecombatcheck = 0
                         if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
                         self.set_target(pygame.mouse.get_pos())
@@ -852,19 +854,8 @@ class unitarmy(pygame.sprite.Sprite):
                             self.state = 5
                         self.attacktarget = whomouseover
                         self.attackpos = whomouseover.pos
-                    # else: self.attacktarget = 0
                     if double_mouse_right:
-                        # if self.combatcheck == 0:
-                        self.state = 2
-                        if whomouseover != 0:
-                            if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
-                                self.state = 4
-                            elif self.ammo > 0:
-                                self.state = 6
-                            self.attacktarget = whomouseover
-                            self.attackpos = whomouseover.pos
-                        # else:
-                        #     self.attacktarget = 0
+                        self.state += 1
                     self.rangecombatcheck = 0
                     if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
                     self.set_target(pygame.mouse.get_pos())

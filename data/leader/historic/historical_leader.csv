@@ -1,15 +1,15 @@
-charid,name,portrait,description,authority,melee_command,range_command,cavalry_command,social
-0,None,0,,0,0,0,0,0
-1,William the Conqueror,2,,92,8,4,7,5
-2,Alan the Red,3,,71,7,6,6,4
-3,William fitzOsbern,,,72,,,,4
-4,Eustace II,4,,75,7,3,8,4
-5,Harold Godwinson,6,,85,7,2,7,7
-6,Gyrth Godwinson,7,,74,4,4,5,4
-7,Leofwine Godwinson,8,,73,3,4,7,4
-8,Unknown Norman General,,,60,7,5,5,3
-9,Unknown Breton General,,,60,6,6,5,3
-10,Unknown Flemish General,,,60,7,6,4,3
+"charid","name","portrait","description","authority","melee_command","range_command","cavalry_command","social"
+0,"None",0,,0,0,0,0,0
+1,"William the Bastard",2,,92,8,4,7,5
+2,"Alan the Red",3,,71,7,6,6,4
+3,"William fitzOsbern",,,72,,,,4
+4,"Eustace II",4,,75,7,3,8,4
+5,"Harold Godwinson",6,,85,7,2,7,7
+6,"Gyrth Godwinson",7,,74,4,4,5,4
+7,"Leofwine Godwinson",8,,73,3,4,7,4
+8,"Unknown Norman General",,,60,7,5,5,3
+9,"Unknown Breton General",,,60,6,6,5,3
+10,"Unknown Flemish General",,,60,7,6,4,3
 11,,,,,,,,
 12,,,,,,,,
 13,,,,,,,,

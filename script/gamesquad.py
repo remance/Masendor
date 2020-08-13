@@ -73,7 +73,6 @@ class unitsquad(pygame.sprite.Sprite):
         self.basemeleedef = round(self.stat[9] + int(statlist.gradelist[self.grade][2]), 0)
         self.baserangedef = round(self.stat[10] + int(statlist.gradelist[self.grade][2]), 0)
         self.basearmour = self.stat[11]
-        print(self.basearmour)
         self.basespeed = round(self.stat[12] + int(statlist.gradelist[self.grade][3]), 0)
         self.baseaccuracy = self.stat[13]
         self.baserange = self.stat[14] * 20
@@ -92,7 +91,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.meleeweapon = self.stat[22]
         self.rangeweapon = self.stat[23]
         self.basemorale = int(self.stat[24] + int(statlist.gradelist[self.grade][9]))
-        self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]))
+        self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]) + self.battalion.leadersocial[self.grade+1])
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
         self.description = self.stat[33]
@@ -338,11 +337,10 @@ class unitsquad(pygame.sprite.Sprite):
                 """apply inflict status effect to enemy from skill to inflict list"""
                 if self.skilleffect[status][30] != [0]:
                     for effect in self.skilleffect[status][30]:
-                        if effect != [0]: self.inflictstatus[effect] = effect[1]
+                        if effect != [0]: self.inflictstatus[effect] = self.skilleffect[status][2]
+            self.charging = False
             if self.chargeskill in self.skilleffect:
                 self.charging = True
-            else:
-                self.charging = False
         """apply effect from status effect"""
         """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 7 no exp gain, 
         7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""

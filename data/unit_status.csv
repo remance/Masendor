@@ -26,7 +26,7 @@
 25,"Focus",,12,10,130,130,130,,80,150,70,,15,0,0,0,20,10,,,
 26,"Poison",,49,60,,,,,,,,,0,-30,-2,-10,,,,,
 27,"Deadly Poison",,,60,,,,,,,,,0,-40,-4,-20,,,,"Deadly poison that cannot be cured, very few can survive this painful experience and even fewer can live long life after.",
-28,"Burn",,,30,,,,,,,,,-60,-50,0,-50,,,,"Dead by burning is not a good way to go. Try to drench yourselves as soon as possible.",
+28,"Burn",,,10,,,,,,,,,-60,-50,0,-50,0,0,0,"Dead by burning is not a good way to go. Try to drench yourselves as soon as possible.",
 29,"Freeze",0,,30,0,,,,,,0,,-100,0,0,0,,,,,
 30,"Shock",,,30,50,50,50,,30,,50,20,-35,0,0,0,,,,,
 31,"Wet",,,120,,,,,80,,,,0,0,0,0,,,,"Being wet can either be good or bad. Fire and burning become much less effective but air and water damage and effect become a dangerous threat.",

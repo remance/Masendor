@@ -1,8 +1,9 @@
 """next goal: skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4)
 FIX
+add speed estimation for shooting unit that walking so it shoot ahead of target depending on accuracy stat, also add chase shoot 2.6
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
 Change when click ui so it will not count as click unit under it only ui
-add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
+maybe add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
 remove index and change call to the sprite itself
 """
@@ -421,11 +422,10 @@ class battle():
         if defense < 0 or 30 in who.trait: defense = 0
         hitchance = hit - defense
         if hitchance <= 10:
+            combatscore = 0
             finalchance = random.randint(0, 100)
             if finalchance > 97:
                 combatscore = 0.1
-            else:
-                combatscore = 0
         elif hitchance > 10 and hitchance <= 20:
             combatscore = 0.1
         elif hitchance > 20 and hitchance <= 40:
@@ -437,12 +437,12 @@ class battle():
         if type == 0:  ##melee dmg
             dmg = who.dmg
             """include charge in dmg if charging, ignore charge defense if have ignore trait"""
-            if who.charging == True and 29 not in who.trait: dmg = round(dmg + (who.charge / 10) - (who.chargedef / 10))
-            elif who.charging == True and 29 in who.trait: dmg = round(dmg + (who.charge / 10))
-            if target.charging == True: dmg = round(dmg + (who.chargedef / 10) - (target.charge / 10))
+            if who.charging == True and 29 not in who.trait:
+                dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
+            elif who.charging == True and 29 in who.trait:
+                dmg = round(dmg + (who.charge / 10))
             dmg = round(dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore * who.troopnumber)
         elif type == 1:  ##range dmg
-            print(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100),combatscore,who.troopnumber)
             dmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore * who.troopnumber)
         """Anti trait dmg bonus"""
         if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]):
@@ -502,10 +502,9 @@ class battle():
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
         if who.corneratk == True:  ##attack corner (side) of the target with aoe attack
+            listloop = target.nearbysquadlist[2:4]
             if targetside in [0, 2]:
                 listloop = target.nearbysquadlist[0:2]
-            else:
-                listloop = target.nearbysquadlist[2:4]
             for squad in listloop:
                 if squad != 0 and squad.state != 100:
                     targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
@@ -550,7 +549,7 @@ class battle():
                         (event.type == KEYDOWN and event.key == K_ESCAPE):
                     self.all.clear(self.screen, self.background)
                     return
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1: ## left click
                     mouse_up = True
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 3:  ## Right Click
                     mouse_right = True
@@ -730,7 +729,8 @@ class battle():
                             """Rotate army side to the enemyside"""
                             if hitbox.who.combatpreparestate == 1:
                                 if hitbox.who.preparetimer == 0: hitbox.who.preparetimer = 0.1
-                                if hitbox.who.preparetimer != 0:
+                                if hitbox.who.preparetimer not in [0,5]:
+                                    print(hitbox.who.preparetimer)
                                     hitbox.who.preparetimer += self.dt
                                     if hitbox.who.preparetimer < 5:
                                         hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)
@@ -738,7 +738,7 @@ class battle():
                                         hitbox.who.preparetimer = 5
                             if hitbox2.who.combatpreparestate == 1:
                                 if hitbox2.who.preparetimer == 0: hitbox2.who.preparetimer = 0.1
-                                if hitbox2.who.preparetimer != 0:
+                                if hitbox2.who.preparetimer not in [0,5]:
                                     hitbox2.who.preparetimer += self.dt
                                     if hitbox2.who.preparetimer < 5:
                                         hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
