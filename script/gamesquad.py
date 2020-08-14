@@ -96,12 +96,22 @@ class unitsquad(pygame.sprite.Sprite):
         self.type = self.stat[29]
         self.description = self.stat[33]
         # if self.hidden
+        self.attackelem = 0
+        self.firecount = 0
+        self.tempcount = 0
+        self.watercount = 0
+        self.aircount = 0
+        self.earthcount = 0
+        self.poisoncount = 0
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
         self.corneratk = False
         self.flankbonus = 1
         self.flankdef = 0
+        self.fightest = 0
+        self.baseauthpenalty = 0.1
+        self.authpenalty = 0.1
         self.basehpregen = 0
         self.basestaminaregen = 1
         self.statuseffect = {}
@@ -130,7 +140,7 @@ class unitsquad(pygame.sprite.Sprite):
                 if trait[32] != [0]:
                     for effect in trait[32]:
                         self.baseinflictstatus[effect] = trait[1]
-            if 3 in self.trait:
+            if 3 in self.trait: ##varied training
                 self.baseattack *= (random.randint(80, 120) / 100)
                 self.basemeleedef *= (random.randint(80, 120) / 100)
                 self.baserangedef *= (random.randint(80, 120) / 100)
@@ -143,7 +153,8 @@ class unitsquad(pygame.sprite.Sprite):
                 self.basechargedef *= (random.randint(80, 120) / 100)
                 self.basemorale += random.randint(-10, 10)
                 self.basediscipline += random.randint(-10, 10)
-                # self.statuseffect[trait]
+            if 149 in self.trait: ##Impetuous
+                self.baseauthpenalty += 0.5
         # self.loyalty
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
         """1 = Offensive, 2 = Defensive, 3 = Skirmisher, 4 = Shock, 5 = Support, 6 = Magic, 7 = Ambusher, 8 = Sniper , 9 = Recon, 10 = Command"""
@@ -272,6 +283,14 @@ class unitsquad(pygame.sprite.Sprite):
                 if squad.state != 100:
                     squad.statuseffect[id] = statuslist[id].copy()
 
+    def thresholdcount(self,statuslist,elem,t1status,t2status):
+        if elem > 50 and elem < 100:
+            self.statuseffect[t1status] = statuslist[t1status].copy()
+            if elem > 100:
+                self.statuseffect[t2status] = statuslist[t2status].copy()
+                del self.statuseffect[t1status]
+                elem == 0
+
     def statusupdate(self, statuslist, dt):
         """calculate stat from stamina and morale state"""
         self.morale = self.basemorale
@@ -289,6 +308,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
+        self.authpenalty = self.baseauthpenalty
         self.corneratk = False
         self.hpregen = self.basehpregen
         self.staminaregen = self.basestaminaregen
@@ -341,6 +361,24 @@ class unitsquad(pygame.sprite.Sprite):
             self.charging = False
             if self.chargeskill in self.skilleffect:
                 self.charging = True
+                self.authpenalty += 0.5
+        """apply effect if elem attack reach 100 threshold"""
+        self.thresholdcount(statuslist, self.firecount, 28, 92)
+        self.thresholdcount(statuslist, self.watercount, 31, 93)
+        self.thresholdcount(statuslist, self.aircount, 30, 94)
+        self.thresholdcount(statuslist, self.earthcount, 23, 35)
+        self.thresholdcount(statuslist, self.poisoncount, 26, 27)
+        """temperature effect"""
+        if self.tempcount > 50 and self.tempcount < 100:
+            self.statuseffect[96] = statuslist[96].copy()
+            if self.tempcount > 100:
+                self.statuseffect[97] = statuslist[97].copy()
+                del self.statuseffect[96]
+        if self.tempcount < -50 and self.tempcount > -100:
+            self.statuseffect[95] = statuslist[95].copy()
+            if self.tempcount < -100:
+                self.statuseffect[29] = statuslist[29].copy()
+                del self.statuseffect[95]
         """apply effect from status effect"""
         """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 7 no exp gain, 
         7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""

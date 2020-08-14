@@ -1,6 +1,6 @@
-"""next goal: skill usage limit option (0.3.3), menu in main game(0.3.1), proper broken retreat after map function (0.4)
+"""next goal: , menu in main game(0.3.1), proper broken retreat after map function (0.4) also skirmish
 FIX
-add speed estimation for shooting unit that walking so it shoot ahead of target depending on accuracy stat, also add chase shoot 2.6
+add speed estimation for shooting unit that walking so it shoot ahead of target depending on accuracy stat, also add chase shoot in 2.6
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
 Change when click ui so it will not count as click unit under it only ui
 maybe add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
@@ -497,6 +497,8 @@ class battle():
         if (33 in who.trait and targetside == 2) or (55 in target.trait and targetside == 2) or (47 in target.trait and whoside in [1,3]): targetdefense = 0
         whodmg, whomoraledmg = self.losscal(who, target, whohit, targetdefense, 0)
         targetdmg, targetmoraledmg = self.losscal(target, who, targethit, whodefense, 0)
+        who.fightest = (whodmg*100/target.unithealth) - (targetdmg*100/who.unithealth)
+        target.fightest = -who.fightest
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
@@ -569,6 +571,9 @@ class battle():
                             self.gamestate = 0
                         else:
                             self.gamestate = 1
+                    if event.key == pygame.K_s and self.lastselected != 0:
+                        whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
+                                         self.lastselected, self.lastmouseover, self.enemyposlist, keystate, othercommand = 1)
                 # if keystate[K_s]:
                 #     scroll_view(screen, background, DIR_DOWN, view_rect)
                 # elif keystate[K_w]:
@@ -579,7 +584,7 @@ class battle():
                 #     scroll_view(screen, background, DIR_RIGHT, view_rect)
                 if event.type == self.SONG_END:
                     # pygame.mixer.music.unload()
-                    self.pickmusic = random.randint(0, 4)
+                    self.pickmusic = random.randint(1, 1)
                     pygame.mixer.music.load(self.musiclist[self.pickmusic])
                     pygame.mixer.music.play(0)
             if self.timer != 0:
@@ -594,6 +599,7 @@ class battle():
             if mouse_up == True:
                 self.check = 0
                 self.check2 = 0
+                self.uicheck = 0
             for army in self.allunitlist:
                 if army.gameid < 2000:
                     self.playerposlist[army.gameid] = army.pos
@@ -602,12 +608,21 @@ class battle():
                 posmask = self.mousepos[0] - army.rect.x, self.mousepos[1] - army.rect.y
                 #     army.mouse_over = True
                 # except: self.mouse_over = False
+                for ui in self.gameui:
+                    if ui.rect.collidepoint(self.mousepos) and mouse_up:
+                        if ui.uitype not in ["unitcard", 'armybox']:
+                            self.check = 1
+                            self.uicheck = 1 ## for avoiding clicking unit under ui
+                        else:
+                            if self.inspectui == 1:
+                                self.check = 1
+                                self.uicheck = 1
                 if army.rect.collidepoint(self.mousepos):
                     try:
                         if army.mask.get_at(posmask) == 1:
                             army.mouse_over = True
                             self.lastmouseover = army
-                            if mouse_up:
+                            if mouse_up and self.uicheck == 0:
                                 self.lastselected = army.gameid
                                 self.check = 1
                     except:
@@ -617,12 +632,13 @@ class battle():
                 if army.state == 100 and army.gotkilled == 0:
                     if army.gameid < 2000:
                         self.die(army, self.playerarmy, self.deadunit, self.all)
+                        for army in self.enemyarmy:
+                            army.authority += 5
                     else:
                         self.die(army, self.enemyarmy, self.deadunit, self.all)
+                        for army in self.playerarmy:
+                            army.authority += 5
                 # pygame.draw.aaline(screen, (100, 0, 0), army.pos, army.target, 10)
-            for ui in self.gameui:
-                if ui.rect.collidepoint(self.mousepos) and mouse_up:
-                    self.check = 1
             if self.lastselected != 0:
                 if self.lastselected < 2000:
                     """if not found in army class then it is in dead class"""
@@ -635,7 +651,7 @@ class battle():
                         whoinput = self.enemyarmy[self.enemyarmynum[self.lastselected]]
                     except:
                         lastselected = 0  # whoinput = self.deadunit[self.deadarmynum[self.lastselected]]
-                if (mouse_up or mouse_right):
+                if mouse_up or mouse_right:
                     whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
                                      self.lastselected, self.lastmouseover, self.enemyposlist, keystate)
                     if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.directionarrow == False:
@@ -730,7 +746,6 @@ class battle():
                             if hitbox.who.combatpreparestate == 1:
                                 if hitbox.who.preparetimer == 0: hitbox.who.preparetimer = 0.1
                                 if hitbox.who.preparetimer not in [0,5]:
-                                    print(hitbox.who.preparetimer)
                                     hitbox.who.preparetimer += self.dt
                                     if hitbox.who.preparetimer < 5:
                                         hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)

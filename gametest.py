@@ -136,20 +136,8 @@ list = {0:1,1:2,2:3,3:4}
 # a = {22: ['Anti-Cavalry', 1.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0.0, 0.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 'This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.', 100]}
 # for d in a.items():
 #        print(d)
-# calsquadlist = np.array([0,0,0,1,1,2,0,0],[0,0,0,1,1,2,0,0])
+# calsquadlist = np.array([[1,2,3],[3,4,5]])
 # calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
 #                 (np.count_nonzero(calsquadlist <= 1)) * 70 / 100)])
 # print(calsquadlist)
-b = {4: pygame.Vector2(300,500)}
-c = {1: pygame.Vector2(1300,500),2: pygame.Vector2(500,500)}
-a = c
-pos = pygame.Vector2(100,100)
-neartarget = {}
-print(enumerate(a))
-for n, thisside in a.items():
-       print(n,thisside)
-       neartarget[n] = pygame.Vector2(thisside).distance_to(pos)
-neartarget = {k: v for k, v in sorted(neartarget.items(), key=lambda item: item[1])}
-for n in a:
-       neartarget[n] = a[n]
-print(neartarget)
+print(50*100/1000)
