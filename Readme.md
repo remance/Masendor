@@ -5,7 +5,7 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.4: Dynamic authority stat (authority reduce and increase depending on activity), add Impetuous trait
+2.4: add speed estimation for shooting unit that walking so it shoot ahead of target depending on accuracy stat
 
 2.5: detach/split battalion
 
@@ -17,7 +17,7 @@ Ver 0.2: Expand core mechanic to increase unit complexity
 
 2.9: equipment quality, unit card stat for equipment, another base stat rework
 
-Ver 0.3: More complex UI function (Event log, popup box)
+Ver 0.3: More complex UI function (Event log, popup box), also weather effect
 
 Ver 0.4: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
 

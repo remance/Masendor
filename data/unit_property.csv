@@ -15,8 +15,8 @@
 14,"Evasive",1,,,130,130,0,,,,,,30,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can dodge melee and range attack when fighting in loose formation.",,
 15,"Divine Connection",1,190,,,,0,,,,,,,0,0,100,0,0,,,,,,,,,,,,,,,0,,,
 16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Arc shot allows archers to shoot pass the obstacle and hit almost any target they intend. ",,"y"
-17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve.",,
-18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving but with some accuracy penalty.",,
+17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve.",,"y"
+18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial.",,"y"
 19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken).",,
 20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad magic casting is not affected by morale (It still cannot cast magic when broken).",,
 21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,,"y"
@@ -147,7 +147,7 @@
 146,"Wall Climbing",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad can bypass wall easily. It does not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and does not receive any defense bonus from siege equipment.",,
 147,"Hero Killer",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad deals more damage to champion and hero grade squad.",,
 148,"Command Independent",1,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad morale will not be affected by commander's death or retreat.",,
-149,"Impetuous",1,,,,,,,,,,,0,0,0,0,-20,0,,,,,,,,,,,,,,,0,"Whether from pride or arrogance, this squad has tendency to not follow order making them have less discipline.",,
+149,"Impetuous",1,,,,,,,,,,,0,0,0,0,-20,0,,,,,,,,,,,,,,,0,"Whether from pride or arrogance, this squad has tendency to follow order even less when the leader makes mistake or issue command they do not like.",,
 150,"Greslanoul's Mastery",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,,
 151,"Hearty Competition",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,"Being the elite of elite, this squad sees battle as a game who kill the most enemy. The more this squad kills the higher its morale including nearby ally squads.","Morale and nearby friendly squads morale +10% for each enemy squad kill",
 152,"Battle Juggernaut",,,130,150,150,,,,,,,30,0,200,25,0,0,,,,,,,,,,,,,,,0,,,

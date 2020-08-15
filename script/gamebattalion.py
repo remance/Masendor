@@ -185,14 +185,14 @@ class directionarrow(pygame.sprite.Sprite):
                               self.image.get_height() / 2 - (self.who.pos[1] - self.who.target[1])), 5)
             self.rect = self.image.get_rect(center=self.who.pos)
             self.previouslength = self.length
-        elif self.length < 2 or self.who.state in [0, 10, 11]:
+        elif self.length < 2 or self.who.state in [0, 10, 11, 100]:
             self.who.directionarrow = False
             self.kill()
 
 
 class hitbox(pygame.sprite.Sprite):
     def __init__(self, who, side, width, height):
-        self._layer = 0
+        self._layer = 1
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = who
         self.side = side
@@ -366,13 +366,14 @@ class unitarmy(pygame.sprite.Sprite):
                     self.deadchange = 1
             # self.squadindex = np.where(self.squadalive > -1, self.armysquad, self.squadalive)
         self.troopnumber = int(sum(self.stat['troop']))
-        self.stamina = int(mean(self.stat['stamina']))
-        self.morale = int(mean(self.stat['morale']))
-        self.speed = mean(self.stat['speed'])
-        self.discipline = mean(self.stat['disci'])
-        self.ammo = int(sum(self.stat['ammo']))
-        self.maxrange = max(self.stat['range'])
-        self.minrange = min(self.stat['range'])
+        if self.troopnumber > 0:
+            self.stamina = int(mean(self.stat['stamina']))
+            self.morale = int(mean(self.stat['morale']))
+            self.speed = mean(self.stat['speed'])
+            self.discipline = mean(self.stat['disci'])
+            self.ammo = int(sum(self.stat['ammo']))
+            self.maxrange = max(self.stat['range'])
+            self.minrange = min(self.stat['range'])
         if self.gamestart == 0:
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
                 self.stamina * 50 / 100), round(self.stamina * 25 / 100)
@@ -385,29 +386,26 @@ class unitarmy(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
     def setupfrontline(self, specialcall=False):
-        """def to setup frontline"""
+        """Setup frontline"""
         gotanother = 0
         startwhere = 0
         whoarray = np.where(self.squadalive > 1, self.armysquad, self.squadalive)
         """rotate the array based on the side being attack"""
         fullwhoarray = [whoarray, np.fliplr(whoarray.swapaxes(0, 1)), np.rot90(whoarray), np.fliplr([whoarray])[0]]
-        # print('full',fullwhoarray)
         whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0],
                     fullwhoarray[3][0]]
-        # print('sub', whoarray)
         for index, whofrontline in enumerate(whoarray):
             if self.gamestart == 0 and specialcall == False:
                 """Add zero to the frontline so it become 8 row array"""
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """Adjust the position of frontline to center of empty 8 array"""
+                whocenter = (8 - len(whofrontline)) / 2
                 if len(whofrontline) == 7:
                     whocenter = random.randint(0, 1)
                 elif len(whofrontline) == 5:
                     whocenter = random.randint(1, 2)
                 elif len(whofrontline) == 3:
                     whocenter = random.randint(2, 3)
-                else:
-                    whocenter = (8 - len(whofrontline)) / 2
                 emptyarray[int(whocenter):int(len(whofrontline) + whocenter)] = whofrontline
                 newwhofrontline = emptyarray.copy()
                 self.startwhere.append(int(whocenter))
@@ -840,6 +838,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.state = 1
                         self.rotateonly = False
                         self.attacktarget = 0
+                        self.attackpos = 0
                         if whomouseover != 0:
                             if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
                                 self.state = 3
@@ -898,9 +897,11 @@ class unitarmy(pygame.sprite.Sprite):
                         # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat
                 if self.charging == True: self.authority -= self.authpenalty
+                print('test')
                 self.state = 0
                 self.commandtarget = self.allsidepos[0]
                 self.target = self.allsidepos[0]
+                self.rangecombatcheck = 0
                 self.setrotate()
 
 

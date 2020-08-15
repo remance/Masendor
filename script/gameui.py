@@ -4,11 +4,11 @@ import pygame.freetype
 
 class uibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event):
+        self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
         self.event = event
-        self._layer = 5
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.mouse_over = False
 
@@ -18,11 +18,11 @@ class uibutton(pygame.sprite.Sprite):
 
 class iconpopup(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event, gameui, itemid=""):
+        self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
         self.event = 0
-        self._layer = 5
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.mouse_over = False
         self.itemid = itemid
@@ -33,13 +33,13 @@ class iconpopup(pygame.sprite.Sprite):
 
 class Gameui(pygame.sprite.Sprite):
     def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
+        self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.X, self.Y = X, Y
         self.text = text
         self.image = image
         self.icon = icon
-        self._layer = 5
         self.uitype = uitype
         self.value = [-1, -1]
         self.lastvalue = 0

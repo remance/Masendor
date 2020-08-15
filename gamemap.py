@@ -23,3 +23,5 @@ class map(pygame.sprite.Sprite):
 
     def getDim(self):
         return self.dim
+
+# Surface.get_at((x, y)) ##get colour at pos maybe can be used to create map from just picture?

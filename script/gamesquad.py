@@ -48,7 +48,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.gamestart = 0
         self.battalion = battalion
         self.authority = battalion.authority
-        with open(main_dir + "\data" + '\\unit_stat.csv', 'r') as unitfile:
+        with open(main_dir + "\data" + '\\unit_preset.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if str(unitid) == row[0]:
@@ -109,7 +109,6 @@ class unitsquad(pygame.sprite.Sprite):
         self.corneratk = False
         self.flankbonus = 1
         self.flankdef = 0
-        self.fightest = 0
         self.baseauthpenalty = 0.1
         self.authpenalty = 0.1
         self.basehpregen = 0
@@ -496,24 +495,6 @@ class unitsquad(pygame.sprite.Sprite):
             #     self.angle = 180
             #     self.rotate()
             #     self.retreatstart = 1
-            # else: self.retreatstart = 0
-            # """Rotate Function"""
-            # self.set_target(battalion.target)
-            # self.previousposition = [self.rect.centerx, self.rect.centery]
-            # myradians = math.atan2(self.target[1] - self.previousposition[1], self.target[0] - self.previousposition[0])
-            # self.newangle = math.degrees(myradians)
-            # # """upper left -"""
-            # if self.newangle >= -180 and self.newangle <= -90:
-            #     self.newangle = -self.newangle - 90
-            # # """upper right +"""
-            # elif self.newangle > -90 and self.newangle < 0:
-            #     self.newangle = (-self.newangle) - 90
-            # # """lower right -"""
-            # elif self.newangle >= 0 and self.newangle <= 90:
-            #     self.newangle = -(self.newangle + 90)
-            # # """lower left +"""
-            # elif self.newangle > 90 and self.newangle <= 180:
-            #     self.newangle = 270 - self.newangle
             self.attackpos = self.battalion.attackpos
             self.attacktarget = self.battalion.attacktarget
             if self.battalion.state in [0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100]:
@@ -540,7 +521,7 @@ class unitsquad(pygame.sprite.Sprite):
                 if self.ammo > 0 and self.range + 150 >= self.attackpos.distance_to(self.combatpos):
                     self.state = 11
             elif 18 in self.trait and self.battalion.state in [1,2,3,4,5,6] and self.ammo > 0: # and self.bahaviour == 1
-                if self.attackpos == 0:
+                if self.attacktarget == 0:
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
                 if self.range + 150 >= self.attackpos.distance_to(self.combatpos):

@@ -1,8 +1,7 @@
 """next goal: , menu in main game(0.3.1), proper broken retreat after map function (0.4) also skirmish
 FIX
-add speed estimation for shooting unit that walking so it shoot ahead of target depending on accuracy stat, also add chase shoot in 2.6
+add chase shoot in 2.7 change stance
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
-Change when click ui so it will not count as click unit under it only ui
 maybe add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
 remove index and change call to the sprite itself
@@ -313,7 +312,6 @@ class battle():
         self.playerposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
-        self.removesquadlist = []
 
     def squadselectside(self, targetside, side, position):
         """side 0 is left 1 is right"""
@@ -399,10 +397,6 @@ class battle():
         squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
         sortmidfront = [who.frontline[whoside][3], who.frontline[whoside][4], who.frontline[whoside][2], who.frontline[whoside][5],
                         who.frontline[whoside][1], who.frontline[whoside][6], who.frontline[whoside][0], who.frontline[whoside][7]]
-        for squad in self.squad[who.groupsquadindex[0]:who.groupsquadindex[-1] + 1]:
-            squad.battleside = [-1 if i in self.removesquadlist else i for i in squad.battleside]
-        for squad in self.squad[target.groupsquadindex[0]:target.groupsquadindex[-1] + 1]:
-            squad.battleside = [-1 if i in self.removesquadlist else i for i in squad.battleside]
         """only calculate if the attack is attack with the front side"""
         if whoside == 0:
             self.combatpositioncal(sortmidfront, who, target, whoside, targetside, squadtargetside)
@@ -414,7 +408,6 @@ class battle():
                             target.frontline[targetside][6],
                             target.frontline[targetside][0], target.frontline[targetside][7]]
             self.combatpositioncal(sortmidfront, target, who, targetside, whoside, squadwhoside)
-        self.removesquadlist = []
 
     def losscal(self, who, target, hit, defense, type):
         if hit < 0: hit = 0
@@ -497,8 +490,6 @@ class battle():
         if (33 in who.trait and targetside == 2) or (55 in target.trait and targetside == 2) or (47 in target.trait and whoside in [1,3]): targetdefense = 0
         whodmg, whomoraledmg = self.losscal(who, target, whohit, targetdefense, 0)
         targetdmg, targetmoraledmg = self.losscal(target, who, targethit, whodefense, 0)
-        who.fightest = (whodmg*100/target.unithealth) - (targetdmg*100/who.unithealth)
-        target.fightest = -who.fightest
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
@@ -631,11 +622,11 @@ class battle():
                     army.mouse_over = False
                 if army.state == 100 and army.gotkilled == 0:
                     if army.gameid < 2000:
-                        self.die(army, self.playerarmy, self.deadunit, self.all)
+                        self.die(army, self.playerarmy, self.deadunit, self.all, self.hitboxs)
                         for army in self.enemyarmy:
                             army.authority += 5
                     else:
-                        self.die(army, self.enemyarmy, self.deadunit, self.all)
+                        self.die(army, self.enemyarmy, self.deadunit, self.all, self.hitboxs)
                         for army in self.playerarmy:
                             army.authority += 5
                 # pygame.draw.aaline(screen, (100, 0, 0), army.pos, army.target, 10)
@@ -774,10 +765,6 @@ class battle():
                                     else:
                                         self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
                                                     self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
-                                    if thissquad.unithealth <= 0:
-                                        self.removesquadlist.append(thissquad.gameid)
-                                    if self.squad[np.where(self.squadindexlist == combat)[0][0]].unithealth <= 0:
-                                        self.removesquadlist.append(self.squad[np.where(self.squadindexlist == combat)[0][0]].gameid)
                         if thissquad.state in [11,12,13] and thissquad.attacktarget != 0:
                             if type(thissquad.attacktarget) == int: thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                             if thissquad.reloadtime >= thissquad.reload and thissquad.attacktarget.state != 100:
