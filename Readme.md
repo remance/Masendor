@@ -7,7 +7,7 @@ Ver 0.2: Expand core mechanic to increase unit complexity
 
 2.5: detach/split battalion
 
-2.6: Leader squad and personal stat+combat dmg chance
+2.6: Leader squad and personal stat+combat dmg chance (Also more dynamic authority based on leader squad position)
 
 2.7: battalion command (raise flag,forced march,decimation,duel,change skill usage,change stance)
 

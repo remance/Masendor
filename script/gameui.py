@@ -60,7 +60,7 @@ class Gameui(pygame.sprite.Sprite):
                              99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
-            self.option3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
+            self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                             7: "Alert", 8:"Warmed Up", 9: "Active", 10: "Fresh"}
         elif self.uitype == "commandbar":
             self.iconimagerect = self.icon[6].get_rect(
@@ -95,7 +95,7 @@ class Gameui(pygame.sprite.Sprite):
             x = pos[0]  ## reset x
             y += word_height  ## start on new row
 
-    def valueinput(self, who, leader="", button="", changeoption=0, gameunitstat=""):
+    def valueinput(self, who, leader="", button="", changeoption=0, gameunitstat="", splithappen = False):
         for thisbutton in button:
             thisbutton.draw(self.image)
         position = 65
@@ -103,10 +103,14 @@ class Gameui(pygame.sprite.Sprite):
             self.value = who.valuefortopbar
             if self.value[3] in self.options1:
                 self.value[3] = self.options1[self.value[3]]
-            if type(self.value[2]) != str: self.value[2] = round(self.value[2] / 10)
+            # if type(self.value[2]) != str:
+            self.value[2] = round(self.value[2] / 10)
             if self.value[2] in self.options2:
                 self.value[2] = self.options2[self.value[2]]
-            if self.value != self.lastvalue:
+            self.value[1] = round(self.value[1] / 10)
+            if self.value[1] in self.options3:
+                self.value[1] = self.options3[self.value[1]]
+            if self.value != self.lastvalue or splithappen == True:
                 self.image = self.image_original.copy()
                 for value in self.value:
                     self.textsurface = self.font.render(str(value), 1, (0, 0, 0))
@@ -121,7 +125,7 @@ class Gameui(pygame.sprite.Sprite):
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
         elif self.uitype == "commandbar":
-            if who.gameid != self.lastwho: ## only redraw leader circle when change unit (will add condition if leader die or changed later)
+            if who.gameid != self.lastwho or splithappen == True: ## only redraw leader circle when change unit (will add condition if leader die or changed later)
                 usecolour = self.white
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
@@ -132,14 +136,14 @@ class Gameui(pygame.sprite.Sprite):
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[0], self.iconimagerect)
                     self.iconimagerect = usecolour[1].get_rect(
-                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
+                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[1], self.iconimagerect)
                 else:
                     self.iconimagerect = usecolour[2].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[2], self.iconimagerect)
                     self.iconimagerect = usecolour[5].get_rect(
-                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 150))
+                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[5], self.iconimagerect)
                 self.iconimagerect = usecolour[3].get_rect(center=(
                     self.image.get_rect()[0] + self.image.get_size()[0] / 3.1,
@@ -164,7 +168,7 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 22))
                 self.image.blit(leader.imgs[self.leaderpiclist[2]], self.leaderpiclistrect)
                 self.leaderpiclistrect = leader.imgs[self.leaderpiclist[3]].get_rect(
-                    center=(self.image.get_size()[0] / 2, self.image.get_rect()[1] + 172))
+                    center=(self.image.get_size()[0] / 2, self.image.get_rect()[1] + 162))
                 self.image.blit(leader.imgs[self.leaderpiclist[3]], self.leaderpiclistrect)
             if self.lastauth != who.authority:
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))

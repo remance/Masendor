@@ -263,6 +263,7 @@ class battle():
         gameui.fpscount.containers = self.all
         gameui.uibutton.containers = self.buttonui, self.uiupdater
         """Create Starting Values"""
+        self.enactment = False
         self.timer = 0
         self.dt = 0
         self.combattimer = 0
@@ -292,7 +293,9 @@ class battle():
         self.buttonui = [gameui.uibutton(self.gameui[2].X - 170, self.gameui[2].Y + 41, topimage[3], 0),
                          gameui.uibutton(self.gameui[2].X - 170, self.gameui[2].Y - 65, topimage[4], 1),
                          gameui.uibutton(self.gameui[2].X - 170, self.gameui[2].Y - 12, topimage[7], 2),
-                         gameui.uibutton(self.gameui[0].X - 206, self.gameui[0].Y, topimage[6], 1)]
+                         gameui.uibutton(self.gameui[0].X - 206, self.gameui[0].Y, topimage[6], 1),
+                         gameui.uibutton(self.gameui[1].X - 50, self.gameui[1].Y+96, topimage[8], 0),
+                         gameui.uibutton(self.gameui[1].X - 100, self.gameui[1].Y+96, topimage[9], 1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1, (0, 0, 0))
         self.fpscount = gameui.fpscount()
         """initialise starting unit sprites"""
@@ -512,15 +515,57 @@ class battle():
     def splitunit(self,who,how):
         if how == 0: ## split by row
             newarmysquad = np.array_split(who.armysquad, 2)[1]
-            newsquadalive = np.array_split(who.squadalive, 2)[1]
+            newsquadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]
+            # newsquadalive = np.array_split(who.squadalive, 2)[1]
             who.armysquad = np.array_split(who.armysquad, 2)[0]
             who.squadalive = np.array_split(who.squadalive, 2)[0]
+            newpos = who.allsidepos[3]
+            who.pos = who.allsidepos[0]
         else:
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
-            newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
+            newsquadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]
+            # newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
             who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
             who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
+            newpos = who.allsidepos[2]
+            who.pos = who.allsidepos[1]
         who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
+        newleader = [who.leaderwho[1],0,0,0]
+        who.leaderwho = [who.leaderwho[0],who.leaderwho[2],who.leaderwho[3],['None', 0, '', 0, 0, 0, 0, 0]]
+        coa = who.coa
+        who.recreatesprite()
+        who.maxhealth, who.health75, who.health50, who.health25, = who.troopnumber, round(who.troopnumber * 75 / 100), round(
+            who.troopnumber * 50 / 100), round(who.troopnumber * 25 / 100)
+        if who.armysquad.size > 20:
+            who.authority = round(
+                (who.leaderwho[0][3] * (100 - (who.armysquad.size)) / 100) + who.leaderwho[1][3] / 2 + who.leaderwho[2][3] / 2 +
+                who.leaderwho[3][3] / 4)
+        if who.gameid < 2000:
+            playercommand = True
+            newgameid = self.playerarmy[-1].gameid+1
+            colour =  (144, 167, 255)
+            control = True
+            army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
+                                          leaderlist=self.allleader, statlist=self.gameunitstat, leader=newleader,
+                                          squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
+                                          colour=colour, control=control, coa=coa, commander=playercommand)
+            self.playerarmy.append(army)
+        else:
+            playercommand = False
+            newgameid = self.enemyarmy[-1].gameid + 1
+            colour = (255, 114, 114)
+            control = False
+            if self.enactment == True: control = True
+            army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
+                                          leaderlist=self.allleader, statlist=self.gameunitstat, leader=newleader,
+                                          squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
+                                          colour=colour, control=control, coa=coa, commander=playercommand)
+            self.enemyarmy.append(army)
+        army.squadsprite = newsquadsprite
+        army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
+                   gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
+                   gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
+                   gamebattalion.hitbox(army, 3, army.rect.width, 5)]
 
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
@@ -543,6 +588,7 @@ class battle():
         self.squadlastselected = None
         self.beforeselected = None
         self.squadbeforeselected = None
+        self.splithappen = False
         while True:
             self.fpscount.fpsshow(self.clock)
             keystate = pygame.key.get_pressed()
@@ -665,12 +711,17 @@ class battle():
                     self.gameui = self.popgameui
                     self.all.add(*self.gameui[0:2])
                     self.all.add(self.buttonui[3])
+                    if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leaderwho[1][0] != "None":
+                        self.all.add(self.buttonui[4])
+                    if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leaderwho[1][0] != "None":
+                        self.all.add(self.buttonui[5])
                 elif self.beforeselected != self.lastselected and self.inspectui == 1:
                     self.check2 = 1
                     self.all.remove(*self.showingsquad)
                     self.showingsquad = []
-                self.gameui[0].valueinput(who=whoinput, leader=self.allleader)
-                self.gameui[1].valueinput(who=whoinput, leader=self.allleader)
+                self.gameui[0].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
+                self.gameui[1].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
+                self.splithappen = False
                 if (self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 0) or (
                         mouse_up == True and self.inspectui == 1 and self.check2 == 1):
                     """Add army inspect ui when left click at ui button)"""
@@ -689,12 +740,18 @@ class battle():
                     self.inspectui = 0
                     self.check = 1
                     self.check2 = 0
+                if self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
+                    self.splitunit(whoinput,1)
+                    self.splithappen = True
+                if self.buttonui[5] in self.all and self.buttonui[5].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
+                    self.splitunit(whoinput, 0)
+                    self.splithappen = True
                 if self.inspectui == 1:
                     # if self.showingsquad[0] not in self.all:
                     self.all.add(*self.showingsquad)
                     """Update value of the clicked squad"""
                     if self.squadlastselected != None:
-                        self.gameui[2].valueinput(who=self.squadlastselected, leader=self.allleader, gameunitstat=self.gameunitstat)
+                        self.gameui[2].valueinput(who=self.squadlastselected, leader=self.allleader, gameunitstat=self.gameunitstat,splithappen=self.splithappen)
                     """Change showing stat to the clicked squad one"""
                     if mouse_up == True:
                         for squad in self.showingsquad:
@@ -702,14 +759,14 @@ class battle():
                                 self.check = 1
                                 squad.command(pygame.mouse.get_pos(), mouse_up, mouse_right, self.squadlastselected.wholastselect)
                                 self.squadlastselected = squad
-                                self.gameui[2].valueinput(who=squad, leader=self.allleader, gameunitstat=self.gameunitstat)
+                                self.gameui[2].valueinput(who=squad, leader=self.allleader, gameunitstat=self.gameunitstat,splithappen=self.splithappen)
                             """Change unit card option based on button clicking"""
                             for button in self.buttonui:
                                 if button.rect.collidepoint(pygame.mouse.get_pos()):
                                     self.check = 1
                                     if self.gameui[2].option != button.event:
                                         self.gameui[2].option = button.event
-                                        self.gameui[2].valueinput(who=squad, leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat)
+                                        self.gameui[2].valueinput(who=squad, leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat,splithappen=self.splithappen)
                     self.squadbeforeselected = self.squadlastselected
                 self.beforeselected = self.lastselected
             """remove the pop up ui when click at no group"""

@@ -224,6 +224,7 @@ class unitarmy(pygame.sprite.Sprite):
         # self.unitarray = unitarray
         self.armysquad = squadlist
         self.squadsprite = []  ##list of squad sprite(not index)
+        self.colour = colour
         self.commander = commander
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
@@ -261,7 +262,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.gamestart = 0
         """leaderwholist is list of 4 leader in 1 battalion. Based on list order: 1st = general, 
         2nd and 3rd = subgeneral, 4th = special role likes advisor, shaman, priest, mage, supporter"""
-        self.leaderwho = [leaderlist.leaderlist[oneleader] for oneleader in leader]
+        self.leaderwho = [leaderlist.leaderlist[oneleader] if type(oneleader) == int else oneleader for oneleader in leader]
         self.leadersocial = leaderlist.leaderclass[self.leaderwho[0][7]]
         self.authority = round(self.leaderwho[0][3] + self.leaderwho[1][3] / 3 + self.leaderwho[2][3] / 3 + self.leaderwho[3][3] / 5)
         if self.armysquad.size > 20:
@@ -277,7 +278,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
         self.image.fill((255, 255, 255, 128))
         pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
-        pygame.draw.rect(self.image, colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
+        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
         self.image_empty = self.image.copy()
         self.imagerect = self.images[10].get_rect(center=self.image.get_rect().center)
         self.image.blit(self.images[10], self.imagerect)
@@ -287,8 +288,9 @@ class unitarmy(pygame.sprite.Sprite):
         self.staminaimage = self.images[5]
         self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.staminaimage, self.staminaimagerect)
-        self.imagerect = coa.get_rect(center=self.image.get_rect().center)
-        self.image.blit(coa, self.imagerect)
+        self.coa = coa
+        self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
         self.rect = self.image.get_rect(midtop=startposition)
         self.testangle = 0
@@ -318,6 +320,32 @@ class unitarmy(pygame.sprite.Sprite):
                 width = 0
                 height += self.imgsize[1]
                 squadnum = 0
+
+    def recreatesprite(self):
+        """redrawing sprite for when split since the size will change"""
+        self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
+        self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
+        self.image.fill((255, 255, 255, 128))
+        pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
+        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
+        self.image_empty = self.image.copy()
+        self.imagerect = self.images[10].get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.images[10], self.imagerect)
+        self.healthimage = self.images[0]
+        self.healthimagerect = self.healthimage.get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.healthimage, self.healthimagerect)
+        self.staminaimage = self.images[5]
+        self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.staminaimage, self.staminaimagerect)
+        self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.coa, self.imagerect)
+        self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
+        self.rect = self.image.get_rect(center=self.pos)
+        self.testangle = 0
+        self.mask = pygame.mask.from_surface(self.image)
+        self.offsetx = self.rect.x
+        self.offsety = self.rect.y
+        self.setuparmy()
 
     def squadtoarmy(self, squads):
         """drawing squad into battalion sprite"""
@@ -384,7 +412,6 @@ class unitarmy(pygame.sprite.Sprite):
             self.maxmorale = self.morale
             self.maxhealth, self.health75, self.health50, self.health25, = self.troopnumber, round(self.troopnumber * 75 / 100), round(
                 self.troopnumber * 50 / 100), round(self.troopnumber * 25 / 100)
-            self.maxtroop = self.troopnumber
         self.moralestate = round((self.morale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
@@ -797,7 +824,7 @@ class unitarmy(pygame.sprite.Sprite):
                 self.stamina, self.morale, self.speed, self.discipline = 0, 0, 0, 0
                 self.state = 100
             # self.rect.topleft = self.pos[0],self.pos[1]
-        self.valuefortopbar = [str(self.troopnumber) + " (" + str(self.maxtroop) + ")", self.stamina, self.moralestate, self.state]
+        self.valuefortopbar = [str(self.troopnumber) + " (" + str(self.maxhealth) + ")", self.staminastate, self.moralestate, self.state]
 
     def set_target(self, pos):
         self.target = pygame.Vector2(pos)
