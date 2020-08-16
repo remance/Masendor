@@ -22,6 +22,7 @@ class arrow(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.shooter = shooter
         self.accuracy = shooter.accuracy
+        if self.shooter.state in [12,13] and 17 not in self.shooter.trait: self.accuracy -= 10
         self.passwho = 0
         self.side = None
         # self.lastpasswho = 0

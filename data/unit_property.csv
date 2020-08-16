@@ -15,7 +15,7 @@
 14,"Evasive",1,,,130,130,0,,,,,,30,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can dodge melee and range attack when fighting in loose formation.",,
 15,"Divine Connection",1,190,,,,0,,,,,,,0,0,100,0,0,,,,,,,,,,,,,,,0,,,
 16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Arc shot allows archers to shoot pass the obstacle and hit almost any target they intend. ",,"y"
-17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve.",,"y"
+17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also help improve accuracy against moving target.",,"y"
 18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial.",,"y"
 19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken).",,
 20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad magic casting is not affected by morale (It still cannot cast magic when broken).",,

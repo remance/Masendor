@@ -65,50 +65,19 @@ import numpy as np
 import pygame
 import timeit
 
-# k = np.array([[1,1,1,1,1,0,0,0],[1,1,1,1,1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-# whofrontline = np.array([1,2,3,4,0,5])
-# targetfrontline = np.array([6,0,7,8,9,10])
-# battleside= [0,0,0,0]
-# side = 3
-# for who in whofrontline:
-#     print(who)
-#     position = np.where(whofrontline == who)[0][0]
-#     fronttarget = targetfrontline[position]
-#     if fronttarget == 0:
-#         print('ye')
-#
-# print(whofrontline)
-# print(targetfrontline)
-# x = {0:3,1:2}
-# x = {k: v for k, v in sorted(x.items(), key=lambda item: item[1])}
-# print(list(x.keys())[0])
-# whoarray = np.array([[1,2,3,4,5],[6,7,8,9,10]])
-fullwhoarray = [np.array([[20000, 20001, 20002, 20003,     1],
-       [20005, 20006, 20007, 20008, 1]]), np.array([[20005, 20000],
-       [20006, 20001],
-       [20007, 20002],
-       [20008, 20003],
-       [20009,    1]]), np.array([[    1, 20009],
-       [20003, 20008],
-       [20002, 20007],
-       [20001, 20006],
-       [20000, 20005]]), np.array([[20005, 20006, 20007, 20008, 1],
-       [20000, 20001, 20002, 20003,     1]])]
 # whoarray = [np.array([20000, 20001, 20002, 20003,     1]), np.array([20005, 20000]), np.array([    1, 20009]), np.array([20005, 20006, 20007, 20008, 20009])]
 # squadalive = np.array([1,1,1,2,2])
 # print(squadalive[np.where(armysquad == 1)[0][0]] )
 # squadalive[np.where(armysquad == 1)[0][0]] = 5
-list = {0:1,1:2,2:3,3:4}
-# starttime = timeit.default_timer()
-# print("The start time is :",starttime)
-# run = 0
-# while run != 5:
-#     k = 0
-#     a = random.randint(0,20)
-#     if a > 10:
-#         k = 10
-#     run += 1
-# print("The time difference is :", timeit.default_timer() - starttime)
+list = [0,1,2,3,4,5,6,7,8,9,10]
+starttime = timeit.default_timer()
+print("The start time is :",starttime)
+run = 0
+while run != 100:
+    for k in list:
+           if k == 5: print(k)
+    run += 1
+print("The time difference is :", timeit.default_timer() - starttime)
 # starttime = timeit.default_timer()
 # print("The start time is :",starttime)
 # run = 0
@@ -120,24 +89,3 @@ list = {0:1,1:2,2:3,3:4}
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-# mapname = '\\test'
-# unitlist = []
-# with open(main_dir + "\data" + "\map" + mapname + '.csv', 'r') as unitfile:
-#        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-#        for row in rd:
-#               for n, i in enumerate(row):
-#                      if i.isdigit():
-#                             row[n] = int(i)
-#                      if n in range(1,11):
-#                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-#                             # print(row[n])
-#               unitlist.append(row)
-# print(unitlist)
-# a = {22: ['Anti-Cavalry', 1.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0.0, 0.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 'This squad is specialised in combat against cavalry squads. Cavalry charge and combat will be much less effective against this squad.', 100]}
-# for d in a.items():
-#        print(d)
-# calsquadlist = np.array([[1,2,3],[3,4,5]])
-# calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
-#                 (np.count_nonzero(calsquadlist <= 1)) * 70 / 100)])
-# print(calsquadlist)
-print(50*100/1000)

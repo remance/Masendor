@@ -91,7 +91,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.meleeweapon = self.stat[22]
         self.rangeweapon = self.stat[23]
         self.basemorale = int(self.stat[24] + int(statlist.gradelist[self.grade][9]))
-        self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]) + self.battalion.leadersocial[self.grade+1])
+        self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
         self.description = self.stat[33]
@@ -295,7 +295,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.morale = self.basemorale
         self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) + (self.authority / 10), 0)
+        self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) +
+                                self.battalion.leadersocial[self.grade + 1] + (self.authority / 10), 0)
         self.attack = round((self.baseattack * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
         self.meleedef = round((self.basemeleedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
         self.rangedef = round((self.baserangedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)

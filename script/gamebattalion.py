@@ -228,7 +228,6 @@ class unitarmy(pygame.sprite.Sprite):
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
         self.squadalive = np.where(self.squadalive > 0, 2, self.squadalive)
-        self.groupsquadindex = []
         self.startwhere = []
         self.imgsize = imgsize
         self.widthbox, self.heightbox = len(squadlist[0]) * self.imgsize[0], len(squadlist) * self.imgsize[1]
@@ -269,6 +268,10 @@ class unitarmy(pygame.sprite.Sprite):
             self.authority = round(
                 (self.leaderwho[0][3] * (100 - (self.armysquad.size)) / 100) + self.leaderwho[1][3] / 2 + self.leaderwho[2][3] / 2 +
                 self.leaderwho[3][3] / 4)
+        self.cansplitrow = False
+        if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
+        self.cansplitcol = False
+        if np.array_split(self.armysquad, 2, axis=1)[0].size > 10 and np.array_split(self.armysquad, 2, axis=1)[1].size > 10: self.cansplitcol = True
         self.authpenalty = 0
         self.tacticeffect = {}
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
@@ -326,8 +329,8 @@ class unitarmy(pygame.sprite.Sprite):
                 # def drawtobattalion(self, startposition, battalion):
                 # self.rect = self.image.get_rect(topleft=(battalion.image.get_rect(startposition)))
                 # self.image.blit(self.image, self.rect)
-                self.squadrect = squads[self.groupsquadindex[truesquadnum]].image.copy().get_rect(topleft=(width, height))
-                self.image_original.blit(squads[self.groupsquadindex[truesquadnum]].image.copy(), self.squadrect)
+                self.squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
+                self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), self.squadrect)
                 # squad.pos = pygame.Vector2((width,height))
                 # squads[self.groupsquadindex[truesquadnum]].drawtobattalion(startposition=(width,height),battalion=self.image)
                 # squads[self.groupsquadindex[truesquadnum]].pos = pygame.Vector2(width,height)
@@ -339,27 +342,27 @@ class unitarmy(pygame.sprite.Sprite):
                 height += self.imgsize[1]
                 squadnum = 0
 
-    def setuparmy(self, squadgroup):
+    def setuparmy(self):
         self.stat = {'troop': [], 'stamina': [], 'morale': [], 'speed': [], 'disci': [], 'ammo': [], 'range': [], 'novice': [], 'militant': [],
                      'pro': [], 'vet': [], 'elite': [], 'champ': [], 'hero': [], 'religmili': [], 'religelite': [], 'merc': [], 'noble': []}
-        for squad in self.groupsquadindex:
-            self.stat['troop'].append(squadgroup[squad].troopnumber)
-            if squadgroup[squad].state != 100:
-                self.stat['stamina'].append(squadgroup[squad].stamina)
-                self.stat['morale'].append(squadgroup[squad].morale)
-                self.stat['speed'].append(squadgroup[squad].speed)
-                self.stat['disci'].append(squadgroup[squad].discipline)
-                self.stat['ammo'].append(squadgroup[squad].ammo)
-                self.stat['range'].append(squadgroup[squad].range)
-                self.authpenalty += squadgroup[squad].authpenalty
-                squadgroup[squad].combatpos = self.pos
-                if squadgroup[squad].charging == True and self.charging != True:
+        for squad in self.squadsprite:
+            self.stat['troop'].append(squad.troopnumber)
+            if squad.state != 100:
+                self.stat['stamina'].append(squad.stamina)
+                self.stat['morale'].append(squad.morale)
+                self.stat['speed'].append(squad.speed)
+                self.stat['disci'].append(squad.discipline)
+                self.stat['ammo'].append(squad.ammo)
+                self.stat['range'].append(squad.range)
+                self.authpenalty += squad.authpenalty
+                squad.combatpos = self.pos
+                if squad.charging == True and self.charging != True:
                     self.charging == True
             # self.stat['speed'].append(squad.troopnumber)
             # self.stat['speed'].append(squad.troopnumber)
             else:
                 """Update squad alive list if squad die"""
-                deadindex = np.where(self.armysquad == squadgroup[squad].gameid)
+                deadindex = np.where(self.armysquad == squad.gameid)
                 deadindex = [deadindex[0], deadindex[1]]
                 if self.squadalive[deadindex[0], deadindex[1]] != 1:
                     self.squadalive[deadindex[0], deadindex[1]] = 1
@@ -551,9 +554,14 @@ class unitarmy(pygame.sprite.Sprite):
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
 
+    def splitbattalion(self,how):
+        """Split battalion by either half column or row"""
+
+
+
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
-            self.setuparmy(squadgroup)
+            self.setuparmy()
             self.setupfrontline()
             self.setupfrontline(specialcall=True)
             self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
@@ -572,7 +580,7 @@ class unitarmy(pygame.sprite.Sprite):
             self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
             self.authpenalty = 0
             self.charging = False
-            self.setuparmy(squadgroup)
+            self.setuparmy()
             self.statusupdate(statuslist)
             """redraw if troop num or stamina change"""
             if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != viewmode:
@@ -641,8 +649,8 @@ class unitarmy(pygame.sprite.Sprite):
             """setup frontline again when squad die"""
             if self.deadchange == 1:
                 self.setupfrontline()
-                for squad in self.groupsquadindex:
-                    squadgroup[squad].basemorale -= 20
+                for squad in self.squadsprite:
+                    squad.basemorale -= 20
                 self.deadchange = 0
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
             # """Stamina and Health Function"""

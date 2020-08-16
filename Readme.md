@@ -5,8 +5,6 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.4: add speed estimation for shooting unit that walking so it shoot ahead of target depending on accuracy stat
-
 2.5: detach/split battalion
 
 2.6: Leader squad and personal stat+combat dmg chance
@@ -17,15 +15,15 @@ Ver 0.2: Expand core mechanic to increase unit complexity
 
 2.9: equipment quality, unit card stat for equipment, another base stat rework
 
-Ver 0.3: More complex UI function (Event log, popup box), also weather effect
+Ver 0.3: Game map, terrain and camera (Going to be somewhat difficult and long to implement, moved from 0.4 as the ui function will need to be reword to work with movable display anywya)
 
-Ver 0.4: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
+Ver 0.4: More complex UI function (Event log, popup box), also weather effect (moved from 0.3)
 
-Ver 0.5: Optimise for larger battle (Also proper code documentation + structure)
+Ver 0.5: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
 Ver 0.6: Battle selection, preparation and result screen
 
-Ver 0.7: In game art and better looking UI (All hand (and mouse) drawn only except for historical image)
+Ver 0.7: In game art and better looking UI (All hand (and mouse) drawn except for historical image)
 
 Ver 0.8: Sound effect and ingame music (May need to use royalty free music since I have no experience in music)
 

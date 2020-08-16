@@ -130,7 +130,6 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                                                    battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=inspectuipos)
                     squad.append(addsquad)
                     squadnum[...] = squadgameid
-                    army.groupsquadindex.append(squadindex)
                     army.squadsprite.append(addsquad)
                     squadindexlist.append(squadgameid)
                     squadgameid += 1
@@ -509,6 +508,20 @@ class battle():
             self.applystatustoenemy(who.inflictstatus, target, whoside)
         if target.inflictstatus != {}:
             self.applystatustoenemy(target.inflictstatus, who, targetside)
+
+    def splitunit(self,who,how):
+        if how == 0: ## split by row
+            newarmysquad = np.array_split(who.armysquad, 2)[1]
+            newsquadalive = np.array_split(who.squadalive, 2)[1]
+            who.armysquad = np.array_split(who.armysquad, 2)[0]
+            who.squadalive = np.array_split(who.squadalive, 2)[0]
+        else:
+            newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
+            newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
+            who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
+            who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
+        who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
+
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         self.deadarmynum[who.gameid] = self.deadindex
