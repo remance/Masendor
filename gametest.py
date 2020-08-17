@@ -69,15 +69,15 @@ import timeit
 # squadalive = np.array([1,1,1,2,2])
 # print(squadalive[np.where(armysquad == 1)[0][0]] )
 # squadalive[np.where(armysquad == 1)[0][0]] = 5
-list = [0,1,2,3,4,5,6,7,8,9,10]
-starttime = timeit.default_timer()
-print("The start time is :",starttime)
-run = 0
-while run != 100:
-    for k in list:
-           if k == 5: print(k)
-    run += 1
-print("The time difference is :", timeit.default_timer() - starttime)
+# list = [0,1,2,3,4,5,6,7,8,9,10]
+# starttime = timeit.default_timer()
+# print("The start time is :",starttime)
+# run = 0
+# while run != 100:
+#     for k in list:
+#            if k == 5: print(k)
+#     run += 1
+# print("The time difference is :", timeit.default_timer() - starttime)
 # starttime = timeit.default_timer()
 # print("The start time is :",starttime)
 # run = 0
@@ -89,3 +89,5 @@ print("The time difference is :", timeit.default_timer() - starttime)
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
+k = [1,2,3,4]
+print(mean(k))

@@ -47,7 +47,6 @@ class unitsquad(pygame.sprite.Sprite):
         self.state = 0
         self.gamestart = 0
         self.battalion = battalion
-        self.authority = battalion.authority
         with open(main_dir + "\data" + '\\unit_preset.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -293,6 +292,7 @@ class unitsquad(pygame.sprite.Sprite):
     def statusupdate(self, statuslist, dt):
         """calculate stat from stamina and morale state"""
         self.morale = self.basemorale
+        self.authority = self.battalion.authority
         self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) +

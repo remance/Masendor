@@ -269,6 +269,7 @@ class unitarmy(pygame.sprite.Sprite):
             self.authority = round(
                 (self.leaderwho[0][3] * (100 - (self.armysquad.size)) / 100) + self.leaderwho[1][3] / 2 + self.leaderwho[2][3] / 2 +
                 self.leaderwho[3][3] / 4)
+        self.startauth = self.authority
         self.cansplitrow = False
         if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
         self.cansplitcol = False
@@ -400,7 +401,7 @@ class unitarmy(pygame.sprite.Sprite):
         if self.troopnumber > 0:
             self.stamina = int(mean(self.stat['stamina']))
             self.morale = int(mean(self.stat['morale']))
-            self.speed = mean(self.stat['speed'])
+            self.speed = min(self.stat['speed'])
             self.discipline = mean(self.stat['disci'])
             self.ammo = int(sum(self.stat['ammo']))
             self.maxrange = max(self.stat['range'])
