@@ -521,21 +521,22 @@ class battle():
             # newpos = who.allsidepos[3] - (self.imageheight * len(who.armysquad)/2)
             who.armysquad = np.array_split(who.armysquad, 2)[0]
             who.squadalive = np.array_split(who.squadalive, 2)[0]
-            newpos = who.allsidepos[3]
-            who.pos = who.allsidepos[0]
+            newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.pos)/2)
+            who.pos = who.allsidepos[0] - ((who.allsidepos[0] - who.pos)/2)
         else:
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
             newsquadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]
             # newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
             who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
             who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
-            newpos = who.allsidepos[2]
-            who.pos = who.allsidepos[1]
+            newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.pos)/2)
+            who.pos = who.allsidepos[1] - ((who.allsidepos[1] - who.pos)/2)
         who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
         newleader = [who.leaderwho[1],0,0,0]
         who.leaderwho = [who.leaderwho[0],who.leaderwho[2],who.leaderwho[3],['None', 0, '', 0, 0, 0, 0, 0]]
         coa = who.coa
         who.recreatesprite()
+        who.makeallsidepos()
         for thishitbox in who.hitbox: thishitbox.kill()
         who.hitbox = [gamebattalion.hitbox(who, 0, who.rect.width, 5),
                        gamebattalion.hitbox(who, 1, 5, who.rect.height - 5),
@@ -582,19 +583,20 @@ class battle():
             army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
                                           leaderlist=self.allleader, statlist=self.gameunitstat, leader=newleader,
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
-                                          colour=colour, control=playercommand, coa=coa, commander=False)
+                                          colour=colour, control=playercommand, coa=coa, commander=False, startangle = who.angle)
             self.enemyarmy.append(army)
             self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
         self.allunitlist.append(army)
         army.squadsprite = newsquadsprite
         for squad in army.squadsprite:
             squad.battalion = army
+        army.newangle = army.angle - 1
         army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
                    gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 3, army.rect.width, 5)]
-        army.angle = who.angle
-        army.newangle = army.angle - 1
+        army.rotate()
+        army.makeallsidepos()
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         self.deadarmynum[who.gameid] = self.deadindex

@@ -200,6 +200,7 @@ class hitbox(pygame.sprite.Sprite):
         self.image = pygame.Surface((width, height), pygame.SRCALPHA)
         self.image.fill((255, 255, 255, 128))
         self.image_original = self.image.copy()
+        self.image = pygame.transform.rotate(self.image_original, self.who.angle)
         self.oldpos = self.who.allsidepos[self.side]
         self.rect = self.image.get_rect(center=self.who.allsidepos[self.side])
         self.mask = pygame.mask.from_surface(self.image)
@@ -217,7 +218,7 @@ class hitbox(pygame.sprite.Sprite):
 class unitarmy(pygame.sprite.Sprite):
     images = []
 
-    def __init__(self, startposition, gameid, leaderlist, statlist, leader, squadlist, imgsize, colour, control, coa, commander=False):
+    def __init__(self, startposition, gameid, leaderlist, statlist, leader, squadlist, imgsize, colour, control, coa, commander=False, startangle = 0):
         # super().__init__()
         self._layer = 3
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -230,12 +231,13 @@ class unitarmy(pygame.sprite.Sprite):
         self.squadalive = np.copy(self.armysquad)
         self.squadalive = np.where(self.squadalive > 0, 2, self.squadalive)
         self.startwhere = []
+        self.justsplit = False
         self.imgsize = imgsize
         self.widthbox, self.heightbox = len(squadlist[0]) * self.imgsize[0], len(squadlist) * self.imgsize[1]
         self.gameid = gameid
         self.control = control
         self.pos, self.attackpos = pygame.Vector2(startposition), 0
-        self.angle, self.newangle = 0, 0
+        self.angle, self.newangle = startangle, startangle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         self.pause = False
         self.hitbox = []
@@ -294,15 +296,19 @@ class unitarmy(pygame.sprite.Sprite):
         self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
         self.rect = self.image.get_rect(midtop=startposition)
-        self.testangle = 0
+        self.testangle = math.radians(360 - startangle)
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
         """generate all four side position"""
-        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2) + 1),
-                           ((self.rect.center[0] - self.widthbox / 2) + 1, self.rect.center[1]),
-                           ((self.rect.center[0] + self.widthbox / 2) - 1, self.rect.center[1]),
-                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2) - 1)]
+        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2) - 5),
+                           ((self.rect.center[0] - self.widthbox / 2) - 5, self.rect.center[1]),
+                           ((self.rect.center[0] + self.widthbox / 2) + 5, self.rect.center[1]),
+                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2) + 5)]
+        """generate again but with rotation in calculation"""
+        self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle),
+                           rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
+            , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
         self.squadpositionlist = []
         """index of battleside and frontline: 0 = front 1 = left 2 =right 3 =rear"""
         """battleside keep index of enemy battalion"""
@@ -342,7 +348,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
         self.rect = self.image.get_rect(center=self.pos)
-        self.testangle = 0
+        self.testangle = math.radians(360 - self.angle)
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
@@ -582,11 +588,6 @@ class unitarmy(pygame.sprite.Sprite):
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
 
-    def splitbattalion(self,how):
-        """Split battalion by either half column or row"""
-
-
-
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.setuparmy()
@@ -604,7 +605,6 @@ class unitarmy(pygame.sprite.Sprite):
         if self.state != 100:
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
-            self.makeallsidepos()
             self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
             self.authpenalty = 0
             self.charging = False
@@ -812,6 +812,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.commandtarget = self.allsidepos[0]
                         self.target = self.commandtarget
                         self.rotateonly = False
+                        self.makeallsidepos()
             if self.stamina <= 0:
                 self.state = 97
                 self.target = self.allsidepos[0]
