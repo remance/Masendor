@@ -47,7 +47,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.state = 0
         self.gamestart = 0
         self.battalion = battalion
-        with open(main_dir + "\data" + '\\unit_preset.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_preset.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if str(unitid) == row[0]:

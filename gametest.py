@@ -89,5 +89,6 @@ import timeit
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-k = [1,2,3,4]
-print(mean(k))
+a = [1,2,3]
+b = [5,6]
+print(a+b)

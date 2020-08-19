@@ -26,7 +26,7 @@ class weaponstat():
     def __init__(self, img):
         self.imgs = img
         self.weaponlist = {}
-        with open(main_dir + "\data" + '\\unit_weapon.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -42,7 +42,7 @@ class unitstat():
         """status effect list"""
         self.statuslist = {}
         self.statusicon = statusicon
-        with open(main_dir + "\data" + '\\unit_status.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -60,7 +60,7 @@ class unitstat():
         unitfile.close()
         """Unit grade list"""
         self.gradelist = {}
-        with open(main_dir + "\data" + '\\unit_grade.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -75,7 +75,7 @@ class unitstat():
         """Unit skill list"""
         self.abilitylist = {}
         self.abilityicon = abilityicon
-        with open(main_dir + "\data" + '\\unit_ability.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_ability.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
@@ -101,7 +101,7 @@ class unitstat():
         """Unit property list"""
         self.traitlist = {}
         self.traiticon = traiticon
-        with open(main_dir + "\data" + '\\unit_property.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_property.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -120,42 +120,13 @@ class unitstat():
         """unit role list"""
         self.role = {}
         self.roleicon = roleicon
-        with open(main_dir + "\data" + '\\unit_type.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\unit_type.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = float(i)
                 self.role[row[0]] = row[1:]
         unitfile.close()
-
-
-class leader():
-    def __init__(self, img, option):
-        self.imgs = img
-        self.leaderlist = {}
-        with open(main_dir + "\data\leader" + str(option) + '\\historical_leader.csv', 'r') as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)
-                    # if and n in []:
-                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                    # else: row[n] = [int(i)]
-                self.leaderlist[row[0]] = row[1:]
-        unitfile.close()
-
-        self.leaderclass = {}
-        with open(main_dir + "\data\leader" + '\\leader_class.csv', 'r') as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)
-                    # if and n in []:
-                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                    # else: row[n] = [int(i)]
-                self.leaderclass[row[0]] = row[1:]
-        unitfile.close()
-
 
 class directionarrow(pygame.sprite.Sprite):
     def __init__(self, who):
@@ -218,7 +189,7 @@ class hitbox(pygame.sprite.Sprite):
 class unitarmy(pygame.sprite.Sprite):
     images = []
 
-    def __init__(self, startposition, gameid, leaderlist, statlist, leader, squadlist, imgsize, colour, control, coa, commander=False, startangle = 0):
+    def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle = 0):
         # super().__init__()
         self._layer = 3
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -264,14 +235,6 @@ class unitarmy(pygame.sprite.Sprite):
         self.gamestart = 0
         """leaderwholist is list of 4 leader in 1 battalion. Based on list order: 1st = general, 
         2nd and 3rd = subgeneral, 4th = special role likes advisor, shaman, priest, mage, supporter"""
-        self.leaderwho = [leaderlist.leaderlist[oneleader] if type(oneleader) == int else oneleader for oneleader in leader]
-        self.leadersocial = leaderlist.leaderclass[self.leaderwho[0][7]]
-        self.authority = round(self.leaderwho[0][3] + self.leaderwho[1][3] / 3 + self.leaderwho[2][3] / 3 + self.leaderwho[3][3] / 5)
-        if self.armysquad.size > 20:
-            self.authority = round(
-                (self.leaderwho[0][3] * (100 - (self.armysquad.size)) / 100) + self.leaderwho[1][3] / 2 + self.leaderwho[2][3] / 2 +
-                self.leaderwho[3][3] / 4)
-        self.startauth = self.authority
         self.cansplitrow = False
         if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
         self.cansplitcol = False
@@ -590,6 +553,14 @@ class unitarmy(pygame.sprite.Sprite):
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
+            self.leadersocial = self.leader[0].social
+            self.authority = round(
+                self.leader[0].authority + self.leader[1].authority / 3 + self.leader[2].authority / 3 + self.leader[3].authority / 5)
+            if self.armysquad.size > 20:
+                self.authority = round(
+                    (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+                    self.leader[3].authority / 4)
+            self.startauth = self.authority
             self.setuparmy()
             self.setupfrontline()
             self.setupfrontline(specialcall=True)
@@ -934,7 +905,6 @@ class unitarmy(pygame.sprite.Sprite):
                         # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat
                 if self.charging == True: self.authority -= self.authpenalty
-                print('test')
                 self.state = 0
                 self.commandtarget = self.allsidepos[0]
                 self.target = self.allsidepos[0]

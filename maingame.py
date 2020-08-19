@@ -20,7 +20,7 @@ from pygame.locals import *
 from pygame.transform import scale
 
 from RTS import mainmenu
-from RTS.script import gamesquad, gamebattalion, gameui, rangeattack
+from RTS.script import gamesquad, gamebattalion, gameui, gameleader, rangeattack
 
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
@@ -65,13 +65,17 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamebattalion.unitarmy(startposition=position, gameid=gameid,
-                                  leaderlist=leaderstat, statlist=unitstat, leader=leader,
                                   squadlist=squadlist, imgsize=imagesize,
                                   colour=colour, control=control, coa=coa, commander=command)
     army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
                    gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 3, army.rect.width, 5)]
+    leaderwho = [leaderstat.leaderlist[oneleader] if type(oneleader) == int else oneleader for oneleader in leader[0:4]]
+    army.leader = [gameleader.leader(leaderwho[0],leader[5],army,leaderstat),
+                   gameleader.leader(leaderwho[1],leader[5],army,leaderstat),
+                   gameleader.leader(leaderwho[2],leader[5],army,leaderstat),
+                   gameleader.leader(leaderwho[3],leader[5],army,leaderstat)]
     return army
 
 
@@ -94,17 +98,17 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
             for n, i in enumerate(row):
                 if i.isdigit():
                     row[n] = int(i)
-                if n in range(1, 11):
+                if n in range(1, 12):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
             if row[0] < 2000:
                 if row[0] == 1:
                     """First player battalion as commander"""
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    playercolour,
-                                   (imagewidth, imageheight), row[10], allleader, gameunitstat, True, coa[row[11]], True)
+                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]], True)
                 else:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour, (imagewidth, imageheight), row[10], allleader, gameunitstat, True, coa[row[11]])
+                                   playercolour, (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]])
                 playerarmy.append(army)
                 playerarmynum[row[0]] = playerstart
                 playerstart += 1
@@ -113,11 +117,11 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                     """First enemy battalion as commander"""
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    enemycolour,
-                                   (imagewidth, imageheight), row[10], allleader, gameunitstat, enactment, coa[row[11]], True)
+                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]], True)
                 elif row[0] > 2000:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    enemycolour,
-                                   (imagewidth, imageheight), row[10], allleader, gameunitstat, enactment, coa[row[11]])
+                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]])
                 enemyarmy.append(army)
                 enemyarmynum[row[0]] = enemystart
                 enemystart += 1
@@ -159,7 +163,7 @@ class battle():
         # (do this before the classes are used, after screen setup)
 
         # create unit
-        imgsold = load_images(['unit', 'unit_ui'])
+        imgsold = load_images(['war', 'unit_ui'])
         imgs = []
         for img in imgsold:
             # x, y = img.get_width(), img.get_height()
@@ -168,12 +172,12 @@ class battle():
         gamesquad.unitsquad.images = imgs
         self.imagewidth, self.imageheight = imgs[0].get_width(), imgs[0].get_height()
         imgs = []
-        imgsold = load_images(['unit', 'unit_ui', 'battalion'])
+        imgsold = load_images(['war', 'unit_ui', 'battalion'])
         for img in imgsold:
             imgs.append(img)
         gamebattalion.unitarmy.images = imgs
         # create weapon icon
-        imgsold = load_images(['unit', 'unit_ui', 'weapon'])
+        imgsold = load_images(['war', 'unit_ui', 'weapon'])
         imgs = []
         for img in imgsold:
             x, y = img.get_width(), img.get_height()
@@ -192,7 +196,7 @@ class battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x / 2), int(y / 2)))
             imgs.append(img)
-        self.allleader = gamebattalion.leader(imgs, option="\historic")
+        self.allleader = gameleader.leaderdata(imgs, option="\historic")
         # coa imagelist
         imgsold = load_images(['leader', 'historic', 'coa'])
         imgs = []
@@ -245,6 +249,7 @@ class battle():
         self.playerarmy = pygame.sprite.Group()
         self.enemyarmy = pygame.sprite.Group()
         self.squad = pygame.sprite.Group()
+        self.armyleader = pygame.sprite.Group()
         self.hitboxs = pygame.sprite.Group()
         self.arrows = pygame.sprite.Group()
         self.directionarrows = pygame.sprite.Group()
@@ -257,6 +262,7 @@ class battle():
         gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
         gamebattalion.deadarmy.containers = self.deadunit, self.unitupdater, self.all
         gamebattalion.hitbox.containers = self.hitboxs, self.unitupdater, self.all
+        gameleader.leader.containers = self.armyleader, self.unitupdater
         rangeattack.arrow.containers = self.arrows, self.all, self.effectupdater
         gamebattalion.directionarrow.containers = self.directionarrows, self.all, self.effectupdater
         gameui.Gameui.containers = self.gameui, self.uiupdater
