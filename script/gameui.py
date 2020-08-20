@@ -157,23 +157,8 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.get_rect()[0]-10 + self.image.get_size()[0] / 1.4,
                     self.image.get_rect()[1]-10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
-                for thisleader in who.leaderwho:
-                    self.leaderpiclist.append(thisleader[1])
-                ## put leader image into leader slot
-                self.leaderpiclistrect = leader.imgs[self.leaderpiclist[0]].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 65))
-                self.image.blit(leader.imgs[self.leaderpiclist[0]], self.leaderpiclistrect)
-                self.leaderpiclistrect = leader.imgs[self.leaderpiclist[1]].get_rect(center=(
-                    self.image.get_rect()[0] + self.image.get_size()[0] / 3.55,
-                    self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 12))
-                self.image.blit(leader.imgs[self.leaderpiclist[1]], self.leaderpiclistrect)
-                self.leaderpiclistrect = leader.imgs[self.leaderpiclist[2]].get_rect(center=(
-                    self.image.get_rect()[0] + self.image.get_size()[0] / 1.47,
-                    self.image.get_rect()[1] + self.image.get_size()[1] / 2.2 + 12))
-                self.image.blit(leader.imgs[self.leaderpiclist[2]], self.leaderpiclistrect)
-                self.leaderpiclistrect = leader.imgs[self.leaderpiclist[3]].get_rect(
-                    center=(self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 162))
-                self.image.blit(leader.imgs[self.leaderpiclist[3]], self.leaderpiclistrect)
+                # for thisleader in who.leaderwho:
+                #     self.leaderpiclist.append(thisleader[1])
             if self.lastauth != who.authority or who.gameid != self.lastwho: ## authority number
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(

@@ -89,6 +89,5 @@ import timeit
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-a = [1,2,3]
-b = [5,6]
-print(a+b)
+a = {1: ['William the Bastard', 2, 92, 8, 4, 7, '', 5, ''], 0: ['None', 0, 0, 0, 0, 0, '', 0, '']}
+print(list(a.keys())[0])

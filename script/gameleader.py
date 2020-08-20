@@ -40,20 +40,20 @@ class leaderdata():
         unitfile.close()
 
 class leader(pygame.sprite.Sprite):
-    def __init__(self, stat, squadposition, battalion, leaderlist):
+
+    def __init__(self, leaderid, squadposition, armyposition, battalion, leaderstat):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.health = 100
         self.morale = 100
-        print(stat)
+        stat = leaderstat.leaderlist[leaderid]
         self.name = stat[0]
-        self.portrait = stat[1]
+        self.health = stat[1]
         self.authority = stat[2]
         self.meleecommand = stat[3]
         self.rangecommand = stat[4]
         self.cavcommand = stat[5]
         self.combat = stat[6]
-        self.social = leaderlist.leaderclass[stat[7]]
+        self.social = leaderstat.leaderclass[stat[7]]
         self.description = stat[-1]
         self.squadpos = squadposition
         # self.trait = stat
@@ -62,12 +62,18 @@ class leader(pygame.sprite.Sprite):
         self.battalion = battalion
         # self.mana = stat
         self.gamestart = 0
+        self.armyposition = armyposition
+        self.imgposition = [(133,65),(80,115),(190,115),(133,163)]
+        self.imgposition = self.imgposition[self.armyposition]
+        ## put leader image into leader slot
+        self.image = leaderstat.imgs[leaderid]
+        self.rect = self.image.get_rect(center=self.imgposition)
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
-        if self.state != 100:
+        if self.state not in [100,101]:
             if self.health < 0:
                 self.state = 100
 

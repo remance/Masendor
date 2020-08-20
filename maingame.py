@@ -71,11 +71,11 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
                    gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 3, army.rect.width, 5)]
-    leaderwho = [leaderstat.leaderlist[oneleader] if type(oneleader) == int else oneleader for oneleader in leader[0:4]]
-    army.leader = [gameleader.leader(leaderwho[0],leader[5],army,leaderstat),
-                   gameleader.leader(leaderwho[1],leader[5],army,leaderstat),
-                   gameleader.leader(leaderwho[2],leader[5],army,leaderstat),
-                   gameleader.leader(leaderwho[3],leader[5],army,leaderstat)]
+    leaderwho = {}
+    army.leader = [gameleader.leader(leader[0],leader[4],0,army,leaderstat),
+                   gameleader.leader(leader[1],leader[5],1,army,leaderstat),
+                   gameleader.leader(leader[2],leader[6],2,army,leaderstat),
+                   gameleader.leader(leader[3],leader[7],3,army,leaderstat)]
     return army
 
 
@@ -638,6 +638,7 @@ class battle():
         self.squadbeforeselected = None
         self.splithappen = False
         self.splitbutton = False
+        self.leadernow = []
         while True:
             self.fpscount.fpsshow(self.clock)
             keystate = pygame.key.get_pressed()
@@ -759,6 +760,8 @@ class battle():
                     self.gameui = self.popgameui
                     self.all.add(*self.gameui[0:2])
                     self.all.add(self.buttonui[3])
+                    self.leadernow = whoinput.leader
+                    self.all.add(*self.leadernow)
                     if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leaderwho[1][0] != "None":
                         self.all.add(self.buttonui[4])
                     if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leaderwho[1][0] != "None":
@@ -769,6 +772,9 @@ class battle():
                         self.all.remove(*self.showingsquad)
                         self.showingsquad = []
                     self.checksplit(whoinput)
+                    self.all.remove(*self.leadernow)
+                    self.leadernow = whoinput.leader
+                    self.all.add(*self.leadernow)
                 self.gameui[0].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
                 self.gameui[1].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
                 self.splithappen = False
@@ -836,6 +842,8 @@ class battle():
                 self.inspectui = 0
                 self.squadbeforeselected = 0
                 self.beforeselected = 0
+                self.all.remove(*self.leadernow)
+                self.leadernow = {}
             if self.gamestate == 1:
                 # fight_sound.play()
                 """Combat and unit update"""
