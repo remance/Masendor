@@ -1,6 +1,6 @@
 """next goal: , menu in main game(0.3.1), proper broken retreat after map function (0.4) also skirmish
 FIX
-add chase shoot in 2.7 change stance
+add chase in 2.7 change stance
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
 maybe add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
@@ -61,12 +61,12 @@ def load_sound(file):
     return sound
 
 
-def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False):
+def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamebattalion.unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
-                                  colour=colour, control=control, coa=coa, commander=command)
+                                  colour=colour, control=control, coa=coa, commander=command, startangle=startangle)
     army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
                    gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
@@ -105,10 +105,10 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                     """First player battalion as commander"""
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    playercolour,
-                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]], True)
+                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]], True, startangle = row[13])
                 else:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour, (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]])
+                                   playercolour, (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]], startangle = row[13])
                 playerarmy.append(army)
                 playerarmynum[row[0]] = playerstart
                 playerstart += 1
@@ -117,11 +117,11 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                     """First enemy battalion as commander"""
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    enemycolour,
-                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]], True)
+                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]], True, startangle = row[13])
                 elif row[0] > 2000:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    enemycolour,
-                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]])
+                                   (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]], startangle = row[13])
                 enemyarmy.append(army)
                 enemyarmynum[row[0]] = enemystart
                 enemystart += 1
@@ -435,6 +435,8 @@ class battle():
             combatscore = 1
         elif hitchance > 80:
             combatscore = 1.5
+        leaderdmgbonus = 0
+        if who.leader != None: leaderdmgbonus = who.leader.combat * 10
         if type == 0:  ##melee dmg
             dmg = who.dmg
             """include charge in dmg if charging, ignore charge defense if have ignore trait"""
@@ -442,9 +444,11 @@ class battle():
                 dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
             elif who.charging == True and 29 in who.trait:
                 dmg = round(dmg + (who.charge / 10))
-            dmg = round(dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore * who.troopnumber)
+            leaderdmg = round(dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore)
+            dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
         elif type == 1:  ##range dmg
-            dmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore * who.troopnumber)
+            leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
+            dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
         """Anti trait dmg bonus"""
         if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]):
             dmg = dmg * 1.25
@@ -453,7 +457,7 @@ class battle():
         elif dmg <= 0:
             dmg = 1
         moraledmg = round(dmg / 100)
-        return dmg, moraledmg
+        return dmg, moraledmg, leaderdmg*100
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -496,12 +500,14 @@ class battle():
         if (33 in target.trait and whoside == 2) or (55 in who.trait and whoside == 2) or (47 in who.trait and targetside in [1,3]): whodefense = 0
         targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
         if (33 in who.trait and targetside == 2) or (55 in target.trait and targetside == 2) or (47 in target.trait and whoside in [1,3]): targetdefense = 0
-        whodmg, whomoraledmg = self.losscal(who, target, whohit, targetdefense, 0)
-        targetdmg, targetmoraledmg = self.losscal(target, who, targethit, whodefense, 0)
+        whodmg, whomoraledmg, wholeaderdmg = self.losscal(who, target, whohit, targetdefense, 0)
+        targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
+        if who.leader != None and random.randint(0, 10) > 5: who.leader.health -= targetleaderdmg
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
+        if target.leader != None and random.randint(0, 10) > 5: target.leader.health -= wholeaderdmg
         if who.corneratk == True:  ##attack corner (side) of the target with aoe attack
             listloop = target.nearbysquadlist[2:4]
             if targetside in [0, 2]:

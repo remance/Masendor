@@ -46,6 +46,7 @@ class leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leaderstat.leaderlist[leaderid]
+        self.gameid = leaderid
         self.name = stat[0]
         self.health = stat[1]
         self.authority = stat[2]
@@ -58,7 +59,7 @@ class leader(pygame.sprite.Sprite):
         self.squadpos = squadposition
         # self.trait = stat
         # self.skill = stat
-        self.state = 0 ## 0 = alive, 98 = missing 99 = wound, 100 = dead
+        self.state = 0 ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
         self.battalion = battalion
         # self.mana = stat
         self.gamestart = 0
@@ -73,7 +74,18 @@ class leader(pygame.sprite.Sprite):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
-        if self.state not in [100,101]:
+        if self.health != 100: print(self.health)
+        if self.state not in [100]:
             if self.health < 0:
                 self.state = 100
-
+                self.battalion.leader.append(self.battalion.leader.pop(self.armyposition)) ## move leader to last of list when dead
+                for index, leader in enumerate(self.battalion.leader): ## also change army position of all leader in that battalion
+                    leader.armyposition =  index
+                self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
+                                    (self.battalion.leader[0].cavcommand - 5) * 0.1]
+                self.authority = 0
+                self.meleecommand = 0
+                self.rangecommand = 0
+                self.cavcommand = 0
+                self.combat = 0
+                self.social = 0

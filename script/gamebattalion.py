@@ -459,63 +459,7 @@ class unitarmy(pygame.sprite.Sprite):
         """calculate stat from stamina and morale state"""
         self.moralestate = round((self.morale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        # """remove cooldown if time reach 0"""
-        # removelist = []
-        # self.skillcooldown = {key: self.skillcooldown[key]-1 for key in self.skillcooldown}
-        # for a, b in self.skillcooldown.items():
-        #     if b <= 0: removelist.append(a)
-        # for a in sorted(removelist, reverse = True):
-        #     self.skillcooldown.pop(a)
-        # """remove effect if time reach 0"""
-        # removelist = []
-        # for a, b in self.skilleffect.items():
-        #     b[3] -= 1
-        #     if b[3] <= 0: removelist.append(a)
-        # for a in sorted(removelist, reverse = True):
-        #     self.skilleffect.pop(a)
-        # """apply effect from skill"""
-        # if len(self.skilleffect) > 0:
-        #     for status in self.skilleffect:
-        #         self.attack = round(self.attack * self.skilleffect[status][10]/100, 0)
-        #         self.meleedef = round(self.meleedef * self.skilleffect[status][11]/100, 0)
-        #         self.rangedef = round(self.rangedef * self.skilleffect[status][12]/100, 0)
-        #         self.speed = round(self.speed * self.skilleffect[status][13]/100, 0)
-        #         self.accuracy = round(self.accuracy * self.skilleffect[status][14]/100, 0)
-        #         self.reload = round(self.reload * self.skilleffect[status][15]/100, 0)
-        #         self.charge = round(self.charge * self.skilleffect[status][16]/100, 0)
-        #         self.chargedef = round(self.charge * self.skilleffect[status][17]/100, 0)
-        #         # self.healthregen += self.skilleffect[status][18]
-        #         # self.staminaregen += self.skilleffect[status][19]
-        #         self.morale = self.basemorale + self.skilleffect[status][20]
-        #         self.discipline = self.discipline + self.skilleffect[status][21]
-        #         #self.sight += self.skilleffect[status][18]
-        #         #self.hidden += self.skilleffect[status][19]
-        # """apply effect from status effect"""
-        # removelist=[]
-        # for a, b in self.statuseffect.items():
-        #     if b <= 0: removelist.append(a)
-        # for a in sorted(removelist, reverse = True):
-        #     self.statuseffect.pop(a)
-        # if len(self.statuseffect) > 0:
-        #     for status in self.statuseffect:
-        #         self.attack = round(self.attack * statuslist[status][4]/100, 0)
-        #         self.meleedef = round(self.meleedef * statuslist[status][5]/100, 0)
-        #         self.rangedef = round(self.rangedef * statuslist[status][6]/100, 0)
-        #         self.armour = round(self.armour * statuslist[status][7]/100, 0)
-        #         self.speed = round(self.speed * statuslist[status][8]/100, 0)
-        #         self.accuracy = round(self.accuracy * statuslist[status][9]/100, 0)
-        #         self.reload = round(self.reload * statuslist[status][10]/100, 0)
-        #         self.charge = round(self.charge * statuslist[status][11]/100, 0)
-        #         self.chargedef = round(self.chargedef * statuslist[status][12]/100, 0)
-        #         # self.healthregen += self.statuseffect[status][13]
-        #         # self.staminaregen += self.statuseffect[status][14]
-        #         self.morale = self.basemorale + self.statuseffect[status][15]
-        #         self.discipline = self.discipline + self.statuseffect[status][16]
-        #         #self.sight += status[18]
-        #         #self.hidden += status[19]
-        # else:
-        #     self.morale = round(self.basemorale, 0)
-        if self.troopnumber > 0:
+        if self.troopnumber > 0 and self.staminastate != self.laststaminastate:
             self.walkspeed, self.runspeed = (self.speed + self.discipline / 100) / 15, (self.speed + self.discipline / 100) / 10
             self.rotatespeed = round(self.runspeed * 6) / (self.troopnumber / 100)
             if self.rotatespeed > 4:self.rotatespeed = 4
@@ -560,6 +504,10 @@ class unitarmy(pygame.sprite.Sprite):
                 self.authority = round(
                     (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
                     self.leader[3].authority / 4)
+            for leader in self.leader:
+                if leader.gameid != 0:
+                    self.squadsprite[leader.squadpos].leader = leader
+            self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1, (self.leader[0].cavcommand - 5) * 0.1]
             self.startauth = self.authority
             self.setuparmy()
             self.setupfrontline()

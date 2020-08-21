@@ -60,6 +60,7 @@ class unitsquad(pygame.sprite.Sprite):
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
                                 row[n] = [int(i)]
+        self.leader = None
         self.name = self.stat[1]
         self.unitclass = self.stat[2]
         self.grade = self.stat[3]
@@ -93,6 +94,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
+        if self.type in [1,2]: self.unittype = self.type-1
+        elif self.type in [3,4,5,6,7]: self.unittype = 2
         self.description = self.stat[33]
         # if self.hidden
         self.attackelem = 0
@@ -293,18 +296,19 @@ class unitsquad(pygame.sprite.Sprite):
         """calculate stat from stamina and morale state"""
         self.morale = self.basemorale
         self.authority = self.battalion.authority
+        self.commandbuff = self.battalion.commandbuff[self.unittype]
         self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) +
                                 self.battalion.leadersocial[self.grade + 1] + (self.authority / 10), 0)
-        self.attack = round((self.baseattack * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
-        self.meleedef = round((self.basemeleedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
-        self.rangedef = round((self.baserangedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
-        self.accuracy = round(self.baseaccuracy * (self.staminastate / 100), 0)
-        self.reload = round(self.basereload * ((200 - self.staminastate) / 100), 0)
-        self.chargedef = round((self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
+        self.attack = round((self.baseattack * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
+        self.meleedef = round((self.basemeleedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
+        self.rangedef = round((self.baserangedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
+        self.accuracy = round(self.baseaccuracy * (self.staminastate / 100), 0) * self.commandbuff
+        self.reload = round(self.basereload * ((200 - self.staminastate) / 100), 0) * self.commandbuff
+        self.chargedef = round((self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
         self.speed = round(self.basespeed * self.staminastate / 100, 0)
-        self.charge = round((self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0)
+        self.charge = round((self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
