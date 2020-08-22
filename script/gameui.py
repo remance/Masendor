@@ -129,6 +129,7 @@ class Gameui(pygame.sprite.Sprite):
                 usecolour = self.white
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
+
                 if who.gameid >= 2000:
                     usecolour = self.black
                 if who.commander == True:
@@ -157,9 +158,11 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.get_rect()[0]-10 + self.image.get_size()[0] / 1.4,
                     self.image.get_rect()[1]-10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
+                self.image_original2 = self.image.copy()
                 # for thisleader in who.leaderwho:
                 #     self.leaderpiclist.append(thisleader[1])
             if self.lastauth != who.authority or who.gameid != self.lastwho: ## authority number
+                self.image = self.image_original2.copy()
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(
                     center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
@@ -191,7 +194,11 @@ class Gameui(pygame.sprite.Sprite):
                 #         self.value.pop(i)
                 #         text.pop(i)
                 self.value, text = self.value[0:-1], text[1:]
-                self.textsurface = self.fonthead.render(self.value[0], 1, (0, 0, 0))
+                leadertext = ""
+                if who.leader != None:
+                    leadertext = "/" + str(who.leader.name)
+                    if who.leader.state == 100: leadertext += " (Dead)"
+                self.textsurface = self.fonthead.render(self.value[0]+leadertext, 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                 self.image.blit(self.textsurface, self.textrect)

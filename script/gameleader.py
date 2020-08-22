@@ -64,23 +64,37 @@ class leader(pygame.sprite.Sprite):
         # self.mana = stat
         self.gamestart = 0
         self.armyposition = armyposition
-        self.imgposition = [(133,65),(80,115),(190,115),(133,163)]
-        self.imgposition = self.imgposition[self.armyposition]
+        self.baseimgposition = [(133,65),(80,115),(190,115),(133,163)]
+        self.imgposition = self.baseimgposition[self.armyposition]
         ## put leader image into leader slot
-        self.image = leaderstat.imgs[leaderid]
+        self.image = leaderstat.imgs[leaderid].copy()
         self.rect = self.image.get_rect(center=self.imgposition)
+        self.image_original = self.image.copy()
+        self.deadmorale = 50 ## main general morale lost when die
+        if self.armyposition != 0: self.deadmorale = 30 ## other position morale lost
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
-        if self.health != 100: print(self.health)
         if self.state not in [100]:
             if self.health < 0:
+                print(self.battalion.gameid)
                 self.state = 100
                 self.battalion.leader.append(self.battalion.leader.pop(self.armyposition)) ## move leader to last of list when dead
+                # if self.battalion.commander == False:
+                for squad in self.battalion.squadsprite:
+                    squad.basemorale -= self.deadmorale ## decrease all squad morale when leader die depending on position
+                # else:
+                #     if self.armyposition != 0:
+                #         for squad in self.battalion.squadsprite:
+                #             squad.basemorale -= self.deadmorale
                 for index, leader in enumerate(self.battalion.leader): ## also change army position of all leader in that battalion
-                    leader.armyposition =  index
+                    leader.armyposition =  index ## change army position to new one
+                    leader.imgposition = leader.baseimgposition[leader.armyposition]
+                    leader.rect = leader.image.get_rect(center=leader.imgposition)
+                    leader.deadmorale = 50
+                    if leader.armyposition != 0: leader.deadmorale = 30 ## change dead morale according to new position
                 self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
                                     (self.battalion.leader[0].cavcommand - 5) * 0.1]
                 self.authority = 0
@@ -89,3 +103,5 @@ class leader(pygame.sprite.Sprite):
                 self.cavcommand = 0
                 self.combat = 0
                 self.social = 0
+                pygame.draw.line(self.image, (150, 20, 20), (5,5),(45,35), 5)
+                self.battalion.leaderchange = True

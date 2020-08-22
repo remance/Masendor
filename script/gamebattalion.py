@@ -211,6 +211,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.angle, self.newangle = startangle, startangle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         self.pause = False
+        self.leaderchange = False
         self.hitbox = []
         self.directionarrow = False
         self.rotateonly = False
@@ -434,6 +435,10 @@ class unitarmy(pygame.sprite.Sprite):
             startwhere += 1
             # print('whofrontline', whofrontline)
             self.frontline[index] = newwhofrontline
+            self.authpenalty = 0
+            for squad in self.squadsprite:
+                if squad.state != 100:
+                    self.authpenalty += squad.authpenalty
 
     # def useskill(self,whichskill):
     #     ##charge skill
@@ -525,7 +530,6 @@ class unitarmy(pygame.sprite.Sprite):
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
             self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
-            self.authpenalty = 0
             self.charging = False
             self.setuparmy()
             self.statusupdate(statuslist)
@@ -600,6 +604,21 @@ class unitarmy(pygame.sprite.Sprite):
                     squad.basemorale -= 20
                 self.deadchange = 0
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
+            """recal stat involve leader if one die"""
+            if self.leaderchange == True:
+                self.authority = round(
+                    self.leader[0].authority + self.leader[1].authority / 3 + self.leader[2].authority / 3 + self.leader[3].authority / 5)
+                if self.armysquad.size > 20:
+                    self.authority = round(
+                        (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+                        self.leader[3].authority / 4)
+                for leader in self.leader:
+                    if leader.gameid != 0:
+                        self.squadsprite[leader.squadpos].leader = leader
+                self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
+                                    (self.leader[0].cavcommand - 5) * 0.1]
+                self.startauth = self.authority
+                self.leaderchange = False
             # """Stamina and Health Function"""
             # if self.troopnumber < 0: self.troopnumber = 0
             # if self.stamina < 0: self.stamina = 0

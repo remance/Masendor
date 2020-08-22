@@ -504,10 +504,10 @@ class battle():
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
-        if who.leader != None and random.randint(0, 10) > 5: who.leader.health -= targetleaderdmg
+        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5: who.leader.health -= targetleaderdmg
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
-        if target.leader != None and random.randint(0, 10) > 5: target.leader.health -= wholeaderdmg
+        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5: target.leader.health -= wholeaderdmg
         if who.corneratk == True:  ##attack corner (side) of the target with aoe attack
             listloop = target.nearbysquadlist[2:4]
             if targetside in [0, 2]:
