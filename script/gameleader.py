@@ -56,10 +56,11 @@ class leader(pygame.sprite.Sprite):
         self.combat = stat[6]
         self.social = leaderstat.leaderclass[stat[7]]
         self.description = stat[-1]
-        self.squadpos = squadposition
+        self.squadpos = squadposition ## squad position is the index of squad in squad sprite loop
         # self.trait = stat
         # self.skill = stat
         self.state = 0 ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
+        if self.name == "none": self.state = 100 ## no leader is same as dead so no need to update
         self.battalion = battalion
         # self.mana = stat
         self.gamestart = 0
@@ -70,17 +71,24 @@ class leader(pygame.sprite.Sprite):
         self.image = leaderstat.imgs[leaderid].copy()
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
-        self.deadmorale = 50 ## main general morale lost when die
-        if self.armyposition != 0: self.deadmorale = 30 ## other position morale lost
+        if self.armyposition == 0:
+            squadpenal = int((self.squadpos/8)*10)
+            self.authority = self.authority - ((self.authority * squadpenal / 100)/2)
+            self.deadmorale = 50 ## main general morale lost when die
+        else: self.deadmorale = 30 ## other position morale lost
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
         if self.state not in [100]:
+            if self.squad.state == 100:
+                self.battalion.gamearmy
+                squadpenal = int((self.squadpos / 8) * 10)
+                self.authority = self.authority - (self.authority * squadpenal / 100)
             if self.health < 0:
-                print(self.battalion.gameid)
                 self.state = 100
+                # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
                 self.battalion.leader.append(self.battalion.leader.pop(self.armyposition)) ## move leader to last of list when dead
                 # if self.battalion.commander == False:
                 for squad in self.battalion.squadsprite:

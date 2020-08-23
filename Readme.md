@@ -5,7 +5,7 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.6: Leader squad and personal stat+combat dmg chance (Also more dynamic authority based on leader squad position), need to decide how squad split will work for leader squad (1 only can split if leader squad will existed in both battalion, 2 auto move leader squad to the one not have after split)
+2.6: swap to other squad if squad dead but leader still survive, need to decide how squad split will work for leader squad (1 only can split if leader squad will existed in both battalion, 2 auto move leader squad to the one not have after split)
 
 2.7: battalion command (raise flag,forced march,decimation,duel,change skill usage,change stance,transfer leader?)
 

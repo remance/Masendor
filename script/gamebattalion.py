@@ -234,6 +234,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.preparetimer = 0
         self.deadchange = 0
         self.gamestart = 0
+        self.authrecalnow = False
         """leaderwholist is list of 4 leader in 1 battalion. Based on list order: 1st = general, 
         2nd and 3rd = subgeneral, 4th = special role likes advisor, shaman, priest, mage, supporter"""
         self.cansplitrow = False
@@ -500,15 +501,18 @@ class unitarmy(pygame.sprite.Sprite):
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
 
+    def authrecal(self):
+        self.authority = round(
+            self.leader[0].authority + (self.leader[1].authority / 3) + (self.leader[2].authority / 3) + (self.leader[3].authority / 5))
+        if self.armysquad.size > 20:
+            self.authority = round(
+                (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+                self.leader[3].authority / 4)
+
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.leadersocial = self.leader[0].social
-            self.authority = round(
-                self.leader[0].authority + self.leader[1].authority / 3 + self.leader[2].authority / 3 + self.leader[3].authority / 5)
-            if self.armysquad.size > 20:
-                self.authority = round(
-                    (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
-                    self.leader[3].authority / 4)
+            self.authrecal()
             for leader in self.leader:
                 if leader.gameid != 0:
                     self.squadsprite[leader.squadpos].leader = leader
@@ -533,6 +537,9 @@ class unitarmy(pygame.sprite.Sprite):
             self.charging = False
             self.setuparmy()
             self.statusupdate(statuslist)
+            if self.authrecalnow == True:
+                self.authrecal()
+                self.authrecalnow = False
             """redraw if troop num or stamina change"""
             if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != viewmode:
                 self.viewmode = viewmode
@@ -606,12 +613,7 @@ class unitarmy(pygame.sprite.Sprite):
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
             """recal stat involve leader if one die"""
             if self.leaderchange == True:
-                self.authority = round(
-                    self.leader[0].authority + self.leader[1].authority / 3 + self.leader[2].authority / 3 + self.leader[3].authority / 5)
-                if self.armysquad.size > 20:
-                    self.authority = round(
-                        (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
-                        self.leader[3].authority / 4)
+                self.authrecal()
                 for leader in self.leader:
                     if leader.gameid != 0:
                         self.squadsprite[leader.squadpos].leader = leader
@@ -828,7 +830,9 @@ class unitarmy(pygame.sprite.Sprite):
                         self.set_target(pygame.mouse.get_pos())
                         self.commandtarget = self.target
                         self.setrotate()
-                        if self.charging == True: self.authority -= self.authpenalty
+                        if self.charging == True:
+                            self.leader[0].authority -= self.authpenalty
+                            self.authrecal()
                 except:  ## if click outside of rect and mask
                     self.state = 1
                     self.rotateonly = False
@@ -847,14 +851,17 @@ class unitarmy(pygame.sprite.Sprite):
                     self.set_target(pygame.mouse.get_pos())
                     self.commandtarget = self.target
                     self.setrotate()
-                    if self.charging == True: self.authority -= self.authpenalty
+                    if self.charging == True:
+                        self.leader[0].authority -= self.authpenalty
+                        self.authrecal()
             elif mouse_right and self.state == 10:  ##Enter Fall back state if in combat and move command issue
                 try:
                     if self.mask.get_at(posmask) == 0:
                         if whomouseover == 0:
                             self.state = 96
                             if self.retreattimer == 0:
-                                self.authority -= self.authpenalty
+                                self.leader[0].authority -= self.authpenalty
+                                self.authrecal()
                                 self.retreattimer = 0.1
                                 self.retreatstart = 1
                             self.set_target(pygame.mouse.get_pos())
@@ -864,14 +871,17 @@ class unitarmy(pygame.sprite.Sprite):
                     if whomouseover == 0:
                         self.state = 96
                         if self.retreattimer == 0:
-                            self.authority -= self.authpenalty
+                            self.leader[0].authority -= self.authpenalty
+                            self.authrecal()
                             self.retreattimer = 0.1
                             self.retreatstart = 1
                         self.set_target(pygame.mouse.get_pos())
                         self.commandtarget = self.target
                         # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat
-                if self.charging == True: self.authority -= self.authpenalty
+                if self.charging == True:
+                    self.leader[0].authority -= self.authpenalty
+                    self.authrecal()
                 self.state = 0
                 self.commandtarget = self.allsidepos[0]
                 self.target = self.allsidepos[0]

@@ -71,7 +71,6 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
                    gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
                    gamebattalion.hitbox(army, 3, army.rect.width, 5)]
-    leaderwho = {}
     army.leader = [gameleader.leader(leader[0],leader[4],0,army,leaderstat),
                    gameleader.leader(leader[1],leader[5],1,army,leaderstat),
                    gameleader.leader(leader[2],leader[6],2,army,leaderstat),
@@ -457,7 +456,7 @@ class battle():
         elif dmg <= 0:
             dmg = 1
         moraledmg = round(dmg / 100)
-        return dmg, moraledmg, leaderdmg*100
+        return dmg, moraledmg, leaderdmg
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -544,8 +543,8 @@ class battle():
             newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.pos)/2)
             who.pos = who.allsidepos[1] - ((who.allsidepos[1] - who.pos)/2)
         who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
-        newleader = [who.leaderwho[1],0,0,0]
-        who.leaderwho = [who.leaderwho[0],who.leaderwho[2],who.leaderwho[3],['None', 0, '', 0, 0, 0, 0, 0]]
+        newleader = [who.leader[1],gameleader.leader(0,0,1,who, self.allleader),gameleader.leader(0,0,2,who, self.allleader),gameleader.leader(0,0,3,who, self.allleader)]
+        who.leader = [who.leader[0],who.leader[2],who.leader[3],gameleader.leader(0,0,3,who, self.allleader)]
         coa = who.coa
         who.recreatesprite()
         who.makeallsidepos()
@@ -571,19 +570,11 @@ class battle():
         who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 75 / 100), round(
             maxstamina * 50 / 100), round(maxstamina * 25 / 100)
         who.maxmorale = maxmorale
-        authdiff = who.startauth - who.authority
-        who.authority = round(who.leaderwho[0][3] + who.leaderwho[1][3] / 3 + who.leaderwho[2][3] / 3 + who.leaderwho[3][3] / 5)
-        if who.armysquad.size > 20:
-            who.authority = round((who.leaderwho[0][3] * (100 - (who.armysquad.size)) / 100)
-                                  + who.leaderwho[1][3] / 2 + who.leaderwho[2][3] / 2 + who.leaderwho[3][3] / 4)
-        who.authority -= authdiff
-        who.startauth = who.authority
         if who.gameid < 2000:
             playercommand = True
             newgameid = self.playerarmy[-1].gameid+1
             colour =  (144, 167, 255)
             army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
-                                          leaderlist=self.allleader, statlist=self.gameunitstat, leader=newleader,
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
                                           colour=colour, control=playercommand, coa=coa, commander=False)
             self.playerarmy.append(army)
@@ -593,11 +584,14 @@ class battle():
             newgameid = self.enemyarmy[-1].gameid + 1
             colour = (255, 114, 114)
             army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
-                                          leaderlist=self.allleader, statlist=self.gameunitstat, leader=newleader,
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
                                           colour=colour, control=playercommand, coa=coa, commander=False, startangle = who.angle)
             self.enemyarmy.append(army)
             self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
+        army.leader = newleader
+        army.commandbuff = [(army.leader[0].meleecommand - 5) * 0.1, (army.leader[0].rangecommand - 5) * 0.1, (army.leader[0].cavcommand - 5) * 0.1]
+        army.leadersocial = army.leader[0].social
+        army.authrecal()
         self.allunitlist.append(army)
         army.squadsprite = newsquadsprite
         for squad in army.squadsprite:
@@ -623,12 +617,11 @@ class battle():
 
     def checksplit(self,whoinput):
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
-                whoinput.leaderwho[1][0] != "None":
+                whoinput.leader[1].name != "None":
             self.all.add(self.buttonui[4])
         elif self.buttonui[4] in self.all:
             self.buttonui[4].kill()
-        if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leaderwho[1][
-            0] != "None":
+        if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[1].name != "None":
             self.all.add(self.buttonui[5])
         elif self.buttonui[5] in self.all:
             self.buttonui[5].kill()
@@ -768,9 +761,9 @@ class battle():
                     self.all.add(self.buttonui[3])
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
-                    if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leaderwho[1][0] != "None":
+                    if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leader[0].name != "None":
                         self.all.add(self.buttonui[4])
-                    if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leaderwho[1][0] != "None":
+                    if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[0].name != "None":
                         self.all.add(self.buttonui[5])
                 elif self.beforeselected != self.lastselected:
                     if self.inspectui == 1:

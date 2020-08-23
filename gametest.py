@@ -90,4 +90,4 @@ import timeit
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
 a = {1: ['William the Bastard', 2, 92, 8, 4, 7, '', 5, ''], 0: ['None', 0, 0, 0, 0, 0, '', 0, '']}
-print(list(a.keys())[0])
+print(int(15/8))
