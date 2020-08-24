@@ -558,8 +558,23 @@ class unitsquad(pygame.sprite.Sprite):
             if self.morale > self.maxmorale: self.morale = self.maxmorale
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
             """dead state"""
-            if self.troopnumber <= 0: self.state = 100
-            # self.rect.topleft = self.pos[0],self.pos[1]
+            if self.troopnumber <= 0:
+                self.state = 100
+                if self.leader != None and self.leader.state != 100:
+                    for squad in self.nearbysquadlist:
+                        if squad != 0 and squad.state != 100:
+                            squad.leader = self.leader
+                            self.leader.squad = squad
+                            for index, squad in enumerate(self.battalion.squadsprite):  ## loop to find new squad pos based on new squadsprite list
+                                if squad.gameid == self.leader.squad.gameid:
+                                    squad.leader.squadpos = index
+                            self.leader = None
+                            break
+                    if self.leader != None: ## if can't find new near squad to move leader then leader flee or get captured
+                        self.leader.state = 97
+                        if random.randint(0,1) == 1:
+                            self.leader.state = 96
+
         else:
             self.morale = 0
             self.stamina = 0

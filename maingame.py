@@ -503,11 +503,29 @@ class battle():
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
-        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5: who.leader.health -= targetleaderdmg
+        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5:
+            who.leader.health -= targetleaderdmg
+            if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0: ## reduce morale to whole army if commander die from the dmg
+                print('test1', who.leader.name)
+                whicharmy = self.enemyarmy
+                if who.battalion.gameid < 2000:
+                    whicharmy = self.playerarmy
+                for army in whicharmy:
+                    for squad in army.squadsprite:
+                        squad.basemorale -= 20
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
-        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5: target.leader.health -= wholeaderdmg
-        if who.corneratk == True:  ##attack corner (side) of the target with aoe attack
+        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:
+            target.leader.health -= wholeaderdmg
+            if target.leader.health <= 0 and target.leader.battalion.commander == True and target.leader.armyposition == 0: ## reduce morale to whole army if commander die from the dmg
+                print('test2', target.leader.name)
+                whicharmy = self.enemyarmy
+                if target.battalion.gameid < 2000:
+                    whicharmy = self.playerarmy
+                for army in whicharmy:
+                    for squad in army.squadsprite:
+                        squad.basemorale -= 30
+        if who.corneratk == True:  ##attack corner (side) of self with aoe attack
             listloop = target.nearbysquadlist[2:4]
             if targetside in [0, 2]:
                 listloop = target.nearbysquadlist[0:2]
@@ -534,7 +552,7 @@ class battle():
             who.squadalive = np.array_split(who.squadalive, 2)[0]
             newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.pos)/2)
             who.pos = who.allsidepos[0] - ((who.allsidepos[0] - who.pos)/2)
-        else:
+        else: ## split by column
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
             newsquadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]
             # newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
@@ -545,9 +563,15 @@ class battle():
         who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
         newleader = [who.leader[1],gameleader.leader(0,0,1,who, self.allleader),gameleader.leader(0,0,2,who, self.allleader),gameleader.leader(0,0,3,who, self.allleader)]
         who.leader = [who.leader[0],who.leader[2],who.leader[3],gameleader.leader(0,0,3,who, self.allleader)]
+        for index, leader in enumerate(who.leader):  ## also change army position of all leader in that battalion
+            leader.armyposition = index  ## change army position to new one
+            leader.imgposition = leader.baseimgposition[leader.armyposition]
+            leader.rect = leader.image.get_rect(center=leader.imgposition)
         coa = who.coa
         who.recreatesprite()
         who.makeallsidepos()
+        who.setuparmy()
+        who.setupfrontline()
         for thishitbox in who.hitbox: thishitbox.kill()
         who.hitbox = [gamebattalion.hitbox(who, 0, who.rect.width, 5),
                        gamebattalion.hitbox(who, 1, 5, who.rect.height - 5),
@@ -555,10 +579,11 @@ class battle():
                        gamebattalion.hitbox(who, 3, who.rect.width, 5)]
         who.rotate()
         who.newangle = who.angle - 1
+        ## need to recal max stat again for the original battalion
         maxhealth = []
         maxstamina = []
         maxmorale = []
-        for squad in who.squadsprite: ## need to recal max stat again for battalion
+        for squad in who.squadsprite:
             maxhealth.append(squad.maxtroop)
             maxstamina.append(squad.maxstamina)
             maxmorale.append(squad.maxmorale)
@@ -570,6 +595,7 @@ class battle():
         who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 75 / 100), round(
             maxstamina * 50 / 100), round(maxstamina * 25 / 100)
         who.maxmorale = maxmorale
+        ## start making new battalion
         if who.gameid < 2000:
             playercommand = True
             newgameid = self.playerarmy[-1].gameid+1
@@ -589,13 +615,27 @@ class battle():
             self.enemyarmy.append(army)
             self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
         army.leader = newleader
+        army.squadsprite = newsquadsprite
+        for squad in army.squadsprite:
+            squad.battalion = army
+        for index, leader in enumerate(army.leader):  ## change army position of all leader in new battalion
+            if how == 0:
+                leader.squadpos -= newarmysquad.size ## just minus the row gone to find new position
+            else:
+                for index, squad in enumerate(army.squadsprite): ## loop to find new squad pos based on new squadsprite list
+                    if squad.gameid == leader.squad.gameid:
+                        leader.squadpos = index
+                    break
+            leader.battalion = army ## set leader battalion to new one
+            leader.armyposition = index  ## change army position to new one
+            leader.imgposition = leader.baseimgposition[leader.armyposition] ## change image pos
+            leader.rect = leader.image.get_rect(center=leader.imgposition)
+            leader.poschangestat(leader) ## change stat based on new army position
+            print(leader.name, leader.battalion.gameid)
         army.commandbuff = [(army.leader[0].meleecommand - 5) * 0.1, (army.leader[0].rangecommand - 5) * 0.1, (army.leader[0].cavcommand - 5) * 0.1]
         army.leadersocial = army.leader[0].social
         army.authrecal()
         self.allunitlist.append(army)
-        army.squadsprite = newsquadsprite
-        for squad in army.squadsprite:
-            squad.battalion = army
         army.newangle = army.angle - 1
         army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
                    gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
@@ -603,6 +643,7 @@ class battle():
                    gamebattalion.hitbox(army, 3, army.rect.width, 5)]
         army.rotate()
         army.makeallsidepos()
+        army.autosquadplace = False
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         self.deadarmynum[who.gameid] = self.deadindex
@@ -800,11 +841,17 @@ class battle():
                         self.splitunit(whoinput,1)
                         self.splithappen = True
                         self.checksplit(whoinput)
+                        self.all.remove(*self.leadernow)
+                        self.leadernow = whoinput.leader
+                        self.all.add(*self.leadernow)
                 elif self.buttonui[5] in self.all and self.buttonui[5].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
                     if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput, 0)
                         self.splithappen = True
                         self.checksplit(whoinput)
+                        self.all.remove(*self.leadernow)
+                        self.leadernow = whoinput.leader
+                        self.all.add(*self.leadernow)
                 if self.inspectui == 1:
                     if self.splithappen == True: ## change showing squad in inspectui if split happen
                         self.all.remove(*self.showingsquad)

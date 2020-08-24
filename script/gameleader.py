@@ -71,38 +71,38 @@ class leader(pygame.sprite.Sprite):
         self.image = leaderstat.imgs[leaderid].copy()
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
+        self.badmorale = [20, 30] ## other position morale lost
         if self.armyposition == 0:
-            squadpenal = int((self.squadpos/8)*10)
+            squadpenal = int((self.squadpos/ len(self.battalion.armysquad[0])) * 10)
             self.authority = self.authority - ((self.authority * squadpenal / 100)/2)
-            self.deadmorale = 50 ## main general morale lost when die
-        else: self.deadmorale = 30 ## other position morale lost
+            badmorale = [30,50] ## main general morale lost when die
+
+    def poschangestat(self,leader):
+        """Change stat that related to army position such as in leader dead event"""
+        leader.badmorale = [20,30] ## sub general morale lost for bad event
+        if leader.armyposition == 0:
+            squadpenal = int((leader.squadpos / len(leader.battalion.armysquad[0])) * 10)
+            leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2)
+            leader.badmorale = [30,50]  ## main general morale lost for bad event
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
         if self.state not in [100]:
-            if self.squad.state == 100:
-                self.battalion.gamearmy
-                squadpenal = int((self.squadpos / 8) * 10)
-                self.authority = self.authority - (self.authority * squadpenal / 100)
-            if self.health < 0:
+            if self.health <= 0:
+                print(self.name, self.health, self.state)
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
                 self.battalion.leader.append(self.battalion.leader.pop(self.armyposition)) ## move leader to last of list when dead
                 # if self.battalion.commander == False:
                 for squad in self.battalion.squadsprite:
-                    squad.basemorale -= self.deadmorale ## decrease all squad morale when leader die depending on position
-                # else:
-                #     if self.armyposition != 0:
-                #         for squad in self.battalion.squadsprite:
-                #             squad.basemorale -= self.deadmorale
+                    squad.basemorale -= self.badmorale[1] ## decrease all squad morale when leader die depending on position
                 for index, leader in enumerate(self.battalion.leader): ## also change army position of all leader in that battalion
-                    leader.armyposition =  index ## change army position to new one
+                    leader.armyposition = index ## change army position to new one
                     leader.imgposition = leader.baseimgposition[leader.armyposition]
                     leader.rect = leader.image.get_rect(center=leader.imgposition)
-                    leader.deadmorale = 50
-                    if leader.armyposition != 0: leader.deadmorale = 30 ## change dead morale according to new position
+                    self.poschangestat(leader)
                 self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
                                     (self.battalion.leader[0].cavcommand - 5) * 0.1]
                 self.authority = 0

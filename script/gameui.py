@@ -161,7 +161,7 @@ class Gameui(pygame.sprite.Sprite):
                 self.image_original2 = self.image.copy()
                 # for thisleader in who.leaderwho:
                 #     self.leaderpiclist.append(thisleader[1])
-            if self.lastauth != who.authority or who.gameid != self.lastwho: ## authority number
+            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen == True: ## authority number
                 self.image = self.image_original2.copy()
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(

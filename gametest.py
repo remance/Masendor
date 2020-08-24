@@ -89,5 +89,11 @@ import timeit
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-a = {1: ['William the Bastard', 2, 92, 8, 4, 7, '', 5, ''], 0: ['None', 0, 0, 0, 0, 0, '', 0, '']}
-print(int(15/8))
+a = [0,1,2,3,4,5,6]
+b = [0,1,2,3,4,5,6]
+for qq in a:
+    print(qq)
+    for bb in b:
+        print(bb)
+        if bb == 0:
+            break

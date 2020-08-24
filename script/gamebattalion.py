@@ -195,13 +195,14 @@ class unitarmy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         # self.unitarray = unitarray
         self.armysquad = squadlist
-        self.squadsprite = []  ##list of squad sprite(not index)
         self.colour = colour
         self.commander = commander
         """Alive state array 0 = not exist, 1 = dead, 2 = alive"""
         self.squadalive = np.copy(self.armysquad)
         self.squadalive = np.where(self.squadalive > 0, 2, self.squadalive)
         self.startwhere = []
+        self.hitbox = []
+        self.squadsprite = [] ##list of squad sprite(not index)
         self.justsplit = False
         self.imgsize = imgsize
         self.widthbox, self.heightbox = len(squadlist[0]) * self.imgsize[0], len(squadlist) * self.imgsize[1]
@@ -212,7 +213,6 @@ class unitarmy(pygame.sprite.Sprite):
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         self.pause = False
         self.leaderchange = False
-        self.hitbox = []
         self.directionarrow = False
         self.rotateonly = False
         self.charging = False
@@ -233,8 +233,9 @@ class unitarmy(pygame.sprite.Sprite):
         self.state = 0
         self.preparetimer = 0
         self.deadchange = 0
-        self.gamestart = 0
+        self.gamestart = False
         self.authrecalnow = False
+        self.autosquadplace = True
         """leaderwholist is list of 4 leader in 1 battalion. Based on list order: 1st = general, 
         2nd and 3rd = subgeneral, 4th = special role likes advisor, shaman, priest, mage, supporter"""
         self.cansplitrow = False
@@ -377,7 +378,7 @@ class unitarmy(pygame.sprite.Sprite):
             self.ammo = int(sum(self.stat['ammo']))
             self.maxrange = max(self.stat['range'])
             self.minrange = min(self.stat['range'])
-        if self.gamestart == 0:
+        if self.gamestart == False:
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
                 self.stamina * 50 / 100), round(self.stamina * 25 / 100)
             self.lasthealthstate, self.laststaminastate = 4, 4
@@ -397,7 +398,7 @@ class unitarmy(pygame.sprite.Sprite):
         whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0],
                     fullwhoarray[3][0]]
         for index, whofrontline in enumerate(whoarray):
-            if self.gamestart == 0 and specialcall == False:
+            if self.gamestart == False and specialcall == False:
                 """Add zero to the frontline so it become 8 row array"""
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """Adjust the position of frontline to center of empty 8 array"""
@@ -411,7 +412,7 @@ class unitarmy(pygame.sprite.Sprite):
                 emptyarray[int(whocenter):int(len(whofrontline) + whocenter)] = whofrontline
                 newwhofrontline = emptyarray.copy()
                 self.startwhere.append(int(whocenter))
-            elif self.gamestart == 1 or specialcall == True:
+            elif self.gamestart == True or specialcall == True:
                 newwhofrontline = whofrontline.copy()
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """replace the dead in frontline with other squad in the same column"""
@@ -509,27 +510,31 @@ class unitarmy(pygame.sprite.Sprite):
                 (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
                 self.leader[3].authority / 4)
 
-    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
-        if self.gamestart == 0:
-            self.leadersocial = self.leader[0].social
-            self.authrecal()
+    def startset(self,squadgroup):
+        self.setuparmy()
+        self.setupfrontline()
+        self.setupfrontline(specialcall=True)
+        self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
+        self.rotate()
+        self.makeallsidepos()
+        self.target = self.allsidepos[0]
+        self.commandtarget = self.allsidepos[0]
+        self.spritearray = self.armysquad
+        self.leadersocial = self.leader[0].social
+        if self.autosquadplace == True:
             for leader in self.leader:
                 if leader.gameid != 0:
-                    self.squadsprite[leader.squadpos].leader = leader
-            self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1, (self.leader[0].cavcommand - 5) * 0.1]
-            self.startauth = self.authority
-            self.setuparmy()
-            self.setupfrontline()
-            self.setupfrontline(specialcall=True)
-            self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
-            self.rotate()
-            self.makeallsidepos()
-            self.target = self.allsidepos[0]
-            self.commandtarget = self.allsidepos[0]
-            self.spritearray = self.armysquad
-            for squad in squadgroup:
-                self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
-            self.gamestart = 1
+                    self.squadsprite[leader.squadpos].leader = leader  ## put in leader to squad with the set pos
+        self.authrecal()
+        self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
+                            (self.leader[0].cavcommand - 5) * 0.1]
+        self.startauth = self.authority
+        for squad in squadgroup:
+            self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
+    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
+        if self.gamestart == False:
+            self.startset(squadgroup)
+            self.gamestart = True
         if self.state != 100:
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
