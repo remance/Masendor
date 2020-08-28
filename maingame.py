@@ -1,5 +1,5 @@
-"""next goal: , menu in main game(0.3.1), proper broken retreat after map function (0.4) also skirmish
-FIX
+"""
+FIx
 add chase in 2.7 change stance
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
 maybe add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
@@ -305,12 +305,12 @@ class battle():
         self.fpscount = gameui.fpscount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
+        self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
+                                                                                self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
         self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy, self.enemyarmy, '\\test',
                                                                                self.imagewidth, self.imageheight, self.allweapon, self.allleader,
                                                                                self.gameunitstat, self.coa, self.squad,
-                                                                               [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
-                                                                                self.gameui[0].rect.bottomleft[1] - self.imageheight / 3],
-                                                                               enactment=self.enactment)
+                                                                               self.inspectuipos, enactment=self.enactment)
         self.allunitlist = self.playerarmy.copy()
         self.allunitlist = self.allunitlist + self.enemyarmy
         self.allunitindex = [army.gameid for army in self.allunitlist]
@@ -545,22 +545,51 @@ class battle():
         """split battalion either by row or column into two seperate battalion"""
         if how == 0: ## split by row
             newarmysquad = np.array_split(who.armysquad, 2)[1]
-            newsquadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]
-            # newsquadalive = np.array_split(who.squadalive, 2)[1]
-            # newpos = who.allsidepos[3] - (self.imageheight * len(who.armysquad)/2)
             who.armysquad = np.array_split(who.armysquad, 2)[0]
             who.squadalive = np.array_split(who.squadalive, 2)[0]
             newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.pos)/2)
             who.pos = who.allsidepos[0] - ((who.allsidepos[0] - who.pos)/2)
         else: ## split by column
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
-            newsquadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]
             # newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
             who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
             who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
             newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.pos)/2)
             who.pos = who.allsidepos[1] - ((who.allsidepos[1] - who.pos)/2)
+        if who.leader[1].squad.gameid not in newarmysquad:  ## move leader if squad not in new one
+            if who.leader[1].squad.type in [1, 3, 5, 6, 7, 10, 11]:  ## if squad type melee move to front
+                leaderreplace = [np.where(who.armysquad == who.leader[1].squad.gameid)[0][0], np.where(who.armysquad == who.leader[1].squad.gameid)[1][0]]
+                leaderreplaceflat = np.where(who.armysquad.flat == who.leader[1].squad.gameid)[0]
+                who.armysquad[leaderreplace[0]][leaderreplace[1]] = newarmysquad[0][int(len(newarmysquad[0]) / 2)]
+                newarmysquad[0][int(len(newarmysquad[0]) / 2)] = who.leader[1].squad.gameid
+            else:  ## if not move to center of battalion
+                leaderreplace = [np.where(who.armysquad == who.leader[1].squad.gameid)[0][0], np.where(who.armysquad == who.leader[1].squad.gameid)[1][0]]
+                leaderreplaceflat = np.where(who.armysquad.flat == who.leader[1].squad.gameid)[0]
+                who.armysquad[leaderreplace[0]][leaderreplace[1]] = newarmysquad[int(len(newarmysquad) / 2)][int(len(newarmysquad[0]) / 2)]
+                newarmysquad[int(len(newarmysquad) / 2)][int(len(newarmysquad[0]) / 2)] = who.leader[1].squad.gameid
+            who.squadalive[leaderreplace[0]][leaderreplace[1]] = [0 if who.armysquad[leaderreplace[0]][leaderreplace[1]] == 0 else 1 if who.squadsprite[leaderreplaceflat[0]].state == 100 else 2][0]
+        squadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad] ## list of sprite not sorted yet
+        newsquadsprite = []
+        for squadindex in newarmysquad.flat: ## sort so the new leader squad position match what set before
+            for squad in squadsprite:
+                if squad.gameid == squadindex:
+                    newsquadsprite.append(squad)
+                    break
         who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
+        for thissprite in [who.squadsprite, newsquadsprite]: ## reset position in inspectui for both battalion
+            width, height = 0, 0
+            squadnum = 0
+            for squad in thissprite:
+                width += self.imagewidth
+                if squadnum >= len(who.armysquad[0]):
+                    width = 0
+                    width += self.imagewidth
+                    height += self.imageheight
+                    squadnum = 0
+                squad.inspposition = (width + self.inspectuipos[0], height + self.inspectuipos[1])
+                squad.rect = squad.image.get_rect(topleft=squad.inspposition)
+                squad.pos = pygame.Vector2(squad.rect.centerx, squad.rect.centery)
+                squadnum += 1
         newleader = [who.leader[1],gameleader.leader(0,0,1,who, self.allleader),gameleader.leader(0,0,2,who, self.allleader),gameleader.leader(0,0,3,who, self.allleader)]
         who.leader = [who.leader[0],who.leader[2],who.leader[3],gameleader.leader(0,0,3,who, self.allleader)]
         for index, leader in enumerate(who.leader):  ## also change army position of all leader in that battalion
@@ -631,7 +660,6 @@ class battle():
             leader.imgposition = leader.baseimgposition[leader.armyposition] ## change image pos
             leader.rect = leader.image.get_rect(center=leader.imgposition)
             leader.poschangestat(leader) ## change stat based on new army position
-            print(leader.name, leader.battalion.gameid)
         army.commandbuff = [(army.leader[0].meleecommand - 5) * 0.1, (army.leader[0].rangecommand - 5) * 0.1, (army.leader[0].cavcommand - 5) * 0.1]
         army.leadersocial = army.leader[0].social
         army.authrecal()

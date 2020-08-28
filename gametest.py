@@ -89,11 +89,6 @@ import timeit
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-a = [0,1,2,3,4,5,6]
-b = [0,1,2,3,4,5,6]
-for qq in a:
-    print(qq)
-    for bb in b:
-        print(bb)
-        if bb == 0:
-            break
+arr = np.array([[11, 19, 18], [14, 15, 11], [9, 21, 46], [29, 21, 59]])
+
+print(round(1.5))
