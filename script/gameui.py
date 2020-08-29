@@ -15,6 +15,24 @@ class uibutton(pygame.sprite.Sprite):
     def draw(self, gamescreen):
         gamescreen.blit(self.image, self.rect)
 
+class switchuibutton(pygame.sprite.Sprite):
+    def __init__(self, X, Y, image):
+        self._layer = 5
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.X, self.Y = X, Y
+        self.images = image
+        self.image = self.images[0]
+        self.event = 0
+        self.rect = self.image.get_rect(center=(self.X, self.Y))
+        self.mouse_over = False
+        self.lastevent = 0
+
+    def update(self):
+        if self.event != self.lastevent:
+            self.image = self.images[self.event]
+            self.rect = self.image.get_rect(center=(self.X, self.Y))
+            self.lastevent = self.event
+
 
 class iconpopup(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event, gameui, itemid=""):

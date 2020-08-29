@@ -227,9 +227,13 @@ class unitsquad(pygame.sprite.Sprite):
     # def receiveskill(self,whichskill):
 
     def checkskillcondition(self):
+        """Check which skill can be used"""
         self.availableskill = [skill for skill in self.skill if skill not in self.skillcooldown.keys() and skill not in self.skilleffect.keys() and self.state in self.skill[skill][
                 6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][9]]
-
+        if self.useskillcond == 1:
+            self.availableskill = [skill for skill in self.availableskill if  self.staminastate > 50 or self.availableskill[skill][9] == 0]
+        elif self.useskillcond == 2:
+            self.availableskill = [skill for skill in self.availableskill if self.staminastate > 25 or self.availableskill[skill][9] == 0]
     def findnearbysquad(self):
         """Find nearby friendly squads in the same battalion for applying buff"""
         self.nearbysquadlist = []
@@ -504,8 +508,9 @@ class unitsquad(pygame.sprite.Sprite):
             self.attacktarget = self.battalion.attacktarget
             if self.battalion.state in [0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100]:
                 self.state = self.battalion.state
-            """Using skill condition"""
-            self.checkskillcondition()
+            self.availableskill = []
+            if self.useskillcond != 3:
+                self.checkskillcondition()
             if self.state in [3, 4]:
                 if self.attackpos.distance_to(
                         self.combatpos) < 300 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:

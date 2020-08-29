@@ -226,6 +226,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.combatpreparestate = 0
         self.ammo = 0
         self.useminrange = False
+        self.useskillcond = 0
         # self.offset = pygame.Vector2(-25, 0)
         self.set_target(startposition)
         self.previousposition = pygame.Vector2(startposition)
@@ -357,6 +358,7 @@ class unitarmy(pygame.sprite.Sprite):
                 self.stat['range'].append(squad.range)
                 self.authpenalty += squad.authpenalty
                 squad.combatpos = self.pos
+                squad.useskillcond = self.useskillcond
                 if squad.charging == True and self.charging != True:
                     self.charging == True
             # self.stat['speed'].append(squad.troopnumber)

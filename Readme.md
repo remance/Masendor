@@ -5,7 +5,7 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.7: battalion command (raise flag,forced march,decimation,duel,change skill usage,change stance,transfer leader?)
+2.7: battalion command (forced march,decimation,duel,change skill usage,change stance,transfer leader?)
 
 2.8: commander, strategist and battalion surrender function 
 
@@ -26,3 +26,5 @@ Ver 0.8: Sound effect and ingame music (May need to use royalty free music since
 Ver 0.9: more complex AI (The most challenging step unless cut corner to the point of braindead AI)
 
 Ver 1 Pax Paradisum: historical battle simulation game
+
+Ver 1.1 Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag and recon command, ambush bonus

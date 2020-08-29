@@ -256,6 +256,7 @@ class battle():
         self.gameui = pygame.sprite.Group()
         self.buttonui = pygame.sprite.Group()
         self.fpscount = pygame.sprite.Group()
+        self.switchbuttonui = pygame.sprite.Group()
         """assign default groups"""
         gamebattalion.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.all, self.squad
         gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
@@ -267,6 +268,7 @@ class battle():
         gameui.Gameui.containers = self.gameui, self.uiupdater
         gameui.fpscount.containers = self.all
         gameui.uibutton.containers = self.buttonui, self.uiupdater
+        gameui.switchuibutton.containers = self.switchbuttonui, self.uiupdater
         """Create Starting Values"""
         self.enactment = True
         self.timer = 0
@@ -302,6 +304,7 @@ class battle():
                          gameui.uibutton(self.gameui[1].X - 50, self.gameui[1].Y+96, topimage[8], 0),
                          gameui.uibutton(self.gameui[1].X - 100, self.gameui[1].Y+96, topimage[9], 1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1, (0, 0, 0))
+        self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y+96, topimage[10:14])]
         self.fpscount = gameui.fpscount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
@@ -826,15 +829,17 @@ class battle():
                         gamebattalion.directionarrow(whoinput)
                 if self.beforeselected == 0: ## add back the pop up ui to group so it get shown when click unit with none selected before
                     self.gameui = self.popgameui
-                    self.all.add(*self.gameui[0:2])
-                    self.all.add(self.buttonui[3])
+                    self.all.add(*self.gameui[0:2]) ## add leader and top ui
+                    self.all.add(self.buttonui[3]) ## add inspection ui open/close button
+                    self.all.add(self.switchbuttonui[0]) ## add skill condition change button
+                    self.switchbuttonui[0].event = whoinput.useskillcond
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
                     if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leader[0].name != "None":
-                        self.all.add(self.buttonui[4])
+                        self.all.add(self.buttonui[4]) ## add column split button
                     if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[0].name != "None":
-                        self.all.add(self.buttonui[5])
-                elif self.beforeselected != self.lastselected:
+                        self.all.add(self.buttonui[5]) ## add row split button
+                elif self.beforeselected != self.lastselected: ## change ui when click other battalion
                     if self.inspectui == 1:
                         self.check2 = 1
                         self.all.remove(*self.showingsquad)
@@ -847,16 +852,14 @@ class battle():
                 self.gameui[1].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
                 self.splithappen = False
                 if (self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 0) or (
-                        mouse_up == True and self.inspectui == 1 and self.check2 == 1):
-                    """Add army inspect ui when left click at ui button)"""
+                        mouse_up == True and self.inspectui == 1 and self.check2 == 1): ## Add army inspect ui when left click at ui button
                     self.inspectui = 1
                     self.all.add(*self.gameui[2:4])
                     self.all.add(*self.buttonui[0:3])
                     self.check = 1
                     self.showingsquad = whoinput.squadsprite
                     self.squadlastselected = self.showingsquad[0]
-                elif self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 1:
-                    """remove when click again and the ui already open"""
+                elif self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 1: ## Remove when click again and the ui already open
                     self.all.remove(*self.showingsquad)
                     self.showingsquad = []
                     for ui in self.gameui[2:4]: ui.kill()
@@ -864,6 +867,11 @@ class battle():
                     self.inspectui = 0
                     self.check = 1
                     self.check2 = 0
+                elif self.switchbuttonui[0].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## rotate skill condition when clicked
+                    self.switchbuttonui[0].event += 1
+                    whoinput.useskillcond += 1
+                    if self.switchbuttonui[0].event >3:
+                        self.switchbuttonui[0].event = 0
                 if self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
                     if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput,1)
