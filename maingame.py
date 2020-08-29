@@ -846,6 +846,7 @@ class battle():
                         self.showingsquad = []
                     self.checksplit(whoinput)
                     self.all.remove(*self.leadernow)
+                    self.switchbuttonui[0].event = whoinput.useskillcond
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
                 self.gameui[0].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
@@ -868,10 +869,10 @@ class battle():
                     self.check = 1
                     self.check2 = 0
                 elif self.switchbuttonui[0].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## rotate skill condition when clicked
-                    self.switchbuttonui[0].event += 1
                     whoinput.useskillcond += 1
-                    if self.switchbuttonui[0].event >3:
-                        self.switchbuttonui[0].event = 0
+                    if whoinput.useskillcond > 3:
+                        whoinput.useskillcond = 0
+                    self.switchbuttonui[0].event = whoinput.useskillcond
                 if self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
                     if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput,1)
@@ -919,6 +920,7 @@ class battle():
                 self.lastselected = 0
                 for ui in self.gameui: ui.kill()
                 for button in self.buttonui: button.kill()
+                self.all.remove(*self.switchbuttonui)
                 self.all.remove(*self.showingsquad)
                 self.showingsquad = []
                 self.inspectui = 0
