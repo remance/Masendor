@@ -302,7 +302,8 @@ class battle():
                          gameui.uibutton(self.gameui[2].X - 170, self.gameui[2].Y - 12, topimage[7], 2),
                          gameui.uibutton(self.gameui[0].X - 206, self.gameui[0].Y, topimage[6], 1),
                          gameui.uibutton(self.gameui[1].X - 50, self.gameui[1].Y+96, topimage[8], 0),
-                         gameui.uibutton(self.gameui[1].X - 100, self.gameui[1].Y+96, topimage[9], 1)]
+                         gameui.uibutton(self.gameui[1].X - 100, self.gameui[1].Y+96, topimage[9], 1),
+                         gameui.uibutton(self.gameui[1].X + 50, self.gameui[1].Y+96, topimage[14], 1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1, (0, 0, 0))
         self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y+96, topimage[10:14])]
         self.fpscount = gameui.fpscount()
@@ -831,6 +832,7 @@ class battle():
                     self.gameui = self.popgameui
                     self.all.add(*self.gameui[0:2]) ## add leader and top ui
                     self.all.add(self.buttonui[3]) ## add inspection ui open/close button
+                    self.all.add(self.buttonui[6])  ## add decimation button
                     self.all.add(self.switchbuttonui[0]) ## add skill condition change button
                     self.switchbuttonui[0].event = whoinput.useskillcond
                     self.leadernow = whoinput.leader
@@ -873,7 +875,7 @@ class battle():
                     if whoinput.useskillcond > 3:
                         whoinput.useskillcond = 0
                     self.switchbuttonui[0].event = whoinput.useskillcond
-                if self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
+                elif self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
                     if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput,1)
                         self.splithappen = True
@@ -889,6 +891,12 @@ class battle():
                         self.all.remove(*self.leadernow)
                         self.leadernow = whoinput.leader
                         self.all.add(*self.leadernow)
+                elif self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
+                    for squad in whoinput.squadsprite:
+                        # squad.basemorale -= 20
+                        # squad.basediscipline += 20
+                        squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
+                        squad.unithealth -= round(squad.unithealth*0.1)
                 if self.inspectui == 1:
                     if self.splithappen == True: ## change showing squad in inspectui if split happen
                         self.all.remove(*self.showingsquad)

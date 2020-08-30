@@ -5,7 +5,7 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.7: battalion command (forced march,decimation,duel,change skill usage,change stance,transfer leader?)
+2.7: battalion command (forced march,decimation,duel,change stance,transfer leader?)
 
 2.8: commander, strategist and battalion surrender function 
 
@@ -19,12 +19,16 @@ Ver 0.5: Optimise for larger battle (Also proper code documentation + structure)
 
 Ver 0.6: Battle selection, preparation and result screen, custom battle
 
-Ver 0.7: In game art and better looking UI (All hand (and mouse) drawn except for historical image)
+Ver 0.7 Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag and recon command, ambush bonus
 
-Ver 0.8: Sound effect and ingame music (May need to use royalty free music since I have no experience in music)
+Ver 0.8: In game art and better looking UI (All hand (and mouse) drawn except for historical image)
 
 Ver 0.9: more complex AI (The most challenging step unless cut corner to the point of braindead AI)
 
 Ver 1 Pax Paradisum: historical battle simulation game
 
-Ver 1.1 Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag and recon command, ambush bonus
+Ver 1 - 1.5: Sound effect and ingame music (May need to use royalty free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battle
+
+Ver 1.6: Siege battle
+
+Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ) 
