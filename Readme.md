@@ -5,7 +5,7 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.7: battalion command (forced march,decimation,duel,change stance,transfer leader?)
+2.7: battalion command (forced march,duel,change stance,skirmishing/fireatwill,transfer leader?)
 
 2.8: commander, strategist and battalion surrender function 
 
@@ -13,7 +13,7 @@ Ver 0.2: Expand core mechanic to increase unit complexity
 
 Ver 0.3: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
 
-Ver 0.4: More complex UI function (Event log, popup box), also weather effect and finalise melee combat engagement and collision
+Ver 0.4: More complex UI function (Event log, popup box), also weather effect and finalise melee combat engagement and collision, changable game speed
 
 Ver 0.5: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 

@@ -216,6 +216,8 @@ class unitarmy(pygame.sprite.Sprite):
         self.directionarrow = False
         self.rotateonly = False
         self.charging = False
+        self.hold = False
+        self.fireatwill = 0
         self.retreatstart = 0
         self.retreattimer, self.retreatmax = 0, 0
         self.combatcheck = 0
@@ -638,7 +640,8 @@ class unitarmy(pygame.sprite.Sprite):
             #     self.target = self.attackpos
             #     if self.attackpos.distance_to(self.pos) < 200 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown:
             #         self.useskill(0)
-            """near target is enemy that is nearest for aggressive auto shooting"""
+            """near target is enemy that is nearest"""
+            # if self.fireatwill == 0:
             thisposlist = enemyposlist.copy()
             if self.gameid >= 2000: thisposlist = playerposlist.copy()
             self.neartarget = {}
@@ -771,6 +774,14 @@ class unitarmy(pygame.sprite.Sprite):
             self.battleside = [0, 0, 0, 0]
             if self.troopnumber <= 0:
                 self.stamina, self.morale, self.speed, self.discipline = 0, 0, 0, 0
+                for leader in self.leader:
+                    if leader.state not in [96,97,98,100]: ## leader get captured/flee/die when squad destroyed
+                        leader.state = 96
+                        for hitbox in self.hitbox:
+                            if hitbox.collide == True and random.randint(0,1) == 0:
+                                leader.state = 97
+                                if random.randint(0,1) == 0:
+                                    leader.state = 100
                 self.state = 100
             # self.rect.topleft = self.pos[0],self.pos[1]
         self.valuefortopbar = [str(self.troopnumber) + " (" + str(self.maxhealth) + ")", self.staminastate, self.moralestate, self.state]

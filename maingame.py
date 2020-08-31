@@ -305,7 +305,8 @@ class battle():
                          gameui.uibutton(self.gameui[1].X - 100, self.gameui[1].Y+96, topimage[9], 1),
                          gameui.uibutton(self.gameui[1].X + 50, self.gameui[1].Y+96, topimage[14], 1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1, (0, 0, 0))
-        self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y+96, topimage[10:14])]
+        self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y+96, topimage[10:14]),
+                               gameui.switchuibutton(self.gameui[1].X+90, self.gameui[1].Y+96, topimage[15:17])]
         self.fpscount = gameui.fpscount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
@@ -507,10 +508,9 @@ class battle():
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
-        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5:
+        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5: ## dmg on leader
             who.leader.health -= targetleaderdmg
             if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0: ## reduce morale to whole army if commander die from the dmg
-                print('test1', who.leader.name)
                 whicharmy = self.enemyarmy
                 if who.battalion.gameid < 2000:
                     whicharmy = self.playerarmy
@@ -833,8 +833,9 @@ class battle():
                     self.all.add(*self.gameui[0:2]) ## add leader and top ui
                     self.all.add(self.buttonui[3]) ## add inspection ui open/close button
                     self.all.add(self.buttonui[6])  ## add decimation button
-                    self.all.add(self.switchbuttonui[0]) ## add skill condition change button
+                    self.all.add(*self.switchbuttonui[0:2]) ## add skill condition change, fire at will buttons
                     self.switchbuttonui[0].event = whoinput.useskillcond
+                    self.switchbuttonui[1].event = whoinput.fireatwill
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
                     if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leader[0].name != "None":
@@ -849,6 +850,7 @@ class battle():
                     self.checksplit(whoinput)
                     self.all.remove(*self.leadernow)
                     self.switchbuttonui[0].event = whoinput.useskillcond
+                    self.switchbuttonui[1].event = whoinput.fireatwill
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
                 self.gameui[0].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
@@ -875,6 +877,12 @@ class battle():
                     if whoinput.useskillcond > 3:
                         whoinput.useskillcond = 0
                     self.switchbuttonui[0].event = whoinput.useskillcond
+                elif self.switchbuttonui[1].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## rotate fire at will condition when clicked
+                    print('test',whoinput.useskillcond)
+                    whoinput.fireatwill += 1
+                    if whoinput.fireatwill > 1:
+                        whoinput.fireatwill = 0
+                    self.switchbuttonui[1].event = whoinput.fireatwill
                 elif self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
                     if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput,1)
@@ -891,10 +899,8 @@ class battle():
                         self.all.remove(*self.leadernow)
                         self.leadernow = whoinput.leader
                         self.all.add(*self.leadernow)
-                elif self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
+                elif self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## decimation effect
                     for squad in whoinput.squadsprite:
-                        # squad.basemorale -= 20
-                        # squad.basediscipline += 20
                         squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
                         squad.unithealth -= round(squad.unithealth*0.1)
                 if self.inspectui == 1:
@@ -903,19 +909,16 @@ class battle():
                         self.showingsquad = whoinput.squadsprite
                         self.all.add(*self.showingsquad)
                     self.all.add(*self.showingsquad)
-                    """Update value of the clicked squad"""
-                    if self.squadlastselected != None:
+                    if self.squadlastselected != None: ## Update value of the clicked squad
                         self.gameui[2].valueinput(who=self.squadlastselected, leader=self.allleader, gameunitstat=self.gameunitstat,splithappen=self.splithappen)
-                    """Change showing stat to the clicked squad one"""
-                    if mouse_up == True:
+                    if mouse_up == True: ## Change showing stat to the clicked squad one
                         for squad in self.showingsquad:
                             if squad.rect.collidepoint(pygame.mouse.get_pos()) == True:
                                 self.check = 1
                                 squad.command(pygame.mouse.get_pos(), mouse_up, mouse_right, self.squadlastselected.wholastselect)
                                 self.squadlastselected = squad
                                 self.gameui[2].valueinput(who=squad, leader=self.allleader, gameunitstat=self.gameunitstat,splithappen=self.splithappen)
-                            """Change unit card option based on button clicking"""
-                            for button in self.buttonui:
+                            for button in self.buttonui:  ## Change unit card option based on button clicking
                                 if button.rect.collidepoint(pygame.mouse.get_pos()):
                                     self.check = 1
                                     if self.gameui[2].option != button.event:

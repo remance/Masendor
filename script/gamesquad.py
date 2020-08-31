@@ -298,6 +298,7 @@ class unitsquad(pygame.sprite.Sprite):
 
     def statusupdate(self, statuslist, dt):
         """calculate stat from stamina and morale state"""
+        ## Maybe make trigger for status update instead of doing it every update for optimise
         self.morale = self.basemorale
         self.authority = self.battalion.authority
         self.commandbuff = self.battalion.commandbuff[self.unittype]
@@ -305,14 +306,14 @@ class unitsquad(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.discipline = round((self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) +
                                 self.battalion.leadersocial[self.grade + 1] + (self.authority / 10), 0)
-        self.attack = round((self.baseattack * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
-        self.meleedef = round((self.basemeleedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
-        self.rangedef = round((self.baserangedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
-        self.accuracy = round(self.baseaccuracy * (self.staminastate / 100), 0) * self.commandbuff
-        self.reload = round(self.basereload * ((200 - self.staminastate) / 100), 0) * self.commandbuff
-        self.chargedef = round((self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
+        self.attack = round((self.baseattack * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
+        self.meleedef = round((self.basemeleedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
+        self.rangedef = round((self.baserangedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
+        self.accuracy = round(self.baseaccuracy * (self.staminastate / 100) + (self.commandbuff * 2), 0)
+        self.reload = round(self.basereload * ((200 - self.staminastate) / 100), 0)
+        self.chargedef = round((self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
         self.speed = round(self.basespeed * self.staminastate / 100, 0)
-        self.charge = round((self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100), 0) * self.commandbuff
+        self.charge = round((self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
@@ -530,11 +531,12 @@ class unitsquad(pygame.sprite.Sprite):
                 self.state = 0
                 if self.ammo > 0 and self.range + 150 >= self.attackpos.distance_to(self.combatpos):
                     self.state = 11
-            elif 18 in self.trait and self.battalion.state in [1,2,3,4,5,6] and self.ammo > 0: # and self.bahaviour == 1
+            elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in [1,2,3,4,5,6] and 18 in self.trait)) and self.ammo > 0:
                 if self.attacktarget == 0:
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
                 if self.range + 150 >= self.attackpos.distance_to(self.combatpos):
+                    self.state = 11
                     if self.battalion.state in [1, 3, 5]:
                         self.state = 12
                     elif self.battalion.state in [2, 4, 6]:
@@ -562,12 +564,10 @@ class unitsquad(pygame.sprite.Sprite):
             """cannot be higher than max hp and max stamina"""
             if self.morale > self.maxmorale: self.morale = self.maxmorale
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
-            """dead state"""
-            if self.troopnumber <= 0:
-                self.state = 100
+            if self.troopnumber <= 0: ## dead state
                 if self.leader != None and self.leader.state != 100:
                     for squad in self.nearbysquadlist:
-                        if squad != 0 and squad.state != 100:
+                        if squad != 0 and squad.state != 100 and squad.leader == None:
                             squad.leader = self.leader
                             self.leader.squad = squad
                             for index, squad in enumerate(self.battalion.squadsprite):  ## loop to find new squad pos based on new squadsprite list
@@ -575,10 +575,17 @@ class unitsquad(pygame.sprite.Sprite):
                                     squad.leader.squadpos = index
                             self.leader = None
                             break
-                    if self.leader != None: ## if can't find new near squad to move leader then leader flee or get captured
-                        self.leader.state = 97
-                        if random.randint(0,1) == 1:
-                            self.leader.state = 96
+                    if self.leader != None: ## if can't find new near squad to move leader then find from first squad to last place in battalion
+                        for index, squad in enumerate(self.battalion.squadsprite):
+                            if squad.state != 100 and squad.leader == None:
+                                squad.leader = self.leader
+                                self.leader.squad = squad
+                                squad.leader.squadpos = index
+                                self.leader = None
+                                break
+
+
+                self.state = 100
 
         else:
             self.morale = 0

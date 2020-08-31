@@ -88,9 +88,11 @@ class arrow(pygame.sprite.Sprite):
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck
         if targetdefense < 0: targetdefense = 0
-        whodmg, whomoraledmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
+        whodmg, whomoraledmg,wholeaderdmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
+        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
+            target.leader.health -= wholeaderdmg
 
     def registerhit(self, who, target, squadlist, squadindexlist):
         """Calculatte damage when arrow reach target"""
