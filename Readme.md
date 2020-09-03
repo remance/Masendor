@@ -1,11 +1,11 @@
-Medieval battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
+Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until ver 0.5).
 
 Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.7: battalion command (forced march,duel,change stance,skirmishing/fireatwill,transfer leader?)
+2.7: battalion command (forced march,transfer leader?)
 
 2.8: commander, strategist and battalion surrender function 
 
@@ -30,5 +30,7 @@ Ver 1 Pax Paradisum: historical battle simulation game
 Ver 1 - 1.5: Sound effect and ingame music (May need to use royalty free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battle
 
 Ver 1.6: Siege battle
+
+Ver 1.7: Leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet)
 
 Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ) 

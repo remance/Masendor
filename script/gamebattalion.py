@@ -72,8 +72,7 @@ class unitstat():
                             row[n] = [int(i)]
                 self.gradelist[row[0]] = row[1:]
         unitfile.close()
-        """Unit skill list"""
-        self.abilitylist = {}
+        self.abilitylist = {} ## Unit skill list
         self.abilityicon = abilityicon
         with open(main_dir + "\data\war" + '\\unit_ability.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -216,8 +215,8 @@ class unitarmy(pygame.sprite.Sprite):
         self.directionarrow = False
         self.rotateonly = False
         self.charging = False
-        self.hold = False
-        self.fireatwill = 0
+        self.hold = 0 ## 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
+        self.fireatwill = 0 ## 0 = fire at will, 1 = no fire
         self.retreatstart = 0
         self.retreattimer, self.retreatmax = 0, 0
         self.combatcheck = 0
@@ -227,20 +226,19 @@ class unitarmy(pygame.sprite.Sprite):
         self.gotkilled = 0
         self.combatpreparestate = 0
         self.ammo = 0
-        self.useminrange = False
+        self.minrange = 0
+        self.maxrange = 0
+        self.useminrange = 0
         self.useskillcond = 0
         # self.offset = pygame.Vector2(-25, 0)
         self.set_target(startposition)
         self.previousposition = pygame.Vector2(startposition)
-        """state 0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack"""
-        self.state = 0
+        self.state = 0 ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
         self.preparetimer = 0
         self.deadchange = 0
         self.gamestart = False
         self.authrecalnow = False
         self.autosquadplace = True
-        """leaderwholist is list of 4 leader in 1 battalion. Based on list order: 1st = general, 
-        2nd and 3rd = subgeneral, 4th = special role likes advisor, shaman, priest, mage, supporter"""
         self.cansplitrow = False
         if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
         self.cansplitcol = False
@@ -269,26 +267,20 @@ class unitarmy(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
-        """generate all four side position"""
-        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2) - 5),
+        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2) - 5), ## generate all four side position
                            ((self.rect.center[0] - self.widthbox / 2) - 5, self.rect.center[1]),
                            ((self.rect.center[0] + self.widthbox / 2) + 5, self.rect.center[1]),
                            (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2) + 5)]
-        """generate again but with rotation in calculation"""
-        self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle),
+        self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle), ## generate again but with rotation in calculation
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
         self.squadpositionlist = []
-        """index of battleside and frontline: 0 = front 1 = left 2 =right 3 =rear"""
-        """battleside keep index of enemy battalion"""
-        self.battleside = [0, 0, 0, 0]
-        """frontline keep list of squad at the front of each side in combat"""
-        self.frontline = {0: [], 1: [], 2: [], 3: []}
+        self.battleside = [0, 0, 0, 0] ## index of battleside (index of enemy fighting at the side of battalion) and frontline: 0 = front 1 = left 2 =right 3 =rear
+        self.frontline = {0: [], 1: [], 2: [], 3: []} ## frontline keep list of squad at the front of each side in combat
         self.viewmode = 0
         width, height = 0, 0
         squadnum = 0
-        """Set up squad position list for drawing"""
-        for squad in self.armysquad.flat:
+        for squad in self.armysquad.flat: ## Set up squad position list for drawing
             width += self.imgsize[0]
             self.squadpositionlist.append((width, height))
             squadnum += 1
@@ -298,7 +290,7 @@ class unitarmy(pygame.sprite.Sprite):
                 squadnum = 0
 
     def recreatesprite(self):
-        """redrawing sprite for when split since the size will change"""
+        """redrawing sprite for when split happen since the size will change"""
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
         self.image.fill((255, 255, 255, 128))
@@ -357,7 +349,8 @@ class unitarmy(pygame.sprite.Sprite):
                 self.stat['speed'].append(squad.speed)
                 self.stat['disci'].append(squad.discipline)
                 self.stat['ammo'].append(squad.ammo)
-                self.stat['range'].append(squad.range)
+                if squad.range > 0:
+                    self.stat['range'].append(squad.range)
                 self.authpenalty += squad.authpenalty
                 squad.combatpos = self.pos
                 squad.useskillcond = self.useskillcond
@@ -380,8 +373,9 @@ class unitarmy(pygame.sprite.Sprite):
             self.speed = min(self.stat['speed'])
             self.discipline = mean(self.stat['disci'])
             self.ammo = int(sum(self.stat['ammo']))
-            self.maxrange = max(self.stat['range'])
-            self.minrange = min(self.stat['range'])
+            if len(self.stat['range']) > 0:
+                self.maxrange = max(self.stat['range'])
+                self.minrange = min(self.stat['range'])
         if self.gamestart == False:
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
                 self.stamina * 50 / 100), round(self.stamina * 25 / 100)
@@ -559,55 +553,42 @@ class unitarmy(pygame.sprite.Sprite):
                     """Change health and stamina bar Function"""
                     if self.troopnumber <= 0 and self.lasthealthstate != 0:
                         self.healthimage = self.images[4]
-                        self.healthimagerect = self.healthimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 0
                     elif self.troopnumber > 0 and self.troopnumber <= self.health25 and self.lasthealthstate != 1:
                         self.healthimage = self.images[3]
-                        self.healthimagerect = self.healthimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 1
                     elif self.troopnumber > self.health25 and self.troopnumber <= self.health50 and self.lasthealthstate != 2:
                         self.healthimage = self.images[2]
-                        self.healthimagerect = self.healthimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 2
                     elif self.troopnumber > self.health50 and self.troopnumber <= self.health75 and self.lasthealthstate != 3:
                         self.healthimage = self.images[1]
-                        self.healthimagerect = self.healthimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 3
                     elif self.troopnumber > self.health75 and self.lasthealthstate != 4:
                         self.healthimage = self.images[0]
-                        self.healthimagerect = self.healthimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 4
                     if self.stamina <= 0 and self.laststaminastate != 0:
                         self.staminaimage = self.images[9]
-                        self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 0
                     elif self.stamina > 0 and self.stamina <= self.stamina25 and self.laststaminastate != 1:
                         self.staminaimage = self.images[8]
-                        self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 1
                     elif self.stamina > self.stamina25 and self.stamina <= self.stamina50 and self.laststaminastate != 2:
                         self.staminaimage = self.images[7]
-                        self.staminaimagerect = self.staminaimage.get_rect(
-                            center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 2
                     elif self.stamina > self.stamina50 and self.stamina <= self.stamina75 and self.laststaminastate != 3:
                         self.staminaimage = self.images[6]
-                        self.staminaimagerect = self.staminaimage.get_rect(
-                            center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 3
                     elif self.stamina > self.stamina75 and self.laststaminastate != 4:
                         self.staminaimage = self.images[5]
-                        self.staminaimagerect = self.staminaimage.get_rect(
-                            center=self.image_original2.get_rect().center)
                         self.image_original2.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 4
                     self.image_original = self.image_original2.copy()
@@ -617,7 +598,7 @@ class unitarmy(pygame.sprite.Sprite):
             if self.deadchange == 1:
                 self.setupfrontline()
                 for squad in self.squadsprite:
-                    squad.basemorale -= 20
+                    squad.basemorale -= 10
                 self.deadchange = 0
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
             """recal stat involve leader if one die"""
@@ -630,18 +611,11 @@ class unitarmy(pygame.sprite.Sprite):
                                     (self.leader[0].cavcommand - 5) * 0.1]
                 self.startauth = self.authority
                 self.leaderchange = False
-            # """Stamina and Health Function"""
-            # if self.troopnumber < 0: self.troopnumber = 0
-            # if self.stamina < 0: self.stamina = 0
-            # if self.troopnumber > self.maxhealth: self.troopnumber = self.maxhealth
-            # if round(self.troopnumber) < self.troopnumber: self.troopnumber = round(self.troopnumber + 1)
-            # else: self.troopnumber = round(self.troopnumber)
             # if self.state in [3,4]:
             #     self.target = self.attackpos
             #     if self.attackpos.distance_to(self.pos) < 200 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown:
             #         self.useskill(0)
             """near target is enemy that is nearest"""
-            # if self.fireatwill == 0:
             thisposlist = enemyposlist.copy()
             if self.gameid >= 2000: thisposlist = playerposlist.copy()
             self.neartarget = {}
@@ -711,21 +685,30 @@ class unitarmy(pygame.sprite.Sprite):
             else:
                 self.moverotate = 0
                 """Can only enter range attack state after finishing rotate"""
-                if self.allsidepos[0].distance_to(self.commandtarget) <= self.maxrange and self.state in [5, 6] and self.useminrange != True:
+                shootrange = self.maxrange
+                if self.useminrange == 0:
+                    shootrange = self.minrange
+                if self.state in [5, 6] and self.pos.distance_to(self.attacktarget.pos) <= shootrange:
                     self.target = self.allsidepos[0]
                     self.rangecombatcheck = 1
-                elif self.allsidepos[0].distance_to(self.commandtarget) <= self.minrange and self.state in [5, 6] and self.useminrange == True:
-                    self.target = self.allsidepos[0]
-                    self.rangecombatcheck = 1
+                elif self.state == 11 and self.pos.distance_to(self.attacktarget.pos) > shootrange and self.hold == 0: ## chase target if it go out of range and hold condition not hold
+                    self.state = 6
+                    self.rangecombatcheck = 0
+                    self.target = pygame.Vector2(self.attacktarget.pos[0], self.attacktarget.pos[1])
+                    self.setrotate(self.target, instant=True)
             """Move Function"""
             if self.allsidepos[0] != self.commandtarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give position command, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
-                """Chase target and rotate accordingly"""
-                if self.state in [3, 4, 5, 6] and self.target != self.attacktarget.pos:
-                    # print(self.attacktarget.pos,self.target)
-                    self.target = pygame.Vector2(self.attacktarget.pos[0], self.attacktarget.pos[1])
-                    self.setrotate(self.target, instant=True)
+                if self.state in [0, 3, 4, 5, 6] and self.attacktarget != 0 and self.target != self.attacktarget.pos: ## Chase target and rotate accordingly
+                    cantchase = False
+                    for hitbox in self.hitbox:
+                        if hitbox.collide == True: cantchase = True
+                    if cantchase == False:
+                        if self.hold == 0 and self.ammo <= 0:
+                            self.state = 4
+                        self.target = pygame.Vector2(self.attacktarget.pos[0], self.attacktarget.pos[1])
+                        self.setrotate(self.target, instant=True)
                 """check for hitbox collide according to which ever closest to the target position"""
                 if self.state not in [0, 97] and self.stamina > 0 and self.target != self.allsidepos[0] and self.retreattimer == 0:
                     side, side2 = self.allsidepos.copy(), {}
@@ -741,6 +724,8 @@ class unitarmy(pygame.sprite.Sprite):
                             """Stop moving when reach target and go to idle"""
                             self.allsidepos[0] = self.commandtarget
                             self.state = 0
+                            self.attacktarget = 0
+                            self.attackpos = 0
                         # if self.state == 5: self.target = self.pos
                         elif move_length > 1:
                             # if self.state != 3 and self.retreatcommand == 1:

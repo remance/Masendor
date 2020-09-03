@@ -72,10 +72,13 @@ class leader(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
         self.badmorale = [20, 30] ## other position morale lost
+        self.commander = False
         if self.armyposition == 0:
             squadpenal = int((self.squadpos/ len(self.battalion.armysquad[0])) * 10)
             self.authority = self.authority - ((self.authority * squadpenal / 100)/2)
             badmorale = [30,50] ## main general morale lost when die
+            if self.battalion.commander == True:
+                self.commander = True
 
     def poschangestat(self,leader):
         """Change stat that related to army position such as in leader dead event"""
@@ -100,6 +103,8 @@ class leader(pygame.sprite.Sprite):
                     squad.basemorale -= self.badmorale[1] ## decrease all squad morale when leader die depending on position
                 for index, leader in enumerate(self.battalion.leader): ## also change army position of all leader in that battalion
                     leader.armyposition = index ## change army position to new one
+                    if self.battalion.commander == True and leader.armyposition == 0:
+                        self.commander = True
                     leader.imgposition = leader.baseimgposition[leader.armyposition]
                     leader.rect = leader.image.get_rect(center=leader.imgposition)
                     self.poschangestat(leader)

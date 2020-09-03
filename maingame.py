@@ -301,12 +301,14 @@ class battle():
                          gameui.uibutton(self.gameui[2].X - 170, self.gameui[2].Y - 65, topimage[4], 1),
                          gameui.uibutton(self.gameui[2].X - 170, self.gameui[2].Y - 12, topimage[7], 2),
                          gameui.uibutton(self.gameui[0].X - 206, self.gameui[0].Y, topimage[6], 1),
-                         gameui.uibutton(self.gameui[1].X - 50, self.gameui[1].Y+96, topimage[8], 0),
-                         gameui.uibutton(self.gameui[1].X - 100, self.gameui[1].Y+96, topimage[9], 1),
-                         gameui.uibutton(self.gameui[1].X + 50, self.gameui[1].Y+96, topimage[14], 1)]
+                         gameui.uibutton(self.gameui[1].X - 115, self.gameui[1].Y+26, topimage[8], 0),
+                         gameui.uibutton(self.gameui[1].X - 115, self.gameui[1].Y+56, topimage[9], 1),
+                         gameui.uibutton(self.gameui[1].X - 115, self.gameui[1].Y+96, topimage[14], 1)]
         self.pause_text = pygame.font.SysFont("helvetica", 100).render("PAUSE", 1, (0, 0, 0))
-        self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y+96, topimage[10:14]),
-                               gameui.switchuibutton(self.gameui[1].X+90, self.gameui[1].Y+96, topimage[15:17])]
+        self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X-70, self.gameui[1].Y+96, topimage[10:14]),
+                               gameui.switchuibutton(self.gameui[1].X-30, self.gameui[1].Y+96, topimage[15:17]),
+                               gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y+96, topimage[17:20]),
+                               gameui.switchuibutton(self.gameui[1].X+40, self.gameui[1].Y+96, topimage[20:22])]
         self.fpscount = gameui.fpscount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
@@ -453,8 +455,7 @@ class battle():
         elif type == 1:  ##range dmg
             leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
             dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
-        """Anti trait dmg bonus"""
-        if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]):
+        if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]): ## Anti trait dmg bonus
             dmg = dmg * 1.25
         if dmg > target.unithealth:
             dmg = target.unithealth
@@ -508,9 +509,10 @@ class battle():
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
-        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5: ## dmg on leader
+        target.basemorale += round((targetmoraledmg * (dmgeffect / 100)/2))
+        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5: ## dmg on who leader
             who.leader.health -= targetleaderdmg
-            if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0: ## reduce morale to whole army if commander die from the dmg
+            if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0: ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
                 whicharmy = self.enemyarmy
                 if who.battalion.gameid < 2000:
                     whicharmy = self.playerarmy
@@ -519,10 +521,10 @@ class battle():
                         squad.basemorale -= 20
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
-        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:
+        who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
+        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5: ## dmg on target leader
             target.leader.health -= wholeaderdmg
             if target.leader.health <= 0 and target.leader.battalion.commander == True and target.leader.armyposition == 0: ## reduce morale to whole army if commander die from the dmg
-                print('test2', target.leader.name)
                 whicharmy = self.enemyarmy
                 if target.battalion.gameid < 2000:
                     whicharmy = self.playerarmy
@@ -531,8 +533,7 @@ class battle():
                         squad.basemorale -= 30
         if who.corneratk == True:  ##attack corner (side) of self with aoe attack
             listloop = target.nearbysquadlist[2:4]
-            if targetside in [0, 2]:
-                listloop = target.nearbysquadlist[0:2]
+            if targetside in [0, 2]: listloop = target.nearbysquadlist[0:2]
             for squad in listloop:
                 if squad != 0 and squad.state != 100:
                     targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
@@ -678,11 +679,13 @@ class battle():
         army.autosquadplace = False
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
+        """remove battalion,hitbox when it dies"""
         self.deadarmynum[who.gameid] = self.deadindex
         self.deadindex += 1
         for hitbox in who.hitbox:
             rendergroup.remove(hitbox)
             hitboxgroup.remove(hitbox)
+            hitbox.kill()
         group.remove(who)
         deadgroup.add(who)
         rendergroup.change_layer(sprite=who, new_layer=0)
@@ -714,6 +717,7 @@ class battle():
         while True:
             self.fpscount.fpsshow(self.clock)
             keystate = pygame.key.get_pressed()
+            keypress = None
             self.mousepos = pygame.mouse.get_pos()
             mouse_up = False
             mouse_right = False
@@ -738,14 +742,15 @@ class battle():
                             self.unitviewmode = 0
                         else:
                             self.unitviewmode = 1
-                    if event.key == pygame.K_SPACE:  ## Pause Button
+                    elif event.key == pygame.K_SPACE:  ## Pause Button
                         if self.gamestate == 1:
                             self.gamestate = 0
                         else:
                             self.gamestate = 1
-                    if event.key == pygame.K_s and self.lastselected != 0:
+                    elif event.key == pygame.K_s and self.lastselected != 0:
                         whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
                                          self.lastselected, self.lastmouseover, self.enemyposlist, keystate, othercommand = 1)
+                    else: keypress = event.key
                 # if keystate[K_s]:
                 #     scroll_view(screen, background, DIR_DOWN, view_rect)
                 # elif keystate[K_w]:
@@ -765,8 +770,6 @@ class battle():
                     self.timer = 0
             self.all.clear(self.screen, self.background)  ##clear sprite before update new one
             self.uiupdater.update()  # update ui outside of combat loop so it update even when game pause
-            # directionX = keystate[K_RIGHT] - keystate[K_LEFT]
-            # directionY = keystate[K_DOWN] - keystate[K_UP]
             self.lastmouseover = 0
             if mouse_up == True:
                 self.check = 0
@@ -778,8 +781,6 @@ class battle():
                 else:
                     self.enemyposlist[army.gameid] = army.pos
                 posmask = self.mousepos[0] - army.rect.x, self.mousepos[1] - army.rect.y
-                #     army.mouse_over = True
-                # except: self.mouse_over = False
                 for ui in self.gameui:
                     if ui.rect.collidepoint(self.mousepos) and mouse_up:
                         if ui.uitype not in ["unitcard", 'armybox']:
@@ -804,13 +805,18 @@ class battle():
                 if army.state == 100 and army.gotkilled == 0:
                     if army.gameid < 2000:
                         self.die(army, self.playerarmy, self.deadunit, self.all, self.hitboxs)
-                        for army in self.enemyarmy:
-                            army.authority += 5
+                        for thisarmy in self.enemyarmy: ## get bonus authority when destroy enemy battalion
+                            thisarmy.authority += 5
+                        for thisarmy in self.playerarmy: ## morale dmg to every squad in army when allied battalion destroyed
+                            for squad in thisarmy.squadsprite:
+                                squad.basemorale -= 20
                     else:
                         self.die(army, self.enemyarmy, self.deadunit, self.all, self.hitboxs)
-                        for army in self.playerarmy:
-                            army.authority += 5
-                # pygame.draw.aaline(screen, (100, 0, 0), army.pos, army.target, 10)
+                        for thisarmy in self.playerarmy: ## get bonus authority when destroy enemy battalion
+                            thisarmy.authority += 5
+                        for thisarmy in self.enemyarmy: ## morale dmg to every squad in army when allied battalion destroyed
+                            for squad in thisarmy.squadsprite:
+                                squad.basemorale -= 20
             if self.lastselected != 0:
                 if self.lastselected < 2000:
                     """if not found in army class then it is in dead class"""
@@ -833,9 +839,11 @@ class battle():
                     self.all.add(*self.gameui[0:2]) ## add leader and top ui
                     self.all.add(self.buttonui[3]) ## add inspection ui open/close button
                     self.all.add(self.buttonui[6])  ## add decimation button
-                    self.all.add(*self.switchbuttonui[0:2]) ## add skill condition change, fire at will buttons
+                    self.all.add(*self.switchbuttonui[0:4]) ## add skill condition change, fire at will buttons
                     self.switchbuttonui[0].event = whoinput.useskillcond
                     self.switchbuttonui[1].event = whoinput.fireatwill
+                    self.switchbuttonui[2].event = whoinput.hold
+                    self.switchbuttonui[3].event = whoinput.useminrange
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
                     if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and whoinput.leader[0].name != "None":
@@ -851,13 +859,15 @@ class battle():
                     self.all.remove(*self.leadernow)
                     self.switchbuttonui[0].event = whoinput.useskillcond
                     self.switchbuttonui[1].event = whoinput.fireatwill
+                    self.switchbuttonui[2].event = whoinput.hold
+                    self.switchbuttonui[3].event = whoinput.useminrange
                     self.leadernow = whoinput.leader
                     self.all.add(*self.leadernow)
                 self.gameui[0].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
                 self.gameui[1].valueinput(who=whoinput, leader=self.allleader,splithappen=self.splithappen)
                 self.splithappen = False
                 if (self.buttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and self.inspectui == 0) or (
-                        mouse_up == True and self.inspectui == 1 and self.check2 == 1): ## Add army inspect ui when left click at ui button
+                        mouse_up == True and self.inspectui == 1 and self.check2 == 1): ## Add army inspect ui when left click at ui button or when change unit with inspect open
                     self.inspectui = 1
                     self.all.add(*self.gameui[2:4])
                     self.all.add(*self.buttonui[0:3])
@@ -872,17 +882,26 @@ class battle():
                     self.inspectui = 0
                     self.check = 1
                     self.check2 = 0
-                elif self.switchbuttonui[0].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## rotate skill condition when clicked
+                elif (self.switchbuttonui[0].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True) or keypress == pygame.K_g: ## rotate skill condition when clicked
                     whoinput.useskillcond += 1
                     if whoinput.useskillcond > 3:
                         whoinput.useskillcond = 0
                     self.switchbuttonui[0].event = whoinput.useskillcond
-                elif self.switchbuttonui[1].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## rotate fire at will condition when clicked
-                    print('test',whoinput.useskillcond)
+                elif (self.switchbuttonui[1].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True) or keypress == pygame.K_f: ## rotate fire at will condition when clicked
                     whoinput.fireatwill += 1
                     if whoinput.fireatwill > 1:
                         whoinput.fireatwill = 0
                     self.switchbuttonui[1].event = whoinput.fireatwill
+                elif (self.switchbuttonui[2].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True) or keypress == pygame.K_h: ## rotate hold condition when clicked
+                    whoinput.hold += 1
+                    if whoinput.hold > 2:
+                        whoinput.hold = 0
+                    self.switchbuttonui[2].event = whoinput.hold
+                elif (self.switchbuttonui[3].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True) or keypress == pygame.K_j: ## rotate min range condition when clicked
+                    whoinput.useminrange += 1
+                    if whoinput.useminrange > 1:
+                        whoinput.useminrange = 0
+                    self.switchbuttonui[3].event = whoinput.useminrange
                 elif self.buttonui[4] in self.all and self.buttonui[4].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
                     if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput,1)

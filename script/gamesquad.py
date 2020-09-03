@@ -314,6 +314,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.chargedef = round((self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
         self.speed = round(self.basespeed * self.staminastate / 100, 0)
         self.charge = round((self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
+        self.range = self.baserange
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
@@ -442,58 +443,48 @@ class unitsquad(pygame.sprite.Sprite):
         self.statusupdate(statuslist, dt)
         self.oldlasthealth, self.oldlaststamina = self.lasthealthstate, self.laststaminastate
         if self.state != 100:
-            """Stamina and Health Function"""
+            """Stamina and Health bar function"""
             if self.unithealth <= 0 and self.lasthealthstate != 0:
                 self.healthimage = self.images[7]
-                self.healthimagerect = self.healthimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.healthimage, self.healthimagerect)
                 self.lasthealthstate = 0
             elif self.unithealth > 0 and self.unithealth <= self.health25 and self.lasthealthstate != 1:
                 self.healthimage = self.images[6]
-                self.healthimagerect = self.healthimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.healthimage, self.healthimagerect)
                 self.lasthealthstate = 1
             elif self.unithealth > self.health25 and self.unithealth <= self.health50 and self.lasthealthstate != 2:
                 self.healthimage = self.images[5]
-                self.healthimagerect = self.healthimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.healthimage, self.healthimagerect)
                 self.lasthealthstate = 2
             elif self.unithealth > self.health50 and self.unithealth <= self.health75 and self.lasthealthstate != 3:
                 self.healthimage = self.images[4]
-                self.healthimagerect = self.healthimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.healthimage, self.healthimagerect)
                 self.lasthealthstate = 3
             elif self.unithealth > self.health75 and self.lasthealthstate != 4:
                 self.healthimage = self.images[3]
-                self.healthimagerect = self.healthimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.healthimage, self.healthimagerect)
                 self.lasthealthstate = 4
-            if self.state == 97:
+            if self.state == 97 and self.laststaminastate != 0:
                 self.staminaimage = self.images[12]
-                self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.staminaimage, self.staminaimagerect)
                 self.laststaminastate = 0
             elif self.stamina > 0 and self.stamina <= self.stamina25 and self.laststaminastate != 1 and self.state != 97:
                 self.staminaimage = self.images[11]
-                self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.staminaimage, self.staminaimagerect)
                 self.laststaminastate = 1
             elif self.stamina > self.stamina25 and self.stamina <= self.stamina50 and self.laststaminastate != 2:
                 self.staminaimage = self.images[10]
-                self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.staminaimage, self.staminaimagerect)
                 self.laststaminastate = 2
             elif self.stamina > self.stamina50 and self.stamina <= self.stamina75 and self.laststaminastate != 3:
                 self.staminaimage = self.images[9]
-                self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.staminaimage, self.staminaimagerect)
                 self.laststaminastate = 3
             elif self.stamina > self.stamina75 and self.laststaminastate != 4:
                 self.staminaimage = self.images[8]
-                self.staminaimagerect = self.staminaimage.get_rect(center=self.image_original.get_rect().center)
                 self.image_original.blit(self.staminaimage, self.staminaimagerect)
                 self.laststaminastate = 4
-            if self.battleside != [-1, -1, -1, -1]:
+            if self.battleside != [-1, -1, -1, -1]: ## red corner when engage in melee combat
                 for index, side in enumerate(self.battleside):
                     if side > 0:
                         self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
@@ -501,11 +492,9 @@ class unitsquad(pygame.sprite.Sprite):
             else:
                 self.image = self.image_original.copy()
             if self.oldlasthealth != self.lasthealthstate or self.oldlaststamina != self.laststaminastate: self.rotate()
-            # if self.retreatstart == 0:
-            #     self.angle = 180
-            #     self.rotate()
-            #     self.retreatstart = 1
             self.attackpos = self.battalion.attackpos
+            if self.battalion.attacktarget != 0:
+                self.attackpos = self.battalion.attacktarget.pos
             self.attacktarget = self.battalion.attacktarget
             if self.battalion.state in [0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100]:
                 self.state = self.battalion.state
@@ -529,13 +518,13 @@ class unitsquad(pygame.sprite.Sprite):
                     self.state = 11
             if self.battalion.state == 11:
                 self.state = 0
-                if self.ammo > 0 and self.range + 150 >= self.attackpos.distance_to(self.combatpos):
+                if self.ammo > 0 and self.range >= self.attackpos.distance_to(self.combatpos):
                     self.state = 11
             elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in [1,2,3,4,5,6] and 18 in self.trait)) and self.ammo > 0:
-                if self.attacktarget == 0:
+                if self.attacktarget == 0: ## get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
-                if self.range + 150 >= self.attackpos.distance_to(self.combatpos):
+                if self.range >= self.attackpos.distance_to(self.combatpos):
                     self.state = 11
                     if self.battalion.state in [1, 3, 5]:
                         self.state = 12
@@ -564,7 +553,7 @@ class unitsquad(pygame.sprite.Sprite):
             """cannot be higher than max hp and max stamina"""
             if self.morale > self.maxmorale: self.morale = self.maxmorale
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
-            if self.troopnumber <= 0: ## dead state
+            if self.troopnumber <= 0: ## enter dead state
                 if self.leader != None and self.leader.state != 100:
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:
@@ -583,13 +572,10 @@ class unitsquad(pygame.sprite.Sprite):
                                 squad.leader.squadpos = index
                                 self.leader = None
                                 break
-
-
                 self.state = 100
-
-        else:
-            self.morale = 0
-            self.stamina = 0
+        # else:
+        #     self.morale = 0
+        #     self.stamina = 0
 
         self.unitcardvalue = [self.name, str(self.troopnumber) + " (" + str(self.maxtroop) + ")", int(self.stamina), int(self.morale),
                               int(self.discipline), int(self.attack), int(self.meleedef), int(self.rangedef), int(self.armour), int(self.speed),

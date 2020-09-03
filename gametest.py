@@ -89,6 +89,5 @@ import timeit
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-arr = np.array([[11, 19, 18], [14, 15, 11], [9, 21, 46], [29, 21, 59]])
-
-print(round(1.5))
+test = {'l':[]}
+print(len(test['l']))
