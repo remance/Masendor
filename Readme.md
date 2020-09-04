@@ -5,15 +5,13 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.7: battalion command (forced march,transfer leader?)
-
 2.8: commander, strategist and battalion surrender function 
 
 2.9: equipment quality, unit card stat for equipment, another base stat rework
 
 Ver 0.3: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
 
-Ver 0.4: More complex UI function (Event log, popup box), also weather effect and finalise melee combat engagement and collision, changable game speed
+Ver 0.4: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect and finalise melee combat engagement and collision, changable game speed
 
 Ver 0.5: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
@@ -31,6 +29,8 @@ Ver 1 - 1.5: Sound effect and ingame music (May need to use royalty free music s
 
 Ver 1.6: Siege battle
 
-Ver 1.7: Leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet)
+Ver 1.7: Leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
 
 Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ) 
+
+Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't be much used until game map become much larger than just a single battlefield)

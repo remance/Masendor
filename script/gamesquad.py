@@ -98,13 +98,10 @@ class unitsquad(pygame.sprite.Sprite):
         elif self.type in [3,4,5,6,7]: self.unittype = 2
         self.description = self.stat[33]
         # if self.hidden
-        self.attackelem = 0
-        self.firecount = 0
+        self.baseelemmelee = 0
+        self.baseelemrange = 0
+        self.elemcount = [0,0,0,0,0] ## Elemental threshold count in this order fire,water,air,earth,poison
         self.tempcount = 0
-        self.watercount = 0
-        self.aircount = 0
-        self.earthcount = 0
-        self.poisoncount = 0
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
@@ -141,7 +138,9 @@ class unitsquad(pygame.sprite.Sprite):
                 if trait[32] != [0]:
                     for effect in trait[32]:
                         self.baseinflictstatus[effect] = trait[1]
-            if 3 in self.trait: ##varied training
+                # self.baseelemmelee =
+                # self.baseelemrange =
+            if 3 in self.trait: ## Varied training
                 self.baseattack *= (random.randint(80, 120) / 100)
                 self.basemeleedef *= (random.randint(80, 120) / 100)
                 self.baserangedef *= (random.randint(80, 120) / 100)
@@ -154,7 +153,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.basechargedef *= (random.randint(80, 120) / 100)
                 self.basemorale += random.randint(-10, 10)
                 self.basediscipline += random.randint(-10, 10)
-            if 149 in self.trait: ##Impetuous
+            if 149 in self.trait: ## Impetuous
                 self.baseauthpenalty += 0.5
         # self.loyalty
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
@@ -171,6 +170,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.maxmorale = self.basemorale
         self.attack, self.meleedef, self.rangedef, self.armour, self.speed, self.accuracy, self.reload, self.morale, self.discipline, self.range, self.charge, self.chargedef \
             = self.baseattack, self.basemeleedef, self.baserangedef, self.basearmour, self.basespeed, self.baseaccuracy, self.basereload, self.basemorale, self.basediscipline, self.baserange, self.basecharge, self.basechargedef
+        self.elemmelee = self.baseelemmelee
+        self.elemrange = self.baseelemrange
         self.maxhealth, self.health75, self.health50, self.health25, = self.unithealth, round(self.unithealth * 75 / 100), round(
             self.unithealth * 50 / 100), round(self.unithealth * 25 / 100)
         self.maxtroop = self.troopnumber
@@ -289,12 +290,13 @@ class unitsquad(pygame.sprite.Sprite):
                     squad.statuseffect[id] = statuslist[id].copy()
 
     def thresholdcount(self,statuslist,elem,t1status,t2status):
-        if elem > 50 and elem < 100:
+        if elem > 50:
             self.statuseffect[t1status] = statuslist[t1status].copy()
             if elem > 100:
                 self.statuseffect[t2status] = statuslist[t2status].copy()
                 del self.statuseffect[t1status]
-                elem == 0
+                elem = 0
+        return elem
 
     def statusupdate(self, statuslist, dt):
         """calculate stat from stamina and morale state"""
@@ -323,6 +325,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.hpregen = self.basehpregen
         self.staminaregen = self.basestaminaregen
         self.inflictstatus = self.baseinflictstatus
+        self.elemmelee = self.baseelemmelee
+        self.elemrange = self.baseelemrange
         """apply status effect from trait"""
         if 0 not in self.trait:
             for trait in self.trait.values():
@@ -334,7 +338,11 @@ class unitsquad(pygame.sprite.Sprite):
 
         """apply effect from skill"""
         if len(self.skilleffect) > 0:
-            for status in self.skilleffect:
+            for status in self.skilleffect: ## apply elemental effect to dmg if skill has element
+                if self.skilleffect[status][1] == 0 and self.skilleffect[status][31] != 0:
+                    self.elemmelee = int(self.skilleffect[status][31])
+                elif self.skilleffect[status][1] == 1 and self.skilleffect[status][31] != 0:
+                    self.elemrange = int(self.skilleffect[status][31])
                 self.attack = round(self.attack * (self.skilleffect[status][10] / 100), 0)
                 self.meleedef = round(self.meleedef * (self.skilleffect[status][11] / 100), 0)
                 self.rangedef = round(self.rangedef * (self.skilleffect[status][12] / 100), 0)
@@ -373,11 +381,14 @@ class unitsquad(pygame.sprite.Sprite):
                 self.charging = True
                 self.authpenalty += 0.5
         """apply effect if elem attack reach 100 threshold"""
-        self.thresholdcount(statuslist, self.firecount, 28, 92)
-        self.thresholdcount(statuslist, self.watercount, 31, 93)
-        self.thresholdcount(statuslist, self.aircount, 30, 94)
-        self.thresholdcount(statuslist, self.earthcount, 23, 35)
-        self.thresholdcount(statuslist, self.poisoncount, 26, 27)
+        if self.elemcount != [0,0,0,0,0]:
+            self.elemcount[0] = self.thresholdcount(statuslist, self.elemcount[0], 28, 92)
+            self.elemcount[1] = self.thresholdcount(statuslist, self.elemcount[1], 31, 93)
+            self.elemcount[2] = self.thresholdcount(statuslist, self.elemcount[2], 30, 94)
+            self.elemcount[3] = self.thresholdcount(statuslist, self.elemcount[3], 23, 35)
+            self.elemcount[4] = self.thresholdcount(statuslist, self.elemcount[4], 26, 27)
+            for elem in self.elemcount:
+                if elem > 0: elem -= dt
         """temperature effect"""
         if self.tempcount > 50 and self.tempcount < 100:
             self.statuseffect[96] = statuslist[96].copy()
@@ -537,13 +548,24 @@ class unitsquad(pygame.sprite.Sprite):
                         dt * 7) if self.state in [2, 4, 6, 10, 96, 98, 99] and self.battalion.pause == False \
                 else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale: self.basemorale += dt
-            if self.unithealth < 0: self.unithealth = 0
-            if self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
             self.troopnumber = self.unithealth / self.troophealth
-            if round(self.troopnumber) < self.troopnumber:
+            if round(self.troopnumber) < self.troopnumber: ## calculate how many troop left based on current hp
                 self.troopnumber = round(self.troopnumber + 1)
             else:
                 self.troopnumber = round(self.troopnumber)
+            if self.unithealth % self.troophealth != 0 and self.hpregen > 0: ## hp regen cannot ressurect troop only heal to max hp
+                alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive unit
+                self.unithealth += self.hpregen * dt
+                if self.unithealth > alivehp: self.unithealth = alivehp
+            elif self.hpregen < 0: ## negative regen can kill
+                self.unithealth += self.hpregen * dt
+                self.troopnumber = self.unithealth / self.troophealth ## recal number of troop again in case some die from negative regen
+                if round(self.troopnumber) < self.troopnumber:
+                    self.troopnumber = round(self.troopnumber + 1)
+                else:
+                    self.troopnumber = round(self.troopnumber)
+            if self.unithealth < 0: self.unithealth = 0
+            if self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
             self.battleside = [-1, -1, -1, -1]
             if self.basemorale <= 0: self.basemorale = 0
             if self.stamina <= 0:

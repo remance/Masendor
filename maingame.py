@@ -491,8 +491,7 @@ class battle():
         if 34 in target.trait or 91 in target.statuseffect: targetpercent = 1
         dmgeffect = who.frontdmgeffect
         targetdmgeffect = target.frontdmgeffect
-        """if attack or defend from side will use discipline to help reduce penalty"""
-        if whoside != 0 and whopercent != 1:
+        if whoside != 0 and whopercent != 1: ## if attack or defend from side will use discipline to help reduce penalty a bit
             whopercent = self.battlesidecal[whoside] + (who.discipline / 300)
             dmgeffect = who.sidedmgeffect
             if whopercent > 1: whopercent = 1
@@ -509,6 +508,8 @@ class battle():
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
+        if target.elemrange not in [0, 5]:  ## apply element effect if atk has element
+            who.elemcount[target.elemrange-1] += round(targetdmg * (dmgeffect / 100)) / 100
         target.basemorale += round((targetmoraledmg * (dmgeffect / 100)/2))
         if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5: ## dmg on who leader
             who.leader.health -= targetleaderdmg
@@ -521,6 +522,8 @@ class battle():
                         squad.basemorale -= 20
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
+        if who.elemrange not in [0, 5]:  ## apply element effect if atk has element
+            target.elemcount[who.elemrange-1] += round(whodmg * (targetdmgeffect / 100)) / 100
         who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
         if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5: ## dmg on target leader
             target.leader.health -= wholeaderdmg
@@ -682,6 +685,10 @@ class battle():
         """remove battalion,hitbox when it dies"""
         self.deadarmynum[who.gameid] = self.deadindex
         self.deadindex += 1
+        if who.commander == True: ## more morale penalty if the battalion is a command battalion
+            for army in group:
+                for squad in army.squadsprite:
+                    squad.basemorale -= 30
         for hitbox in who.hitbox:
             rendergroup.remove(hitbox)
             hitboxgroup.remove(hitbox)

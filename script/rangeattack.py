@@ -91,6 +91,8 @@ class arrow(pygame.sprite.Sprite):
         whodmg, whomoraledmg,wholeaderdmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
+        if who.elemrange not in [0, 5]:  ## apply element effect if atk has element
+            target.elemcount[who.elemrange-1] += (whodmg / 100)
         if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
             target.leader.health -= wholeaderdmg
 
