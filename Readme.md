@@ -1,11 +1,13 @@
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until ver 0.5).
 
+For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw?view_as=subscriber
+
 Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.8: commander, strategist and battalion surrender function 
+2.8: battalion surrender and betrayal function 
 
 2.9: equipment quality, unit card stat for equipment, another base stat rework
 
@@ -29,7 +31,7 @@ Ver 1 - 1.5: Sound effect and ingame music (May need to use royalty free music s
 
 Ver 1.6: Siege battle
 
-Ver 1.7: Leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
+Ver 1.7: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
 
 Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ) 
 

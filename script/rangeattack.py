@@ -34,23 +34,25 @@ class arrow(pygame.sprite.Sprite):
         elif 74 in self.shooter.trait:
             hitchance = round((100 - self.accuracy * random.randint(1, 5)) / ((maxrange / range) * 2))
         howlong = range / (self.speed * 50)
-        targetnow = self.shooter.attacktarget.pos
-        if self.shooter.attacktarget.state in [1, 3, 5, 7] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
-            targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.allsidepos[0]
-            if targetmove.length() > 1:
-                targetmove.normalize_ip()
-                targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))
-                if 17 not in self.shooter.trait: hitchance += random.randint(-20,20)
-            else:
-                targetnow = self.shooter.attacktarget.pos
-        elif self.shooter.attacktarget.state in [2, 4, 6, 8, 96, 98, 99] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
-            targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.allsidepos[0]
-            if targetmove.length() > 1:
-                targetmove.normalize_ip()
-                targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))
-                if 17 not in self.shooter.trait: hitchance += random.randint(-20,20)
-            else:
-                targetnow = self.shooter.attacktarget.pos
+        targetnow = self.shooter.attackpos
+        if self.shooter.attacktarget != 0:
+            targetnow = self.shooter.attacktarget.pos
+            if self.shooter.attacktarget.state in [1, 3, 5, 7] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
+                targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.allsidepos[0]
+                if targetmove.length() > 1:
+                    targetmove.normalize_ip()
+                    targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))
+                    if 17 not in self.shooter.trait: hitchance += random.randint(-20,20)
+                else:
+                    targetnow = self.shooter.attacktarget.pos
+            elif self.shooter.attacktarget.state in [2, 4, 6, 8, 96, 98, 99] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
+                targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.allsidepos[0]
+                if targetmove.length() > 1:
+                    targetmove.normalize_ip()
+                    targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))
+                    if 17 not in self.shooter.trait: hitchance += random.randint(-20,20)
+                else:
+                    targetnow = self.shooter.attacktarget.pos
         if randomposition1 == 0:
             self.target = pygame.Vector2(targetnow[0] - hitchance, targetnow[1] - hitchance)
         else:

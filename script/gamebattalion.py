@@ -685,10 +685,10 @@ class unitarmy(pygame.sprite.Sprite):
                 shootrange = self.maxrange
                 if self.useminrange == 0:
                     shootrange = self.minrange
-                if self.state in [5, 6] and self.pos.distance_to(self.attacktarget.pos) <= shootrange:
+                if self.state in [5, 6] and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(self.attackpos) <= shootrange):
                     self.target = self.allsidepos[0]
                     self.rangecombatcheck = 1
-                elif self.state == 11 and self.pos.distance_to(self.attacktarget.pos) > shootrange and self.hold == 0: ## chase target if it go out of range and hold condition not hold
+                elif self.state == 11 and self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) > shootrange and self.hold == 0: ## chase target if it go out of range and hold condition not hold
                     self.state = 6
                     self.rangecombatcheck = 0
                     self.target = pygame.Vector2(self.attacktarget.pos[0], self.attacktarget.pos[1])
@@ -815,13 +815,16 @@ class unitarmy(pygame.sprite.Sprite):
                         self.forcedmelee = False
                         self.attacktarget = 0
                         self.attackpos = 0
-                        if whomouseover != 0:
+                        if keystate[pygame.K_LALT] == True or (whomouseover != 0 and ((self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
                             if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
                                 self.state = 3
                             elif self.ammo > 0:  ##Move to range attack
                                 self.state = 5
-                            self.attacktarget = whomouseover
-                            self.attackpos = whomouseover.pos
+                            if keystate[pygame.K_LALT] == True:
+                                self.attackpos = pygame.Vector2(mouse_pos[0],mouse_pos[1])
+                            else:
+                                self.attacktarget = whomouseover
+                                self.attackpos = whomouseover.pos
                         if double_mouse_right:
                             self.state += 1
                         self.rangecombatcheck = 0
@@ -837,14 +840,17 @@ class unitarmy(pygame.sprite.Sprite):
                     self.rotateonly = False
                     self.forcedmelee = False
                     self.attacktarget = 0
-                    if whomouseover != 0:
+                    if keystate[pygame.K_LALT] == True or (whomouseover != 0 and ((self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
                         if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
                             self.forcedmelee = True
                             self.state = 3
                         elif self.ammo > 0:
                             self.state = 5
-                        self.attacktarget = whomouseover
-                        self.attackpos = whomouseover.pos
+                        if keystate[pygame.K_LALT] == True:
+                            self.attackpos = mouse_pos
+                        else:
+                            self.attacktarget = whomouseover
+                            self.attackpos = whomouseover.pos
                     if double_mouse_right:
                         self.state += 1
                     self.rangecombatcheck = 0

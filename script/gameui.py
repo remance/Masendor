@@ -88,7 +88,7 @@ class Gameui(pygame.sprite.Sprite):
             self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]]
             self.lastauth = 0
         elif self.uitype == "unitcard":
-            self.fonthead = pygame.font.SysFont("helvetica", textsize + 2)
+            self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
         #     self.iconimagerect = self.icon[0].get_rect(

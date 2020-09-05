@@ -559,7 +559,6 @@ class battle():
             who.pos = who.allsidepos[0] - ((who.allsidepos[0] - who.pos)/2)
         else: ## split by column
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
-            # newsquadalive = np.array_split(who.squadalive, 2, axis=1)[1]
             who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
             who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
             newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.pos)/2)
@@ -681,6 +680,24 @@ class battle():
         army.makeallsidepos()
         army.autosquadplace = False
 
+    def changeside(self,who):
+        """Change army group and gameid when change side"""
+        ## start making new battalion
+        if who.gameid < 2000:
+            newgameid = self.enemyarmy[-1].gameid + 1
+            who.colour = (255, 114, 114)
+            self.playerarmy.remove(who)
+            self.enemyarmy.append(who)
+            if self.enactment == False:
+                who.control = False
+            self.playerarmynum.pop(who.gameid)
+            self.playerposlist.pop(who.gameid)
+            who.gameid = newgameid
+            self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
+            who.recreatesprite()
+        else:
+            colour = (144, 167, 255)
+
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         """remove battalion,hitbox when it dies"""
         self.deadarmynum[who.gameid] = self.deadindex
@@ -757,6 +774,8 @@ class battle():
                     elif event.key == pygame.K_s and self.lastselected != 0:
                         whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
                                          self.lastselected, self.lastmouseover, self.enemyposlist, keystate, othercommand = 1)
+                    elif event.key == pygame.K_q and self.lastselected != 0:
+                        self.changeside(whoinput)
                     else: keypress = event.key
                 # if keystate[K_s]:
                 #     scroll_view(screen, background, DIR_DOWN, view_rect)
@@ -925,7 +944,7 @@ class battle():
                         self.all.remove(*self.leadernow)
                         self.leadernow = whoinput.leader
                         self.all.add(*self.leadernow)
-                elif self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True: ## decimation effect
+                elif self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True and whoinput.state == 0: ## decimation effect
                     for squad in whoinput.squadsprite:
                         squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
                         squad.unithealth -= round(squad.unithealth*0.1)
@@ -1021,13 +1040,13 @@ class battle():
                                     else:
                                         self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
                                                     self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
-                        if thissquad.state in [11,12,13] and thissquad.attacktarget != 0:
-                            if type(thissquad.attacktarget) == int: thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
-                            if thissquad.reloadtime >= thissquad.reload and thissquad.attacktarget.state != 100:
-                                rangeattack.arrow(thissquad, thissquad.attackpos.distance_to(thissquad.combatpos), thissquad.range)
+                        if thissquad.state in [11,12,13]:
+                            if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0: thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                            if thissquad.reloadtime >= thissquad.reload and (thissquad.attacktarget == 0 or (thissquad.attacktarget != 0  and thissquad.attacktarget.state != 100)):
+                                rangeattack.arrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range)
                                 thissquad.ammo -= 1
                                 thissquad.reloadtime = 0
-                            elif thissquad.attacktarget.state == 100:
+                            elif thissquad.attacktarget != 0  and thissquad.attacktarget.state == 100:
                                 thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
                         self.combattimer = 0
                 self.combattimer += self.dt

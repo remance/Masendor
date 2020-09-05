@@ -529,18 +529,20 @@ class unitsquad(pygame.sprite.Sprite):
                     self.state = 11
             if self.battalion.state == 11:
                 self.state = 0
-                if self.ammo > 0 and self.range >= self.attackpos.distance_to(self.combatpos):
+                if self.ammo > 0 and self.range >= self.combatpos.distance_to(self.attackpos):
+                    # and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(
+                    #     self.attackpos) <= shootrange)
                     self.state = 11
             elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in [1,2,3,4,5,6] and 18 in self.trait)) and self.ammo > 0:
-                if self.attacktarget == 0: ## get near target if no attack target yet
+                if self.attacktarget == 0 and len(self.battalion.neartarget) > 0: ## get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
-                if self.range >= self.attackpos.distance_to(self.combatpos):
-                    self.state = 11
-                    if self.battalion.state in [1, 3, 5]:
-                        self.state = 12
-                    elif self.battalion.state in [2, 4, 6]:
-                        self.state = 13
+                    if self.range >= self.attackpos.distance_to(self.combatpos):
+                        self.state = 11
+                        if self.battalion.state in [1, 3, 5]: ## Walk and shoot
+                            self.state = 12
+                        elif self.battalion.state in [2, 4, 6]: ## Run and shoot
+                            self.state = 13
             if self.state in [11,12,13] and self.reloadtime < self.reload:
                 self.reloadtime += dt
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
