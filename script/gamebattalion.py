@@ -217,6 +217,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.charging = False
         self.forcedmelee = False
         self.forcedmarch = False
+        self.changefaction = False
         self.hold = 0 ## 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fireatwill = 0 ## 0 = fire at will, 1 = no fire
         self.retreatstart = 0
@@ -628,16 +629,23 @@ class unitarmy(pygame.sprite.Sprite):
                     self.state = 10
             if self.rangecombatcheck == 1: self.state = 11
             self.mask = pygame.mask.from_surface(self.image)
-            """retreat state"""
-            if round(self.morale) <= 20:
+            if round(self.morale) <= 20: ## Retreat state
                 self.state = 98
                 if self.retreatstart == 0:
                     self.retreatstart = 1
-                """broken state"""
-                if self.morale <= 0:
+                if self.morale <= 0: ## Broken state
                     self.morale, self.state = 0, 99
                     if self.retreatstart == 0:
                         self.retreatstart = 1
+                sidecheck = [hitbox.collide for hitbox in self.hitbox]
+                if False not in sidecheck:
+                    self.state = 10
+                    self.retreatstart = 0
+                    for squad in self.squadsprite:
+                        if 9 not in squad.statuseffect:
+                            squad.statuseffect[9] = self.gameunitstat.statuslist[9].copy()
+                    if random.randint(0,100) > 99: self.changefaction = True
+
             """only start retreating when ready"""
             if self.retreattimer > 0:
                 self.retreattimer += dt
@@ -800,11 +808,11 @@ class unitarmy(pygame.sprite.Sprite):
         if instant == True:
             self.rotate()
 
-    def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, wholastselect, whomouseover, enemyposlist, keystate, othercommand=0):
+    def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
         self.rect = self.rect.clamp(SCREENRECT)
         # self.image = self.images[2] 100))
-        if wholastselect == self.gameid and self.control == True and self.state not in [100]:
+        if self.control == True and self.state not in [100]:
             """check if right click in mask or not. if not, move unit"""
             posmask = mouse_pos[0] - self.rect.x, mouse_pos[1] - self.rect.y
             if mouse_right and self.state not in [10, 97, 98, 99, 100]:

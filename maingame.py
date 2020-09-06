@@ -1,8 +1,5 @@
 """
-FIx
-add chase in 2.7 change stance
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
-maybe add state change based on previous command (unit resume attacking if move to attack but get caught in combat with another unit)
 Optimise list
 remove index and change call to the sprite itself
 """
@@ -86,7 +83,7 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
     playercolour = (144, 167, 255)
     enemycolour = (255, 114, 114)
     """army num is list index for battalion in either player or enemy group"""
-    playerarmynum, enemyarmynum, playerstart, enemystart = {}, {}, 0, 0
+    playerstart, enemystart = 0, 0
     """squadindex is list index for all squad group"""
     squadindex = 0
     """firstsquad check if it the first ever in group"""
@@ -109,7 +106,6 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    playercolour, (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, True, coa[row[12]], startangle = row[13])
                 playerarmy.append(army)
-                playerarmynum[row[0]] = playerstart
                 playerstart += 1
             elif row[0] >= 2000:
                 if row[0] == 2000:
@@ -122,7 +118,6 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                                    enemycolour,
                                    (imagewidth, imageheight), row[10]+row[11], allleader, gameunitstat, enactment, coa[row[12]], startangle = row[13])
                 enemyarmy.append(army)
-                enemyarmynum[row[0]] = enemystart
                 enemystart += 1
             """armysquadindex is list index for squad list in a specific army"""
             armysquadindex = 0
@@ -139,7 +134,7 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                     squadindex += 1
                 armysquadindex += 1
     unitfile.close()
-    return playerarmynum, enemyarmynum, squadindexlist
+    return squadindexlist
 
 
 class battle():
@@ -314,14 +309,13 @@ class battle():
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
                                                                                 self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
-        self.playerarmynum, self.enemyarmynum, self.squadindexlist = unitsetup(self.playerarmy, self.enemyarmy, '\\test',
+        self.squadindexlist = unitsetup(self.playerarmy, self.enemyarmy, '\\test',
                                                                                self.imagewidth, self.imageheight, self.allweapon, self.allleader,
                                                                                self.gameunitstat, self.coa, self.squad,
                                                                                self.inspectuipos, enactment=self.enactment)
         self.allunitlist = self.playerarmy.copy()
         self.allunitlist = self.allunitlist + self.enemyarmy
         self.allunitindex = [army.gameid for army in self.allunitlist]
-        self.deadarmynum = {}
         self.deadindex = 0
         self.playerposlist = {}
         self.enemyposlist = {}
@@ -640,7 +634,6 @@ class battle():
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
                                           colour=colour, control=playercommand, coa=coa, commander=False)
             self.playerarmy.append(army)
-            self.playerarmynum[newgameid] = list(self.playerarmynum.items())[-1][1] + 1
         else:
             playercommand = self.enactment
             newgameid = self.enemyarmy[-1].gameid + 1
@@ -649,7 +642,6 @@ class battle():
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
                                           colour=colour, control=playercommand, coa=coa, commander=False, startangle = who.angle)
             self.enemyarmy.append(army)
-            self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
         army.leader = newleader
         army.squadsprite = newsquadsprite
         for squad in army.squadsprite:
@@ -680,27 +672,38 @@ class battle():
         army.makeallsidepos()
         army.autosquadplace = False
 
-    def changeside(self,who):
+    def changefaction(self,who):
         """Change army group and gameid when change side"""
-        ## start making new battalion
+        oldgroup = self.enemyarmy
+        newgroup = self.playerarmy
+        oldposlist = self.enemyposlist
+        who.colour = (144, 167, 255)
+        who.control = True
+        # if who.gameid < 2000:
+        #     newgameid = self.enemyarmy[-1].gameid + 1
+        #     self.playerarmy.remove(who)
+        #     self.enemyarmy.append(who)
+        #     self.playerarmynum.pop(who.gameid)
+        #     self.playerposlist.pop(who.gameid)
+        #     who.gameid = newgameid
+        #     self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
         if who.gameid < 2000:
-            newgameid = self.enemyarmy[-1].gameid + 1
+            oldgroup = self.playerarmy
+            newgroup = self.enemyarmy
+            oldposlist = self.playerposlist
             who.colour = (255, 114, 114)
-            self.playerarmy.remove(who)
-            self.enemyarmy.append(who)
             if self.enactment == False:
                 who.control = False
-            self.playerarmynum.pop(who.gameid)
-            self.playerposlist.pop(who.gameid)
-            who.gameid = newgameid
-            self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
-            who.recreatesprite()
-        else:
-            colour = (144, 167, 255)
+        newgameid = newgroup[-1].gameid + 1
+        oldgroup.remove(who)
+        newgroup.append(who)
+        oldposlist.pop(who.gameid)
+        self.allunitindex = [newgameid if index == who.gameid else index for index in self.allunitindex]
+        who.gameid = newgameid
+        who.recreatesprite()
 
     def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
         """remove battalion,hitbox when it dies"""
-        self.deadarmynum[who.gameid] = self.deadindex
         self.deadindex += 1
         if who.commander == True: ## more morale penalty if the battalion is a command battalion
             for army in group:
@@ -775,7 +778,7 @@ class battle():
                         whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
                                          self.lastselected, self.lastmouseover, self.enemyposlist, keystate, othercommand = 1)
                     elif event.key == pygame.K_q and self.lastselected != 0:
-                        self.changeside(whoinput)
+                        self.changefaction(whoinput)
                     else: keypress = event.key
                 # if keystate[K_s]:
                 #     scroll_view(screen, background, DIR_DOWN, view_rect)
@@ -822,12 +825,15 @@ class battle():
                             army.mouse_over = True
                             self.lastmouseover = army
                             if mouse_up and self.uicheck == 0:
-                                self.lastselected = army.gameid
+                                self.lastselected = army
                                 self.check = 1
                     except:
                         army.mouse_over = False
                 else:
                     army.mouse_over = False
+                if army.changefaction == True: ## change side via surrender or betrayal
+                    self.changefaction(army)
+                    army.changefaction = False
                 if army.state == 100 and army.gotkilled == 0:
                     if army.gameid < 2000:
                         self.die(army, self.playerarmy, self.deadunit, self.all, self.hitboxs)
@@ -843,21 +849,15 @@ class battle():
                         for thisarmy in self.enemyarmy: ## morale dmg to every squad in army when allied battalion destroyed
                             for squad in thisarmy.squadsprite:
                                 squad.basemorale -= 20
-            if self.lastselected != 0:
-                if self.lastselected < 2000:
-                    """if not found in army class then it is in dead class"""
-                    try:
-                        whoinput = self.playerarmy[self.playerarmynum[self.lastselected]]
-                    except:
-                        lastselected = 0  # whoinput = self.deadunit[self.deadarmynum[self.lastselected]]
-                else:
-                    try:
-                        whoinput = self.enemyarmy[self.enemyarmynum[self.lastselected]]
-                    except:
-                        lastselected = 0  # whoinput = self.deadunit[self.deadarmynum[self.lastselected]]
+            if self.lastselected != 0 and self.lastselected.state != 100:
+                """if not found in army class then it is in dead class"""
+                try:
+                    whoinput = self.lastselected
+                except:
+                    lastselected = 0  # whoinput = self.deadunit[self.deadarmynum[self.lastselected]]
                 if mouse_up or mouse_right:
                     whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
-                                     self.lastselected, self.lastmouseover, self.enemyposlist, keystate)
+                                     self.lastmouseover, self.enemyposlist, keystate)
                     if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.directionarrow == False:
                         gamebattalion.directionarrow(whoinput)
                 if self.beforeselected == 0: ## add back the pop up ui to group so it get shown when click unit with none selected before
@@ -1041,7 +1041,8 @@ class battle():
                                         self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
                                                     self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
                         if thissquad.state in [11,12,13]:
-                            if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0: thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                            if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
+                                thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                             if thissquad.reloadtime >= thissquad.reload and (thissquad.attacktarget == 0 or (thissquad.attacktarget != 0  and thissquad.attacktarget.state != 100)):
                                 rangeattack.arrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range)
                                 thissquad.ammo -= 1

@@ -89,5 +89,10 @@ import timeit
 #     else: 0
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-test = {'l':[]}
-print(len(test['l']))
+d = {9: 10, "key2": 23}
+
+if 9 in d:
+    print("this will execute")
+
+if "nonexistent key" in d:
+    print("this will not")

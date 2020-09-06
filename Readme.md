@@ -1,7 +1,7 @@
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until ver 0.5).
 
-For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw?view_as=subscriber
+For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 Plan
 
@@ -19,7 +19,7 @@ Ver 0.5: Optimise for larger battle (Also proper code documentation + structure)
 
 Ver 0.6: Battle selection, preparation and result screen, custom battle
 
-Ver 0.7 Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag and recon command, ambush bonus
+Ver 0.7 Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus
 
 Ver 0.8: In game art and better looking UI (All hand (and mouse) drawn except for historical image)
 
@@ -32,6 +32,8 @@ Ver 1 - 1.5: Sound effect and ingame music (May need to use royalty free music s
 Ver 1.6: Siege battle
 
 Ver 1.7: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
+
+ver 1.8: leader rapport and affect on authority and control mechanic including surrender and betrayal 
 
 Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ) 
 
