@@ -91,6 +91,10 @@ class Gameui(pygame.sprite.Sprite):
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
+            self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
+                    "Melee Defence: ", 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
+                    "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
+            self.qualitytext = ["Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect"]
         #     self.iconimagerect = self.icon[0].get_rect(
         #         center=(
         #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))
@@ -113,7 +117,7 @@ class Gameui(pygame.sprite.Sprite):
             x = pos[0]  ## reset x
             y += word_height  ## start on new row
 
-    def valueinput(self, who, leader="", button="", changeoption=0, gameunitstat="", splithappen = False):
+    def valueinput(self, who, weaponlist="", armourlist="", leader="", button="", changeoption=0, gameunitstat="", splithappen = False):
         for thisbutton in button:
             thisbutton.draw(self.image)
         position = 65
@@ -147,7 +151,6 @@ class Gameui(pygame.sprite.Sprite):
                 usecolour = self.white
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
-
                 if who.gameid >= 2000:
                     usecolour = self.black
                 if who.commander == True:
@@ -189,112 +192,106 @@ class Gameui(pygame.sprite.Sprite):
         elif self.uitype == "unitcard":
             position = 15
             positionx = 45
-            self.value = who.unitcardvalue
-            self.value2 = who.unitcardvalue2
+            self.value = [who.name, str(who.troopnumber) + " (" + str(who.maxtroop) + ")", int(who.stamina), int(who.morale),
+                int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),int(who.accuracy),
+                int(who.range), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef, who.description]
+            self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
             self.description = self.value[-1]
             if type(self.description) == list: self.description = self.description[0]
-            ## options = {2: "Skirmish is a light infantry that served as harassment or flanking unit. They can move fast and often carry range weapon. They can be good in melee combat but their lack of heavy armour mean that they cannot withstand more overwhelming force.",
-            ##            5: "Support is unit that can be essential in drawn out war. They can offer spiritual help to the other squad in the battalion, perform first aids or post battle surgery. In other words, support unit help other unit fight and survive better in this hell that people often refer as field of glory.",
-            ## 10:"This is command unit for this battalion. Do not let them get destroyed or your battalion will receive huge penalty to morale and all other undesirable status penalty. However putting this unit on frontline will also provide large bonus to the entire battalion, so use consider this option carefully."}
-            text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", 'Melee Attack: ',
-                    'Melee Defence: ', 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                    "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
-            """Stat card"""
-            if self.option == 1 and (self.value != self.lastvalue or changeoption == 1):
+            if self.value != self.lastvalue or changeoption == 1 or who.gameid != self.lastwho:
                 self.image = self.image_original.copy()
                 row = 0
-                # self.iconimagerect = self.icon[0].get_rect(
-                #     center=(
-                #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
-                # deletelist = [i for i,x in enumerate(self.value) if x == 0]
-                # if len(deletelist) != 0:
-                #     for i in sorted(deletelist, reverse = True):
-                #         self.value.pop(i)
-                #         text.pop(i)
-                self.value, text = self.value[0:-1], text[1:]
+                self.name = self.value[0]
                 leadertext = ""
                 if who.leader != None:
                     leadertext = "/" + str(who.leader.name)
                     if who.leader.state == 100: leadertext += " (Dead)"
-                self.textsurface = self.fonthead.render(self.value[0]+leadertext, 1, (0, 0, 0))
+                self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0)) ##unit and leader name at the top
                 self.textrect = self.textsurface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                 self.image.blit(self.textsurface, self.textrect)
-                position += 20
                 row += 1
-                for n, value in enumerate(self.value[1:]):
-                    self.textsurface = self.font.render(text[n] + str(value), 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    position += 20
-                    row += 1
-                    if row == 9: positionx, position = 200, 35
-            elif self.option == 0 and (who.gameid != self.lastwho or changeoption == 1): ## description card
-                self.image = self.image_original.copy()
-                # self.iconimagerect = self.icon[0].get_rect(
-                #     center=(
-                #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
-                # self.image.blit(self.icon[0], self.iconimagerect)
-                self.textsurface = self.fonthead.render(self.value[0], 1, (0, 0, 0))
-                self.textrect = self.textsurface.get_rect(
-                    midleft=(self.image.get_rect()[0] + 42, self.image.get_rect()[1] + position))
-                self.image.blit(self.textsurface, self.textrect)
-                self.blit_text(self.image, self.description, (42, 25), self.fontlong)
-            elif self.option == 2 and (self.value2 != self.lastvalue2 or changeoption == 1): ## unit card
-                self.image = self.image_original.copy()
-                self.textsurface = self.fonthead.render(self.value[0], 1, (0, 0, 0)) ##unit name at the top
-                self.textrect = self.textsurface.get_rect(
-                    midleft=(self.image.get_rect()[0] + 42, self.image.get_rect()[1] + position))
-                self.image.blit(self.textsurface, self.textrect)
                 position += 20
-                position2 = positionx + 20
-                for trait in self.value2[0]: ## property list
-                    # if trait in self.value2[2] : cd = int(self.value2[2][trait])
-                    # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
-                    if trait != 0:
-                        self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
+                if self.option == 1: ## Stat card
+                    # self.iconimagerect = self.icon[0].get_rect(
+                    #     center=(
+                    #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
+                    # deletelist = [i for i,x in enumerate(self.value) if x == 0]
+                    # if len(deletelist) != 0:
+                    #     for i in sorted(deletelist, reverse = True):
+                    #         self.value.pop(i)
+                    #         text.pop(i)
+                    self.value, text = self.value[0:-1], self.fronttext[1:]
+                    for n, value in enumerate(self.value[1:]):
+                        self.textsurface = self.font.render(text[n] + str(value), 1, (0, 0, 0))
+                        self.textrect = self.textsurface.get_rect(
+                            midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
+                        self.image.blit(self.textsurface, self.textrect)
+                        position += 20
+                        row += 1
+                        if row == 9: positionx, position = 200, 35
+                elif self.option == 0: ## description card
+                    self.blit_text(self.image, self.description, (42, 25), self.fontlong)
+                elif self.option == 2: ## unit card
+                    position2 = positionx + 20
+                    for trait in self.value2[0]: ## property list
+                        # if trait in self.value2[2] : cd = int(self.value2[2][trait])
+                        # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
+                        if trait != 0:
+                            self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
+                            self.textrect = self.textsurface.get_rect(
+                                midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                            self.image.blit(self.textsurface, self.textrect)
+                            position += 20
+                    for skill in self.value2[1]: ## skill cooldown
+                        if skill in self.value2[2]:
+                            cd = int(self.value2[2][skill])
+                        else:
+                            cd = 0
+                        self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
+                        # position2 += 25
+                        # if position2 >= 90:
+                        #     position2 = positionx + 20
                         position += 20
-                for skill in self.value2[1]: ## skill cooldown
-                    if skill in self.value2[2]:
-                        cd = int(self.value2[2][skill])
-                    else:
-                        cd = 0
-                    self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    # position2 += 25
-                    # if position2 >= 90:
-                    #     position2 = positionx + 20
-                    position += 20
-                # position += 20
-                position2 = positionx + 20
-                for status in self.value2[3]: ## skill effect list
-                    self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    # position2 += 25
-                    # if position2 >= 90:
-                    #     position2 = positionx + 20
-                    position += 20
-                # position += 20
-                position2 = positionx + 20
-                for status in self.value2[4]: ## status list
-                    self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
-                        midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    self.image.blit(self.textsurface, self.textrect)
-                    # position2 += 25
-                    # if position2 >= 90:
-                    #     position2 = positionx + 20
-                    position += 20
-            self.lastvalue = self.value
-            self.lastvalue2 != self.value2
+                    # position += 20
+                    position2 = positionx + 20
+                    for status in self.value2[3]: ## skill effect list
+                        self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
+                        self.textrect = self.textsurface.get_rect(
+                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                        self.image.blit(self.textsurface, self.textrect)
+                        # position2 += 25
+                        # if position2 >= 90:
+                        #     position2 = positionx + 20
+                        position += 20
+                    # position += 20
+                    position2 = positionx + 20
+                    for status in self.value2[4]: ## status list
+                        self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
+                        self.textrect = self.textsurface.get_rect(
+                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                        self.image.blit(self.textsurface, self.textrect)
+                        # position2 += 25
+                        # if position2 >= 90:
+                        #     position2 = positionx + 20
+                        position += 20
+                elif self.option == 3: ## equipment guard
+                    textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][3]),
+                                 self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
+                                 "Total Weight:" + str(who.weight)]
+                    if who.rangeweapon[0] != 0:
+                        textvalue.insert(1, self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
+                    for text in textvalue:
+                        self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
+                        self.textrect = self.textsurface.get_rect(
+                            midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
+                        self.image.blit(self.textsurface, self.textrect)
+                        position += 20
+                self.lastvalue = self.value
+                self.lastvalue2 != self.value2
         self.lastwho = who.gameid
 
 

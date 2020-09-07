@@ -7,15 +7,13 @@ Plan
 
 Ver 0.2: Expand core mechanic to increase unit complexity
 
-2.8: battalion surrender and betrayal function 
-
 2.9: equipment quality, unit card stat for equipment, another base stat rework
 
-Ver 0.3: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
+Ver 0.3 The World at Hand: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
 
-Ver 0.4: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect and finalise melee combat engagement and collision, changable game speed
+Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect and finalise melee combat engagement and collision, changable game speed
 
-Ver 0.5: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
+Ver 0.5 : Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
 Ver 0.6: Battle selection, preparation and result screen, custom battle
 
@@ -29,12 +27,12 @@ Ver 1 Pax Paradisum: historical battle simulation game
 
 Ver 1 - 1.5: Sound effect and ingame music (May need to use royalty free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battle
 
-Ver 1.6: Siege battle
+Ver 1.6: Siege battle, more complex unit equipment (main hand/off hand, item)
 
 Ver 1.7: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
 
 ver 1.8: leader rapport and affect on authority and control mechanic including surrender and betrayal 
 
-Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ) 
+Ver 1.9: Deployable Defence (Stakes, Barrier, Camp, Wagon, ), dynamic squad facing position and maybe "saved" formation that player can rotate in battle 
 
 Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't be much used until game map become much larger than just a single battlefield)

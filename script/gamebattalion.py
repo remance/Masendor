@@ -24,6 +24,7 @@ def rotationxy(origin, point, angle):
 
 class weaponstat():
     def __init__(self, img):
+        """Armour has dmg. penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weaponlist = {}
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
@@ -34,7 +35,22 @@ class weaponstat():
                         row[n] = int(i)
                 self.weaponlist[row[0]] = row[1:]
         unitfile.close()
+        self.quality = [25, 50, 75, 100, 125, 150, 175]
 
+class armourstat():
+    def __init__(self, img):
+        """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
+        self.imgs = img
+        self.armourlist = {}
+        with open(main_dir + "\data\war" + '\\unit_armour.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                self.armourlist[row[0]] = row[1:]
+        unitfile.close()
+        self.quality = [25,50,75,100,125,150,175]
 
 class unitstat():
     def __init__(self, statusicon, abilityicon, traiticon, roleicon):
@@ -637,15 +653,16 @@ class unitarmy(pygame.sprite.Sprite):
                     self.morale, self.state = 0, 99
                     if self.retreatstart == 0:
                         self.retreatstart = 1
-                sidecheck = [hitbox.collide for hitbox in self.hitbox]
-                if False not in sidecheck:
+                if 0 not in self.battleside:
                     self.state = 10
                     self.retreatstart = 0
                     for squad in self.squadsprite:
                         if 9 not in squad.statuseffect:
                             squad.statuseffect[9] = self.gameunitstat.statuslist[9].copy()
                     if random.randint(0,100) > 99: self.changefaction = True
-
+            if self.state == 10 and self.battleside == [0,0,0,0] and (self.attacktarget == 0 or (self.attacktarget != 0 and self.attacktarget.state == 100)):
+                self.state = 0
+                self.attacktarget = 0
             """only start retreating when ready"""
             if self.retreattimer > 0:
                 self.retreattimer += dt

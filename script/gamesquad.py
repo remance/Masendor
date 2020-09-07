@@ -30,7 +30,7 @@ class selectedborder(pygame.sprite.Sprite):
 class unitsquad(pygame.sprite.Sprite):
     images = []
 
-    def __init__(self, unitid, gameid, weaponlist, statlist, battalion, position, inspectuipos):
+    def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
         # super().__init__()
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -55,7 +55,7 @@ class unitsquad(pygame.sprite.Sprite):
                     for n, i in enumerate(self.stat):
                         if i.isdigit():
                             self.stat[n] = int(i)
-                        if n in [5, 6]:
+                        if n in [5, 6, 11, 22, 23]:
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -72,8 +72,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.baseattack = round(self.stat[8] + int(statlist.gradelist[self.grade][1]), 0)
         self.basemeleedef = round(self.stat[9] + int(statlist.gradelist[self.grade][2]), 0)
         self.baserangedef = round(self.stat[10] + int(statlist.gradelist[self.grade][2]), 0)
-        self.basearmour = self.stat[11]
-        self.basespeed = round(self.stat[12] + int(statlist.gradelist[self.grade][3]), 0)
+        self.armourgear = self.stat[11]
+        self.basearmour = armourlist.armourlist[self.stat[11][0]][1] * (armourlist.quality[self.stat[11][1]]/100) ## Armour stat is cal from based armour * quality
         self.baseaccuracy = self.stat[13]
         self.baserange = self.stat[14] * 20
         self.ammo = self.stat[15]
@@ -94,6 +94,10 @@ class unitsquad(pygame.sprite.Sprite):
         self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
+        self.basespeed = 50
+        if self.type in [4,5,6,7]: self.speed = 80
+        self.weight = weaponlist.weaponlist[self.stat[22][0]][3] + weaponlist.weaponlist[self.stat[23][0]][3] + armourlist.armourlist[self.stat[11][0]][2]
+        self.basespeed = round((self.basespeed * ((100-self.weight)/100)) + int(statlist.gradelist[self.grade][3]), 0)
         if self.type in [1,2]: self.unittype = self.type-1
         elif self.type in [3,4,5,6,7]: self.unittype = 2
         self.description = self.stat[33]
@@ -161,7 +165,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.role = []
         if self.basearmour > 60 and self.basemeleedef > 60: self.role.append(2)
         if self.baseattack > 60: self.role.append(1)
-        if self.basespeed > 80 and self.basearmour < 30: self.role.append(3)
+        if self.basespeed > 40 and self.basearmour < 30: self.role.append(3)
         if self.basecharge > 70: self.role.append(4)
         self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
             self.stamina * 50 / 100), round(self.stamina * 25 / 100)
@@ -197,10 +201,12 @@ class unitsquad(pygame.sprite.Sprite):
         self.image.blit(self.staminaimage, self.staminaimagerect)
         """weapon class in circle"""
         image1 = weaponlist.imgs[weaponlist.weaponlist[self.unitclass][4]]
-        self.dmg = weaponlist.weaponlist[self.meleeweapon][1]
-        self.penetrate = weaponlist.weaponlist[self.meleeweapon][2]
-        self.rangedmg = weaponlist.weaponlist[self.rangeweapon][1]
-        self.rangepenetrate = weaponlist.weaponlist[self.rangeweapon][2]
+        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * (weaponlist.quality[self.meleeweapon[1]]/100)
+        self.penetrate = weaponlist.weaponlist[self.meleeweapon[0]][2] * (weaponlist.quality[self.meleeweapon[1]]/100)
+        if self.penetrate > 100: self.penetrate == 100
+        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * (weaponlist.quality[self.rangeweapon[1]]/100)
+        self.rangepenetrate = weaponlist.weaponlist[self.rangeweapon[0]][2] * (weaponlist.quality[self.rangeweapon[1]]/100)
+        if self.rangepenetrate > 100: self.rangepenetrate == 100
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
@@ -534,7 +540,7 @@ class unitsquad(pygame.sprite.Sprite):
                     #     self.attackpos) <= shootrange)
                     self.state = 11
             elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in [1,2,3,4,5,6] and 18 in self.trait)) and self.ammo > 0:
-                if self.attacktarget == 0 and len(self.battalion.neartarget) > 0: ## get near target if no attack target yet
+                if self.attacktarget == 0 and self.battalion.neartarget != 0 and len(self.battalion.neartarget) > 0: ## get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
                     if self.range >= self.attackpos.distance_to(self.combatpos):
@@ -600,13 +606,6 @@ class unitsquad(pygame.sprite.Sprite):
         # else:
         #     self.morale = 0
         #     self.stamina = 0
-
-        self.unitcardvalue = [self.name, str(self.troopnumber) + " (" + str(self.maxtroop) + ")", int(self.stamina), int(self.morale),
-                              int(self.discipline), int(self.attack), int(self.meleedef), int(self.rangedef), int(self.armour), int(self.speed),
-                              int(self.accuracy),
-                              int(self.range), self.ammo, str(int(self.reloadtime)) + " (" + str(self.reload) + ")", self.charge, self.chargedef,
-                              self.description]
-        self.unitcardvalue2 = [self.trait, self.skill, self.skillcooldown, self.skilleffect, self.statuseffect]
 
     def rotate(self):
         self.image = pygame.transform.rotate(self.image_original, self.angle)
