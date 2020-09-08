@@ -9,6 +9,7 @@ main_dir = mainmenu.main_dir
 
 class map(pygame.sprite.Sprite):
     def __init__(self,x,y,image):
+        """Scrollable and zoomable map"""
         self.image = image
         MAP_WIDTH = self.image.get_width()
         MAP_HEIGHT = self.image.get_height()
