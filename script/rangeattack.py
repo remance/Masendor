@@ -14,7 +14,7 @@ class arrow(pygame.sprite.Sprite):
     images = []
 
     def __init__(self, shooter, range, maxrange):
-        self._layer = 4
+        self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
         self.arcshot = False
@@ -22,12 +22,13 @@ class arrow(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.shooter = shooter
         self.accuracy = shooter.accuracy
-        if self.shooter.state in [12,13] and 17 not in self.shooter.trait: self.accuracy -= 10
+        if self.shooter.state in [12, 13] and 17 not in self.shooter.trait: self.accuracy -= 10
         self.passwho = 0
         self.side = None
         # self.lastpasswho = 0
         randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 20)  ## randpos1 is for left or right random
-        hitchance = round((100 - self.accuracy * random.randint(1, 5)) / (maxrange / range)) ## the further hitchance from 0 the further arrow will land from target
+        hitchance = round((100 - self.accuracy * random.randint(1, 5)) / (
+                    maxrange / range))  ## the further hitchance from 0 the further arrow will land from target
         """73 no range penalty, 74 long rance accuracy"""
         if 73 in self.shooter.trait:
             hitchance = round(100 - self.accuracy * random.randint(1, 5))
@@ -42,7 +43,7 @@ class arrow(pygame.sprite.Sprite):
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
                     targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))
-                    if 17 not in self.shooter.trait: hitchance += random.randint(-20,20)
+                    if 17 not in self.shooter.trait: hitchance += random.randint(-20, 20)
                 else:
                     targetnow = self.shooter.attacktarget.pos
             elif self.shooter.attacktarget.state in [2, 4, 6, 8, 96, 98, 99] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
@@ -50,7 +51,7 @@ class arrow(pygame.sprite.Sprite):
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
                     targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))
-                    if 17 not in self.shooter.trait: hitchance += random.randint(-20,20)
+                    if 17 not in self.shooter.trait: hitchance += random.randint(-20, 20)
                 else:
                     targetnow = self.shooter.attacktarget.pos
         if randomposition1 == 0:
@@ -90,11 +91,11 @@ class arrow(pygame.sprite.Sprite):
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck
         if targetdefense < 0: targetdefense = 0
-        whodmg, whomoraledmg,wholeaderdmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
+        whodmg, whomoraledmg, wholeaderdmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
         if who.elemrange not in [0, 5]:  ## apply element effect if atk has element
-            target.elemcount[who.elemrange-1] += (whodmg / 100)
+            target.elemcount[who.elemrange - 1] += (whodmg / 100)
         if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
             target.leader.health -= wholeaderdmg
 

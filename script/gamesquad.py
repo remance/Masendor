@@ -12,11 +12,11 @@ SCREENRECT = mainmenu.SCREENRECT
 
 
 class selectedborder(pygame.sprite.Sprite):
-    ##add this in 3.0
+    ##add this in 4.0
     images = []
 
     def __init__(self, x, y, whichsquad):
-        self._layer = 7
+        self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
         self.whichsquad = whichsquad
@@ -32,7 +32,7 @@ class unitsquad(pygame.sprite.Sprite):
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
         # super().__init__()
-        self._layer = 6
+        self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = 0
         self.mouse_over = False
@@ -73,7 +73,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.basemeleedef = round(self.stat[9] + int(statlist.gradelist[self.grade][2]), 0)
         self.baserangedef = round(self.stat[10] + int(statlist.gradelist[self.grade][2]), 0)
         self.armourgear = self.stat[11]
-        self.basearmour = armourlist.armourlist[self.stat[11][0]][1] * (armourlist.quality[self.stat[11][1]]/100) ## Armour stat is cal from based armour * quality
+        self.basearmour = armourlist.armourlist[self.stat[11][0]][1] * (
+                    armourlist.quality[self.stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
         self.baseaccuracy = self.stat[13]
         self.baserange = self.stat[14] * 20
         self.ammo = self.stat[15]
@@ -95,16 +96,19 @@ class unitsquad(pygame.sprite.Sprite):
         self.troopnumber = self.stat[28]
         self.type = self.stat[29]
         self.basespeed = 50
-        if self.type in [4,5,6,7]: self.speed = 80
-        self.weight = weaponlist.weaponlist[self.stat[22][0]][3] + weaponlist.weaponlist[self.stat[23][0]][3] + armourlist.armourlist[self.stat[11][0]][2]
-        self.basespeed = round((self.basespeed * ((100-self.weight)/100)) + int(statlist.gradelist[self.grade][3]), 0)
-        if self.type in [1,2]: self.unittype = self.type-1
-        elif self.type in [3,4,5,6,7]: self.unittype = 2
+        if self.type in [4, 5, 6, 7]: self.speed = 80
+        self.weight = weaponlist.weaponlist[self.stat[22][0]][3] + weaponlist.weaponlist[self.stat[23][0]][3] + \
+                      armourlist.armourlist[self.stat[11][0]][2]
+        self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
+        if self.type in [1, 2]:
+            self.unittype = self.type - 1
+        elif self.type in [3, 4, 5, 6, 7]:
+            self.unittype = 2
         self.description = self.stat[33]
         # if self.hidden
         self.baseelemmelee = 0
         self.baseelemrange = 0
-        self.elemcount = [0,0,0,0,0] ## Elemental threshold count in this order fire,water,air,earth,poison
+        self.elemcount = [0, 0, 0, 0, 0]  ## Elemental threshold count in this order fire,water,air,earth,poison
         self.tempcount = 0
         self.criteffect = 100
         self.frontdmgeffect = 100
@@ -144,7 +148,7 @@ class unitsquad(pygame.sprite.Sprite):
                         self.baseinflictstatus[effect] = trait[1]
                 # self.baseelemmelee =
                 # self.baseelemrange =
-            if 3 in self.trait: ## Varied training
+            if 3 in self.trait:  ## Varied training
                 self.baseattack *= (random.randint(80, 120) / 100)
                 self.basemeleedef *= (random.randint(80, 120) / 100)
                 self.baserangedef *= (random.randint(80, 120) / 100)
@@ -157,7 +161,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.basechargedef *= (random.randint(80, 120) / 100)
                 self.basemorale += random.randint(-10, 10)
                 self.basediscipline += random.randint(-10, 10)
-            if 149 in self.trait: ## Impetuous
+            if 149 in self.trait:  ## Impetuous
                 self.baseauthpenalty += 0.5
         # self.loyalty
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
@@ -201,11 +205,11 @@ class unitsquad(pygame.sprite.Sprite):
         self.image.blit(self.staminaimage, self.staminaimagerect)
         """weapon class in circle"""
         image1 = weaponlist.imgs[weaponlist.weaponlist[self.unitclass][4]]
-        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * (weaponlist.quality[self.meleeweapon[1]]/100)
-        self.penetrate = weaponlist.weaponlist[self.meleeweapon[0]][2] * (weaponlist.quality[self.meleeweapon[1]]/100)
+        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * (weaponlist.quality[self.meleeweapon[1]] / 100)
+        self.penetrate = weaponlist.weaponlist[self.meleeweapon[0]][2] * (weaponlist.quality[self.meleeweapon[1]] / 100)
         if self.penetrate > 100: self.penetrate == 100
-        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * (weaponlist.quality[self.rangeweapon[1]]/100)
-        self.rangepenetrate = weaponlist.weaponlist[self.rangeweapon[0]][2] * (weaponlist.quality[self.rangeweapon[1]]/100)
+        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * (weaponlist.quality[self.rangeweapon[1]] / 100)
+        self.rangepenetrate = weaponlist.weaponlist[self.rangeweapon[0]][2] * (weaponlist.quality[self.rangeweapon[1]] / 100)
         if self.rangepenetrate > 100: self.rangepenetrate == 100
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
@@ -235,12 +239,14 @@ class unitsquad(pygame.sprite.Sprite):
 
     def checkskillcondition(self):
         """Check which skill can be used"""
-        self.availableskill = [skill for skill in self.skill if skill not in self.skillcooldown.keys() and skill not in self.skilleffect.keys() and self.state in self.skill[skill][
-                6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][9]]
+        self.availableskill = [skill for skill in self.skill if
+                               skill not in self.skillcooldown.keys() and skill not in self.skilleffect.keys() and self.state in self.skill[skill][
+                                   6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][9]]
         if self.useskillcond == 1:
-            self.availableskill = [skill for skill in self.availableskill if  self.staminastate > 50 or self.availableskill[skill][9] == 0]
+            self.availableskill = [skill for skill in self.availableskill if self.staminastate > 50 or self.availableskill[skill][9] == 0]
         elif self.useskillcond == 2:
             self.availableskill = [skill for skill in self.availableskill if self.staminastate > 25 or self.availableskill[skill][9] == 0]
+
     def findnearbysquad(self):
         """Find nearby friendly squads in the same battalion for applying buff"""
         self.nearbysquadlist = []
@@ -295,7 +301,7 @@ class unitsquad(pygame.sprite.Sprite):
                 if squad.state != 100:
                     squad.statuseffect[id] = statuslist[id].copy()
 
-    def thresholdcount(self,statuslist,elem,t1status,t2status):
+    def thresholdcount(self, statuslist, elem, t1status, t2status):
         if elem > 50:
             self.statuseffect[t1status] = statuslist[t1status].copy()
             if elem > 100:
@@ -344,7 +350,7 @@ class unitsquad(pygame.sprite.Sprite):
 
         """apply effect from skill"""
         if len(self.skilleffect) > 0:
-            for status in self.skilleffect: ## apply elemental effect to dmg if skill has element
+            for status in self.skilleffect:  ## apply elemental effect to dmg if skill has element
                 if self.skilleffect[status][1] == 0 and self.skilleffect[status][31] != 0:
                     self.elemmelee = int(self.skilleffect[status][31])
                 elif self.skilleffect[status][1] == 1 and self.skilleffect[status][31] != 0:
@@ -387,7 +393,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.charging = True
                 self.authpenalty += 0.5
         """apply effect if elem attack reach 100 threshold"""
-        if self.elemcount != [0,0,0,0,0]:
+        if self.elemcount != [0, 0, 0, 0, 0]:
             self.elemcount[0] = self.thresholdcount(statuslist, self.elemcount[0], 28, 92)
             self.elemcount[1] = self.thresholdcount(statuslist, self.elemcount[1], 31, 93)
             self.elemcount[2] = self.thresholdcount(statuslist, self.elemcount[2], 30, 94)
@@ -501,7 +507,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.staminaimage = self.images[8]
                 self.image_original.blit(self.staminaimage, self.staminaimagerect)
                 self.laststaminastate = 4
-            if self.battleside != [-1, -1, -1, -1]: ## red corner when engage in melee combat
+            if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
                 for index, side in enumerate(self.battleside):
                     if side > 0:
                         self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
@@ -539,35 +545,38 @@ class unitsquad(pygame.sprite.Sprite):
                     # and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(
                     #     self.attackpos) <= shootrange)
                     self.state = 11
-            elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in [1,2,3,4,5,6] and 18 in self.trait)) and self.ammo > 0:
-                if self.attacktarget == 0 and self.battalion.neartarget != 0 and len(self.battalion.neartarget) > 0: ## get near target if no attack target yet
+            elif self.battalion.fireatwill == 0 and (
+                    self.state == 0 or (self.battalion.state in [1, 2, 3, 4, 5, 6] and 18 in self.trait)) and self.ammo > 0:
+                if self.attacktarget == 0 and self.battalion.neartarget != 0 and len(
+                        self.battalion.neartarget) > 0:  ## get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
                     if self.range >= self.attackpos.distance_to(self.combatpos):
                         self.state = 11
-                        if self.battalion.state in [1, 3, 5]: ## Walk and shoot
+                        if self.battalion.state in [1, 3, 5]:  ## Walk and shoot
                             self.state = 12
-                        elif self.battalion.state in [2, 4, 6]: ## Run and shoot
+                        elif self.battalion.state in [2, 4, 6]:  ## Run and shoot
                             self.state = 13
-            if self.state in [11,12,13] and self.reloadtime < self.reload:
+            if self.state in [11, 12, 13] and self.reloadtime < self.reload:
                 self.reloadtime += dt
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
             self.stamina = self.stamina - (dt * 3) if self.state in [1, 3, 5, 11] and self.battalion.pause == False else self.stamina - (
-                        dt * 7) if self.state in [2, 4, 6, 10, 96, 98, 99] and self.battalion.pause == False \
-                else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (dt * self.staminaregen) if self.state == 97 else self.stamina
+                    dt * 7) if self.state in [2, 4, 6, 10, 96, 98, 99] and self.battalion.pause == False \
+                else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (
+                        dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale: self.basemorale += dt
             self.troopnumber = self.unithealth / self.troophealth
-            if round(self.troopnumber) < self.troopnumber: ## calculate how many troop left based on current hp
+            if round(self.troopnumber) < self.troopnumber:  ## calculate how many troop left based on current hp
                 self.troopnumber = round(self.troopnumber + 1)
             else:
                 self.troopnumber = round(self.troopnumber)
-            if self.unithealth % self.troophealth != 0 and self.hpregen > 0: ## hp regen cannot ressurect troop only heal to max hp
+            if self.unithealth % self.troophealth != 0 and self.hpregen > 0:  ## hp regen cannot ressurect troop only heal to max hp
                 alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive unit
                 self.unithealth += self.hpregen * dt
                 if self.unithealth > alivehp: self.unithealth = alivehp
-            elif self.hpregen < 0: ## negative regen can kill
+            elif self.hpregen < 0:  ## negative regen can kill
                 self.unithealth += self.hpregen * dt
-                self.troopnumber = self.unithealth / self.troophealth ## recal number of troop again in case some die from negative regen
+                self.troopnumber = self.unithealth / self.troophealth  ## recal number of troop again in case some die from negative regen
                 if round(self.troopnumber) < self.troopnumber:
                     self.troopnumber = round(self.troopnumber + 1)
                 else:
@@ -583,7 +592,7 @@ class unitsquad(pygame.sprite.Sprite):
             """cannot be higher than max hp and max stamina"""
             if self.morale > self.maxmorale: self.morale = self.maxmorale
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
-            if self.troopnumber <= 0: ## enter dead state
+            if self.troopnumber <= 0:  ## enter dead state
                 if self.leader != None and self.leader.state != 100:
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:
@@ -594,7 +603,7 @@ class unitsquad(pygame.sprite.Sprite):
                                     squad.leader.squadpos = index
                             self.leader = None
                             break
-                    if self.leader != None: ## if can't find new near squad to move leader then find from first squad to last place in battalion
+                    if self.leader != None:  ## if can't find new near squad to move leader then find from first squad to last place in battalion
                         for index, squad in enumerate(self.battalion.squadsprite):
                             if squad.state != 100 and squad.leader == None:
                                 squad.leader = self.leader

@@ -4,20 +4,20 @@ import pygame.freetype
 
 class uibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event):
-        self._layer = 5
+        self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
         self.event = event
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.mouse_over = False
-
-    def draw(self, gamescreen):
-        gamescreen.blit(self.image, self.rect)
+    #
+    # def draw(self, gamescreen):
+    #     gamescreen.blit(self.image, self.rect)
 
 class switchuibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image):
-        self._layer = 5
+        self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.images = image
@@ -36,7 +36,7 @@ class switchuibutton(pygame.sprite.Sprite):
 
 class iconpopup(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event, gameui, itemid=""):
-        self._layer = 5
+        self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
@@ -44,14 +44,14 @@ class iconpopup(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.mouse_over = False
         self.itemid = itemid
-
-    def draw(self, gamescreen):
-        gamescreen.blit(self.image, self.rect)
+    #
+    # def draw(self, gamescreen):
+    #     gamescreen.blit(self.image, self.rect)
 
 
 class Gameui(pygame.sprite.Sprite):
     def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
-        self._layer = 5
+        self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.X, self.Y = X, Y
@@ -79,7 +79,7 @@ class Gameui(pygame.sprite.Sprite):
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
-                            7: "Alert", 8:"Warmed Up", 9: "Active", 10: "Fresh"}
+                             7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}
         elif self.uitype == "commandbar":
             self.iconimagerect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
@@ -92,8 +92,8 @@ class Gameui(pygame.sprite.Sprite):
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
             self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
-                    "Melee Defence: ", 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                    "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
+                              "Melee Defence: ", 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
+                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
             self.qualitytext = ["Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect"]
         #     self.iconimagerect = self.icon[0].get_rect(
         #         center=(
@@ -117,7 +117,7 @@ class Gameui(pygame.sprite.Sprite):
             x = pos[0]  ## reset x
             y += word_height  ## start on new row
 
-    def valueinput(self, who, weaponlist="", armourlist="", leader="", button="", changeoption=0, gameunitstat="", splithappen = False):
+    def valueinput(self, who, weaponlist="", armourlist="", leader="", button="", changeoption=0, gameunitstat="", splithappen=False):
         for thisbutton in button:
             thisbutton.draw(self.image)
         position = 65
@@ -147,7 +147,7 @@ class Gameui(pygame.sprite.Sprite):
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
         elif self.uitype == "commandbar":
-            if who.gameid != self.lastwho or splithappen == True: ## only redraw leader circle when change unit (will add condition if leader die or changed later)
+            if who.gameid != self.lastwho or splithappen == True:  ## only redraw leader circle when change unit (will add condition if leader die or changed later)
                 usecolour = self.white
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
@@ -172,17 +172,17 @@ class Gameui(pygame.sprite.Sprite):
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[5], self.iconimagerect)
                 self.iconimagerect = usecolour[3].get_rect(center=(
-                    self.image.get_rect()[0]-10 + self.image.get_size()[0] / 3.1,
-                    self.image.get_rect()[1]-10 + self.image.get_size()[1] / 2.2))
+                    self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
+                    self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[3], self.iconimagerect)
                 self.iconimagerect = usecolour[0].get_rect(center=(
-                    self.image.get_rect()[0]-10 + self.image.get_size()[0] / 1.4,
-                    self.image.get_rect()[1]-10 + self.image.get_size()[1] / 2.2))
+                    self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
+                    self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
                 self.image_original2 = self.image.copy()
                 # for thisleader in who.leaderwho:
                 #     self.leaderpiclist.append(thisleader[1])
-            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen == True: ## authority number
+            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen == True:  ## authority number
                 self.image = self.image_original2.copy()
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(
@@ -193,8 +193,10 @@ class Gameui(pygame.sprite.Sprite):
             position = 15
             positionx = 45
             self.value = [who.name, str(who.troopnumber) + " (" + str(who.maxtroop) + ")", int(who.stamina), int(who.morale),
-                int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),int(who.accuracy),
-                int(who.range), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef, who.description]
+                          int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
+                          int(who.accuracy),
+                          int(who.range), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef,
+                          who.description]
             self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
             self.description = self.value[-1]
             if type(self.description) == list: self.description = self.description[0]
@@ -206,13 +208,13 @@ class Gameui(pygame.sprite.Sprite):
                 if who.leader != None:
                     leadertext = "/" + str(who.leader.name)
                     if who.leader.state == 100: leadertext += " (Dead)"
-                self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0)) ##unit and leader name at the top
+                self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0))  ##unit and leader name at the top
                 self.textrect = self.textsurface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                 self.image.blit(self.textsurface, self.textrect)
                 row += 1
                 position += 20
-                if self.option == 1: ## Stat card
+                if self.option == 1:  ## Stat card
                     # self.iconimagerect = self.icon[0].get_rect(
                     #     center=(
                     #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
@@ -230,11 +232,11 @@ class Gameui(pygame.sprite.Sprite):
                         position += 20
                         row += 1
                         if row == 9: positionx, position = 200, 35
-                elif self.option == 0: ## description card
+                elif self.option == 0:  ## description card
                     self.blit_text(self.image, self.description, (42, 25), self.fontlong)
-                elif self.option == 2: ## unit card
+                elif self.option == 2:  ## unit card
                     position2 = positionx + 20
-                    for trait in self.value2[0]: ## property list
+                    for trait in self.value2[0]:  ## property list
                         # if trait in self.value2[2] : cd = int(self.value2[2][trait])
                         # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
                         if trait != 0:
@@ -243,7 +245,7 @@ class Gameui(pygame.sprite.Sprite):
                                 midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
                             self.image.blit(self.textsurface, self.textrect)
                             position += 20
-                    for skill in self.value2[1]: ## skill cooldown
+                    for skill in self.value2[1]:  ## skill cooldown
                         if skill in self.value2[2]:
                             cd = int(self.value2[2][skill])
                         else:
@@ -258,7 +260,7 @@ class Gameui(pygame.sprite.Sprite):
                         position += 20
                     # position += 20
                     position2 = positionx + 20
-                    for status in self.value2[3]: ## skill effect list
+                    for status in self.value2[3]:  ## skill effect list
                         self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
@@ -269,7 +271,7 @@ class Gameui(pygame.sprite.Sprite):
                         position += 20
                     # position += 20
                     position2 = positionx + 20
-                    for status in self.value2[4]: ## status list
+                    for status in self.value2[4]:  ## status list
                         self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
@@ -278,12 +280,18 @@ class Gameui(pygame.sprite.Sprite):
                         # if position2 >= 90:
                         #     position2 = positionx + 20
                         position += 20
-                elif self.option == 3: ## equipment guard
-                    textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][3]),
-                                 self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
+                elif self.option == 3:  ## equipment guard
+                    textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(
+                        weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(
+                        weaponlist.weaponlist[who.meleeweapon[0]][3]),
+                                 self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(
+                                     armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
                                  "Total Weight:" + str(who.weight)]
                     if who.rangeweapon[0] != 0:
-                        textvalue.insert(1, self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
+                        textvalue.insert(1,
+                                         self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
+                                             weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
+                                             weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
                     for text in textvalue:
                         self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
