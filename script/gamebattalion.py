@@ -157,26 +157,24 @@ class directionarrow(pygame.sprite.Sprite):
         self.lengthgap = self.who.image.get_height() / 2
         self.length = self.who.pos.distance_to(self.who.target) + self.lengthgap
         self.previouslength = self.length
-        self.image = pygame.Surface((self.length * 2, self.length * 2), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 0))
-        self.image_original = self.image.copy()
-        pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width() / 2, self.image.get_height() / 2),
-                         (self.image.get_width() / 2 - (self.who.pos[0] - self.who.target[0]),
-                          self.image.get_height() / 2 - (self.who.pos[1] - self.who.target[1])), 5)
-        self.rect = self.image.get_rect(center=self.who.pos)
+        self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
+        self.image.fill((0, 0, 0))
+        # self.image_original = self.image.copy()
+        # pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width()/2, 0),(self.image.get_width()/2,self.image.get_height()), 5)
+        self.image = pygame.transform.rotate(self.image, self.who.angle)
+        self.rect = self.image.get_rect(midbottom=self.who.allsidepos[0])
 
     def update(self, who, enmy, squad, hitbox, squadindex, dt):
-        self.length = self.who.allsidepos[0].distance_to(self.who.target) + self.lengthgap
-        if self.length != self.previouslength and self.length > 2 and self.who.state != 0:
+        self.length = self.who.pos.distance_to(self.who.target) + self.lengthgap
+        distance = self.who.allsidepos[0].distance_to(self.who.target) + self.lengthgap
+        if self.length != self.previouslength and distance > 2 and self.who.state != 0:
             self.pos = self.who.pos
-            self.image = pygame.Surface((self.length * 2, self.length * 2), pygame.SRCALPHA)
-            self.image.fill((255, 255, 255, 0))
-            pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width() / 2, self.image.get_height() / 2),
-                             (self.image.get_width() / 2 - (self.who.pos[0] - self.who.target[0]),
-                              self.image.get_height() / 2 - (self.who.pos[1] - self.who.target[1])), 5)
-            self.rect = self.image.get_rect(center=self.who.pos)
+            self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
+            self.image.fill((0, 0, 0))
+            self.image = pygame.transform.rotate(self.image, self.who.angle)
+            self.rect = self.image.get_rect(midbottom=self.who.allsidepos[0])
             self.previouslength = self.length
-        elif self.length < 2 or self.who.state in [0, 10, 11, 100]:
+        elif distance < 2 or self.who.state in [0, 10, 11, 100]:
             self.who.directionarrow = False
             self.kill()
 
@@ -287,15 +285,15 @@ class unitarmy(pygame.sprite.Sprite):
         self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
-        self.rect = self.image.get_rect(midtop=startposition)
+        self.rect = self.image.get_rect(center=startposition)
         self.testangle = math.radians(360 - startangle)
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
-        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2) - 5),  ## generate all four side position
-                           ((self.rect.center[0] - self.widthbox / 2) - 5, self.rect.center[1]),
-                           ((self.rect.center[0] + self.widthbox / 2) + 5, self.rect.center[1]),
-                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2) + 5)]
+        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2)),  ## generate all four side position
+                           ((self.rect.center[0] - self.widthbox / 2), self.rect.center[1]),
+                           ((self.rect.center[0] + self.widthbox / 2), self.rect.center[1]),
+                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2))]
         self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
@@ -840,8 +838,6 @@ class unitarmy(pygame.sprite.Sprite):
 
     def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-        self.rect = self.rect.clamp(SCREENRECT)
-        # self.image = self.images[2] 100))
         if self.control == True and self.state not in [100]:
             """check if right click in mask or not. if not, move unit"""
             posmask = mouse_pos[0] - self.rect.x, mouse_pos[1] - self.rect.y
@@ -868,7 +864,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.state += 1
                         self.rangecombatcheck = 0
                         if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                        self.set_target(pygame.mouse.get_pos())
+                        self.set_target(mouse_pos)
                         self.commandtarget = self.target
                         self.setrotate()
                         if self.charging == True:
@@ -895,7 +891,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.state += 1
                     self.rangecombatcheck = 0
                     if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                    self.set_target(pygame.mouse.get_pos())
+                    self.set_target(mouse_pos)
                     self.commandtarget = self.target
                     self.setrotate()
                     if self.charging == True:
@@ -911,7 +907,7 @@ class unitarmy(pygame.sprite.Sprite):
                                 self.authrecal()
                                 self.retreattimer = 0.1
                                 self.retreatstart = 1
-                            self.set_target(pygame.mouse.get_pos())
+                            self.set_target(mouse_pos)
                             self.commandtarget = self.target
                             # self.combatcheck = 0
                 except:
@@ -922,7 +918,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.authrecal()
                             self.retreattimer = 0.1
                             self.retreatstart = 1
-                        self.set_target(pygame.mouse.get_pos())
+                        self.set_target(mouse_pos)
                         self.commandtarget = self.target
                         # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat

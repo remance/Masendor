@@ -5,7 +5,7 @@ For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 Plan
 
-Ver 0.3 The World at Hand: Game map, terrain and camera (Going to be somewhat difficult and long to implement)
+Ver 0.3 The World at Hand: Game map, terrain,mini map and camera (Going to be somewhat difficult and long to implement)
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect and finalise melee combat engagement and collision, changable game speed
 
@@ -23,7 +23,7 @@ Ver 1 Pax Paradisum: historical battle simulation game
 
 Ver 1 - 1.5: More art, sound effect and ingame music (May need to use royalty free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battle
 
-Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item)
+Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item, mount)
 
 Ver 1.6: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
 

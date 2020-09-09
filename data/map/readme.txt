@@ -7,7 +7,7 @@ plain
 snow
 desert
 tundra
-vocanic
+volcanic
 draught
 demonic
 ice

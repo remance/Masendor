@@ -20,16 +20,11 @@ class map(pygame.sprite.Sprite):
         self.dim = pygame.Vector2(MAP_WIDTH, MAP_HEIGHT)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-        self.rect = self.image.get_rect(center=(SCREENRECT.width/2,SCREENRECT.height/2))
-        self.pos = self.rect.center
+        self.rect = self.image.get_rect(topleft=(0,0))
 
     # def update(self, dt, pos, zoom):
     #     self.image = self.image_original
     #     self.pos = pygame.Vector2(pos[0], pos[1])
-
-    # def draw(self, gamescreen):
-    #     # self.image = pygame.transform.scale(self.battlemap.image_original, (self.dim[0], self.dim[1]))
-    #     gamescreen.blit(self.image, self.pos)
 
 class mapfeature(pygame.sprite.Sprite):
     images = []

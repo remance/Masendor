@@ -738,12 +738,12 @@ class battle():
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
                 whoinput.leader[1].name != "None":
             self.allui.add(self.buttonui[5])
-        elif self.buttonui[5] in self.all:
+        elif self.buttonui[5] in self.allui:
             self.buttonui[5].kill()
         if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[
             1].name != "None":
             self.allui.add(self.buttonui[6])
-        elif self.buttonui[6] in self.all:
+        elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
 
     def rungame(self):
@@ -758,26 +758,30 @@ class battle():
         self.splithappen = False
         self.splitbutton = False
         self.leadernow = []
+        self.rightcorner = SCREENRECT.width - 5
+        self.bottomcorner = SCREENRECT.height - 5
+        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]
         while True:
             self.fpscount.fpsshow(self.clock)
-            keystate = pygame.key.get_pressed()
-            if keystate[K_s]:
-                self.camerapos[1]+=100
-            elif keystate[K_w]:
-                self.camerapos[1]-=100
-            if keystate[K_a]:
-                self.camerapos[0]-=100
-            elif keystate[K_d]:
-                self.camerapos[0]+=100
-            if self.camerapos[0] > self.battlemap.image.get_width() * self.camera.scale: self.camerapos[0] = self.battlemap.image.get_width() * self.camerascale
-            elif self.camerapos[0] < 0: self.camerapos[0] = 0
-            if self.camerapos[1] > self.battlemap.image.get_height() * self.camera.scale: self.camerapos[0] = self.battlemap.image.get_height() * self.camera.scale
-            elif self.camerapos[1] < 0: self.camerapos[1] = 0
             keypress = None
             self.mousepos = pygame.mouse.get_pos()
+            self.battlemousepos = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0], self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])
             mouse_up = False
             mouse_right = False
             double_mouse_right = False
+            keystate = pygame.key.get_pressed()
+            if keystate[K_s] or self.mousepos[1] >= self.bottomcorner: ## down
+                self.camerapos[1]+=100
+            elif keystate[K_w] or self.mousepos[1] <= 5: ## up
+                self.camerapos[1]-=100
+            if keystate[K_a] or self.mousepos[0] <= 5: ## left
+                self.camerapos[0]-=100
+            elif keystate[K_d] or self.mousepos[0] >= self.rightcorner: ## right
+                self.camerapos[0]+=100
+            if self.camerapos[0] > self.battlemap.image.get_width(): self.camerapos[0] = self.battlemap.image.get_width()
+            elif self.camerapos[0] < 0: self.camerapos[0] = 0
+            if self.camerapos[1] > self.battlemap.image.get_height(): self.camerapos[1] = self.battlemap.image.get_height()
+            elif self.camerapos[1] < 0: self.camerapos[1] = 0
             for event in pygame.event.get():  ## get event input
                 if event.type == QUIT or \
                         (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -786,7 +790,7 @@ class battle():
                     return
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:  ## left click
                     mouse_up = True
-                    print(self.mousepos)
+                    print("moseeeeeee", self.mousepos, self.battlemousepos)
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 3:  ## Right Click
                     mouse_right = True
                     if self.timer == 0:
@@ -806,7 +810,7 @@ class battle():
                         else:
                             self.gamestate = 1
                     elif event.key == pygame.K_SPACE and self.lastselected != 0:
-                        whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
+                        whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                          self.lastselected, self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
                     elif event.key == pygame.K_q and self.lastselected != 0:
                         self.changefaction(whoinput)
@@ -823,7 +827,7 @@ class battle():
                     self.timer = 0
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
             self.uiupdater.update()  # update ui outside of combat loop so it update even when game pause
-            # self.mapupdater.update(self.dt)
+            # self.mapupdater.update(self.dt,self.camerapos,self.camerascale)
             # self.screen.blit(self.background, self.camerapos)
             self.lastmouseover = 0
             if mouse_up == True:
@@ -835,7 +839,6 @@ class battle():
                     self.playerposlist[army.gameid] = army.pos
                 else:
                     self.enemyposlist[army.gameid] = army.pos
-                posmask = self.mousepos[0] - army.rect.x, self.mousepos[1] - army.rect.y
                 for ui in self.gameui:
                     if ui.rect.collidepoint(self.mousepos) and mouse_up:
                         if ui.uitype not in ["unitcard", 'armybox']:
@@ -845,7 +848,8 @@ class battle():
                             if self.inspectui == 1:
                                 self.check = 1
                                 self.uicheck = 1
-                if army.rect.collidepoint(self.mousepos):
+                if army.rect.collidepoint(self.battlemousepos):
+                    posmask = int(self.battlemousepos[0] - army.rect.x), int(self.battlemousepos[1] - army.rect.y)
                     try:
                         if army.mask.get_at(posmask) == 1:
                             army.mouse_over = True
@@ -862,14 +866,14 @@ class battle():
                     army.changefaction = False
                 if army.state == 100 and army.gotkilled == 0:
                     if army.gameid < 2000:
-                        self.die(army, self.playerarmy, self.deadunit, self.all, self.hitboxs)
+                        self.die(army, self.playerarmy, self.deadunit, self.allcamera, self.hitboxs)
                         for thisarmy in self.enemyarmy:  ## get bonus authority when destroy enemy battalion
                             thisarmy.authority += 5
                         for thisarmy in self.playerarmy:  ## morale dmg to every squad in army when allied battalion destroyed
                             for squad in thisarmy.squadsprite:
                                 squad.basemorale -= 20
                     else:
-                        self.die(army, self.enemyarmy, self.deadunit, self.all, self.hitboxs)
+                        self.die(army, self.enemyarmy, self.deadunit, self.allcamera, self.hitboxs)
                         for thisarmy in self.playerarmy:  ## get bonus authority when destroy enemy battalion
                             thisarmy.authority += 5
                         for thisarmy in self.enemyarmy:  ## morale dmg to every squad in army when allied battalion destroyed
@@ -879,9 +883,9 @@ class battle():
                 """if not found in army class then it is in dead class"""
                 whoinput = self.lastselected
                 if mouse_up or mouse_right:
-                    whoinput.command(pygame.mouse.get_pos(), mouse_up, mouse_right, double_mouse_right,
+                    whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                      self.lastmouseover, self.enemyposlist, keystate)
-                    if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.directionarrow == False:
+                    if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.moverotate == 0 and whoinput.directionarrow == False:
                         gamebattalion.directionarrow(whoinput)
                 if self.beforeselected == 0:  ## add back the pop up ui to group so it get shown when click unit with none selected before
                     self.gameui = self.popgameui
@@ -991,7 +995,7 @@ class battle():
                         for squad in self.showingsquad:
                             if squad.rect.collidepoint(pygame.mouse.get_pos()) == True:
                                 self.check = 1
-                                squad.command(pygame.mouse.get_pos(), mouse_up, mouse_right, self.squadlastselected.wholastselect)
+                                squad.command(self.battlemousepos, mouse_up, mouse_right, self.squadlastselected.wholastselect)
                                 self.squadlastselected = squad
                                 self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour, leader=self.allleader,
                                                           gameunitstat=self.gameunitstat, splithappen=self.splithappen)
@@ -1017,7 +1021,7 @@ class battle():
                 self.squadbeforeselected = 0
                 self.beforeselected = 0
                 self.allui.remove(*self.leadernow)
-                self.leadernow = {}
+                self.leadernow = []
             if self.gamestate == 1:
                 # fight_sound.play()
                 """Combat and unit update"""
@@ -1094,7 +1098,7 @@ class battle():
             self.clock.tick(60)
             self.dt = self.clock.tick(60) / 1000
             self.screen.blit(self.camera.image, (0,0))
-            dirty = self.allui.draw(self.screen)  # draw the scene
+            self.allui.draw(self.screen)  # draw the scene
             # pygame.display.update(dirty)
             pygame.display.flip()
         if pygame.mixer:

@@ -39,7 +39,7 @@ class leaderdata():
 class leader(pygame.sprite.Sprite):
 
     def __init__(self, leaderid, squadposition, armyposition, battalion, leaderstat):
-        self._layer = 6
+        self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leaderstat.leaderlist[leaderid]
