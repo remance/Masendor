@@ -15,7 +15,7 @@ class arrow(pygame.sprite.Sprite):
     def __init__(self, shooter, range, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.speed = 80 * abs(11 - viewmode) / 10
+        self.speed = 8 * viewmode / 10
         self.image = self.images[0]
         self.arcshot = False
         if 16 in shooter.trait: self.arcshot = True
@@ -35,7 +35,7 @@ class arrow(pygame.sprite.Sprite):
         elif 74 in self.shooter.trait:
             hitchance = round((100 - self.accuracy * random.randint(1, 5)) / ((maxrange / range) * 2))
         howlong = range / (self.speed * 50)
-        targetnow = self.shooter.baseattackpos
+        targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
             targetnow = self.shooter.attacktarget.basepos
             if self.shooter.attacktarget.state in [1, 3, 5, 7] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
@@ -76,8 +76,8 @@ class arrow(pygame.sprite.Sprite):
         else:
             self.rect = self.image.get_rect(midbottom=(self.shooter.combatpos[0] + randomposition2, self.shooter.combatpos[1] + randomposition2))
             self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] + randomposition2, self.shooter.battalion.basepos[1] + randomposition2)
-        self.pos = self.basepos * abs(self.viewmode - 11) / 10
-        self.target = self.basetarget * abs(self.viewmode - 11) / 10
+        self.pos = self.basepos * viewmode / 10
+        self.target = self.basetarget * viewmode / 10
         self.mask = pygame.mask.from_surface(self.image)
 
     def rangedmgcal(self, who, target, targetside):
@@ -133,7 +133,8 @@ class arrow(pygame.sprite.Sprite):
 
     def update(self, who, target, hitbox, squadlist, squadindexlist, dt, viewmode):
         """Who is the player battalion group, target is the enemy battalion group"""
-        self.speed = 80 * abs(11 - viewmode) / 10
+        self.speed = 8 * viewmode / 10
+        self.target = self.basetarget * viewmode / 10
         move = self.target - self.pos
         move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""
@@ -147,7 +148,8 @@ class arrow(pygame.sprite.Sprite):
         if move_length >= self.speed:
             move.normalize_ip()
             move = move * self.speed * dt * 50
-            self.pos += move
+            self.basepos += move
+            self.pos = self.basepos * viewmode / 10
             self.rect.center = list(int(v) for v in self.pos)
             self.mask = pygame.mask.from_surface(self.image)
         elif move_length < self.speed:

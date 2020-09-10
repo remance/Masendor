@@ -283,7 +283,6 @@ class battle():
         self.combattimer = 0
         self.clock = pygame.time.Clock()
         self.lastmouseover = 0
-        self.unitviewmode = 0
         """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
         self.battlesidecal = [1, 0.5, 0.1, 0.5]
         """create game ui"""
@@ -758,7 +757,9 @@ class battle():
             self.fpscount.fpsshow(self.clock)
             keypress = None
             self.mousepos = pygame.mouse.get_pos()
-            self.battlemousepos = [pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0], self.mousepos[1] - self.centerscreen[1] + self.camerapos[1]), pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.basecamerapos[0], self.mousepos[1] - self.centerscreen[1] + self.basecamerapos[1])]
+            # battlemousepos = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.basecamerapos[0],
+            #                self.mousepos[1] - self.centerscreen[1] + self.basecamerapos[1])
+            # self.battlemousepos = [battlemousepos * self.camerascale / 10, battlemousepos]
             mouse_up = False ### problem battlemouse may need to also keep both before and after zoom for click and command
             mouse_right = False
             double_mouse_right = False
@@ -787,6 +788,9 @@ class battle():
                 self.basecamerapos[1] = 10000
             elif self.basecamerapos[1] < 0:
                 self.basecamerapos[1] = 0
+            self.battlemousepos = [pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
+                                                  self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])]
+            self.battlemousepos.append(self.battlemousepos[0] * 10 / self.camerascale)
             for event in pygame.event.get():  ## get event input
                 if event.type == QUIT or \
                         (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -795,6 +799,7 @@ class battle():
                     return
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  ## left click
+                        print(self.battlemousepos, 'mouse')
                         mouse_up = True
                     elif event.button == 3:  ## Right Click
                         mouse_right = True
@@ -818,19 +823,19 @@ class battle():
                             self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
                             self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_TAB:
-                        if self.unitviewmode == 1:
-                            self.unitviewmode = 0
-                        else:
-                            self.unitviewmode = 1
-                    elif event.key == pygame.K_p:  ## Pause Button
+                    # if event.key == pygame.K_TAB:
+                        # if self.unitviewmode == 1:
+                        #     self.unitviewmode = 0
+                        # else:
+                        #     self.unitviewmode = 1
+                    if event.key == pygame.K_p:  ## Pause Button
                         if self.gamestate == 1:
                             self.gamestate = 0
                         else:
                             self.gamestate = 1
                     elif event.key == pygame.K_SPACE and self.lastselected != 0:
                         whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
-                                         self.lastselected, self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
+                                        self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
                     elif event.key == pygame.K_q and self.lastselected != 0:
                         self.changefaction(whoinput)
                     else:

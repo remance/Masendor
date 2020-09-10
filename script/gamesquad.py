@@ -447,7 +447,7 @@ class unitsquad(pygame.sprite.Sprite):
         if self.charge < 0: self.charge = 0
         if self.chargedef < 0: self.chargedef = 0
         if self.discipline < 0: self.discipline = 0
-        self.range = self.range / self.viewmode
+        self.range = self.range * self.viewmode / 10
         """remove cooldown if time reach 0"""
         self.skillcooldown = {key: val - dt for key, val in self.skillcooldown.items()}
         self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0}

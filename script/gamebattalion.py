@@ -203,9 +203,9 @@ class hitbox(pygame.sprite.Sprite):
             self.viewmode = abs(viewmode - 11)
             self.image_original = self.image_original2.copy()
             scalewidth = self.image_original.get_width()
-            scaleheight = self.image_original.get_height() / self.viewmode
+            scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
             if self.side in [0,3]:
-                scalewidth = self.image_original.get_width() / self.viewmode
+                scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
                 scaleheight = self.image_original.get_height()
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
@@ -305,7 +305,6 @@ class unitarmy(pygame.sprite.Sprite):
         self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy() ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
         self.rect = self.image.get_rect(center=startposition)
-        print(self.rect.center)
         self.testangle = math.radians(360 - startangle)
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
@@ -333,16 +332,16 @@ class unitarmy(pygame.sprite.Sprite):
                 squadnum = 0
 
     def changescale(self):
-        scalewidth = self.image_original.get_width() / self.viewmode
-        scaleheight = self.image_original.get_height() / self.viewmode
-        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] / self.viewmode, len(self.armysquad) * self.imgsize[
-            1] / self.viewmode
+        scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
+        scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * abs(self.viewmode - 11) / self.maxviewmode, len(self.armysquad) * self.imgsize[
+            1] * abs(self.viewmode - 11) / self.maxviewmode
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.image_original = self.image.copy()
 
     def changeposscale(self):
-        self.set_target(self.basetarget)
+        self.target = self.basetarget * abs(self.viewmode - 11) / self.maxviewmode
         self.previousposition = self.basepreviousposition * abs(self.viewmode - 11) / self.maxviewmode
         self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
         self.rect = self.image.get_rect(center=self.pos)
@@ -606,10 +605,10 @@ class unitarmy(pygame.sprite.Sprite):
             if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != abs(viewmode - 11):
                 if self.viewmode != abs(viewmode - 11):
                     self.viewmode = abs(viewmode - 11)
-                    if self.viewmode != 1:
+                    if self.viewmode != 1: ## battalion view
                         self.image_original = self.image_original3.copy()
                         self.changescale()
-                    elif self.viewmode == 1:
+                    elif self.viewmode == 1: ## Squad view when zoom closest
                         self.image_original = self.image_original2.copy()
                         self.squadtoarmy(squadgroup)
                         self.changescale()
@@ -757,10 +756,9 @@ class unitarmy(pygame.sprite.Sprite):
                 shootrange = self.maxrange
                 if self.useminrange == 0:
                     shootrange = self.minrange
-                if self.state in [5, 6] and (
-                        (self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(
-                        self.attackpos) <= shootrange):
-                    self.target = self.allsidepos[0]
+                if self.state in [5, 6] and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange)
+                                             or self.pos.distance_to(self.attackpos) <= shootrange):
+                    self.set_target(self.allsidepos[0])
                     self.rangecombatcheck = 1
                 elif self.state == 11 and self.attacktarget != 0 and self.pos.distance_to(
                         self.attacktarget.pos) > shootrange and self.hold == 0:  ## chase target if it go out of range and hold condition not hold
@@ -807,8 +805,9 @@ class unitarmy(pygame.sprite.Sprite):
                                 move = move * self.walkspeed * dt * 50
                             elif self.state in [10]:
                                 move = move * 3.5 * dt * 50
-                            move = move * abs(11 - self.viewmode) / self.maxviewmode
-                            self.pos += move
+                            move = move
+                            self.basepos += move
+                            self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
                         self.rect.center = list(int(v) for v in self.pos)
                         self.makeallsidepos()
                     elif (self.hitbox[
@@ -898,7 +897,7 @@ class unitarmy(pygame.sprite.Sprite):
                             elif self.ammo > 0:  ##Move to range attack
                                 self.state = 5
                             if keystate[pygame.K_LALT] == True:
-                                self.baseattackpos = mouse_pos[1]
+                                self.set_target(mouse_pos[1])
                             else:
                                 self.attacktarget = whomouseover
                                 self.baseattackpos = whomouseover.basepos
@@ -925,7 +924,8 @@ class unitarmy(pygame.sprite.Sprite):
                         elif self.ammo > 0:
                             self.state = 5
                         if keystate[pygame.K_LALT] == True:
-                            self.attackpos = mouse_pos[1]
+                            self.baseattackpos = mouse_pos[1]
+                            self.attackpos = mouse_pos[0]
                         else:
                             self.attacktarget = whomouseover
                             self.attackpos = whomouseover.pos
@@ -960,7 +960,8 @@ class unitarmy(pygame.sprite.Sprite):
                             self.authrecal()
                             self.retreattimer = 0.1
                             self.retreatstart = 1
-                        self.set_target(mouse_pos[1])
+                        self.basetarget = mouse_pos[1]
+                        self.target = mouse_pos[0]
                         self.commandtarget = self.target
                         # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat
@@ -972,7 +973,6 @@ class unitarmy(pygame.sprite.Sprite):
                 self.target = self.set_target(self.allsidepos[0])
                 self.rangecombatcheck = 0
                 self.setrotate()
-            self.changeposscale()
 
 
 class deadarmy(pygame.sprite.Sprite):
