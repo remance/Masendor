@@ -805,7 +805,6 @@ class unitarmy(pygame.sprite.Sprite):
                                 move = move * self.walkspeed * dt * 50
                             elif self.state in [10]:
                                 move = move * 3.5 * dt * 50
-                            move = move
                             self.basepos += move
                             self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
                         self.rect.center = list(int(v) for v in self.pos)

@@ -15,7 +15,7 @@ class arrow(pygame.sprite.Sprite):
     def __init__(self, shooter, range, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.speed = 8 * viewmode / 10
+        self.speed = 8
         self.image = self.images[0]
         self.arcshot = False
         if 16 in shooter.trait: self.arcshot = True
@@ -133,7 +133,7 @@ class arrow(pygame.sprite.Sprite):
 
     def update(self, who, target, hitbox, squadlist, squadindexlist, dt, viewmode):
         """Who is the player battalion group, target is the enemy battalion group"""
-        self.speed = 8 * viewmode / 10
+        self.speed = 8
         self.target = self.basetarget * viewmode / 10
         move = self.target - self.pos
         move_length = move.length()

@@ -624,7 +624,7 @@ class unitsquad(pygame.sprite.Sprite):
 
     def command(self, mouse_pos, mouse_up, mouse_right, squadlastselect):
         self.wholastselect = squadlastselect
-        if self.rect.collidepoint(mouse_pos):
+        if self.rect.collidepoint(mouse_pos[0]):
             self.mouse_over = True
             self.whomouseover = self.gameid
             if mouse_up:
