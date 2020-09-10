@@ -9,22 +9,28 @@ SCREENRECT = mainmenu.SCREENRECT
 class map(pygame.sprite.Sprite):
     images = []
 
-    def __init__(self):
-        """Scrollable and zoomable map, image file of map should be at 1000x1000 then it will be scaled in game"""
+    def __init__(self, scale):
+        """image file of map should be at size 1000x1000 then it will be scaled in game"""
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
-        self.scale = 10
-        MAP_WIDTH = self.image.get_width() * self.scale
-        MAP_HEIGHT = self.image.get_height() * self.scale
-        self.dim = pygame.Vector2(MAP_WIDTH, MAP_HEIGHT)
+        self.scale = scale
+        scalewidth = self.image.get_width() * self.scale
+        scaleheight = self.image.get_height() * self.scale
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
 
-    # def update(self, dt, pos, zoom):
-    #     self.image = self.image_original
-    #     self.pos = pygame.Vector2(pos[0], pos[1])
+    def changescale(self,scale):
+        self.scale = scale
+        self.image = self.image_original
+        scalewidth = self.image.get_width() * self.scale
+        scaleheight = self.image.get_height() * self.scale
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+
+    # def update(self, dt, pos, scale):
 
 class mapfeature(pygame.sprite.Sprite):
     images = []

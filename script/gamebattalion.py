@@ -180,15 +180,18 @@ class directionarrow(pygame.sprite.Sprite):
 
 
 class hitbox(pygame.sprite.Sprite):
+    maxviewmode = 10
+
     def __init__(self, who, side, width, height):
         self._layer = 3
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.viewmode = 1
         self.who = who
         self.side = side
         self.collide = 0
         self.image = pygame.Surface((width, height), pygame.SRCALPHA)
         self.image.fill((255, 255, 255, 128))
-        self.image_original = self.image.copy()
+        self.image_original,self.image_original2 = self.image.copy(), self.image.copy()
         self.image = pygame.transform.rotate(self.image_original, self.who.angle)
         self.oldpos = self.who.allsidepos[self.side]
         self.rect = self.image.get_rect(center=self.who.allsidepos[self.side])
@@ -196,6 +199,17 @@ class hitbox(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
+        if self.viewmode != abs(viewmode - 11):
+            self.viewmode = abs(viewmode - 11)
+            self.image_original = self.image_original2.copy()
+            scalewidth = self.image_original.get_width()
+            scaleheight = self.image_original.get_height() / self.viewmode
+            if self.side in [0,3]:
+                scalewidth = self.image_original.get_width() / self.viewmode
+                scaleheight = self.image_original.get_height()
+            self.dim = pygame.Vector2(scalewidth, scaleheight)
+            self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+            self.image_original = self.image.copy()
         if self.oldpos != self.who.allsidepos[self.side]:
             self.image = pygame.transform.rotate(self.image_original, self.who.angle)
             self.rect = self.image.get_rect(center=self.who.allsidepos[self.side])
@@ -208,7 +222,7 @@ class hitbox(pygame.sprite.Sprite):
 
 class unitarmy(pygame.sprite.Sprite):
     images = []
-
+    maxviewmode = 10
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
         # super().__init__()
         self._layer = 5
@@ -224,11 +238,16 @@ class unitarmy(pygame.sprite.Sprite):
         self.hitbox = []
         self.squadsprite = []  ##list of squad sprite(not index)
         self.justsplit = False
+        self.viewmode = 1
         self.imgsize = imgsize
-        self.widthbox, self.heightbox = len(squadlist[0]) * self.imgsize[0], len(squadlist) * self.imgsize[1]
+        self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] / self.viewmode, len(self.armysquad) * self.imgsize[
+            1] / self.viewmode
         self.gameid = gameid
         self.control = control
-        self.pos, self.attackpos = pygame.Vector2(startposition), 0
+        self.basepos, self.baseattackpos = pygame.Vector2(
+            startposition), 0  ## Basepos is for remember pos at closest zoom and recal new pos when zoom out
+        self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode, self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
         self.angle, self.newangle = startangle, startangle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         self.pause = False
@@ -255,7 +274,8 @@ class unitarmy(pygame.sprite.Sprite):
         self.useminrange = 0
         self.useskillcond = 0
         self.set_target(startposition)
-        self.previousposition = pygame.Vector2(startposition)
+        self.basepreviousposition = pygame.Vector2(startposition)
+        self.previousposition = self.basepreviousposition * (self.viewmode/10)
         self.state = 0  ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
         self.preparetimer = 0
         self.deadchange = 0
@@ -272,7 +292,6 @@ class unitarmy(pygame.sprite.Sprite):
         self.image.fill((255, 255, 255, 128))
         pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
-        self.image_empty = self.image.copy()
         self.imagerect = self.images[10].get_rect(center=self.image.get_rect().center)
         self.image.blit(self.images[10], self.imagerect)
         self.healthimage = self.images[0]
@@ -284,16 +303,17 @@ class unitarmy(pygame.sprite.Sprite):
         self.coa = coa
         self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.coa, self.imagerect)
-        self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
+        self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy() ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
         self.rect = self.image.get_rect(center=startposition)
+        print(self.rect.center)
         self.testangle = math.radians(360 - startangle)
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
-        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2)),  ## generate all four side position
-                           ((self.rect.center[0] - self.widthbox / 2), self.rect.center[1]),
-                           ((self.rect.center[0] + self.widthbox / 2), self.rect.center[1]),
-                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2))]
+        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale  / 2)),  ## generate all four side position
+                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
+                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
+                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
         self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
             , rotationxy(self.rect.center, self.allsidepos[2], self.testangle), rotationxy(self.rect.center, self.allsidepos[3], self.testangle)]
@@ -301,7 +321,6 @@ class unitarmy(pygame.sprite.Sprite):
         self.battleside = [0, 0, 0,
                            0]  ## index of battleside (index of enemy fighting at the side of battalion) and frontline: 0 = front 1 = left 2 =right 3 =rear
         self.frontline = {0: [], 1: [], 2: [], 3: []}  ## frontline keep list of squad at the front of each side in combat
-        self.viewmode = 0
         width, height = 0, 0
         squadnum = 0
         for squad in self.armysquad.flat:  ## Set up squad position list for drawing
@@ -313,6 +332,23 @@ class unitarmy(pygame.sprite.Sprite):
                 height += self.imgsize[1]
                 squadnum = 0
 
+    def changescale(self):
+        scalewidth = self.image_original.get_width() / self.viewmode
+        scaleheight = self.image_original.get_height() / self.viewmode
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] / self.viewmode, len(self.armysquad) * self.imgsize[
+            1] / self.viewmode
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+        self.image_original = self.image.copy()
+
+    def changeposscale(self):
+        self.set_target(self.basetarget)
+        self.previousposition = self.basepreviousposition * abs(self.viewmode - 11) / self.maxviewmode
+        self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
+        self.rect = self.image.get_rect(center=self.pos)
+        self.attackpos = self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
+        self.makeallsidepos()
+
     def recreatesprite(self):
         """redrawing sprite for when split happen since the size will change"""
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
@@ -320,7 +356,6 @@ class unitarmy(pygame.sprite.Sprite):
         self.image.fill((255, 255, 255, 128))
         pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
-        self.image_empty = self.image.copy()
         self.imagerect = self.images[10].get_rect(center=self.image.get_rect().center)
         self.image.blit(self.images[10], self.imagerect)
         self.healthimage = self.images[0]
@@ -331,7 +366,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.image.blit(self.staminaimage, self.staminaimagerect)
         self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.coa, self.imagerect)
-        self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
+        self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()
         self.rect = self.image.get_rect(center=self.pos)
         self.testangle = math.radians(360 - self.angle)
         self.mask = pygame.mask.from_surface(self.image)
@@ -504,20 +539,20 @@ class unitarmy(pygame.sprite.Sprite):
         # for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
         # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
         # self.attackpos = pygame.Vector2(side[list(side2.keys())[0]])
-        self.attackpos = enemyhitbox.who.allsidepos[enemyhitbox.side]
+        self.baseattackpos = enemyhitbox.who.allsidepos[enemyhitbox.side]
+        self.attackpos = self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
         # if list(side2.keys())[0] == 1:
-        self.target = enemyhitbox.who.allsidepos[enemyhitbox.side]
         # self.commandtarget = enemyhitbox.who.allsidepos[enemyhitbox.side]
         # enemyhitbox.who.battleside[enemyhitbox.side] = self.gameid
         # self.battleside[0] = enemyhitbox.who.gameid
-        self.set_target(self.target)
+        self.set_target(enemyhitbox.who.allsidepos[enemyhitbox.side])
 
     def makeallsidepos(self):
         """generate all four side position"""
-        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightbox / 2) - 5),
-                           ((self.rect.center[0] - self.widthbox / 2) - 5, self.rect.center[1]),
-                           ((self.rect.center[0] + self.widthbox / 2) + 5, self.rect.center[1]),
-                           (self.rect.center[0], (self.rect.center[1] + self.heightbox / 2) + 5)]
+        self.allsidepos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2) - 5),
+                           ((self.rect.center[0] - self.widthscale / 2) - 5, self.rect.center[1]),
+                           ((self.rect.center[0] + self.widthscale / 2) + 5, self.rect.center[1]),
+                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2) + 5)]
         """generate again but with rotation in calculation"""
         self.allsidepos = [rotationxy(self.rect.center, self.allsidepos[0], self.testangle),
                            rotationxy(self.rect.center, self.allsidepos[1], self.testangle)
@@ -568,54 +603,59 @@ class unitarmy(pygame.sprite.Sprite):
                 self.authrecal()
                 self.authrecalnow = False
             """redraw if troop num or stamina change"""
-            if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != viewmode:
-                self.viewmode = viewmode
-                if self.viewmode == 1:
-                    self.image_original = self.image_empty.copy()
-                    self.squadtoarmy(squadgroup)
+            if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != abs(viewmode - 11):
+                if self.viewmode != abs(viewmode - 11):
+                    self.viewmode = abs(viewmode - 11)
+                    if self.viewmode != 1:
+                        self.image_original = self.image_original3.copy()
+                        self.changescale()
+                    elif self.viewmode == 1:
+                        self.image_original = self.image_original2.copy()
+                        self.squadtoarmy(squadgroup)
+                        self.changescale()
+                    self.changeposscale()
                 else:
                     """Change health and stamina bar Function"""
                     if self.troopnumber <= 0 and self.lasthealthstate != 0:
                         self.healthimage = self.images[4]
-                        self.image_original2.blit(self.healthimage, self.healthimagerect)
+                        self.image_original.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 0
                     elif self.troopnumber > 0 and self.troopnumber <= self.health25 and self.lasthealthstate != 1:
                         self.healthimage = self.images[3]
-                        self.image_original2.blit(self.healthimage, self.healthimagerect)
+                        self.image_original.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 1
                     elif self.troopnumber > self.health25 and self.troopnumber <= self.health50 and self.lasthealthstate != 2:
                         self.healthimage = self.images[2]
-                        self.image_original2.blit(self.healthimage, self.healthimagerect)
+                        self.image_original.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 2
                     elif self.troopnumber > self.health50 and self.troopnumber <= self.health75 and self.lasthealthstate != 3:
                         self.healthimage = self.images[1]
-                        self.image_original2.blit(self.healthimage, self.healthimagerect)
+                        self.image_original.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 3
                     elif self.troopnumber > self.health75 and self.lasthealthstate != 4:
                         self.healthimage = self.images[0]
-                        self.image_original2.blit(self.healthimage, self.healthimagerect)
+                        self.image_original.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 4
                     if self.stamina <= 0 and self.laststaminastate != 0:
                         self.staminaimage = self.images[9]
-                        self.image_original2.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 0
                     elif self.stamina > 0 and self.stamina <= self.stamina25 and self.laststaminastate != 1:
                         self.staminaimage = self.images[8]
-                        self.image_original2.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 1
                     elif self.stamina > self.stamina25 and self.stamina <= self.stamina50 and self.laststaminastate != 2:
                         self.staminaimage = self.images[7]
-                        self.image_original2.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 2
                     elif self.stamina > self.stamina50 and self.stamina <= self.stamina75 and self.laststaminastate != 3:
                         self.staminaimage = self.images[6]
-                        self.image_original2.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 3
                     elif self.stamina > self.stamina75 and self.laststaminastate != 4:
                         self.staminaimage = self.images[5]
-                        self.image_original2.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 4
-                    self.image_original = self.image_original2.copy()
                 self.rotate()
             self.oldlasthealth, self.oldlaststamina = self.lasthealthstate, self.laststaminastate
             """setup frontline again when any squad die"""
@@ -767,6 +807,7 @@ class unitarmy(pygame.sprite.Sprite):
                                 move = move * self.walkspeed * dt * 50
                             elif self.state in [10]:
                                 move = move * 3.5 * dt * 50
+                            move = move * abs(11 - self.viewmode) / self.maxviewmode
                             self.pos += move
                         self.rect.center = list(int(v) for v in self.pos)
                         self.makeallsidepos()
@@ -803,7 +844,8 @@ class unitarmy(pygame.sprite.Sprite):
         self.valuefortopbar = [str(self.troopnumber) + " (" + str(self.maxhealth) + ")", self.staminastate, self.moralestate, self.state]
 
     def set_target(self, pos):
-        self.target = pygame.Vector2(pos)
+        self.basetarget = pygame.Vector2(pos)
+        self.target = self.basetarget * abs(self.viewmode - 11) / self.maxviewmode
         # print(self.target)
 
     def rotate(self):
@@ -840,7 +882,7 @@ class unitarmy(pygame.sprite.Sprite):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
         if self.control == True and self.state not in [100]:
             """check if right click in mask or not. if not, move unit"""
-            posmask = mouse_pos[0] - self.rect.x, mouse_pos[1] - self.rect.y
+            posmask = mouse_pos[0][0] - self.rect.x, mouse_pos[0][1] - self.rect.y
             if mouse_right and self.state not in [10, 97, 98, 99, 100]:
                 try:  ## if click within rect but not in mask
                     if self.mask.get_at(posmask) == 0:
@@ -856,15 +898,15 @@ class unitarmy(pygame.sprite.Sprite):
                             elif self.ammo > 0:  ##Move to range attack
                                 self.state = 5
                             if keystate[pygame.K_LALT] == True:
-                                self.attackpos = pygame.Vector2(mouse_pos[0], mouse_pos[1])
+                                self.baseattackpos = mouse_pos[1]
                             else:
                                 self.attacktarget = whomouseover
-                                self.attackpos = whomouseover.pos
+                                self.baseattackpos = whomouseover.basepos
                         if double_mouse_right:
                             self.state += 1
                         self.rangecombatcheck = 0
                         if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                        self.set_target(mouse_pos)
+                        self.set_target(mouse_pos[1])
                         self.commandtarget = self.target
                         self.setrotate()
                         if self.charging == True:
@@ -883,7 +925,7 @@ class unitarmy(pygame.sprite.Sprite):
                         elif self.ammo > 0:
                             self.state = 5
                         if keystate[pygame.K_LALT] == True:
-                            self.attackpos = mouse_pos
+                            self.attackpos = mouse_pos[1]
                         else:
                             self.attacktarget = whomouseover
                             self.attackpos = whomouseover.pos
@@ -891,7 +933,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.state += 1
                     self.rangecombatcheck = 0
                     if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                    self.set_target(mouse_pos)
+                    self.set_target(mouse_pos[1])
                     self.commandtarget = self.target
                     self.setrotate()
                     if self.charging == True:
@@ -907,7 +949,7 @@ class unitarmy(pygame.sprite.Sprite):
                                 self.authrecal()
                                 self.retreattimer = 0.1
                                 self.retreatstart = 1
-                            self.set_target(mouse_pos)
+                            self.set_target(mouse_pos[1])
                             self.commandtarget = self.target
                             # self.combatcheck = 0
                 except:
@@ -918,7 +960,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.authrecal()
                             self.retreattimer = 0.1
                             self.retreatstart = 1
-                        self.set_target(mouse_pos)
+                        self.set_target(mouse_pos[1])
                         self.commandtarget = self.target
                         # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat
@@ -927,9 +969,10 @@ class unitarmy(pygame.sprite.Sprite):
                     self.authrecal()
                 self.state = 0
                 self.commandtarget = self.allsidepos[0]
-                self.target = self.allsidepos[0]
+                self.target = self.set_target(self.allsidepos[0])
                 self.rangecombatcheck = 0
                 self.setrotate()
+            self.changeposscale()
 
 
 class deadarmy(pygame.sprite.Sprite):

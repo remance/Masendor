@@ -447,6 +447,7 @@ class unitsquad(pygame.sprite.Sprite):
         if self.charge < 0: self.charge = 0
         if self.chargedef < 0: self.chargedef = 0
         if self.discipline < 0: self.discipline = 0
+        self.range = self.range / self.viewmode
         """remove cooldown if time reach 0"""
         self.skillcooldown = {key: val - dt for key, val in self.skillcooldown.items()}
         self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0}
@@ -463,6 +464,7 @@ class unitsquad(pygame.sprite.Sprite):
             self.rotate()
             self.findnearbysquad()
             self.gamestart = 1
+        self.viewmode = viewmode
         self.statusupdate(statuslist, dt)
         self.oldlasthealth, self.oldlaststamina = self.lasthealthstate, self.laststaminastate
         if self.state != 100:
@@ -526,7 +528,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.checkskillcondition()
             if self.state in [3, 4]:
                 if self.attackpos.distance_to(
-                        self.combatpos) < 300 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                        self.combatpos) < 300/self.viewmode and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                     self.useskill(0)
             skillchance = random.randint(0, 10)
             if skillchance >= 6 and len(self.availableskill) > 0:

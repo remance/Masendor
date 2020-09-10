@@ -7,8 +7,8 @@ main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
 
 class camera():
-    def __init__(self, startpos, zoom):
-        self.scale = zoom
+    def __init__(self, startpos, viewmode):
+        self.viewmode = viewmode
         self.pos = startpos
         self.image = pygame.Surface((SCREENRECT.width,SCREENRECT.height))
 

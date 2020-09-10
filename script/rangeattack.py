@@ -10,12 +10,12 @@ from RTS import maingame
 
 
 class arrow(pygame.sprite.Sprite):
-    speed = 8
     images = []
 
-    def __init__(self, shooter, range, maxrange):
+    def __init__(self, shooter, range, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.speed = 80 * abs(11 - viewmode) / 10
         self.image = self.images[0]
         self.arcshot = False
         if 16 in shooter.trait: self.arcshot = True
@@ -35,30 +35,30 @@ class arrow(pygame.sprite.Sprite):
         elif 74 in self.shooter.trait:
             hitchance = round((100 - self.accuracy * random.randint(1, 5)) / ((maxrange / range) * 2))
         howlong = range / (self.speed * 50)
-        targetnow = self.shooter.attackpos
+        targetnow = self.shooter.baseattackpos
         if self.shooter.attacktarget != 0:
-            targetnow = self.shooter.attacktarget.pos
+            targetnow = self.shooter.attacktarget.basepos
             if self.shooter.attacktarget.state in [1, 3, 5, 7] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
-                targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.allsidepos[0]
+                targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))
+                    targetnow = self.shooter.attacktarget.basepos + (targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))
                     if 17 not in self.shooter.trait: hitchance += random.randint(-20, 20)
                 else:
                     targetnow = self.shooter.attacktarget.pos
             elif self.shooter.attacktarget.state in [2, 4, 6, 8, 96, 98, 99] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
-                targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.allsidepos[0]
+                targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.pos + (targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))
+                    targetnow = self.shooter.attacktarget.basepos + (targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))
                     if 17 not in self.shooter.trait: hitchance += random.randint(-20, 20)
                 else:
-                    targetnow = self.shooter.attacktarget.pos
+                    targetnow = self.shooter.attacktarget.basepos
         if randomposition1 == 0:
-            self.target = pygame.Vector2(targetnow[0] - hitchance, targetnow[1] - hitchance)
+            self.basetarget = pygame.Vector2(targetnow[0] - hitchance, targetnow[1] - hitchance)
         else:
-            self.target = pygame.Vector2(targetnow[0] + hitchance, targetnow[1] + hitchance)
-        myradians = math.atan2(self.target[1] - self.shooter.combatpos[1], self.target[0] - self.shooter.combatpos[0])
+            self.basetarget = pygame.Vector2(targetnow[0] + hitchance, targetnow[1] + hitchance)
+        myradians = math.atan2(self.basetarget[1] - self.shooter.battalion.basepos[1], self.basetarget[0] - self.shooter.battalion.basepos[0])
         self.angle = math.degrees(myradians)
         # """upper left and upper right"""
         if self.angle >= -180 and self.angle < 0:
@@ -72,10 +72,12 @@ class arrow(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, self.angle)
         if randomposition1 == 0:
             self.rect = self.image.get_rect(midbottom=(self.shooter.combatpos[0] - randomposition2, self.shooter.combatpos[1] - randomposition2))
-            self.pos = pygame.Vector2(self.shooter.combatpos[0] - randomposition2, self.shooter.combatpos[1] - randomposition2)
+            self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] - randomposition2, self.shooter.battalion.basepos[1] - randomposition2)
         else:
             self.rect = self.image.get_rect(midbottom=(self.shooter.combatpos[0] + randomposition2, self.shooter.combatpos[1] + randomposition2))
-            self.pos = pygame.Vector2(self.shooter.combatpos[0] + randomposition2, self.shooter.combatpos[1] + randomposition2)
+            self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] + randomposition2, self.shooter.battalion.basepos[1] + randomposition2)
+        self.pos = self.basepos * abs(self.viewmode - 11) / 10
+        self.target = self.basetarget * abs(self.viewmode - 11) / 10
         self.mask = pygame.mask.from_surface(self.image)
 
     def rangedmgcal(self, who, target, targetside):
@@ -129,8 +131,9 @@ class arrow(pygame.sprite.Sprite):
                 squadhit = np.where(squadindexlist == squadhit)[0][0]
                 self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
 
-    def update(self, who, target, hitbox, squadlist, squadindexlist, dt):
+    def update(self, who, target, hitbox, squadlist, squadindexlist, dt, viewmode):
         """Who is the player battalion group, target is the enemy battalion group"""
+        self.speed = 80 * abs(11 - viewmode) / 10
         move = self.target - self.pos
         move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""

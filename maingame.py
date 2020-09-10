@@ -268,10 +268,11 @@ class battle():
         gameui.uibutton.containers = self.buttonui, self.uiupdater
         gameui.switchuibutton.containers = self.switchbuttonui, self.uiupdater
         ## create the background map
-        self.battlemap = gamemap.map()
-        self.camerapos = pygame.Vector2(5000,5000)
-        self.camerascale = 10
-        self.camera = gamecamera.camera(self.camerapos, 10)
+        self.camerapos = pygame.Vector2(5000,5000) ## Camera pos at the current zoom
+        self.basecamerapos = pygame.Vector2(5000,5000) ## Camera pos at cloest zoom for recalculate sprite pos after zoom
+        self.camerascale = 10 ## Camera zoom
+        self.battlemap = gamemap.map(self.camerascale)
+        self.camera = gamecamera.camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255,255,255))
         # pygame.display.flip()
@@ -695,14 +696,6 @@ class battle():
         oldposlist = self.enemyposlist
         who.colour = (144, 167, 255)
         who.control = True
-        # if who.gameid < 2000:
-        #     newgameid = self.enemyarmy[-1].gameid + 1
-        #     self.playerarmy.remove(who)
-        #     self.enemyarmy.append(who)
-        #     self.playerarmynum.pop(who.gameid)
-        #     self.playerposlist.pop(who.gameid)
-        #     who.gameid = newgameid
-        #     self.enemyarmynum[newgameid] = list(self.enemyarmynum.items())[-1][1] + 1
         if who.gameid < 2000:
             oldgroup = self.playerarmy
             newgroup = self.enemyarmy
@@ -765,39 +758,65 @@ class battle():
             self.fpscount.fpsshow(self.clock)
             keypress = None
             self.mousepos = pygame.mouse.get_pos()
-            self.battlemousepos = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0], self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])
-            mouse_up = False
+            self.battlemousepos = [pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0], self.mousepos[1] - self.centerscreen[1] + self.camerapos[1]), pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.basecamerapos[0], self.mousepos[1] - self.centerscreen[1] + self.basecamerapos[1])]
+            mouse_up = False ### problem battlemouse may need to also keep both before and after zoom for click and command
             mouse_right = False
             double_mouse_right = False
             keystate = pygame.key.get_pressed()
             if keystate[K_s] or self.mousepos[1] >= self.bottomcorner: ## down
-                self.camerapos[1]+=100
+                self.basecamerapos[1] += 50 * abs(11- self.camerascale)
+                self.camerapos[1] = self.basecamerapos[1] * self.camerascale / 10
             elif keystate[K_w] or self.mousepos[1] <= 5: ## up
-                self.camerapos[1]-=100
+                self.basecamerapos[1] -= 50 * abs(11- self.camerascale)
+                self.camerapos[1] = self.basecamerapos[1] * self.camerascale / 10
             if keystate[K_a] or self.mousepos[0] <= 5: ## left
-                self.camerapos[0]-=100
+                self.basecamerapos[0] -= 50 * abs(11- self.camerascale)
+                self.camerapos[0] = self.basecamerapos[0] * self.camerascale / 10
             elif keystate[K_d] or self.mousepos[0] >= self.rightcorner: ## right
-                self.camerapos[0]+=100
+                self.basecamerapos[0] += 50 * abs(11- self.camerascale)
+                self.camerapos[0] = self.basecamerapos[0] * self.camerascale / 10
             if self.camerapos[0] > self.battlemap.image.get_width(): self.camerapos[0] = self.battlemap.image.get_width()
             elif self.camerapos[0] < 0: self.camerapos[0] = 0
             if self.camerapos[1] > self.battlemap.image.get_height(): self.camerapos[1] = self.battlemap.image.get_height()
             elif self.camerapos[1] < 0: self.camerapos[1] = 0
+            if self.basecamerapos[0] > 10000:
+                self.basecamerapos[0] = 10000
+            elif self.basecamerapos[0] < 0:
+                self.basecamerapos[0] = 0
+            if self.basecamerapos[1] > 10000:
+                self.basecamerapos[1] = 10000
+            elif self.basecamerapos[1] < 0:
+                self.basecamerapos[1] = 0
             for event in pygame.event.get():  ## get event input
                 if event.type == QUIT or \
                         (event.type == KEYDOWN and event.key == K_ESCAPE):
                     self.allui.clear(self.screen, self.background)
                     self.allcamera.clear(self.screen, self.background)
                     return
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:  ## left click
-                    mouse_up = True
-                    print("moseeeeeee", self.mousepos, self.battlemousepos)
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 3:  ## Right Click
-                    mouse_right = True
-                    if self.timer == 0:
-                        self.timer = 0.001  ##Start timer after first mouse click
-                    elif self.timer < 0.3:
-                        double_mouse_right = True
-                        self.timer = 0
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:  ## left click
+                        mouse_up = True
+                    elif event.button == 3:  ## Right Click
+                        mouse_right = True
+                        if self.timer == 0:
+                            self.timer = 0.001  ##Start timer after first mouse click
+                        elif self.timer < 0.3:
+                            double_mouse_right = True
+                            self.timer = 0
+                    elif event.button == 4:
+                        self.camerascale += 1
+                        if self.camerascale > 10: self.camerascale = 10
+                        else:
+                            self.battlemap.changescale(self.camerascale)
+                            self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
+                            self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
+                    elif event.button == 5:
+                        self.camerascale -= 1
+                        if self.camerascale < 1: self.camerascale = 1
+                        else:
+                            self.battlemap.changescale(self.camerascale)
+                            self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
+                            self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
                         if self.unitviewmode == 1:
@@ -848,8 +867,8 @@ class battle():
                             if self.inspectui == 1:
                                 self.check = 1
                                 self.uicheck = 1
-                if army.rect.collidepoint(self.battlemousepos):
-                    posmask = int(self.battlemousepos[0] - army.rect.x), int(self.battlemousepos[1] - army.rect.y)
+                if army.rect.collidepoint(self.battlemousepos[0]):
+                    posmask = int(self.battlemousepos[0][0] - army.rect.x), int(self.battlemousepos[0][1] - army.rect.y)
                     try:
                         if army.mask.get_at(posmask) == 1:
                             army.mouse_over = True
@@ -885,8 +904,8 @@ class battle():
                 if mouse_up or mouse_right:
                     whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                      self.lastmouseover, self.enemyposlist, keystate)
-                    if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.moverotate == 0 and whoinput.directionarrow == False:
-                        gamebattalion.directionarrow(whoinput)
+                    # if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.moverotate == 0 and whoinput.directionarrow == False:
+                    #     gamebattalion.directionarrow(whoinput)
                 if self.beforeselected == 0:  ## add back the pop up ui to group so it get shown when click unit with none selected before
                     self.gameui = self.popgameui
                     self.allui.add(*self.gameui[0:2])  ## add leader and top ui
@@ -1083,15 +1102,15 @@ class battle():
                                 thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                             if thissquad.reloadtime >= thissquad.reload and (
                                     thissquad.attacktarget == 0 or (thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
-                                rangeattack.arrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range)
+                                rangeattack.arrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range, self.camerascale)
                                 thissquad.ammo -= 1
                                 thissquad.reloadtime = 0
                             elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
                                 thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
                         self.combattimer = 0
                 self.combattimer += self.dt
-                self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.unitviewmode, self.playerposlist, self.enemyposlist)
-                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt)
+                self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
+                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt, self.camerascale)
             elif self.gamestate == 0:
                 pass
             self.camera.update(self.camerapos, self.allcamera)
