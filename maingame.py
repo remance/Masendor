@@ -272,6 +272,7 @@ class battle():
         self.basecamerapos = pygame.Vector2(5000,5000) ## Camera pos at cloest zoom for recalculate sprite pos after zoom
         self.camerascale = 10 ## Camera zoom
         self.battlemap = gamemap.map(self.camerascale)
+        gamebattalion.unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
         self.camera = gamecamera.camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255,255,255))
@@ -557,18 +558,23 @@ class battle():
 
     def splitunit(self, who, how):
         """split battalion either by row or column into two seperate battalion"""
+        basesidepos = [(who.basepos[0], (who.basepos[1] - who.heightbox / 2)),
+            ((who.basepos[0] - who.widthbox / 2), who.basepos[1]),((who.basepos[0] + who.widthbox / 2) + 5, who.basepos[1]),
+            (who.basepos[0], (who.basepos[1] + who.heightbox / 2) + 5)]
+        basesidepos = [gamebattalion.rotationxy(who.basepos, basesidepos[0], who.testangle),  ## generate again but with rotation in calculation
+            gamebattalion.rotationxy(who.basepos, basesidepos[1], who.testangle), gamebattalion.rotationxy(who.basepos, basesidepos[2], who.testangle), gamebattalion.rotationxy(who.basepos, basesidepos[3], who.testangle)]
         if how == 0:  ## split by row
             newarmysquad = np.array_split(who.armysquad, 2)[1]
             who.armysquad = np.array_split(who.armysquad, 2)[0]
             who.squadalive = np.array_split(who.squadalive, 2)[0]
-            newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.pos) / 2)
-            who.pos = who.allsidepos[0] - ((who.allsidepos[0] - who.pos) / 2)
+            newpos = basesidepos[3] - ((basesidepos[3] - who.basepos) / 2)
+            who.basepos = basesidepos[0] - ((basesidepos[0] - who.basepos) / 2)
         else:  ## split by column
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
             who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
             who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
-            newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.pos) / 2)
-            who.pos = who.allsidepos[1] - ((who.allsidepos[1] - who.pos) / 2)
+            newpos = basesidepos[2] - ((basesidepos[2] - who.basepos) / 2)
+            who.basepos = basesidepos[1] - ((basesidepos[1] - who.basepos) / 2)
         if who.leader[1].squad.gameid not in newarmysquad:  ## move leader if squad not in new one
             if who.leader[1].squad.type in [1, 3, 5, 6, 7, 10, 11]:  ## if squad type melee move to front
                 leaderreplace = [np.where(who.armysquad == who.leader[1].squad.gameid)[0][0],
@@ -618,6 +624,8 @@ class battle():
         who.makeallsidepos()
         who.setuparmy()
         who.setupfrontline()
+        who.viewmode = self.camerascale
+        who.changescale()
         for thishitbox in who.hitbox: thishitbox.kill()
         who.hitbox = [gamebattalion.hitbox(who, 0, who.rect.width, 5),
                       gamebattalion.hitbox(who, 1, 5, who.rect.height - 5),
@@ -680,12 +688,14 @@ class battle():
         army.authrecal()
         self.allunitlist.append(army)
         army.newangle = army.angle - 1
+        army.rotate()
+        army.viewmode = self.camerascale
+        army.changescale()
+        army.makeallsidepos()
         army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
                        gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
                        gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
                        gamebattalion.hitbox(army, 3, army.rect.width, 5)]
-        army.rotate()
-        army.makeallsidepos()
         army.autosquadplace = False
 
     def changefaction(self, who):
@@ -860,9 +870,9 @@ class battle():
                 self.uicheck = 0
             for army in self.allunitlist:
                 if army.gameid < 2000:
-                    self.playerposlist[army.gameid] = army.pos
+                    self.playerposlist[army.gameid] = army.basepos
                 else:
-                    self.enemyposlist[army.gameid] = army.pos
+                    self.enemyposlist[army.gameid] = army.basepos
                 for ui in self.gameui:
                     if ui.rect.collidepoint(self.mousepos) and mouse_up:
                         if ui.uitype not in ["unitcard", 'armybox']:
@@ -987,7 +997,7 @@ class battle():
                         whoinput.useminrange = 0
                     self.switchbuttonui[3].event = whoinput.useminrange
                 elif self.buttonui[5] in self.allui and self.buttonui[5].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
-                    if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
+                    if whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput, 1)
                         self.splithappen = True
                         self.checksplit(whoinput)
@@ -995,7 +1005,7 @@ class battle():
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
                 elif self.buttonui[6] in self.allui and self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
-                    if whoinput.pos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
+                    if whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
                         self.splitunit(whoinput, 0)
                         self.splithappen = True
                         self.checksplit(whoinput)

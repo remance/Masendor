@@ -186,7 +186,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.walkspeed, self.runspeed = self.basespeed / 15, self.basespeed / 10
         self.moralestate = round((self.basemorale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        self.image = self.images[0]
+        self.image = self.images[0] ## squad block blue colour for player
         """squad block colour"""
         if self.battalion.gameid >= 2000:
             self.image = self.images[19]

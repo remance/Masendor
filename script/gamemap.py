@@ -21,6 +21,7 @@ class map(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
+        self.terraincolour = [(166,255,107,255),(255,199,13,255),(196,196,196,255),(240,229,176,255),(212,194,173,255),(112,145,189,255),(148,140,135,255),(153,217,235,255),(100,110,214,255)] ## grassland, plain, snow, desert, tundra, ice, barren, shallow water, deep water
 
     def changescale(self,scale):
         self.scale = scale
@@ -30,6 +31,15 @@ class map(pygame.sprite.Sprite):
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
+    def getterrain(self, pos):
+        terrain = self.image.get_at((int(pos[0]), int(pos[1]))) ##get colour at pos to obtain the terrain type
+        # terrainindex = None
+        for index, colour in enumerate(self.terraincolour):
+            if terrain == colour:
+                terrainindex = index
+                break
+        return terrainindex
+
     # def update(self, dt, pos, scale):
 
 class mapfeature(pygame.sprite.Sprite):
@@ -38,4 +48,4 @@ class mapfeature(pygame.sprite.Sprite):
     def __init__(self, x, y, image):
         self._layer = 1
         pygame.sprite.Sprite.__init__(self, self.containers)
-# Surface.get_at((x, y)) ##get colour at pos maybe can be used to create map from just picture?
+

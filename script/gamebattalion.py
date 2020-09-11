@@ -222,7 +222,9 @@ class hitbox(pygame.sprite.Sprite):
 
 class unitarmy(pygame.sprite.Sprite):
     images = []
+    gamemap = []
     maxviewmode = 10
+
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
         # super().__init__()
         self._layer = 5
@@ -245,8 +247,8 @@ class unitarmy(pygame.sprite.Sprite):
             1] / self.viewmode
         self.gameid = gameid
         self.control = control
-        self.basepos, self.baseattackpos = pygame.Vector2(
-            startposition), 0  ## Basepos is for remember pos at closest zoom and recal new pos when zoom out
+        self.basepos = pygame.Vector2(startposition) ## Basepos is for remember pos at closest zoom and recal new pos when zoom out
+        self.baseattackpos = 0
         self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode, self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
         self.angle, self.newangle = startangle, startangle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
@@ -273,6 +275,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.maxrange = 0
         self.useminrange = 0
         self.useskillcond = 0
+        self.terrain = 0
         self.set_target(startposition)
         self.basepreviousposition = pygame.Vector2(startposition)
         self.previousposition = self.basepreviousposition * (self.viewmode/10)
@@ -584,6 +587,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
+        self.terrain = self.gamemap.getterrain(self.pos)
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
 
@@ -808,6 +812,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.basepos += move
                             self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
                         self.rect.center = list(int(v) for v in self.pos)
+                        self.terrain = self.gamemap.getterrain(self.pos)
                         self.makeallsidepos()
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.preparetimer <= 0) and self.moverotate == 0 and self.rotateonly != True:

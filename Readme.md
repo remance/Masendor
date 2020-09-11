@@ -1,6 +1,8 @@
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until ver 0.5).
 
+Also the game currently use pygame 1.9.6 module and will not work with pygame 2 as I have no plan to upgrade it anytime soon.
+
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 Plan
@@ -31,4 +33,4 @@ ver 1.7: leader rapport and affect on authority and control mechanic including s
 
 Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon, ), dynamic squad facing position and maybe "saved" formation that player can rotate in battle 
 
-Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't be much used until game map become much larger than just a single battlefield)
+Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield)
