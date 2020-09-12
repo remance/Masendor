@@ -1,6 +1,6 @@
 import pygame
 import pygame.freetype
-
+import csv
 from RTS import mainmenu
 
 main_dir = mainmenu.main_dir
@@ -32,6 +32,7 @@ Farm = (255,242,0,255)
 Wall = (102,92,118,255)
 Mana = (101,109,214,255)
 Rot = (200,191,231,255)
+Wetground = (255)
 
 class map(pygame.sprite.Sprite):
     images = []
@@ -69,7 +70,7 @@ class mapfeature(pygame.sprite.Sprite):
     images = []
 
     def __init__(self, scale):
-        self._layer = 1
+        self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
         self.scale = scale
@@ -79,7 +80,18 @@ class mapfeature(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
-        self.featurecolour = [Plain,Barren,PlantField,Forest,InlandWater,Road,UrbanBuilding,Farm,Wall,Mana,Rot] ## forest, tall plant/grass, field, road/bridge, wall, urban building
+        self.featurecolour = [Plain,Barren,PlantField,Forest,InlandWater,Road,UrbanBuilding,Farm,Wall,Mana,Rot,Wetground] ## forest, tall plant/grass, field, road/bridge, wall, urban building
+        self.featuremod = {}
+        with open(main_dir + "\data\map" + '\\unit_terrainbonus.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                self.featuremod[row[0]] = row[1:]
+        unitfile.close()
+
+
 
     def changescale(self,scale):
         self.scale = scale
@@ -98,7 +110,33 @@ class mapfeature(pygame.sprite.Sprite):
             featureindex = featureindex + (terrainindex * 11)
         return terrainindex, featureindex
 
-    ## actually since
+class mapheight(pygame.sprite.Sprite):
+    images = []
+
+    def __init__(self, scale):
+        self._layer = 0
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = self.images[0]
+        self.scale = scale
+        scalewidth = self.image.get_width() * self.scale
+        scaleheight = self.image.get_height() * self.scale
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image_original = self.image.copy()
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+        self.rect = self.image.get_rect(topleft=(0,0))
+
+    def changescale(self,scale):
+        self.scale = scale
+        self.image = self.image_original
+        scalewidth = self.image.get_width() * self.scale
+        scaleheight = self.image.get_height() * self.scale
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+
+    def getheight(self, pos):
+        heightindex = 255 - self.image.get_at((int(pos[0]), int(pos[1])))[2] ##get colour at pos to obtain the terrain type
+        return heightindex
+
 
 class beautifulmap(pygame.sprite.Sprite):
     images = []

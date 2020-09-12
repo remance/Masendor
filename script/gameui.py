@@ -299,7 +299,7 @@ class Gameui(pygame.sprite.Sprite):
                         weaponlist.weaponlist[who.meleeweapon[0]][3]),
                                  self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(
                                      armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
-                                 "Total Weight:" + str(who.weight), "Terrain:" + terrain]
+                                 "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.battalion.height)]
                     if who.rangeweapon[0] != 0:
                         textvalue.insert(1,
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(

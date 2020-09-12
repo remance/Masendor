@@ -51,60 +51,60 @@ class unitsquad(pygame.sprite.Sprite):
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if str(unitid) == row[0]:
-                    self.stat = row
-                    for n, i in enumerate(self.stat):
+                    stat = row
+                    for n, i in enumerate(stat):
                         if i.isdigit():
-                            self.stat[n] = int(i)
+                            stat[n] = int(i)
                         if n in [5, 6, 11, 22, 23]:
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
                                 row[n] = [int(i)]
         self.leader = None
-        self.name = self.stat[1]
-        self.unitclass = self.stat[2]
-        self.grade = self.stat[3]
-        self.race = self.stat[4]
-        self.trait = self.stat[5]
-        self.skill = self.stat[6]
+        self.name = stat[1]
+        self.unitclass = stat[2]
+        self.grade = stat[3]
+        self.race = stat[4]
+        self.trait = stat[5]
+        self.skill = stat[6]
         self.skillcooldown = {}
-        self.cost = self.stat[7]
-        self.baseattack = round(self.stat[8] + int(statlist.gradelist[self.grade][1]), 0)
-        self.basemeleedef = round(self.stat[9] + int(statlist.gradelist[self.grade][2]), 0)
-        self.baserangedef = round(self.stat[10] + int(statlist.gradelist[self.grade][2]), 0)
-        self.armourgear = self.stat[11]
-        self.basearmour = armourlist.armourlist[self.stat[11][0]][1] * (
-                    armourlist.quality[self.stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
-        self.baseaccuracy = self.stat[13]
-        self.baserange = self.stat[14] * 20
-        self.ammo = self.stat[15]
-        self.basereload = self.stat[16]
+        self.cost = stat[7]
+        self.baseattack = round(stat[8] + int(statlist.gradelist[self.grade][1]), 0)
+        self.basemeleedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
+        self.baserangedef = round(stat[10] + int(statlist.gradelist[self.grade][2]), 0)
+        self.armourgear = stat[11]
+        self.basearmour = armourlist.armourlist[stat[11][0]][1] * (
+                    armourlist.quality[stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
+        self.baseaccuracy = stat[13]
+        self.baserange = stat[14] * 20
+        self.ammo = stat[15]
+        self.basereload = stat[16]
         self.reloadtime = 0
-        self.basecharge = self.stat[17]
+        self.basecharge = stat[17]
         self.basechargedef = 10
-        self.chargeskill = self.stat[18]
+        self.chargeskill = stat[18]
         self.charging = False
         self.skill.insert(0, self.chargeskill)
         self.skill = {x: statlist.abilitylist[x] for x in self.skill if x != 0}
-        self.troophealth = round(self.stat[19] * (int(statlist.gradelist[self.grade][7]) / 100))
-        self.stamina = int(self.stat[20] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
-        self.mana = self.stat[21]
-        self.meleeweapon = self.stat[22]
-        self.rangeweapon = self.stat[23]
-        self.basemorale = int(self.stat[24] + int(statlist.gradelist[self.grade][9]))
-        self.basediscipline = int(self.stat[25] + int(statlist.gradelist[self.grade][10]))
-        self.troopnumber = self.stat[28]
-        self.type = self.stat[29]
+        self.troophealth = round(stat[19] * (int(statlist.gradelist[self.grade][7]) / 100))
+        self.stamina = int(stat[20] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
+        self.mana = stat[21]
+        self.meleeweapon = stat[22]
+        self.rangeweapon = stat[23]
+        self.basemorale = int(stat[24] + int(statlist.gradelist[self.grade][9]))
+        self.basediscipline = int(stat[25] + int(statlist.gradelist[self.grade][10]))
+        self.troopnumber = stat[28]
+        self.type = stat[29]
         self.basespeed = 50
         if self.type in [4, 5, 6, 7]: self.speed = 80
-        self.weight = weaponlist.weaponlist[self.stat[22][0]][3] + weaponlist.weaponlist[self.stat[23][0]][3] + \
-                      armourlist.armourlist[self.stat[11][0]][2]
+        self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
+                      armourlist.armourlist[stat[11][0]][2]
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
         if self.type in [1, 2]:
             self.unittype = self.type - 1
         elif self.type in [3, 4, 5, 6, 7]:
             self.unittype = 2
-        self.description = self.stat[33]
+        self.description = stat[33]
         # if self.hidden
         self.baseelemmelee = 0
         self.baseelemrange = 0
