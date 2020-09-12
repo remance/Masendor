@@ -589,8 +589,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
-        self.terrain = self.gamemap.getterrain(self.pos)
-        self.feature = self.gamemapfeature.getfeature(self.pos)
+        self.terrain, self.feature = self.gamemapfeature.getfeature(self.pos, self.gamemap)
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
 
@@ -815,8 +814,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.basepos += move
                             self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
                         self.rect.center = list(int(v) for v in self.pos)
-                        self.terrain = self.gamemap.getterrain(self.pos)
-                        self.feature = self.gamemapfeature.getfeature(self.pos)
+                        self.terrain, self.feature = self.gamemapfeature.getfeature(self.pos, self.gamemap)
                         self.makeallsidepos()
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.preparetimer <= 0) and self.moverotate == 0 and self.rotateonly != True:

@@ -257,7 +257,7 @@ class battle():
         self.fpscount = pygame.sprite.Group()
         self.switchbuttonui = pygame.sprite.Group()
         """assign default groups"""
-        gamemap.map.containers = self.battlemap, self.mapupdater, self.allcamera
+        gamemap.map.containers = self.battlemap, self.mapupdater
         gamemap.mapfeature.containers = self.battlemapfeature, self.mapupdater, self.allcamera
         gamebattalion.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
         gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
@@ -840,11 +840,13 @@ class battle():
                             self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
                             self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
                 if event.type == pygame.KEYDOWN:
-                    # if event.key == pygame.K_TAB:
-                        # if self.unitviewmode == 1:
-                        #     self.unitviewmode = 0
-                        # else:
-                        #     self.unitviewmode = 1
+                    if event.key == pygame.K_TAB:
+                        if self.battlemap in self.allcamera:
+                            self.allcamera.remove(self.battlemap)
+                            self.allcamera.add(self.battlemapfeature)
+                        else:
+                            self.allcamera.remove(self.battlemapfeature)
+                            self.allcamera.add(self.battlemap)
                     if event.key == pygame.K_p:  ## Pause Button
                         if self.gamestate == 1:
                             self.gamestate = 0
