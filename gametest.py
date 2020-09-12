@@ -78,15 +78,11 @@ import timeit
 #            if k == 5: print(k)
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-# starttime = timeit.default_timer()
-# print("The start time is :",starttime)
-# run = 0
-# k = 10
-# while run != 5:
-#     a = random.randint(0,20)
-#     if a > 10:
-#         k = 10
-#     else: 0
-#     run += 1
-# print("The time difference is :", timeit.default_timer() - starttime)
-print("\\test")
+featurecolour = np.array(((16,84,36,255),(167,186,139,255),(255,242,0,255),(130,82,55,255),(102,92,118,255),(147,140,136,255))) ## forest, tall plant/grass, field, bridge, wall, urban building
+
+starttime = timeit.default_timer()
+print("The start time is :",starttime)
+run = 0
+print(list((16,84,36,255)))
+print("The time difference is :", timeit.default_timer() - starttime)
+##0.06538829500000004 0.055473137000000006

@@ -299,7 +299,7 @@ class mainmenu():
                                         gamescreen=self.screen, value=SoundVolume, min_value=0, max_value=100)
         img = load_image('volume_icon.png', 'ui')
         self.volumeicon = menuicon(images=[img], X=self.sliderbutton1.X - 150, Y=self.sliderbutton1.Y, gamescreen=self.screen, imageresize=50)
-        pygame.display.set_caption('Pax Paradisum')
+        pygame.display.set_caption('The World at Hand')
         pygame.mouse.set_visible(1)
         if pygame.mixer:
             self.mixervolume = float(SoundVolume / 100)

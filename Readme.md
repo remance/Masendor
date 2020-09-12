@@ -1,7 +1,7 @@
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until ver 0.5).
 
-Also the game currently use pygame 1.9.6 module and will not work with pygame 2 as I have no plan to upgrade it anytime soon.
+Also the game currently use pygame 1.9.6 module and will not work with pygame 2 as there is no plan to upgrade it anytime soon.
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
@@ -13,7 +13,7 @@ Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dram
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
-Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle
+Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle, improve main menu
 
 Ver 0.7 Future Visionary: Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus
 
