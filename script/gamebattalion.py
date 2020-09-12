@@ -222,7 +222,8 @@ class hitbox(pygame.sprite.Sprite):
 
 class unitarmy(pygame.sprite.Sprite):
     images = []
-    gamemap = []
+    gamemap = None
+    gamemapfeature = None
     maxviewmode = 10
 
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
@@ -276,6 +277,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.useminrange = 0
         self.useskillcond = 0
         self.terrain = 0
+        self.feature = None
         self.set_target(startposition)
         self.basepreviousposition = pygame.Vector2(startposition)
         self.previousposition = self.basepreviousposition * (self.viewmode/10)
@@ -588,6 +590,7 @@ class unitarmy(pygame.sprite.Sprite):
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
         self.terrain = self.gamemap.getterrain(self.pos)
+        self.feature = self.gamemapfeature.getfeature(self.pos)
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
 
@@ -813,6 +816,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
                         self.rect.center = list(int(v) for v in self.pos)
                         self.terrain = self.gamemap.getterrain(self.pos)
+                        self.feature = self.gamemapfeature.getfeature(self.pos)
                         self.makeallsidepos()
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.preparetimer <= 0) and self.moverotate == 0 and self.rotateonly != True:

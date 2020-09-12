@@ -96,6 +96,7 @@ class Gameui(pygame.sprite.Sprite):
                               "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
             self.qualitytext = ["Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect"]
             self.terrainlist = ["Grassland", "Plain", "Snow", "Desert", "Tundra", "Ice", "Barren", "Shallow water", "Deep water"]
+            self.featurelist = ["Forest", "Tall plant/grass", "Field", "Bridge", "Wall", "Urban building"]
         #     self.iconimagerect = self.icon[0].get_rect(
         #         center=(
         #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))
@@ -282,12 +283,14 @@ class Gameui(pygame.sprite.Sprite):
                         #     position2 = positionx + 20
                         position += 20
                 elif self.option == 3:  ## equipment and terrain
+                    terrain = self.terrainlist[who.battalion.terrain]
+                    if who.battalion.feature != None: terrain += "/" + self.featurelist[who.battalion.feature]
                     textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][3]),
                                  self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(
                                      armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
-                                 "Total Weight:" + str(who.weight), "Terrain:" + self.terrainlist[who.battalion.terrain]]
+                                 "Total Weight:" + str(who.weight), "Terrain:" + terrain]
                     if who.rangeweapon[0] != 0:
                         textvalue.insert(1,
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(

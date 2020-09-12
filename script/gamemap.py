@@ -62,7 +62,7 @@ class mapfeature(pygame.sprite.Sprite):
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
-    def getfaature(self, pos):
+    def getfeature(self, pos):
         feature = self.image.get_at((int(pos[0]), int(pos[1]))) ##get colour at pos to obtain the terrain type
         featureindex = None
         if feature in self.featurecolour:

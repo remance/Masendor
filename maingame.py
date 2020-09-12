@@ -163,7 +163,8 @@ class battle():
         ## create game map
         mapselected = "testmap"
         imgs = load_images(['map', mapselected],loadorder=False)
-        gamemap.map.images = imgs
+        gamemap.map.images = [imgs[0]]
+        gamemap.mapfeature.images = [imgs[1]]
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
         imgs = []
@@ -242,6 +243,7 @@ class battle():
         self.mapupdater = pygame.sprite.Group()
         self.effectupdater = pygame.sprite.Group()
         self.battlemap = pygame.sprite.Group()
+        self.battlemapfeature = pygame.sprite.Group()
         self.playerarmy = pygame.sprite.Group()
         self.enemyarmy = pygame.sprite.Group()
         self.squad = pygame.sprite.Group()
@@ -256,6 +258,7 @@ class battle():
         self.switchbuttonui = pygame.sprite.Group()
         """assign default groups"""
         gamemap.map.containers = self.battlemap, self.mapupdater, self.allcamera
+        gamemap.mapfeature.containers = self.battlemapfeature, self.mapupdater, self.allcamera
         gamebattalion.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
         gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
         gamebattalion.deadarmy.containers = self.deadunit, self.unitupdater, self.allcamera
@@ -272,7 +275,9 @@ class battle():
         self.basecamerapos = pygame.Vector2(5000,5000) ## Camera pos at cloest zoom for recalculate sprite pos after zoom
         self.camerascale = 10 ## Camera zoom
         self.battlemap = gamemap.map(self.camerascale)
+        self.battlemapfeature = gamemap.mapfeature(self.camerascale)
         gamebattalion.unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
+        gamebattalion.unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
         self.camera = gamecamera.camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255,255,255))
@@ -823,6 +828,7 @@ class battle():
                         if self.camerascale > 10: self.camerascale = 10
                         else:
                             self.battlemap.changescale(self.camerascale)
+                            self.battlemapfeature.changescale(self.camerascale)
                             self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
                             self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
                     elif event.button == 5:
@@ -830,6 +836,7 @@ class battle():
                         if self.camerascale < 1: self.camerascale = 1
                         else:
                             self.battlemap.changescale(self.camerascale)
+                            self.battlemapfeature.changescale(self.camerascale)
                             self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
                             self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
                 if event.type == pygame.KEYDOWN:

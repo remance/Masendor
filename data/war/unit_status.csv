@@ -43,7 +43,7 @@
 42,"Bewitched","0,1",,30,,,,,,,,,0,0,0,30,-10,,,"""Damn! Akusb got bewitched by mermaids this time! Go get get a compass, a priest, and a monkey here!""",
 43,"Paralysed",,,10,0,20,20,,0,,0,,-80,0,0,0,0,,,"Paralysed and unable to act, this unit is now an easy target for coup de grace.",
 44,"Knock Down",0,,5,,,,,,,,,-60,0,0,0,-60,,,"No matter how many time you get knocked down, only by getting up is when you can fight again.",
-45,"Aging",,,,,,,,,,,,0,,-10,,,,,,
+45,"Aging",,,,,,,,,,,,0,,-10,,,,,"The flow of time is unstoppable, but the process of life can be accelerated. ",
 46,"Disarmed","4,5",,,,,,,,,,,-80,0,0,0,0,,,"Losing weapon is a shame any warrior worth their salt should reconsider their life. But now is a good time to run.",
 47,"Enlarged",,,,,,,,,,,,40,0,0,0,0,,,,
 48,"Rusted",,,120,70,70,70,,,70,70,,0,0,0,0,0,,,,
