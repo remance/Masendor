@@ -332,3 +332,52 @@ class fpscount(pygame.sprite.Sprite):
         fps_text = self.font.render(fps, 1, pygame.Color("black"))
         self.textrect = fps_text.get_rect(center=(25, 25))
         self.image.blit(fps_text, self.textrect)
+
+
+class minimap(pygame.sprite.Sprite):
+    def __init__(self, image, camera):
+        self._layer = 8
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = image
+        scalewidth = self.image.get_width() / 5
+        scaleheight = self.image.get_height() / 5
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+        self.image_original = self.image.copy()
+        self.enemydot = pygame.Surface(4,4).fill((0, 0, 0))
+        self.playerdot = pygame.Surface(4,4).fill((0, 0, 0))
+        enemy = pygame.Surface(2,2).fill((255, 0, 0))
+        player = pygame.Surface(2,2).fill((0, 0, 255))
+        rect = enemy.get_rect(center=self.enemydot.get_rect().center)
+        self.enemydot.blit(enemy, rect)
+        self.playerdot.blit(player, rect)
+        self.playerpos = []
+        self.enemypos = []
+        self.cameraborder = pygame.Surface((camera.image.get_width(), camera.image.get_height()), pygame.SRCALPHA)
+        pygame.draw.rect(self.cameraborder, (0, 0, 0), (0, 0, self.cameraborder.get_width(), self.cameraborder.get_height()), 4)
+        self.cameraborder_original = self.cameraborder.copy()
+        self.camerapos = camera.pos
+        self.lastscale = 10
+
+    def update(self, viewmode, camerapos, playerposlist, enemyposlist):
+        if self.playerpos != playerposlist or self.enemypos != enemyposlist or self.camerapos != camerapos or self.lastscale != viewmode:
+            self.playerpos = playerposlist
+            self.enemypos = enemyposlist
+            self.image = self.image_original.copy()
+            for player in playerposlist:
+                scaledpos = player / 50
+                rect = self.playerdot.get_rect(center=scaledpos)
+                self.image.blit(self.playerdot, rect)
+            for enemy in enemyposlist:
+                scaledpos = enemy / 50
+                rect = self.enemydot.get_rect(center=scaledpos)
+                self.image.blit(self.enemydot, rect)
+            if self.lastscale != viewmode:
+                self.cameraborder = self.cameraborder_original.copy()
+                camerawidth = self.cameraborder.get_width() * 10 / viewmode
+                cameraheight = self.cameraborder.get_height() * 10 / viewmode
+                cameradim = pygame.Vector2(camerawidth, cameraheight)
+                self.cameraborder = pygame.transform.scale(self.image_original, (int(cameradim[0]), int(cameradim[1])))
+                self.lastscale = viewmode
+            camerarect = self.cameraborder.get_rect(center=camerapos)
+            self.image.blit(self.cameraborder, camerarect)

@@ -24,7 +24,7 @@ def rotationxy(origin, point, angle):
 
 class weaponstat():
     def __init__(self, img):
-        """Armour has dmg. penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
+        """Armour has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weaponlist = {}
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
@@ -56,7 +56,7 @@ class armourstat():
 
 class unitstat():
     def __init__(self, statusicon, abilityicon, traiticon, roleicon):
-        """Stat data read"""
+        """Unit stat data read"""
         """status effect list"""
         self.statuslist = {}
         self.statusicon = statusicon

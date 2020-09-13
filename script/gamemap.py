@@ -36,6 +36,7 @@ Wetground = (186,184,109,255)
 
 class map(pygame.sprite.Sprite):
     images = []
+    maxviewmode = 10
 
     def __init__(self, scale):
         """image file of map should be at size 1000x1000 then it will be scaled in game"""
@@ -72,6 +73,7 @@ class map(pygame.sprite.Sprite):
 
 class mapfeature(pygame.sprite.Sprite):
     images = []
+    maxviewmode = 10
 
     def __init__(self, scale):
         self._layer = 0
@@ -120,6 +122,7 @@ class mapfeature(pygame.sprite.Sprite):
 
 class mapheight(pygame.sprite.Sprite):
     images = []
+    maxviewmode = 10
 
     def __init__(self, scale):
         self._layer = 0
