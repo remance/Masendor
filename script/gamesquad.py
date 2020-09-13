@@ -76,7 +76,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.basearmour = armourlist.armourlist[stat[11][0]][1] * (
                     armourlist.quality[stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
         self.baseaccuracy = stat[13]
-        self.baserange = stat[14] * 20
+        self.baserange = stat[14] * 10
         self.ammo = stat[15]
         self.basereload = stat[16]
         self.reloadtime = 0
@@ -222,7 +222,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(self.rect.centerx, self.rect.centery)
         """self.combatpos is pos of battalion"""
         self.combatpos = 0
-        self.attackpos = self.battalion.attackpos
+        self.attackpos = self.battalion.baseattackpos
 
     def useskill(self, whichskill):
         if whichskill == 0:  ##charge skill need to seperate since charge power will be used only for charge skill
@@ -469,7 +469,6 @@ class unitsquad(pygame.sprite.Sprite):
         if self.charge < 0: self.charge = 0
         if self.chargedef < 0: self.chargedef = 0
         if self.discipline < 0: self.discipline = 0
-        self.range = self.range * self.viewmode / 10
         """remove cooldown if time reach 0"""
         self.skillcooldown = {key: val - dt for key, val in self.skillcooldown.items()}
         self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0}
@@ -539,9 +538,9 @@ class unitsquad(pygame.sprite.Sprite):
             else:
                 self.image = self.image_original.copy()
             if self.oldlasthealth != self.lasthealthstate or self.oldlaststamina != self.laststaminastate: self.rotate()
-            self.attackpos = self.battalion.attackpos
+            self.attackpos = self.battalion.baseattackpos
             if self.battalion.attacktarget != 0:
-                self.attackpos = self.battalion.attacktarget.pos
+                self.attackpos = self.battalion.attacktarget.basepos
             self.attacktarget = self.battalion.attacktarget
             if self.battalion.state in [0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100]:
                 self.state = self.battalion.state
@@ -550,7 +549,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.checkskillcondition()
             if self.state in [3, 4]:
                 if self.attackpos.distance_to(
-                        self.combatpos) < 300/self.viewmode and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                        self.combatpos) < 30 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                     self.useskill(0)
             skillchance = random.randint(0, 10)
             if skillchance >= 6 and len(self.availableskill) > 0:
@@ -565,7 +564,7 @@ class unitsquad(pygame.sprite.Sprite):
                     self.state = 11
             if self.battalion.state == 11:
                 self.state = 0
-                if self.ammo > 0 and self.range >= self.combatpos.distance_to(self.attackpos):
+                if self.ammo > 0 and self.range >= self.attackpos.distance_to(self.combatpos):
                     # and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(
                     #     self.attackpos) <= shootrange)
                     self.state = 11

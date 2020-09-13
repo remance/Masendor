@@ -242,16 +242,16 @@ class unitarmy(pygame.sprite.Sprite):
         self.hitbox = []
         self.squadsprite = []  ##list of squad sprite(not index)
         self.justsplit = False
-        self.viewmode = 1
+        self.viewmode = 10
         self.imgsize = imgsize
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
         self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] / self.viewmode, len(self.armysquad) * self.imgsize[
             1] / self.viewmode
         self.gameid = gameid
         self.control = control
-        self.basepos = pygame.Vector2(startposition) ## Basepos is for remember pos at closest zoom and recal new pos when zoom out
+        self.basepos = pygame.Vector2(startposition) ## Basepos is for true pos that is used for ingame calculation
         self.baseattackpos = 0
-        self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode, self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
+        self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11), self.baseattackpos * abs(self.viewmode - 11) ## pos is for showing on screen
         self.angle, self.newangle = startangle, startangle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         self.pause = False
@@ -282,7 +282,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.feature = None
         self.set_target(startposition)
         self.basepreviousposition = pygame.Vector2(startposition)
-        self.previousposition = self.basepreviousposition * (self.viewmode/10)
+        self.previousposition = self.basepreviousposition * abs(self.viewmode - 11)
         self.state = 0  ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
         self.preparetimer = 0
         self.deadchange = 0
@@ -348,11 +348,11 @@ class unitarmy(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
 
     def changeposscale(self):
-        self.target = self.basetarget * abs(self.viewmode - 11) / self.maxviewmode
-        self.previousposition = self.basepreviousposition * abs(self.viewmode - 11) / self.maxviewmode
-        self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
+        self.target = self.basetarget * abs(self.viewmode - 11)
+        self.previousposition = self.basepreviousposition * abs(self.viewmode - 11)
+        self.pos = self.basepos * abs(self.viewmode - 11)
         self.rect = self.image.get_rect(center=self.pos)
-        self.attackpos = self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
+        self.attackpos = self.baseattackpos * abs(self.viewmode - 11)
         self.makeallsidepos()
 
     def recreatesprite(self):
@@ -417,7 +417,7 @@ class unitarmy(pygame.sprite.Sprite):
                 if squad.range > 0:
                     self.stat['range'].append(squad.range)
                 self.authpenalty += squad.authpenalty
-                squad.combatpos = self.pos
+                squad.combatpos = self.basepos
                 squad.useskillcond = self.useskillcond
                 if squad.charging == True and self.charging != True:
                     self.charging == True
@@ -546,7 +546,7 @@ class unitarmy(pygame.sprite.Sprite):
         # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
         # self.attackpos = pygame.Vector2(side[list(side2.keys())[0]])
         self.baseattackpos = enemyhitbox.who.allsidepos[enemyhitbox.side]
-        self.attackpos = self.baseattackpos * abs(self.viewmode - 11) / self.maxviewmode
+        self.attackpos = self.baseattackpos * abs(self.viewmode - 11)
         # if list(side2.keys())[0] == 1:
         # self.commandtarget = enemyhitbox.who.allsidepos[enemyhitbox.side]
         # enemyhitbox.who.battleside[enemyhitbox.side] = self.gameid
@@ -591,10 +591,12 @@ class unitarmy(pygame.sprite.Sprite):
         self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
-        self.terrain, self.feature = self.gamemapfeature.getfeature(self.pos, self.gamemap)
-        self.height = self.gamemapheight.getheight(self.pos)
+        self.terrain, self.feature = self.gamemapfeature.getfeature(self.basepos, self.gamemap)
+        self.height = self.gamemapheight.getheight(self.basepos)
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
+        self.changescale()
+        self.changeposscale()
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == False:
@@ -765,29 +767,29 @@ class unitarmy(pygame.sprite.Sprite):
                 shootrange = self.maxrange
                 if self.useminrange == 0:
                     shootrange = self.minrange
-                if self.state in [5, 6] and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange)
-                                             or self.pos.distance_to(self.attackpos) <= shootrange):
+                if self.state in [5, 6] and ((self.attacktarget != 0 and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange)
+                                             or self.basepos.distance_to(self.baseattackpos) <= shootrange):
                     self.set_target(self.allsidepos[0])
                     self.rangecombatcheck = 1
-                elif self.state == 11 and self.attacktarget != 0 and self.pos.distance_to(
-                        self.attacktarget.pos) > shootrange and self.hold == 0:  ## chase target if it go out of range and hold condition not hold
+                elif self.state == 11 and self.attacktarget != 0 and self.basepos.distance_to(
+                        self.attacktarget.basepos) > shootrange and self.hold == 0:  ## chase target if it go out of range and hold condition not hold
                     self.state = 6
                     self.rangecombatcheck = 0
-                    self.target = pygame.Vector2(self.attacktarget.pos[0], self.attacktarget.pos[1])
+                    self.set_target(self.attacktarget.basepos)
                     self.setrotate(self.target, instant=True)
             """Move Function"""
             if self.allsidepos[0] != self.commandtarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give position command, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
                 if self.state in [0, 3, 4, 5,
-                                  6] and self.attacktarget != 0 and self.target != self.attacktarget.pos and self.hold == 0:  ## Chase target and rotate accordingly
+                                  6] and self.attacktarget != 0 and self.target != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for hitbox in self.hitbox:
                         if hitbox.collide == True: cantchase = True
                     if cantchase == False:
                         if self.forcedmelee == True and self.state == 0:
                             self.state = 4
-                        self.target = pygame.Vector2(self.attacktarget.pos[0], self.attacktarget.pos[1])
+                        self.set_target(self.attacktarget.basepos)
                         self.setrotate(self.target, instant=True)
                 """check for hitbox collide according to which ever closest to the target position"""
                 if self.state not in [0, 97] and self.stamina > 0 and self.target != self.allsidepos[0] and self.retreattimer == 0:
@@ -814,11 +816,11 @@ class unitarmy(pygame.sprite.Sprite):
                                 move = move * self.walkspeed * dt * 50
                             elif self.state in [10]:
                                 move = move * 3.5 * dt * 50
-                            self.basepos += move
-                            self.pos = self.basepos * abs(self.viewmode - 11) / self.maxviewmode
+                            self.basepos += (move/10)
+                            self.pos = self.basepos * abs(self.viewmode - 11)
                         self.rect.center = list(int(v) for v in self.pos)
-                        self.terrain, self.feature = self.gamemapfeature.getfeature(self.pos, self.gamemap)
-                        self.height = self.gamemapheight.getheight(self.pos)
+                        self.terrain, self.feature = self.gamemapfeature.getfeature(self.basepos, self.gamemap)
+                        self.height = self.gamemapheight.getheight(self.basepos)
                         self.makeallsidepos()
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.preparetimer <= 0) and self.moverotate == 0 and self.rotateonly != True:
@@ -854,7 +856,7 @@ class unitarmy(pygame.sprite.Sprite):
 
     def set_target(self, pos):
         self.basetarget = pygame.Vector2(pos)
-        self.target = self.basetarget * abs(self.viewmode - 11) / self.maxviewmode
+        self.target = self.basetarget * abs(self.viewmode - 11)
         # print(self.target)
 
     def rotate(self):

@@ -43,14 +43,11 @@ class map(pygame.sprite.Sprite):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
+        self.trueimage = self.image.copy()
         self.scale = scale
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
-        # maxwidth = self.image.get_width() * 10
-        # maxheight = self.image.get_height() * 10
-        # maxdim = pygame.Vector2(scalewidth, scaleheight)
-        # self.trueimage = pygame.transform.scale(self.image_original, (int(maxdim[0]), int(maxdim[1])))
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
@@ -65,7 +62,7 @@ class map(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
     def getterrain(self, pos):
-        terrain = self.image.get_at((int(pos[0]), int(pos[1]))) ##get colour at pos to obtain the terrain type
+        terrain = self.trueimage.get_at((int(pos[0]), int(pos[1]))) ##get colour at pos to obtain the terrain type
         terrainindex = self.terraincolour.index(terrain)
         return terrainindex
 
@@ -79,15 +76,11 @@ class mapfeature(pygame.sprite.Sprite):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
+        self.trueimage = self.image.copy()
         self.scale = scale
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
-        # maxwidth = self.image.get_width() * 10
-        # maxheight = self.image.get_height() * 10
-        # maxdim = pygame.Vector2(scalewidth, scaleheight)
-        # self.image_original = self.image.copy()
-        # self.trueimage = pygame.transform.scale(self.image_original, (int(maxdim[0]), int(maxdim[1])))
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
@@ -101,7 +94,6 @@ class mapfeature(pygame.sprite.Sprite):
                         row[n] = int(i)
                 self.featuremod[row[0]] = row[1:]
         unitfile.close()
-        print(self.featuremod)
 
     def changescale(self,scale):
         self.scale = scale
@@ -113,7 +105,7 @@ class mapfeature(pygame.sprite.Sprite):
 
     def getfeature(self, pos, gamemap):
         terrainindex = gamemap.getterrain(pos)
-        feature = self.image.get_at((int(pos[0]), int(pos[1]))) ##get colour at pos to obtain the terrain type
+        feature = self.trueimage.get_at((int(pos[0]), int(pos[1]))) ##get colour at pos to obtain the terrain type
         featureindex = None
         if feature in self.featurecolour:
             featureindex = self.featurecolour.index(feature)
@@ -128,15 +120,11 @@ class mapheight(pygame.sprite.Sprite):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
+        self.trueimage = self.image.copy()
         self.scale = scale
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
-        # maxwidth = self.image.get_width() * 10
-        # maxheight = self.image.get_height() * 10
-        # maxdim = pygame.Vector2(scalewidth, scaleheight)
-        # self.image_original = self.image.copy()
-        # self.trueimage = pygame.transform.scale(self.image_original, (int(maxdim[0]), int(maxdim[1])))
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
@@ -150,7 +138,7 @@ class mapheight(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
     def getheight(self, pos):
-        heightindex = 255 - self.image.get_at((int(pos[0]), int(pos[1])))[2] ##get colour at pos to obtain the terrain type
+        heightindex = 255 - self.trueimage.get_at((int(pos[0]), int(pos[1])))[2] ##get colour at pos to obtain the terrain type
         return heightindex
 
 

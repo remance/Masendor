@@ -275,9 +275,9 @@ class battle():
         gameui.uibutton.containers = self.buttonui, self.uiupdater
         gameui.switchuibutton.containers = self.switchbuttonui, self.uiupdater
         ## create the background map
-        self.camerapos = pygame.Vector2(5000,5000) ## Camera pos at the current zoom
-        self.basecamerapos = pygame.Vector2(5000,5000) ## Camera pos at cloest zoom for recalculate sprite pos after zoom
-        self.camerascale = 10 ## Camera zoom
+        self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
+        self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
+        self.camerascale = 1 ## Camera zoom
         self.battlemap = gamemap.map(self.camerascale)
         self.battlemapfeature = gamemap.mapfeature(self.camerascale)
         self.battlemapheight = gamemap.mapheight(self.camerascale)
@@ -759,14 +759,6 @@ class battle():
         elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
 
-    def mapchangescale(self):
-        # if self.mapviewmode == 0:
-        self.battlemapfeature.changescale(self.camerascale)
-        # elif self.mapviewmode == 1:
-        self.battlemap.changescale(self.camerascale)
-        # else:
-        self.battlemapheight.changescale(self.camerascale)
-
     def rungame(self):
         self.gamestate = 1
         self.check = 0  ## For checking if unit or ui is clicked
@@ -774,6 +766,7 @@ class battle():
         self.inspectui = 0
         self.lastselected = 0
         self.mapviewmode = 0
+        self.mapshown = self.battlemapfeature
         self.squadlastselected = None
         self.beforeselected = None
         self.squadbeforeselected = None
@@ -783,6 +776,7 @@ class battle():
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
         self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]
+        self.battlemousepos = [0,0]
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -790,37 +784,37 @@ class battle():
             # battlemousepos = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.basecamerapos[0],
             #                self.mousepos[1] - self.centerscreen[1] + self.basecamerapos[1])
             # self.battlemousepos = [battlemousepos * self.camerascale / 10, battlemousepos]
-            mouse_up = False ### problem battlemouse may need to also keep both before and after zoom for click and command
+            mouse_up = False
             mouse_right = False
             double_mouse_right = False
             keystate = pygame.key.get_pressed()
             if keystate[K_s] or self.mousepos[1] >= self.bottomcorner: ## down
-                self.basecamerapos[1] += 50 * abs(11- self.camerascale)
-                self.camerapos[1] = self.basecamerapos[1] * self.camerascale / 10
+                self.basecamerapos[1] += 5 * abs(11- self.camerascale)
+                self.camerapos[1] = self.basecamerapos[1] * self.camerascale
             elif keystate[K_w] or self.mousepos[1] <= 5: ## up
-                self.basecamerapos[1] -= 50 * abs(11- self.camerascale)
-                self.camerapos[1] = self.basecamerapos[1] * self.camerascale / 10
+                self.basecamerapos[1] -= 5 * abs(11- self.camerascale)
+                self.camerapos[1] = self.basecamerapos[1] * self.camerascale
             if keystate[K_a] or self.mousepos[0] <= 5: ## left
-                self.basecamerapos[0] -= 50 * abs(11- self.camerascale)
-                self.camerapos[0] = self.basecamerapos[0] * self.camerascale / 10
+                self.basecamerapos[0] -= 5 * abs(11- self.camerascale)
+                self.camerapos[0] = self.basecamerapos[0] * self.camerascale
             elif keystate[K_d] or self.mousepos[0] >= self.rightcorner: ## right
-                self.basecamerapos[0] += 50 * abs(11- self.camerascale)
-                self.camerapos[0] = self.basecamerapos[0] * self.camerascale / 10
-            if self.camerapos[0] > self.battlemap.image.get_width(): self.camerapos[0] = self.battlemap.image.get_width()
+                self.basecamerapos[0] += 5 * abs(11- self.camerascale)
+                self.camerapos[0] = self.basecamerapos[0] * self.camerascale
+            if self.camerapos[0] > self.mapshown.image.get_width(): self.camerapos[0] = self.mapshown.image.get_width()
             elif self.camerapos[0] < 0: self.camerapos[0] = 0
-            if self.camerapos[1] > self.battlemap.image.get_height(): self.camerapos[1] = self.battlemap.image.get_height()
+            if self.camerapos[1] > self.mapshown.image.get_height(): self.camerapos[1] = self.mapshown.image.get_height()
             elif self.camerapos[1] < 0: self.camerapos[1] = 0
-            if self.basecamerapos[0] > 10000:
-                self.basecamerapos[0] = 10000
+            if self.basecamerapos[0] > 1000:
+                self.basecamerapos[0] = 1000
             elif self.basecamerapos[0] < 0:
                 self.basecamerapos[0] = 0
-            if self.basecamerapos[1] > 10000:
-                self.basecamerapos[1] = 10000
+            if self.basecamerapos[1] > 1000:
+                self.basecamerapos[1] = 1000
             elif self.basecamerapos[1] < 0:
                 self.basecamerapos[1] = 0
-            self.battlemousepos = [pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
-                                                  self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])]
-            self.battlemousepos.append(self.battlemousepos[0] * 10 / self.camerascale)
+            self.battlemousepos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
+                                                  self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])
+            self.battlemousepos[1] = self.battlemousepos[0] / self.camerascale
             for event in pygame.event.get():  ## get event input
                 if event.type == QUIT or \
                         (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -841,31 +835,34 @@ class battle():
                         self.camerascale += 1
                         if self.camerascale > 10: self.camerascale = 10
                         else:
-                            self.mapchangescale()
-                            self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
-                            self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
+                            self.camerapos[0] = self.basecamerapos[0] *  self.camerascale
+                            self.camerapos[1] = self.basecamerapos[1] *  self.camerascale
+                            self.mapshown.changescale(self.camerascale)
                     elif event.button == 5:
                         self.camerascale -= 1
                         if self.camerascale < 1: self.camerascale = 1
                         else:
-                            self.mapchangescale()
-                            self.camerapos[0] = self.basecamerapos[0] *  self.camerascale / 10
-                            self.camerapos[1] = self.basecamerapos[1] *  self.camerascale / 10
+                            self.camerapos[0] = self.basecamerapos[0] *  self.camerascale
+                            self.camerapos[1] = self.basecamerapos[1] *  self.camerascale
+                            self.mapshown.changescale(self.camerascale)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
                         if self.mapviewmode == 0: ## Currently in feature mode
                             self.allcamera.remove(self.battlemapfeature)
                             self.allcamera.add(self.battlemap)
+                            self.mapshown = self.battlemap
                             self.mapviewmode += 1
                         elif self.mapviewmode == 1: ## Currently in base mode
                             self.allcamera.remove(self.battlemap)
                             self.allcamera.add(self.battlemapheight)
+                            self.mapshown = self.battlemapheight
                             self.mapviewmode += 1
                         else: ## Currently in height mode
                             self.allcamera.remove(self.battlemapheight)
                             self.allcamera.add(self.battlemapfeature)
-                            self.mapviewmode += 1
+                            self.mapshown = self.battlemapfeature
                             self.mapviewmode = 0
+                        self.mapshown.changescale(self.camerascale)
                     if event.key == pygame.K_p:  ## Pause Button
                         if self.gamestate == 1:
                             self.gamestate = 0
@@ -902,7 +899,7 @@ class battle():
                 else:
                     self.enemyposlist[army.gameid] = army.basepos
                 for ui in self.gameui:
-                    if ui.rect.collidepoint(self.mousepos) and mouse_up:
+                    if ui.rect.collidepoint(self.mousepos) and mouse_up and ui in self.allui:
                         if ui.uitype not in ["unitcard", 'armybox']:
                             self.check = 1
                             self.uicheck = 1  ## for avoiding clicking unit under ui
@@ -1025,7 +1022,7 @@ class battle():
                         whoinput.useminrange = 0
                     self.switchbuttonui[3].event = whoinput.useminrange
                 elif self.buttonui[5] in self.allui and self.buttonui[5].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
-                    if whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
+                    if whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
                         self.splitunit(whoinput, 1)
                         self.splithappen = True
                         self.checksplit(whoinput)
@@ -1033,7 +1030,7 @@ class battle():
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
                 elif self.buttonui[6] in self.allui and self.buttonui[6].rect.collidepoint(pygame.mouse.get_pos()) and mouse_up == True:
-                    if whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 500:
+                    if whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
                         self.splitunit(whoinput, 0)
                         self.splithappen = True
                         self.checksplit(whoinput)
