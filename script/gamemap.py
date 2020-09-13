@@ -32,7 +32,7 @@ Farm = (255,242,0,255)
 Wall = (102,92,118,255)
 Mana = (101,109,214,255)
 Rot = (200,191,231,255)
-Wetground = (255)
+Wetground = (186,184,109,255)
 
 class map(pygame.sprite.Sprite):
     images = []
@@ -46,6 +46,10 @@ class map(pygame.sprite.Sprite):
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
+        # maxwidth = self.image.get_width() * 10
+        # maxheight = self.image.get_height() * 10
+        # maxdim = pygame.Vector2(scalewidth, scaleheight)
+        # self.trueimage = pygame.transform.scale(self.image_original, (int(maxdim[0]), int(maxdim[1])))
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
@@ -53,7 +57,7 @@ class map(pygame.sprite.Sprite):
 
     def changescale(self,scale):
         self.scale = scale
-        self.image = self.image_original
+        self.image = self.image_original.copy()
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
@@ -77,6 +81,11 @@ class mapfeature(pygame.sprite.Sprite):
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
+        # maxwidth = self.image.get_width() * 10
+        # maxheight = self.image.get_height() * 10
+        # maxdim = pygame.Vector2(scalewidth, scaleheight)
+        # self.image_original = self.image.copy()
+        # self.trueimage = pygame.transform.scale(self.image_original, (int(maxdim[0]), int(maxdim[1])))
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
@@ -90,12 +99,11 @@ class mapfeature(pygame.sprite.Sprite):
                         row[n] = int(i)
                 self.featuremod[row[0]] = row[1:]
         unitfile.close()
-
-
+        print(self.featuremod)
 
     def changescale(self,scale):
         self.scale = scale
-        self.image = self.image_original
+        self.image = self.image_original.copy()
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
@@ -107,7 +115,7 @@ class mapfeature(pygame.sprite.Sprite):
         featureindex = None
         if feature in self.featurecolour:
             featureindex = self.featurecolour.index(feature)
-            featureindex = featureindex + (terrainindex * 11)
+            featureindex = featureindex + (terrainindex * 12)
         return terrainindex, featureindex
 
 class mapheight(pygame.sprite.Sprite):
@@ -121,13 +129,18 @@ class mapheight(pygame.sprite.Sprite):
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
+        # maxwidth = self.image.get_width() * 10
+        # maxheight = self.image.get_height() * 10
+        # maxdim = pygame.Vector2(scalewidth, scaleheight)
+        # self.image_original = self.image.copy()
+        # self.trueimage = pygame.transform.scale(self.image_original, (int(maxdim[0]), int(maxdim[1])))
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
 
     def changescale(self,scale):
         self.scale = scale
-        self.image = self.image_original
+        self.image = self.image_original.copy()
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)

@@ -17,7 +17,7 @@ Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom 
 
 Ver 0.7 Future Visionary: Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus
 
-Ver 0.8 Authentic Attraction: In game art and better looking UI (All hand (and mouse) drawn except for historical image)
+Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image)
 
 Ver 0.9 Gaze of New Life: more complex AI (The most challenging step unless cut corner to the point of braindead AI)
 

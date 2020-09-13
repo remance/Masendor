@@ -2,6 +2,7 @@
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
 Optimise list
 remove index and change call to the sprite itself
+maybe all base pos stuff should be in smallest map pos including all calculation? should help reduce ram and cpu usage when zoom in/out, also maybe delete map.image when not shown and recreate it when change
 """
 import ast
 import csv
@@ -759,8 +760,11 @@ class battle():
             self.buttonui[6].kill()
 
     def mapchangescale(self):
-        self.battlemap.changescale(self.camerascale)
+        # if self.mapviewmode == 0:
         self.battlemapfeature.changescale(self.camerascale)
+        # elif self.mapviewmode == 1:
+        self.battlemap.changescale(self.camerascale)
+        # else:
         self.battlemapheight.changescale(self.camerascale)
 
     def rungame(self):
@@ -825,7 +829,6 @@ class battle():
                     return
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  ## left click
-                        print(self.battlemousepos, 'mouse')
                         mouse_up = True
                     elif event.button == 3:  ## Right Click
                         mouse_right = True

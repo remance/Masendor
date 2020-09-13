@@ -94,16 +94,17 @@ class unitsquad(pygame.sprite.Sprite):
         self.basemorale = int(stat[24] + int(statlist.gradelist[self.grade][9]))
         self.basediscipline = int(stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = stat[28]
-        self.type = stat[29]
         self.basespeed = 50
-        if self.type in [4, 5, 6, 7]: self.speed = 80
+        if stat[29] in [4, 5, 6, 7]: self.basespeed = 80
         self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
-        if self.type in [1, 2]:
-            self.unittype = self.type - 1
-        elif self.type in [3, 4, 5, 6, 7]:
+        if stat[29] in [1, 2]:
+            self.unittype = stat[29] - 1
+            self.featuremod = 1 ## the starting column in unit_terrainbonus of infantry
+        elif stat[29] in [3, 4, 5, 6, 7]:
             self.unittype = 2
+            self.featuremod = 3 ## the starting column in unit_terrainbonus of cavalry
         self.description = stat[33]
         # if self.hidden
         self.baseelemmelee = 0
@@ -347,7 +348,28 @@ class unitsquad(pygame.sprite.Sprite):
                         self.statuseffect[effect] = statuslist[effect].copy()
                         if self.statuseffect[effect][2] > 1:
                             self.statustonearby(self.statuseffect[effect][2], effect, statuslist)
-
+        """apply effect from terrain"""
+        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod] != 100:
+            speedmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod]
+            self.speed *= speedmod/100
+            self.charge *= speedmod/100
+        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1] != 100:
+            combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
+            self.attack *= combatmod/100
+            self.meleedef *= combatmod/100
+            self.chargedef *= combatmod/100
+        self.rangedef += self.battalion.gamemapfeature.featuremod[self.battalion.feature][5]
+        # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
+        if self.tempcount != self.battalion.gamemapfeature.featuremod[self.battalion.feature][7]:
+            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][7] > 0:
+                self.tempcount += dt
+            elif self.battalion.gamemapfeature.featuremod[self.battalion.feature][7] < 0:
+                self.tempcount -= dt
+            else:
+                if self.tempcount > 0:
+                    self.tempcount -= dt
+                else:
+                    self.tempcount += dt
         """apply effect from skill"""
         if len(self.skilleffect) > 0:
             for status in self.skilleffect:  ## apply elemental effect to dmg if skill has element
