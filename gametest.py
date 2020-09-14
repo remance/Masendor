@@ -80,5 +80,6 @@ import timeit
 #            if k == 5: print(k)
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-test = np.random.randint(0,255,size=(1000,1000))
-print(test)
+test = {4:pygame.Vector2(5,6)}
+test2 = {4:pygame.Vector2(5,6)}
+print(test[4])

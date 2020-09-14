@@ -852,7 +852,6 @@ class unitarmy(pygame.sprite.Sprite):
                                     leader.state = 100
                 self.state = 100
             # self.rect.topleft = self.pos[0],self.pos[1]
-        self.valuefortopbar = [str(self.troopnumber) + " (" + str(self.maxhealth) + ")", self.staminastate, self.moralestate, self.state]
 
     def set_target(self, pos):
         self.basetarget = pygame.Vector2(pos)
@@ -894,25 +893,54 @@ class unitarmy(pygame.sprite.Sprite):
         if self.control == True and self.state not in [100]:
             """check if right click in mask or not. if not, move unit"""
             posmask = mouse_pos[0][0] - self.rect.x, mouse_pos[0][1] - self.rect.y
-            if mouse_right and self.state not in [10, 97, 98, 99, 100]:
-                try:  ## if click within rect but not in mask
-                    if self.mask.get_at(posmask) == 0:
+            if mouse_right and mouse_pos[1][0] >= 0 and mouse_pos[1][0] <= 1000 and mouse_pos[1][1] >= 0 and mouse_pos[1][1] <= 1000:
+                if self.state not in [10, 97, 98, 99, 100]:
+                    try:  ## if click within rect but not in mask
+                        if self.mask.get_at(posmask) == 0:
+                            self.state = 1
+                            self.rotateonly = False
+                            self.forcedmelee = False
+                            self.attacktarget = 0
+                            self.attackpos = 0
+                            if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
+                                    (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
+                                if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
+                                    self.state = 3
+                                elif self.ammo > 0:  ##Move to range attack
+                                    self.state = 5
+                                if keystate[pygame.K_LALT] == True:
+                                    self.set_target(mouse_pos[1])
+                                else:
+                                    self.attacktarget = whomouseover
+                                    self.baseattackpos = whomouseover.basepos
+                            if double_mouse_right:
+                                self.state += 1
+                            self.rangecombatcheck = 0
+                            if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
+                            self.set_target(mouse_pos[1])
+                            self.commandtarget = self.target
+                            self.setrotate()
+                            if self.charging == True:
+                                self.leader[0].authority -= self.authpenalty
+                                self.authrecal()
+                    except:  ## if click outside of rect and mask
                         self.state = 1
                         self.rotateonly = False
                         self.forcedmelee = False
                         self.attacktarget = 0
-                        self.attackpos = 0
                         if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
                                 (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
                             if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
+                                self.forcedmelee = True
                                 self.state = 3
-                            elif self.ammo > 0:  ##Move to range attack
+                            elif self.ammo > 0:
                                 self.state = 5
                             if keystate[pygame.K_LALT] == True:
-                                self.set_target(mouse_pos[1])
+                                self.baseattackpos = mouse_pos[1]
+                                self.attackpos = mouse_pos[0]
                             else:
                                 self.attacktarget = whomouseover
-                                self.baseattackpos = whomouseover.basepos
+                                self.attackpos = whomouseover.pos
                         if double_mouse_right:
                             self.state += 1
                         self.rangecombatcheck = 0
@@ -923,37 +951,20 @@ class unitarmy(pygame.sprite.Sprite):
                         if self.charging == True:
                             self.leader[0].authority -= self.authpenalty
                             self.authrecal()
-                except:  ## if click outside of rect and mask
-                    self.state = 1
-                    self.rotateonly = False
-                    self.forcedmelee = False
-                    self.attacktarget = 0
-                    if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
-                            (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
-                        if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
-                            self.forcedmelee = True
-                            self.state = 3
-                        elif self.ammo > 0:
-                            self.state = 5
-                        if keystate[pygame.K_LALT] == True:
-                            self.baseattackpos = mouse_pos[1]
-                            self.attackpos = mouse_pos[0]
-                        else:
-                            self.attacktarget = whomouseover
-                            self.attackpos = whomouseover.pos
-                    if double_mouse_right:
-                        self.state += 1
-                    self.rangecombatcheck = 0
-                    if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                    self.set_target(mouse_pos[1])
-                    self.commandtarget = self.target
-                    self.setrotate()
-                    if self.charging == True:
-                        self.leader[0].authority -= self.authpenalty
-                        self.authrecal()
-            elif mouse_right and self.state == 10:  ##Enter Fall back state if in combat and move command issue
-                try:
-                    if self.mask.get_at(posmask) == 0:
+                elif self.state == 10:  ##Enter Fall back state if in combat and move command issue
+                    try:
+                        if self.mask.get_at(posmask) == 0:
+                            if whomouseover == 0:
+                                self.state = 96
+                                if self.retreattimer == 0:
+                                    self.leader[0].authority -= self.authpenalty
+                                    self.authrecal()
+                                    self.retreattimer = 0.1
+                                    self.retreatstart = 1
+                                self.set_target(mouse_pos[1])
+                                self.commandtarget = self.target
+                                # self.combatcheck = 0
+                    except:
                         if whomouseover == 0:
                             self.state = 96
                             if self.retreattimer == 0:
@@ -961,21 +972,10 @@ class unitarmy(pygame.sprite.Sprite):
                                 self.authrecal()
                                 self.retreattimer = 0.1
                                 self.retreatstart = 1
-                            self.set_target(mouse_pos[1])
+                            self.basetarget = mouse_pos[1]
+                            self.target = mouse_pos[0]
                             self.commandtarget = self.target
                             # self.combatcheck = 0
-                except:
-                    if whomouseover == 0:
-                        self.state = 96
-                        if self.retreattimer == 0:
-                            self.leader[0].authority -= self.authpenalty
-                            self.authrecal()
-                            self.retreattimer = 0.1
-                            self.retreatstart = 1
-                        self.basetarget = mouse_pos[1]
-                        self.target = mouse_pos[0]
-                        self.commandtarget = self.target
-                        # self.combatcheck = 0
             elif othercommand == 1 and self.state != 10:  ## Pause all action except combat
                 if self.charging == True:
                     self.leader[0].authority -= self.authpenalty

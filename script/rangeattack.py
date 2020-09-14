@@ -15,7 +15,7 @@ class arrow(pygame.sprite.Sprite):
     def __init__(self, shooter, range, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.speed = 80
+        self.speed = 150
         self.image = self.images[0]
         self.arcshot = False
         if 16 in shooter.trait: self.arcshot = True
@@ -26,13 +26,13 @@ class arrow(pygame.sprite.Sprite):
         self.passwho = 0
         self.side = None
         randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 5)  ## randpos1 is for left or right random
-        hitchance = self.accuracy * (100 - (range * 100 / maxrange))/100 ## the further hitchance from 0 the further arrow will land from target
+        hitchance = self.accuracy * (100 - ((range * 100 / maxrange)/2))/100 ## the further hitchance from 0 the further arrow will land from target
         if hitchance == 0: hitchance = 1
         """73 no range penalty, 74 long rance accuracy"""
         if 73 in self.shooter.trait:
             hitchance = self.accuracy
         elif 74 in self.shooter.trait:
-            hitchance = self.accuracy * (100 - ((range * 100 / maxrange)/2))/100 ## range penalty half
+            hitchance = self.accuracy * (100 - ((range * 100 / maxrange)/4))/100 ## range penalty half
         howlong = range / self.speed
         targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
@@ -41,7 +41,7 @@ class arrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))/10)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))/11)
                     if 17 not in self.shooter.trait: hitchance -= 10
                 else:
                     targetnow = self.shooter.attacktarget.basepos
@@ -49,7 +49,7 @@ class arrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))/10)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))/11)
                     if 17 not in self.shooter.trait: hitchance -= 20
                 else:
                     targetnow = self.shooter.attacktarget.basepos
@@ -78,7 +78,6 @@ class arrow(pygame.sprite.Sprite):
             self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] + randomposition2, self.shooter.battalion.basepos[1] + randomposition2)
         self.pos = self.basepos * viewmode
         self.target = self.basetarget * viewmode
-        # print(hitchance,self.basetarget,targetnow,self.target)
         self.mask = pygame.mask.from_surface(self.image)
 
     def rangedmgcal(self, who, target, targetside):
