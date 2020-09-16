@@ -7,9 +7,9 @@ For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 Plan
 
-Ver 0.3 The World at Hand: Game map, terrain,mini map and camera (Going to be somewhat difficult and long to implement)
+Ver 0.3 The World at Hand: Game map, terrain,mini map, camera and finalise retreat, melee combat engagement and collision (Going to be somewhat difficult and long to implement)
 
-Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect and finalise melee combat engagement and collision, changable game speed
+Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 

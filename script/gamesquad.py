@@ -587,7 +587,7 @@ class unitsquad(pygame.sprite.Sprite):
                     dt * 7) if self.state in [2, 4, 6, 10, 96, 98, 99] and self.battalion.pause == False \
                 else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (
                         dt * self.staminaregen) if self.state == 97 else self.stamina
-            if self.basemorale < self.maxmorale: self.basemorale += dt
+            if self.basemorale < self.maxmorale and self.state != 99: self.basemorale += dt
             self.troopnumber = self.unithealth / self.troophealth
             if round(self.troopnumber) < self.troopnumber:  ## calculate how many troop left based on current hp
                 self.troopnumber = round(self.troopnumber + 1)
@@ -607,13 +607,13 @@ class unitsquad(pygame.sprite.Sprite):
             if self.unithealth < 0: self.unithealth = 0
             if self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
             self.battleside = [-1, -1, -1, -1]
-            if self.basemorale <= 0: self.basemorale = 0
             if self.stamina <= 0:
                 self.state = 97
                 self.stamina = 0
             if self.state == 97 and self.stamina > 1000: self.state = 0
             """cannot be higher than max hp and max stamina"""
-            if self.morale > self.maxmorale: self.morale = self.maxmorale
+            if self.basemorale <= 0: self.basemorale = 0
+            elif self.morale > self.maxmorale: self.morale = self.maxmorale
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
             if self.troopnumber <= 0:  ## enter dead state
                 if self.leader != None and self.leader.state != 100:

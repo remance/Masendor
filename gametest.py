@@ -80,6 +80,15 @@ import timeit
 #            if k == 5: print(k)
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-test = {4:pygame.Vector2(5,6)}
-test2 = {4:pygame.Vector2(5,6)}
-print(test[4])
+neartarget = {}
+qlist = []
+test = pygame.Vector2(900,300)
+thisposlist = {1:pygame.Vector2(0,0), 2:pygame.Vector2(1000,1000)}
+for n, thisside in thisposlist.items(): neartarget[n] = pygame.Vector2(thisside).distance_to(test)
+for i in test:
+    qlist.append(abs(i-1000))
+    qlist.append(abs(i))
+print(qlist.index(min(qlist)),qlist)
+
+#[100.0, 900.0, 700.0, 300.0]
+#0 = X 1000, 1 = X 0, 2 = Y 1000, 3 = Y 0
