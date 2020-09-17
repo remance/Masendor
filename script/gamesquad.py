@@ -560,11 +560,11 @@ class unitsquad(pygame.sprite.Sprite):
                 self.state = 0
                 if any(battle > 0 for battle in self.battleside) == True:
                     self.state = 10
-                elif self.ammo > 0 and 16 in self.trait:  ##help range attack when battalion in melee combat
+                elif self.ammo > 0 and 16 in self.trait:  ##help range attack when battalion in melee combat if has arcshot
                     self.state = 11
             if self.battalion.state == 11:
                 self.state = 0
-                if self.ammo > 0 and self.range >= self.attackpos.distance_to(self.combatpos):
+                if self.ammo > 0 and self.attackpos != 0 and self.range >= self.attackpos.distance_to(self.combatpos):
                     # and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(
                     #     self.attackpos) <= shootrange)
                     self.state = 11

@@ -65,10 +65,10 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     army = gamebattalion.unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
                                   colour=colour, control=control, coa=coa, commander=command, startangle=startangle)
-    army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 5),
-                   gamebattalion.hitbox(army, 1, 5, army.rect.height - 5),
-                   gamebattalion.hitbox(army, 2, 5, army.rect.height - 5),
-                   gamebattalion.hitbox(army, 3, army.rect.width, 5)]
+    army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width-10, 1),
+                   gamebattalion.hitbox(army, 1, 1, army.rect.height-10),
+                   gamebattalion.hitbox(army, 2, 1, army.rect.height-10),
+                   gamebattalion.hitbox(army, 3, army.rect.width-10, 1)]
     army.leader = [gameleader.leader(leader[0], leader[4], 0, army, leaderstat),
                    gameleader.leader(leader[1], leader[5], 1, army, leaderstat),
                    gameleader.leader(leader[2], leader[6], 2, army, leaderstat),

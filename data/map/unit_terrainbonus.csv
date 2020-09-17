@@ -39,7 +39,7 @@
 37,"Desert Sand",100,100,100,100,0,0,70
 38,"Desert Shrubland",100,100,90,95,10,10,40
 39,"Desert Forest",80,110,60,80,30,50,30
-40,"Oasis",10,10,10,10,0,5,
+40,"Oasis",10,10,10,10,0,5,20
 41,"Sand Road",110,100,130,100,0,0,50
 42,"Desert Dwelling",50,110,30,60,40,30,30
 43,"Desert Farm",90,110,80,85,15,40,50
@@ -107,26 +107,27 @@
 105,,,,,,,,
 106,"Rotten Land",,,,,,,
 107,,,,,,,,
-108,"Lively Water",,,,,,,
-109,"Empty Water",,,,,,,
-110,"Marsh",,,,,,,
-111,"Swamp",,,,,,,
-112,"Water",,,,,,,
-113,"Bridge",,,,,,,
-114,"Swamp Building",,,,,,,
-115,"Swamp Farm",,,,,,,
-116,"Wall",,,,,,,
+108,"Lively Water",,,,,,,-20
+109,"Empty Water",,,,,,,-20
+110,"Marsh",,,,,,,-30
+111,"Swamp",,,,,,,-30
+112,"Water",,,,,,,-20
+113,"Bridge",,,,,,,0
+114,"Swamp Building",,,,,,,0
+115,"Swamp Farm",,,,,,,0
+116,"Wall",,,,,,,0
 117,"Cold Mana",,,,,,,
 118,"Creeping Rot",80,100,70,100,,,
 119,,,,,,,,
-120,"Sea",,,,,,,
-121,"Ocean",,,,,,,
-122,"Coral Reef",,,,,,,
-123,"Underwater Forest",,,,,,,
-124,"Fresh Water",,,,,,,
-125,"Bridge",,,,,,,
-126,"Sunken City",,,,,,,
-127,"Fishery",,,,,,,
-128,"Submerged Wall",,,,,,,
-129,"Water Mana",,,,,,,
+120,"Sea",,,,,,,-30
+121,"Ocean",,,,,,,-30
+122,"Coral Reef",,,,,,,-30
+123,"Underwater Forest",,,,,,,-30
+124,"Fresh Water",,,,,,,-30
+125,"Bridge",,,,,,,0
+126,"Sunken City",,,,,,,-30
+127,"Fishery",,,,,,,0
+128,"Submerged Wall",,,,,,,-30
+129,"Water Mana",,,,,,,-30
 130,"Creeping Rot",80,100,70,100,,,
+131,"Beach",,,,,,,
