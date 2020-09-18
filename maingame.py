@@ -1109,33 +1109,33 @@ class battle():
                                 hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
                                 """set up army position to the enemyside"""
-                                if hitbox.side == 0 and hitbox.who.state in [1, 2, 3, 4, 5, 6]:
-                                    hitbox.who.combatprepare(hitbox2)
-                                    hitbox.who.preparetimer = 0
-                                elif hitbox2.side == 0 and hitbox2.who.state in [1, 2, 3, 4, 5, 6]:
-                                    hitbox2.who.combatprepare(hitbox)
-                                    hitbox2.who.preparetimer = 0
+                                # if hitbox.side == 0 and hitbox.who.state in [1, 2, 3, 4, 5, 6]:
+                                #     hitbox.who.combatprepare(hitbox2)
+                                #     hitbox.who.preparetimer = 0
+                                # elif hitbox2.side == 0 and hitbox2.who.state in [1, 2, 3, 4, 5, 6]:
+                                #     hitbox2.who.combatprepare(hitbox)
+                                #     hitbox2.who.preparetimer = 0
                                 for battle in hitbox.who.battleside:
                                     if battle != 0:
                                         self.squadcombatcal(hitbox.who, hitbox2.who, hitbox.who.battleside.index(battle),
                                                             hitbox2.who.battleside.index(hitbox.who.gameid))
-                            """Rotate army side to the enemyside"""
-                            if hitbox.who.combatpreparestate == 1:
-                                if hitbox.who.preparetimer == 0: hitbox.who.preparetimer = 0.1
-                                if hitbox.who.preparetimer not in [0, 5]:
-                                    hitbox.who.preparetimer += self.dt
-                                    if hitbox.who.preparetimer < 5:
-                                        hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)
-                                    else:
-                                        hitbox.who.preparetimer = 5
-                            if hitbox2.who.combatpreparestate == 1:
-                                if hitbox2.who.preparetimer == 0: hitbox2.who.preparetimer = 0.1
-                                if hitbox2.who.preparetimer not in [0, 5]:
-                                    hitbox2.who.preparetimer += self.dt
-                                    if hitbox2.who.preparetimer < 5:
-                                        hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
-                                    else:
-                                        hitbox.who.preparetimer = 5
+                            # """Rotate army side to the enemyside"""
+                            # if hitbox.who.combatpreparestate == 1:
+                            #     if hitbox.who.preparetimer == 0: hitbox.who.preparetimer = 0.1
+                            #     if hitbox.who.preparetimer not in [0, 5]:
+                            #         hitbox.who.preparetimer += self.dt
+                            #         if hitbox.who.preparetimer < 5:
+                            #             hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)
+                            #         else:
+                            #             hitbox.who.preparetimer = 5
+                            # if hitbox2.who.combatpreparestate == 1:
+                            #     if hitbox2.who.preparetimer == 0: hitbox2.who.preparetimer = 0.1
+                            #     if hitbox2.who.preparetimer not in [0, 5]:
+                            #         hitbox2.who.preparetimer += self.dt
+                            #         if hitbox2.who.preparetimer < 5:
+                            #             hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
+                            #         else:
+                            #             hitbox.who.preparetimer = 5
                         elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000)
                                                                           or (
                                                                                   hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
@@ -1155,7 +1155,7 @@ class battle():
                             if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
                                 thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                             if thissquad.reloadtime >= thissquad.reload and (
-                                    thissquad.attacktarget == 0 or (thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
+                                    (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
                                 rangeattack.arrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range, self.camerascale)
                                 thissquad.ammo -= 1
                                 thissquad.reloadtime = 0

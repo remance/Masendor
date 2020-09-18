@@ -643,43 +643,43 @@ class unitarmy(pygame.sprite.Sprite):
                     """Change health and stamina bar Function"""
                     if self.troopnumber <= 0 and self.lasthealthstate != 0:
                         self.healthimage = self.images[4]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
+                        self.image_original3.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 0
                     elif self.troopnumber > 0 and self.troopnumber <= self.health25 and self.lasthealthstate != 1:
                         self.healthimage = self.images[3]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
+                        self.image_original3.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 1
                     elif self.troopnumber > self.health25 and self.troopnumber <= self.health50 and self.lasthealthstate != 2:
                         self.healthimage = self.images[2]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
+                        self.image_original3.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 2
                     elif self.troopnumber > self.health50 and self.troopnumber <= self.health75 and self.lasthealthstate != 3:
                         self.healthimage = self.images[1]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
+                        self.image_original3.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 3
                     elif self.troopnumber > self.health75 and self.lasthealthstate != 4:
                         self.healthimage = self.images[0]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
+                        self.image_original3.blit(self.healthimage, self.healthimagerect)
                         self.lasthealthstate = 4
                     if self.stamina <= 0 and self.laststaminastate != 0:
                         self.staminaimage = self.images[9]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 0
                     elif self.stamina > 0 and self.stamina <= self.stamina25 and self.laststaminastate != 1:
                         self.staminaimage = self.images[8]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 1
                     elif self.stamina > self.stamina25 and self.stamina <= self.stamina50 and self.laststaminastate != 2:
                         self.staminaimage = self.images[7]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 2
                     elif self.stamina > self.stamina50 and self.stamina <= self.stamina75 and self.laststaminastate != 3:
                         self.staminaimage = self.images[6]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 3
                     elif self.stamina > self.stamina75 and self.laststaminastate != 4:
                         self.staminaimage = self.images[5]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
                         self.laststaminastate = 4
                 self.rotate()
             self.oldlasthealth, self.oldlaststamina = self.lasthealthstate, self.laststaminastate
@@ -735,15 +735,31 @@ class unitarmy(pygame.sprite.Sprite):
                 if self.retreatstart == 1 and 0 in self.battleside:
                     retreatside = [hitbox.side for hitbox in self.hitbox if hitbox.collide == 0]
                     self.retreatmax = (4 - len(retreatside)) * 2
-                    # print(self.retreattimer, self.retreatmax,retreatside)
+                    # print("count", self.retreattimer, self.retreatmax, retreatside)
                     if self.retreattimer >= self.retreatmax:
                         if self.state in [98,99]:
                             if self.retreatway == None or self.retreatway[1] not in retreatside:
+                                for hitbox in self.hitbox:
+                                    print(hitbox.side, hitbox.collide)
                                 getrandom = random.randint(0, len(retreatside) - 1)
                                 self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
-                                print(getrandom,retreatside[getrandom], self.retreatway, self.allsidepos, (self.basepos + ((self.retreatway[0] - self.pos)/10))*100)
+                                target = (self.basepos + (self.retreatway[0] - self.basepos))
+                                print(target, self.basepos)
+                                if target[0] < self.basepos[0] and target[0] > 0: target[0] *= -100
+                                else:target[0] *= 100
+                                if target[1] < self.basepos[1] and target[1] > 0: target[1] *= -100
+                                else:target[1] *= 100
+                                # print(target)
+                                # poslist = []
+                                # for item in target:
+                                #     poslist.append(abs(item - 1000))
+                                #     poslist.append(item)
+                                # target[int(poslist.index(min(poslist)) / 2)] *= 100
+                                # if poslist.index(min(poslist)) in [1, 3]:
+                                #     target[int(poslist.index(min(poslist)) / 2)] *= -1
+                                self.set_target(target)
+                                print(getrandom,retreatside,retreatside[getrandom], self.retreatway, self.allsidepos, target)
                             self.combatcheck = 0
-                            self.set_target((self.basepos + ((self.retreatway[0] - self.pos)/10))*100)
                         self.retreattimer = self.retreatmax
             elif self.state in [98,99] and self.morale >= 20: ## state become normal again when morale reach 20
                 self.state = 0
