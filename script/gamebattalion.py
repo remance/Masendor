@@ -284,6 +284,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.basepreviousposition = pygame.Vector2(startposition)
         self.previousposition = self.basepreviousposition * abs(self.viewmode - 11)
         self.state = 0  ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
+        self.commandstate = self.state
         self.deadchange = 0
         self.gamestart = False
         self.authrecalnow = False
@@ -738,18 +739,14 @@ class unitarmy(pygame.sprite.Sprite):
                     if self.retreattimer >= self.retreatmax:
                         if self.state in [98,99]:
                             if self.retreatway == None or self.retreatway[1] not in retreatside:
-                                for hitbox in self.hitbox:
-                                    print(hitbox.side, hitbox.collide)
                                 getrandom = random.randint(0, len(retreatside) - 1)
                                 self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
                                 target = (self.basepos + (self.retreatway[0] - self.basepos))
-                                print(target, self.basepos)
                                 if target[0] < self.basepos[0] and target[0] > 0: target[0] *= -100
                                 else:target[0] *= 100
                                 if target[1] < self.basepos[1] and target[1] > 0: target[1] *= -100
                                 else:target[1] *= 100
                                 self.set_target(target)
-                                print(getrandom,retreatside,retreatside[getrandom], self.retreatway, self.allsidepos, target)
                             self.combatcheck = 0
                         self.retreattimer = self.retreatmax
             elif self.state in [98,99] and self.morale >= 20: ## state become normal again when morale reach 20
@@ -758,7 +755,9 @@ class unitarmy(pygame.sprite.Sprite):
                 self.retreatstart = 0
             if self.state == 10 and self.battleside == [0, 0, 0, 0] and (
                     self.attacktarget == 0 or (self.attacktarget != 0 and self.attacktarget.state == 100)):
-                self.state = 0
+                if self.target == self.allsidepos[0]:
+                    self.state = 0
+                else: self.state = self.commandstate
                 self.attacktarget = 0
             """Rotate Function"""
             if self.angle != round(self.newangle) and self.stamina > 0 and (
@@ -801,7 +800,7 @@ class unitarmy(pygame.sprite.Sprite):
                     self.rangecombatcheck = 1
                 elif self.state == 11 and self.attacktarget != 0 and self.basepos.distance_to(
                         self.attacktarget.basepos) > shootrange and self.hold == 0:  ## chase target if it go out of range and hold condition not hold
-                    self.state = 6
+                    self.state = self.commandstate
                     self.rangecombatcheck = 0
                     self.set_target(self.attacktarget.basepos)
                     self.setrotate(self.target, instant=True)
@@ -809,14 +808,13 @@ class unitarmy(pygame.sprite.Sprite):
             if self.allsidepos[0] != self.basetarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
-                if self.state in [0, 3, 4, 5,
-                                  6] and self.attacktarget != 0 and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
+                if self.state in [0, 3, 4, 5,6,10] and self.attacktarget != 0 \
+                        and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for hitbox in self.hitbox:
                         if hitbox.collide != 0: cantchase = True
-                    if cantchase == False:
-                        if self.forcedmelee == True and self.state == 0:
-                            self.state = 4
+                    if cantchase == False and self.forcedmelee == True:
+                        self.state = self.commandstate
                         self.set_target(self.attacktarget.basepos)
                         self.setrotate(self.target, instant=True)
                 """check for hitbox collide according to which ever closest to the target position"""
@@ -824,18 +822,18 @@ class unitarmy(pygame.sprite.Sprite):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
-                    print('test', self.moverotate)
                     if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[list(side2.keys())[1]].collide == 0) or self.combatpreparestate == 1) \
                             and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = False
                         move = self.basetarget - self.allsidepos[0]
                         move_length = move.length()
-                        print('pass', move_length)
                         if (move_length < self.walkspeed and move_length < self.runspeed) and self.battleside == [0, 0, 0,
-                                                                                                                  0] and self.rangecombatcheck == 0:
+                                0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""
                             self.allsidepos[0] = self.commandtarget
                             self.state = 0
+                            self.commandstate = self.state
+                            print('stop')
                         # if self.state == 5: self.target = self.pos
                         elif move_length > 0.1:
                             # if self.state != 3 and self.retreatcommand == 1:
@@ -860,6 +858,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.pause = True
                     elif self.moverotate == 0 and self.rotateonly == True:
                         self.state = 0
+                        self.commandstate = self.state
                         self.set_target(self.allsidepos[0])
                         self.commandtarget = self.target
                         self.rotateonly = False
@@ -948,6 +947,7 @@ class unitarmy(pygame.sprite.Sprite):
                                     self.baseattackpos = whomouseover.basepos
                             if double_mouse_right:
                                 self.state += 1
+                            self.commandstate = self.state
                             self.rangecombatcheck = 0
                             if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
                             self.set_target(mouse_pos[1])
@@ -976,6 +976,7 @@ class unitarmy(pygame.sprite.Sprite):
                                 self.attackpos = whomouseover.pos
                         if double_mouse_right:
                             self.state += 1
+                        self.commandstate = self.state
                         self.rangecombatcheck = 0
                         if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
                         self.set_target(mouse_pos[1])
@@ -989,6 +990,7 @@ class unitarmy(pygame.sprite.Sprite):
                         if self.mask.get_at(posmask) == 0:
                             if whomouseover == 0:
                                 self.state = 96
+                                self.commandstate = self.state
                                 if self.retreattimer == 0:
                                     self.leader[0].authority -= self.authpenalty
                                     self.authrecal()
@@ -1000,6 +1002,7 @@ class unitarmy(pygame.sprite.Sprite):
                     except:
                         if whomouseover == 0:
                             self.state = 96
+                            self.commandstate = self.state
                             if self.retreattimer == 0:
                                 self.leader[0].authority -= self.authpenalty
                                 self.authrecal()
@@ -1013,6 +1016,7 @@ class unitarmy(pygame.sprite.Sprite):
                     self.leader[0].authority -= self.authpenalty
                     self.authrecal()
                 self.state = 0
+                self.commandstate = self.state
                 self.set_target(self.allsidepos[0])
                 self.commandtarget = self.target
                 self.rangecombatcheck = 0

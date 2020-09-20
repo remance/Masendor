@@ -479,10 +479,8 @@ class battle():
             dmg = dmg * 1.25
         if dmg > target.unithealth:
             dmg = target.unithealth
-        elif dmg <= 0:
-            dmg = 1
         moraledmg = round(dmg / 100)
-        return dmg, moraledmg, leaderdmg
+        return int(dmg/2), int(moraledmg/2), int(leaderdmg/2)
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -637,10 +635,10 @@ class battle():
         who.changescale()
         who.height = who.gamemapheight.getheight(who.basepos)
         for thishitbox in who.hitbox: thishitbox.kill()
-        who.hitbox = [gamebattalion.hitbox(who, 0, who.rect.width, 1),
-                      gamebattalion.hitbox(who, 1, 1, who.rect.height - 5),
-                      gamebattalion.hitbox(who, 2, 1, who.rect.height - 5),
-                      gamebattalion.hitbox(who, 3, who.rect.width, 1)]
+        who.hitbox = [gamebattalion.hitbox(who, 0, who.rect.width-10, 1),
+                      gamebattalion.hitbox(who, 1, 1, who.rect.height - 10),
+                      gamebattalion.hitbox(who, 2, 1, who.rect.height - 10),
+                      gamebattalion.hitbox(who, 3, who.rect.width-10, 1)]
         who.rotate()
         who.newangle = who.angle - 1
         ## need to recal max stat again for the original battalion
@@ -1134,7 +1132,7 @@ class battle():
                                                                                   hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
                 """Calculate squad combat dmg"""
-                if self.combattimer >= 1:
+                if self.combattimer >= 0.5:
                     for thissquad in self.squad:
                         if any(battle > 1 for battle in thissquad.battleside) == True:
                             for index, combat in enumerate(thissquad.battleside):

@@ -85,7 +85,7 @@
 84,"Palace Guards",14,4,1,"115","39",,65,60,0,"68",20,0,0,0,0,21,21,100,100,0,"14,4","0,0",110,65,,1,50,1,,,,"The place where the rulers reside in always requires the maximum security from both enemy soldiers and assassins. Palace Guards are elite troops equipped with a halberd and heavy armours. Trained to fight in both the narrow corridor and open space, Palace Guards can dispatch any foes efficiently in any situation. They are also no less than any other elite troops on the battlefield."
 85,"Jeweled Guards",1,4,1,"115","39",,56,75,34,"75",15,0,0,0,0,30,21,100,110,0,"1,4","0,0",120,75,,1,30,1,,,"Healing Potion,Bandage",
 86,"Milingrels",1,5,1,"111,115","38 ,111",,64,91,50,"60",31,0,0,0,0,17,21,100,120,15,"1,4","0,0",125,82,,1,10,1,,"Smoke Screen","Healing Scroll,Healing Potion,Speed Potion","Milingrels are elite knight squads that is assigned to protect royalty at all time from any danger including in battle. They will not break, they will not yield and they will never fail. They are equipped with multiple tools and can use some magic to fulfill those mission. The leader of this unit is bestowed with the title ""Royal Knight""."
-87,"Heavy Axemen",12,1,1,,,,,,,,,,,,,,,,,,"12,3",,100,40,,1,150,1,,,,
+87,"Heavy Axemen",12,1,1,,,,,,,,,,,,,,,,,,"12,3",,100,40,,1,150,1,,,,"The ultimate heavy melee infantry unit. Heavy Axemen are extremely efficient in offensive shock tactic while still retain good defensive capability. A good set of armours allows Heavy Axemen to wreak havoc for much longer than the lighter Axemen. Yet still no match against cavalry though so match them up against other infantry units for the best result."
 88,"Marain Suxor Welliors",12,,1,,,,,,,,,,,,,,,,,,,,,50,,1,,1,,,,
 89,"Avantafes",12,,1,"12",,,,,,,,,,,,,,,,,,,,65,,1,,1,,,,
 90,"Happy Executioners",12,2,1,"56,135",,,,,,,,,,,,,,,,,,,,35,,1,,1,,,,"It is a common tradition and belief for people of Utyus that dying happy is the ultimate purpose of all life as spirits that die with regret usually linger and haunt other innocent people. And what emotion can be associate with happiness more than laughter? Utyusian people with their utmost generosity (and fear) also extend this tradition to their enemies and criminals. Happy Executioners usually force the victims during the execution to laugh (forcibly) before chopping their head off."
@@ -155,11 +155,11 @@
 154,"Houndmasters Of Lueae",,4,1,,,,,,,,,,,,,,,,,,,,,,,1,,1,,,,
 155,"Barbarians",13,0,1,"24",,,,,0,,,,,,,,1,,,,,,,20,,1,150,1,,,,
 156,"Highlanders",12,0,1,"24,192",,,,,0,"3,3",,,,,,,1,,,,,,,25,,1,150,1,,,,
-157,"Great Axe Warriors",13,1,1,"24",,,,,0,,,,,,,,1,,,,,,,,,1,,1,,,,
+157,"Great Axe Warriors",13,1,1,"24",,,,,0,,,,,,,,1,,,,,,,,,1,,1,,,,"Terror of battlefield carving through enemy lines with massive swings of their great axe. Great Axe Warriors are as the name suggested, the best shock infantry one can employ to crush the enemy infantry and completely break them in a single charge. For the best result, try to perform charging manoeuvre on the enemy's frontline with this unit instead of waiting for the enemy to come."
 158,"Great Mountain Children",13,0,1,"24,192,265",,,,,0,,,,,,,,,,,,,,,20,,1,,1,,,,
 159,"Savage Defilers",13,1,1,"11,24,112,162",,,,,0,,,,,,,,4,,,,,,,,,1,,1,,,,
 160,"Swift Marauders",13,2,1,"24,112",,,,,0,,,,,,,,1,,,,,,,,,1,,1,,,,
-161,"Berserkers",12,1,1,"11,24",,,,5,0,"3,3",50,0,0,0,0,,4,,,,,,,,,1,50,1,,,,
+161,"Berserkers",12,1,1,"11,24",,,,5,0,"3,3",50,0,0,0,0,,4,,,,,,,,,1,50,1,,,,"Beyond anger lies chaos, a pure force of destruction that can only be stopped by a mortal blow. Berserkers with two axes in hands will obliterate anyone that stood in their path friends and foes alike. Going into berserk makes them lose control and will never surrender even in the face of death. If you want to avoid losing your troop against such overwhelming force, rain them down with arrows as Berserkers do not wear heavy armour nor shield."
 162,"Naked Warriors",12,1,1,"11,24",,,,5,0,"0,0",56,0,0,0,0,,4,,,,,,,,,1,,1,,,,
 163,"Aggressive Tranquils",7,3,1,"11,24",,,,15,0,"16,3",55,0,0,0,0,,4,,,,,,,35,,1,,1,,,,
 164,"Stone Dwelling Banishers",10,2,1,"11,24",,,,10,15,"3,3",54,0,0,0,0,,4,,,,,,,20,,1,,1,,,"Juicy Meat",
