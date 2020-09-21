@@ -477,10 +477,11 @@ class battle():
             dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
         if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]):  ## Anti trait dmg bonus
             dmg = dmg * 1.25
+        if target.state in [1,2,3,4,5,6,7,8,9]: dmg = dmg * 5
         if dmg > target.unithealth:
             dmg = target.unithealth
         moraledmg = round(dmg / 100)
-        return int(dmg/2), int(moraledmg/2), int(leaderdmg/2)
+        return int(dmg/5), int(moraledmg/5), int(leaderdmg/5)
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -1132,7 +1133,7 @@ class battle():
                                                                                   hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
                 """Calculate squad combat dmg"""
-                if self.combattimer >= 0.5:
+                if self.combattimer >= 0.2:
                     for thissquad in self.squad:
                         if any(battle > 1 for battle in thissquad.battleside) == True:
                             for index, combat in enumerate(thissquad.battleside):

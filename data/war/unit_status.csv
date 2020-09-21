@@ -60,7 +60,7 @@
 59,"Weaken",,,60,,,,,,,,,-30,,,,,,,"Weaken but not unwilling to fight. May the lord grants them strength once again.",
 60,"Strengthen",,,60,,,,,,,,,30,,,,,,,,
 61,"Meleelock",,,30,,,,,0,,,,0,,,,,,,,
-62,"Smoke",,,,,,,,,,,,30,,,,,,,,
+62,"Smoke",,,,,,,,,,,,30,,,,,,,"Smoke reduce the sight of the unit making it less effective in combat but improve range defense.",
 63,"Poison Smoke",,,,,,,,,,,,0,,,,,,,,
 64,"Sleep Smoke",,,,,,,,,,,,0,,,,,,,,
 65,"Suppressed",,,15,,,120,,10,,,,0,,,,,,,"This unit is being suppressed by range attacks making them almost unable to move but increase their range defense.",

@@ -741,7 +741,7 @@ class unitarmy(pygame.sprite.Sprite):
                             if self.retreatway == None or self.retreatway[1] not in retreatside:
                                 getrandom = random.randint(0, len(retreatside) - 1)
                                 self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
-                                target = (self.basepos + (self.retreatway[0] - self.basepos))
+                                target = self.basepos + (self.retreatway[0] - self.basepos)
                                 if target[0] < self.basepos[0] and target[0] > 0: target[0] *= -100
                                 else:target[0] *= 100
                                 if target[1] < self.basepos[1] and target[1] > 0: target[1] *= -100
@@ -753,6 +753,17 @@ class unitarmy(pygame.sprite.Sprite):
                 self.state = 0
                 self.retreattimer = 0
                 self.retreatstart = 0
+            if self.hold == 1: ## skirmishing
+                minrange = self.minrange
+                if minrange == 0: minrange = 100
+                if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange / 2:
+                    self.state = 96
+                    target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
+                    if target[0] < 0: target[0] = 0
+                    elif target[0] > 1000: target[0] = 1000
+                    if target[1] < 0: target[1] = 0
+                    elif target[1] > 1000: target[1] = 1000
+                    self.set_target(target)
             if self.state == 10 and self.battleside == [0, 0, 0, 0] and (
                     self.attacktarget == 0 or (self.attacktarget != 0 and self.attacktarget.state == 100)):
                 if self.target == self.allsidepos[0]:
@@ -833,7 +844,6 @@ class unitarmy(pygame.sprite.Sprite):
                             self.allsidepos[0] = self.commandtarget
                             self.state = 0
                             self.commandstate = self.state
-                            print('stop')
                         # if self.state == 5: self.target = self.pos
                         elif move_length > 0.1:
                             # if self.state != 3 and self.retreatcommand == 1:
