@@ -1,6 +1,8 @@
 import pygame
 import pygame.freetype
 import csv
+import random
+import ast
 from RTS import mainmenu
 
 main_dir = mainmenu.main_dir
@@ -143,9 +145,52 @@ class mapheight(pygame.sprite.Sprite):
 
 
 class beautifulmap(pygame.sprite.Sprite):
-    images = []
-
-    def __init__(self, x, y, image):
-        self._layer = 2
+    textureimages = []
+    def __init__(self, scale, basemap,featuremap):
+        self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = featuremap.image.copy()
+        self.scale = scale
+        self.newcolourlist = {}
+        with open(main_dir + "\data\map" + '\\colourchange.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                    elif "," in i:
+                        row[n] = ast.literal_eval(i)
+                self.newcolourlist[row[0]] = row[1:]
+        for rowcount, rowpos in enumerate(range(0, 1000)): ## Recolour the map
+            for colcount, colpos in enumerate(range(0,1000)):
+                terrain, feature = featuremap.getfeature((rowpos,colpos),basemap)
+                newcolour = self.newcolourlist[feature][1]
+                rect = pygame.Rect(rowpos,colpos,1,1)
+                self.image.fill(newcolour,rect)
+
+        for rowpos in range(0, 991): ## Put in terrain texture
+            for colpos in range(0, 991):
+                if rowpos % 20 == 0 and colpos % 20 == 0:
+                    terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)
+                    feature = self.textureimages[feature]
+                    thistexture = feature[random.randint(0,len(feature)-1)]
+                    rect = thistexture.get_rect(center=(rowpos + random.randint(0, 19), colpos + random.randint(0, 19)))
+                    self.image.blit(thistexture, rect)
+
+        scalewidth = self.image.get_width() * self.scale
+        scaleheight = self.image.get_height() * self.scale
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.trueimage = self.image.copy()
+        self.image_original = self.image.copy()
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+        self.rect = self.image.get_rect(topleft=(0,0))
+
+    def changescale(self, scale):
+        self.scale = scale
+        self.image = self.image_original.copy()
+        scalewidth = self.image.get_width() * self.scale
+        scaleheight = self.image.get_height() * self.scale
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+
 

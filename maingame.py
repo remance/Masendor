@@ -167,6 +167,12 @@ class battle():
         gamemap.map.images = [imgs[0]]
         gamemap.mapfeature.images = [imgs[1]]
         gamemap.mapheight.images = [imgs[2]]
+        maptexture = []
+        loadtexturefolder = ['glassland','draught','bushland','forest']
+        for texturefolder in loadtexturefolder:
+            imgs = load_images(['map','texture', texturefolder], loadorder=False)
+            maptexture.append(imgs)
+        gamemap.beautifulmap.textureimages = maptexture
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
         imgs = []
@@ -238,7 +244,7 @@ class battle():
             pygame.mixer.music.load(self.musiclist[self.pickmusic])
             pygame.mixer.music.play(0)
         """Initialize Game Groups"""
-        self.allcamera = pygame.sprite.LayeredUpdates() ## the layer is as followed 0 = terrain map, 1 = dead army, 2 = map feature, 3 = hitbox, 4 = direction arrow, 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = ui/button, 9 = squad inspect
+        self.allcamera = pygame.sprite.LayeredUpdates() ## the layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow, 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = ui/button, 9 = squad inspect
         self.allui = pygame.sprite.LayeredUpdates()
         self.unitupdater = pygame.sprite.Group()
         self.uiupdater = pygame.sprite.Group()
@@ -247,6 +253,7 @@ class battle():
         self.battlemap = pygame.sprite.Group()
         self.battlemapfeature = pygame.sprite.Group()
         self.battlemapheight = pygame.sprite.Group()
+        self.showmap = pygame.sprite.Group()
         self.playerarmy = pygame.sprite.Group()
         self.enemyarmy = pygame.sprite.Group()
         self.squad = pygame.sprite.Group()
@@ -262,8 +269,9 @@ class battle():
         self.switchbuttonui = pygame.sprite.Group()
         """assign default groups"""
         gamemap.map.containers = self.battlemap, self.mapupdater
-        gamemap.mapfeature.containers = self.battlemapfeature, self.mapupdater, self.allcamera
+        gamemap.mapfeature.containers = self.battlemapfeature, self.mapupdater
         gamemap.mapheight.containers = self.battlemapheight, self.mapupdater
+        gamemap.beautifulmap.containers = self.showmap, self.mapupdater, self.allcamera
         gamebattalion.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
         gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
         gamebattalion.deadarmy.containers = self.deadunit, self.unitupdater, self.allcamera
@@ -283,6 +291,7 @@ class battle():
         self.battlemap = gamemap.map(self.camerascale)
         self.battlemapfeature = gamemap.mapfeature(self.camerascale)
         self.battlemapheight = gamemap.mapheight(self.camerascale)
+        self.showmap = gamemap.beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature)
         gamebattalion.unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
         gamebattalion.unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
         gamebattalion.unitarmy.gamemapheight = self.battlemapheight
@@ -300,7 +309,7 @@ class battle():
         """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
         self.battlesidecal = [1, 0.5, 0.1, 0.5]
         """create game ui"""
-        self.minimap = gameui.minimap(SCREENRECT.width, SCREENRECT.height, self.battlemapfeature.trueimage, self.camera)
+        self.minimap = gameui.minimap(SCREENRECT.width, SCREENRECT.height, self.showmap.trueimage, self.camera)
         topimage = load_images(['ui', 'battle_ui'])
         iconimage = load_images(['ui', 'battle_ui', 'topbar_icon'])
         self.gameui = [
@@ -765,7 +774,7 @@ class battle():
         self.inspectui = 0
         self.lastselected = 0
         self.mapviewmode = 0
-        self.mapshown = self.battlemapfeature
+        self.mapshown = self.showmap
         self.squadlastselected = None
         self.beforeselected = None
         self.squadbeforeselected = None
@@ -847,20 +856,15 @@ class battle():
                             self.mapshown.changescale(self.camerascale)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
-                        if self.mapviewmode == 0: ## Currently in feature mode
-                            self.allcamera.remove(self.battlemapfeature)
-                            self.allcamera.add(self.battlemap)
-                            self.mapshown = self.battlemap
-                            self.mapviewmode += 1
-                        elif self.mapviewmode == 1: ## Currently in base mode
-                            self.allcamera.remove(self.battlemap)
+                        if self.mapviewmode == 0: ## Currently in normal mode
+                            self.allcamera.remove(self.showmap)
                             self.allcamera.add(self.battlemapheight)
                             self.mapshown = self.battlemapheight
-                            self.mapviewmode += 1
+                            self.mapviewmode = 1
                         else: ## Currently in height mode
                             self.allcamera.remove(self.battlemapheight)
-                            self.allcamera.add(self.battlemapfeature)
-                            self.mapshown = self.battlemapfeature
+                            self.allcamera.add(self.showmap)
+                            self.mapshown = self.showmap
                             self.mapviewmode = 0
                         self.mapshown.changescale(self.camerascale)
                     if event.key == pygame.K_p:  ## Pause Button

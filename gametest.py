@@ -80,9 +80,7 @@ import timeit
 #            if k == 5: print(k)
 #     run += 1
 # print("The time difference is :", timeit.default_timer() - starttime)
-qlist2 = pygame.Vector2(0,5)
-qlist = pygame.Vector2(22,100)
-print(qlist < qlist2)
+print(20 % 20)
 
 #[100.0, 900.0, 700.0, 300.0]
 #0 = X 1000, 1 = X 0, 2 = Y 1000, 3 = Y 0
