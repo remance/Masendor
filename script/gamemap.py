@@ -3,6 +3,8 @@ import pygame.freetype
 import csv
 import random
 import ast
+import sys
+from PIL import Image, ImageFilter
 from RTS import mainmenu
 
 main_dir = mainmenu.main_dir
@@ -167,7 +169,15 @@ class beautifulmap(pygame.sprite.Sprite):
                 newcolour = self.newcolourlist[feature][1]
                 rect = pygame.Rect(rowpos,colpos,1,1)
                 self.image.fill(newcolour,rect)
-
+        data = pygame.image.tostring(self.image, 'RGB') ## Convert image to string data for filtering effect
+        img = Image.frombytes('RGB', (1000, 1000), data) ## Use PIL to get image data
+        img = img.filter(ImageFilter.BLUR) ## Blue Image (or apply other filter in future)
+        img = img.tobytes()
+        img = pygame.image.fromstring(img, (1000,1000),'RGB') ## Convert image back to a pygame surface
+        self.image = pygame.Surface((1000,1000)) ## For unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
+        rect = self.image.get_rect(topleft=(0, 0))
+        self.image.blit(img,rect)
+        del img, data
         for rowpos in range(0, 991): ## Put in terrain texture
             for colpos in range(0, 991):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
