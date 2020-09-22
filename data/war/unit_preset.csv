@@ -192,7 +192,7 @@
 191,"Gettiles",26,1,1,,,,30,32,16,"1,3",45,,37,30,8,,19,100,,0,,"26,3",,,5,1,130,2,,,,
 192,"Gemmius Sicsalus",26,2,1,,"41",,,,,,,,38,40,7,,19,100,,0,,"26,3",,,6,1,70,2,,,,
 193,"Songes ",26,1,1,"194,225","44",,10,13,0,"20,3",64,,40,30,8,,19,100,,0,,"26,4",,,8,1,30,2,,,,"Songes is a group of rangers wielding light crossbow that patrol the Forest of Estaliart as most of the monsters that dwell in that forest have thick skin enough to resist the arrow from a bow. Although consist of mostly volunteer and conscript, these rangers are experienced enough to travel through most forest unhindered. "
-194,"Longbowmen",23,1,1,"16","82",,7,17,0,"20,3",40,60,65,45,7,3,19,100,110,0,"4,3","23,3",100,60,7,1,100,2,,,,
+194,"Longbowmen",23,1,1,"16","82",,7,17,0,"20,3",40,60,65,45,7,3,19,100,110,0,"4,3","23,3",100,60,7,1,100,2,,,,"Similar to how Vaqueros was popularised and become widely known in the form of American Cowboy, so does the Longbowman by the English. Believed to be originated from Wales, Longbowmen are the dominant long-range infantry forces in British Isle since the beginning of the Medieval era. Capable of firing more powerful and further shots, only fools underestimate what Longbowmen can achieve in the battlefield. "
 195,"Greatbowmen",25,2,1,"16","82",,4,12,0,"20,3",34,60,70,40,9,1,19,100,110,0,"4,3","25,3",100,65,7,1,80,2,,,,
 196,"Greatbows Of Kobala",25,4,1,"16,74,305","82,101",,5,11,5,"14,3",38,65,75,50,9,6,19,100,125,0,"4,3","25,5",,77,8,1,30,2,,,,
 197,"Barlisia",25,1,1,"16,74,224","82,196",,,19,2,"20,3",40,65,70,50,8,12,19,100,115,0,"4,3","25,3",,80,7,1,60,2,,,,
