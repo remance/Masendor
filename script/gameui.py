@@ -217,7 +217,7 @@ class Gameui(pygame.sprite.Sprite):
                 row = 0
                 self.name = self.value[0]
                 leadertext = ""
-                if who.leader != None:
+                if who.leader is not None:
                     leadertext = "/" + str(who.leader.name)
                     if who.leader.state == 100: leadertext += " (Dead)"
                 self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0))  ##unit and leader name at the top
@@ -294,7 +294,7 @@ class Gameui(pygame.sprite.Sprite):
                         position += 20
                 elif self.option == 3:  ## equipment and terrain
                     terrain = self.terrainlist[who.battalion.terrain]
-                    if who.battalion.feature != None: terrain += "/" + self.featurelist[who.battalion.feature]
+                    if who.battalion.feature is not None: terrain += "/" + self.featurelist[who.battalion.feature]
                     textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][3]),

@@ -280,6 +280,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.terrain = 0
         self.height = 0
         self.feature = None
+        self.getfeature = self.gamemapfeature.getfeature
         self.set_target(startposition)
         self.basepreviousposition = pygame.Vector2(startposition)
         self.previousposition = self.basepreviousposition * abs(self.viewmode - 11)
@@ -602,7 +603,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
-        self.terrain, self.feature = self.gamemapfeature.getfeature(self.basepos, self.gamemap)
+        self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
         self.height = self.gamemapheight.getheight(self.basepos)
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
@@ -738,7 +739,7 @@ class unitarmy(pygame.sprite.Sprite):
                     # print("count", self.retreattimer, self.retreatmax, retreatside)
                     if self.retreattimer >= self.retreatmax:
                         if self.state in [98,99]:
-                            if self.retreatway == None or self.retreatway[1] not in retreatside:
+                            if self.retreatway is None or self.retreatway[1] not in retreatside:
                                 getrandom = random.randint(0, len(retreatside) - 1)
                                 self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
                                 target = self.basepos + (self.retreatway[0] - self.basepos)
@@ -860,7 +861,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.basepos += (move/10)
                             self.pos = self.basepos * abs(self.viewmode - 11)
                         self.rect.center = list(int(v) for v in self.pos)
-                        self.terrain, self.feature = self.gamemapfeature.getfeature(self.basepos, self.gamemap)
+                        self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
                         self.height = self.gamemapheight.getheight(self.basepos)
                         self.makeallsidepos()
                     elif (self.hitbox[

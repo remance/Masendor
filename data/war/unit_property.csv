@@ -14,7 +14,7 @@
 13,"Weapon Expert",1,,120,115,,0,,115,,115,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Decades of perfection the weapon make this squad a pinnacle of all warriors. ",,
 14,"Evasive",1,,,130,130,0,,,,,,30,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can dodge melee and range attack when fighting in loose formation.",,
 15,"Divine Connection",1,190,,,,0,,,,,,,0,0,100,0,0,,,,,,,,,,,,,,,0,,,
-16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Arc shot allows archers to shoot pass the obstacle and hit almost any target they intend. ",,"y"
+16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Arc shot allows archers to shoot pass the obstacle to hit the target they aiming for. ",,"y"
 17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also help improve accuracy against moving target.",,"y"
 18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial.",,"y"
 19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken).",,
@@ -25,7 +25,7 @@
 24,"Anti-Mage",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against armoured squads. Not even the heaviest armoured knight can stand against this squad's devastating blow.",,
 25,"Anti-Machine",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"This squad is specialised in combat against machine squads. Neither Iron or wood can not stop this squad attack.",,
 26,"Anti-Large",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"The bigger they are, the harder the fall. This squad is specialised in combat against large squads.",,
-27,"Anti-All",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,,
+27,"Anti-All",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"The destroyer of world. No man, beast nor machine can withstand this true might.",,
 28,"Anti-Structure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,,
 29,"Ignore Charge Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Rush of death and ruin. The world shall tremble upon this sight. This squad attack ignore charge defence entirely. ",,"y"
 30,"Ignore Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Deadly to those unfortunate to face them in combat. This squad attack ignore defense entirely.",,"y"

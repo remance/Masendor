@@ -167,6 +167,8 @@ class battle():
         gamemap.map.images = [imgs[0]]
         gamemap.mapfeature.images = [imgs[1]]
         gamemap.mapheight.images = [imgs[2]]
+        img = load_image('effect.png', 'map')
+        gamemap.beautifulmap.effectimage = img
         maptexture = []
         loadtexturefolder = ['glassland','draught','bushland','forest']
         for texturefolder in loadtexturefolder:
@@ -471,7 +473,7 @@ class battle():
         elif hitchance > 80:
             combatscore = 1.5
         leaderdmgbonus = 0
-        if who.leader != None: leaderdmgbonus = who.leader.combat * 10
+        if who.leader is not None: leaderdmgbonus = who.leader.combat * 10
         if type == 0:  ##melee dmg
             dmg = who.dmg
             """include charge in dmg if charging, ignore charge defense if have ignore trait"""
@@ -479,8 +481,8 @@ class battle():
                 dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
             elif who.charging == True and 29 in who.trait:
                 dmg = round(dmg + (who.charge / 10))
-            leaderdmg = round(dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore)
-            dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
+            leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
+            dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
         elif type == 1:  ##range dmg
             leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
             dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
@@ -490,7 +492,7 @@ class battle():
         if dmg > target.unithealth:
             dmg = target.unithealth
         moraledmg = round(dmg / 100)
-        return int(dmg/5), int(moraledmg/5), int(leaderdmg/5)
+        return dmg, moraledmg, leaderdmg
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -540,7 +542,7 @@ class battle():
         if target.elemrange not in [0, 5]:  ## apply element effect if atk has element
             who.elemcount[target.elemrange - 1] += round(targetdmg * (dmgeffect / 100)) / 100
         target.basemorale += round((targetmoraledmg * (dmgeffect / 100) / 2))
-        if who.leader != None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
+        if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
             if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
                 whicharmy = self.enemyarmy
@@ -554,7 +556,7 @@ class battle():
         if who.elemrange not in [0, 5]:  ## apply element effect if atk has element
             target.elemcount[who.elemrange - 1] += round(whodmg * (targetdmgeffect / 100)) / 100
         who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
-        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
+        if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
             target.leader.health -= wholeaderdmg
             if target.leader.health <= 0 and target.leader.battalion.commander == True and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
                 whicharmy = self.enemyarmy
@@ -1064,7 +1066,7 @@ class battle():
                         self.showingsquad = whoinput.squadsprite
                         self.allui.add(*self.showingsquad)
                     self.allui.add(*self.showingsquad)
-                    if self.squadlastselected != None:  ## Update value of the clicked squad
+                    if self.squadlastselected is not None:  ## Update value of the clicked squad
                         self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                   leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
                     if mouse_up == True:  ## Change showing stat to the clicked squad one

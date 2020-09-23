@@ -5,7 +5,7 @@
 3,"Shortsword",8,10,5,1,,,
 4,"Dagger",6,50,2,1,"Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon.",,
 5,"Spear",9,10,8,2,"Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long range, this make spear a good counter against cavalry class but usually have somewhat lower melee defense than other melee class.",,
-6,"Club",7,30,13,4,,,
+6,"Club",7,30,13,4,"A shabby club ",,
 7,"Mace",8,50,16,4,"Mace is a bludgeon type weapon that become popular due to the advancement of heavy armour that make bladed weaponry less effective. Some type of mace also have piercing or bladed compartments attached such as morning star or winged mace.",,"Flail is a mace with its head part attaching to chain. Although more difficult to use than mace, flail attack can be somewhat hard to predict and defend against. Its flexible swing means that the flail's head can land impact behind enemy's shield as well. "
 8,"Great Mace",15,65,30,4,,,
 9,"Flail",7,50,15,5,,,
