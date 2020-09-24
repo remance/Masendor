@@ -3,8 +3,6 @@ import pygame.freetype
 import csv
 import random
 import ast
-import base64
-import numpy as np
 from PIL import Image, ImageFilter
 from RTS import mainmenu
 
@@ -171,6 +169,7 @@ class beautifulmap(pygame.sprite.Sprite):
                 newcolour = self.newcolourlist[feature][1]
                 rect = pygame.Rect(rowpos,colpos,1,1)
                 self.image.fill(newcolour,rect)
+        ## Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, 'RGB') ## Convert image to string data for filtering effect
         img = Image.frombytes('RGB', (1000, 1000), data) ## Use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2)) ## Blue Image (or apply other filter in future)
@@ -179,13 +178,17 @@ class beautifulmap(pygame.sprite.Sprite):
         self.image = pygame.Surface((1000,1000)) ## For unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img,rect)
+        ## PIL module code till here
         for rowpos in range(0, 991): ## Put in terrain texture
             for colpos in range(0, 991):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
                     randompos = (rowpos + random.randint(0, 19), colpos + random.randint(0, 19))
-                    terrain, feature = featuremap.getfeature((randompos), basemap)
-                    feature = self.textureimages[feature]
-                    thistexture = feature[random.randint(0,len(feature)-1)]
+                    terrain, thisfeature = featuremap.getfeature((randompos), basemap)
+                    feature = self.textureimages[thisfeature]
+                    choose = random.randint(0,len(feature)-1)
+                    if thisfeature - (terrain * 12) in (0,1) and random.randint(0,100) < 60: ## reduce speical texture in empty terrain like glassland
+                        choose = -1 ## empty texture
+                    thistexture = feature[choose]
                     rect = thistexture.get_rect(center=(randompos))
                     self.image.blit(thistexture, rect)
         rect = self.image.get_rect(topleft=(0, 0))

@@ -169,11 +169,13 @@ class battle():
         gamemap.mapheight.images = [imgs[2]]
         img = load_image('effect.png', 'map')
         gamemap.beautifulmap.effectimage = img
+        empty = load_image('empty.png', 'map/texture')
         maptexture = []
         loadtexturefolder = ['glassland','draught','bushland','forest']
-        for texturefolder in loadtexturefolder:
+        for index, texturefolder in enumerate(loadtexturefolder):
             imgs = load_images(['map','texture', texturefolder], loadorder=False)
             maptexture.append(imgs)
+            maptexture[index].append(empty)
         gamemap.beautifulmap.textureimages = maptexture
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
@@ -408,7 +410,7 @@ class battle():
                     """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
                     if fronttarget > 1:
                         """only attack if the side is already free else just wait until it free"""
-                        if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] in [-1, 0]:
+                        if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] in (-1, 0):
                             self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
                             self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] = thiswho
                     else:
@@ -421,7 +423,7 @@ class battle():
                         fronttarget = self.squadselectside(receiver.frontline[receiverside], chance, position)
                         """attack if the found defender at that side is free if not check other side"""
                         if fronttarget > 1:
-                            if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1, 0]:
+                            if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
                                 self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
                                 self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
                         else:
@@ -429,7 +431,7 @@ class battle():
                             truetargetside = self.changeside(secondpick, receiverside)
                             fronttarget = self.squadselectside(receiver.frontline[receiverside], secondpick, position)
                             if fronttarget > 1:
-                                if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in [-1, 0]:
+                                if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
                                     self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
                                     self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
                             else:
@@ -486,9 +488,9 @@ class battle():
         elif type == 1:  ##range dmg
             leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
             dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
-        if (21 in who.trait and target.type in [1, 2]) or (23 in who.trait and target.type in [4, 5, 6, 7]):  ## Anti trait dmg bonus
+        if (21 in who.trait and target.type in (1, 2)) or (23 in who.trait and target.type in (4, 5, 6, 7)):  ## Anti trait dmg bonus
             dmg = dmg * 1.25
-        if target.state in [1,2,3,4,5,6,7,8,9]: dmg = dmg * 5
+        if target.state in (1,2,3,4,5,6,7,8,9): dmg = dmg * 5
         if dmg > target.unithealth:
             dmg = target.unithealth
         moraledmg = round(dmg / 100)
@@ -498,7 +500,7 @@ class battle():
         for status in inflictstatus.items():
             if status[1] == 1 and attackerside == 0:
                 receiver.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
-            elif status[1] in [2, 3]:
+            elif status[1] in (2, 3):
                 receiver.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
                 if status[1] == 3:
                     for squad in receiver.nearbysquadlist[0:2]:
@@ -531,15 +533,15 @@ class battle():
             if targetpercent > 1: targetpercent = 1
         whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
         """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
-        if (33 in target.trait and whoside == 2) or (55 in who.trait and whoside == 2) or (47 in who.trait and targetside in [1, 3]): whodefense = 0
+        if (33 in target.trait and whoside == 2) or (55 in who.trait and whoside == 2) or (47 in who.trait and targetside in (1, 3)): whodefense = 0
         targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
         if (33 in who.trait and targetside == 2) or (55 in target.trait and targetside == 2) or (
-                47 in target.trait and whoside in [1, 3]): targetdefense = 0
+                47 in target.trait and whoside in (1, 3)): targetdefense = 0
         whodmg, whomoraledmg, wholeaderdmg = self.losscal(who, target, whohit, targetdefense, 0)
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
-        if target.elemrange not in [0, 5]:  ## apply element effect if atk has element
+        if target.elemrange not in (0, 5):  ## apply element effect if atk has element
             who.elemcount[target.elemrange - 1] += round(targetdmg * (dmgeffect / 100)) / 100
         target.basemorale += round((targetmoraledmg * (dmgeffect / 100) / 2))
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
@@ -553,7 +555,7 @@ class battle():
                         squad.basemorale -= 20
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
-        if who.elemrange not in [0, 5]:  ## apply element effect if atk has element
+        if who.elemrange not in (0, 5):  ## apply element effect if atk has element
             target.elemcount[who.elemrange - 1] += round(whodmg * (targetdmgeffect / 100)) / 100
         who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
@@ -567,7 +569,7 @@ class battle():
                         squad.basemorale -= 30
         if who.corneratk == True:  ##attack corner (side) of self with aoe attack
             listloop = target.nearbysquadlist[2:4]
-            if targetside in [0, 2]: listloop = target.nearbysquadlist[0:2]
+            if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
             for squad in listloop:
                 if squad != 0 and squad.state != 100:
                     targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
@@ -595,7 +597,7 @@ class battle():
             newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.basepos) / 2)
             who.basepos = who.allsidepos[1] - ((who.allsidepos[1] - who.basepos) / 2)
         if who.leader[1].squad.gameid not in newarmysquad:  ## move leader if squad not in new one
-            if who.leader[1].squad.unittype in [1, 3, 5, 6, 7, 10, 11]:  ## if squad type melee move to front
+            if who.leader[1].squad.unittype in (1, 3, 5, 6, 7, 10, 11):  ## if squad type melee move to front
                 leaderreplace = [np.where(who.armysquad == who.leader[1].squad.gameid)[0][0],
                                  np.where(who.armysquad == who.leader[1].squad.gameid)[1][0]]
                 leaderreplaceflat = np.where(who.armysquad.flat == who.leader[1].squad.gameid)[0]
@@ -617,7 +619,7 @@ class battle():
                     newsquadsprite.append(squad)
                     break
         who.squadsprite = [squad for squad in who.squadsprite if squad.gameid in who.armysquad]
-        for thissprite in [who.squadsprite, newsquadsprite]:  ## reset position in inspectui for both battalion
+        for thissprite in (who.squadsprite, newsquadsprite):  ## reset position in inspectui for both battalion
             width, height = 0, 0
             squadnum = 0
             for squad in thissprite:
@@ -917,7 +919,7 @@ class battle():
                         self.enemyposlist[army.gameid] = army.basepos
                     for ui in self.gameui:
                         if (ui.rect.collidepoint(self.mousepos) and mouse_up and ui in self.allui):
-                            if ui.uitype not in ["unitcard", 'armybox']:
+                            if ui.uitype not in ("unitcard", 'armybox'):
                                 self.check = 1
                                 self.uicheck = 1  ## for avoiding clicking unit under ui
                                 break
@@ -1114,9 +1116,9 @@ class battle():
                                 hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
                                 """set up army position to the enemyside"""
-                                if hitbox.side == 0 and hitbox.who.state in [1, 2, 3, 4, 5, 6]:
+                                if hitbox.side == 0 and hitbox.who.state in (1, 2, 3, 4, 5, 6):
                                     hitbox.who.combatprepare(hitbox2)
-                                elif hitbox2.side == 0 and hitbox2.who.state in [1, 2, 3, 4, 5, 6]:
+                                elif hitbox2.side == 0 and hitbox2.who.state in (1, 2, 3, 4, 5, 6):
                                     hitbox2.who.combatprepare(hitbox)
                                 for battle in hitbox.who.battleside:
                                     if battle != 0:
@@ -1149,7 +1151,7 @@ class battle():
                                     else:
                                         self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
                                                     self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
-                        if thissquad.state in [11, 12, 13]:
+                        if thissquad.state in (11, 12, 13):
                             if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
                                 thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                             if thissquad.reloadtime >= thissquad.reload and (

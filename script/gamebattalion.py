@@ -64,11 +64,11 @@ class unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if (i.isdigit() or "-" in i and n not in [1, 20]):
+                    if (i.isdigit() or "-" in i and n not in (1, 20)):
                         row[n] = int(i)
                     elif i == "":
                         row[n] = 100
-                        if n in [2, 3]:
+                        if n in (2, 3):
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -83,7 +83,7 @@ class unitstat():
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = float(i)
-                    if n in [12]:
+                    if n == 12:
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():
@@ -99,12 +99,12 @@ class unitstat():
                 for n, i in enumerate(row):
                     # print(n, type(n))
                     if run != 0:
-                        if n in [2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30]:
+                        if n in (2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30):
                             if i == "":
                                 row[n] = 100
                             else:
                                 row[n] = float(i)
-                        elif n in [6, 7, 28, 31]:
+                        elif n in (6, 7, 28, 31):
                             """Convert all condition and status to list"""
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -122,11 +122,11 @@ class unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if (i.isdigit() or "-" in i) and n not in [1, 34, 35]:
+                    if (i.isdigit() or "-" in i) and n not in (1, 34, 35):
                         row[n] = float(i)
                     elif i == "":
                         row[n] = 100
-                    if n in [19, 33]:
+                    if n in (19, 33):
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():
@@ -174,7 +174,7 @@ class directionarrow(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.image, self.who.angle)
             self.rect = self.image.get_rect(midbottom=self.who.allsidepos[0])
             self.previouslength = self.length
-        elif distance < 2 or self.who.state in [0, 10, 11, 100]:
+        elif distance < 2 or self.who.state in (0, 10, 11, 100):
             self.who.directionarrow = False
             self.kill()
 
@@ -204,7 +204,7 @@ class hitbox(pygame.sprite.Sprite):
             self.image_original = self.image_original2.copy()
             scalewidth = self.image_original.get_width()
             scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
-            if self.side in [0,3]:
+            if self.side in (0,3):
                 scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
                 scaleheight = self.image_original.get_height()
             self.dim = pygame.Vector2(scalewidth, scaleheight)
@@ -491,7 +491,7 @@ class unitarmy(pygame.sprite.Sprite):
                 for deadsquad in dead[0]:
                     run = 0
                     while gotanother == 0:
-                        if fullwhoarray[index][run, deadsquad] not in [0, 1]:
+                        if fullwhoarray[index][run, deadsquad] not in (0, 1):
                             newwhofrontline[deadsquad] = fullwhoarray[index][run, deadsquad]
                             gotanother = 1
                         else:
@@ -539,7 +539,7 @@ class unitarmy(pygame.sprite.Sprite):
             self.walkspeed, self.runspeed = (self.speed + self.discipline / 100) / 15, (self.speed + self.discipline / 100) / 10
             self.rotatespeed = round(self.runspeed * 6) / (self.troopnumber / 100)
             if self.rotatespeed > 4: self.rotatespeed = 4
-            if self.state in [1, 3, 5]:
+            if self.state in (1, 3, 5):
                 self.rotatespeed = round(self.walkspeed * 6) / (self.troopnumber / 100)
                 if self.rotatespeed > 3: self.rotatespeed = 3
             if self.rotatespeed < 1:
@@ -713,7 +713,7 @@ class unitarmy(pygame.sprite.Sprite):
                 """can not use range attack in melee combat"""
                 self.rangecombatcheck = 0
                 """enter melee combat state when check"""
-                if self.state not in [96, 98]:
+                if self.state not in (96, 98):
                     self.state = 10
             if self.rangecombatcheck == 1: self.state = 11
             self.mask = pygame.mask.from_surface(self.image)
@@ -738,7 +738,7 @@ class unitarmy(pygame.sprite.Sprite):
                     self.retreatmax = (4 - len(retreatside)) * 2
                     # print("count", self.retreattimer, self.retreatmax, retreatside)
                     if self.retreattimer >= self.retreatmax:
-                        if self.state in [98,99]:
+                        if self.state in (98,99):
                             if self.retreatway is None or self.retreatway[1] not in retreatside:
                                 getrandom = random.randint(0, len(retreatside) - 1)
                                 self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
@@ -750,7 +750,7 @@ class unitarmy(pygame.sprite.Sprite):
                                 self.set_target(target)
                             self.combatcheck = 0
                         self.retreattimer = self.retreatmax
-            elif self.state in [98,99] and self.morale >= 20: ## state become normal again when morale reach 20
+            elif self.state in (98,99) and self.morale >= 20: ## state become normal again when morale reach 20
                 self.state = 0
                 self.retreattimer = 0
                 self.retreatstart = 0
@@ -806,7 +806,7 @@ class unitarmy(pygame.sprite.Sprite):
                 shootrange = self.maxrange
                 if self.useminrange == 0:
                     shootrange = self.minrange
-                if self.state in [5, 6] and ((self.attacktarget != 0 and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange)
+                if self.state in (5, 6) and ((self.attacktarget != 0 and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange)
                                              or self.basepos.distance_to(self.baseattackpos) <= shootrange):
                     self.set_target(self.allsidepos[0])
                     self.rangecombatcheck = 1
@@ -820,7 +820,7 @@ class unitarmy(pygame.sprite.Sprite):
             if self.allsidepos[0] != self.basetarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
-                if self.state in [0, 3, 4, 5,6,10] and self.attacktarget != 0 \
+                if self.state in (0, 3, 4, 5,6,10) and self.attacktarget != 0 \
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for hitbox in self.hitbox:
@@ -830,7 +830,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.set_target(self.attacktarget.basepos)
                         self.setrotate(self.target, instant=True)
                 """check for hitbox collide according to which ever closest to the target position"""
-                if self.state not in [0, 97] and self.stamina > 0 and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax):
+                if self.state not in (0, 97) and self.stamina > 0 and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
@@ -849,11 +849,11 @@ class unitarmy(pygame.sprite.Sprite):
                         elif move_length > 0.1:
                             # if self.state != 3 and self.retreatcommand == 1:
                             move.normalize_ip()
-                            if self.state in [2, 4, 6, 96, 98, 99]:
+                            if self.state in (2, 4, 6, 96, 98, 99):
                                 move = move * self.runspeed * dt * 50
-                            elif self.state in [1, 3, 5]:
+                            elif self.state in (1, 3, 5):
                                 move = move * self.walkspeed * dt * 50
-                            elif self.state in [10]:
+                            elif self.state != 10:
                                 move = move * 3.5 * dt * 50
                                 if move.length() > move_length:
                                     move = self.basetarget - self.allsidepos[0]
@@ -886,7 +886,7 @@ class unitarmy(pygame.sprite.Sprite):
             if self.troopnumber <= 0:
                 self.stamina, self.morale, self.speed, self.discipline = 0, 0, 0, 0
                 for leader in self.leader:
-                    if leader.state not in [96, 97, 98, 100]:  ## leader get captured/flee/die when squad destroyed
+                    if leader.state not in (96, 97, 98, 100):  ## leader get captured/flee/die when squad destroyed
                         leader.state = 96
                         for hitbox in self.hitbox:
                             if hitbox.collide != 0 and random.randint(0, 1) == 0:
@@ -933,11 +933,11 @@ class unitarmy(pygame.sprite.Sprite):
 
     def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-        if self.control == True and self.state not in [100]:
+        if self.control == True and self.state != 100:
             """check if right click in mask or not. if not, move unit"""
             posmask = mouse_pos[0][0] - self.rect.x, mouse_pos[0][1] - self.rect.y
             if mouse_right and mouse_pos[1][0] >= 0 and mouse_pos[1][0] <= 1000 and mouse_pos[1][1] >= 0 and mouse_pos[1][1] <= 1000:
-                if self.state not in [10, 97, 98, 99, 100]:
+                if self.state not in (10, 97, 98, 99, 100):
                     try:  ## if click within rect but not in mask
                         if self.mask.get_at(posmask) == 0:
                             self.state = 1
@@ -1022,7 +1022,7 @@ class unitarmy(pygame.sprite.Sprite):
                             self.set_target(mouse_pos[1])
                             self.commandtarget = self.target
                             # self.combatcheck = 0
-            elif othercommand == 1 and self.state not in [10,96,97,98,99,100]:  ## Pause all action except combat
+            elif othercommand == 1 and self.state not in (10,96,97,98,99,100):  ## Pause all action except combat
                 if self.charging == True:
                     self.leader[0].authority -= self.authpenalty
                     self.authrecal()

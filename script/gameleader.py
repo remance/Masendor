@@ -89,9 +89,8 @@ class leader(pygame.sprite.Sprite):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
-        if self.state not in [100]:
+        if self.state != 100:
             if self.health <= 0:
-                print(self.name, self.health, self.state)
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
                 self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead

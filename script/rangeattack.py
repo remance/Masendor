@@ -22,7 +22,7 @@ class arrow(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.shooter = shooter
         self.accuracy = shooter.accuracy
-        if self.shooter.state in [12, 13] and 17 not in self.shooter.trait: self.accuracy -= 10
+        if self.shooter.state in (12, 13) and 17 not in self.shooter.trait: self.accuracy -= 10
         self.passwho = 0
         self.side = None
         randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 5)  ## randpos1 is for left or right random
@@ -37,7 +37,7 @@ class arrow(pygame.sprite.Sprite):
         targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
             targetnow = self.shooter.attacktarget.basepos
-            if self.shooter.attacktarget.state in [1, 3, 5, 7] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
+            if self.shooter.attacktarget.state in (1, 3, 5, 7) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
                 targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
@@ -45,7 +45,7 @@ class arrow(pygame.sprite.Sprite):
                     if 17 not in self.shooter.trait: hitchance -= 10
                 else:
                     targetnow = self.shooter.attacktarget.basepos
-            elif self.shooter.attacktarget.state in [2, 4, 6, 8, 96, 98, 99] and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
+            elif self.shooter.attacktarget.state in (2, 4, 6, 8, 96, 98, 99) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
                 targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
@@ -54,10 +54,11 @@ class arrow(pygame.sprite.Sprite):
                 else:
                     targetnow = self.shooter.attacktarget.basepos
         hitchance = random.randint(int(hitchance),100)
-        if hitchance != 100:
+        if random.randint(0,100) > hitchance:
             if randomposition1 == 0: hitchance = 100 + (hitchance/20)
             else: hitchance = 100 - (hitchance/20)
-        self.basetarget = pygame.Vector2(targetnow[0] * hitchance/100, targetnow[1] * hitchance/100)
+            self.basetarget = pygame.Vector2(targetnow[0] * hitchance / 100, targetnow[1] * hitchance / 100)
+        else: self.basetarget = targetnow
         myradians = math.atan2(self.basetarget[1] - self.shooter.battalion.basepos[1], self.basetarget[0] - self.shooter.battalion.basepos[0])
         self.angle = math.degrees(myradians)
         # """upper left and upper right"""
@@ -96,7 +97,7 @@ class arrow(pygame.sprite.Sprite):
         whodmg, whomoraledmg, wholeaderdmg = maingame.battle.losscal(maingame.battle, who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
-        if who.elemrange not in [0, 5]:  ## apply element effect if atk has element
+        if who.elemrange not in (0, 5):  ## apply element effect if atk has element
             target.elemcount[who.elemrange - 1] += (whodmg / 100)
         if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
             target.leader.health -= wholeaderdmg
@@ -110,7 +111,7 @@ class arrow(pygame.sprite.Sprite):
                 calsquadlist = np.delete(calsquadlist,
                                          (calsquadlist <= 1).nonzero()[0][:round((np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
                 squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
-                if squadhit not in [0, 1]:
+                if squadhit not in (0, 1):
                     squadhit = np.where(squadindexlist == squadhit)[0][0]
                     self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
             for unit in pygame.sprite.spritecollide(self, target, 0, collided=pygame.sprite.collide_mask):
@@ -118,7 +119,7 @@ class arrow(pygame.sprite.Sprite):
                 calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
                     (np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
                 squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
-                if squadhit not in [0, 1]:
+                if squadhit not in (0, 1):
                     squadhit = np.where(squadindexlist == squadhit)[0][0]
                     self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
         elif self.arcshot == False and self.passwho != 0:
@@ -127,14 +128,14 @@ class arrow(pygame.sprite.Sprite):
             calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
                 (np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
             squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
-            if squadhit not in [0, 1]:
+            if squadhit not in (0, 1):
                 squadhit = np.where(squadindexlist == squadhit)[0][0]
                 self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
 
     def update(self, who, target, hitbox, squadlist, squadindexlist, dt, viewmode):
         """Who is the player battalion group, target is the enemy battalion group"""
         move = self.basetarget - self.basepos
-        move_length = move.length() * 10
+        move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""
         for hitbox in pygame.sprite.spritecollide(self, hitbox, 0, collided=pygame.sprite.collide_mask):
             if hitbox.who.gameid != self.shooter.battalion.gameid:
@@ -143,13 +144,16 @@ class arrow(pygame.sprite.Sprite):
                 if self.arcshot == False:
                     self.registerhit(who, target, squadlist, squadindexlist)
                     self.kill()
-        if move_length >= self.speed:
+        if move_length >= 1:
             move.normalize_ip()
             move = move * self.speed * dt
+            if move.length() > move_length:
+                move = self.basetarget - self.basepos
+                move.normalize_ip()
             self.basepos += move
             self.pos = self.basepos * viewmode
             self.rect.center = list(int(v) for v in self.pos)
             self.mask = pygame.mask.from_surface(self.image)
-        elif move_length < self.speed:
+        else:
             self.registerhit(who, target, squadlist, squadindexlist)
             self.kill()

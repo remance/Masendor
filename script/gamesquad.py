@@ -55,7 +55,7 @@ class unitsquad(pygame.sprite.Sprite):
                     for n, i in enumerate(stat):
                         if i.isdigit():
                             stat[n] = int(i)
-                        if n in [5, 6, 11, 22, 23]:
+                        if n in (5, 6, 11, 22, 23):
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -95,14 +95,14 @@ class unitsquad(pygame.sprite.Sprite):
         self.basediscipline = int(stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = stat[28]
         self.basespeed = 50
-        if stat[29] in [4, 5, 6, 7]: self.basespeed = 80
+        if stat[29] in (4, 5, 6, 7): self.basespeed = 80
         self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
-        if stat[29] in [1, 2]:
+        if stat[29] in (1, 2):
             self.unittype = stat[29] - 1
             self.featuremod = 1 ## the starting column in unit_terrainbonus of infantry
-        elif stat[29] in [3, 4, 5, 6, 7]:
+        elif stat[29] in (3, 4, 5, 6, 7):
             self.unittype = 2
             self.featuremod = 3 ## the starting column in unit_terrainbonus of cavalry
         self.description = stat[33]
@@ -290,7 +290,7 @@ class unitsquad(pygame.sprite.Sprite):
 
     def statustonearby(self, aoe, id, statuslist):
         """apply status effect to nearby unit depending on aoe stat"""
-        if aoe in [2, 3]:
+        if aoe in (2, 3):
             if aoe > 1:
                 for squad in self.nearbysquadlist[0:4]:
                     if squad != 0: squad.statuseffect[id] = statuslist[id].copy()
@@ -394,7 +394,7 @@ class unitsquad(pygame.sprite.Sprite):
                 # self.hidden += self.skilleffect[status][19]
                 self.criteffect = round(self.criteffect * (self.skilleffect[status][23] / 100), 0)
                 self.frontdmgeffect = round(self.frontdmgeffect * (self.skilleffect[status][24] / 100), 0)
-                if self.skilleffect[status][2] in [2, 3] and self.skilleffect[status][24] != 100:
+                if self.skilleffect[status][2] in (2, 3) and self.skilleffect[status][24] != 100:
                     self.sidedmgeffect = round(self.sidedmgeffect * (self.skilleffect[status][24] / 100), 0)
                     if self.skilleffect[status][2] == 3: self.corneratk = True
                 """Apply status to self if there is one in skill effect"""
@@ -542,12 +542,12 @@ class unitsquad(pygame.sprite.Sprite):
             if self.battalion.attacktarget != 0:
                 self.attackpos = self.battalion.attacktarget.basepos
             self.attacktarget = self.battalion.attacktarget
-            if self.battalion.state in [0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100]:
+            if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100):
                 self.state = self.battalion.state
             self.availableskill = []
             if self.useskillcond != 3:
                 self.checkskillcondition()
-            if self.state in [3, 4]:
+            if self.state in (3, 4):
                 if self.attackpos.distance_to(
                         self.combatpos) < 30 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                     self.useskill(0)
@@ -556,7 +556,7 @@ class unitsquad(pygame.sprite.Sprite):
                 # print('use', self.gameid)
                 self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
             """Melee combat act"""
-            if self.battalion.state == 10 and self.state not in [97]:
+            if self.battalion.state == 10 and self.state != 97:
                 self.state = 0
                 if any(battle > 0 for battle in self.battleside) == True:
                     self.state = 10
@@ -569,22 +569,22 @@ class unitsquad(pygame.sprite.Sprite):
                     #     self.attackpos) <= shootrange)
                     self.state = 11
             elif self.battalion.fireatwill == 0 and (
-                    self.state == 0 or (self.battalion.state in [1, 2, 3, 4, 5, 6] and 18 in self.trait)) and self.ammo > 0:
+                    self.state == 0 or (self.battalion.state in (1, 2, 3, 4, 5, 6) and 18 in self.trait)) and self.ammo > 0:
                 if self.attacktarget == 0 and self.battalion.neartarget != 0 and len(
                         self.battalion.neartarget) > 0:  ## get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
                     if self.range >= self.attackpos.distance_to(self.combatpos):
                         self.state = 11
-                        if self.battalion.state in [1, 3, 5]:  ## Walk and shoot
+                        if self.battalion.state in (1, 3, 5):  ## Walk and shoot
                             self.state = 12
-                        elif self.battalion.state in [2, 4, 6]:  ## Run and shoot
+                        elif self.battalion.state in (2, 4, 6):  ## Run and shoot
                             self.state = 13
-            if self.state in [11, 12, 13] and self.reloadtime < self.reload:
+            if self.state in (11, 12, 13) and self.reloadtime < self.reload:
                 self.reloadtime += dt
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
-            self.stamina = self.stamina - (dt * 3) if self.state in [1, 3, 5, 11] and self.battalion.pause == False else self.stamina - (
-                    dt * 7) if self.state in [2, 4, 6, 10, 96, 98, 99] and self.battalion.pause == False \
+            self.stamina = self.stamina - (dt * 3) if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
+                    dt * 7) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
                 else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (
                         dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale and self.state != 99: self.basemorale += dt
