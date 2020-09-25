@@ -35,7 +35,7 @@ class weaponstat():
                         row[n] = int(i)
                 self.weaponlist[row[0]] = row[1:]
         unitfile.close()
-        self.quality = [25, 50, 75, 100, 125, 150, 175]
+        self.quality = (25, 50, 75, 100, 125, 150, 175)
 
 
 class armourstat():
@@ -51,7 +51,7 @@ class armourstat():
                         row[n] = int(i)
                 self.armourlist[row[0]] = row[1:]
         unitfile.close()
-        self.quality = [25, 50, 75, 100, 125, 150, 175]
+        self.quality = (25, 50, 75, 100, 125, 150, 175)
 
 
 class unitstat():
@@ -280,6 +280,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.terrain = 0
         self.height = 0
         self.feature = None
+        self.sidefeature = []
         self.getfeature = self.gamemapfeature.getfeature
         self.set_target(startposition)
         self.basepreviousposition = pygame.Vector2(startposition)
@@ -604,6 +605,8 @@ class unitarmy(pygame.sprite.Sprite):
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
+        self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
+                            self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
         self.height = self.gamemapheight.getheight(self.basepos)
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
@@ -757,7 +760,7 @@ class unitarmy(pygame.sprite.Sprite):
             if self.hold == 1: ## skirmishing
                 minrange = self.minrange
                 if minrange == 0: minrange = 100
-                if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange / 2:
+                if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange / 5:
                     self.state = 96
                     target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
                     if target[0] < 0: target[0] = 0
@@ -864,6 +867,8 @@ class unitarmy(pygame.sprite.Sprite):
                         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
                         self.height = self.gamemapheight.getheight(self.basepos)
                         self.makeallsidepos()
+                        self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
+                                            self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.combatpreparestate == 0) and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = True
@@ -874,6 +879,8 @@ class unitarmy(pygame.sprite.Sprite):
                         self.commandtarget = self.target
                         self.rotateonly = False
                         self.makeallsidepos()
+                        self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
+                                            self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
             if self.stamina <= 0:
                 self.state = 97
                 self.set_target(self.allsidepos[0])

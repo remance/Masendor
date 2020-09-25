@@ -171,12 +171,12 @@ class battle():
         gamemap.beautifulmap.effectimage = img
         empty = load_image('empty.png', 'map/texture')
         maptexture = []
-        loadtexturefolder = ['glassland','draught','bushland','forest']
+        loadtexturefolder = ['glassland','draught','bushland','forest','inlandwater','road','building','farm']
         for index, texturefolder in enumerate(loadtexturefolder):
             imgs = load_images(['map','texture', texturefolder], loadorder=False)
             maptexture.append(imgs)
-            maptexture[index].append(empty)
         gamemap.beautifulmap.textureimages = maptexture
+        gamemap.beautifulmap.emptyimage = empty
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
         imgs = []
@@ -295,7 +295,7 @@ class battle():
         self.battlemap = gamemap.map(self.camerascale)
         self.battlemapfeature = gamemap.mapfeature(self.camerascale)
         self.battlemapheight = gamemap.mapheight(self.camerascale)
-        self.showmap = gamemap.beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature)
+        self.showmap = gamemap.beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature, self.battlemapheight)
         gamebattalion.unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
         gamebattalion.unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
         gamebattalion.unitarmy.gamemapheight = self.battlemapheight
@@ -654,7 +654,7 @@ class battle():
                       gamebattalion.hitbox(who, 2, 1, who.rect.height - 10),
                       gamebattalion.hitbox(who, 3, who.rect.width-10, 1)]
         who.rotate()
-        who.newangle = who.angle - 1
+        who.newangle = who.angle
         ## need to recal max stat again for the original battalion
         maxhealth = []
         maxstamina = []
@@ -709,12 +709,14 @@ class battle():
         army.leadersocial = army.leader[0].social
         army.authrecal()
         self.allunitlist.append(army)
-        army.newangle = army.angle - 1
+        army.newangle = army.angle
         army.rotate()
         army.viewmode = self.camerascale
         army.changescale()
         army.makeallsidepos()
-        army.terrain, army.feature = army.gamemapfeature.getfeature(army.basepos, army.gamemap)
+        army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
+        army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
+                            army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
         army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 1),
                        gamebattalion.hitbox(army, 1, 1, army.rect.height - 5),
                        gamebattalion.hitbox(army, 2, 1, army.rect.height - 5),
@@ -861,15 +863,11 @@ class battle():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
                         if self.mapviewmode == 0: ## Currently in normal mode
-                            self.allcamera.remove(self.showmap)
-                            self.allcamera.add(self.battlemapheight)
-                            self.mapshown = self.battlemapheight
                             self.mapviewmode = 1
+                            self.showmap.changemode(self.mapviewmode)
                         else: ## Currently in height mode
-                            self.allcamera.remove(self.battlemapheight)
-                            self.allcamera.add(self.showmap)
-                            self.mapshown = self.showmap
                             self.mapviewmode = 0
+                            self.showmap.changemode(self.mapviewmode)
                         self.mapshown.changescale(self.camerascale)
                     if event.key == pygame.K_p:  ## Pause Button
                         if self.gamestate == 1:
@@ -962,7 +960,7 @@ class battle():
             if self.lastselected != 0 and self.lastselected.state != 100:
                 """if not found in army class then it is in dead class"""
                 whoinput = self.lastselected
-                if mouse_up or mouse_right:
+                if (mouse_up or mouse_right):
                     whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                      self.lastmouseover, self.enemyposlist, keystate)
                     # if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.moverotate == 0 and whoinput.directionarrow == False:

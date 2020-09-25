@@ -93,7 +93,7 @@ class mapfeature(pygame.sprite.Sprite):
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit():
+                    if i.isdigit() or "-" in i:
                         row[n] = int(i)
                 self.featuremod[row[0]] = row[1:]
         unitfile.close()
@@ -147,12 +147,15 @@ class mapheight(pygame.sprite.Sprite):
 
 class beautifulmap(pygame.sprite.Sprite):
     textureimages = []
+    emptyimage = None
     effectimage = None
-    def __init__(self, scale, basemap,featuremap):
+
+    def __init__(self, scale, basemap,featuremap,gamemapheight):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = featuremap.image.copy()
         self.scale = scale
+        self.mode = 0
         self.newcolourlist = {}
         with open(main_dir + "\data\map" + '\\colourchange.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -186,28 +189,38 @@ class beautifulmap(pygame.sprite.Sprite):
                     terrain, thisfeature = featuremap.getfeature((randompos), basemap)
                     feature = self.textureimages[thisfeature]
                     choose = random.randint(0,len(feature)-1)
-                    if thisfeature - (terrain * 12) in (0,1) and random.randint(0,100) < 60: ## reduce speical texture in empty terrain like glassland
-                        choose = -1 ## empty texture
-                    thistexture = feature[choose]
+                    if thisfeature - (terrain * 12) in (0,1,4,5,7) and random.randint(0,100) < 70: ## reduce speical texture in empty terrain like glassland
+                        thistexture = self.emptyimage ## empty texture
+                    else: thistexture = feature[choose]
                     rect = thistexture.get_rect(center=(randompos))
                     self.image.blit(thistexture, rect)
         rect = self.image.get_rect(topleft=(0, 0))
-        # self.image.blit(img,rect)
-        self.image.blit(self.effectimage,rect)
+        self.image.blit(self.effectimage,rect) ## Add special filter effect that make it look like old map
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.trueimage = self.image.copy()
         self.image_original = self.image.copy()
+        self.imagewithheight_original = self.image.copy()
+        self.imagewithheight_original.blit(gamemapheight.image, rect)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
 
+    def changemode(self,mode):
+        self.mode = mode
+        self.changescale(self.scale)
+
     def changescale(self, scale):
         self.scale = scale
-        self.image = self.image_original.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
+        scalewidth = self.image_original.get_width() * self.scale
+        scaleheight = self.image_original.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+        if self.mode == 0:
+            self.image = self.image_original.copy()
+            self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
+        else:
+            self.image = self.imagewithheight_original.copy()
+            self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
+
 
 
