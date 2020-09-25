@@ -9,6 +9,8 @@ Plan
 
 Ver 0.3 The World at Hand: Game map, terrain,mini map, camera and finalise retreat, melee combat engagement and collision (Going to be somewhat difficult and long to implement)
 
+3.9 Add more height and terrain effect to combat/movement restriction
+
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
@@ -24,6 +26,8 @@ Ver 0.9 Gaze of New Life: more complex AI (The most challenging step unless cut 
 Ver 1 Pax Paradisum: historical battle simulation game
 
 Ver 1 - 1.5: More art, sound effect and ingame music (May need to use royalty free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battle
+
+Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather
 
 Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item, mount)
 

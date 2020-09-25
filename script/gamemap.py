@@ -149,6 +149,7 @@ class beautifulmap(pygame.sprite.Sprite):
     textureimages = []
     emptyimage = None
     effectimage = None
+    placename = None
 
     def __init__(self, scale, basemap,featuremap,gamemapheight):
         self._layer = 0
@@ -189,13 +190,14 @@ class beautifulmap(pygame.sprite.Sprite):
                     terrain, thisfeature = featuremap.getfeature((randompos), basemap)
                     feature = self.textureimages[thisfeature]
                     choose = random.randint(0,len(feature)-1)
-                    if thisfeature - (terrain * 12) in (0,1,4,5,7) and random.randint(0,100) < 70: ## reduce speical texture in empty terrain like glassland
+                    if thisfeature - (terrain * 12) in (0,1,4,5,7) and random.randint(0,100) < 60: ## reduce speical texture in empty terrain like glassland
                         thistexture = self.emptyimage ## empty texture
                     else: thistexture = feature[choose]
                     rect = thistexture.get_rect(center=(randompos))
                     self.image.blit(thistexture, rect)
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(self.effectimage,rect) ## Add special filter effect that make it look like old map
+        self.image.blit(self.placename, rect) ## Add placename layer to map
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)

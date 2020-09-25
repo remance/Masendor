@@ -167,6 +167,7 @@ class battle():
         gamemap.map.images = [imgs[0]]
         gamemap.mapfeature.images = [imgs[1]]
         gamemap.mapheight.images = [imgs[2]]
+        gamemap.beautifulmap.placename = imgs[3]
         img = load_image('effect.png', 'map')
         gamemap.beautifulmap.effectimage = img
         empty = load_image('empty.png', 'map/texture')

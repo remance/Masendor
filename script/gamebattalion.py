@@ -281,6 +281,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.height = 0
         self.feature = None
         self.sidefeature = []
+        self.sideheight = []
         self.getfeature = self.gamemapfeature.getfeature
         self.set_target(startposition)
         self.basepreviousposition = pygame.Vector2(startposition)
@@ -608,6 +609,8 @@ class unitarmy(pygame.sprite.Sprite):
         self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
                             self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
         self.height = self.gamemapheight.getheight(self.basepos)
+        self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
+                           self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
         self.changescale()
@@ -869,6 +872,8 @@ class unitarmy(pygame.sprite.Sprite):
                         self.makeallsidepos()
                         self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
                                             self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
+                        self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
+                                           self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.combatpreparestate == 0) and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = True
@@ -881,6 +886,8 @@ class unitarmy(pygame.sprite.Sprite):
                         self.makeallsidepos()
                         self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
                                             self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
+                        self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
+                                           self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
             if self.stamina <= 0:
                 self.state = 97
                 self.set_target(self.allsidepos[0])
