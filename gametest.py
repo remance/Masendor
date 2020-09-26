@@ -12,6 +12,9 @@ import math
 ## random map generator (https://dxprog.com/files/randmaps.html)
 ## https://www.redblobgames.com/maps/terrain-from-noise/
 
+# column to list
+# https://convert.town/column-to-comma-separated-list
+
 import random
 import sys
 import os

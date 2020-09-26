@@ -96,17 +96,6 @@ class Gameui(pygame.sprite.Sprite):
                               "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
             self.qualitytext = ["Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect"]
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water", "Deep water"]
-            self.featurelist = ["Grassland", "Draught", "Bushland", "Forest", "Inland Water", "Road", "Building", "Farm", "Wall", "Mana Flux",
-                                "Creeping Rot", "", "Savanna", "Draught", "Tropical Shrubland", "Jungle", "Inland Water", "Road", "Building", "Farm",
-                                "Wall", "Heat Mana", "Creeping Rot", "", "Volcanic Soil", "", "", "", "", "Road", "", "Fertile Farm", "Wall",
-                                "Fire Mana", "Creeping Rot", "", "Desert Plain", "Desert Sand", "Desert Shrubland", "Desert Forest", "Oasis",
-                                "Sand Road", "Desert Dwelling", "Desert Farm", "Wall", "Earth Mana", "Creeping Rot", "", "Snow", "Tundra",
-                                "Arctic Shrubland", "Arctic Forest", "Frozen Water", "Snow Road", "Warm Shelter", "Arctic Farm", "Wall", "Ice Mana",
-                                "Creeping Rot", "", "", "", "", "", "Poisoned Water", "", "", "", "Wall", "Poisoned Mana", "Creeping Rot", "", "",
-                                "Void", "", "", "", "", "", "", "", "Leyline", "Creeping Rot", "", "", "", "", "", "", "", "", "", "Demonic Wall", "",
-                                "Creeping Rot", "", "", "", "", "", "", "", "", "", "Death Wall", "", "Rotten Land", "", "", "", "Marsh", "Swamp",
-                                "Water", "", "", "", "", "Cold Mana", "Creeping Rot", "", "Fresh Water", "Salt Water", "Coral Reef",
-                                "Underwater Forest", "", "Sunken Road", "Undercity", "", "", "Water Mana", "Creeping Rot", "", ""]
         #     self.iconimagerect = self.icon[0].get_rect(
         #         center=(
         #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))

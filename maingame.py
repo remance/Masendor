@@ -162,6 +162,7 @@ class battle():
         # Load images, assign to sprite classes
         # (do this before the classes are used, after screen setup)
         ## create game map
+        featurelist = ["Grassland","Draught","Bushland","Forest","Inland Water","Road","Building","Farm","Wall","Mana Flux","Creeping Rot","Mud","Savanna","Draught","Tropical Shrubland","Jungle","Inland Water","Road","Building","Farm","Wall","Heat Mana","Creeping Rot","Mud","Volcanic Soil","Scorched Land","","","","Road","","Fertile Farm","Wall","Fire Mana","Creeping Rot","","Desert Plain","Desert Sand","Desert Shrubland","Desert Forest","Oasis","Sand Road","Desert Dwelling","Desert Farm","Wall","Earth Mana","Creeping Rot","Quicksand","Snow","Tundra","Arctic Shrubland","Arctic Forest","Frozen Water","Snow Road","Warm Shelter","Arctic Farm","Wall","Ice Mana","Preserving Rot","Ice Ground","","","","","Poisoned Water","","","","Wall","Poisoned Mana","Creeping Rot","","","Void","","","","","","","","Leyline","Creeping Rot","","","","","","","","","","Demonic Wall","","Creeping Rot","","","","","","","","","","Death Wall","","Rotten Land","","Lively Water","Empty Water","Marsh","Swamp","Water","Bridge","Swamp Building","Swamp Farm","Wall","Cold Mana","Creeping Rot","","Sea","Ocean","Coral Reef","Underwater Forest","Fresh Water","Bridge","Sunken City","Fishery","Submerged Wall","Water Mana","Creeping Rot",""]
         mapselected = "testmap"
         imgs = load_images(['map', mapselected],loadorder=False)
         gamemap.map.images = [imgs[0]]
@@ -172,11 +173,16 @@ class battle():
         gamemap.beautifulmap.effectimage = img
         empty = load_image('empty.png', 'map/texture')
         maptexture = []
-        loadtexturefolder = ['glassland','draught','bushland','forest','inlandwater','road','building','farm']
+        loadtexturefolder = []
+        for feature in featurelist:
+            loadtexturefolder.append(feature.replace(" ", "").lower())
+        loadtexturefolder = list(set(loadtexturefolder))
+        loadtexturefolder = [item for item in loadtexturefolder if item != ""] ## For now remove terrain with no planned name/folder yet
         for index, texturefolder in enumerate(loadtexturefolder):
             imgs = load_images(['map','texture', texturefolder], loadorder=False)
             maptexture.append(imgs)
         gamemap.beautifulmap.textureimages = maptexture
+        gamemap.beautifulmap.loadtexturelist = loadtexturefolder
         gamemap.beautifulmap.emptyimage = empty
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
@@ -328,6 +334,7 @@ class battle():
         self.gameui.append(
             gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=SCREENRECT.height - 310, image=topimage[2],
                           icon="", uitype="unitcard"))
+        self.gameui[2].featurelist = featurelist
         self.gameui.append(
             gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] + 150,
                           image=topimage[5], icon="", uitype="armybox"))

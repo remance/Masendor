@@ -141,7 +141,9 @@ class mapheight(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
     def getheight(self, pos):
-        heightindex = 255 - self.trueimage.get_at((int(pos[0]), int(pos[1])))[2] ##get colour at pos to obtain the terrain type
+        colour = self.trueimage.get_at((int(pos[0]), int(pos[1])))[2]
+        if colour == 0: color = 155
+        heightindex = 255 - colour ##get colour at pos to obtain the terrain type
         return heightindex
 
 
@@ -150,6 +152,7 @@ class beautifulmap(pygame.sprite.Sprite):
     emptyimage = None
     effectimage = None
     placename = None
+    loadtexturelist = None
 
     def __init__(self, scale, basemap,featuremap,gamemapheight):
         self._layer = 0
@@ -188,7 +191,7 @@ class beautifulmap(pygame.sprite.Sprite):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
                     randompos = (rowpos + random.randint(0, 19), colpos + random.randint(0, 19))
                     terrain, thisfeature = featuremap.getfeature((randompos), basemap)
-                    feature = self.textureimages[thisfeature]
+                    feature = self.textureimages[self.loadtexturelist.index(self.newcolourlist[thisfeature][0].replace(" ", "").lower())]
                     choose = random.randint(0,len(feature)-1)
                     if thisfeature - (terrain * 12) in (0,1,4,5,7) and random.randint(0,100) < 60: ## reduce speical texture in empty terrain like glassland
                         thistexture = self.emptyimage ## empty texture
