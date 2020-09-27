@@ -854,13 +854,16 @@ class unitarmy(pygame.sprite.Sprite):
                         # if self.state == 5: self.target = self.pos
                         elif move_length > 0.1:
                             # if self.state != 3 and self.retreatcommand == 1:
+                            heightdiff = (self.height / self.sideheight[0]) ** 2
+                            if self.state in (96,98,99):
+                                heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
                             move.normalize_ip()
                             if self.state in (2, 4, 6, 96, 98, 99):
-                                move = move * self.runspeed * dt * 50
+                                move = move * self.runspeed * heightdiff * dt * 20
                             elif self.state in (1, 3, 5):
-                                move = move * self.walkspeed * dt * 50
+                                move = move * self.walkspeed * heightdiff * dt * 20
                             elif self.state != 10:
-                                move = move * 3.5 * dt * 50
+                                move = move * 3.5 * heightdiff * dt * 20
                                 if move.length() > move_length:
                                     move = self.basetarget - self.allsidepos[0]
                                     move.normalize_ip()

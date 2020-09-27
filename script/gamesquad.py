@@ -358,6 +358,16 @@ class unitsquad(pygame.sprite.Sprite):
             self.attack *= combatmod/100
             self.meleedef *= combatmod/100
             self.chargedef *= combatmod/100
+        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] != 0:
+            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] == 1:
+                if self.weight > 30 and self.weight <= 60: ## sinking
+                    self.statuseffect[101] = statuslist[101].copy()
+                elif self.weight > 60: ## Drowning
+                    self.statuseffect[102] = statuslist[102].copy()
+            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] == 2: ## Rot feature
+                self.statuseffect[54] = statuslist[54].copy()
+            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] == 3: ## Poison
+                self.elemcount[4] += dt
         self.rangedef += self.battalion.gamemapfeature.featuremod[self.battalion.feature][5]
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
         if self.tempcount != self.battalion.gamemapfeature.featuremod[self.battalion.feature][7]:

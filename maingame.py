@@ -465,6 +465,8 @@ class battle():
             self.combatpositioncal(sortmidfront, target, who, targetside, whoside, squadwhoside)
 
     def losscal(self, who, target, hit, defense, type):
+        heightadventage = who.battalion.height - target.battalion.height
+        hit += heightadventage
         if hit < 0: hit = 0
         """ignore def trait"""
         if defense < 0 or 30 in who.trait: defense = 0

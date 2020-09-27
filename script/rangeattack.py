@@ -41,7 +41,7 @@ class arrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * 50 * howlong))/11)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * 20 * howlong))/11)
                     if 17 not in self.shooter.trait: hitchance -= 10
                 else:
                     targetnow = self.shooter.attacktarget.basepos
@@ -49,7 +49,7 @@ class arrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * 50 * howlong))/11)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * 20 * howlong))/11)
                     if 17 not in self.shooter.trait: hitchance -= 20
                 else:
                     targetnow = self.shooter.attacktarget.basepos

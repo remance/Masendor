@@ -54,7 +54,7 @@ class map(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
-        self.terraincolour = [Temperate,Tropical,Volcanic,Desert,Arctic,Blight,Void,Demonic,Death,ShallowWater,DeepWater]
+        self.terraincolour = (Temperate,Tropical,Volcanic,Desert,Arctic,Blight,Void,Demonic,Death,ShallowWater,DeepWater)
 
     def changescale(self,scale):
         self.scale = scale
@@ -87,7 +87,7 @@ class mapfeature(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0,0))
-        self.featurecolour = [Plain,Barren,PlantField,Forest,InlandWater,Road,UrbanBuilding,Farm,Wall,Mana,Rot,Wetground] ## forest, tall plant/grass, field, road/bridge, wall, urban building
+        self.featurecolour = (Plain,Barren,PlantField,Forest,InlandWater,Road,UrbanBuilding,Farm,Wall,Mana,Rot,Wetground)
         self.featuremod = {}
         with open(main_dir + "\data\map" + '\\unit_terrainbonus.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -142,7 +142,7 @@ class mapheight(pygame.sprite.Sprite):
 
     def getheight(self, pos):
         colour = self.trueimage.get_at((int(pos[0]), int(pos[1])))[2]
-        if colour == 0: color = 155
+        if colour == 0: colour = 155
         heightindex = 255 - colour ##get colour at pos to obtain the terrain type
         return heightindex
 

@@ -70,5 +70,4 @@ import numpy as np
 import pygame
 import timeit
 
-if 'a' in ("a","b"):
-    print('k')
+print(10**2)
