@@ -312,7 +312,7 @@ class unitsquad(pygame.sprite.Sprite):
         return elem
 
     def statusupdate(self, statuslist, dt):
-        """calculate stat from stamina and morale state"""
+        """calculate stat from stamina, morale state, skill, status, terrain"""
         ## Maybe make trigger for status update instead of doing it every update for optimise
         self.morale = self.basemorale
         self.authority = self.battalion.authority
@@ -354,26 +354,28 @@ class unitsquad(pygame.sprite.Sprite):
             self.speed *= speedmod/100
             self.charge *= speedmod/100
         if self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1] != 100:
-            combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
-            self.attack *= combatmod/100
+            # combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
+            self.attack *= self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]/100
+        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 2] != 100:
+            combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 2]
             self.meleedef *= combatmod/100
             self.chargedef *= combatmod/100
-        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] != 0:
-            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] == 1:
+        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][10] != 0:
+            if 1 in self.battalion.gamemapfeature.featuremod[self.battalion.feature][10]:
                 if self.weight > 30 and self.weight <= 60: ## sinking
                     self.statuseffect[101] = statuslist[101].copy()
-                elif self.weight > 60: ## Drowning
+                elif self.weight > 60 or self.stamina <= 0: ## Drowning
                     self.statuseffect[102] = statuslist[102].copy()
-            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] == 2: ## Rot feature
+            if 2 in self.battalion.gamemapfeature.featuremod[self.battalion.feature][10]: ## Rot feature
                 self.statuseffect[54] = statuslist[54].copy()
-            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][8] == 3: ## Poison
+            if 3 in self.battalion.gamemapfeature.featuremod[self.battalion.feature][10]: ## Poison
                 self.elemcount[4] += dt
-        self.rangedef += self.battalion.gamemapfeature.featuremod[self.battalion.feature][5]
+        self.rangedef += self.battalion.gamemapfeature.featuremod[self.battalion.feature][7]
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
         if self.tempcount != self.battalion.gamemapfeature.featuremod[self.battalion.feature][7]:
-            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][7] > 0:
+            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][9] > 0:
                 self.tempcount += dt
-            elif self.battalion.gamemapfeature.featuremod[self.battalion.feature][7] < 0:
+            elif self.battalion.gamemapfeature.featuremod[self.battalion.feature][9] < 0:
                 self.tempcount -= dt
             else:
                 if self.tempcount > 0:

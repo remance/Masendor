@@ -18,7 +18,7 @@ from pygame.locals import *
 from pygame.transform import scale
 
 from RTS import mainmenu
-from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack
+from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup
 
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
@@ -255,7 +255,7 @@ class battle():
             pygame.mixer.music.load(self.musiclist[self.pickmusic])
             pygame.mixer.music.play(0)
         """Initialize Game Groups"""
-        self.allcamera = pygame.sprite.LayeredUpdates() ## the layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow, 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = ui/button, 9 = squad inspect
+        self.allcamera = pygame.sprite.LayeredUpdates() ## the layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow, 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = ui/button, 9 = squad inspect, 10 pop up
         self.allui = pygame.sprite.LayeredUpdates()
         self.unitupdater = pygame.sprite.Group()
         self.uiupdater = pygame.sprite.Group()
@@ -278,6 +278,7 @@ class battle():
         self.buttonui = pygame.sprite.Group()
         self.fpscount = pygame.sprite.Group()
         self.switchbuttonui = pygame.sprite.Group()
+        self.terraincheck = pygame.sprite.Group()
         """assign default groups"""
         gamemap.map.containers = self.battlemap, self.mapupdater
         gamemap.mapfeature.containers = self.battlemapfeature, self.mapupdater
@@ -295,6 +296,7 @@ class battle():
         gameui.fpscount.containers = self.allui
         gameui.uibutton.containers = self.buttonui, self.uiupdater
         gameui.switchuibutton.containers = self.switchbuttonui, self.uiupdater
+        gamepopup.terrainpopup.containers = self.terraincheck, self.uiupdater
         ## create the background map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
@@ -783,12 +785,34 @@ class battle():
         elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
 
+    def uimouseover(self, mouse_up, mouse_right):
+        for ui in self.gameui:
+            if ui in self.allui and (ui.rect.collidepoint(self.mousepos) and (mouse_up or mouse_right)):
+                if ui.uitype not in ("unitcard", 'armybox'):
+                    self.check = 1
+                    self.uicheck = 1  ## for avoiding clicking unit under ui
+                    break
+                else:
+                    if self.inspectui == 1:
+                        self.check = 1
+                        self.uicheck = 1
+                        break
+        return self.check
+
+    def buttonmouseover(self, mouse_up, mouse_right):
+        for button in self.buttonui:
+            if button in self.allui and (button.rect.collidepoint(self.mousepos) and (mouse_up or mouse_right)):
+                self.check = 1
+                self.uicheck = 1  ## for avoiding clicking unit under ui
+                break
+        return self.check
+
     def rungame(self):
         self.gamestate = 1
         self.check = 0  ## For checking if unit or ui is clicked
         self.check2 = 0  ##  For checking if another unit is clicked when inspect ui open"
         self.inspectui = 0
-        self.lastselected = 0
+        self.lastselected = None
         self.mapviewmode = 0
         self.mapshown = self.showmap
         self.squadlastselected = None
@@ -884,12 +908,12 @@ class battle():
                             self.gamestate = 0
                         else:
                             self.gamestate = 1
-                    elif event.key == pygame.K_SPACE and self.lastselected != 0:
+                    elif event.key == pygame.K_SPACE and self.lastselected is not None:
                         whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                         self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
-                    elif event.key == pygame.K_q and self.lastselected != 0:
+                    elif event.key == pygame.K_q and self.lastselected is not None:
                         self.changefaction(whoinput)
-                    elif event.key == pygame.K_l and self.lastselected != 0:
+                    elif event.key == pygame.K_l and self.lastselected is not None:
                         for squad in whoinput.squadsprite:
                             squad.basemorale = 0
                     else:
@@ -908,69 +932,68 @@ class battle():
             # self.mapupdater.update(self.dt,self.camerapos,self.camerascale)
             # self.screen.blit(self.background, self.camerapos)
             self.lastmouseover = 0
-            if mouse_up == True:
-                self.check = 0
-                self.check2 = 0
-                self.uicheck = 0
-            if self.minimap.rect.collidepoint(self.mousepos):
-                posmask = pygame.Vector2(int(self.mousepos[0] - self.minimap.rect.x), int(self.mousepos[1] - self.minimap.rect.y))
+            # if self.terraincheck in self.allui and self.terraincheck.mouse_pos != self.mouse_pos:
+            #     self.allui.remove(self.terraincheck)
+            if mouse_up or mouse_right:
                 if mouse_up:
+                    self.check = 0
+                    self.check2 = 0
+                    self.uicheck = 0
+                if self.minimap.rect.collidepoint(self.mousepos):
+                    posmask = pygame.Vector2(int(self.mousepos[0] - self.minimap.rect.x), int(self.mousepos[1] - self.minimap.rect.y))
                     self.basecamerapos = posmask * 5
                     self.camerapos = self.basecamerapos * self.camerascale
                     self.check = 1
                     self.uicheck = 1
-            else:
-                for army in self.allunitlist:
-                    if army.gameid < 2000:
-                        self.playerposlist[army.gameid] = army.basepos
-                    else:
-                        self.enemyposlist[army.gameid] = army.basepos
-                    for ui in self.gameui:
-                        if (ui.rect.collidepoint(self.mousepos) and mouse_up and ui in self.allui):
-                            if ui.uitype not in ("unitcard", 'armybox'):
+                elif self.uimouseover() == 1:
+                    pass
+                elif self.buttonmouseover() == 1:
+                    pass
+                elif mouse_right and self.lastselected is None and self.uicheck != 1:
+                    terrainpop, featurepop = self.battlemapfeature.getfeature(self.mousepos, self.battlemap)
+                    featurepop = self.battlemapfeature.featuremod[featurepop]
+                    self.terraincheck  = gamepopup.terrainpopup(featurepop, self.mouse_pos)
+                    self.allui.add(self.terraincheck)
+            for army in self.allunitlist:
+                if army.gameid < 2000:
+                    self.playerposlist[army.gameid] = army.basepos
+                else:
+                    self.enemyposlist[army.gameid] = army.basepos
+                if army.rect.collidepoint(self.battlemousepos[0]):
+                    posmask = int(self.battlemousepos[0][0] - army.rect.x), int(self.battlemousepos[0][1] - army.rect.y)
+                    try:
+                        if army.mask.get_at(posmask) == 1:
+                            army.mouse_over = True
+                            self.lastmouseover = army
+                            if mouse_up and self.uicheck == 0:
+                                self.lastselected = army
                                 self.check = 1
-                                self.uicheck = 1  ## for avoiding clicking unit under ui
-                                break
-                            else:
-                                if self.inspectui == 1:
-                                    self.check = 1
-                                    self.uicheck = 1
-                                    break
-                    if army.rect.collidepoint(self.battlemousepos[0]):
-                        posmask = int(self.battlemousepos[0][0] - army.rect.x), int(self.battlemousepos[0][1] - army.rect.y)
-                        try:
-                            if army.mask.get_at(posmask) == 1:
-                                army.mouse_over = True
-                                self.lastmouseover = army
-                                if mouse_up and self.uicheck == 0:
-                                    self.lastselected = army
-                                    self.check = 1
-                        except:
-                            army.mouse_over = False
-                    else:
+                    except:
                         army.mouse_over = False
-                    if army.changefaction == True:  ## change side via surrender or betrayal
-                        self.changefaction(army)
-                        army.changefaction = False
-                    if army.state == 100 and army.gotkilled == 0:
-                        if army.gameid < 2000:
-                            self.die(army, self.playerarmy, self.deadunit, self.allcamera, self.hitboxs)
-                            for thisarmy in self.enemyarmy:  ## get bonus authority when destroy enemy battalion
-                                thisarmy.authority += 5
-                            for thisarmy in self.playerarmy:  ## morale dmg to every squad in army when allied battalion destroyed
-                                for squad in thisarmy.squadsprite:
-                                    squad.basemorale -= 20
-                        else:
-                            self.die(army, self.enemyarmy, self.deadunit, self.allcamera, self.hitboxs)
-                            for thisarmy in self.playerarmy:  ## get bonus authority when destroy enemy battalion
-                                thisarmy.authority += 5
-                            for thisarmy in self.enemyarmy:  ## morale dmg to every squad in army when allied battalion destroyed
-                                for squad in thisarmy.squadsprite:
-                                    squad.basemorale -= 20
-            if self.lastselected != 0 and self.lastselected.state != 100:
+                else:
+                    army.mouse_over = False
+                if army.changefaction == True:  ## change side via surrender or betrayal
+                    self.changefaction(army)
+                    army.changefaction = False
+                if army.state == 100 and army.gotkilled == 0:
+                    if army.gameid < 2000:
+                        self.die(army, self.playerarmy, self.deadunit, self.allcamera, self.hitboxs)
+                        for thisarmy in self.enemyarmy:  ## get bonus authority when destroy enemy battalion
+                            thisarmy.authority += 5
+                        for thisarmy in self.playerarmy:  ## morale dmg to every squad in army when allied battalion destroyed
+                            for squad in thisarmy.squadsprite:
+                                squad.basemorale -= 20
+                    else:
+                        self.die(army, self.enemyarmy, self.deadunit, self.allcamera, self.hitboxs)
+                        for thisarmy in self.playerarmy:  ## get bonus authority when destroy enemy battalion
+                            thisarmy.authority += 5
+                        for thisarmy in self.enemyarmy:  ## morale dmg to every squad in army when allied battalion destroyed
+                            for squad in thisarmy.squadsprite:
+                                squad.basemorale -= 20
+            if self.lastselected is not None and self.lastselected.state != 100:
                 """if not found in army class then it is in dead class"""
                 whoinput = self.lastselected
-                if (mouse_up or mouse_right):
+                if (mouse_up or mouse_right) and self.uicheck == 0:
                     whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                      self.lastmouseover, self.enemyposlist, keystate)
                     # if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.moverotate == 0 and whoinput.directionarrow == False:
@@ -1014,7 +1037,6 @@ class battle():
                     self.inspectui = 1
                     self.allui.add(*self.gameui[2:4])
                     self.allui.add(*self.buttonui[0:4])
-                    self.check = 1
                     self.showingsquad = whoinput.squadsprite
                     self.squadlastselected = self.showingsquad[0]
                 elif self.buttonui[4].rect.collidepoint(
@@ -1024,7 +1046,6 @@ class battle():
                     for ui in self.gameui[2:4]: ui.kill()
                     for button in self.buttonui[0:4]: button.kill()
                     self.inspectui = 0
-                    self.check = 1
                     self.check2 = 0
                 elif (self.switchbuttonui[0].rect.collidepoint(
                         pygame.mouse.get_pos()) and mouse_up == True) or keypress == pygame.K_g:  ## rotate skill condition when clicked
@@ -1083,6 +1104,7 @@ class battle():
                         for squad in self.showingsquad:
                             if squad.rect.collidepoint(pygame.mouse.get_pos()) == True:
                                 self.check = 1
+                                self.uicheck = 1
                                 squad.command(self.battlemousepos, mouse_up, mouse_right, self.squadlastselected.wholastselect)
                                 self.squadlastselected = squad
                                 self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour, leader=self.allleader,
@@ -1090,6 +1112,7 @@ class battle():
                             for button in self.buttonui:  ## Change unit card option based on button clicking
                                 if button.rect.collidepoint(pygame.mouse.get_pos()):
                                     self.check = 1
+                                    self.uicheck = 1
                                     if self.gameui[2].option != button.event:
                                         self.gameui[2].option = button.event
                                         self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour,
@@ -1099,7 +1122,7 @@ class battle():
                 self.beforeselected = self.lastselected
             """remove the pop up ui when click at no group"""
             if self.check != 1:
-                self.lastselected = 0
+                self.lastselected = None
                 for ui in self.gameui: ui.kill()
                 for button in self.buttonui: button.kill()
                 self.allui.remove(*self.switchbuttonui)
