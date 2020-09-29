@@ -93,7 +93,12 @@ class mapfeature(pygame.sprite.Sprite):
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit() or "-" in i:
+                    if n == 11:
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                    elif i.isdigit() or "-" in i:
                         row[n] = int(i)
                 self.featuremod[row[0]] = row[1:]
         unitfile.close()

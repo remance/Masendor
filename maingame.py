@@ -821,7 +821,6 @@ class battle():
         self.mapshown = self.showmap
         self.squadlastselected = None
         self.beforeselected = None
-        self.squadbeforeselected = None
         self.splithappen = False
         self.splitbutton = False
         self.leadernow = []
@@ -1105,9 +1104,6 @@ class battle():
                         self.showingsquad = whoinput.squadsprite
                         self.allui.add(*self.showingsquad)
                     self.allui.add(*self.showingsquad)
-                    if self.squadlastselected is not None:  ## Update value of the clicked squad
-                        self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                  leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
                     if mouse_up == True:  ## Change showing stat to the clicked squad one
                         for squad in self.showingsquad:
                             if squad.rect.collidepoint(pygame.mouse.get_pos()) == True:
@@ -1126,7 +1122,9 @@ class battle():
                                         self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                                   leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat,
                                                                   splithappen=self.splithappen)
-                    self.squadbeforeselected = self.squadlastselected
+                    if self.squadlastselected is not None:  ## Update value of the clicked squad
+                        self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
+                                                  leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
                 self.beforeselected = self.lastselected
             """remove the pop up ui when click at no group"""
             if self.check != 1:
@@ -1137,9 +1135,9 @@ class battle():
                 self.allui.remove(*self.showingsquad)
                 self.showingsquad = []
                 self.inspectui = 0
-                self.squadbeforeselected = 0
                 self.beforeselected = 0
                 self.allui.remove(*self.leadernow)
+                self.squadlastselected = None
                 self.leadernow = []
             if self.gamestate == 1:
                 # fight_sound.play()
