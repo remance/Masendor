@@ -1,0 +1,5 @@
+"id","name","speed","health","cost","properties"
+0,"None",0,0,0,0
+1,"Horse",90,100,,0
+2,"Camel",70,100,,265
+3,"Elephant",60,500,,0

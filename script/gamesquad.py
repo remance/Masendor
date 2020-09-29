@@ -95,9 +95,18 @@ class unitsquad(pygame.sprite.Sprite):
         self.basediscipline = int(stat[25] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = stat[28]
         self.basespeed = 50
-        if stat[29] in (4, 5, 6, 7): self.basespeed = 80
+        self.mount = statlist.mountlist[stat[30]]
+        if stat[30] != 0:
+            self.basespeed = self.mount[2]
+            self.troophealth += self.mount[1]
+            for trait in self.mount[4]: ## Apply mount trait to unit
+                if trait not in self.trait:
+                    self.trait.append(trait)
         self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
+        for trait in armourlist.armourlist[stat[11][0]][4]:
+            if trait not in self.trait:
+                self.trait.append(trait)
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
         if stat[29] in (1, 2):
             self.unittype = stat[29] - 1
@@ -111,6 +120,14 @@ class unitsquad(pygame.sprite.Sprite):
         self.baseelemrange = 0
         self.elemcount = [0, 0, 0, 0, 0]  ## Elemental threshold count in this order fire,water,air,earth,poison
         self.tempcount = 0
+        fireres = 1
+        waterres = 1
+        airres = 1
+        earthres = 1
+        self.magicres = 1
+        self.heatres = 1
+        self.coldres = 1
+        poisonres = 1
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
@@ -126,7 +143,8 @@ class unitsquad(pygame.sprite.Sprite):
         self.baseinflictstatus = {}
         self.specialstatus = []
         """Add trait to base stat"""
-        if 0 not in self.trait:
+        self.trait = [trait for trait in self.trait if trait != 0]
+        if len(self.trait) > 0:
             self.trait = {x: statlist.traitlist[x] for x in self.trait}
             for trait in self.trait.values():
                 self.baseattack *= (trait[3] / 100)
@@ -144,6 +162,14 @@ class unitsquad(pygame.sprite.Sprite):
                 self.basemorale += trait[15]
                 self.basediscipline += trait[16]
                 self.criteffect += trait[17]
+                fireres -= (trait[21]/100)
+                waterres -= (trait[22]/100)
+                airres -= (trait[23]/100)
+                earthres -= (trait[24]/100)
+                self.magicres -= (trait[25]/100)
+                self.heatres -= (trait[26]/100)
+                self.coldres -= (trait[27]/100)
+                poisonres -= (trait[28]/100)
                 if trait[32] != [0]:
                     for effect in trait[32]:
                         self.baseinflictstatus[effect] = trait[1]
@@ -165,6 +191,15 @@ class unitsquad(pygame.sprite.Sprite):
             if 149 in self.trait:  ## Impetuous
                 self.baseauthpenalty += 0.5
         # self.loyalty
+        if fireres < 0: fireres = 0
+        if waterres < 0: waterres = 0
+        if airres < 0: airres = 0
+        if earthres < 0: earthres = 0
+        if self.magicres < 0: self.magicres = 0
+        if self.heatres < 0: self.heatres = 0
+        if self.coldres < 0: self.coldres = 0
+        if poisonres < 0: poisonres = 0
+        self.elemresist = (fireres,waterres,airres,earthres, poisonres)
         """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
         """1 = Offensive, 2 = Defensive, 3 = Skirmisher, 4 = Shock, 5 = Support, 6 = Magic, 7 = Ambusher, 8 = Sniper , 9 = Recon, 10 = Command"""
         self.role = []
@@ -342,7 +377,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
         """apply status effect from trait"""
-        if 0 not in self.trait:
+        if len(self.trait) > 1:
             for trait in self.trait.values():
                 if trait[18] != [0]:
                     for effect in trait[18]:
@@ -370,13 +405,16 @@ class unitsquad(pygame.sprite.Sprite):
             if 2 in self.battalion.gamemapfeature.featuremod[self.battalion.feature][10]: ## Rot feature
                 self.statuseffect[54] = statuslist[54].copy()
             if 3 in self.battalion.gamemapfeature.featuremod[self.battalion.feature][10]: ## Poison
-                self.elemcount[4] += dt
+                self.elemcount[4] += (dt * self.elemresist[5])
         self.rangedef += self.battalion.gamemapfeature.featuremod[self.battalion.feature][7]
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
-        if self.tempcount != self.battalion.gamemapfeature.featuremod[self.battalion.feature][7]:
-            if self.battalion.gamemapfeature.featuremod[self.battalion.feature][9] > 0:
+        tempreach = self.battalion.gamemapfeature.featuremod[self.battalion.feature][9] * self.heatres
+        if self.battalion.gamemapfeature.featuremod[self.battalion.feature][7] < 0:
+            tempreach = self.battalion.gamemapfeature.featuremod[self.battalion.feature][9] * self.coldres
+        if self.tempcount != tempreach:
+            if tempreach > 0:
                 self.tempcount += dt
-            elif self.battalion.gamemapfeature.featuremod[self.battalion.feature][9] < 0:
+            elif tempreach < 0:
                 self.tempcount -= dt
             else:
                 if self.tempcount > 0:

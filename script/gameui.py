@@ -240,12 +240,11 @@ class Gameui(pygame.sprite.Sprite):
                     for trait in self.value2[0]:  ## property list
                         # if trait in self.value2[2] : cd = int(self.value2[2][trait])
                         # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
-                        if trait != 0:
-                            self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
-                            self.textrect = self.textsurface.get_rect(
-                                midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                            self.image.blit(self.textsurface, self.textrect)
-                            position += 20
+                        self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
+                        self.textrect = self.textsurface.get_rect(
+                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                        self.image.blit(self.textsurface, self.textrect)
+                        position += 20
                     for skill in self.value2[1]:  ## skill cooldown
                         if skill in self.value2[2]:
                             cd = int(self.value2[2][skill])
@@ -295,6 +294,8 @@ class Gameui(pygame.sprite.Sprite):
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
+                    if 0 not in who.mount:
+                        textvalue.insert(3, str(who.mount[0]))
                     for text in textvalue:
                         self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(

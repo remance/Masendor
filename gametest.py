@@ -70,4 +70,6 @@ import numpy as np
 import pygame
 import timeit
 
-print(10**2)
+k = {}
+for a in k:
+    print(a)

@@ -558,7 +558,7 @@ class battle():
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
         if target.elemrange not in (0, 5):  ## apply element effect if atk has element
-            who.elemcount[target.elemrange - 1] += round(targetdmg * (dmgeffect / 100)) / 100
+            who.elemcount[target.elemrange - 1] += round((targetdmg * (dmgeffect / 100)) / 100 * who.elemresist[target.elemrange - 1])
         target.basemorale += round((targetmoraledmg * (dmgeffect / 100) / 2))
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
@@ -572,7 +572,7 @@ class battle():
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
         if who.elemrange not in (0, 5):  ## apply element effect if atk has element
-            target.elemcount[who.elemrange - 1] += round(whodmg * (targetdmgeffect / 100)) / 100
+            target.elemcount[who.elemrange - 1] += round(whodmg * (targetdmgeffect / 100) / 100 * target.elemresist[who.elemrange - 1])
         who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
             target.leader.health -= wholeaderdmg

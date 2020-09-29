@@ -47,7 +47,12 @@ class armourstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit():
+                    if n == 5:
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                    elif i.isdigit():
                         row[n] = int(i)
                 self.armourlist[row[0]] = row[1:]
         unitfile.close()
@@ -144,7 +149,20 @@ class unitstat():
                     if i.isdigit(): row[n] = float(i)
                 self.role[row[0]] = row[1:]
         unitfile.close()
-
+        """unit mount list"""
+        self.mountlist = {}
+        with open(main_dir + "\data\war" + '\\unit_mount.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if n == 5:
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                    elif i.isdigit(): row[n] = int(i)
+                self.mountlist[row[0]] = row[1:]
+        unitfile.close()
 
 class directionarrow(pygame.sprite.Sprite):
     def __init__(self, who):

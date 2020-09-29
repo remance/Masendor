@@ -20,7 +20,6 @@ class terrainpopup(pygame.sprite.Sprite):
         self.textsurface = self.font.render(input[0], 1, (0, 0, 0)) ## terrain feature name
         self.textrect = self.textsurface.get_rect(topleft=(5,5))
         self.image.blit(self.textsurface, self.textrect)
-        print(input)
         for index, pos in enumerate(self.imgpos):
             if input[index+1] == 100:
                 self.imagerect = self.images[7].get_rect(center=pos)

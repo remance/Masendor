@@ -7,11 +7,25 @@ For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 Plan
 
-Ver 0.3 The World at Hand: Game map, terrain,mini map, camera and finalise retreat, melee combat engagement and collision (Going to be somewhat difficult and long to implement)
-
-3.9 Add more height and terrain effect to combat/movement restriction
-
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
+
+4.1 Popup box for ui such as skill, status, button, leader, also squad selection highlight
+
+4.2 Dramatic text
+
+4.3 esc menu
+
+4.4 Event log
+
+4.5 Encyclopedia
+
+4.6 Encyclopedia popup
+
+4.7 Army selection list
+
+4.8 Weather effect
+
+4.9 Game speed setting
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
@@ -29,7 +43,7 @@ Ver 1 - 1.5: More art, sound effect and ingame music (May need to use royalty fr
 
 Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather
 
-Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item, mount)
+Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item)
 
 Ver 1.6: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader
 
