@@ -357,6 +357,7 @@ class unitarmy(pygame.sprite.Sprite):
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.image_original = self.image.copy()
+        self.rotate()
 
     def changeposscale(self):
         self.target = self.basetarget * abs(self.viewmode - 11)
@@ -627,7 +628,6 @@ class unitarmy(pygame.sprite.Sprite):
                     hitbox.kill()
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
-            self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
             self.charging = False
             self.setuparmy()
             self.statusupdate(statuslist)
@@ -646,50 +646,77 @@ class unitarmy(pygame.sprite.Sprite):
                         self.squadtoarmy(squadgroup)
                         self.changescale()
                     self.changeposscale()
+                    self.rotate()
                 else:
                     """Change health and stamina bar Function"""
-                    if self.troopnumber <= 0 and self.lasthealthstate != 0:
-                        self.healthimage = self.images[4]
-                        self.image_original3.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 0
-                    elif self.troopnumber > 0 and self.troopnumber <= self.health25 and self.lasthealthstate != 1:
-                        self.healthimage = self.images[3]
-                        self.image_original3.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 1
-                    elif self.troopnumber > self.health25 and self.troopnumber <= self.health50 and self.lasthealthstate != 2:
-                        self.healthimage = self.images[2]
-                        self.image_original3.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 2
-                    elif self.troopnumber > self.health50 and self.troopnumber <= self.health75 and self.lasthealthstate != 3:
-                        self.healthimage = self.images[1]
-                        self.image_original3.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 3
-                    elif self.troopnumber > self.health75 and self.lasthealthstate != 4:
-                        self.healthimage = self.images[0]
-                        self.image_original3.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 4
-                    if self.stamina <= 0 and self.laststaminastate != 0:
-                        self.staminaimage = self.images[9]
-                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 0
-                    elif self.stamina > 0 and self.stamina <= self.stamina25 and self.laststaminastate != 1:
-                        self.staminaimage = self.images[8]
-                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 1
-                    elif self.stamina > self.stamina25 and self.stamina <= self.stamina50 and self.laststaminastate != 2:
-                        self.staminaimage = self.images[7]
-                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 2
-                    elif self.stamina > self.stamina50 and self.stamina <= self.stamina75 and self.laststaminastate != 3:
-                        self.staminaimage = self.images[6]
-                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 3
-                    elif self.stamina > self.stamina75 and self.laststaminastate != 4:
-                        self.staminaimage = self.images[5]
-                        self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 4
-                self.rotate()
-            self.oldlasthealth, self.oldlaststamina = self.lasthealthstate, self.laststaminastate
+                    if self.viewmode != 1:
+                        if self.oldarmyhealth != self.troopnumber:
+                            if self.troopnumber > self.health75:
+                                if self.lasthealthstate != 4:
+                                    self.healthimage = self.images[0]
+                                    self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                    self.lasthealthstate = 4
+                                    self.rotate()
+                            elif self.troopnumber > self.health50:
+                                if self.lasthealthstate != 3:
+                                    self.healthimage = self.images[1]
+                                    self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                    self.lasthealthstate = 3
+                                    self.rotate()
+                            elif self.troopnumber > self.health25:
+                                if self.lasthealthstate != 2:
+                                    self.healthimage = self.images[2]
+                                    self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                    self.lasthealthstate = 2
+                                    self.rotate()
+                            elif self.troopnumber > 0:
+                                if self.lasthealthstate != 1:
+                                    self.healthimage = self.images[3]
+                                    self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                    self.lasthealthstate = 1
+                                    self.rotate()
+                            elif self.troopnumber <= 0:
+                                if self.lasthealthstate != 0:
+                                    self.healthimage = self.images[4]
+                                    self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                    self.lasthealthstate = 0
+                                    self.rotate()
+                            self.oldarmyhealth = self.troopnumber
+                        if self.oldarmystamina != self.stamina:
+                            if self.stamina > self.stamina75:
+                                if self.laststaminastate != 4:
+                                    self.staminaimage = self.images[5]
+                                    self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                                    self.laststaminastate = 4
+                                    self.rotate()
+                            elif self.stamina > self.stamina50:
+                                if self.laststaminastate != 3:
+                                    self.staminaimage = self.images[6]
+                                    self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                                    self.laststaminastate = 3
+                                    self.rotate()
+                            elif self.stamina > self.stamina25:
+                                if self.laststaminastate != 2:
+                                    self.staminaimage = self.images[7]
+                                    self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                                    self.laststaminastate = 2
+                                    self.rotate()
+                            elif self.stamina > 0:
+                                if self.laststaminastate != 1:
+                                    self.staminaimage = self.images[8]
+                                    self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                                    self.laststaminastate = 1
+                                    self.rotate()
+                            elif self.stamina <= 0:
+                                if self.laststaminastate != 0:
+                                    self.staminaimage = self.images[9]
+                                    self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                                    self.laststaminastate = 0
+                                    self.rotate()
+                            self.oldarmystamina = self.stamina
+                    else:
+                        self.squadtoarmy(squadgroup)
+                        self.rotate()
             """setup frontline again when any squad die"""
             if self.deadchange == 1:
                 self.setupfrontline()
@@ -719,7 +746,7 @@ class unitarmy(pygame.sprite.Sprite):
                 """can not use range attack in melee combat"""
                 self.rangecombatcheck = 0
                 """enter melee combat state when check"""
-                if self.state not in (96, 98):
+                if self.state not in (96, 98, 99):
                     self.state = 10
             if self.rangecombatcheck == 1: self.state = 11
             self.mask = pygame.mask.from_surface(self.image)

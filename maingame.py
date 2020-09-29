@@ -226,7 +226,7 @@ class battle():
         for img in imgsold:
             imgs.append(img)
         self.coa = imgs
-        """Game Effect"""
+        ## Game Effect
         imgsold = load_images(['effect'])
         imgs = []
         for img in imgsold:
@@ -235,6 +235,9 @@ class battle():
             imgs.append(img)
         self.gameeffect = imgs
         rangeattack.arrow.images = [self.gameeffect[0]]
+        ## Popup Ui
+        imgs =  load_images(['ui','popup_ui','terraincheck'], loadorder=False)
+        gamepopup.terrainpopup.images = imgs
         # decorate the game window
         # icon = load_image('sword.jpg')
         # icon = pygame.transform.scale(icon, (32, 32))
@@ -353,6 +356,7 @@ class battle():
                                gameui.switchuibutton(self.gameui[1].X - 30, self.gameui[1].Y + 96, topimage[15:17]),
                                gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y + 96, topimage[17:20]),
                                gameui.switchuibutton(self.gameui[1].X + 40, self.gameui[1].Y + 96, topimage[20:22])]
+        self.terraincheck = gamepopup.terrainpopup()
         self.fpscount = gameui.fpscount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
@@ -497,12 +501,12 @@ class battle():
                 dmg = round(dmg + (who.charge / 10))
             leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
             dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
+            if target.state in (1, 2, 3, 4, 5, 6, 7, 8, 9): dmg = dmg * 5
         elif type == 1:  ##range dmg
             leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
             dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
         if (21 in who.trait and target.type in (1, 2)) or (23 in who.trait and target.type in (4, 5, 6, 7)):  ## Anti trait dmg bonus
             dmg = dmg * 1.25
-        if target.state in (1,2,3,4,5,6,7,8,9): dmg = dmg * 5
         if dmg > target.unithealth:
             dmg = target.unithealth
         moraledmg = round(dmg / 100)
@@ -785,9 +789,9 @@ class battle():
         elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
 
-    def uimouseover(self, mouse_up, mouse_right):
+    def uimouseover(self):
         for ui in self.gameui:
-            if ui in self.allui and (ui.rect.collidepoint(self.mousepos) and (mouse_up or mouse_right)):
+            if ui in self.allui and ui.rect.collidepoint(self.mousepos):
                 if ui.uitype not in ("unitcard", 'armybox'):
                     self.check = 1
                     self.uicheck = 1  ## for avoiding clicking unit under ui
@@ -799,9 +803,9 @@ class battle():
                         break
         return self.check
 
-    def buttonmouseover(self, mouse_up, mouse_right):
+    def buttonmouseover(self):
         for button in self.buttonui:
-            if button in self.allui and (button.rect.collidepoint(self.mousepos) and (mouse_up or mouse_right)):
+            if button in self.allui and button.rect.collidepoint(self.mousepos):
                 self.check = 1
                 self.uicheck = 1  ## for avoiding clicking unit under ui
                 break
@@ -932,27 +936,31 @@ class battle():
             # self.mapupdater.update(self.dt,self.camerapos,self.camerascale)
             # self.screen.blit(self.background, self.camerapos)
             self.lastmouseover = 0
-            # if self.terraincheck in self.allui and self.terraincheck.mouse_pos != self.mouse_pos:
-            #     self.allui.remove(self.terraincheck)
+            if self.terraincheck in self.allui and self.terraincheck.pos != self.mousepos:
+                self.allui.remove(self.terraincheck)
             if mouse_up or mouse_right:
+                self.uicheck = 0
                 if mouse_up:
                     self.check = 0
                     self.check2 = 0
-                    self.uicheck = 0
                 if self.minimap.rect.collidepoint(self.mousepos):
-                    posmask = pygame.Vector2(int(self.mousepos[0] - self.minimap.rect.x), int(self.mousepos[1] - self.minimap.rect.y))
-                    self.basecamerapos = posmask * 5
-                    self.camerapos = self.basecamerapos * self.camerascale
-                    self.check = 1
-                    self.uicheck = 1
+                    if mouse_up:
+                        posmask = pygame.Vector2(int(self.mousepos[0] - self.minimap.rect.x), int(self.mousepos[1] - self.minimap.rect.y))
+                        self.basecamerapos = posmask * 5
+                        self.camerapos = self.basecamerapos * self.camerascale
+                        self.check = 1
+                    elif  mouse_right and self.lastselected is not None:
+                        self.uicheck = 1
+                    elif mouse_right and self.lastselected is None:
+                        pass
                 elif self.uimouseover() == 1:
                     pass
                 elif self.buttonmouseover() == 1:
                     pass
                 elif mouse_right and self.lastselected is None and self.uicheck != 1:
-                    terrainpop, featurepop = self.battlemapfeature.getfeature(self.mousepos, self.battlemap)
+                    terrainpop, featurepop = self.battlemapfeature.getfeature(self.battlemousepos[1], self.battlemap)
                     featurepop = self.battlemapfeature.featuremod[featurepop]
-                    self.terraincheck  = gamepopup.terrainpopup(featurepop, self.mouse_pos)
+                    self.terraincheck.pop(self.mousepos, featurepop)
                     self.allui.add(self.terraincheck)
             for army in self.allunitlist:
                 if army.gameid < 2000:
@@ -1147,9 +1155,9 @@ class battle():
                                 hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
                                 """set up army position to the enemyside"""
-                                if hitbox.side == 0 and hitbox.who.state in (1, 2, 3, 4, 5, 6):
+                                if hitbox.side == 0 and hitbox.who.state in (1, 2, 3, 4, 5, 6) and hitbox.who.combatpreparestate == 0:
                                     hitbox.who.combatprepare(hitbox2)
-                                elif hitbox2.side == 0 and hitbox2.who.state in (1, 2, 3, 4, 5, 6):
+                                elif hitbox2.side == 0 and hitbox2.who.state in (1, 2, 3, 4, 5, 6) and hitbox2.who.combatpreparestate == 0:
                                     hitbox2.who.combatprepare(hitbox)
                                 for battle in hitbox.who.battleside:
                                     if battle != 0:
