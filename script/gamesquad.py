@@ -66,6 +66,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.grade = stat[3]
         self.race = stat[4]
         self.trait = stat[5]
+        self.trait = self.trait + statlist.gradelist[self.grade][11]
         self.skill = stat[6]
         self.skillcooldown = {}
         self.cost = stat[7]
@@ -99,14 +100,10 @@ class unitsquad(pygame.sprite.Sprite):
         if stat[30] != 0:
             self.basespeed = self.mount[2]
             self.troophealth += self.mount[1]
-            for trait in self.mount[4]: ## Apply mount trait to unit
-                if trait not in self.trait:
-                    self.trait.append(trait)
+            self.trait = self.trait + self.mount[4] ## Apply mount trait to unit
         self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
-        for trait in armourlist.armourlist[stat[11][0]][4]:
-            if trait not in self.trait:
-                self.trait.append(trait)
+        self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
         if stat[29] in (1, 2):
             self.unittype = stat[29] - 1
@@ -143,7 +140,7 @@ class unitsquad(pygame.sprite.Sprite):
         self.baseinflictstatus = {}
         self.specialstatus = []
         """Add trait to base stat"""
-        self.trait = [trait for trait in self.trait if trait != 0]
+        self.trait = list(set([trait for trait in self.trait if trait != 0]))
         if len(self.trait) > 0:
             self.trait = {x: statlist.traitlist[x] for x in self.trait}
             for trait in self.trait.values():

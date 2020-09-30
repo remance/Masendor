@@ -568,7 +568,6 @@ class unitarmy(pygame.sprite.Sprite):
 
     def combatprepare(self, enemyhitbox):
         self.combatpreparestate = 1
-        print(self.baseattackpos, self.basetarget)
         # side, side2 = enemy.allsidepos.copy(), {}
         # for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
         # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
@@ -580,7 +579,6 @@ class unitarmy(pygame.sprite.Sprite):
         # enemyhitbox.who.battleside[enemyhitbox.side] = self.gameid
         # self.battleside[0] = enemyhitbox.who.gameid
         self.set_target(enemyhitbox.who.allsidepos[enemyhitbox.side])
-        print(self.baseattackpos, self.basetarget)
 
     def makeallsidepos(self):
         """generate all four side position"""
@@ -1069,7 +1067,6 @@ class unitarmy(pygame.sprite.Sprite):
                 self.commandtarget = self.target
                 self.rangecombatcheck = 0
                 self.setrotate()
-            print(self.baseattackpos)
 
 
 class deadarmy(pygame.sprite.Sprite):

@@ -1,5 +1,15 @@
 "id","name","speed","health","cost","properties"
 0,"None",0,0,0,0
 1,"Horse",90,100,,0
-2,"Camel",70,100,,265
+2,"Camel",75,100,,265
 3,"Elephant",60,500,,0
+4,"Armoured Horse",75,200,,
+5,"Armoured Camel",60,200,,265
+6,"Armoured Elephant",50,1000,,
+7,,,,,
+8,,,,,
+9,,,,,
+10,,,,,
+11,,,,,
+12,,,,,
+13,,,,,

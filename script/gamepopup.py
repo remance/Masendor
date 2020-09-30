@@ -55,10 +55,10 @@ class onelinepopup(pygame.sprite.Sprite):
             self.pos = pos
             self.textsurface = self.font.render(self.textinput, 1, (0, 0, 0))  ## button name
             self.textrect = self.textsurface.get_rect(topleft=(1, 1))
-            self.image = pygame.Surface((self.textrect.width+2, self.textrect.height+2))
-            image = pygame.Surface((self.textrect.width, self.textrect.height))
+            self.image = pygame.Surface((self.textrect.width+6, self.textrect.height+6))
+            image = pygame.Surface((self.textrect.width+2, self.textrect.height+2))
             image.fill((255,255,255))
             image.blit(self.textsurface, self.textrect)
-            rect = self.image.get_rect(topleft=(1,1))
+            rect = self.image.get_rect(topleft=(2,2))
             self.image.blit(image,rect)
             self.rect = self.image.get_rect(bottomleft=self.pos)
