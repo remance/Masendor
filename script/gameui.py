@@ -6,10 +6,10 @@ class uibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.X, self.Y = X, Y
+        self.pos = (X, Y)
         self.image = image
         self.event = event
-        self.rect = self.image.get_rect(center=(self.X, self.Y))
+        self.rect = self.image.get_rect(center=self.pos)
         self.mouse_over = False
     #
     # def draw(self, gamescreen):
@@ -19,18 +19,18 @@ class switchuibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.X, self.Y = X, Y
+        self.pos = (X, Y)
         self.images = image
         self.image = self.images[0]
         self.event = 0
-        self.rect = self.image.get_rect(center=(self.X, self.Y))
+        self.rect = self.image.get_rect(center=self.pos)
         self.mouse_over = False
         self.lastevent = 0
 
     def update(self):
         if self.event != self.lastevent:
             self.image = self.images[self.event]
-            self.rect = self.image.get_rect(center=(self.X, self.Y))
+            self.rect = self.image.get_rect(center=self.pos)
             self.lastevent = self.event
 
 
@@ -323,6 +323,14 @@ class fpscount(pygame.sprite.Sprite):
         self.textrect = fps_text.get_rect(center=(25, 25))
         self.image.blit(fps_text, self.textrect)
 
+class selectedsquad(pygame.sprite.Sprite):
+    def __init__(self,image):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = image
+
+    def pop(self, pos):
+        self.rect = self.image.get_rect(topleft=pos)
 
 class minimap(pygame.sprite.Sprite):
     def __init__(self, X, Y,image, camera):

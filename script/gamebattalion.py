@@ -568,6 +568,7 @@ class unitarmy(pygame.sprite.Sprite):
 
     def combatprepare(self, enemyhitbox):
         self.combatpreparestate = 1
+        print(self.baseattackpos, self.basetarget)
         # side, side2 = enemy.allsidepos.copy(), {}
         # for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
         # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
@@ -579,6 +580,7 @@ class unitarmy(pygame.sprite.Sprite):
         # enemyhitbox.who.battleside[enemyhitbox.side] = self.gameid
         # self.battleside[0] = enemyhitbox.who.gameid
         self.set_target(enemyhitbox.who.allsidepos[enemyhitbox.side])
+        print(self.baseattackpos, self.basetarget)
 
     def makeallsidepos(self):
         """generate all four side position"""
@@ -635,6 +637,17 @@ class unitarmy(pygame.sprite.Sprite):
         self.changescale()
         self.changeposscale()
 
+    def viewmodechange(self, squadgroup):
+        if self.viewmode != 1:  ## battalion view
+            self.image_original = self.image_original3.copy()
+            self.changescale()
+        elif self.viewmode == 1:  ## Squad view when zoom closest
+            self.image_original = self.image_original2.copy()
+            self.squadtoarmy(squadgroup)
+            self.changescale()
+        self.changeposscale()
+        self.rotate()
+
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == False:
             self.startset(squadgroup)
@@ -656,15 +669,7 @@ class unitarmy(pygame.sprite.Sprite):
             if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != abs(viewmode - 11):
                 if self.viewmode != abs(viewmode - 11):
                     self.viewmode = abs(viewmode - 11)
-                    if self.viewmode != 1: ## battalion view
-                        self.image_original = self.image_original3.copy()
-                        self.changescale()
-                    elif self.viewmode == 1: ## Squad view when zoom closest
-                        self.image_original = self.image_original2.copy()
-                        self.squadtoarmy(squadgroup)
-                        self.changescale()
-                    self.changeposscale()
-                    self.rotate()
+                    self.viewmodechange(squadgroup)
                 else:
                     """Change health and stamina bar Function"""
                     if self.viewmode != 1:
@@ -831,7 +836,7 @@ class unitarmy(pygame.sprite.Sprite):
                 self.testangle = math.radians(360 - self.angle)
                 if self.angle < 0:
                     self.testangle = math.radians(-self.angle)
-                ### rotate logic to continuously rotate based on angle and shortest length
+                ## Rotate logic to continuously rotate based on angle and shortest length
                 if round(self.newangle) > self.angle:
                     if self.rotatecal > 180:
                         self.angle -= self.rotatespeed * dt * 50
@@ -848,7 +853,6 @@ class unitarmy(pygame.sprite.Sprite):
                     else:
                         self.angle -= self.rotatespeed * dt * 50
                         if self.angle < self.newangle: self.angle = round(self.newangle)
-                ###
                 self.rotate()
                 self.makeallsidepos()
             else:
@@ -890,7 +894,7 @@ class unitarmy(pygame.sprite.Sprite):
                         self.pause = False
                         move = self.basetarget - self.allsidepos[0]
                         move_length = move.length()
-                        if (move_length < self.walkspeed and move_length < self.runspeed) and self.battleside == [0, 0, 0,
+                        if move_length < 0.1 and self.battleside == [0, 0, 0,
                                 0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""
                             self.allsidepos[0] = self.commandtarget
@@ -904,15 +908,15 @@ class unitarmy(pygame.sprite.Sprite):
                                 heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
                             move.normalize_ip()
                             if self.state in (2, 4, 6, 96, 98, 99):
-                                move = move * self.runspeed * heightdiff * dt * 20
+                                move = move * self.runspeed * heightdiff * dt
                             elif self.state in (1, 3, 5):
-                                move = move * self.walkspeed * heightdiff * dt * 20
-                            elif self.state != 10:
-                                move = move * 3.5 * heightdiff * dt * 20
-                                if move.length() > move_length:
-                                    move = self.basetarget - self.allsidepos[0]
-                                    move.normalize_ip()
-                            self.basepos += (move/10)
+                                move = move * self.walkspeed * heightdiff * dt
+                            elif self.state == 10:
+                                move =  move * 3 * heightdiff * dt
+                            if move.length() > move_length:
+                                move = self.basetarget - self.allsidepos[0]
+                                move.normalize_ip()
+                            self.basepos += move
                             self.pos = self.basepos * abs(self.viewmode - 11)
                         self.rect.center = list(int(v) for v in self.pos)
                         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
@@ -993,6 +997,49 @@ class unitarmy(pygame.sprite.Sprite):
         if instant == True:
             self.rotate()
 
+    def processcommand(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate):
+        self.state = 1
+        self.rotateonly = False
+        self.forcedmelee = False
+        self.attacktarget = 0
+        self.baseattackpos = 0
+        self.attackpos = 0
+        if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
+                (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
+            if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
+                self.state = 3
+            elif self.ammo > 0:  ##Move to range attack
+                self.state = 5
+            if keystate[pygame.K_LALT] == True:
+                self.set_target(mouse_pos[1])
+            else:
+                self.attacktarget = whomouseover
+                self.baseattackpos = whomouseover.basepos
+        if double_mouse_right:
+            self.state += 1
+        self.commandstate = self.state
+        self.rangecombatcheck = 0
+        if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
+        self.set_target(mouse_pos[1])
+        self.commandtarget = self.target
+        self.setrotate()
+        if self.charging == True:
+            self.leader[0].authority -= self.authpenalty
+            self.authrecal()
+
+    def processretreat(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate):
+        if whomouseover == 0:
+            self.state = 96
+            self.commandstate = self.state
+            if self.retreattimer == 0:
+                self.leader[0].authority -= self.authpenalty
+                self.authrecal()
+                self.retreattimer = 0.1
+                self.retreatstart = 1
+            self.set_target(mouse_pos[1])
+            self.commandtarget = self.target
+            self.combatpreparestate = 0
+
     def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
         if self.control == True and self.state != 100:
@@ -1002,87 +1049,15 @@ class unitarmy(pygame.sprite.Sprite):
                 if self.state not in (10, 97, 98, 99, 100):
                     try:  ## if click within rect but not in mask
                         if self.mask.get_at(posmask) == 0:
-                            self.state = 1
-                            self.rotateonly = False
-                            self.forcedmelee = False
-                            self.attacktarget = 0
-                            self.attackpos = 0
-                            if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
-                                    (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
-                                if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
-                                    self.state = 3
-                                elif self.ammo > 0:  ##Move to range attack
-                                    self.state = 5
-                                if keystate[pygame.K_LALT] == True:
-                                    self.set_target(mouse_pos[1])
-                                else:
-                                    self.attacktarget = whomouseover
-                                    self.baseattackpos = whomouseover.basepos
-                            if double_mouse_right:
-                                self.state += 1
-                            self.commandstate = self.state
-                            self.rangecombatcheck = 0
-                            if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                            self.set_target(mouse_pos[1])
-                            self.commandtarget = self.target
-                            self.setrotate()
-                            if self.charging == True:
-                                self.leader[0].authority -= self.authpenalty
-                                self.authrecal()
+                            self.processcommand(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
                     except:  ## if click outside of rect and mask
-                        self.state = 1
-                        self.rotateonly = False
-                        self.forcedmelee = False
-                        self.attacktarget = 0
-                        if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
-                                (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
-                            if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
-                                self.forcedmelee = True
-                                self.state = 3
-                            elif self.ammo > 0:
-                                self.state = 5
-                            if keystate[pygame.K_LALT] == True:
-                                self.baseattackpos = mouse_pos[1]
-                                self.attackpos = mouse_pos[0]
-                            else:
-                                self.attacktarget = whomouseover
-                                self.attackpos = whomouseover.pos
-                        if double_mouse_right:
-                            self.state += 1
-                        self.commandstate = self.state
-                        self.rangecombatcheck = 0
-                        if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
-                        self.set_target(mouse_pos[1])
-                        self.commandtarget = self.target
-                        self.setrotate()
-                        if self.charging == True:
-                            self.leader[0].authority -= self.authpenalty
-                            self.authrecal()
+                        self.processcommand(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
                 elif self.state == 10:  ##Enter Fall back state if in combat and move command issue
                     try:
                         if self.mask.get_at(posmask) == 0:
-                            if whomouseover == 0:
-                                self.state = 96
-                                self.commandstate = self.state
-                                if self.retreattimer == 0:
-                                    self.leader[0].authority -= self.authpenalty
-                                    self.authrecal()
-                                    self.retreattimer = 0.1
-                                    self.retreatstart = 1
-                                self.set_target(mouse_pos[1])
-                                self.commandtarget = self.target
-                                # self.combatcheck = 0
+                            self.processretreat(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
                     except:
-                        if whomouseover == 0:
-                            self.state = 96
-                            self.commandstate = self.state
-                            if self.retreattimer == 0:
-                                self.leader[0].authority -= self.authpenalty
-                                self.authrecal()
-                                self.retreattimer = 0.1
-                                self.retreatstart = 1
-                            self.set_target(mouse_pos[1])
-                            self.commandtarget = self.target
+                        self.processretreat(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
                             # self.combatcheck = 0
             elif othercommand == 1 and self.state not in (10,96,97,98,99,100):  ## Pause all action except combat
                 if self.charging == True:
@@ -1094,6 +1069,7 @@ class unitarmy(pygame.sprite.Sprite):
                 self.commandtarget = self.target
                 self.rangecombatcheck = 0
                 self.setrotate()
+            print(self.baseattackpos)
 
 
 class deadarmy(pygame.sprite.Sprite):

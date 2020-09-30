@@ -40,3 +40,25 @@ class terrainpopup(pygame.sprite.Sprite):
                     self.image.blit(self.images[modindex + 1], self.imagerect)
                     break
         self.rect = self.image.get_rect(bottomleft=self.pos)
+
+class onelinepopup(pygame.sprite.Sprite):
+    def __init__(self):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", 18)
+        self.pos = (0,0)
+        self.textinput = ""
+
+    def pop(self, pos, input):
+        if self.pos != pos or self.textinput != input:
+            self.textinput = input
+            self.pos = pos
+            self.textsurface = self.font.render(self.textinput, 1, (0, 0, 0))  ## button name
+            self.textrect = self.textsurface.get_rect(topleft=(1, 1))
+            self.image = pygame.Surface((self.textrect.width+2, self.textrect.height+2))
+            image = pygame.Surface((self.textrect.width, self.textrect.height))
+            image.fill((255,255,255))
+            image.blit(self.textsurface, self.textrect)
+            rect = self.image.get_rect(topleft=(1,1))
+            self.image.blit(image,rect)
+            self.rect = self.image.get_rect(bottomleft=self.pos)

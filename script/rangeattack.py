@@ -41,7 +41,7 @@ class arrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * 20 * howlong))/11)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * howlong))/11)
                     if 17 not in self.shooter.trait: hitchance -= 10
                 else:
                     targetnow = self.shooter.attacktarget.basepos
@@ -49,7 +49,7 @@ class arrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * 20 * howlong))/11)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * howlong))/11)
                     if 17 not in self.shooter.trait: hitchance -= 20
                 else:
                     targetnow = self.shooter.attacktarget.basepos
@@ -58,7 +58,8 @@ class arrow(pygame.sprite.Sprite):
             if randomposition1 == 0: hitchance = 100 + (hitchance/20)
             else: hitchance = 100 - (hitchance/20)
             self.basetarget = pygame.Vector2(targetnow[0] * hitchance / 100, targetnow[1] * hitchance / 100)
-        else: self.basetarget = targetnow
+        else:
+            self.basetarget = targetnow * random.uniform(0.99,1.01)
         myradians = math.atan2(self.basetarget[1] - self.shooter.battalion.basepos[1], self.basetarget[0] - self.shooter.battalion.basepos[0])
         self.angle = math.degrees(myradians)
         # """upper left and upper right"""
