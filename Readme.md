@@ -9,7 +9,7 @@ Plan
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
 
-4.1 Popup box for ui such as skill, status, leader
+4.1 Popup box for ui such as skill, status
 
 4.2 Dramatic text
 
@@ -51,4 +51,4 @@ ver 1.7: leader rapport and affect on authority and control mechanic including s
 
 Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon, ), dynamic squad facing position and maybe "saved" formation that player can rotate in battle 
 
-Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield)
+Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command

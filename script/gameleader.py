@@ -8,7 +8,7 @@ from RTS import mainmenu
 main_dir = mainmenu.main_dir
 
 
-class leaderdata():
+class Leaderdata():
     def __init__(self, img, option):
         self.imgs = img
         self.leaderlist = {}
@@ -36,7 +36,7 @@ class leaderdata():
         unitfile.close()
 
 
-class leader(pygame.sprite.Sprite):
+class Leader(pygame.sprite.Sprite):
 
     def __init__(self, leaderid, squadposition, armyposition, battalion, leaderstat):
         self._layer = 8

@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 
 
-class uibutton(pygame.sprite.Sprite):
+class Uibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -15,7 +15,7 @@ class uibutton(pygame.sprite.Sprite):
     # def draw(self, gamescreen):
     #     gamescreen.blit(self.image, self.rect)
 
-class switchuibutton(pygame.sprite.Sprite):
+class Switchuibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -34,7 +34,7 @@ class switchuibutton(pygame.sprite.Sprite):
             self.lastevent = self.event
 
 
-class iconpopup(pygame.sprite.Sprite):
+class Popupicon(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event, gameui, itemid=""):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -61,7 +61,6 @@ class Gameui(pygame.sprite.Sprite):
         self.uitype = uitype
         self.value = [-1, -1]
         self.lastvalue = 0
-        self.lastvalue2 = 0
         self.option = 0
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.lastwho = 0
@@ -77,7 +76,7 @@ class Gameui(pygame.sprite.Sprite):
                              10: "Fighting", 11: "shooting", 68: "Dancing", 69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating",
                              99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready"}
+                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Elated"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                              7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}
         elif self.uitype == "commandbar":
@@ -235,51 +234,52 @@ class Gameui(pygame.sprite.Sprite):
                         if row == 9: positionx, position = 200, 35
                 elif self.option == 0:  ## description card
                     self.blit_text(self.image, self.description, (42, 25), self.fontlong)
-                elif self.option == 2:  ## unit card
-                    position2 = positionx + 20
-                    for trait in self.value2[0]:  ## property list
-                        # if trait in self.value2[2] : cd = int(self.value2[2][trait])
-                        # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
-                        self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        position += 20
-                    for skill in self.value2[1]:  ## skill cooldown
-                        if skill in self.value2[2]:
-                            cd = int(self.value2[2][skill])
-                        else:
-                            cd = 0
-                        self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        # position2 += 25
-                        # if position2 >= 90:
-                        #     position2 = positionx + 20
-                        position += 20
-                    # position += 20
-                    position2 = positionx + 20
-                    for status in self.value2[3]:  ## skill effect list
-                        self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        # position2 += 25
-                        # if position2 >= 90:
-                        #     position2 = positionx + 20
-                        position += 20
-                    # position += 20
-                    position2 = positionx + 20
-                    for status in self.value2[4]:  ## status list
-                        self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
-                        # position2 += 25
-                        # if position2 >= 90:
-                        #     position2 = positionx + 20
-                        position += 20
+                # elif self.option == 2:  ## unit skill card
+                #     pass
+                    # position2 = positionx + 20
+                    # for trait in self.value2[0]:  ## property list
+                    #     # if trait in self.value2[2] : cd = int(self.value2[2][trait])
+                    #     # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
+                    #     self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
+                    #     self.textrect = self.textsurface.get_rect(
+                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                    #     self.image.blit(self.textsurface, self.textrect)
+                    #     position += 20
+                    # for skill in self.value2[1]:  ## skill cooldown
+                    #     if skill in self.value2[2]:
+                    #         cd = int(self.value2[2][skill])
+                    #     else:
+                    #         cd = 0
+                    #     self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
+                    #     self.textrect = self.textsurface.get_rect(
+                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                    #     self.image.blit(self.textsurface, self.textrect)
+                    #     # position2 += 25
+                    #     # if position2 >= 90:
+                    #     #     position2 = positionx + 20
+                    #     position += 20
+                    # # position += 20
+                    # position2 = positionx + 20
+                    # for status in self.value2[3]:  ## skill effect list
+                    #     self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
+                    #     self.textrect = self.textsurface.get_rect(
+                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                    #     self.image.blit(self.textsurface, self.textrect)
+                    #     # position2 += 25
+                    #     # if position2 >= 90:
+                    #     #     position2 = positionx + 20
+                    #     position += 20
+                    # # position += 20
+                    # position2 = positionx + 20
+                    # for status in self.value2[4]:  ## status list
+                    #     self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
+                    #     self.textrect = self.textsurface.get_rect(
+                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
+                    #     self.image.blit(self.textsurface, self.textrect)
+                    #     # position2 += 25
+                    #     # if position2 >= 90:
+                    #     #     position2 = positionx + 20
+                    #     position += 20
                 elif self.option == 3:  ## equipment and terrain
                     terrain = self.terrainlist[who.battalion.terrain]
                     if who.battalion.feature is not None: terrain += "/" + self.featurelist[who.battalion.feature]
@@ -303,11 +303,57 @@ class Gameui(pygame.sprite.Sprite):
                         self.image.blit(self.textsurface, self.textrect)
                         position += 20
                 self.lastvalue = self.value
-                self.lastvalue2 != self.value2
         self.lastwho = who.gameid
 
+class Skillcardicon(pygame.sprite.Sprite):
+    cooldown = None
+    activeskill = None
 
-class fpscount(pygame.sprite.Sprite):
+    def __init__(self, image, pos, id = None):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.id = id
+        self.pos = pos
+        self.font = pygame.font.SysFont("helvetica", 18)
+        self.cooldowncheck = 0
+        self.activecheck = 0
+        self.image = image
+        self.rect = self.image.get_rect(center=pos)
+        self.image_original = self.image.copy()
+        self.cooldownrect = self.image.get_rect(topleft=(0, 0))
+
+    def numberchange(self, number):
+        resultnumber = str(round(number / 1000, 1)) + "K"
+        return resultnumber
+
+    def iconchange(self, cooldown, activetimer):
+        """Show active effect timer first if none show cooldown"""
+        if activetimer != self.activecheck:
+            self.activecheck = activetimer
+            self.image = self.image_original.copy()
+            if self.activecheck > 0:
+                rect = self.image.get_rect(topleft=(0,0))
+                self.image.blit(self.activeskill,rect)
+                printnumber = str(self.activecheck)
+                if self.activecheck >= 1000:
+                    printnumber = self.numberchange(printnumber)
+                self.textsurface = self.font.render(printnumber, 1, (0, 0, 0))  ## timer number
+                self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+                self.image.blit(self.textsurface, self.textrect)
+
+        elif cooldown != self.cooldowncheck:
+            self.cooldowncheck = cooldown
+            self.image = self.image_original.copy()
+            if self.cooldowncheck > 0:
+                self.image.blit(self.cooldown,self.cooldownrect)
+                printnumber = str(self.cooldowncheck)
+                if self.cooldowncheck >= 1000:
+                    printnumber = self.numberchange(printnumber)
+                self.textsurface = self.font.render(printnumber, 1, (0, 0, 0))  ## timer number
+                self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+                self.image.blit(self.textsurface, self.textrect)
+
+class FPScount(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -323,7 +369,7 @@ class fpscount(pygame.sprite.Sprite):
         self.textrect = fps_text.get_rect(center=(25, 25))
         self.image.blit(fps_text, self.textrect)
 
-class selectedsquad(pygame.sprite.Sprite):
+class Selectedsquad(pygame.sprite.Sprite):
     def __init__(self,image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -332,7 +378,7 @@ class selectedsquad(pygame.sprite.Sprite):
     def pop(self, pos):
         self.rect = self.image.get_rect(topleft=pos)
 
-class minimap(pygame.sprite.Sprite):
+class Minimap(pygame.sprite.Sprite):
     def __init__(self, X, Y,image, camera):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)

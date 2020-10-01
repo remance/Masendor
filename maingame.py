@@ -62,17 +62,17 @@ def load_sound(file):
 def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
-    army = gamebattalion.unitarmy(startposition=position, gameid=gameid,
+    army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
                                   colour=colour, control=control, coa=coa, commander=command, startangle=startangle)
-    army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width-10, 2),
-                   gamebattalion.hitbox(army, 1, 2, army.rect.height-10),
-                   gamebattalion.hitbox(army, 2, 2, army.rect.height-10),
-                   gamebattalion.hitbox(army, 3, army.rect.width-10, 2)]
-    army.leader = [gameleader.leader(leader[0], leader[4], 0, army, leaderstat),
-                   gameleader.leader(leader[1], leader[5], 1, army, leaderstat),
-                   gameleader.leader(leader[2], leader[6], 2, army, leaderstat),
-                   gameleader.leader(leader[3], leader[7], 3, army, leaderstat)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - 10, 2),
+                   gamebattalion.Hitbox(army, 1, 2, army.rect.height - 10),
+                   gamebattalion.Hitbox(army, 2, 2, army.rect.height - 10),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - 10, 2)]
+    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
+                   gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
+                   gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
+                   gameleader.Leader(leader[3], leader[7], 3, army, leaderstat)]
     return army
 
 
@@ -129,7 +129,7 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
             """Setup squad in army to squad group"""
             for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
-                    addsquad = gamesquad.unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=allweapon, armourlist=allarmour,
+                    addsquad = gamesquad.Unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=allweapon, armourlist=allarmour,
                                                    statlist=gameunitstat,
                                                    battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=inspectuipos)
                     squad.append(addsquad)
@@ -143,7 +143,7 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
     return squadindexlist
 
 
-class battle():
+class Battle():
     def __init__(self, winstyle):
         # Initialize pygame
         pygame.init()
@@ -165,12 +165,12 @@ class battle():
         featurelist = ["Grassland","Draught","Bushland","Forest","Inland Water","Road","Building","Farm","Wall","Mana Flux","Creeping Rot","Mud","Savanna","Draught","Tropical Shrubland","Jungle","Inland Water","Road","Building","Farm","Wall","Heat Mana","Creeping Rot","Mud","Volcanic Soil","Scorched Land","","","","Road","","Fertile Farm","Wall","Fire Mana","Creeping Rot","","Desert Plain","Desert Sand","Desert Shrubland","Desert Forest","Oasis","Sand Road","Desert Dwelling","Desert Farm","Wall","Earth Mana","Creeping Rot","Quicksand","Snow","Tundra","Arctic Shrubland","Arctic Forest","Frozen Water","Snow Road","Warm Shelter","Arctic Farm","Wall","Ice Mana","Preserving Rot","Ice Ground","","","","","Poisoned Water","","","","Wall","Poisoned Mana","Creeping Rot","","","Void","","","","","","","","Leyline","Creeping Rot","","","","","","","","","","Demonic Wall","","Creeping Rot","","","","","","","","","","Death Wall","","Rotten Land","","Lively Water","Empty Water","Marsh","Swamp","Water","Bridge","Swamp Building","Swamp Farm","Wall","Cold Mana","Creeping Rot","","Sea","Ocean","Coral Reef","Underwater Forest","Fresh Water","Bridge","Sunken City","Fishery","Submerged Wall","Water Mana","Creeping Rot",""]
         mapselected = "testmap"
         imgs = load_images(['map', mapselected],loadorder=False)
-        gamemap.map.images = [imgs[0]]
-        gamemap.mapfeature.images = [imgs[1]]
-        gamemap.mapheight.images = [imgs[2]]
-        gamemap.beautifulmap.placename = imgs[3]
+        gamemap.Basemap.images = [imgs[0]]
+        gamemap.Mapfeature.images = [imgs[1]]
+        gamemap.Mapheight.images = [imgs[2]]
+        gamemap.Beautifulmap.placename = imgs[3]
         img = load_image('effect.png', 'map')
-        gamemap.beautifulmap.effectimage = img
+        gamemap.Beautifulmap.effectimage = img
         empty = load_image('empty.png', 'map/texture')
         maptexture = []
         loadtexturefolder = []
@@ -181,9 +181,9 @@ class battle():
         for index, texturefolder in enumerate(loadtexturefolder):
             imgs = load_images(['map','texture', texturefolder], loadorder=False)
             maptexture.append(imgs)
-        gamemap.beautifulmap.textureimages = maptexture
-        gamemap.beautifulmap.loadtexturelist = loadtexturefolder
-        gamemap.beautifulmap.emptyimage = empty
+        gamemap.Beautifulmap.textureimages = maptexture
+        gamemap.Beautifulmap.loadtexturelist = loadtexturefolder
+        gamemap.Beautifulmap.emptyimage = empty
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
         imgs = []
@@ -191,27 +191,33 @@ class battle():
             # x, y = img.get_width(), img.get_height()
             # img = pygame.transform.scale(img, (int(x),int(y/2)))
             imgs.append(img)
-        gamesquad.unitsquad.images = imgs
+        gamesquad.Unitsquad.images = imgs
         self.imagewidth, self.imageheight = imgs[0].get_width(), imgs[0].get_height()
         imgs = []
         imgsold = load_images(['war', 'unit_ui', 'battalion'])
         for img in imgsold:
             imgs.append(img)
-        gamebattalion.unitarmy.images = imgs
+        gamebattalion.Unitarmy.images = imgs
         imgsold = load_images(['war', 'unit_ui', 'weapon'])
         imgs = []
         for img in imgsold:
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))
             imgs.append(img)
-        self.allweapon = gamebattalion.weaponstat(imgs)  ## create weapon class
+        self.allweapon = gamebattalion.Weaponstat(imgs)  ## create weapon class
         imgs = load_images(['war', 'unit_ui', 'armour'])
-        self.allarmour = gamebattalion.armourstat(imgs)  ## create armour class
-        imgsold = load_images(['ui', 'skill_icon'], loadorder=False)
-        imgs = []
-        for img in imgsold:
-            imgs.append(img)
-        self.gameunitstat = gamebattalion.unitstat(imgs, imgs, imgs, imgs)
+        self.allarmour = gamebattalion.Armourstat(imgs)  ## create armour class
+        self.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
+        self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
+        self.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
+        self.skillimgs = load_images(['ui', 'skill_icon'], loadorder=False)
+        cooldown = pygame.Surface((self.skillimgs[0].get_width(), self.skillimgs[0].get_height()), pygame.SRCALPHA)
+        cooldown.fill((230,70,80,200))
+        activeskill = pygame.Surface((self.skillimgs[0].get_width(), self.skillimgs[0].get_height()), pygame.SRCALPHA)
+        activeskill.fill((170,220,77,200))
+        gameui.Skillcardicon.activeskill = activeskill
+        gameui.Skillcardicon.cooldown = cooldown
+        self.gameunitstat = gamebattalion.Unitstat()
         ## create leader list
         imgsold = load_images(['leader', 'historic'])
         imgs = []
@@ -219,7 +225,7 @@ class battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x / 2), int(y / 2)))
             imgs.append(img)
-        self.allleader = gameleader.leaderdata(imgs, option="\historic")
+        self.allleader = gameleader.Leaderdata(imgs, option="\historic")
         ## coa imagelist
         imgsold = load_images(['leader', 'historic', 'coa'])
         imgs = []
@@ -234,10 +240,10 @@ class battle():
             # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
             imgs.append(img)
         self.gameeffect = imgs
-        rangeattack.arrow.images = [self.gameeffect[0]]
+        rangeattack.Rangearrow.images = [self.gameeffect[0]]
         ## Popup Ui
         imgs =  load_images(['ui','popup_ui','terraincheck'], loadorder=False)
-        gamepopup.terrainpopup.images = imgs
+        gamepopup.Terrainpopup.images = imgs
         # decorate the game window
         # icon = load_image('sword.jpg')
         # icon = pygame.transform.scale(icon, (32, 32))
@@ -285,44 +291,49 @@ class battle():
         self.terraincheck = pygame.sprite.Group()
         self.buttonnamepopup = pygame.sprite.Group()
         self.leaderpopup = pygame.sprite.Group()
+        self.traiticon = pygame.sprite.Group()
+        self.skillicon = pygame.sprite.Group()
+        self.effecticon = pygame.sprite.Group()
         """assign default groups"""
-        gamemap.map.containers = self.battlemap, self.mapupdater
-        gamemap.mapfeature.containers = self.battlemapfeature, self.mapupdater
-        gamemap.mapheight.containers = self.battlemapheight, self.mapupdater
-        gamemap.beautifulmap.containers = self.showmap, self.mapupdater, self.allcamera
-        gamebattalion.unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
-        gamesquad.unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
-        gamebattalion.deadarmy.containers = self.deadunit, self.unitupdater, self.allcamera
-        gamebattalion.hitbox.containers = self.hitboxs, self.unitupdater, self.allcamera
-        gameleader.leader.containers = self.armyleader, self.unitupdater
-        rangeattack.arrow.containers = self.arrows, self.effectupdater, self.allcamera
-        gamebattalion.directionarrow.containers = self.directionarrows, self.effectupdater, self.allcamera
+        gamemap.Basemap.containers = self.battlemap, self.mapupdater
+        gamemap.Mapfeature.containers = self.battlemapfeature, self.mapupdater
+        gamemap.Mapheight.containers = self.battlemapheight, self.mapupdater
+        gamemap.Beautifulmap.containers = self.showmap, self.mapupdater, self.allcamera
+        gamebattalion.Unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
+        gamesquad.Unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
+        gamebattalion.Deadarmy.containers = self.deadunit, self.unitupdater, self.allcamera
+        gamebattalion.Hitbox.containers = self.hitboxs, self.unitupdater, self.allcamera
+        gameleader.Leader.containers = self.armyleader, self.unitupdater
+        rangeattack.Rangearrow.containers = self.arrows, self.effectupdater, self.allcamera
+        gamebattalion.Directionarrow.containers = self.directionarrows, self.effectupdater, self.allcamera
         gameui.Gameui.containers = self.gameui, self.uiupdater
-        gameui.minimap.containers = self.minimap, self.allui
-        gameui.fpscount.containers = self.allui
-        gameui.uibutton.containers = self.buttonui, self.uiupdater
-        gameui.switchuibutton.containers = self.switchbuttonui, self.uiupdater
-        gameui.selectedsquad.containers = self.squadselectedborder
-        gamepopup.terrainpopup.containers = self.terraincheck
-        gamepopup.onelinepopup.containers = self.buttonnamepopup, self.leaderpopup
+        gameui.Minimap.containers = self.minimap, self.allui
+        gameui.FPScount.containers = self.allui
+        gameui.Uibutton.containers = self.buttonui, self.uiupdater
+        gameui.Switchuibutton.containers = self.switchbuttonui, self.uiupdater
+        gameui.Selectedsquad.containers = self.squadselectedborder
+        gameui.Skillcardicon.containers = self.traiticon, self.skillicon, self.effecticon, self.allui
+        gamepopup.Terrainpopup.containers = self.terraincheck
+        gamepopup.Onelinepopup.containers = self.buttonnamepopup, self.leaderpopup
         ## create the background map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1 ## Camera zoom
-        self.battlemap = gamemap.map(self.camerascale)
-        self.battlemapfeature = gamemap.mapfeature(self.camerascale)
-        self.battlemapheight = gamemap.mapheight(self.camerascale)
-        self.showmap = gamemap.beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature, self.battlemapheight)
-        gamebattalion.unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
-        gamebattalion.unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
-        gamebattalion.unitarmy.gamemapheight = self.battlemapheight
-        self.camera = gamecamera.camera(self.camerapos, self.camerascale)
+        self.battlemap = gamemap.Basemap(self.camerascale)
+        self.battlemapfeature = gamemap.Mapfeature(self.camerascale)
+        self.battlemapheight = gamemap.Mapheight(self.camerascale)
+        self.showmap = gamemap.Beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature, self.battlemapheight)
+        gamebattalion.Unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
+        gamebattalion.Unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
+        gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
+        self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255,255,255))
         # pygame.display.flip()
         """Create Starting Values"""
         self.enactment = True
         self.timer = 0
+        self.uitimer = 0
         self.dt = 0
         self.combattimer = 0
         self.clock = pygame.time.Clock()
@@ -330,7 +341,7 @@ class battle():
         """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
         self.battlesidecal = [1, 0.5, 0.1, 0.5]
         """create game ui"""
-        self.minimap = gameui.minimap(SCREENRECT.width, SCREENRECT.height, self.showmap.trueimage, self.camera)
+        self.minimap = gameui.Minimap(SCREENRECT.width, SCREENRECT.height, self.showmap.trueimage, self.camera)
         topimage = load_images(['ui', 'battle_ui'])
         iconimage = load_images(['ui', 'battle_ui', 'topbar_icon'])
         self.gameui = [
@@ -349,23 +360,26 @@ class battle():
             gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] + 150,
                           image=topimage[5], icon="", uitype="armybox"))
         self.popgameui = self.gameui
-        self.buttonui = [gameui.uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 10, topimage[3], 0),
-                         gameui.uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 70, topimage[4], 1),
-                         gameui.uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 30, topimage[7], 2),
-                         gameui.uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 50, topimage[22], 3),
-                         gameui.uibutton(self.gameui[0].X - 206, self.gameui[0].Y, topimage[6], 1),
-                         gameui.uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 26, topimage[8], 0),
-                         gameui.uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 56, topimage[9], 1),
-                         gameui.uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 96, topimage[14], 1)]
-        self.switchbuttonui = [gameui.switchuibutton(self.gameui[1].X - 70, self.gameui[1].Y + 96, topimage[10:14]),
-                               gameui.switchuibutton(self.gameui[1].X - 30, self.gameui[1].Y + 96, topimage[15:17]),
-                               gameui.switchuibutton(self.gameui[1].X, self.gameui[1].Y + 96, topimage[17:20]),
-                               gameui.switchuibutton(self.gameui[1].X + 40, self.gameui[1].Y + 96, topimage[20:22])]
-        self.squadselectedborder = gameui.selectedsquad(topimage[-1])
-        self.terraincheck = gamepopup.terrainpopup()
-        self.buttonnamepopup = gamepopup.onelinepopup()
-        self.leaderpopup = gamepopup.onelinepopup()
-        self.fpscount = gameui.fpscount()
+        self.buttonui = [gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 10, topimage[3], 0),
+                         gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 70, topimage[4], 1),
+                         gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 30, topimage[7], 2),
+                         gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 50, topimage[22], 3),
+                         gameui.Uibutton(self.gameui[0].X - 206, self.gameui[0].Y, topimage[6], 1),
+                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 26, topimage[8], 0),
+                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 56, topimage[9], 1),
+                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 96, topimage[14], 1)]
+        self.switchbuttonui = [gameui.Switchuibutton(self.gameui[1].X - 70, self.gameui[1].Y + 96, topimage[10:14]),
+                               gameui.Switchuibutton(self.gameui[1].X - 30, self.gameui[1].Y + 96, topimage[15:17]),
+                               gameui.Switchuibutton(self.gameui[1].X, self.gameui[1].Y + 96, topimage[17:20]),
+                               gameui.Switchuibutton(self.gameui[1].X + 40, self.gameui[1].Y + 96, topimage[20:22])]
+        self.traiticon = []
+        self.skillicon = []
+        self.effecticon = []
+        self.squadselectedborder = gameui.Selectedsquad(topimage[-1])
+        self.terraincheck = gamepopup.Terrainpopup()
+        self.buttonnamepopup = gamepopup.Onelinepopup()
+        self.leaderpopup = gamepopup.Onelinepopup()
+        self.fpscount = gameui.FPScount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
@@ -615,7 +629,7 @@ class battle():
             who.basepos = who.allsidepos[0] - ((who.allsidepos[0] - who.basepos) / 2)
         else:  ## split by column
             newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
-            who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0] 
+            who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
             who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
             newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.basepos) / 2)
             who.basepos = who.allsidepos[1] - ((who.allsidepos[1] - who.basepos) / 2)
@@ -656,9 +670,9 @@ class battle():
                 squad.rect = squad.image.get_rect(topleft=squad.inspposition)
                 squad.pos = pygame.Vector2(squad.rect.centerx, squad.rect.centery)
                 squadnum += 1
-        newleader = [who.leader[1], gameleader.leader(0, 0, 1, who, self.allleader), gameleader.leader(0, 0, 2, who, self.allleader),
-                     gameleader.leader(0, 0, 3, who, self.allleader)]
-        who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.leader(0, 0, 3, who, self.allleader)]
+        newleader = [who.leader[1], gameleader.Leader(0, 0, 1, who, self.allleader), gameleader.Leader(0, 0, 2, who, self.allleader),
+                     gameleader.Leader(0, 0, 3, who, self.allleader)]
+        who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(0, 0, 3, who, self.allleader)]
         for index, leader in enumerate(who.leader):  ## also change army position of all leader in that battalion
             leader.armyposition = index  ## change army position to new one
             leader.imgposition = leader.baseimgposition[leader.armyposition]
@@ -672,10 +686,10 @@ class battle():
         who.changescale()
         who.height = who.gamemapheight.getheight(who.basepos)
         for thishitbox in who.hitbox: thishitbox.kill()
-        who.hitbox = [gamebattalion.hitbox(who, 0, who.rect.width-10, 1),
-                      gamebattalion.hitbox(who, 1, 1, who.rect.height - 10),
-                      gamebattalion.hitbox(who, 2, 1, who.rect.height - 10),
-                      gamebattalion.hitbox(who, 3, who.rect.width-10, 1)]
+        who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - 10, 1),
+                      gamebattalion.Hitbox(who, 1, 1, who.rect.height - 10),
+                      gamebattalion.Hitbox(who, 2, 1, who.rect.height - 10),
+                      gamebattalion.Hitbox(who, 3, who.rect.width - 10, 1)]
         who.rotate()
         who.newangle = who.angle
         ## need to recal max stat again for the original battalion
@@ -699,7 +713,7 @@ class battle():
             playercommand = True
             newgameid = self.playerarmy[-1].gameid + 1
             colour = (144, 167, 255)
-            army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
+            army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
                                           colour=colour, control=playercommand, coa=coa, commander=False)
             self.playerarmy.append(army)
@@ -707,7 +721,7 @@ class battle():
             playercommand = self.enactment
             newgameid = self.enemyarmy[-1].gameid + 1
             colour = (255, 114, 114)
-            army = gamebattalion.unitarmy(startposition=newpos, gameid=newgameid,
+            army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                           squadlist=newarmysquad, imgsize=(self.imagewidth, self.imageheight),
                                           colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
             self.enemyarmy.append(army)
@@ -740,13 +754,13 @@ class battle():
         army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
         army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                             army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-        army.hitbox = [gamebattalion.hitbox(army, 0, army.rect.width, 1),
-                       gamebattalion.hitbox(army, 1, 1, army.rect.height - 5),
-                       gamebattalion.hitbox(army, 2, 1, army.rect.height - 5),
-                       gamebattalion.hitbox(army, 3, army.rect.width, 1)]
+        army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width, 1),
+                       gamebattalion.Hitbox(army, 1, 1, army.rect.height - 5),
+                       gamebattalion.Hitbox(army, 2, 1, army.rect.height - 5),
+                       gamebattalion.Hitbox(army, 3, army.rect.width, 1)]
         army.autosquadplace = False
 
-    def changefaction(self, who):
+    def changefaction(self, who): ## TODO move this to gamebattalion
         """Change army group and gameid when change side"""
         oldgroup = self.enemyarmy
         newgroup = self.playerarmy
@@ -768,7 +782,7 @@ class battle():
         who.gameid = newgameid
         who.recreatesprite()
 
-    def die(self, who, group, deadgroup, rendergroup, hitboxgroup):
+    def die(self, who, group, deadgroup, rendergroup, hitboxgroup): ## TODO move this to gamebattalion
         """remove battalion,hitbox when it dies"""
         self.deadindex += 1
         if who.commander == True:  ## more morale penalty if the battalion is a command battalion
@@ -795,6 +809,47 @@ class battle():
             self.allui.add(self.buttonui[6])
         elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
+
+    def traiticonblit(self):
+
+        position = self.gameui[2].rect.topleft
+        position = [position[0] + 100 , position[1] + 60]
+        startrow = position[0]
+        for trait in self.gameui[2].value2[0]:
+            self.traiticon.append(gameui.Skillcardicon(self.traitimgs[0], (position[0], position[1])))  ## For now use placeholder image 0
+            position[0] += 40
+            if position[0] >= SCREENRECT.width:
+                position[1] += 30
+                position[0] = startrow
+
+    def skilliconblit(self):
+        position = self.gameui[2].rect.topleft
+        position = [position[0] + 100, position[1] + 100]
+        startrow = position[0]
+        for skill in self.gameui[2].value2[1]:
+            self.skillicon.append(gameui.Skillcardicon(self.skillimgs[0], (position[0], position[1]), id = skill)) ## For now use placeholder image 0
+            position[0] += 40
+            if position[0] >= SCREENRECT.width:
+                position[1] += 30
+                position[0] = startrow
+
+    def effecticonblit(self):
+        position = self.gameui[2].rect.topleft
+        position = [position[0] + 100, position[1] + 140]
+        startrow = position[0]
+        # for status in gameui[2].value2[3]:
+        position = [startrow, position[1]]
+        # for status in gameui[2].value2[4]:
+
+    def countdownskillicon(self):
+        for skill in self.skillicon:
+            cd = 0
+            activetime = 0
+            if skill.id in self.gameui[2].value2[2]:
+                cd = int(self.gameui[2].value2[2][skill.id])
+            if skill.id in self.gameui[2].value2[3]:
+                activetime = int(self.gameui[2].value2[3][skill.id][3])
+            skill.iconchange(cd, activetime)
 
     def uimouseover(self):
         for ui in self.gameui:
@@ -1147,7 +1202,6 @@ class battle():
                 else:
                     self.allui.remove(self.leaderpopup)
                     self.allui.remove(self.buttonnamepopup) ## remove popup if no mouseover on any button
-
                 if self.inspectui == 1:
                     if self.splithappen == True:  ## change showing squad in inspectui if split happen
                         self.allui.remove(*self.showingsquad)
@@ -1165,6 +1219,16 @@ class battle():
                                 self.allui.add(self.squadselectedborder)
                                 self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour, leader=self.allleader,
                                                           gameunitstat=self.gameunitstat, splithappen=self.splithappen)
+                                if self.gameui[2].option == 2:
+                                    for traiticon in self.traiticon: traiticon.kill()
+                                    for skillicon in self.skillicon: skillicon.kill()
+                                    self.traiticonblit()
+                                    self.skilliconblit()
+                                    self.countdownskillicon()
+                                else:
+                                    for icon in self.skillicon: icon.kill()
+                                    for icon in self.traiticon: icon.kill()
+                                    for icon in self.effecticon: icon.kill()
                             for button in self.buttonui:  ## Change unit card option based on button clicking
                                 if button.rect.collidepoint(self.mousepos):
                                     self.clickcheck = 1
@@ -1174,15 +1238,32 @@ class battle():
                                         self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                                   leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat,
                                                                   splithappen=self.splithappen)
-                    if self.squadlastselected is not None:  ## Update value of the clicked squad
+                                        if self.gameui[2].option == 2:
+                                            for traiticon in self.traiticon: traiticon.kill()
+                                            for skillicon in self.skillicon: skillicon.kill()
+                                            self.traiticonblit()
+                                            self.skilliconblit()
+                                            self.countdownskillicon()
+                                        else:
+                                            for icon in self.skillicon: icon.kill()
+                                            for icon in self.traiticon: icon.kill()
+                                            for icon in self.effecticon: icon.kill()
+                    if (self.squadlastselected is not None and self.uitimer >= 0.5 and self.gameui[2].option != 0 ) or self.beforeselected != self.lastselected:  ## Update value of the clicked squad
                         self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                   leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
+                        if self.gameui[2].option == 2:
+                            self.countdownskillicon()
+                        self.uitimer = 0
                 self.beforeselected = self.lastselected
             """remove the pop up ui when click at no group"""
             if self.clickcheck != 1:
                 self.lastselected = None
+                self.gameui[2].option = 1
                 for ui in self.gameui: ui.kill()
                 for button in self.buttonui: button.kill()
+                for icon in self.skillicon: icon.kill()
+                for icon in self.traiticon: icon.kill()
+                for icon in self.effecticon: icon.kill()
                 self.allui.remove(*self.switchbuttonui)
                 self.allui.remove(*self.showingsquad)
                 self.showingsquad = []
@@ -1240,7 +1321,7 @@ class battle():
                             thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                         if thissquad.reloadtime >= thissquad.reload and (
                                 (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
-                            rangeattack.arrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range, self.camerascale)
+                            rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range, self.camerascale)
                             thissquad.ammo -= 1
                             thissquad.reloadtime = 0
                         elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
@@ -1249,6 +1330,7 @@ class battle():
             self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
             self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt, self.camerascale)
             self.combattimer += self.dt
+            self.uitimer += self.dt
             self.camera.update(self.camerapos, self.allcamera)
             self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner],self.playerposlist,self.enemyposlist)
             self.clock.tick(60)
@@ -1266,5 +1348,5 @@ class battle():
 
 
 if __name__ == '__main__':
-    main = battle()
+    main = Battle()
     main.rungame()

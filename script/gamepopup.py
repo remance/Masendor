@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-class terrainpopup(pygame.sprite.Sprite):
+class Terrainpopup(pygame.sprite.Sprite):
     images = []
 
     def __init__(self):
@@ -41,7 +41,7 @@ class terrainpopup(pygame.sprite.Sprite):
                     break
         self.rect = self.image.get_rect(bottomleft=self.pos)
 
-class onelinepopup(pygame.sprite.Sprite):
+class Onelinepopup(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)

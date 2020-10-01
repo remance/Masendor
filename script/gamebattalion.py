@@ -22,7 +22,7 @@ def rotationxy(origin, point, angle):
     return pygame.Vector2(x, y)
 
 
-class weaponstat():
+class Weaponstat():
     def __init__(self, img):
         """Armour has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
@@ -38,7 +38,7 @@ class weaponstat():
         self.quality = (25, 50, 75, 100, 125, 150, 175)
 
 
-class armourstat():
+class Armourstat():
     def __init__(self, img):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
@@ -59,12 +59,10 @@ class armourstat():
         self.quality = (25, 50, 75, 100, 125, 150, 175)
 
 
-class unitstat():
-    def __init__(self, statusicon, abilityicon, traiticon, roleicon):
+class Unitstat():
+    def __init__(self):
         """Unit stat data read"""
-        """status effect list"""
         self.statuslist = {}
-        self.statusicon = statusicon
         with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -96,7 +94,6 @@ class unitstat():
                 self.gradelist[row[0]] = row[1:]
         unitfile.close()
         self.abilitylist = {}  ## Unit skill list
-        self.abilityicon = abilityicon
         with open(main_dir + "\data\war" + '\\unit_ability.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -122,7 +119,6 @@ class unitstat():
         unitfile.close()
         """Unit property list"""
         self.traitlist = {}
-        self.traiticon = traiticon
         with open(main_dir + "\data\war" + '\\unit_property.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -141,7 +137,6 @@ class unitstat():
         unitfile.close()
         """unit role list"""
         self.role = {}
-        self.roleicon = roleicon
         with open(main_dir + "\data\war" + '\\unit_type.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -164,7 +159,7 @@ class unitstat():
                 self.mountlist[row[0]] = row[1:]
         unitfile.close()
 
-class directionarrow(pygame.sprite.Sprite):
+class Directionarrow(pygame.sprite.Sprite):
     def __init__(self, who):
         """Layer must be called before sprite_init"""
         self._layer = 4
@@ -197,7 +192,7 @@ class directionarrow(pygame.sprite.Sprite):
             self.kill()
 
 
-class hitbox(pygame.sprite.Sprite):
+class Hitbox(pygame.sprite.Sprite):
     maxviewmode = 10
 
     def __init__(self, who, side, width, height):
@@ -237,7 +232,7 @@ class hitbox(pygame.sprite.Sprite):
         self.collide = 0
 
 
-class unitarmy(pygame.sprite.Sprite):
+class Unitarmy(pygame.sprite.Sprite):
     images = []
     gamemap = None
     gamemapfeature = None
@@ -1069,7 +1064,7 @@ class unitarmy(pygame.sprite.Sprite):
                 self.setrotate()
 
 
-class deadarmy(pygame.sprite.Sprite):
+class Deadarmy(pygame.sprite.Sprite):
     def __init__(self):
         # super().__init__()
         pygame.sprite.Sprite.__init__(self, self.containers)

@@ -21,7 +21,7 @@ SCREENRECT = Rect(0, 0, ScreenWidth, ScreenHeight)
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
-class menutext(pygame.sprite.Sprite):
+class Menutext(pygame.sprite.Sprite):
     def __init__(self, images, X, Y, gamescreen, text="", size=16):
         self.X, self.Y = X, Y
         self.images = images
@@ -75,7 +75,7 @@ class menutext(pygame.sprite.Sprite):
         self.event = False
 
 
-class menuicon(pygame.sprite.Sprite):
+class Menuicon(pygame.sprite.Sprite):
     def __init__(self, images, X, Y, gamescreen, text="", imageresize=0):
         self.X, self.Y = X, Y
         self.images = images
@@ -112,7 +112,7 @@ class menuicon(pygame.sprite.Sprite):
             self.image = self.images[0]
 
 
-class slidermenu(pygame.sprite.Sprite):
+class Slidermenu(pygame.sprite.Sprite):
     def __init__(self, barimage, buttonimage, textimage, X, Y, gamescreen, value, text="", imageresize=0, min_value=0, max_value=100, size=16):
         self.X, self.Y = X, Y
         self.barimage = barimage
@@ -198,7 +198,7 @@ def makebarlist(listtodo, menuimage, screen):
         img3 = img2
         barimage = [img, img2, img3]
         # print(bar)
-        bar = menutext(images=barimage, X=menuimage.X, Y=menuimage.Y * number, gamescreen=screen, text=bar)
+        bar = Menutext(images=barimage, X=menuimage.X, Y=menuimage.Y * number, gamescreen=screen, text=bar)
         number += 0.06  # -runnum
         # runnum+=0.01
         barlist.append(bar)
@@ -251,7 +251,7 @@ def game_intro(screen, clock, introoption):
 #     gamearmy.weaponstat
 #     gamearmy.unitstat
 
-class mainmenu():
+class Mainmenu():
     def __init__(self):
         # Initialize pygame
         pygame.init()
@@ -274,32 +274,32 @@ class mainmenu():
             self.background.blit(bgdtile, (x, 0))
         self.screen.blit(self.background, (0, 0))
         imagelist = load_base_button()
-        self.menubutton = menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 2, gamescreen=self.screen, text="START")
+        self.menubutton = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 2, gamescreen=self.screen, text="START")
         imagelist = load_base_button()
-        self.menubutton2 = menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.2, gamescreen=self.screen, text="QUIT")
+        self.menubutton2 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.2, gamescreen=self.screen, text="QUIT")
         imagelist = load_base_button()
-        self.menubutton3 = menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.5, gamescreen=self.screen, text="OPTION")
+        self.menubutton3 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.5, gamescreen=self.screen, text="OPTION")
         imagelist = load_base_button()
-        self.menubutton4 = menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.2, gamescreen=self.screen, text="BACK")
+        self.menubutton4 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.2, gamescreen=self.screen, text="BACK")
         img = load_image('scroll_normal.jpg', 'ui')
         img2 = img
         img3 = load_image('scroll_click.jpg', 'ui')
         imagelist = [img, img2, img3]
-        self.scrollbar1 = menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 2.3, gamescreen=self.screen,
+        self.scrollbar1 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 2.3, gamescreen=self.screen,
                                    text=str(ScreenWidth) + " x " + str(ScreenHeight), size=16)
         resolutionlist = ['1920 x 1080', '1600 x 900', '1366 x 768', '1280 x 720', '1024 x 768', ]
         self.resolutionbar = makebarlist(listtodo=resolutionlist, menuimage=self.scrollbar1, screen=self.screen)
         img = load_image('resolution_icon.png', 'ui')
-        self.resolutionicon = menuicon(images=[img], X=self.scrollbar1.X - 150, Y=self.scrollbar1.Y, gamescreen=self.screen, imageresize=50)
+        self.resolutionicon = Menuicon(images=[img], X=self.scrollbar1.X - 150, Y=self.scrollbar1.Y, gamescreen=self.screen, imageresize=50)
         img = load_image('scroller.png', 'ui')
         img2 = load_image('scoll_button_normal.png', 'ui')
         img3 = load_image('scoll_button_click.png', 'ui')
         img4 = load_image('numbervalue_icon.jpg', 'ui')
-        self.sliderbutton1 = slidermenu(barimage=img, buttonimage=[img2, img3], textimage=img4, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 3,
+        self.sliderbutton1 = Slidermenu(barimage=img, buttonimage=[img2, img3], textimage=img4, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 3,
                                         gamescreen=self.screen, value=SoundVolume, min_value=0, max_value=100)
         img = load_image('volume_icon.png', 'ui')
-        self.volumeicon = menuicon(images=[img], X=self.sliderbutton1.X - 150, Y=self.sliderbutton1.Y, gamescreen=self.screen, imageresize=50)
-        pygame.display.set_caption('The World at Hand')
+        self.volumeicon = Menuicon(images=[img], X=self.sliderbutton1.X - 150, Y=self.sliderbutton1.Y, gamescreen=self.screen, imageresize=50)
+        pygame.display.set_caption('Window of Insight')
         pygame.mouse.set_visible(1)
         if pygame.mixer:
             self.mixervolume = float(SoundVolume / 100)
@@ -335,7 +335,7 @@ class mainmenu():
                 self.menubutton3.update(pygame.mouse.get_pos(), mouse_up)
                 self.menubutton3.draw(self.screen)
                 if self.menubutton.event == True:
-                    self.battlegame = maingamefunc.battle(self.winstyle)
+                    self.battlegame = maingamefunc.Battle(self.winstyle)
                     self.battlegame.rungame()
                     self.menubutton.event = False
                 if self.menubutton3.event == True:
@@ -393,5 +393,5 @@ class mainmenu():
 
 
 if __name__ == '__main__':
-    runmenu = mainmenu()
+    runmenu = Mainmenu()
     runmenu.run(maingame)

@@ -1,5 +1,5 @@
 "id","name","armour","weight","cost","properties"
-0,"None",0,0,0,"0"
+0,"None",0,0,0,"199,200"
 1,"Padded Armour",30,20,1000,"0"
 2,"Leather Armour",25,14,900,"0"
 3,"Fur Armour",35,26,1500,"81,200"

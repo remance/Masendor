@@ -37,7 +37,7 @@ Mana = (101,109,214,255)
 Rot = (200,191,231,255)
 Wetground = (186,184,109,255)
 
-class map(pygame.sprite.Sprite):
+class Basemap(pygame.sprite.Sprite):
     images = []
     maxviewmode = 10
 
@@ -71,7 +71,7 @@ class map(pygame.sprite.Sprite):
 
     # def update(self, dt, pos, scale):
 
-class mapfeature(pygame.sprite.Sprite):
+class Mapfeature(pygame.sprite.Sprite):
     images = []
     maxviewmode = 10
 
@@ -120,7 +120,7 @@ class mapfeature(pygame.sprite.Sprite):
             featureindex = featureindex + (terrainindex * 12)
         return terrainindex, featureindex
 
-class mapheight(pygame.sprite.Sprite):
+class Mapheight(pygame.sprite.Sprite):
     images = []
     maxviewmode = 10
 
@@ -152,7 +152,7 @@ class mapheight(pygame.sprite.Sprite):
         return heightindex
 
 
-class beautifulmap(pygame.sprite.Sprite):
+class Beautifulmap(pygame.sprite.Sprite):
     textureimages = []
     emptyimage = None
     effectimage = None

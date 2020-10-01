@@ -6,7 +6,7 @@ from RTS import mainmenu
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
 
-class camera():
+class Camera():
     def __init__(self, startpos, viewmode):
         self.viewmode = viewmode
         self.pos = startpos

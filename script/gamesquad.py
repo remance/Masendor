@@ -10,24 +10,7 @@ from RTS import mainmenu
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
 
-
-class selectedborder(pygame.sprite.Sprite):
-    ##add this in 4.0
-    images = []
-
-    def __init__(self, x, y, whichsquad):
-        self._layer = 9
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.whichsquad = whichsquad
-        self.X, self.Y = x, y
-        self.rect = self.image.get_rect(mid=(self.X, self.Y))
-
-    def update(self):
-        self.rect.center = list(int(v) for v in self.pos)
-
-
-class unitsquad(pygame.sprite.Sprite):
+class Unitsquad(pygame.sprite.Sprite):
     images = []
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
@@ -111,7 +94,7 @@ class unitsquad(pygame.sprite.Sprite):
         elif stat[29] in (3, 4, 5, 6, 7):
             self.unittype = 2
             self.featuremod = 3 ## the starting column in unit_terrainbonus of cavalry
-        self.description = stat[33]
+        self.description = stat[-1]
         # if self.hidden
         self.baseelemmelee = 0
         self.baseelemrange = 0
@@ -176,7 +159,7 @@ class unitsquad(pygame.sprite.Sprite):
                 self.baseattack *= (random.randint(80, 120) / 100)
                 self.basemeleedef *= (random.randint(80, 120) / 100)
                 self.baserangedef *= (random.randint(80, 120) / 100)
-                self.basearmour *= (random.randint(80, 120) / 100)
+                # self.basearmour *= (random.randint(80, 120) / 100)
                 self.basespeed *= (random.randint(80, 120) / 100)
                 self.baseaccuracy *= (random.randint(80, 120) / 100)
                 self.baserange *= (random.randint(80, 120) / 100)
@@ -675,7 +658,7 @@ class unitsquad(pygame.sprite.Sprite):
             if self.state == 97 and self.stamina > 1000: self.state = 0
             """cannot be higher than max hp and max stamina"""
             if self.basemorale <= 0: self.basemorale = 0
-            elif self.morale > self.maxmorale: self.morale = self.maxmorale
+            elif self.basemorale > self.maxmorale: self.basemorale -= dt
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
             if self.troopnumber <= 0:  ## enter dead state
                 if self.leader != None and self.leader.state != 100:

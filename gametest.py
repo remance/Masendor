@@ -70,6 +70,3 @@ import numpy as np
 import pygame
 import timeit
 
-k = {}
-for a in k:
-    print(a)
