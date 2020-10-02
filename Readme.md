@@ -9,8 +9,6 @@ Plan
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
 
-4.1 Popup box for ui such as skill, status
-
 4.2 Dramatic text
 
 4.3 esc menu
