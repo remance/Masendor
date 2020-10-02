@@ -53,12 +53,40 @@ class Onelinepopup(pygame.sprite.Sprite):
         if self.pos != pos or self.textinput != input:
             self.textinput = input
             self.pos = pos
-            self.textsurface = self.font.render(self.textinput, 1, (0, 0, 0))  ## button name
-            self.textrect = self.textsurface.get_rect(topleft=(1, 1))
-            self.image = pygame.Surface((self.textrect.width+6, self.textrect.height+6))
-            image = pygame.Surface((self.textrect.width+2, self.textrect.height+2))
-            image.fill((255,255,255))
-            image.blit(self.textsurface, self.textrect)
+            textsurface = self.font.render(self.textinput, 1, (0, 0, 0))  ## button name
+            textrect = textsurface.get_rect(topleft=(1, 1))
+            self.image = pygame.Surface((textrect.width+6, textrect.height+6)) ## Black border
+            image = pygame.Surface((textrect.width+2, textrect.height+2)) ## White Box
+            image.fill((255, 255, 255))
+            image.blit(textsurface, textrect)
             rect = self.image.get_rect(topleft=(2,2))
+            self.image.blit(image,rect)
+            self.rect = self.image.get_rect(bottomleft=self.pos)
+
+class Effecticonpopup(pygame.sprite.Sprite):
+    def __init__(self):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.headfont = pygame.font.SysFont("helvetica", 16)
+        self.font = pygame.font.SysFont("helvetica", 12)
+        self.pos = (0, 0)
+        self.textinput = ""
+
+    def pop(self, pos, input):
+        if self.pos != pos or self.textinput != input:
+            self.textinput = input
+            self.pos = pos
+            namesurface = self.headfont.render(self.textinput[0], 1, (0, 0, 0))  ## name
+            namerect = namesurface.get_rect(topleft=(1, 1))
+            # textsurface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
+            # textrect = textsurface.get_rect(topleft=(1, namerect.height + 1))
+            self.image = pygame.Surface((namerect.width + 6, namerect.height + 6))  ## Black border
+            image = pygame.Surface((namerect.width + 2, namerect.height + 2))  ## White Box for text
+            # self.image = pygame.Surface((namerect.width + 6, textrect.height + namerect.height + 6)) ## Black border
+            # image = pygame.Surface((namerect.width + 2, textrect.height + namerect.height + 2)) ## White Box for text
+            image.fill((255, 255, 255))
+            image.blit(namesurface, namerect)
+            # image.blit(textsurface, textrect)
+            rect = self.image.get_rect(topleft=(2, 2))
             self.image.blit(image,rect)
             self.rect = self.image.get_rect(bottomleft=self.pos)

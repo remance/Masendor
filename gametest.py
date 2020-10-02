@@ -70,3 +70,5 @@ import numpy as np
 import pygame
 import timeit
 
+k = {5:[6,8,9,1]}
+print(list(k.keys())[0])

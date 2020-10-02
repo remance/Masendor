@@ -309,9 +309,10 @@ class Skillcardicon(pygame.sprite.Sprite):
     cooldown = None
     activeskill = None
 
-    def __init__(self, image, pos, id = None):
+    def __init__(self, image, pos, type, id = None):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.type = type
         self.id = id
         self.pos = pos
         self.font = pygame.font.SysFont("helvetica", 18)
@@ -352,6 +353,20 @@ class Skillcardicon(pygame.sprite.Sprite):
                 self.textsurface = self.font.render(printnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
+
+class Effectcardicon(pygame.sprite.Sprite):
+
+    def __init__(self, image, pos, type, id = None):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.type = type
+        self.id = id
+        self.pos = pos
+        self.cooldowncheck = 0
+        self.activecheck = 0
+        self.image = image
+        self.rect = self.image.get_rect(center=pos)
+        self.image_original = self.image.copy()
 
 class FPScount(pygame.sprite.Sprite):
     def __init__(self):
