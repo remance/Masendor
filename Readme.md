@@ -27,7 +27,7 @@ Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dram
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
-Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle, improve main menu
+Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle, custom unit editor, improve main menu
 
 Ver 0.7 Future Visionary: Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus
 

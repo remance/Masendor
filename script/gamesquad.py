@@ -81,9 +81,10 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basespeed = 50
         self.mount = statlist.mountlist[stat[30]]
         if stat[30] != 0:
-            self.basespeed = self.mount[2]
-            self.troophealth += self.mount[1]
-            self.trait = self.trait + self.mount[4] ## Apply mount trait to unit
+            self.basespeed = self.mount[1]
+            self.troophealth += self.mount[2]
+            self.basecharge += self.mount[3]
+            self.trait = self.trait + self.mount[5] ## Apply mount trait to unit
         self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
         self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]

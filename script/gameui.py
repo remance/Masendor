@@ -76,7 +76,7 @@ class Gameui(pygame.sprite.Sprite):
                              10: "Fighting", 11: "shooting", 68: "Dancing", 69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating",
                              99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Elated"}
+                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Inspired"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                              7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}
         elif self.uitype == "commandbar":
@@ -335,22 +335,22 @@ class Skillcardicon(pygame.sprite.Sprite):
             if self.activecheck > 0:
                 rect = self.image.get_rect(topleft=(0,0))
                 self.image.blit(self.activeskill,rect)
-                printnumber = str(self.activecheck)
+                outputnumber = str(self.activecheck)
                 if self.activecheck >= 1000:
-                    printnumber = self.numberchange(printnumber)
-                self.textsurface = self.font.render(printnumber, 1, (0, 0, 0))  ## timer number
+                    outputnumber = self.numberchange(outputnumber)
+                self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
 
-        elif cooldown != self.cooldowncheck:
+        elif cooldown != self.cooldowncheck and self.activecheck == 0:
             self.cooldowncheck = cooldown
             self.image = self.image_original.copy()
             if self.cooldowncheck > 0:
                 self.image.blit(self.cooldown,self.cooldownrect)
-                printnumber = str(self.cooldowncheck)
+                outputnumber = str(self.cooldowncheck)
                 if self.cooldowncheck >= 1000:
-                    printnumber = self.numberchange(printnumber)
-                self.textsurface = self.font.render(printnumber, 1, (0, 0, 0))  ## timer number
+                    outputnumber = self.numberchange(outputnumber)
+                self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
 

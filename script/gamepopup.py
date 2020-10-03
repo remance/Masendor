@@ -79,7 +79,7 @@ class Effecticonpopup(pygame.sprite.Sprite):
             namesurface = self.headfont.render(self.textinput[0], 1, (0, 0, 0))  ## name
             namerect = namesurface.get_rect(topleft=(1, 1))
             # textsurface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
-            # textrect = textsurface.get_rect(topleft=(1, namerect.height + 1))
+            # textrect = textsurface.get_rect(topleft=(1, textrect.height + 1))
             self.image = pygame.Surface((namerect.width + 6, namerect.height + 6))  ## Black border
             image = pygame.Surface((namerect.width + 2, namerect.height + 2))  ## White Box for text
             # self.image = pygame.Surface((namerect.width + 6, textrect.height + namerect.height + 6)) ## Black border

@@ -26,7 +26,7 @@
 25,"Anti-Machine",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"This squad is specialised in combat against machine squads. Neither Iron or wood can not stop this squad attack.",,
 26,"Anti-Large",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"The bigger they are, the harder the fall. This squad is specialised in combat against large squads.",,
 27,"Anti-All",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"The destroyer of world. No man, beast nor machine can withstand this true might.",,
-28,"Anti-Structure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,,
+28,"Anti-Structure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Tear down the wall! No structure can withstand such strong force.",,
 29,"Ignore Charge Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Rush of death and ruin. The world shall tremble upon this sight. This squad attack ignore charge defence entirely. ",,"y"
 30,"Ignore Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Deadly to those unfortunate to face them in combat. This squad attack ignore defense entirely.",,"y"
 31,"Cannibal",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
@@ -43,7 +43,7 @@
 42,"Hunger Instinct",1,,140,80,80,0,130,,,,,0,0,0,-10,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"Hunger is one of the most important factor for the aggressivity in many animal. If this squad is in hunger stage, it will fight much harder than usual to obtain the food which in this case is the enemy in front of it.",,
 43,"Famed",2,,,,,0,,,,,,0,0,0,10,10,0,3,,,0,0,0,0,0,0,0,0,,,,0,"This squad have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for ally squads nearby while reducing for enemy.",,
 44,"Armistice Bringer",4,,,,,0,,,,,,0,0,0,-50,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
-45,"Shield Expert",1,,,120,120,,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,"rework"
+45,"Shield Expert",1,,,120,120,,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"Survive to fight another day by improving your defense is never a bad idea.",,"rework"
 46,"Crumble",1,,60,60,100,-70,60,60,,60,60,100,0,0,60,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"Nothing last forever, even for an inanimate material creature. Time has render this squad much less powerful compare to its former glory.",,
 47,"Superb Flanker",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"This squad fight better against enemy squad from flanking position.",,"y"
 48,"Bandit Honour",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to.",,
@@ -73,7 +73,7 @@
 72,"Farsight",1,,,,110,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Farsight reduce accuracy penalty from long range shooting and also make squad see enemy projectile earlier.",,
 73,"No Range Penalty",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Assured accuracy to eradicate enemy from any place.",,"y"
 74,"Long Range Accuracy",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Death from afar, the end of chivalric era is near.",,"y"
-75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
+75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"Entertainment may look like it has no place in this hell. But it sure improve the soldiers’ morale.",,
 76,"Virtue Of Honour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
 77,"Kings Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
 78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,,
@@ -104,19 +104,19 @@
 103,"Battle Preparation",,,115,115,115,0,110,,,115,115,10,0,0,20,10,0,0,15,,0,0,0,0,0,0,0,0,,,,0,"This squad receives combat bonus when the stamina is at fresh level.",,
 104,"Blessed",1,,,,,0,,,,,,0,0,0,0,0,0,18,,,,,,,,,,,,,,0,"To the blessed heaven shall assist. The world is blight and the sky is clear.",,"y"
 105,"Cursed",1,,,,,0,,,,,,0,0,0,0,0,0,19,,,,,,,,,,,,,,0,"A cursed being either by means of magic or nature, this squad will always be cursed and cannot be cured by normal means.",,"y"
-106,"Lucky",1,,,,,,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,,
-107,"Unlucky",1,,,,,,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,,
+106,"Lucky",1,,,,,,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"With luck on their side, surely no one can deny their destiny.",,
+107,"Unlucky",1,,,,,,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,"Born under the wrong star or maybe some witches hold grudge against them, this unit usually fail at every task more than succeed.",,
 108,"Inner Demon",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,,
 109,"Fanatical Backstabbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them.","Flank attack bonus +50%",
 110,"Tireless",1,,,,,0,,,,,,0,0,100,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Absolute killing machine! This squad's fatigue cannot be decreased making its combat effectiveness stay at best condition for the whole fight.",,
-111,"Unbreakable",1,,,150,150,0,,,,,,0,0,0,50,10,0,0,,,0,0,0,0,0,0,0,0,,,,0,,,
+111,"Unbreakable",1,,,150,150,0,,,,,,0,0,0,50,10,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Fleeing or surrendering is never an option for those with true honour and bravery. Death is a better option than dishonour.",,
 112,"Savage Looter",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"This squad know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army.",,
 113,"Catcher Expert",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0," A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble.",,
 114,"Marvelous Athletic",1,,,,,0,,,,,,0,0,1,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"This squad being athletic superior makes them much more effective in long activity such as fighting.",,
 115,"Iron Discipline",1,,,,,0,,,,,,0,0,0,0,20,0,0,,,0,0,0,0,0,0,0,0,,,,0,"This squad receives further bonus effect from discipline.",,
 116,"Sticky Attack",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,24,,,
 117,"Curse Strike",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,19,,,
-118,"Infective Touch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,,
+118,"Infective Touch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"Who can blame the unfortunates that want to spread misfortune to the others. The world is too bright for fake happiness. ",,
 119,"Stunning Blast",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,23,,,
 120,"Mana Stealer",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
 121,"Maiden Of Meldolea",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,"All stat -10%, nearby enemy squads stat -10%",
@@ -164,8 +164,8 @@
 163,"Fragile Will",1,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,"This squad will be affected by negative psychological effect even more than usual.",,
 164,"Overwhelming Presence",,,,,,,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"This squad appearance is so overwhelming that leave both friendly and enemy squads in fear and worry.",,
 165,"Headshotter",,,,,,,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,,0,,,
-166,"Perfect Aims",,,,,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
-167,"Personal Escort",,,,,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,,
+166,"Perfect Aims",,,,,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"Never a shot wasted when the enemy are lining up to be killed.",,
+167,"Personal Escort",,,,,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"Trained to escort important person to safety, this unit will allows any leader it protect to survive for much longer in a chaotic battle.",,
 168,"Domination Aura",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,"When enemy squad becomes broken near this squad, it will join this squad's side instead of freeing.",,
 169,"Fire Being",1,,,,,,,,,,,0,0,0,0,0,0,0,,,100,-50,0,0,0,50,0,0,,,,0,"Fire damage actually heal this squad instead of damaging them.",,
 170,"Water Being",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,100,-50,0,0,0,50,0,,,,0,"Water damage actually heal this squad instead of damaging them.",,
@@ -197,8 +197,8 @@
 196,"Heat Aura",,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,80,30,0,,,,0,,,
 197,"Cold Aura",,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,30,80,0,,,,0,,,
 198,"Pain Weakness",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,"This squad is completely unfit for any direct battle! Any injury cause the squad to fight less effectively.",,
-199,"Cold Weakness",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,-50,0,,,,0,,,
-200,"Heat Weakness",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,-50,0,0,,,,0,,,
+199,"Cold Exposure",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,-50,0,,,,0,"The lack of covering or wrong type of clothing can kill anyone just like the enemy in cold place. Warm up or be preserved forever.",,
+200,"Heat Exposure",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,-50,0,0,,,,0,"The cloth or armour this unit is wearing is not suitable for hot climate. The heat will render the body reaching mortality state eventually.",,
 201,"Fire Weakness",1,,,,,,,,,,,0,0,0,0,0,0,0,,,-50,0,0,0,0,0,0,0,,,,0,,"Earth damage +30%",
 202,"Water Weakness",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,-50,0,0,0,0,0,0,,,,0,,"Water damage +30%",
 203,"Air Weakness",1,,,,,,,,,,,0,0,0,0,0,0,0,,,0,0,-50,0,0,0,0,0,,,,0,,"Air damage +30%",
@@ -296,7 +296,7 @@
 295,"Sorrow Of Battle ",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,"Woe for the world to see war and not peace. Our enemy too suffer the same fate as us.","Morale +20%, enemy morale -30%, melee attack -20%, melee defense -10%",
 296,"Smokey Wings At The Ground",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,"When this squad suffer casulty, the Smokey Wings on the dead troops will drop to the ground. The smoke rising from the ground up will every squads without anti-smokey mask. ","Active when 10% of this squad dies, affect everyone in nearby radius.",
 297,"Anti-Smokey Mask",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,"This squad cannot be affected by Smokey ability.","No effect from any smoke",
-298,"Strong Will",,,,,,,,,,,,0,,,0,0,0,22,,,,,,,,,,,,,,0,,"A strong warrior requires a strong will, this squad cannot be affected by negative psychological effect.",
+298,"Strong Will",,,,,,,,,,,,0,,,0,0,0,22,,,,,,,,,,,,,,0,"To have strong will is much harder to achieve than having strong body. Only few are so well trained to face against the unknown after all.","A strong warrior requires a strong will, this squad cannot be affected by negative psychological effect.",
 299,"Fullmoon Jubilance",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,"The fateful day! This squad will fight firecely to the death to fulfill the prophecy.","Attack +30%, all defense -10%, always in berserk status",
 300,"Halfmoon Preparation",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,"There are no glory yet in battle before full moon, This squad will fight more reservely and more likely to retreat In losing fight.","Attack -30%, all defense +35%, morale -50%, speed +20%",
 301,"Crescentmoon Sacrifice",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,"The rites must be made to hasten the arrival of the true moon! Sacrifices must be chosen!","Attack +20%, morale +15%, speed +10%",

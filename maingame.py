@@ -18,7 +18,7 @@ from pygame.locals import *
 from pygame.transform import scale
 
 from RTS import mainmenu
-from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup
+from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama
 
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
@@ -162,7 +162,7 @@ class Battle():
         # Load images, assign to sprite classes
         # (do this before the classes are used, after screen setup)
         ## create game map
-        featurelist = ["Grassland","Draught","Bushland","Forest","Inland Water","Road","Building","Farm","Wall","Mana Flux","Creeping Rot","Mud","Savanna","Draught","Tropical Shrubland","Jungle","Inland Water","Road","Building","Farm","Wall","Heat Mana","Creeping Rot","Mud","Volcanic Soil","Scorched Land","","","","Road","","Fertile Farm","Wall","Fire Mana","Creeping Rot","","Desert Plain","Desert Sand","Desert Shrubland","Desert Forest","Oasis","Sand Road","Desert Dwelling","Desert Farm","Wall","Earth Mana","Creeping Rot","Quicksand","Snow","Tundra","Arctic Shrubland","Arctic Forest","Frozen Water","Snow Road","Warm Shelter","Arctic Farm","Wall","Ice Mana","Preserving Rot","Ice Ground","","","","","Poisoned Water","","","","Wall","Poisoned Mana","Creeping Rot","","","Void","","","","","","","","Leyline","Creeping Rot","","","","","","","","","","Demonic Wall","","Creeping Rot","","","","","","","","","","Death Wall","","Rotten Land","","Lively Water","Empty Water","Marsh","Swamp","Water","Bridge","Swamp Building","Swamp Farm","Wall","Cold Mana","Creeping Rot","","Sea","Ocean","Coral Reef","Underwater Forest","Fresh Water","Bridge","Sunken City","Fishery","Submerged Wall","Water Mana","Creeping Rot",""]
+        featurelist = ["Grassland","Draught","Bushland","Forest","Inland Water","Road","Building","Farm","Pandemonium","Mana Flux","Creeping Rot","Mud","Savanna","Draught","Tropical Shrubland","Jungle","Inland Water","Road","Building","Farm","Pandemonium","Heat Mana","Creeping Rot","Mud","Volcanic Soil","Scorched Land","","","","Road","","Fertile Farm","Pandemonium","Fire Mana","Creeping Rot","","Desert Plain","Desert Sand","Desert Shrubland","Desert Forest","Oasis","Sand Road","Desert Dwelling","Desert Farm","Pandemonium","Earth Mana","Creeping Rot","Quicksand","Snow","Tundra","Arctic Shrubland","Arctic Forest","Frozen Water","Snow Road","Warm Shelter","Arctic Farm","Pandemonium","Ice Mana","Preserving Rot","Ice Ground","","","","","Poisoned Water","","","","Pandemonium","Poisoned Mana","Creeping Rot","","","Void","","","","","","","","Leyline","Creeping Rot","","","","","","","","","","Pandemonium","","Creeping Rot","","","","","","","","","","Pandemonium","","Rotten Land","","Lively Water","Empty Water","Marsh","Swamp","Water","Bridge","Swamp Building","Swamp Farm","Pandemonium","Cold Mana","Creeping Rot","","Sea","Ocean","Coral Reef","Underwater Forest","Fresh Water","Bridge","Sunken City","Fishery","Pandemonium","Water Mana","Creeping Rot",""]
         mapselected = "testmap"
         imgs = load_images(['map', mapselected],loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
@@ -295,6 +295,7 @@ class Battle():
         self.traiticon = pygame.sprite.Group()
         self.skillicon = pygame.sprite.Group()
         self.effecticon = pygame.sprite.Group()
+        self.textdrama = pygame.sprite.Group()
         """assign default groups"""
         gamemap.Basemap.containers = self.battlemap, self.mapupdater
         gamemap.Mapfeature.containers = self.battlemapfeature, self.mapupdater
@@ -318,6 +319,7 @@ class Battle():
         gamepopup.Terrainpopup.containers = self.terraincheck
         gamepopup.Onelinepopup.containers = self.buttonnamepopup, self.leaderpopup
         gamepopup.Effecticonpopup.containers = self.effectpopup
+        gamedrama.Textdrama.containers = self.textdrama
         ## create the background map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
@@ -337,10 +339,28 @@ class Battle():
         self.enactment = True
         self.timer = 0
         self.uitimer = 0
-        self.dt = 0
+        self.dramatimer = 0
+        self.dt = 0 ## Used for in game calculation
+        self.uidt = 0 ## Used for ui timer
         self.combattimer = 0
         self.clock = pygame.time.Clock()
         self.lastmouseover = 0
+        self.gamestate = 1
+        self.clickcheck = 0  ## For checking if unit or ui is clicked
+        self.clickcheck2 = 0  ##  For checking if another unit is clicked when inspect ui open"
+        self.inspectui = 0
+        self.lastselected = None
+        self.mapviewmode = 0
+        self.mapshown = self.showmap
+        self.squadlastselected = None
+        self.beforeselected = None
+        self.splithappen = False
+        self.splitbutton = False
+        self.leadernow = []
+        self.rightcorner = SCREENRECT.width - 5
+        self.bottomcorner = SCREENRECT.height - 5
+        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]
+        self.battlemousepos = [0,0]
         """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
         self.battlesidecal = [1, 0.5, 0.1, 0.5]
         """create game ui"""
@@ -380,6 +400,7 @@ class Battle():
         self.buttonnamepopup = gamepopup.Onelinepopup()
         self.leaderpopup = gamepopup.Onelinepopup()
         self.effectpopup = gamepopup.Effecticonpopup()
+        self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
@@ -904,22 +925,6 @@ class Battle():
         return effectmouseover
 
     def rungame(self):
-        self.gamestate = 1
-        self.clickcheck = 0  ## For checking if unit or ui is clicked
-        self.clickcheck2 = 0  ##  For checking if another unit is clicked when inspect ui open"
-        self.inspectui = 0
-        self.lastselected = None
-        self.mapviewmode = 0
-        self.mapshown = self.showmap
-        self.squadlastselected = None
-        self.beforeselected = None
-        self.splithappen = False
-        self.splitbutton = False
-        self.leadernow = []
-        self.rightcorner = SCREENRECT.width - 5
-        self.bottomcorner = SCREENRECT.height - 5
-        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]
-        self.battlemousepos = [0,0]
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -1003,11 +1008,13 @@ class Battle():
                     elif event.key == pygame.K_SPACE and self.lastselected is not None:
                         whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                         self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
-                    elif event.key == pygame.K_q and self.lastselected is not None:
-                        self.changefaction(whoinput)
                     elif event.key == pygame.K_l and self.lastselected is not None:
                         for squad in whoinput.squadsprite:
                             squad.basemorale = 0
+                    elif event.key == pygame.K_q:
+                        self.textdrama.slowdrama('Test')
+                        self.allui.add(self.textdrama)
+                        self.dramatimer = 0.1
                     else:
                         keypress = event.key
                 if event.type == self.SONG_END:
@@ -1016,9 +1023,13 @@ class Battle():
                     pygame.mixer.music.load(self.musiclist[self.pickmusic])
                     pygame.mixer.music.play(0)
             if self.timer != 0:
-                self.timer += self.dt
+                self.timer += self.uidt
                 if self.timer >= 0.5:
                     self.timer = 0
+            if self.dramatimer != 0:
+                self.dramatimer += self.uidt
+                if self.dramatimer > 5:
+                    self.allui.remove(self.textdrama)
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
             self.uiupdater.update()  # update ui outside of combat loop so it update even when game pause
             # self.mapupdater.update(self.dt,self.camerapos,self.camerascale)
@@ -1256,12 +1267,10 @@ class Battle():
                                                               leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat,
                                                               splithappen=self.splithappen)
                                     if self.gameui[2].option == 2:
-                                        print('test1')
                                         self.traitskillblit()
                                         self.effecticonblit()
                                         self.countdownskillicon()
                                     else:
-                                        print('test2')
                                         for icon in self.traiticon.sprites(): icon.kill()
                                         for icon in self.effecticon.sprites(): icon.kill()
                     if (self.squadlastselected is not None and self.uitimer >= 0.5 and self.gameui[2].option != 0 ) or self.beforeselected != self.lastselected:  ## Update value of the clicked squad
@@ -1367,6 +1376,7 @@ class Battle():
             self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner],self.playerposlist,self.enemyposlist)
             self.clock.tick(60)
             self.dt = 0
+            self.uidt = self.clock.tick(60) / 1000
             if self.gamestate == 1:
                 self.dt = self.clock.tick(60) / 1000
             self.screen.blit(self.camera.image, (0,0))
