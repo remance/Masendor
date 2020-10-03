@@ -1375,10 +1375,10 @@ class Battle():
             self.camera.update(self.camerapos, self.allcamera)
             self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner],self.playerposlist,self.enemyposlist)
             self.clock.tick(60)
-            self.dt = 0
-            self.uidt = self.clock.tick(60) / 1000
-            if self.gamestate == 1:
-                self.dt = self.clock.tick(60) / 1000
+            self.dt = self.clock.tick(60) / 1000
+            self.uidt = self.dt
+            if self.gamestate == 0:
+                self.dt = 0
             self.screen.blit(self.camera.image, (0,0))
             self.allui.draw(self.screen)  # draw the scene
             # pygame.display.update(dirty)
