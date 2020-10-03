@@ -68,7 +68,20 @@ import numpy as np
 #     for i in k:
 #         if len(n)>50:
 import pygame
-import timeit
 
-k = {5:[6,8,9,1]}
-print(list(k.keys())[0])
+class Test():
+    def __init__(self):
+        self.trait = {5:[55], 16:[51], 19:[556]}
+        self.ignoredef = True
+
+import timeit
+hey = Test()
+
+starttime = timeit.default_timer()
+print("The start time is :",starttime)
+aa = 0
+while aa < 10000:
+    if 1 in hey.trait:
+        pass
+    aa += 1
+print("The time difference is :", timeit.default_timer() - starttime)

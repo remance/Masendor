@@ -244,6 +244,8 @@ class Battle():
         ## Popup Ui
         imgs =  load_images(['ui','popup_ui','terraincheck'], loadorder=False)
         gamepopup.Terrainpopup.images = imgs
+        imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
+        gamedrama.Textdrama.images = imgs
         # decorate the game window
         # icon = load_image('sword.jpg')
         # icon = pygame.transform.scale(icon, (32, 32))
@@ -606,6 +608,7 @@ class Battle():
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
             if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+                self.textdrama.slowdrama(str(who.leader.name) + " is dead")
                 whicharmy = self.enemyarmy
                 if who.battalion.gameid < 2000:
                     whicharmy = self.playerarmy
@@ -1012,7 +1015,7 @@ class Battle():
                         for squad in whoinput.squadsprite:
                             squad.basemorale = 0
                     elif event.key == pygame.K_q:
-                        self.textdrama.slowdrama('Test')
+                        self.textdrama.slowdrama('THIS IS A DRAMATIC TEXT')
                         self.allui.add(self.textdrama)
                         self.dramatimer = 0.1
                     else:
@@ -1027,6 +1030,7 @@ class Battle():
                 if self.timer >= 0.5:
                     self.timer = 0
             if self.dramatimer != 0:
+                self.textdrama.playanimation()
                 self.dramatimer += self.uidt
                 if self.dramatimer > 5:
                     self.allui.remove(self.textdrama)
