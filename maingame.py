@@ -515,33 +515,33 @@ class Battle():
 
     def losscal(self, who, target, hit, defense, type):
         heightadventage = who.battalion.height - target.battalion.height
+        if type == 1: heightadventage = int((who.battalion.height - target.battalion.height)/2)
         hit += heightadventage
         if hit < 0: hit = 0
-        """ignore def trait"""
-        if defense < 0 or 30 in who.trait: defense = 0
+        if defense < 0 or 30 in who.trait: defense = 0 ## Ignore def trait
         hitchance = hit - defense
-        if hitchance <= 10:
-            combatscore = 0
-            finalchance = random.randint(0, 100)
-            if finalchance > 97:
-                combatscore = 0.1
-        elif hitchance > 10 and hitchance <= 20:
-            combatscore = 0.1
-        elif hitchance > 20 and hitchance <= 40:
-            combatscore = 0.5
-        elif hitchance > 40 and hitchance <= 80:
-            combatscore = 1
-        elif hitchance > 80:
+        if hitchance > 80:
             combatscore = 1.5
+        elif hitchance > 40:
+            combatscore = 1
+        elif hitchance > 20:
+            combatscore = 0.5
+        elif hitchance > 10:
+            combatscore = 0.1
+        elif hitchance <= 10:
+            combatscore = 0
+            if random.randint(0, 100) > 90: ## Final chence
+                combatscore = 0.1
         leaderdmgbonus = 0
         if who.leader is not None: leaderdmgbonus = who.leader.combat * 10
         if type == 0:  ##melee dmg
             dmg = who.dmg
             """include charge in dmg if charging, ignore charge defense if have ignore trait"""
-            if who.charging == True and 29 not in who.trait:
-                dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
-            elif who.charging == True and 29 in who.trait:
-                dmg = round(dmg + (who.charge / 10))
+            if who.charging == True:
+                if 29 not in who.trait:
+                    dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
+                elif 29 in who.trait:
+                    dmg = round(dmg + (who.charge / 10))
             leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
             dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
             if target.state in (1, 2, 3, 4, 5, 6, 7, 8, 9): dmg = dmg * 5
