@@ -608,7 +608,7 @@ class Battle():
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
             if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
-                self.textdrama.slowdrama(str(who.leader.name) + " is dead")
+                self.textdrama.queue.append(str(who.leader.name) + " is dead")
                 whicharmy = self.enemyarmy
                 if who.battalion.gameid < 2000:
                     whicharmy = self.playerarmy
@@ -623,6 +623,7 @@ class Battle():
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
             target.leader.health -= wholeaderdmg
             if target.leader.health <= 0 and target.leader.battalion.commander == True and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
+                self.textdrama.queue.append(str(target.leader.name) + " is dead")
                 whicharmy = self.enemyarmy
                 if target.battalion.gameid < 2000:
                     whicharmy = self.playerarmy
@@ -1015,9 +1016,7 @@ class Battle():
                         for squad in whoinput.squadsprite:
                             squad.basemorale = 0
                     elif event.key == pygame.K_q:
-                        self.textdrama.slowdrama('THIS IS A DRAMATIC TEXT')
-                        self.allui.add(self.textdrama)
-                        self.dramatimer = 0.1
+                        self.textdrama.queue.append('THIS IS A DRAMATIC TEXT')
                     else:
                         keypress = event.key
                 if event.type == self.SONG_END:
@@ -1029,10 +1028,15 @@ class Battle():
                 self.timer += self.uidt
                 if self.timer >= 0.5:
                     self.timer = 0
-            if self.dramatimer != 0:
+            if self.dramatimer == 0 and len(self.textdrama.queue) != 0: ## Start timer and add to allui If there is event queue
+                self.allui.add(self.textdrama)
+                self.textdrama.processqueue()
+                self.dramatimer = 0.1
+            elif self.dramatimer > 0:
                 self.textdrama.playanimation()
                 self.dramatimer += self.uidt
-                if self.dramatimer > 5:
+                if self.dramatimer > 3:
+                    self.dramatimer = 0
                     self.allui.remove(self.textdrama)
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
             self.uiupdater.update()  # update ui outside of combat loop so it update even when game pause

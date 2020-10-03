@@ -594,8 +594,8 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.useskillcond != 3:
                 self.checkskillcondition()
             if self.state in (3, 4):
-                if self.attackpos.distance_to(
-                        self.combatpos) < 30 and self.chargeskill not in self.statuseffect and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                if self.attackpos.distance_to(self.combatpos) < 10 and self.chargeskill not in self.statuseffect \
+                        and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                     self.useskill(0)
             skillchance = random.randint(0, 10)
             if skillchance >= 6 and len(self.availableskill) > 0:

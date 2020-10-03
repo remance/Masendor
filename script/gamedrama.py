@@ -18,10 +18,9 @@ class Textdrama(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", 70)
         self.queue = []
 
-    def processqueue(self, timer):
-        if timer == 0:
-            self.slowdrama(self.queue[0])
-            self.queue = self.queue[1:]
+    def processqueue(self):
+        self.slowdrama(self.queue[0])
+        self.queue = self.queue[1:]
 
     def slowdrama(self, input):
         self.textblit = False
