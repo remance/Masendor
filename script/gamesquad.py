@@ -697,6 +697,3 @@ class Unitsquad(pygame.sprite.Sprite):
             if mouse_up:
                 self.selected = True
                 self.wholastselect = self.gameid
-                # self.image = self.images[2] 100))
-        # if wholastselect == self.gameid:
-        # if mouse_right and self.rect.collidepoint(mouse_pos) == True:

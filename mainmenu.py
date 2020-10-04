@@ -22,9 +22,10 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
 class Menutext(pygame.sprite.Sprite):
-    def __init__(self, images, X, Y, gamescreen, text="", size=16):
-        self.X, self.Y = X, Y
-        self.images = images
+    def __init__(self, images, pos, text="", size=16):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.images = [image.copy() for image in images]
         self.text = text
         self.font = pygame.font.SysFont("timesnewroman", size)
         if text != "":
@@ -35,32 +36,26 @@ class Menutext(pygame.sprite.Sprite):
             self.images[1].blit(self.textsurface, self.textrect)
             self.images[2].blit(self.textsurface, self.textrect)
         self.image = self.images[0]
-        self.rects = self.images[0].get_rect(center=(self.X, self.Y))
+        self.rects = self.images[0].get_rect(center=self.pos)
         self.event = False
 
     def update(self, mouse_pos, mouse_up):
         if self.rects.collidepoint(mouse_pos):
             self.mouse_over = True
+            self.image = self.images[1]
             if mouse_up:
-                self.rects = self.images[2].get_rect(center=(self.X, self.Y))
-                # print("click", self.X, self.Y)
                 self.event = True
+                self.image = self.images[2]
                 return self.event
         else:
             self.mouse_over = False
-        if self.mouse_over == True:
-            self.rects = self.images[1].get_rect(center=(self.X, self.Y))
-            self.image = self.images[1]
-            # if mouse_up:
-        else:
-            self.rects = self.images[0].get_rect(center=(self.X, self.Y))
             self.image = self.images[0]
 
     def draw(self, gamescreen):
         """ Draws element onto a surface """
         gamescreen.blit(self.image, self.rects)
 
-    def changestate(self, gamescreen, text):
+    def changestate(self, text):
         if text != "":
             img = load_image('scroll_normal.jpg', 'ui')
             img2 = img
@@ -71,13 +66,13 @@ class Menutext(pygame.sprite.Sprite):
             self.images[0].blit(self.textsurface, self.textrect)
             self.images[1].blit(self.textsurface, self.textrect)
             self.images[2].blit(self.textsurface, self.textrect)
-        self.rects = self.images[0].get_rect(center=(self.X, self.Y))
+        self.rects = self.images[0].get_rect(center=self.pos)
         self.event = False
 
 
 class Menuicon(pygame.sprite.Sprite):
-    def __init__(self, images, X, Y, gamescreen, text="", imageresize=0):
-        self.X, self.Y = X, Y
+    def __init__(self, images, pos, text="", imageresize=0):
+        self.pos = pos
         self.images = images
         self.image = self.images[0]
         if imageresize != 0:
@@ -87,7 +82,7 @@ class Menuicon(pygame.sprite.Sprite):
         if text != "":
             self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
             self.textrect = self.textsurface.get_rect(center=self.image.get_rect().center)
-        self.rects = self.image.get_rect(center=(self.X, self.Y))
+        self.rects = self.image.get_rect(center=self.pos)
         self.event = False
 
     def draw(self, gamescreen):
@@ -98,30 +93,30 @@ class Menuicon(pygame.sprite.Sprite):
         if self.rects.collidepoint(mouse_pos):
             self.mouse_over = True
             if mouse_up:
-                self.rects = self.images[2].get_rect(center=(self.X, self.Y))
+                self.rects = self.images[2].get_rect(center=self.pos)
                 self.event = True
                 return self.event
         else:
             self.mouse_over = False
         if self.mouse_over == True:
-            self.rects = self.images[1].get_rect(center=(self.X, self.Y))
+            self.rects = self.images[1].get_rect(center=self.pos)
             self.image = self.images[1]
             # if mouse_up:
         else:
-            self.rects = self.images[0].get_rect(center=(self.X, self.Y))
+            self.rects = self.images[0].get_rect(center=self.pos)
             self.image = self.images[0]
 
 
 class Slidermenu(pygame.sprite.Sprite):
-    def __init__(self, barimage, buttonimage, textimage, X, Y, gamescreen, value, text="", imageresize=0, min_value=0, max_value=100, size=16):
-        self.X, self.Y = X, Y
+    def __init__(self, barimage, buttonimage, textimage, pos, value, text="", imageresize=0, min_value=0, max_value=100, size=16):
+        self.pos = pos
         self.barimage = barimage
         self.buttonimagelist = buttonimage
         self.buttonimage = self.buttonimagelist[0]
         self.textimage_original = pygame.transform.scale(textimage, (int(textimage.get_size()[0] / 2), int(textimage.get_size()[1] / 2)))
         self.textimage = self.textimage_original.copy()
-        self.min_value = self.X - 100
-        self.max_value = self.X + 100
+        self.min_value = self.pos[0] - 100
+        self.max_value = self.pos[0] + 100
         self.text = text
         self.size = size
         self.font = pygame.font.SysFont("timesnewroman", self.size)
@@ -130,14 +125,14 @@ class Slidermenu(pygame.sprite.Sprite):
         self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
         self.textrect = self.textsurface.get_rect(center=self.textimage.get_rect().center)
         self.textimage.blit(self.textsurface, self.textrect)
-        self.mouse_value = self.value + self.X
-        self.rects = self.barimage.get_rect(center=(self.X, self.Y))
+        self.mouse_value = self.value + self.pos[0]
+        self.rects = self.barimage.get_rect(center=self.pos)
         slidersize = self.barimage.get_size()
-        self.textimagerects = self.textimage_original.get_rect(center=(self.X + slidersize[0], self.Y))
+        self.textimagerects = self.textimage_original.get_rect(center=(self.pos[0] + slidersize[0], self.pos[1]))
 
     def draw(self, gamescreen):
         gamescreen.blit(self.barimage, self.rects)
-        self.buttonrects = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.Y))
+        self.buttonrects = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.pos[1]))
         gamescreen.blit(self.buttonimage, self.buttonrects)
         gamescreen.blit(self.textimage, self.textimagerects)
 
@@ -155,9 +150,9 @@ class Slidermenu(pygame.sprite.Sprite):
                 self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(center=self.textimage.get_rect().center)
                 self.textimage.blit(self.textsurface, self.textrect)
-                self.rects = self.barimage.get_rect(center=(self.X, self.Y))
+                self.rects = self.barimage.get_rect(center=self.pos)
                 slidersize = self.barimage.get_size()
-                self.textimagerects = self.textimage_original.get_rect(center=(self.X + slidersize[0], self.Y))
+                self.textimagerects = self.textimage_original.get_rect(center=(self.pos[0] + slidersize[0], self.pos[1]))
                 self.event = True
         else:
             self.mouse_over = False
@@ -198,7 +193,7 @@ def makebarlist(listtodo, menuimage, screen):
         img3 = img2
         barimage = [img, img2, img3]
         # print(bar)
-        bar = Menutext(images=barimage, X=menuimage.X, Y=menuimage.Y * number, gamescreen=screen, text=bar)
+        bar = Menutext(images=barimage, pos=(menuimage.pos[0], menuimage.pos[1] * number), text=bar)
         number += 0.06  # -runnum
         # runnum+=0.01
         barlist.append(bar)
@@ -258,7 +253,8 @@ class Mainmenu():
         if pygame.mixer and not pygame.mixer.get_init():
             print('Warning, no sound')
             pygame.mixer = None
-
+        self.menubutton = pygame.sprite.Group()
+        Menutext.containers = self.menubutton
         # Set the display mode
         self.winstyle = 0  # |FULLSCREEN
         if FULLSCREEN == 1:
@@ -274,31 +270,28 @@ class Mainmenu():
             self.background.blit(bgdtile, (x, 0))
         self.screen.blit(self.background, (0, 0))
         imagelist = load_base_button()
-        self.menubutton = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 2, gamescreen=self.screen, text="START")
-        imagelist = load_base_button()
-        self.menubutton2 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.2, gamescreen=self.screen, text="QUIT")
-        imagelist = load_base_button()
-        self.menubutton3 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.5, gamescreen=self.screen, text="OPTION")
-        imagelist = load_base_button()
-        self.menubutton4 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 1.2, gamescreen=self.screen, text="BACK")
+        self.menubutton = Menutext(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height / 2), text="START")
+        self.menubutton2 = Menutext(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height / 1.2), text="QUIT")
+        self.menubutton3 = Menutext(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height / 1.5), text="OPTION")
+        self.menubutton4 = Menutext(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height / 1.2), text="BACK")
         img = load_image('scroll_normal.jpg', 'ui')
         img2 = img
         img3 = load_image('scroll_click.jpg', 'ui')
         imagelist = [img, img2, img3]
-        self.scrollbar1 = Menutext(images=imagelist, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 2.3, gamescreen=self.screen,
+        self.scrollbar1 = Menutext(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height / 2.3),
                                    text=str(ScreenWidth) + " x " + str(ScreenHeight), size=16)
         resolutionlist = ['1920 x 1080', '1600 x 900', '1366 x 768', '1280 x 720', '1024 x 768', ]
         self.resolutionbar = makebarlist(listtodo=resolutionlist, menuimage=self.scrollbar1, screen=self.screen)
         img = load_image('resolution_icon.png', 'ui')
-        self.resolutionicon = Menuicon(images=[img], X=self.scrollbar1.X - 150, Y=self.scrollbar1.Y, gamescreen=self.screen, imageresize=50)
+        self.resolutionicon = Menuicon(images=[img], pos=(self.scrollbar1.pos[0] - 150, self.scrollbar1.pos[1]), imageresize=50)
         img = load_image('scroller.png', 'ui')
         img2 = load_image('scoll_button_normal.png', 'ui')
         img3 = load_image('scoll_button_click.png', 'ui')
         img4 = load_image('numbervalue_icon.jpg', 'ui')
-        self.sliderbutton1 = Slidermenu(barimage=img, buttonimage=[img2, img3], textimage=img4, X=SCREENRECT.width / 2, Y=SCREENRECT.height / 3,
-                                        gamescreen=self.screen, value=SoundVolume, min_value=0, max_value=100)
+        self.sliderbutton1 = Slidermenu(barimage=img, buttonimage=[img2, img3], textimage=img4, pos=(SCREENRECT.width / 2, SCREENRECT.height / 3),
+                                        value=SoundVolume, min_value=0, max_value=100)
         img = load_image('volume_icon.png', 'ui')
-        self.volumeicon = Menuicon(images=[img], X=self.sliderbutton1.X - 150, Y=self.sliderbutton1.Y, gamescreen=self.screen, imageresize=50)
+        self.volumeicon = Menuicon(images=[img], pos=(self.sliderbutton1.pos[0] - 150, self.sliderbutton1.pos[1]), imageresize=50)
         pygame.display.set_caption('Window of Insight')
         pygame.mouse.set_visible(1)
         if pygame.mixer:

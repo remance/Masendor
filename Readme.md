@@ -1,15 +1,13 @@
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until ver 0.5).
 
-Requires PIL 7.2 module for map filtering effect. Also the game currently use pygame 1.9.6 module and will not work with pygame 2 as there is no plan to upgrade it anytime soon.
+Requires PIL 7.2 module for map filtering effect. Also the game currently use pygame 1.9.6 module and will not work with pygame 2 and there is no plan to upgrade it anytime soon until stable build come out.
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 Plan
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
-
-4.2 Dramatic text
 
 4.3 esc menu
 
