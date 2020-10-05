@@ -136,10 +136,10 @@ class Slidermenu(pygame.sprite.Sprite):
         gamescreen.blit(self.buttonimage, self.buttonrects)
         gamescreen.blit(self.textimage, self.textimagerects)
 
-    def update(self, mouse_pos, mouse_up):
+    def update(self, mouse_pos, mouse_up, mouse_down):
         if self.rects.collidepoint(mouse_pos):
             self.mouse_over = True
-            if mouse_up:
+            if mouse_up or  mouse_down:
                 self.mouse_value = mouse_pos[0]
                 if self.mouse_value > self.max_value:
                     self.mouse_value = self.max_value
@@ -311,14 +311,14 @@ class Mainmenu():
             self.screen.blit(self.background, (0, 0))
             # get input
             mouse_up = False
+            mouse_down = False
             for event in pygame.event.get():
                 if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE) or self.menubutton2.event == True:
                     return
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if pygame.mouse.get_pressed()[0]:
+                    mouse_down = True
+                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  ## left click
                     mouse_up = True
-                    # print(pygame.mouse.get_pos())
-                # elif event.type == MOUSEWHEEL:
-                #    print(event)
             keystate = pygame.key.get_pressed()
             if self.menustate == "mainmenu":
                 self.menubutton.update(pygame.mouse.get_pos(), mouse_up)
@@ -339,7 +339,7 @@ class Mainmenu():
                 self.menubutton4.draw(self.screen)
                 self.scrollbar1.update(pygame.mouse.get_pos(), mouse_up)
                 self.scrollbar1.draw(self.screen)
-                self.sliderbutton1.update(pygame.mouse.get_pos(), mouse_up)
+                self.sliderbutton1.update(pygame.mouse.get_pos(), mouse_up, mouse_down)
                 self.sliderbutton1.draw(self.screen)
                 self.resolutionicon.draw(self.screen)
                 self.volumeicon.draw(self.screen)

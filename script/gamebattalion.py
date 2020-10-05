@@ -439,8 +439,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.stat['speed'].append(squad.speed)
                 self.stat['disci'].append(squad.discipline)
                 self.stat['ammo'].append(squad.ammo)
-                if squad.range > 0:
-                    self.stat['range'].append(squad.range)
+                if squad.shootrange > 0:
+                    self.stat['range'].append(squad.shootrange)
                 squad.combatpos = self.basepos
                 squad.useskillcond = self.useskillcond
                 if squad.charging == True and self.charging != True:

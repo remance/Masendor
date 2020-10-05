@@ -12,7 +12,7 @@ from RTS import maingame
 class Rangearrow(pygame.sprite.Sprite):
     images = []
 
-    def __init__(self, shooter, range, maxrange, viewmode):
+    def __init__(self, shooter, shootrange, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.speed = 150
@@ -26,14 +26,14 @@ class Rangearrow(pygame.sprite.Sprite):
         self.passwho = 0
         self.side = None
         randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 5)  ## randpos1 is for left or right random
-        hitchance = self.accuracy * (100 - ((range * 100 / maxrange)/2))/100 ## the further hitchance from 0 the further arrow will land from target
+        hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 2)) / 100 ## the further hitchance from 0 the further arrow will land from target
         if hitchance == 0: hitchance = 1
         """73 no range penalty, 74 long rance accuracy"""
         if 73 in self.shooter.trait:
             hitchance = self.accuracy
         elif 74 in self.shooter.trait:
-            hitchance = self.accuracy * (100 - ((range * 100 / maxrange)/4))/100 ## range penalty half
-        howlong = range / self.speed
+            hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100 ## range penalty half
+        howlong = shootrange / self.speed
         targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
             targetnow = self.shooter.attacktarget.basepos

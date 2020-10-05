@@ -60,7 +60,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basearmour = armourlist.armourlist[stat[11][0]][1] * (
                     armourlist.quality[stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
         self.baseaccuracy = stat[13]
-        self.baserange = stat[14] * 10
+        self.baserange = stat[14]
         self.ammo = stat[15]
         self.basereload = stat[16]
         self.reloadtime = 0
@@ -193,7 +193,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.unithealth = self.troophealth * self.troopnumber
         self.lasthealthstate, self.laststaminastate = 4, 4
         self.maxmorale = self.basemorale
-        self.attack, self.meleedef, self.rangedef, self.armour, self.speed, self.accuracy, self.reload, self.morale, self.discipline, self.range, self.charge, self.chargedef \
+        self.attack, self.meleedef, self.rangedef, self.armour, self.speed, self.accuracy, self.reload, self.morale, self.discipline, self.shootrange, self.charge, self.chargedef \
             = self.baseattack, self.basemeleedef, self.baserangedef, self.basearmour, self.basespeed, self.baseaccuracy, self.basereload, self.basemorale, self.basediscipline, self.baserange, self.basecharge, self.basechargedef
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
@@ -346,7 +346,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.chargedef = round((self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
         self.speed = round(self.basespeed * self.staminastate / 100, 0)
         self.charge = round((self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2), 0)
-        self.range = self.baserange
+        self.shootrange = self.baserange
         self.criteffect = 100
         self.frontdmgeffect = 100
         self.sidedmgeffect = 100
@@ -357,6 +357,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.inflictstatus = self.baseinflictstatus
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
+        """apply height to range"""
+        self.shootrange = self.shootrange + (self.shootrange * self.battalion.height / 100)
         """apply status effect from trait"""
         if len(self.trait) > 1:
             for trait in self.trait.values():
@@ -416,7 +418,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.rangedef = round(self.rangedef * (self.skilleffect[status][12] / 100), 0)
                 self.speed = round(self.speed * (self.skilleffect[status][13] / 100), 0)
                 self.accuracy = round(self.accuracy * (self.skilleffect[status][14] / 100), 0)
-                self.range = round(self.range * (self.skilleffect[status][15] / 100), 0)
+                self.shootrange = round(self.shootrange * (self.skilleffect[status][15] / 100), 0)
                 self.reload = round(self.reload / (self.skilleffect[status][16] / 100), 0)
                 self.charge = round(self.charge * (self.skilleffect[status][17] / 100), 0)
                 self.chargedef = round(self.chargedef + self.skilleffect[status][18], 0)
@@ -610,7 +612,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.state = 11
             if self.battalion.state == 11:
                 self.state = 0
-                if self.ammo > 0 and self.attackpos != 0 and self.range >= self.attackpos.distance_to(self.combatpos):
+                if self.ammo > 0 and self.attackpos != 0 and self.shootrange >= self.attackpos.distance_to(self.combatpos):
                     # and ((self.attacktarget != 0 and self.pos.distance_to(self.attacktarget.pos) <= shootrange) or self.pos.distance_to(
                     #     self.attackpos) <= shootrange)
                     self.state = 11
@@ -620,7 +622,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         self.battalion.neartarget) > 0:  ## get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
-                    if self.range >= self.attackpos.distance_to(self.combatpos):
+                    if self.shootrange >= self.attackpos.distance_to(self.combatpos):
                         self.state = 11
                         if self.battalion.state in (1, 3, 5):  ## Walk and shoot
                             self.state = 12

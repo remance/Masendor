@@ -195,7 +195,7 @@ class Gameui(pygame.sprite.Sprite):
             self.value = [who.name, str(who.troopnumber) + " (" + str(who.maxtroop) + ")", int(who.stamina), int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
                           int(who.accuracy),
-                          int(who.range), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef,
+                          int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef,
                           who.description]
             self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
             self.description = self.value[-1]

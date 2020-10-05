@@ -47,4 +47,4 @@ ver 1.7: leader rapport and affect on authority and control mechanic including s
 
 Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon, ), dynamic squad facing position and maybe "saved" formation that player can rotate in battle 
 
-Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command
+Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command, order dalay?

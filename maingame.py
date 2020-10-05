@@ -20,6 +20,8 @@ from pygame.transform import scale
 from RTS import mainmenu
 from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gameescmenu
 
+config = mainmenu.config
+SoundVolume = mainmenu.SoundVolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
@@ -221,7 +223,7 @@ class Battle():
         gameui.Skillcardicon.cooldown = cooldown
         self.gameunitstat = gamebattalion.Unitstat()
         ## create leader list
-        imgsold = load_images(['leader', 'historic'])
+        imgsold = load_images(['leader', 'historic', 'portrait'],loadorder=False)
         imgs = []
         for img in imgsold:
             x, y = img.get_width(), img.get_height()
@@ -302,6 +304,9 @@ class Battle():
         self.textdrama = pygame.sprite.Group()
         self.battlemenu = pygame.sprite.Group()
         self.battlemenubutton = pygame.sprite.Group()
+        self.optionmenubutton = pygame.sprite.Group()
+        self.slidermenu = pygame.sprite.Group()
+        self.valuebox = pygame.sprite.Group()
         """assign default groups"""
         gamemap.Basemap.containers = self.battlemap, self.mapupdater
         gamemap.Mapfeature.containers = self.battlemapfeature, self.mapupdater
@@ -327,7 +332,9 @@ class Battle():
         gamepopup.Effecticonpopup.containers = self.effectpopup
         gamedrama.Textdrama.containers = self.textdrama
         gameescmenu.Menubox.containers = self.battlemenu
-        gameescmenu.Menubutton.containers = self.battlemenubutton
+        gameescmenu.Menubutton.containers = self.battlemenubutton, self.optionmenubutton
+        gameescmenu.Slidermenu.containers = self.slidermenu
+        gameescmenu.Valuebox.containers = self.valuebox
         ## create the background map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
@@ -418,6 +425,12 @@ class Battle():
                                 gameescmenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1]), text="Option", size=14),
                                 gameescmenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1]+50), text="Main Menu", size=14),
                                 gameescmenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1]+100), text="Desktop", size=14)]
+        self.optionmenubutton = [gameescmenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0]-50, self.battlemenu.rect.center[1]+70), text="Confirm", size=14),
+                                gameescmenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0]+50, self.battlemenu.rect.center[1]+70), text="Apply", size=14),
+                                gameescmenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0]+150, self.battlemenu.rect.center[1]+70), text="Cancel", size=14)]
+        sliderimage = load_images(['ui','battlemenu_ui','slider'], loadorder=False)
+        self.slidermenu = [gameescmenu.Slidermenu(sliderimage[0], sliderimage[1:3], (self.battlemenu.rect.center[0]*1.1, self.battlemenu.rect.center[1]), SoundVolume, 0)]
+        self.valuebox = [gameescmenu.Valuebox(sliderimage[3], (self.battlemenu.rect.topright[0]*1.2, self.battlemenu.rect.center[1]), SoundVolume)]
         """initialise starting unit sprites"""
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
@@ -947,6 +960,7 @@ class Battle():
             keypress = None
             self.mousepos = pygame.mouse.get_pos()
             mouse_up = False
+            mouse_down = False
             mouse_right = False
             double_mouse_right = False
             keystate = pygame.key.get_pressed()
@@ -963,9 +977,15 @@ class Battle():
                         self.allui.add(*self.battlemenubutton)
                     else:
                         self.gamestate = 1
+                        self.battlemenu.changemode(0)
                         self.allui.remove(self.battlemenu)
                         self.allui.remove(*self.battlemenubutton)
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1: ## left click
+                        self.allui.remove(*self.optionmenubutton)
+                        self.allui.remove(*self.slidermenu)
+                        self.allui.remove(*self.valuebox)
+                if pygame.mouse.get_pressed()[0]: ## Hold left click
+                    mouse_down = True
+                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1: ## left click
                     mouse_up = True
                 if self.gamestate == 1:
                     if event.type == pygame.MOUSEBUTTONUP:
@@ -1012,8 +1032,18 @@ class Battle():
                         elif event.key == pygame.K_l and self.lastselected is not None:
                             for squad in whoinput.squadsprite:
                                 squad.basemorale = 0
-                        elif event.key == pygame.K_q:
-                            self.textdrama.queue.append('THIS IS A DRAMATIC TEXT')
+                        elif event.key == pygame.K_1:
+                            self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        elif event.key == pygame.K_2:
+                            self.textdrama.queue.append('Showcase: Basic ESC menu and option')
+                        # elif event.key == pygame.K_3:
+                        #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        # elif event.key == pygame.K_4:
+                        #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        # elif event.key == pygame.K_5:
+                        #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        # elif event.key == pygame.K_6:
+                        #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         else:
                             keypress = event.key
                 if event.type == self.SONG_END:
@@ -1400,7 +1430,7 @@ class Battle():
                                 thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
                             if thissquad.reloadtime >= thissquad.reload and (
                                     (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
-                                rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.range, self.camerascale)
+                                rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.shootrange, self.camerascale)
                                 thissquad.ammo -= 1
                                 thissquad.reloadtime = 0
                             elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
@@ -1418,31 +1448,72 @@ class Battle():
                 if self.gamespeed == 0:
                     self.dt = 0
             else:
-                for button in self.battlemenubutton:
-                    if button.rect.collidepoint(self.mousepos):
-                        button.image = button.images[1]
-                        if mouse_up:
-                            button.image = button.images[2]
-                            if button.text == "Resume":
-                                self.gamestate = 1
-                                self.allui.remove(self.battlemenu)
-                                self.allui.remove(*self.battlemenubutton)
-                            # elif button.text == "Encyclopedia":
-                            #
-                            # elif button.text == "Option":
-                            #
-                            elif button.text == "Main Menu":
-                                print('test')
-                                self.allui.clear(self.screen, self.background)
-                                self.allcamera.clear(self.screen, self.background)
-                                return
-                            elif button.text == "Desktop":
-                                self.allui.clear(self.screen, self.background)
-                                self.allcamera.clear(self.screen, self.background)
-                                quit()
-                            break
-                    else:
-                        button.image = button.images[0]
+                if self.battlemenu.mode == 0:
+                    for button in self.battlemenubutton:
+                        if button.rect.collidepoint(self.mousepos):
+                            button.image = button.images[1]
+                            if mouse_up:
+                                button.image = button.images[2]
+                                if button.text == "Resume":
+                                    self.gamestate = 1
+                                    self.allui.remove(self.battlemenu)
+                                    self.allui.remove(*self.battlemenubutton)
+                                    self.allui.remove(*self.slidermenu)
+                                    self.allui.remove(*self.valuebox)
+                                # elif button.text == "Encyclopedia":
+                                #self.battlemenu.changemode(2)
+                                elif button.text == "Option":
+                                    self.battlemenu.changemode(1)
+                                    self.allui.remove(*self.battlemenubutton)
+                                    self.allui.add(*self.optionmenubutton)
+                                    self.allui.add(*self.slidermenu)
+                                    self.allui.add(*self.valuebox)
+                                    self.oldsetting = self.slidermenu[0].value ## Save previous setting for in case of cancel
+                                elif button.text == "Main Menu":
+                                    self.allui.clear(self.screen, self.background)
+                                    self.allcamera.clear(self.screen, self.background)
+                                    return
+                                elif button.text == "Desktop":
+                                    self.allui.clear(self.screen, self.background)
+                                    self.allcamera.clear(self.screen, self.background)
+                                    quit()
+                                break
+                        else:
+                            button.image = button.images[0]
+                elif self.battlemenu.mode == 1:
+                    for button in self.optionmenubutton:
+                        if button.rect.collidepoint(self.mousepos):
+                            button.image = button.images[1]
+                            if mouse_up:
+                                button.image = button.images[2]
+                                if button.text == "Confirm":
+                                    self.oldsetting = self.mixervolume
+                                    pygame.mixer.music.set_volume(self.mixervolume)
+                                    mainmenu.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
+                                    self.battlemenu.changemode(0)
+                                    self.allui.remove(*self.optionmenubutton)
+                                    self.allui.remove(*self.slidermenu)
+                                    self.allui.remove(*self.valuebox)
+                                    self.allui.add(*self.battlemenubutton)
+                                elif button.text == "Apply":
+                                    self.oldsetting = self.mixervolume
+                                    pygame.mixer.music.set_volume(self.mixervolume)
+                                    mainmenu.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
+                                elif button.text == "Cancel":
+                                    self.mixervolume = self.oldsetting
+                                    pygame.mixer.music.set_volume(self.mixervolume)
+                                    self.slidermenu[0].update(self.mixervolume, self.valuebox[0], forcedvalue=True)
+                                    self.battlemenu.changemode(0)
+                                    self.allui.remove(*self.optionmenubutton)
+                                    self.allui.remove(*self.slidermenu)
+                                    self.allui.remove(*self.valuebox)
+                                    self.allui.add(*self.battlemenubutton)
+                        else:
+                            button.image = button.images[0]
+                    for slider in self.slidermenu:
+                        if slider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):
+                            slider.update(self.mousepos, self.valuebox[0])
+                            self.mixervolume = float(slider.value / 100)
             self.screen.blit(self.camera.image, (0,0))
             self.allui.draw(self.screen)  ## Draw the scene
             # pygame.display.update(dirty)
