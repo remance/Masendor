@@ -85,3 +85,15 @@ while aa < 10000:
         pass
     aa += 1
 print("The time difference is :", timeit.default_timer() - starttime)
+
+import re
+imgs = []
+dirpath = os.path.join(main_dir, 'data')
+subfolder = ['leader', 'historic', 'portrait']
+for folder in subfolder:
+    dirpath = os.path.join(dirpath, folder)
+filelist = os.listdir(dirpath)
+filelist.sort(key=lambda var:[int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
+loadorder = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]
+print(loadorder)
+print(filelist)

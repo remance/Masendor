@@ -1,5 +1,8 @@
 """
 still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
+## Known problem
+battalion sometimes go through enemy sprite to the pos center
+Hitbox still behave weirdly in melee combat
 Optimise list
 remove index and change call to the sprite itself
 maybe all base pos stuff should be in smallest map pos including all calculation? should help reduce ram and cpu usage when zoom in/out, also maybe delete map.image when not shown and recreate it when change
@@ -10,6 +13,7 @@ import glob
 import os
 import os.path
 import random
+import re
 
 import numpy as np
 import pygame
@@ -44,13 +48,14 @@ def load_images(subfolder=[], loadorder=True):
         for folder in subfolder:
             dirpath = os.path.join(dirpath, folder)
     if loadorder == True:
-        loadorder = open(dirpath + "/load_order.txt", "r")
-        loadorder = ast.literal_eval(loadorder.read())
-        for file in loadorder:
+        loadorderfile = open(dirpath + "/load_order.txt", "r")
+        loadorderfile = ast.literal_eval(loadorderfile.read())
+        for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
     else:
-        loadorder = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
-        for file in loadorder:
+        loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
+        loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
+        for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
     return imgs
 
@@ -739,10 +744,10 @@ class Battle():
         who.changescale()
         who.height = who.gamemapheight.getheight(who.basepos)
         for thishitbox in who.hitbox: thishitbox.kill()
-        who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - 10, 1),
-                      gamebattalion.Hitbox(who, 1, 1, who.rect.height - 10),
-                      gamebattalion.Hitbox(who, 2, 1, who.rect.height - 10),
-                      gamebattalion.Hitbox(who, 3, who.rect.width - 10, 1)]
+        who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - (who.rect.width*0.1), 1),
+                      gamebattalion.Hitbox(who, 1, 1, who.rect.height - (who.rect.height*0.1)),
+                      gamebattalion.Hitbox(who, 2, 1, who.rect.height - (who.rect.height*0.1)),
+                      gamebattalion.Hitbox(who, 3, who.rect.width - (who.rect.width*0.1), 1)]
         who.rotate()
         who.newangle = who.angle
         ## need to recal max stat again for the original battalion
@@ -807,49 +812,11 @@ class Battle():
         army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
         army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                             army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-        army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width, 1),
-                       gamebattalion.Hitbox(army, 1, 1, army.rect.height - 5),
-                       gamebattalion.Hitbox(army, 2, 1, army.rect.height - 5),
-                       gamebattalion.Hitbox(army, 3, army.rect.width, 1)]
+        army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - (army.rect.width*0.1), 1),
+                       gamebattalion.Hitbox(army, 1, 1, army.rect.height  - (army.rect.height*0.1)),
+                       gamebattalion.Hitbox(army, 2, 1, army.rect.height - (army.rect.height*0.1)),
+                       gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width*0.1), 1)]
         army.autosquadplace = False
-
-    def changefaction(self, who): ## TODO move this to gamebattalion
-        """Change army group and gameid when change side"""
-        oldgroup = self.enemyarmy
-        newgroup = self.playerarmy
-        oldposlist = self.enemyposlist
-        who.colour = (144, 167, 255)
-        who.control = True
-        if who.gameid < 2000:
-            oldgroup = self.playerarmy
-            newgroup = self.enemyarmy
-            oldposlist = self.playerposlist
-            who.colour = (255, 114, 114)
-            if self.enactment == False:
-                who.control = False
-        newgameid = newgroup[-1].gameid + 1
-        oldgroup.remove(who)
-        newgroup.append(who)
-        oldposlist.pop(who.gameid)
-        self.allunitindex = [newgameid if index == who.gameid else index for index in self.allunitindex]
-        who.gameid = newgameid
-        who.recreatesprite()
-
-    def die(self, who, group, deadgroup, rendergroup, hitboxgroup): ## TODO move this to gamebattalion
-        """remove battalion,hitbox when it dies"""
-        self.deadindex += 1
-        if who.commander == True:  ## more morale penalty if the battalion is a command battalion
-            for army in group:
-                for squad in army.squadsprite:
-                    squad.basemorale -= 30
-        for hitbox in who.hitbox:
-            rendergroup.remove(hitbox)
-            hitboxgroup.remove(hitbox)
-            hitbox.kill()
-        group.remove(who)
-        deadgroup.add(who)
-        rendergroup.change_layer(sprite=who, new_layer=1)
-        who.gotkilled = 1
 
     def checksplit(self, whoinput):
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
@@ -1029,9 +996,7 @@ class Battle():
                         elif event.key == pygame.K_SPACE and self.lastselected is not None:
                             whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                             self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
-                        elif event.key == pygame.K_l and self.lastselected is not None:
-                            for squad in whoinput.squadsprite:
-                                squad.basemorale = 0
+                        ### FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         elif event.key == pygame.K_2:
@@ -1044,6 +1009,14 @@ class Battle():
                         #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         # elif event.key == pygame.K_6:
                         #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        elif event.key == pygame.K_k and self.lastselected != 0:
+                            if whoinput.gameid < 2000:
+                                self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex, self.enactment)
+                            else:
+                                self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex, self.enactment)
+                        elif event.key == pygame.K_l and self.lastselected is not None:
+                            for squad in whoinput.squadsprite:
+                                squad.basemorale = 0
                         else:
                             keypress = event.key
                 if event.type == self.SONG_END:
@@ -1148,7 +1121,10 @@ class Battle():
                     else:
                         army.mouse_over = False
                     if army.changefaction == True:  ## change side via surrender or betrayal
-                        self.changefaction(army)
+                        if army.gameid < 2000:
+                            self.allunitindex = army.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex, self.enactment)
+                        else:
+                            self.allunitindex = army.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex, self.enactment)
                         army.changefaction = False
                     if army.state == 100 and army.gotkilled == 0:
                         if army.gameid < 2000:

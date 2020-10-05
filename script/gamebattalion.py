@@ -655,7 +655,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.viewmode != 1:
                     if self.oldarmyhealth != self.troopnumber:
                         if self.troopnumber > self.health75:
-                            if self.lasthealthstate != 4:
+                            if self.lasthealthstate != 4: ## Cannot use and on this if elif
                                 self.healthimage = self.images[0]
                                 self.image_original3.blit(self.healthimage, self.healthimagerect)
                                 self.lasthealthstate = 4
@@ -779,30 +779,34 @@ class Unitarmy(pygame.sprite.Sprite):
                         if 9 not in squad.statuseffect:
                             squad.statuseffect[9] = self.gameunitstat.statuslist[9].copy()
                     if random.randint(0, 100) > 99: self.changefaction = True
-                """only start retreating when ready"""
-                if self.retreattimer > 0:
-                    self.retreattimer += dt
-                if self.retreatstart == 1 and 0 in self.battleside:
-                    retreatside = [hitbox.side for hitbox in self.hitbox if hitbox.collide == 0]
-                    self.retreatmax = (4 - len(retreatside)) * 2
-                    # print("count", self.retreattimer, self.retreatmax, retreatside)
-                    if self.retreattimer >= self.retreatmax:
-                        if self.state in (98,99):
-                            if self.retreatway is None or self.retreatway[1] not in retreatside:
-                                getrandom = random.randint(0, len(retreatside) - 1)
-                                self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
-                                target = self.basepos + (self.retreatway[0] - self.basepos)
-                                if target[0] < self.basepos[0] and target[0] > 0: target[0] *= -100
-                                else:target[0] *= 100
-                                if target[1] < self.basepos[1] and target[1] > 0: target[1] *= -100
-                                else:target[1] *= 100
-                                self.set_target(target)
-                            self.combatcheck = 0
-                        self.retreattimer = self.retreatmax
             elif self.state in (98,99) and self.morale >= 20: ## state become normal again when morale reach 20
                 self.state = 0
                 self.retreattimer = 0
                 self.retreatstart = 0
+            """only start retreating when ready"""
+            if self.retreattimer > 0:
+                self.retreattimer += dt
+            if self.retreatstart == 1 and 0 in self.battleside:
+                retreatside = [hitbox.side for hitbox in self.hitbox if hitbox.collide == 0]
+                self.retreatmax = (4 - len(retreatside)) * 2
+                # print("count", self.retreattimer, self.retreatmax, retreatside)
+                if self.retreattimer >= self.retreatmax:
+                    if self.state in (98, 99):
+                        if self.retreatway is None or self.retreatway[1] not in retreatside:
+                            getrandom = random.randint(0, len(retreatside) - 1)
+                            self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
+                            target = self.basepos + (self.retreatway[0] - self.basepos)
+                            if target[0] < self.basepos[0] and target[0] > 0:
+                                target[0] *= -100
+                            else:
+                                target[0] *= 100
+                            if target[1] < self.basepos[1] and target[1] > 0:
+                                target[1] *= -100
+                            else:
+                                target[1] *= 100
+                            self.set_target(target)
+                        self.combatcheck = 0
+                    self.retreattimer = self.retreatmax
             if self.hold == 1: ## skirmishing
                 minrange = self.minrange
                 if minrange == 0: minrange = 100
@@ -868,17 +872,19 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.allsidepos[0] != self.basetarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
-                if self.state in (0, 3, 4, 5,6,10) and self.attacktarget != 0 \
+                if self.state in (0, 3, 4, 5,6, 10) and self.attacktarget != 0 \
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for hitbox in self.hitbox:
                         if hitbox.collide != 0: cantchase = True
                     if cantchase == False and self.forcedmelee == True:
+                        print('test')
                         self.state = self.commandstate
                         self.set_target(self.attacktarget.basepos)
                         self.setrotate(self.target, instant=True)
                 """check for hitbox collide according to which ever closest to the target position"""
                 if self.state not in (0, 97) and self.stamina > 0 and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax):
+                    if self.retreattimer > 0: print(self.retreattimer, self.retreatmax)
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
@@ -994,6 +1000,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.state = 1
         self.rotateonly = False
         self.forcedmelee = False
+        if self.ammo <= 0: self.a = True
         self.attacktarget = 0
         self.baseattackpos = 0
         self.attackpos = 0
@@ -1062,6 +1069,40 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.commandtarget = self.target
                 self.rangecombatcheck = 0
                 self.setrotate()
+
+    def switchfaction(self, oldgroup, newgroup, oldposlist, allunitindex, enactment):
+        """Change army group and gameid when change side"""
+        self.colour = (144, 167, 255)
+        self.control = True
+        if self.gameid < 2000:
+            self.colour = (255, 114, 114)
+            if enactment == False:
+                self.control = False
+        newgameid = newgroup[-1].gameid + 1
+        oldgroup.remove(self)
+        newgroup.append(self)
+        oldposlist.pop(self.gameid)
+        allunitindex = [newgameid if index == self.gameid else index for index in allunitindex]
+        self.gameid = newgameid
+        self.recreatesprite()
+        self.changescale()
+        return allunitindex
+
+    def die(self, deadindex, who, group, deadgroup, rendergroup, hitboxgroup):
+        """remove battalion,hitbox when it dies"""
+        deadindex += 1
+        if who.commander == True:  ## more morale penalty if the battalion is a command battalion
+            for army in group:
+                for squad in army.squadsprite:
+                    squad.basemorale -= 30
+        for hitbox in who.hitbox:
+            rendergroup.remove(hitbox)
+            hitboxgroup.remove(hitbox)
+            hitbox.kill()
+        group.remove(who)
+        deadgroup.add(who)
+        rendergroup.change_layer(sprite=who, new_layer=1)
+        who.gotkilled = 1
 
 
 class Deadarmy(pygame.sprite.Sprite):
