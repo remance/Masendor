@@ -440,3 +440,75 @@ class Minimap(pygame.sprite.Sprite):
                 self.image.blit(self.enemydot, rect)
             pygame.draw.rect(self.image, (0, 0, 0), (camerapos[1][0] / 5 / viewmode, camerapos[1][1] / 5 / viewmode,
                 self.cameraborder[0] * 10 / viewmode / 50, self.cameraborder[1] * 10 / viewmode  / 50), 2)
+
+class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if having it scrollable
+
+    def __init__(self, image, pos):
+        self._layer = 8
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", 16)
+        self.mode = 0
+        self.image = image
+        self.image_original = self.image.copy()
+        self.battlelog = []
+        self.battalionlog = []
+        self.leaderlog = []
+        self.squadlog = []
+        self.rect = self.image.get_rect(bottomleft=pos)
+        self.currentstartrow = 0
+        self.maxrowshow = 9
+        self.lencheck = 0
+
+    def changemode(self, mode):
+        self.mode = mode
+        self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
+        self.currentstartrow = self.lencheck - self.maxrowshow
+        self.recreateimage((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
+
+    def recreateimage(self):
+        thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
+        self.image = self.image_original.copy()
+        row = 10
+        for index, text in enumerate(thislog[self.currentstartrow:]):
+            if index == self.maxrowshow: break
+            textsurface = self.font.render(text[1], 1, (0, 0, 0))
+            textrect = textsurface.get_rect(topleft=(50, row))
+            self.image.blit(textsurface, textrect)
+            row += 20
+
+    def addlog(self, log, modelist):
+        """Add log to appropiate event log, the log must be in list format following this rule [who (gameid), logtext]"""
+        imagechange = False
+        atlastrow = False
+        if self.currentstartrow + self.maxrowshow >= self.lencheck:
+            atlastrow = True
+        for mode in modelist:
+            thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode]
+            textoutput = ": " + log[1]
+            if len(textoutput) <= 47:
+                thislog.append([log[0], textoutput])
+            else:  ## Cut the text log into multiple row
+                cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
+                howmanyloop = len(textoutput) / 47
+                if howmanyloop.is_integer() == False:
+                    howmanyloop = int(howmanyloop) + 1
+                startingindex = 0
+                for run in range(1, howmanyloop + 1):
+                    textcutnumber = [number for number in cutspace if number <= run * 47]
+                    cutnumber = textcutnumber[-1]
+                    finaltextoutput = textoutput[startingindex:cutnumber]
+                    if run == howmanyloop:
+                        finaltextoutput = textoutput[startingindex:]
+                    if run == 1:
+                        thislog.append([log[0], finaltextoutput])
+                    else: thislog.append([-1, finaltextoutput])
+                    startingindex = cutnumber + 1
+            if len(thislog) > 1000:
+                del thislog[0]
+            if mode == self.mode:
+                imagechange = True
+        if imagechange == True:
+            self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
+            if atlastrow == True and self.lencheck > 9:
+                self.currentstartrow = self.lencheck - self.maxrowshow
+            self.recreateimage()

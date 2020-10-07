@@ -261,7 +261,6 @@ class Battle():
         # pygame.display.set_icon(icon)
         pygame.display.set_caption('Masendor RTS')
         pygame.mouse.set_visible(1)
-
         # #load the sound effects
         # boom_sound = load_sound('boom.wav')
         # shoot_sound = load_sound('car_door.wav')
@@ -295,6 +294,7 @@ class Battle():
         self.deadunit = pygame.sprite.Group()
         self.gameui = pygame.sprite.Group()
         self.minimap = pygame.sprite.Group()
+        self.eventlog = pygame.sprite.Group()
         self.buttonui = pygame.sprite.Group()
         self.squadselectedborder = pygame.sprite.Group()
         self.fpscount = pygame.sprite.Group()
@@ -332,6 +332,7 @@ class Battle():
         gameui.Selectedsquad.containers = self.squadselectedborder
         gameui.Skillcardicon.containers = self.traiticon, self.skillicon, self.allui
         gameui.Effectcardicon.containers = self.effecticon, self.allui
+        gameui.Eventlog.containers = self.eventlog, self.allui
         gamepopup.Terrainpopup.containers = self.terraincheck
         gamepopup.Onelinepopup.containers = self.buttonnamepopup, self.leaderpopup
         gamepopup.Effecticonpopup.containers = self.effectpopup
@@ -416,6 +417,7 @@ class Battle():
                                gameui.Switchuibutton(self.gameui[1].X - 30, self.gameui[1].Y + 96, topimage[15:17]),
                                gameui.Switchuibutton(self.gameui[1].X, self.gameui[1].Y + 96, topimage[17:20]),
                                gameui.Switchuibutton(self.gameui[1].X + 40, self.gameui[1].Y + 96, topimage[20:22])]
+        self.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
         self.squadselectedborder = gameui.Selectedsquad(topimage[-1])
         self.terraincheck = gamepopup.Terrainpopup()
         self.buttonnamepopup = gamepopup.Onelinepopup()
@@ -966,19 +968,31 @@ class Battle():
                                 double_mouse_right = True
                                 self.timer = 0
                         elif event.button == 4:
-                            self.camerascale += 1
-                            if self.camerascale > 10: self.camerascale = 10
-                            else:
-                                self.camerapos[0] = self.basecamerapos[0] *  self.camerascale
-                                self.camerapos[1] = self.basecamerapos[1] *  self.camerascale
-                                self.mapshown.changescale(self.camerascale)
+                            if self.eventlog.rect.collidepoint(self.mousepos): ## Scrolling when mouse at event log
+                                self.eventlog.currentstartrow -= 1
+                                if self.eventlog.currentstartrow < 0: self.eventlog.currentstartrow = 0
+                                else: self.eventlog.recreateimage()
+                            else: ## Scrolling in game map to zoom
+                                self.camerascale += 1
+                                if self.camerascale > 10: self.camerascale = 10
+                                else:
+                                    self.camerapos[0] = self.basecamerapos[0] *  self.camerascale
+                                    self.camerapos[1] = self.basecamerapos[1] *  self.camerascale
+                                    self.mapshown.changescale(self.camerascale)
                         elif event.button == 5:
-                            self.camerascale -= 1
-                            if self.camerascale < 1: self.camerascale = 1
-                            else:
-                                self.camerapos[0] = self.basecamerapos[0] *  self.camerascale
-                                self.camerapos[1] = self.basecamerapos[1] *  self.camerascale
-                                self.mapshown.changescale(self.camerascale)
+                            if self.eventlog.rect.collidepoint(self.mousepos): ## Scrolling when mouse at event log
+                                self.eventlog.currentstartrow += 1
+                                if self.eventlog.currentstartrow + self.eventlog.maxrowshow - 1 < self.eventlog.lencheck and self.eventlog.lencheck > 9:
+                                    self.eventlog.recreateimage()
+                                else:
+                                    self.eventlog.currentstartrow -= 1
+                            else: ## Scrolling in game map to zoom
+                                self.camerascale -= 1
+                                if self.camerascale < 1: self.camerascale = 1
+                                else:
+                                    self.camerapos[0] = self.basecamerapos[0] *  self.camerascale
+                                    self.camerapos[1] = self.basecamerapos[1] *  self.camerascale
+                                    self.mapshown.changescale(self.camerascale)
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_TAB:
                             if self.mapviewmode == 0: ## Currently in normal mode
@@ -1001,10 +1015,10 @@ class Battle():
                             self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         elif event.key == pygame.K_2:
                             self.textdrama.queue.append('Showcase: Basic ESC menu and option')
-                        # elif event.key == pygame.K_3:
-                        #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
-                        # elif event.key == pygame.K_4:
-                        #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        elif event.key == pygame.K_3:
+                            self.eventlog.addlog([0, "William the Conquerer is killed in melee combat, We are losing morale extremely fast, Run now or die we can't win this battle"], [0])
+                        elif event.key == pygame.K_4:
+                            self.eventlog.addlog([0, "Enemy number is now lower than half"], [0])
                         # elif event.key == pygame.K_5:
                         #     self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         # elif event.key == pygame.K_6:
