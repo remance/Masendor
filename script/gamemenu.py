@@ -60,7 +60,7 @@ class Slidermenu(pygame.sprite.Sprite):
 
     def update(self, mouse_pos, valuebox, forcedvalue = False):
         if forcedvalue is False:
-            self.mouse_value = self.pos[0] + (mouse_pos[0] - self.pos[0])
+            self.mouse_value = mouse_pos[0]
             if self.mouse_value > self.max_value:
                 self.mouse_value = self.max_value
             if self.mouse_value < self.min_value:

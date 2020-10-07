@@ -424,7 +424,6 @@ class Minimap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomright=(self.X, self.Y))
 
     def update(self, viewmode, camerapos, playerposlist, enemyposlist):
-        # print(self.playerpos != playerposlist.values(), self.playerpos, playerposlist.values())
         if self.playerpos != playerposlist.values() or self.enemypos != enemyposlist.values() or self.camerapos != camerapos or self.lastscale != viewmode:
             self.playerpos = playerposlist.values()
             self.enemypos = enemyposlist.values()
@@ -441,12 +440,13 @@ class Minimap(pygame.sprite.Sprite):
             pygame.draw.rect(self.image, (0, 0, 0), (camerapos[1][0] / 5 / viewmode, camerapos[1][1] / 5 / viewmode,
                 self.cameraborder[0] * 10 / viewmode / 50, self.cameraborder[1] * 10 / viewmode  / 50), 2)
 
-class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if having it scrollable
+class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
 
     def __init__(self, image, pos):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", 16)
+        self.pos = pos
         self.mode = 0
         self.image = image
         self.image_original = self.image.copy()
@@ -454,16 +454,21 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
         self.battalionlog = []
         self.leaderlog = []
         self.squadlog = []
-        self.rect = self.image.get_rect(bottomleft=pos)
+        self.rect = self.image.get_rect(bottomleft=self.pos)
         self.currentstartrow = 0
         self.maxrowshow = 9
         self.lencheck = 0
+        self.logscroll = None ## Link from maingame after creation of both object
 
     def changemode(self, mode):
         self.mode = mode
         self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
-        self.currentstartrow = self.lencheck - self.maxrowshow
-        self.recreateimage((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
+        self.currentstartrow = 0
+        if self.lencheck > self.maxrowshow:
+            self.currentstartrow = self.lencheck - self.maxrowshow
+        self.logscroll.currentrow = self.currentstartrow
+        self.logscroll.changeimage(logsize=self.lencheck)
+        self.recreateimage()
 
     def recreateimage(self):
         thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
@@ -511,4 +516,56 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
             self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
             if atlastrow == True and self.lencheck > 9:
                 self.currentstartrow = self.lencheck - self.maxrowshow
+                self.logscroll.currentrow = self.currentstartrow
+            self.logscroll.changeimage(logsize=self.lencheck)
             self.recreateimage()
+
+class Logscroller(pygame.sprite.Sprite):
+    def __init__(self, pos, uiheight, maxrowshow):
+        self._layer = 9
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.uiheight = uiheight
+        self.pos = pos
+        self.image = pygame.Surface((15, self.uiheight))
+        self.image.fill((255,255,255))
+        self.image_original = self.image.copy()
+        self.buttoncolour = (200,100,0)
+        pygame.draw.rect(self.image, self.buttoncolour, (0, 0, self.image.get_width(), self.uiheight))
+        self.rect = self.image.get_rect(topright=self.pos)
+        self.currentrow = 0
+        self.maxrowshow = maxrowshow
+        self.logsize = 0
+
+    def newimagecreate(self):
+        percentrow = 0
+        maxrow = 100
+        self.image = self.image_original.copy()
+        if self.logsize > 0:
+            percentrow = self.currentrow * 100 / self.logsize
+        # if self.currentrow + self.maxrowshow < self.logsize:
+        if self.logsize > 0:
+            maxrow = (self.currentrow + self.maxrowshow) * 100 / self.logsize
+        maxrow = maxrow - percentrow
+        pygame.draw.rect(self.image, self.buttoncolour, (0, int(self.uiheight * percentrow / 100), self.image.get_width(), int(self.uiheight * maxrow / 100)))
+
+    def changeimage(self, newrow = None, logsize = None):
+        """New row is input of scrolling by user to new row, logsize is changing based on adding more log or clear"""
+        if logsize is not None and self.logsize != logsize:
+            self.logsize = logsize
+            self.newimagecreate()
+        elif newrow is not None and self.currentrow != newrow: ## Accept from both wheeling scroll and drag scroll bar
+            self.currentrow = newrow
+            self.newimagecreate()
+
+    def update(self, mouse_pos):
+            """User input update"""
+            self.mouse_value = (mouse_pos[1] - self.pos[1]) * 100 / self.uiheight ## Find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
+            if self.mouse_value > 100:
+                self.mouse_value = 100
+            if self.mouse_value < 0:
+                self.mouse_value = 0
+            newrow = int(self.logsize * self.mouse_value / 100)
+            if self.logsize > self.maxrowshow and newrow > self.logsize - self.maxrowshow:
+                newrow = self.logsize - self.maxrowshow
+            self.changeimage(newrow)
+            return self.currentrow

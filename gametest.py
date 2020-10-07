@@ -69,19 +69,13 @@ import numpy as np
 #         if len(n)>50:
 import pygame
 
-class Test():
-    def __init__(self):
-        self.trait = {5:[55], 16:[51], 19:[556]}
-        self.ignoredef = True
-
 import timeit
-hey = Test()
-
+test = (500,500)
 starttime = timeit.default_timer()
 print("The start time is :",starttime)
-aa = 0
-while aa < 10000:
-    if 1 in hey.trait:
-        pass
-    aa += 1
+if test[0] in range(0,1000) and test[1] in range(0,1000):
+    print('hey')
 print("The time difference is :", timeit.default_timer() - starttime)
+# 2.56590000000112e-05
+# 2.9509000000010888e-05
+# 2.0954999999989177e-05
