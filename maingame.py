@@ -87,6 +87,12 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
               enactment=False):
     """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+    letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
+    numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")
+    boardpos = []
+    for dd in numberboard:
+        for ll in letterboard:
+            boardpos.append(ll + dd)
     squadindexlist = []
     unitlist = []
     playercolour = (144, 167, 255)
@@ -140,6 +146,8 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                                                    statlist=gameunitstat,
                                                    battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=inspectuipos)
                     squad.append(addsquad)
+                    addsquad.boardpos = boardpos[armysquadindex]
+                    print(addsquad.boardpos, armysquadindex)
                     squadnum[...] = squadgameid
                     army.squadsprite.append(addsquad)
                     squadindexlist.append(squadgameid)
@@ -422,12 +430,17 @@ class Battle():
         self.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
         self.logscroll = gameui.Logscroller(self.eventlog.rect.topright, topimage[23].get_height(), self.eventlog.maxrowshow)
         self.eventlog.logscroll = self.logscroll ## Link scroller to ui since it is easier to do here with the current order
+        ### Assign eventlog to unit class to broadcast event to the log
+        gamesquad.Unitsquad.eventlog = self.eventlog
+        ###
         self.buttonui.append(gameui.Uibutton(self.eventlog.pos[0] + (topimage[24].get_width()/2), self.eventlog.pos[1] - self.eventlog.image.get_height() - (topimage[24].get_height()/2), topimage[24], 0))
         self.buttonui += [gameui.Uibutton(self.buttonui[8].pos[0] + topimage[24].get_width(), self.buttonui[8].pos[1], topimage[25], 1),
                         gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 2), self.buttonui[8].pos[1], topimage[26],2),
-                        gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 3), self.buttonui[8].pos[1], topimage[27],3)]
-        self.allui.add(self.buttonui[8:12])
-        self.screenbuttonlist = self.buttonui[8:12] ## List of button always on screen (for now just eventlog)
+                        gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 3), self.buttonui[8].pos[1], topimage[27],3),
+                        gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 5), self.buttonui[8].pos[1], topimage[28],4),
+                        gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 6), self.buttonui[8].pos[1], topimage[29],5)]
+        self.allui.add(self.buttonui[8:14])
+        self.screenbuttonlist = self.buttonui[8:14] ## List of button always on screen (for now just eventlog)
         self.squadselectedborder = gameui.Selectedsquad(topimage[-1])
         self.terraincheck = gamepopup.Terrainpopup()
         self.buttonnamepopup = gamepopup.Onelinepopup()
@@ -651,14 +664,18 @@ class Battle():
         target.basemorale += round((targetmoraledmg * (dmgeffect / 100) / 2))
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
-            if who.leader.health <= 0 and who.leader.battalion.commander == True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
-                self.textdrama.queue.append(str(who.leader.name) + " is dead")
-                whicharmy = self.enemyarmy
-                if who.battalion.gameid < 2000:
-                    whicharmy = self.playerarmy
-                for army in whicharmy:
-                    for squad in army.squadsprite:
-                        squad.basemorale -= 20
+            if who.leader.health <= 0:
+                if who.leader.battalion.commander == True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+                    self.textdrama.queue.append(str(who.leader.name) + " is dead")
+                    self.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2])
+                    whicharmy = self.enemyarmy
+                    if who.battalion.gameid < 2000:
+                        whicharmy = self.playerarmy
+                    for army in whicharmy:
+                        for squad in army.squadsprite:
+                            squad.basemorale -= 20
+                else:
+                    self.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2])
         target.unithealth -= round(whodmg * (targetdmgeffect / 100))
         target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
         if who.elemrange not in (0, 5):  ## apply element effect if atk has element
@@ -666,14 +683,18 @@ class Battle():
         who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
             target.leader.health -= wholeaderdmg
-            if target.leader.health <= 0 and target.leader.battalion.commander == True and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
-                self.textdrama.queue.append(str(target.leader.name) + " is dead")
-                whicharmy = self.enemyarmy
-                if target.battalion.gameid < 2000:
-                    whicharmy = self.playerarmy
-                for army in whicharmy:
-                    for squad in army.squadsprite:
-                        squad.basemorale -= 30
+            if target.leader.health <= 0:
+                if target.leader.battalion.commander == True and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
+                    self.textdrama.queue.append(str(target.leader.name) + " is dead")
+                    self.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2])
+                    whicharmy = self.enemyarmy
+                    if target.battalion.gameid < 2000:
+                        whicharmy = self.playerarmy
+                    for army in whicharmy:
+                        for squad in army.squadsprite:
+                            squad.basemorale -= 30
+                else:
+                    self.eventlog.addlog([0, str(target.leader.name) + " is dead"], [0, 2])
         if who.corneratk == True:  ##attack corner (side) of self with aoe attack
             listloop = target.nearbysquadlist[2:4]
             if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
@@ -1024,11 +1045,20 @@ class Battle():
                                 self.mapviewmode = 0
                                 self.showmap.changemode(self.mapviewmode)
                             self.mapshown.changescale(self.camerascale)
-                        if event.key == pygame.K_p:  ## Pause Button
+                        elif event.key == pygame.K_p:  ## Pause Button
                             if self.gamespeed == 1:
                                 self.gamespeed = 0
                             else:
                                 self.gamespeed = 1
+                        elif event.key == pygame.K_PAGEUP: ## Go to top of event log
+                                self.eventlog.currentstartrow = 0
+                                self.eventlog.recreateimage()
+                                self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
+                        elif event.key == pygame.K_PAGEDOWN: ## Go to bottom of event log
+                            if self.eventlog.lencheck > self.eventlog.maxrowshow:
+                                self.eventlog.currentstartrow = self.eventlog.lencheck - self.eventlog.maxrowshow
+                                self.eventlog.recreateimage()
+                                self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
                         elif event.key == pygame.K_SPACE and self.lastselected is not None:
                             whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                             self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
@@ -1152,7 +1182,12 @@ class Battle():
                 for button in self.screenbuttonlist: ## Event log button click
                     if button.rect.collidepoint(self.mousepos):
                         if mouse_up:
-                            self.eventlog.changemode(button.event)
+                            if button.event in (0,1,2,3):
+                                self.eventlog.changemode(button.event)
+                            elif button.event == 4:
+                                self.eventlog.cleartab()
+                            elif button.event == 5:
+                               self.eventlog.cleartab(alltab=True)
                             self.uicheck = 1
                         elif mouse_right: self.uicheck = 1
                         break
@@ -1182,19 +1217,20 @@ class Battle():
                         army.changefaction = False
                     if army.state == 100 and army.gotkilled == 0:
                         if army.gameid < 2000:
-                            self.die(army, self.playerarmy, self.deadunit, self.allcamera, self.hitboxs)
+                            self.battalion.die(army, self.playerarmy, self.deadunit, self.allcamera, self.hitboxs)
                             for thisarmy in self.enemyarmy:  ## get bonus authority when destroy enemy battalion
                                 thisarmy.authority += 5
                             for thisarmy in self.playerarmy:  ## morale dmg to every squad in army when allied battalion destroyed
                                 for squad in thisarmy.squadsprite:
                                     squad.basemorale -= 20
                         else:
-                            self.die(army, self.enemyarmy, self.deadunit, self.allcamera, self.hitboxs)
+                            self.battalion.die(army, self.enemyarmy, self.deadunit, self.allcamera, self.hitboxs)
                             for thisarmy in self.playerarmy:  ## get bonus authority when destroy enemy battalion
                                 thisarmy.authority += 5
                             for thisarmy in self.enemyarmy:  ## morale dmg to every squad in army when allied battalion destroyed
                                 for squad in thisarmy.squadsprite:
                                     squad.basemorale -= 20
+                        self.eventlog.addlog([0, str(army.leader.name) + "'s battalion is destroyed"], [0, 1])
                 if self.lastselected is not None and self.lastselected.state != 100:
                     """if not found in army class then it is in dead class"""
                     whoinput = self.lastselected
@@ -1345,6 +1381,8 @@ class Battle():
                                     squad.command(self.battlemousepos, mouse_up, mouse_right, self.squadlastselected.wholastselect)
                                     self.squadlastselected = squad
                                     self.squadselectedborder.pop(squad.inspposition)
+                                    self.eventlog.addlog(
+                                        [0, str(self.squadlastselected.boardpos) + " " + str(self.squadlastselected.name)  + " in " + self.squadlastselected.battalion.leader[0].name + "'s battalion is clicked"], [3])
                                     self.allui.add(self.squadselectedborder)
                                     self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour, leader=self.allleader,
                                                               gameunitstat=self.gameunitstat, splithappen=self.splithappen)

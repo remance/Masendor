@@ -118,12 +118,12 @@
 117,"Shadow Lawmakers",3,4,1,"14,56,33,232,304","44,196",,,,,,,,,,,,,,,0,"2,4",,135,95,4,1,10,1,0,,,,
 118,"Scouts",3,1,1,"190,225,308","160,196",,32,35,3,"20,3",62,,,,,,21,100,115,0,,,100,50,8,1,10,1,0,,,,"Intelligence is one of the key aspects of victory in warfare. Knowing the location, who is leading, and how many are the enemy troops can let one formulate a well-thought plan. Scouts are well-versed in the art of reconnaissance, skirmishing and ambushing. A battalion of Scouts leading the main army body is the basis of every capable leader's tactic. With extremely high survivability ability, the only real threat to Scouts is light cavalry units that are capable of catching up to their speed. "
 119,"Mountaineer Scouts",3,1,1,"192,223,308","160,196",,31,35,3,"20,3",62,,,,,,21,,130,0,,,100,55,7,1,10,1,0,,,,
-120,"Border Patrols",3,1,1,"308","160",,45,52,5,"2,3",54,60,80,3,60,,21,,115,0,,,100,65,7,1,30,1,0,,,,
+120,"Border Patrols",3,1,1,"308","160",,45,52,5,"2,3",54,60,80,3,60,,21,,115,0,,,100,65,7,1,30,1,0,,,,"In the ancient time, the border existed not only to formalised the territory of a country but also served as a safety zone for people inside it. Border Patrols regularly safeguard against both hostile civilisations and beasts alike. More than just scouting, they are prepared to deal with the immediate threat with both melee and range arms as the first line of protection for the empire. "
 121,"Giseras",3,1,1,"194,308","44,160",,,,,,,,,,,,21,,,0,,,105,,6,1,15,1,0,,,,
 122,"Lagoinu Watchers",3,1,1,"308","160,196",,,,,,,,,,,,21,,,0,,,100,,8,1,20,1,0,,,,
 123,"Foe Seekers",3,2,1,"16,236,305,307","160,196",,,,,,,,,,,,21,,,0,,,110,,9,1,10,1,0,,,,
 124,"Bandits",12,10,1,"3,112,225",,,,,,"9,1",,,40,8,10,29,21,100,105,0,,,90,20,6,1,200,1,0,,,,"The pests of early civilisation that creeping in the area where the hand of law cannot reach. Bandits are a group of people that take up arms to rob, loot and raze village or even unguarded town for their survival. Using whatever equipments they can get, Bandits are versatile units that can be used in both skirmish and serious melee engagement.  Their looting ability also allows them to gain more resource from raiding."
-125,"Free People",3,10,1,"3,112,222",,,,,,"20,3",,,30,5,20,33,21,100,100,0,,,90,25,6,1,150,1,0,,,,
+125,"Free People",3,10,1,"3,112,222",,,,,,"20,3",,,30,5,20,33,21,100,100,0,,,90,25,6,1,150,1,0,,,,"The Free People, in other words, those who do not follow the rule of law established by the tyranny of society. Even less organised than tribal people, Free People live in an unorganised society purely of communal benefit for survival in the harsh wild. And in the uncertain time, it is not uncommon for these Free People to turn to banditry on unsuspected traveller or merchant."
 126,"Pirates",1,10,1,"112,191",,,,,,"20,3",,,0,0,0,25,21,100,110,0,,,90,20,7,1,100,1,0,,,,"The outlaws of the high sea where the dream of treasure is always in reach. Interesting enough, history seems to suggest that pirate may not always be outlaws and often are employed as privateers by many empires such as the Barbary pirates, Vikings and of course Republic of Pirates (being privateers of their very own country). Living on the sea for the major part of their life allows Pirates to become a fearsome naval force and later on a legend that fascinates people of the future."
 127,"Raiders",1,10,1,"112,113",,,,,,"9,3",,,60,2,40,47,21,100,110,0,,,95,15,5,1,150,1,0,,,,
 128,"Jukkaila Mountain Bandits",12,10,1,"48,112,113,192,223","139",,,,,"4,3",,,0,0,0,67,1,105,120,0,,,105,10,5,1,100,1,0,,,,
@@ -131,7 +131,7 @@
 130,"City Guards",5,0,1,"93","33",,,,,,,,,,,,21,,,,,,100,,,1,150,1,0,,,,"Law and order is the foundation of every society. Before the existence of modern police is the group of militia or volunteer that served as the City Guards that enforce the law, catch the criminals and any other menial tasks. Usually armed with polearms and light armour, they are less suited for an open field battle but more on urban combat."
 131,"Flower Guards",14,2,1,"93",,,,,,,,,,,,,21,,,,,,,,,1,100,1,0,,,,
 132,"Medals Carriers",14,4,1,"93",,,,,,,,,,,,,,,,,,,,,,1,30,1,0,,,,
-133,"Peace Holders",5,3,1,"93",,,,,,,,,,,,,,,,,,,,,,1,50,1,0,,,,
+133,"Peace Holders",5,3,1,"93",,,,,,,,,,,,,,,,,,,,,,1,50,1,0,,,,"The goal of every society is to provide peace to its people. And peace cannot exist without order for chaos is in the heart of every human. Why share when you can steal? Why tolerate what you can eradicate? Peace Holders enforce the rule of law so society can flourish even in the direst of time. Equipped with heavier weaponry not only to fight off criminality but to crush any riot that can threaten the peace."
 134,"Halberdiers",14,2,1,"22","34",,64,20,0,"2,3",18,,,,,,,100,100,,,,100,,,1,100,1,0,,,,
 135,"Wardens",14,2,1,"22","34",,61,25,0,"1,4",15,,,,,,,,,,,,,,,1,100,1,0,,,,
 136,"Landguards",14,1,1,"22","34",,60,22,0,"1,3",17,,,,,,,,,,,,,,,1,200,1,0,,,,
@@ -147,7 +147,7 @@
 146,"Ghartiewa's Guardians",15,9,1,"22,54,111,298","35,161",,,,,,,,,,,,,,,,,,,100,,1,15,1,0,,,"Life Potion, ",
 147,"Champion Of Light",7,9,1,"54,100,104,298","161",,,,,,,,,,,,,,,,,,,100,,1,5,1,0,,,"Strength Potion",
 148,"Hell Vanquisher",1,9,1,"54,100,174,298","136,161",,,,,,,,,,,,,,,,,,,95,,1,5,1,0,,,"Strength Potion, Speed Potion, Stamina Potion",
-149,"Houndmasters",3,1,1,,,,,,,,,,,,,,,,,,,,,,,1,,1,0,,,,
+149,"Houndmasters",3,1,1,,,,,,,,,,,,,,,,,,,,,,,1,,1,0,,,,"The dog of war existed alongside the first of humanity since the age of stone. Faithful to their master, Houndmasters, these dogs will aggressively attack any people or beast regardless of size if the master command so. Swift and small in size, a trained dog served as an undeniably useful tool as a first charge to cause distraction in the enemy line before the main troops moving in for the kill.   "
 150,"Beastmasters",3,2,1,,,,,,,,,,,,,,,,,,,,,,,1,,1,0,,,,
 151,"Tainted Sannaria Warriors",,2,1,,,,,,,,,,,,,,,,,,,,,,,1,,1,0,,,,
 152,"Mikos Bhklui",,3,1,,,,,,,,,,,,,,,,,,,,,,,1,,1,0,,,,

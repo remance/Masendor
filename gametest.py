@@ -76,6 +76,3 @@ print("The start time is :",starttime)
 if test[0] in range(0,1000) and test[1] in range(0,1000):
     print('hey')
 print("The time difference is :", timeit.default_timer() - starttime)
-# 2.56590000000112e-05
-# 2.9509000000010888e-05
-# 2.0954999999989177e-05

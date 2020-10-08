@@ -89,7 +89,7 @@ class Leader(pygame.sprite.Sprite):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
-        if self.state != 100:
+        if self.state not in (96,97,98,99,100):
             if self.health <= 0:
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
@@ -113,4 +113,5 @@ class Leader(pygame.sprite.Sprite):
                 self.combat = 0
                 self.social = 0
                 pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)
-                self.battalion.leaderchange = True
+                if self.battalion.leader[1].state not in (96,97,98,99,100):
+                    self.battalion.leaderchange = True

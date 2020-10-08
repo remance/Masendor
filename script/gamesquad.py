@@ -12,6 +12,7 @@ SCREENRECT = mainmenu.SCREENRECT
 
 class Unitsquad(pygame.sprite.Sprite):
     images = []
+    eventlog = None
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
         # super().__init__()
@@ -45,6 +46,7 @@ class Unitsquad(pygame.sprite.Sprite):
                             elif i.isdigit():
                                 row[n] = [int(i)]
         self.leader = None
+        self.boardpos = None ## Used for event log position of squad (Assigned in maingame unit setup)
         self.name = stat[1]
         self.unitclass = stat[2]
         self.grade = stat[3]
@@ -696,6 +698,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.leader = None
                                 break
                 self.state = 100
+                self.eventlog.addlog([0, str(self.boardpos) + " " + str(self.name) + " in " + self.battalion.leader[0].name +  "'s battalion is destroyed"], [3])
         # else:
         #     self.morale = 0
         #     self.stamina = 0

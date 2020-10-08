@@ -470,6 +470,18 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
         self.logscroll.changeimage(logsize=self.lencheck)
         self.recreateimage()
 
+    def cleartab(self, alltab = False):
+        self.lencheck = 0
+        self.currentstartrow = 0
+        currentlog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
+        currentlog.clear()
+        if alltab == True:
+            for log in (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog):
+                log.clear()
+        self.logscroll.currentrow = self.currentstartrow
+        self.logscroll.changeimage(logsize=self.lencheck)
+        self.recreateimage()
+
     def recreateimage(self):
         thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
         self.image = self.image_original.copy()
