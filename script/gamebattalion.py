@@ -204,15 +204,19 @@ class Hitbox(pygame.sprite.Sprite):
         self.collide = 0
         self.image = pygame.Surface((width, height), pygame.SRCALPHA)
         self.image.fill((255, 255, 255, 128))
+        self.clickimage = self.image.copy()
+        self.clickimage.fill((0, 0, 0, 128))
+        self.notclickimage = self.image.copy()
         self.image_original,self.image_original2 = self.image.copy(), self.image.copy()
         self.image = pygame.transform.rotate(self.image_original, self.who.angle)
         self.oldpos = self.who.hitboxpos[self.side]
         self.rect = self.image.get_rect(center=self.who.hitboxpos[self.side])
         self.pos = self.rect.center
         self.mask = pygame.mask.from_surface(self.image)
+        self.clickcheck = False
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
-        if self.viewmode != abs(viewmode - 11):
+        if self.viewmode != abs(viewmode - 11) or self.clickcheck is True:
             self.viewmode = abs(viewmode - 11)
             self.image_original = self.image_original2.copy()
             scalewidth = self.image_original.get_width()
@@ -223,7 +227,7 @@ class Hitbox(pygame.sprite.Sprite):
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
             self.image_original = self.image.copy()
-        if self.oldpos != self.who.hitboxpos[self.side]:
+        if self.oldpos != self.who.hitboxpos[self.side] or self.clickcheck is True:
             self.image = pygame.transform.rotate(self.image_original, self.who.angle)
             self.rect = self.image.get_rect(center=self.who.hitboxpos[self.side])
             self.pos = self.rect.center
@@ -231,6 +235,17 @@ class Hitbox(pygame.sprite.Sprite):
             self.oldpos = self.who.hitboxpos[self.side]
         self.collide = 0
 
+    def clicked(self):
+        self.image_original2 = self.clickimage.copy()
+        self.clickcheck = True
+        self.update(None,None,None,abs(11 - self.viewmode),None,None)
+        self.clickcheck = False
+
+    def release(self):
+        self.image_original2 = self.notclickimage.copy()
+        self.clickcheck = True
+        self.update(None,None,None,abs(11 - self.viewmode),None,None)
+        self.clickcheck = False
 
 class Unitarmy(pygame.sprite.Sprite):
     images = []
@@ -443,8 +458,8 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.stat['range'].append(squad.shootrange)
                 squad.combatpos = self.basepos
                 squad.useskillcond = self.useskillcond
-                if squad.charging == True and self.charging != True:
-                    self.charging == True
+                if squad.charging is True and self.charging != True:
+                    self.charging = True
             # self.stat['speed'].append(squad.troopnumber)
             # self.stat['speed'].append(squad.troopnumber)
             else:
@@ -465,7 +480,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if len(self.stat['range']) > 0:
                 self.maxrange = max(self.stat['range'])
                 self.minrange = min(self.stat['range'])
-        if self.gamestart == False:
+        if self.gamestart is False:
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
                 self.stamina * 50 / 100), round(self.stamina * 25 / 100)
             self.lasthealthstate, self.laststaminastate = 4, 4
@@ -485,7 +500,7 @@ class Unitarmy(pygame.sprite.Sprite):
         whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0],
                     fullwhoarray[3][0]]
         for index, whofrontline in enumerate(whoarray):
-            if self.gamestart == False and specialcall == False:
+            if self.gamestart is False and specialcall is False:
                 """Add zero to the frontline so it become 8 row array"""
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """Adjust the position of frontline to center of empty 8 array"""
@@ -499,7 +514,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 emptyarray[int(whocenter):int(len(whofrontline) + whocenter)] = whofrontline
                 newwhofrontline = emptyarray.copy()
                 self.startwhere.append(int(whocenter))
-            elif self.gamestart == True or specialcall == True:
+            elif self.gamestart is True or specialcall is True:
                 newwhofrontline = whofrontline.copy()
                 emptyarray = np.array([0, 0, 0, 0, 0, 0, 0, 0])
                 """replace the dead in frontline with other squad in the same column"""
@@ -611,7 +626,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.commandtarget = self.target
         self.spritearray = self.armysquad
         self.leadersocial = self.leader[0].social
-        if self.autosquadplace == True:
+        if self.autosquadplace is True:
             for leader in self.leader:
                 if leader.gameid != 0:
                     self.squadsprite[leader.squadpos].leader = leader  ## put in leader to squad with the set pos
@@ -642,7 +657,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rotate()
 
     def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
-        if self.gamestart == False:
+        if self.gamestart is False:
             self.startset(squadgroup)
             self.gamestart = True
         """redraw if troop num or stamina change"""
@@ -730,7 +745,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.charging = False
             self.setuparmy()
             self.statusupdate(statuslist)
-            if self.authrecalnow == True:
+            if self.authrecalnow is True:
                 self.authrecal()
                 self.authrecalnow = False
             """setup frontline again when any squad die"""
@@ -741,7 +756,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.deadchange = 0
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
             """recal stat involve leader if one die"""
-            if self.leaderchange == True:
+            if self.leaderchange is True:
                 self.authrecal()
                 for leader in self.leader:
                     if leader.gameid != 0:
@@ -877,7 +892,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     cantchase = False
                     for hitbox in self.hitbox:
                         if hitbox.collide != 0: cantchase = True
-                    if cantchase == False and self.forcedmelee == True:
+                    if cantchase is False and self.forcedmelee is True:
                         print('test')
                         self.state = self.commandstate
                         self.set_target(self.attacktarget.basepos)
@@ -928,7 +943,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     elif (self.hitbox[
                               list(side2.keys())[0]].collide != 0 and self.combatpreparestate == 0) and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = True
-                    elif self.moverotate == 0 and self.rotateonly == True:
+                    elif self.moverotate == 0 and self.rotateonly is True:
                         self.state = 0
                         self.commandstate = self.state
                         self.set_target(self.allsidepos[0])
@@ -993,7 +1008,7 @@ class Unitarmy(pygame.sprite.Sprite):
         # """lower left +"""
         elif self.newangle > 90 and self.newangle <= 180:
             self.newangle = 270 - self.newangle
-        if instant == True:
+        if instant is True:
             self.rotate()
 
     def processcommand(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate):
@@ -1004,13 +1019,13 @@ class Unitarmy(pygame.sprite.Sprite):
         self.attacktarget = 0
         self.baseattackpos = 0
         self.attackpos = 0
-        if keystate[pygame.K_LALT] == True or (whomouseover != 0 and (
+        if keystate[pygame.K_LALT] is True or (whomouseover != 0 and (
                 (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
-            if self.ammo <= 0 or keystate[pygame.K_LCTRL] == True:
+            if self.ammo <= 0 or keystate[pygame.K_LCTRL] is True:
                 self.state = 3
             elif self.ammo > 0:  ##Move to range attack
                 self.state = 5
-            if keystate[pygame.K_LALT] == True:
+            if keystate[pygame.K_LALT] is True:
                 self.set_target(mouse_pos[1])
             else:
                 self.attacktarget = whomouseover
@@ -1019,11 +1034,11 @@ class Unitarmy(pygame.sprite.Sprite):
             self.state += 1
         self.commandstate = self.state
         self.rangecombatcheck = 0
-        if keystate[pygame.K_LSHIFT] == True: self.rotateonly = True
+        if keystate[pygame.K_LSHIFT] is True: self.rotateonly = True
         self.set_target(mouse_pos[1])
         self.commandtarget = self.target
         self.setrotate()
-        if self.charging == True:
+        if self.charging is True:
             self.leader[0].authority -= self.authpenalty
             self.authrecal()
 
@@ -1042,7 +1057,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-        if self.control == True and self.state != 100:
+        if self.control is True and self.state != 100:
             """check if right click in mask or not. if not, move unit"""
             posmask = mouse_pos[0][0] - self.rect.x, mouse_pos[0][1] - self.rect.y
             if mouse_right and mouse_pos[1][0] >= 0 and mouse_pos[1][0] <= 1000 and mouse_pos[1][1] >= 0 and mouse_pos[1][1] <= 1000:
@@ -1060,7 +1075,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.processretreat(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
                             # self.combatcheck = 0
             elif othercommand == 1 and self.state not in (10,96,97,98,99,100):  ## Pause all action except combat
-                if self.charging == True:
+                if self.charging is True:
                     self.leader[0].authority -= self.authpenalty
                     self.authrecal()
                 self.state = 0
@@ -1076,7 +1091,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.control = True
         if self.gameid < 2000:
             self.colour = (255, 114, 114)
-            if enactment == False:
+            if enactment is False:
                 self.control = False
         newgameid = newgroup[-1].gameid + 1
         oldgroup.remove(self)
@@ -1091,7 +1106,7 @@ class Unitarmy(pygame.sprite.Sprite):
     def die(self, deadindex, who, group, deadgroup, rendergroup, hitboxgroup):
         """remove battalion,hitbox when it dies"""
         deadindex += 1
-        if who.commander == True:  ## more morale penalty if the battalion is a command battalion
+        if who.commander is True:  ## more morale penalty if the battalion is a command battalion
             for army in group:
                 for squad in army.squadsprite:
                     squad.basemorale -= 30

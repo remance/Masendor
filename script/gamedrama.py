@@ -42,7 +42,7 @@ class Textdrama(pygame.sprite.Sprite):
             rightcornerrect = self.rightcorner.get_rect(topleft=(self.currentlength+30, 0))
             self.image.blit(self.rightcorner, rightcornerrect)
             self.currentlength += self.body.get_width()
-        elif self.currentlength >= self.maxlength and self.textblit == False:
+        elif self.currentlength >= self.maxlength and self.textblit is False:
             self.image.blit(self.textsurface, self.textrect)
             self.textblit = True
 

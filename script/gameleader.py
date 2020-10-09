@@ -74,7 +74,7 @@ class Leader(pygame.sprite.Sprite):
             squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10)
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
             self.badmorale = (30, 50)  ## main general morale lost when die
-            if self.battalion.commander == True:
+            if self.battalion.commander is True:
                 self.commander = True
 
     def poschangestat(self, leader):
@@ -93,13 +93,13 @@ class Leader(pygame.sprite.Sprite):
             if self.health <= 0:
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
-                self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
-                # if self.battalion.commander == False:
+                if self.battalion.leader[1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[1].name != "None":
+                    self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
                 for squad in self.battalion.squadsprite:
                     squad.basemorale -= self.badmorale[1]  ## decrease all squad morale when leader die depending on position
                 for index, leader in enumerate(self.battalion.leader):  ## also change army position of all leader in that battalion
                     leader.armyposition = index  ## change army position to new one
-                    if self.battalion.commander == True and leader.armyposition == 0:
+                    if self.battalion.commander is True and leader.armyposition == 0:
                         self.commander = True
                     leader.imgposition = leader.baseimgposition[leader.armyposition]
                     leader.rect = leader.image.get_rect(center=leader.imgposition)
@@ -113,5 +113,4 @@ class Leader(pygame.sprite.Sprite):
                 self.combat = 0
                 self.social = 0
                 pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)
-                if self.battalion.leader[1].state not in (96,97,98,99,100):
-                    self.battalion.leaderchange = True
+                self.battalion.leaderchange = True

@@ -47,7 +47,7 @@ def load_images(subfolder=[], loadorder=True):
     if subfolder != []:
         for folder in subfolder:
             dirpath = os.path.join(dirpath, folder)
-    if loadorder == True:
+    if loadorder is True:
         loadorderfile = open(dirpath + "/load_order.txt", "r")
         loadorderfile = ast.literal_eval(loadorderfile.read())
         for file in loadorderfile:
@@ -147,7 +147,6 @@ def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon,
                                                    battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=inspectuipos)
                     squad.append(addsquad)
                     addsquad.boardpos = boardpos[armysquadindex]
-                    print(addsquad.boardpos, armysquadindex)
                     squadnum[...] = squadgameid
                     army.squadsprite.append(addsquad)
                     squadindexlist.append(squadgameid)
@@ -523,7 +522,7 @@ class Battle():
                 position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
                 fronttarget = receiver.frontline[receiverside][position]
                 """check if squad not already fighting if true skip picking new enemy """
-                if any(battle > 1 for battle in self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside) == False:
+                if any(battle > 1 for battle in self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside) is False:
                     """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
                     if fronttarget > 1:
                         """only attack if the side is already free else just wait until it free"""
@@ -596,7 +595,7 @@ class Battle():
         if type == 0:  ##melee dmg
             dmg = who.dmg
             """include charge in dmg if charging, ignore charge defense if have ignore trait"""
-            if who.charging == True:
+            if who.charging is True:
                 if 29 not in who.trait:
                     dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
                 elif 29 in who.trait:
@@ -665,7 +664,7 @@ class Battle():
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
             if who.leader.health <= 0:
-                if who.leader.battalion.commander == True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+                if who.leader.battalion.commander is True and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
                     self.textdrama.queue.append(str(who.leader.name) + " is dead")
                     self.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2])
                     whicharmy = self.enemyarmy
@@ -684,7 +683,7 @@ class Battle():
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
             target.leader.health -= wholeaderdmg
             if target.leader.health <= 0:
-                if target.leader.battalion.commander == True and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
+                if target.leader.battalion.commander is True and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
                     self.textdrama.queue.append(str(target.leader.name) + " is dead")
                     self.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2])
                     whicharmy = self.enemyarmy
@@ -695,7 +694,7 @@ class Battle():
                             squad.basemorale -= 30
                 else:
                     self.eventlog.addlog([0, str(target.leader.name) + " is dead"], [0, 2])
-        if who.corneratk == True:  ##attack corner (side) of self with aoe attack
+        if who.corneratk is True:  ##attack corner (side) of self with aoe attack
             listloop = target.nearbysquadlist[2:4]
             if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
             for squad in listloop:
@@ -1066,7 +1065,7 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Basic ESC menu and option')
+                            self.textdrama.queue.append('Showcase: Event log')
                         elif event.key == pygame.K_3:
                             self.eventlog.addlog([0, "Some leader just die so event show up in war and lead tabs"], [0,2])
                         elif event.key == pygame.K_4:
@@ -1083,6 +1082,9 @@ class Battle():
                         elif event.key == pygame.K_l and self.lastselected is not None:
                             for squad in whoinput.squadsprite:
                                 squad.basemorale = 0
+                        elif event.key == pygame.K_m and self.lastselected is not None:
+                            self.lastselected.leader[0].health -= 1000
+                        ###
                         else:
                             keypress = event.key
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
@@ -1204,12 +1206,17 @@ class Battle():
                                 self.lastmouseover = army
                                 if mouse_up and self.uicheck == 0:
                                     self.lastselected = army
+                                    for hitbox in self.lastselected.hitbox:
+                                        hitbox.clicked()
+                                    if self.beforeselected is not None:
+                                        for hitbox in self.beforeselected.hitbox:
+                                            hitbox.release()
                                     self.clickcheck = 1
                         except:
                             army.mouse_over = False
                     else:
                         army.mouse_over = False
-                    if army.changefaction == True:  ## change side via surrender or betrayal
+                    if army.changefaction is True:  ## change side via surrender or betrayal
                         if army.gameid < 2000:
                             self.allunitindex = army.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex, self.enactment)
                         else:
@@ -1237,9 +1244,9 @@ class Battle():
                     if (mouse_up or mouse_right) and self.uicheck == 0:
                         whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                          self.lastmouseover, self.enemyposlist, keystate)
-                        # if whoinput.target != whoinput.pos and whoinput.rotateonly == False and whoinput.moverotate == 0 and whoinput.directionarrow == False:
+                        # if whoinput.target != whoinput.pos and whoinput.rotateonly is False and whoinput.moverotate == 0 and whoinput.directionarrow is False:
                         #     gamebattalion.directionarrow(whoinput)
-                    if self.beforeselected == 0:  ## add back the pop up ui to group so it get shown when click unit with none selected before
+                    if self.beforeselected is None:  ## add back the pop up ui to group so it get shown when click unit with none selected before
                         self.gameui = self.popgameui
                         self.allui.add(*self.gameui[0:2])  ## add leader and top ui
                         self.allui.add(self.buttonui[4])  ## add inspection ui open/close button
@@ -1287,7 +1294,7 @@ class Battle():
                             self.squadlastselected = self.showingsquad[0]
                             self.squadselectedborder.pop(self.showingsquad[0].inspposition)
                             self.allui.add(self.squadselectedborder)
-                        elif mouse_up == True and self.inspectui == 1:  ## Remove when click again and the ui already open
+                        elif mouse_up is True and self.inspectui == 1:  ## Remove when click again and the ui already open
                             self.allui.remove(*self.showingsquad)
                             self.allui.remove(self.squadselectedborder)
                             self.showingsquad = []
@@ -1296,7 +1303,7 @@ class Battle():
                             self.inspectui = 0
                             self.clickcheck2 = 0
                     elif self.switchbuttonui[0].rect.collidepoint(self.mousepos) or keypress == pygame.K_g:
-                        if mouse_up == True or keypress == pygame.K_g:  ## rotate skill condition when clicked
+                        if mouse_up is True or keypress == pygame.K_g:  ## rotate skill condition when clicked
                             whoinput.useskillcond += 1
                             if whoinput.useskillcond > 3:
                                 whoinput.useskillcond = 0
@@ -1306,7 +1313,7 @@ class Battle():
                             self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[0].event])
                             self.allui.add(self.buttonnamepopup)
                     elif self.switchbuttonui[1].rect.collidepoint(self.mousepos) or keypress == pygame.K_f:
-                        if mouse_up == True or keypress == pygame.K_f:  ## rotate fire at will condition when clicked
+                        if mouse_up is True or keypress == pygame.K_f:  ## rotate fire at will condition when clicked
                             whoinput.fireatwill += 1
                             if whoinput.fireatwill > 1:
                                 whoinput.fireatwill = 0
@@ -1316,7 +1323,7 @@ class Battle():
                             self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[1].event])
                             self.allui.add(self.buttonnamepopup)
                     elif self.switchbuttonui[2].rect.collidepoint(self.mousepos) or keypress == pygame.K_h:
-                        if mouse_up == True or keypress == pygame.K_h:  ## rotate hold condition when clicked
+                        if mouse_up is True or keypress == pygame.K_h:  ## rotate hold condition when clicked
                             whoinput.hold += 1
                             if whoinput.hold > 2:
                                 whoinput.hold = 0
@@ -1326,7 +1333,7 @@ class Battle():
                             self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[2].event])
                             self.allui.add(self.buttonnamepopup)
                     elif self.switchbuttonui[3].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
-                        if mouse_up == True or keypress == pygame.K_j:  ## rotate min range condition when clicked
+                        if mouse_up is True or keypress == pygame.K_j:  ## rotate min range condition when clicked
                             whoinput.useminrange += 1
                             if whoinput.useminrange > 1:
                                 whoinput.useminrange = 0
@@ -1338,7 +1345,7 @@ class Battle():
                     elif self.buttonui[5] in self.allui and self.buttonui[5].rect.collidepoint(self.mousepos):
                         self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
                         self.allui.add(self.buttonnamepopup)
-                        if mouse_up == True and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
+                        if mouse_up is True and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
                             self.splitunit(whoinput, 1)
                             self.splithappen = True
                             self.checksplit(whoinput)
@@ -1348,7 +1355,7 @@ class Battle():
                     elif self.buttonui[6] in self.allui and self.buttonui[6].rect.collidepoint(self.mousepos):
                         self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
                         self.allui.add(self.buttonnamepopup)
-                        if mouse_up == True and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
+                        if mouse_up is True and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
                             self.splitunit(whoinput, 0)
                             self.splithappen = True
                             self.checksplit(whoinput)
@@ -1358,24 +1365,24 @@ class Battle():
                     elif self.buttonui[7].rect.collidepoint(self.mousepos):  ## decimation effect
                         self.buttonnamepopup.pop(self.mousepos, "Decimation")
                         self.allui.add(self.buttonnamepopup)
-                        if mouse_up == True and whoinput.state == 0:
+                        if mouse_up is True and whoinput.state == 0:
                             for squad in whoinput.squadsprite:
                                 squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
                                 squad.unithealth -= round(squad.unithealth * 0.1)
-                    elif self.gameui[1] in self.allui and self.gameui[1].rect.collidepoint(self.mousepos) and self.leadermouseover() == True:
+                    elif self.gameui[1] in self.allui and self.gameui[1].rect.collidepoint(self.mousepos) and self.leadermouseover() is True:
                         pass
                     else:
                         self.allui.remove(self.leaderpopup)
                         self.allui.remove(self.buttonnamepopup) ## remove popup if no mouseover on any button
                     if self.inspectui == 1:
-                        if self.splithappen == True:  ## change showing squad in inspectui if split happen
+                        if self.splithappen is True:  ## change showing squad in inspectui if split happen
                             self.allui.remove(*self.showingsquad)
                             self.showingsquad = whoinput.squadsprite
                             self.allui.add(*self.showingsquad)
                         self.allui.add(*self.showingsquad)
-                        if mouse_up == True:  ## Change showing stat to the clicked squad one
+                        if mouse_up is True:  ## Change showing stat to the clicked squad one
                             for squad in self.showingsquad:
-                                if squad.rect.collidepoint(self.mousepos) == True:
+                                if squad.rect.collidepoint(self.mousepos) is True:
                                     self.clickcheck = 1
                                     self.uicheck = 1
                                     squad.command(self.battlemousepos, mouse_up, mouse_right, self.squadlastselected.wholastselect)
@@ -1422,11 +1429,11 @@ class Battle():
                                 for icon in self.traiticon.sprites(): icon.kill()
                                 for icon in self.effecticon.sprites(): icon.kill()
                             self.uitimer = 0
-                        if self.effecticonmouseover(self.traiticon) == True:
+                        if self.effecticonmouseover(self.traiticon) is True:
                             pass
-                        elif self.effecticonmouseover(self.skillicon) == True:
+                        elif self.effecticonmouseover(self.skillicon) is True:
                             pass
-                        elif self.effecticonmouseover(self.effecticon) == True:
+                        elif self.effecticonmouseover(self.effecticon) is True:
                             pass
                         else: self.allui.remove(self.effectpopup)
                     else:
@@ -1435,7 +1442,10 @@ class Battle():
                     self.beforeselected = self.lastselected
                 """remove the pop up ui when click at no group"""
                 if self.clickcheck != 1:
-                    self.lastselected = None
+                    if self.lastselected is not None:
+                        for hitbox in self.lastselected.hitbox:
+                            hitbox.release()
+                        self.lastselected = None
                     self.gameui[2].option = 1
                     for ui in self.gameui: ui.kill()
                     for button in self.buttonui[0:8]: button.kill()
@@ -1445,7 +1455,7 @@ class Battle():
                     self.allui.remove(*self.showingsquad)
                     self.showingsquad = []
                     self.inspectui = 0
-                    self.beforeselected = 0
+                    self.beforeselected = None
                     self.allui.remove(*self.leadernow)
                     self.squadlastselected = None
                     self.allui.remove(self.squadselectedborder)
@@ -1485,7 +1495,7 @@ class Battle():
                 """Calculate squad combat dmg"""
                 if self.combattimer >= 0.2:
                     for thissquad in self.squad:
-                        if any(battle > 1 for battle in thissquad.battleside) == True:
+                        if any(battle > 1 for battle in thissquad.battleside) is True:
                             for index, combat in enumerate(thissquad.battleside):
                                 if combat > 1:
                                     if thissquad.gameid not in self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside:

@@ -9,13 +9,11 @@ Plan
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
 
-4.4 Game event log
+4.5 Army selection list
 
-4.5 Encyclopedia
+4.6 Encyclopedia
 
-4.6 Encyclopedia popup
-
-4.7 Army selection list
+4.7 Encyclopedia popup
 
 4.8 Weather effect
 
