@@ -62,10 +62,14 @@ class Leader(pygame.sprite.Sprite):
         # self.mana = stat
         self.gamestart = 0
         self.armyposition = armyposition
-        self.baseimgposition = [(133, 65), (80, 115), (190, 115), (133, 163)]
+        self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]
         self.imgposition = self.baseimgposition[self.armyposition]
         ## put leader image into leader slot
-        self.image = leaderstat.imgs[leaderid].copy()
+        try:
+            self.fullimage = leaderstat.imgs[leaderid].copy()
+        except: ## Use Unknown leader image if there is none for now TODO make function to maybe keep image name and link to leader id
+            self.fullimage = leaderstat.imgs[-1].copy()
+        self.image = pygame.transform.scale(self.fullimage, (int(self.fullimage.get_width()/2), int(self.fullimage.get_height()/2)))
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
         self.badmorale = (20, 30)  ## other position morale lost
@@ -74,7 +78,7 @@ class Leader(pygame.sprite.Sprite):
             squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10)
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
             self.badmorale = (30, 50)  ## main general morale lost when die
-            if self.battalion.commander is True:
+            if self.battalion.commander:
                 self.commander = True
 
     def poschangestat(self, leader):
@@ -99,7 +103,7 @@ class Leader(pygame.sprite.Sprite):
                     squad.basemorale -= self.badmorale[1]  ## decrease all squad morale when leader die depending on position
                 for index, leader in enumerate(self.battalion.leader):  ## also change army position of all leader in that battalion
                     leader.armyposition = index  ## change army position to new one
-                    if self.battalion.commander is True and leader.armyposition == 0:
+                    if self.battalion.commander and leader.armyposition == 0:
                         self.commander = True
                     leader.imgposition = leader.baseimgposition[leader.armyposition]
                     leader.rect = leader.image.get_rect(center=leader.imgposition)

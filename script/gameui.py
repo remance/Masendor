@@ -1,7 +1,6 @@
 import pygame
 import pygame.freetype
 
-
 class Uibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event):
         self._layer = 8
@@ -132,7 +131,7 @@ class Gameui(pygame.sprite.Sprite):
             self.value[1] = round(self.value[1] / 10)
             if self.value[1] in self.options3:
                 self.value[1] = self.options3[self.value[1]]
-            if self.value != self.lastvalue or splithappen is True:
+            if self.value != self.lastvalue or splithappen:
                 self.image = self.image_original.copy()
                 for value in self.value:
                     self.textsurface = self.font.render(str(value), 1, (0, 0, 0))
@@ -147,13 +146,13 @@ class Gameui(pygame.sprite.Sprite):
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
         elif self.uitype == "commandbar":
-            if who.gameid != self.lastwho or splithappen is True:  ## only redraw leader circle when change unit (will add condition if leader die or changed later)
+            if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change unit (will add condition if leader die or changed later)
                 usecolour = self.white
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
                 if who.gameid >= 2000:
                     usecolour = self.black
-                if who.commander is True:
+                if who.commander:
                     ## main general
                     self.iconimagerect = usecolour[0].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
@@ -182,7 +181,7 @@ class Gameui(pygame.sprite.Sprite):
                 self.image_original2 = self.image.copy()
                 # for thisleader in who.leaderwho:
                 #     self.leaderpiclist.append(thisleader[1])
-            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen is True:  ## authority number
+            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  ## authority number
                 self.image = self.image_original2.copy()
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(
@@ -475,7 +474,7 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
         self.currentstartrow = 0
         currentlog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
         currentlog.clear()
-        if alltab is True:
+        if alltab:
             for log in (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog):
                 log.clear()
         self.logscroll.currentrow = self.currentstartrow
@@ -507,7 +506,7 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
             else:  ## Cut the text log into multiple row
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
                 howmanyloop = len(textoutput) / 47
-                if howmanyloop.is_integer() is False:
+                if howmanyloop.is_integer() == False:
                     howmanyloop = int(howmanyloop) + 1
                 startingindex = 0
                 for run in range(1, howmanyloop + 1):
@@ -524,15 +523,15 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
                 del thislog[0]
             if mode == self.mode:
                 imagechange = True
-        if imagechange is True:
+        if imagechange:
             self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
-            if atlastrow is True and self.lencheck > 9:
+            if atlastrow and self.lencheck > 9:
                 self.currentstartrow = self.lencheck - self.maxrowshow
                 self.logscroll.currentrow = self.currentstartrow
             self.logscroll.changeimage(logsize=self.lencheck)
             self.recreateimage()
 
-class Logscroller(pygame.sprite.Sprite):
+class Uiscroller(pygame.sprite.Sprite):
     def __init__(self, pos, uiheight, maxrowshow):
         self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -582,10 +581,44 @@ class Logscroller(pygame.sprite.Sprite):
             self.changeimage(newrow)
             return self.currentrow
 
-class armyselect(pygame.sprite.Sprite):
+class Armyselect(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = image
+        self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.currentrow = 0
+        self.maxrowshow = 9
+
+class Armyicon(pygame.sprite.Sprite):
+    def __init__(self, pos, army):
+        self._layer = 8
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.army = army
+        army.icon = self
+        self.pos = pos
+        self.leaderimage = self.army.leader[0].image.copy()
+        self.leaderimage = pygame.transform.scale(self.leaderimage, (int(self.leaderimage.get_width()/1.5), int(self.leaderimage.get_height()/1.5)))
+        self.image = pygame.Surface((self.leaderimage.get_width()+2, self.leaderimage.get_height()+2))
+        self.image.fill((144, 167, 255))
+        if self.army.gameid >= 2000:
+            self.image.fill((255, 114, 114))
+        self.leaderrect = self.leaderimage.get_rect(center=(self.image.get_width()/2, self.image.get_height()/2))
+        self.image.blit(self.leaderimage, self.leaderrect)
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def changepos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def changeimage(self, newimage = None, changeside = False):
+        if changeside:
+            self.image.fill((144, 167, 255))
+            if self.army.gameid >= 2000:
+                self.image.fill((255, 114, 114))
+            self.image.blit(self.leaderimage, self.leaderrect)
+        if newimage is not None:
+            self.leaderimage = newimage
+            self.image.blit(self.leaderimage, self.leaderrect)
 

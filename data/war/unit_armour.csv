@@ -9,7 +9,7 @@
 7,"Plate Armour",80,60,4000,"199,200"
 8,"Splint Armour",65,35,3000,"0"
 9,"Brigandine Armour",40,25,2600,"0"
-10,"Laminar Armour",45,30,3500,"82"
+10,"Laminar Armour",60,30,3500,"82"
 11,"Cuirass Armour",50,35,3000,"0"
 12,"Shell Armour",,,,"0"
 13,"Slave Cloth",3,1,50,"0"
@@ -29,7 +29,7 @@
 27,"Gladiator Armor",27,7,1250,"0"
 28,"Holy Robe",25,3,10000,
 29,"Plank Armour",25,40,300,
-30,,,,,
+30,"Desert mail hauberk",50,35,2200,82
 31,,,,,
 32,,,,,
 33,,,,,

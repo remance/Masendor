@@ -361,7 +361,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
         """apply height to range"""
-        self.shootrange = self.shootrange + (self.shootrange * self.battalion.height / 100)
+        self.shootrange = self.shootrange * self.battalion.height / 100
         """apply status effect from trait"""
         if len(self.trait) > 1:
             for trait in self.trait.values():
@@ -609,11 +609,11 @@ class Unitsquad(pygame.sprite.Sprite):
                 if self.battalion.state != 10:
                     self.nocombat = 0
             if self.battalion.state == 10 and self.state != 97:
-                if any(battle > 0 for battle in self.battleside) is True:
+                if any(battle > 0 for battle in self.battleside):
                     self.state = 10
                 elif self.ammo > 0 and 16 in self.trait:  ##help range attack when battalion in melee combat if has arcshot
                     self.state = 11
-                elif any(battle > 0 for battle in self.battleside) is False:
+                elif any(battle > 0 for battle in self.battleside) == False:
                     if self.nocombat == 0:
                         self.nocombat = 0.1
                     if self.nocombat > 1:
@@ -641,8 +641,8 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.state in (11, 12, 13) and self.reloadtime < self.reload:
                 self.reloadtime += dt
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
-            self.stamina = self.stamina - (dt * 3) if self.state in (1, 3, 5, 11) and self.battalion.pause is False else self.stamina - (
-                    dt * 7) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause is False \
+            self.stamina = self.stamina - (dt * 3) if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
+                    dt * 7) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
                 else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (
                         dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale and self.state != 99 and self.battalion.leader[0].state not in (96,97,98,99,100):
