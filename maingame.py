@@ -834,7 +834,7 @@ class Battle():
                         for hitbox in self.beforeselected.hitbox:
                             hitbox.release()
                 if mouseright:
-                    self.basecamerapos = icon.army.basepos
+                    self.basecamerapos = pygame.Vector2(icon.army.basepos[0],icon.army.basepos[1])
                     self.camerapos = self.basecamerapos * self.camerascale
                 break
         return self.clickcheck
