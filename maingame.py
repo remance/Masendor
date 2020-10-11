@@ -40,7 +40,7 @@ def load_image(file, subfolder=""):
     return surface.convert_alpha()
 
 
-def load_images(subfolder=[], loadorder=True):
+def load_images(subfolder=[], loadorder=True, returnorder=False):
     """loads all images(files) in folder using loadorder list file use only png file"""
     imgs = []
     dirpath = os.path.join(main_dir, 'data')
@@ -57,11 +57,15 @@ def load_images(subfolder=[], loadorder=True):
         loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
-    return imgs
+    if returnorder == False:
+        return imgs
+    else:
+        loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
+        return imgs, loadorderfile
 
 
 def load_sound(file):
-    file = os.path.join(main_dir, 'data/sound/', file)
+    file = os.path.join(main_dir, "data/sound/", file)
     sound = pygame.mixer.Sound(file)
     return sound
 
@@ -235,8 +239,8 @@ class Battle():
         gameui.Skillcardicon.cooldown = cooldown
         self.gameunitstat = gamebattalion.Unitstat()
         ## create leader list
-        imgs = load_images(['leader', 'historic', 'portrait'],loadorder=False)
-        self.allleader = gameleader.Leaderdata(imgs, option="\historic")
+        imgs, order = load_images(['leader', 'historic', 'portrait'],loadorder=False, returnorder=True)
+        self.allleader = gameleader.Leaderdata(imgs, order, option="\historic")
         ## coa imagelist
         imgsold = load_images(['leader', 'historic', 'coa'])
         imgs = []

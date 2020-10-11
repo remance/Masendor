@@ -9,8 +9,9 @@ main_dir = mainmenu.main_dir
 
 
 class Leaderdata():
-    def __init__(self, img, option):
+    def __init__(self, img, imgorder, option):
         self.imgs = img
+        self.imgorder = imgorder
         self.leaderlist = {}
         with open(main_dir + "\data\leader" + str(option) + '\\historical_leader.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -66,8 +67,8 @@ class Leader(pygame.sprite.Sprite):
         self.imgposition = self.baseimgposition[self.armyposition]
         ## put leader image into leader slot
         try:
-            self.fullimage = leaderstat.imgs[leaderid].copy()
-        except: ## Use Unknown leader image if there is none for now TODO make function to maybe keep image name and link to leader id
+            self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
+        except: ## Use Unknown leader image if there is none in list
             self.fullimage = leaderstat.imgs[-1].copy()
         self.image = pygame.transform.scale(self.fullimage, (int(self.fullimage.get_width()/2), int(self.fullimage.get_height()/2)))
         self.rect = self.image.get_rect(center=self.imgposition)
