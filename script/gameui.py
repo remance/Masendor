@@ -540,7 +540,7 @@ class Uiscroller(pygame.sprite.Sprite):
         self.image = pygame.Surface((15, self.uiheight))
         self.image.fill((255,255,255))
         self.image_original = self.image.copy()
-        self.buttoncolour = (200,100,0)
+        self.buttoncolour = (100,100,100)
         pygame.draw.rect(self.image, self.buttoncolour, (0, 0, self.image.get_width(), self.uiheight))
         self.rect = self.image.get_rect(topright=self.pos)
         self.currentrow = 0
@@ -589,7 +589,9 @@ class Armyselect(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
         self.currentrow = 0
-        self.maxrowshow = 9
+        self.maxrowshow = 2
+        self.maxcolumnshow = 6
+        self.logsize = 0
 
 class Armyicon(pygame.sprite.Sprite):
     def __init__(self, pos, army):
@@ -600,10 +602,14 @@ class Armyicon(pygame.sprite.Sprite):
         self.pos = pos
         self.leaderimage = self.army.leader[0].image.copy()
         self.leaderimage = pygame.transform.scale(self.leaderimage, (int(self.leaderimage.get_width()/1.5), int(self.leaderimage.get_height()/1.5)))
-        self.image = pygame.Surface((self.leaderimage.get_width()+2, self.leaderimage.get_height()+2))
-        self.image.fill((144, 167, 255))
+        self.image = pygame.Surface((self.leaderimage.get_width() + 4, self.leaderimage.get_height() + 4))
+        self.image.fill((0, 0, 0))
+        centerimage = pygame.Surface((self.leaderimage.get_width() + 2, self.leaderimage.get_height() + 2))
+        centerimage.fill((144, 167, 255))
         if self.army.gameid >= 2000:
-            self.image.fill((255, 114, 114))
+            centerimage.fill((255, 114, 114))
+        imagerect = centerimage.get_rect(topleft=(1,1))
+        self.image.blit(centerimage, imagerect)
         self.leaderrect = self.leaderimage.get_rect(center=(self.image.get_width()/2, self.image.get_height()/2))
         self.image.blit(self.leaderimage, self.leaderrect)
         self.rect = self.image.get_rect(center=self.pos)

@@ -402,7 +402,6 @@ class Battle():
         iconimage = load_images(['ui', 'battle_ui', 'topbar_icon'])
         self.armyselector = gameui.Armyselect((0,0), topimage[30])
         self.selectscroll = gameui.Uiscroller(self.armyselector.rect.topright, topimage[30].get_height(), self.armyselector.maxrowshow)
-        self.eventlog.logscroll = self.logscroll
         self.gameui = [
             gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
                           icon=iconimage, uitype="topbar")]
@@ -718,12 +717,19 @@ class Battle():
 
     def setuparmyicon(self):
         row = 30
-        startcolumn = 15
+        startcolumn = 25
         column = startcolumn
         list = self.playerarmy
-        currentindex = self.armyselector.currentrow * 10
         if self.enactment == True:
             list = self.allunitlist
+        currentindex = int(self.armyselector.currentrow * self.armyselector.maxcolumnshow)
+        self.armyselector.logsize = len(list) / self.armyselector.maxcolumnshow
+        if self.armyselector.logsize.is_integer() == False:
+            self.armyselector.logsize = int(self.armyselector.logsize) + 1
+        if self.armyselector.currentrow > self.armyselector.logsize - 1:
+            self.armyselector.currentrow = self.armyselector.logsize - 1
+            currentindex = int(self.armyselector.currentrow * self.armyselector.maxcolumnshow)
+            self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
         if len(self.armyicon) > 0: ## Remove all old icon first before making new list
             for icon in self.armyicon:
                 icon.kill()
@@ -735,6 +741,7 @@ class Battle():
                 row += 50
                 column = startcolumn
             if row > 100: break
+        self.selectscroll.changeimage(logsize=self.armyselector.logsize)
 
     def checksplit(self, whoinput):
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
@@ -810,17 +817,21 @@ class Battle():
                         break
         return self.clickcheck
 
-    def armyiconmouseover(self):
+    def armyiconmouseover(self, mouseup, mouseright):
         for icon in self.armyicon:
             if icon.rect.collidepoint(self.mousepos):
                 self.clickcheck = 1
                 self.uicheck = 1
-                self.lastselected = icon.army
-                for hitbox in self.lastselected.hitbox:
-                    hitbox.clicked()
-                if self.beforeselected is not None and self.beforeselected != self.lastselected:
-                    for hitbox in self.beforeselected.hitbox:
-                        hitbox.release()
+                if mouseup:
+                    self.lastselected = icon.army
+                    for hitbox in self.lastselected.hitbox:
+                        hitbox.clicked()
+                    if self.beforeselected is not None and self.beforeselected != self.lastselected:
+                        for hitbox in self.beforeselected.hitbox:
+                            hitbox.release()
+                if mouseright:
+                    self.basecamerapos = icon.army.basepos
+                    self.camerapos = self.basecamerapos * self.camerascale
                 break
         return self.clickcheck
 
@@ -914,6 +925,12 @@ class Battle():
                                 else:
                                     self.eventlog.recreateimage()
                                     self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
+                            elif self.armyselector.rect.collidepoint(self.mousepos): ## Scrolling when mouse at event log
+                                self.armyselector.currentrow -= 1
+                                if self.armyselector.currentrow < 0: self.armyselector.currentrow = 0
+                                else:
+                                    self.setuparmyicon()
+                                    self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
                             else: ## Scrolling in game map to zoom
                                 self.camerascale += 1
                                 if self.camerascale > 10: self.camerascale = 10
@@ -929,6 +946,15 @@ class Battle():
                                     self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
                                 else:
                                     self.eventlog.currentstartrow -= 1
+                            elif self.armyselector.rect.collidepoint(self.mousepos): ## Scrolling when mouse at event log
+                                self.armyselector.currentrow += 1
+                                if self.armyselector.currentrow < self.armyselector.logsize:
+                                    self.setuparmyicon()
+                                    self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
+                                else:
+                                    self.armyselector.currentrow -= 1
+                                    if self.armyselector.currentrow < 0:
+                                        self.armyselector.currentrow = 0
                             else: ## Scrolling in game map to zoom
                                 self.camerascale -= 1
                                 if self.camerascale < 1: self.camerascale = 1
@@ -1071,12 +1097,24 @@ class Battle():
                         elif mouse_right:
                             self.clickcheck = 1
                             self.uicheck = 1
+                    elif self.selectscroll.rect.collidepoint(self.mousepos): ## Have to run logscroll before event log
+                        if (mouse_down or mouse_up):
+                            # print(self.armyselector.logsize, self.selectscroll.logsize)
+                            self.clickcheck = 1
+                            self.uicheck = 1
+                            newrow = self.selectscroll.update(self.mousepos)
+                            if self.armyselector.currentrow != newrow:
+                                self.armyselector.currentrow = newrow
+                                self.setuparmyicon()
+                        elif mouse_right:
+                            self.clickcheck = 1
+                            self.uicheck = 1
                     elif self.eventlog.rect.collidepoint(self.mousepos):
                         if mouse_up or mouse_right:
                             self.clickcheck = 1
                             self.uicheck = 1
                     elif self.armyselector.rect.collidepoint(self.mousepos):
-                        if self.armyiconmouseover() == 1:
+                        if self.armyiconmouseover(mouse_up, mouse_right) == 1:
                             pass
                     elif self.uimouseover() == 1:
                         pass
@@ -1105,6 +1143,12 @@ class Battle():
                         self.playerposlist[army.gameid] = army.basepos
                     else:
                         self.enemyposlist[army.gameid] = army.basepos
+                    if army.basepos[0] < 0 or army.basepos[0] > 1000 or army.basepos[1] < 0 or army.basepos[
+                        1] > 1000:  ## remove unit when it go out of battlemap
+                        self.allunitindex.remove(army.gameid)
+                        army.kill()
+                        for hitbox in army.hitbox:
+                            hitbox.kill()
                     if army.rect.collidepoint(self.battlemousepos[0]):
                         posmask = int(self.battlemousepos[0][0] - army.rect.x), int(self.battlemousepos[0][1] - army.rect.y)
                         try:
@@ -1132,10 +1176,10 @@ class Battle():
                         self.setuparmyicon()
                     if army.state == 100 and army.gotkilled == 0:
                         if army.gameid < 2000:
-                            self.allunitindex = self.die(self.deadindex, army, self.playerarmy, self.enemyarmy, self.deadunit, self.allcamera, self.hitboxs, self.allunitlist, self.allunitindex)
+                            self.die(self, army, self.playerarmy, self.enemyarmy)
                             self.setuparmyicon()
                         else:
-                            self.allunitindex = self.die(self.deadindex, army, self.enemyarmy, self.playerarmy, self.deadunit, self.allcamera, self.hitboxs, self.allunitlist, self.allunitindex)
+                            self.die(self, army, self.enemyarmy, self.playerarmy)
                             self.setuparmyicon()
                         self.eventlog.addlog([0, str(army.leader[0].name) + "'s battalion is destroyed"], [0, 1])
                 if self.lastselected is not None and self.lastselected.state != 100:
@@ -1246,7 +1290,7 @@ class Battle():
                         self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
                         self.allui.add(self.buttonnamepopup)
                         if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                            self.allunitindex = self.splitunit(whoinput, 1, self.playerarmy, self.enemyarmy, self.allunitlist, self.camerascale, self.enactment, self.imagewidth, self.imageheight, gameleader, self.allleader, self.inspectuipos, self.allunitindex)
+                            self.allunitindex = self.splitunit(self,whoinput, 1, gameleader)
                             self.splithappen = True
                             self.checksplit(whoinput)
                             self.allui.remove(*self.leadernow)
@@ -1257,7 +1301,7 @@ class Battle():
                         self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
                         self.allui.add(self.buttonnamepopup)
                         if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                            self.allunitindex = self.splitunit(whoinput, 0, self.playerarmy, self.enemyarmy, self.allunitlist, self.camerascale, self.enactment, self.imagewidth, self.imageheight, gameleader, self.allleader, self.inspectuipos, self.allunitindex)
+                            self.allunitindex = self.splitunit(whoinput, 0, gameleader)
                             self.splithappen = True
                             self.checksplit(whoinput)
                             self.allui.remove(*self.leadernow)
@@ -1407,7 +1451,17 @@ class Battle():
                                                     self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
                         if thissquad.state in (11, 12, 13):
                             if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
-                                thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                                if thissquad.attacktarget in self.allunitindex:
+                                    thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                                else:
+                                    thissquad.attackpos = 0
+                                    thissquad.attacktarget = 0
+                                    for target in list(thissquad.battalion.neartarget.values()):
+                                        if target in self.allunitindex:
+                                            thissquad.attackpos = target[1]
+                                            thissquad.attacktarget = target[1]
+                                            thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                                            break
                             if thissquad.reloadtime >= thissquad.reload and (
                                     (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
                                 rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.shootrange, self.camerascale)

@@ -737,10 +737,6 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.squadtoarmy(squadgroup)
                     self.rotate()
         if self.state != 100:
-            if self.basepos[0] < 0 or self.basepos[0] > 1000 or self.basepos[1] < 0 or self.basepos[1] > 1000: ## remove unit when it go out of battlemap
-                self.kill()
-                for hitbox in self.hitbox:
-                    hitbox.kill()
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
             self.charging = False

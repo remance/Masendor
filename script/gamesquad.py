@@ -361,7 +361,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
         """apply height to range"""
-        self.shootrange = self.shootrange * self.battalion.height / 100
+        if self.battalion.height > 100:
+            self.shootrange = self.shootrange * self.battalion.height / 100
         """apply status effect from trait"""
         if len(self.trait) > 1:
             for trait in self.trait.values():

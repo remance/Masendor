@@ -11,31 +11,30 @@ SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
 
-def die(deadindex, who, group, enemygroup, deadgroup, rendergroup, hitboxgroup, allunitlist, allunitindex):
+def die(battle, who, group, enemygroup):
     """remove battalion,hitbox when it dies"""
-    deadindex += 1
+    battle.deadindex += 1
     if who.commander:  ## more morale penalty if the battalion is a command battalion
         for army in group:
             for squad in army.squadsprite:
                 squad.basemorale -= 30
     for hitbox in who.hitbox:
-        rendergroup.remove(hitbox)
-        hitboxgroup.remove(hitbox)
+        battle.allcamera.remove(hitbox)
+        battle.hitboxs.remove(hitbox)
         hitbox.kill()
-    allunitlist.remove(who)
-    allunitindex.remove(who.gameid)
+    battle.allunitlist.remove(who)
+    battle.allunitindex.remove(who.gameid)
     group.remove(who)
-    deadgroup.add(who)
-    rendergroup.change_layer(sprite=who, new_layer=1)
+    battle.deadunit.add(who)
+    battle.allcamera.change_layer(sprite=who, new_layer=1)
     who.gotkilled = 1
     for thisarmy in enemygroup:  ## get bonus authority to the another army
         thisarmy.authority += 5
     for thisarmy in group:  ## morale dmg to every squad in army when allied battalion destroyed
         for squad in thisarmy.squadsprite:
             squad.basemorale -= 20
-    return allunitindex
 
-def splitunit(who, how, playerarmy, enemyarmy, allunitlist, camerascale, enactment, imagewidth, imageheight, gameleader, allleader, inspectuipos, allunitindex):
+def splitunit(battle, who, how, gameleader):
     """split battalion either by row or column into two seperate battalion"""
     if how == 0:  ## split by row
         newarmysquad = np.array_split(who.armysquad, 2)[1]
@@ -76,19 +75,19 @@ def splitunit(who, how, playerarmy, enemyarmy, allunitlist, camerascale, enactme
         width, height = 0, 0
         squadnum = 0
         for squad in thissprite:
-            width += imagewidth
+            width += battle.imagewidth
             if squadnum >= len(who.armysquad[0]):
                 width = 0
-                width += imagewidth
-                height += imageheight
+                width += battle.imagewidth
+                height += battle.imageheight
                 squadnum = 0
-            squad.inspposition = (width + inspectuipos[0], height + inspectuipos[1])
+            squad.inspposition = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
             squad.rect = squad.image.get_rect(topleft=squad.inspposition)
             squad.pos = pygame.Vector2(squad.rect.centerx, squad.rect.centery)
             squadnum += 1
-    newleader = [who.leader[1], gameleader.Leader(0, 0, 1, who, allleader), gameleader.Leader(0, 0, 2, who, allleader),
-                 gameleader.Leader(0, 0, 3, who, allleader)]
-    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(0, 0, 3, who, allleader)]
+    newleader = [who.leader[1], gameleader.Leader(0, 0, 1, who, battle.allleader), gameleader.Leader(0, 0, 2, who, battle.allleader),
+                 gameleader.Leader(0, 0, 3, who, battle.allleader)]
+    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(0, 0, 3, who, battle.allleader)]
     for index, leader in enumerate(who.leader):  ## also change army position of all leader in that battalion
         leader.armyposition = index  ## change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]
@@ -98,7 +97,7 @@ def splitunit(who, how, playerarmy, enemyarmy, allunitlist, camerascale, enactme
     who.makeallsidepos()
     who.setuparmy()
     who.setupfrontline()
-    who.viewmode = camerascale
+    who.viewmode = battle.camerascale
     who.changescale()
     who.height = who.gamemapheight.getheight(who.basepos)
     for thishitbox in who.hitbox: thishitbox.kill()
@@ -127,20 +126,20 @@ def splitunit(who, how, playerarmy, enemyarmy, allunitlist, camerascale, enactme
     ## start making new battalion
     if who.gameid < 2000:
         playercommand = True
-        newgameid = playerarmy[-1].gameid + 1
+        newgameid = battle.playerarmy[-1].gameid + 1
         colour = (144, 167, 255)
         army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
-                                      squadlist=newarmysquad, imgsize=(imagewidth, imageheight),
+                                      squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
                                       colour=colour, control=playercommand, coa=coa, commander=False)
-        playerarmy.append(army)
+        battle.playerarmy.append(army)
     else:
-        playercommand = enactment
-        newgameid = enemyarmy[-1].gameid + 1
+        playercommand = battle.enactment
+        newgameid = battle.enemyarmy[-1].gameid + 1
         colour = (255, 114, 114)
         army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
-                                      squadlist=newarmysquad, imgsize=(imagewidth, imageheight),
+                                      squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
                                       colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
-        enemyarmy.append(army)
+        battle.enemyarmy.append(army)
     army.leader = newleader
     army.squadsprite = newsquadsprite
     for squad in army.squadsprite:
@@ -161,11 +160,11 @@ def splitunit(who, how, playerarmy, enemyarmy, allunitlist, camerascale, enactme
     army.commandbuff = [(army.leader[0].meleecommand - 5) * 0.1, (army.leader[0].rangecommand - 5) * 0.1, (army.leader[0].cavcommand - 5) * 0.1]
     army.leadersocial = army.leader[0].social
     army.authrecal()
-    allunitlist.append(army)
-    allunitindex.append(army.gameid)
+    battle.allunitlist.append(army)
+    battle.allunitindex.append(army.gameid)
     army.newangle = army.angle
     army.rotate()
-    army.viewmode = camerascale
+    army.viewmode = battle.camerascale
     army.changescale()
     army.makeallsidepos()
     army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
@@ -176,4 +175,3 @@ def splitunit(who, how, playerarmy, enemyarmy, allunitlist, camerascale, enactme
                    gamebattalion.Hitbox(army, 2, 1, army.rect.height - (army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 1)]
     army.autosquadplace = False
-    return allunitindex
