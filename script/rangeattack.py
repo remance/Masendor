@@ -15,7 +15,7 @@ class Rangearrow(pygame.sprite.Sprite):
     def __init__(self, shooter, shootrange, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.speed = 150
+        self.speed = 50
         self.image = self.images[0]
         self.arcshot = False
         if 16 in shooter.trait: self.arcshot = True
@@ -138,10 +138,10 @@ class Rangearrow(pygame.sprite.Sprite):
         move = self.basetarget - self.basepos
         move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""
-        for hitbox in pygame.sprite.spritecollide(self, hitbox, 0, collided=pygame.sprite.collide_mask):
-            if hitbox.who.gameid != self.shooter.battalion.gameid:
-                self.passwho = hitbox.who
-                self.side = hitbox.side
+        for thishitbox in pygame.sprite.spritecollide(self, hitbox, 0, collided=pygame.sprite.collide_mask):
+            if thishitbox.who.gameid != self.shooter.battalion.gameid:
+                self.passwho = thishitbox.who
+                self.side = thishitbox.side
                 if self.arcshot == False:
                     self.registerhit(who, target, squadlist, squadindexlist)
                     self.kill()

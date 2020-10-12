@@ -1,5 +1,7 @@
 import pygame
 import pygame.freetype
+import datetime
+
 
 class Uibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event):
@@ -628,3 +630,56 @@ class Armyicon(pygame.sprite.Sprite):
             self.leaderimage = newimage
             self.image.blit(self.leaderimage, self.leaderrect)
 
+class Timer(pygame.sprite.Sprite):
+    def __init__(self, pos, textsize = 20):
+        self._layer = 9
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", textsize)
+        self.pos = pos
+        self.timer = 0
+        self.oldtimer = 0
+        self.image = pygame.Surface((100,30), pygame.SRCALPHA)
+        self.image_original = self.image.copy()
+        self.timersurface = self.font.render(str(round(self.timer,2)), 1, (0, 0, 0))
+        self.timerrect = self.timersurface.get_rect(topleft=(5,5))
+        self.image.blit(self.timersurface, self.timerrect)
+        self.rect = self.image.get_rect(topleft=pos)
+
+    def timerupdate(self, dt):
+        if dt > 0:
+            self.timer += dt
+            if self.timer - self.oldtimer > 1:
+                self.oldtimer = self.timer
+                self.image = self.image_original.copy()
+                timenum = str(datetime.timedelta(seconds=self.timer))
+                timenum = str(timenum).split(".")[0]
+                self.timersurface = self.font.render(timenum, 1, (0, 0, 0))
+                self.image.blit(self.timersurface, self.timerrect)
+
+class Timeui(pygame.sprite.Sprite):
+    def __init__(self, pos, image):
+        self._layer = 8
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.image = image.copy()
+        self.rect = self.image.get_rect(topleft=pos)
+
+class Speednumber(pygame.sprite.Sprite):
+    def __init__(self, pos, speed, textsize = 20):
+        self._layer = 9
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", textsize)
+        self.pos = pos
+        self.image = pygame.Surface((50,30), pygame.SRCALPHA)
+        self.image_original = self.image.copy()
+        self.speed = speed
+        self.timersurface = self.font.render(str(self.speed), 1, (0, 0, 0))
+        self.timerrect = self.timersurface.get_rect(topleft=(3,3))
+        self.image.blit(self.timersurface, self.timerrect)
+        self.rect = self.image.get_rect(center=pos)
+
+    def speedupdate(self, newspeed):
+        self.image = self.image_original.copy()
+        self.speed = newspeed
+        self.timersurface = self.font.render(str(self.speed), 1, (0, 0, 0))
+        self.image.blit(self.timersurface, self.timerrect)
