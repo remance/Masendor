@@ -92,8 +92,8 @@ class Gameui(pygame.sprite.Sprite):
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
             self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
-                              "Melee Defence: ", 'Range Defence: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defence:"]
+                              "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
+                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense:"]
             self.qualitytext = ["Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect"]
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water", "Deep water"]
         #     self.iconimagerect = self.icon[0].get_rect(

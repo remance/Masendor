@@ -385,6 +385,7 @@ class Unitsquad(pygame.sprite.Sprite):
             self.chargedef *= combatmod/100
         if self.battalion.gamemapfeature.featuremod[self.battalion.feature][10] != [0]:
             if 1 in self.battalion.gamemapfeature.featuremod[self.battalion.feature][10]:
+                self.statuseffect[93] = statuslist[93].copy()
                 if self.weight > 60 or self.stamina <= 0: ## Drowning
                     self.statuseffect[102] = statuslist[102].copy()
                 elif self.weight > 30: ## Sinking

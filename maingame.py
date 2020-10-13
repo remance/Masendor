@@ -1174,7 +1174,6 @@ class Battle():
                                         self.gamespeed = self.gamespeedset[newindex]
                                 elif button.event == 2:
                                     newindex = self.gamespeedset.index(self.gamespeed) + 1
-                                    print(newindex, self.gamespeedset, len(self.gamespeedset))
                                     if newindex < len(self.gamespeedset):
                                         self.gamespeed = self.gamespeedset[newindex]
                                 self.speednumber.speedupdate(self.gamespeed)
