@@ -14,6 +14,7 @@ import os
 import os.path
 import random
 import re
+import datetime
 
 import numpy as np
 import pygame
@@ -63,6 +64,21 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
         return imgs, loadorderfile
 
+def csv_read(file, subfolder=[]):
+    returndict = {}
+    folderlist = ""
+    for folder in subfolder:
+        folderlist += "\\" + folder
+    folderlist += "\\" + file
+    with open(main_dir + folderlist, 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        for row in rd:
+            for n, i in enumerate(row):
+                if i.isdigit():
+                    row[n] = int(i)
+            returndict[row[0]] = row[1:]
+        unitfile.close()
+    return returndict
 
 def load_sound(file):
     file = os.path.join(main_dir, "data/sound/", file)
@@ -181,8 +197,8 @@ class Battle():
         # (do this before the classes are used, after screen setup)
         ## create game map
         featurelist = ["Grassland","Draught","Bushland","Forest","Inland Water","Road","Building","Farm","Pandemonium","Mana Flux","Creeping Rot","Mud","Savanna","Draught","Tropical Shrubland","Jungle","Inland Water","Road","Building","Farm","Pandemonium","Heat Mana","Creeping Rot","Mud","Volcanic Soil","Scorched Land","","","","Road","","Fertile Farm","Pandemonium","Fire Mana","Creeping Rot","","Desert Plain","Desert Sand","Desert Shrubland","Desert Forest","Oasis","Sand Road","Desert Dwelling","Desert Farm","Pandemonium","Earth Mana","Creeping Rot","Quicksand","Snow","Tundra","Arctic Shrubland","Arctic Forest","Frozen Water","Snow Road","Warm Shelter","Arctic Farm","Pandemonium","Ice Mana","Preserving Rot","Ice Ground","","","","","Poisoned Water","","","","Pandemonium","Poisoned Mana","Creeping Rot","","","Void","","","","","","","","Leyline","Creeping Rot","","","","","","","","","","Pandemonium","","Creeping Rot","","","","","","","","","","Pandemonium","","Rotten Land","","Lively Water","Empty Water","Marsh","Swamp","Water","Bridge","Swamp Building","Swamp Farm","Pandemonium","Cold Mana","Creeping Rot","","Sea","Ocean","Coral Reef","Underwater Forest","Fresh Water","Bridge","Sunken City","Fishery","Pandemonium","Water Mana","Creeping Rot",""]
-        mapselected = "testmap"
-        imgs = load_images(['map', mapselected],loadorder=False)
+        self.mapselected = "testmap"
+        imgs = load_images(['map', self.mapselected],loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
         gamemap.Mapfeature.images = [imgs[1]]
         gamemap.Mapheight.images = [imgs[2]]
@@ -303,6 +319,7 @@ class Battle():
         self.eventlog = pygame.sprite.Group()
         self.logscroll = pygame.sprite.Group()
         self.buttonui = pygame.sprite.Group()
+        self.lorebuttonui = pygame.sprite.Group()
         self.squadselectedborder = pygame.sprite.Group()
         self.fpscount = pygame.sprite.Group()
         self.switchbuttonui = pygame.sprite.Group()
@@ -327,6 +344,8 @@ class Battle():
         self.timeui = pygame.sprite.Group()
         self.timenumber = pygame.sprite.Group()
         self.speednumber = pygame.sprite.Group()
+        self.lorenamelist = pygame.sprite.Group()
+        self.subsectionname = pygame.sprite.Group()
         """assign default groups"""
         gamemap.Basemap.containers = self.battlemap, self.mapupdater
         gamemap.Mapfeature.containers = self.battlemapfeature, self.mapupdater
@@ -342,7 +361,7 @@ class Battle():
         gameui.Gameui.containers = self.gameui, self.uiupdater
         gameui.Minimap.containers = self.minimap, self.allui
         gameui.FPScount.containers = self.allui
-        gameui.Uibutton.containers = self.buttonui, self.uiupdater
+        gameui.Uibutton.containers = self.buttonui, self.lorebuttonui, self.uiupdater
         gameui.Switchuibutton.containers = self.switchbuttonui, self.uiupdater
         gameui.Selectedsquad.containers = self.squadselectedborder
         gameui.Skillcardicon.containers = self.traiticon, self.skillicon, self.allui
@@ -363,6 +382,8 @@ class Battle():
         gamemenu.Slidermenu.containers = self.slidermenu
         gamemenu.Valuebox.containers = self.valuebox
         gamelorebook.Lorebook.containers = self.lorebook
+        gamelorebook.Subsectionlist.containers = self.lorenamelist
+        gamelorebook.Subsectionname.containers = self.subsectionname
         ## create the background map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
@@ -401,6 +422,7 @@ class Battle():
         self.beforeselected = None
         self.splithappen = False
         self.splitbutton = False
+        self.currentweather = None
         self.splitunit = gamelongscript.splitunit
         self.die = gamelongscript.die
         self.leadernow = []
@@ -472,8 +494,34 @@ class Battle():
         self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
+        gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data','lore'])
+        gamelorebook.Lorebook.factionlore = None
+        gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
+        gamelorebook.Lorebook.unitlore = None
+        gamelorebook.Lorebook.armourstat = self.allarmour.armourlist
+        gamelorebook.Lorebook.weaponstat = self.allweapon.weaponlist
+        gamelorebook.Lorebook.statusstat = self.gameunitstat.statuslist
+        gamelorebook.Lorebook.skillstat = self.gameunitstat.abilitylist
+        gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
+        gamelorebook.Lorebook.leaderstat = self.allleader.leaderlist
+        gamelorebook.Lorebook.leaderlore = None
+        gamelorebook.Lorebook.terrainstat = None
+        gamelorebook.Lorebook.landmarkstat = None
         imgs = load_images(['ui','lorebook_ui'],loadorder=False)
         self.lorebook = gamelorebook.Lorebook(imgs[0])
+        self.lorenamelist = gamelorebook.Subsectionlist(self.lorebook.rect.topleft, imgs[1])
+        self.subsectionname
+        imgs = load_images(['ui','lorebook_ui','button'],loadorder=False)
+        self.lorebuttonui = [gameui.Uibutton(self.lorebook.rect.topleft[0] + imgs[0].get_width(), self.lorebook.rect.topleft[1] + (imgs[0].get_height()/2), imgs[0], 0, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5), self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[1], 1, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 2, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[2], 2, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 3, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[3], 3, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 4, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[4], 4, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 5, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[5], 5, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 6, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[6], 6, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 7, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[7], 7, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 8, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[8], 8, 10),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 9, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[9], 9, 10)]
         buttonimage = load_images(['ui','battlemenu_ui','button'], loadorder=False)
         self.battlemenubutton = [gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 100), text="Resume", size=14),
                                  gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 50), text="Encyclopedia", size=14),
@@ -490,7 +538,7 @@ class Battle():
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
                              self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
-        self.squadindexlist = unitsetup(self.playerarmy, self.enemyarmy, '\\testmap',
+        self.squadindexlist = unitsetup(self.playerarmy, self.enemyarmy, '\\' + self.mapselected,
                                         self.imagewidth, self.imageheight, self.allweapon, self.allarmour, self.allleader,
                                         self.gameunitstat, self.coa, self.squad,
                                         self.inspectuipos, enactment=self.enactment)
@@ -886,8 +934,18 @@ class Battle():
                 break
         return effectmouseover
 
+    def convertweathertime(self):
+        for item in self.weatherevent.items():
+            newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
+            self.weatherevent[item[0]] = newtime, item[2]
+
     def rungame(self):
         self.setuparmyicon()
+        try:
+            self.weatherevent = csv_read('weather.csv', ["data", "map", self.mapselected])
+            self.convertweathertime()
+        except:## If no weather found use default light sunny weather
+            self.weatherevent = {5: [datetime.datetime.strptime("00:00:00", "%H:%M:%S").time(), 1]}
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -1530,19 +1588,15 @@ class Battle():
                                 button.image = button.images[2]
                                 if button.text == "Resume":
                                     self.gamestate = 1
-                                    self.allui.remove(self.battlemenu)
-                                    self.allui.remove(*self.battlemenubutton)
-                                    self.allui.remove(*self.slidermenu)
-                                    self.allui.remove(*self.valuebox)
+                                    self.allui.remove(self.battlemenu, *self.battlemenubutton, *self.slidermenu, *self.valuebox)
                                 elif button.text == "Encyclopedia":
                                     self.battlemenu.mode = 2
-                                    self.allui.add(self.lorebook)
+                                    self.allui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui)
+                                    self.lorebook.changesection(0)
                                 elif button.text == "Option":
                                     self.battlemenu.changemode(1)
                                     self.allui.remove(*self.battlemenubutton)
-                                    self.allui.add(*self.optionmenubutton)
-                                    self.allui.add(*self.slidermenu)
-                                    self.allui.add(*self.valuebox)
+                                    self.allui.add(*self.optionmenubutton,*self.slidermenu,*self.valuebox)
                                     self.oldsetting = self.slidermenu[0].value ## Save previous setting for in case of cancel
                                 elif button.text == "Main Menu":
                                     self.allui.clear(self.screen, self.background)
@@ -1566,9 +1620,7 @@ class Battle():
                                     pygame.mixer.music.set_volume(self.mixervolume)
                                     mainmenu.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
                                     self.battlemenu.changemode(0)
-                                    self.allui.remove(*self.optionmenubutton)
-                                    self.allui.remove(*self.slidermenu)
-                                    self.allui.remove(*self.valuebox)
+                                    self.allui.remove(*self.optionmenubutton,*self.slidermenu,*self.valuebox)
                                     self.allui.add(*self.battlemenubutton)
                                 elif button.text == "Apply":
                                     self.oldsetting = self.mixervolume
@@ -1579,9 +1631,7 @@ class Battle():
                                     pygame.mixer.music.set_volume(self.mixervolume)
                                     self.slidermenu[0].update(self.mixervolume, self.valuebox[0], forcedvalue=True)
                                     self.battlemenu.changemode(0)
-                                    self.allui.remove(*self.optionmenubutton)
-                                    self.allui.remove(*self.slidermenu)
-                                    self.allui.remove(*self.valuebox)
+                                    self.allui.remove(*self.optionmenubutton,*self.slidermenu,*self.valuebox)
                                     self.allui.add(*self.battlemenubutton)
                         else:
                             button.image = button.images[0]
@@ -1589,6 +1639,12 @@ class Battle():
                         if slider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):
                             slider.update(self.mousepos, self.valuebox[0])
                             self.mixervolume = float(slider.value / 100)
+                elif self.battlemenu.mode == 2:
+                    if mouse_up == True:
+                        for button in self.lorebuttonui:
+                            if button.rect.collidepoint(self.mousepos):
+                                self.lorebook.changesection(button.event)
+                                break
             self.screen.blit(self.camera.image, (0,0))
             self.allui.draw(self.screen)  ## Draw the scene
             # pygame.display.update(dirty)

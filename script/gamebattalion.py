@@ -62,6 +62,20 @@ class Armourstat():
 class Unitstat():
     def __init__(self):
         """Unit stat data read"""
+        self.unitlist = {}
+        with open(main_dir + "\data\war" + '\\unit_preset.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                    if n in (5, 6, 11, 22, 23):
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                self.unitlist[row[0]] = row[1:]
+            unitfile.close()
         self.statuslist = {}
         with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)

@@ -4,8 +4,8 @@ import datetime
 
 
 class Uibutton(pygame.sprite.Sprite):
-    def __init__(self, X, Y, image, event):
-        self._layer = 8
+    def __init__(self, X, Y, image, event, newlayer=8):
+        self._layer = newlayer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (X, Y)
         self.image = image
@@ -94,7 +94,7 @@ class Gameui(pygame.sprite.Sprite):
             self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
                               "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense:"]
-            self.qualitytext = ["Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect"]
+            self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water", "Deep water"]
         #     self.iconimagerect = self.icon[0].get_rect(
         #         center=(

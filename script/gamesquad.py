@@ -32,70 +32,58 @@ class Unitsquad(pygame.sprite.Sprite):
         self.gamestart = 0
         self.nocombat = 0
         self.battalion = battalion
-        with open(main_dir + "\data\war" + '\\unit_preset.csv', 'r') as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                if str(unitid) == row[0]:
-                    stat = row
-                    for n, i in enumerate(stat):
-                        if i.isdigit():
-                            stat[n] = int(i)
-                        if n in (5, 6, 11, 22, 23):
-                            if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                            elif i.isdigit():
-                                row[n] = [int(i)]
+        stat = statlist.unitlist[int(unitid)]
         self.leader = None
         self.boardpos = None ## Used for event log position of squad (Assigned in maingame unit setup)
-        self.name = stat[1]
-        self.unitclass = stat[2]
-        self.grade = stat[3]
-        self.race = stat[4]
-        self.trait = stat[5]
+        self.name = stat[0]
+        self.unitclass = stat[1]
+        self.grade = stat[2]
+        self.race = stat[3]
+        self.trait = stat[4]
         self.trait = self.trait + statlist.gradelist[self.grade][11]
-        self.skill = stat[6]
+        self.skill = stat[5]
         self.skillcooldown = {}
-        self.cost = stat[7]
-        self.baseattack = round(stat[8] + int(statlist.gradelist[self.grade][1]), 0)
-        self.basemeleedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
-        self.baserangedef = round(stat[10] + int(statlist.gradelist[self.grade][2]), 0)
-        self.armourgear = stat[11]
-        self.basearmour = armourlist.armourlist[stat[11][0]][1] * (
-                    armourlist.quality[stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
-        self.baseaccuracy = stat[13]
-        self.baserange = stat[14]
-        self.ammo = stat[15]
-        self.basereload = stat[16]
+        self.cost = stat[6]
+        self.baseattack = round(stat[7] + int(statlist.gradelist[self.grade][1]), 0)
+        self.basemeleedef = round(stat[8] + int(statlist.gradelist[self.grade][2]), 0)
+        self.baserangedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
+        self.armourgear = stat[10]
+        self.basearmour = armourlist.armourlist[stat[10][0]][1] * (
+                    armourlist.quality[stat[10][1]] / 100)  ## Armour stat is cal from based armour * quality
+        self.baseaccuracy = stat[12]
+        self.baserange = stat[13]
+        self.ammo = stat[14]
+        self.basereload = stat[15]
         self.reloadtime = 0
-        self.basecharge = stat[17]
+        self.basecharge = stat[16]
         self.basechargedef = 10
-        self.chargeskill = stat[18]
+        self.chargeskill = stat[17]
         self.charging = False
         self.skill.insert(0, self.chargeskill)
         self.skill = {x: statlist.abilitylist[x] for x in self.skill if x != 0}
-        self.troophealth = round(stat[19] * (int(statlist.gradelist[self.grade][7]) / 100))
-        self.stamina = int(stat[20] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
-        self.mana = stat[21]
-        self.meleeweapon = stat[22]
-        self.rangeweapon = stat[23]
-        self.basemorale = int(stat[24] + int(statlist.gradelist[self.grade][9]))
-        self.basediscipline = int(stat[25] + int(statlist.gradelist[self.grade][10]))
-        self.troopnumber = stat[28]
+        self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100))
+        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
+        self.mana = stat[20]
+        self.meleeweapon = stat[21]
+        self.rangeweapon = stat[22]
+        self.basemorale = int(stat[23] + int(statlist.gradelist[self.grade][9]))
+        self.basediscipline = int(stat[24] + int(statlist.gradelist[self.grade][10]))
+        self.troopnumber = stat[27]
         self.basespeed = 50
-        self.mount = statlist.mountlist[stat[30]]
-        if stat[30] != 0:
+        self.mount = statlist.mountlist[stat[29]]
+        if stat[29] != 0:
             self.basespeed = self.mount[1]
             self.troophealth += self.mount[2]
             self.basecharge += self.mount[3]
             self.trait = self.trait + self.mount[5] ## Apply mount trait to unit
-        self.weight = weaponlist.weaponlist[stat[22][0]][3] + weaponlist.weaponlist[stat[23][0]][3] + \
-                      armourlist.armourlist[stat[11][0]][2]
-        self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]
+        self.weight = weaponlist.weaponlist[stat[21][0]][3] + weaponlist.weaponlist[stat[22][0]][3] + \
+                      armourlist.armourlist[stat[10][0]][2]
+        self.trait = self.trait + armourlist.armourlist[stat[10][0]][4]
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
-        if stat[29] in (1, 2):
-            self.unittype = stat[29] - 1
+        if stat[28] in (1, 2):
+            self.unittype = stat[28] - 1
             self.featuremod = 1 ## the starting column in unit_terrainbonus of infantry
-        elif stat[29] in (3, 4, 5, 6, 7):
+        elif stat[28] in (3, 4, 5, 6, 7):
             self.unittype = 2
             self.featuremod = 3 ## the starting column in unit_terrainbonus of cavalry
         self.description = stat[-1]

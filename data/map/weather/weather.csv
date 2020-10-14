@@ -1,0 +1,13 @@
+"ID","Name","atk_effect","def_melee_effect","def_range_effect","armour_effect","speed_effect","accuracy_effect","reload_effect","charge_effect","charge_def_bonus","health_regen_buff","stamina_regen_buff","morale_bonus","discipline_bonus","sight_bonus","hidden_bonus","Temperature","Elemental","spawn","Status"
+0,"Random",,,,,,,,,,,,,,,,,,,
+1,"Rain",,,,,,90,,,,,,-10,,,,-15,1,10,
+2,"Snow",,,,,,,,,,,,,,,,-30,0,5,
+3,"Bread Dust",,,,,,85,,,,,,,,,,0,0,1,
+4,"Foggy",90,90,70,,,70,,90,,,,,,,,0,0,1,
+5,"Sunny",,,,,,,,,,,,,,,,5,0,0,
+6,"Cloudy",,,,,,,,,,,,,,,,-5,0,0,
+7,"Void",,,,,,,,,,,,,,,,0,0,,
+8,"Mana Mist",,,,,,80,,,,,,,,,,0,0,,
+9,"Thunder Storm",,,,,,60,,,,,,-30,,,,-20,1,20,
+10,"Hail",,,,,,,,,,,,-20,,,,-10,1,5,
+11,"Windy",90,,,,,60,80,,,,,,,,,-10,0,0,
