@@ -7,28 +7,30 @@ SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
 class Weather:
-    def __init__(self, type, level, allweather):
-        self.stat = allweather[type]
-        self.temperature
-        self.statuseffect
+    def __init__(self, type, level, weatherlist):
+        self.type = type
+        stat = weatherlist[type]
+        self.temperature = stat[16]
         self.level = level ## Weather level 0 = Light, 1 = Normal, 2 = Strong
-        self.spawnrate = level + 1
+        self.spawnrate = stat[18] * (level + 1)
+        self.statuseffect = stat[19]
+        self.spawnangle = stat[21]
+        self.speed = stat[22] * (level + 1)
 
-    def weatherchange(self, level):
-        self.level = level
+    # def weatherchange(self, level):
+    #     self.level = level
 
 class Mattersprite(pygame.sprite.Sprite):
-    def __init__(self, pos, target, images, type):
+    def __init__(self, pos, target, speed, image):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.type = type
-        self.speed = 100
+        self.speed = speed
         # if type in (0,1,2):
         #     self.speed =
-        self.pos = pos
-        self.image = images[random.randint(0,len(images)-1)]
+        self.pos = pygame.Vector2(pos)
+        self.target = pygame.Vector2(target)
+        self.image = image
         self.rect = self.image.get_rect(center=self.pos)
-        self.target = target
 
     def update(self, dt):
         move = self.target - self.pos
@@ -36,11 +38,10 @@ class Mattersprite(pygame.sprite.Sprite):
         if move_length > 0.1:
             move.normalize_ip()
             move = move * self.speed  * dt
-            if move.length() > move_length:
-                move = self.target - self.pos
-                move.normalize_ip()
             self.pos += move
             self.rect.center = list(int(v) for v in self.pos)
+            if move.length() > move_length:
+                self.kill()
         else :
             self.kill()
 

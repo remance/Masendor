@@ -175,3 +175,5 @@ def splitunit(battle, who, how, gameleader):
                    gamebattalion.Hitbox(army, 2, 1, army.rect.height - (army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 1)]
     army.autosquadplace = False
+
+

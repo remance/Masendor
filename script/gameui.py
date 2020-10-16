@@ -638,6 +638,7 @@ class Timer(pygame.sprite.Sprite):
         self.pos = pos
         self.timer = 0
         self.oldtimer = 0
+        self.timenum = datetime.timedelta(seconds=self.timer)
         self.image = pygame.Surface((100,30), pygame.SRCALPHA)
         self.image_original = self.image.copy()
         self.timersurface = self.font.render(str(round(self.timer,2)), 1, (0, 0, 0))
@@ -651,8 +652,8 @@ class Timer(pygame.sprite.Sprite):
             if self.timer - self.oldtimer > 1:
                 self.oldtimer = self.timer
                 self.image = self.image_original.copy()
-                timenum = str(datetime.timedelta(seconds=self.timer))
-                timenum = str(timenum).split(".")[0]
+                self.timenum = datetime.timedelta(seconds=self.timer)
+                timenum = str(self.timenum).split(".")[0]
                 self.timersurface = self.font.render(timenum, 1, (0, 0, 0))
                 self.image.blit(self.timersurface, self.timerrect)
 

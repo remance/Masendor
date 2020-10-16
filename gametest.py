@@ -77,10 +77,12 @@ if test[0] in range(0,1000) and test[1] in range(0,1000):
     print('hey')
 print("The time difference is :", timeit.default_timer() - starttime)
 
-k = {1:"00:01:00",2, 2:"00:02:00"}
-import datetime
-for item in k.items():
-    print(item)
-    newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
-    k[item[0]] = newtime
-print(k[1] < k[2])
+k = {1:"00:01:00", 2:"00:02:00"}
+k.pop(0)
+print(k)
+# import datetime
+# for item in k.items():
+#     print(item)
+#     newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
+#     k[item[0]] = newtime
+# print(k[1] < k[2])

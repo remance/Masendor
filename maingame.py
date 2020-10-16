@@ -23,7 +23,7 @@ from pygame.locals import *
 from pygame.transform import scale
 
 from RTS import mainmenu
-from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, gamelorebook
+from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, gamelorebook, gameweather
 
 config = mainmenu.config
 SoundVolume = mainmenu.SoundVolume
@@ -74,7 +74,7 @@ def csv_read(file, subfolder=[]):
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             for n, i in enumerate(row):
-                if i.isdigit():
+                if i.isdigit() or "-" in i:
                     row[n] = int(i)
             returndict[row[0]] = row[1:]
         unitfile.close()
@@ -263,6 +263,12 @@ class Battle():
         for img in imgsold:
             imgs.append(img)
         self.coa = imgs
+        ## Weather list
+        self.allweather = csv_read('weather.csv', ['data','map','weather'])
+        self.weatherimgs = []
+        for weather in ('0','1','2'):
+            imgs = load_images(['map','weather',weather],loadorder=False)
+            self.weatherimgs.append(imgs)
         ## Game Effect
         imgsold = load_images(['effect'])
         imgs = []
@@ -300,7 +306,7 @@ class Battle():
         self.allui = pygame.sprite.LayeredUpdates()
         self.unitupdater = pygame.sprite.Group()
         self.uiupdater = pygame.sprite.Group()
-        self.mapupdater = pygame.sprite.Group()
+        self.weatherupdater = pygame.sprite.Group()
         self.effectupdater = pygame.sprite.Group()
         self.battlemap = pygame.sprite.Group()
         self.battlemapfeature = pygame.sprite.Group()
@@ -346,11 +352,12 @@ class Battle():
         self.speednumber = pygame.sprite.Group()
         self.lorenamelist = pygame.sprite.Group()
         self.subsectionname = pygame.sprite.Group()
+        self.weathermatter = pygame.sprite.Group()
         """assign default groups"""
-        gamemap.Basemap.containers = self.battlemap, self.mapupdater
-        gamemap.Mapfeature.containers = self.battlemapfeature, self.mapupdater
-        gamemap.Mapheight.containers = self.battlemapheight, self.mapupdater
-        gamemap.Beautifulmap.containers = self.showmap, self.mapupdater, self.allcamera
+        gamemap.Basemap.containers = self.battlemap
+        gamemap.Mapfeature.containers = self.battlemapfeature
+        gamemap.Mapheight.containers = self.battlemapheight
+        gamemap.Beautifulmap.containers = self.showmap, self.allcamera
         gamebattalion.Unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
         gamesquad.Unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
         gamebattalion.Deadarmy.containers = self.deadunit, self.unitupdater, self.allcamera
@@ -361,7 +368,7 @@ class Battle():
         gameui.Gameui.containers = self.gameui, self.uiupdater
         gameui.Minimap.containers = self.minimap, self.allui
         gameui.FPScount.containers = self.allui
-        gameui.Uibutton.containers = self.buttonui, self.lorebuttonui, self.uiupdater
+        gameui.Uibutton.containers = self.buttonui, self.lorebuttonui
         gameui.Switchuibutton.containers = self.switchbuttonui, self.uiupdater
         gameui.Selectedsquad.containers = self.squadselectedborder
         gameui.Skillcardicon.containers = self.traiticon, self.skillicon, self.allui
@@ -384,6 +391,7 @@ class Battle():
         gamelorebook.Lorebook.containers = self.lorebook
         gamelorebook.Subsectionlist.containers = self.lorenamelist
         gamelorebook.Subsectionname.containers = self.subsectionname
+        gameweather.Mattersprite.containers = self.weathermatter, self.allui, self.weatherupdater
         ## create the background map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
@@ -392,6 +400,7 @@ class Battle():
         self.battlemapfeature = gamemap.Mapfeature(self.camerascale)
         self.battlemapheight = gamemap.Mapheight(self.camerascale)
         self.showmap = gamemap.Beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature, self.battlemapheight)
+        del gamemap.Beautifulmap.textureimages ## remove texture image list to clear memory
         gamebattalion.Unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
@@ -423,6 +432,7 @@ class Battle():
         self.splithappen = False
         self.splitbutton = False
         self.currentweather = None
+        self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height
         self.splitunit = gamelongscript.splitunit
         self.die = gamelongscript.die
         self.leadernow = []
@@ -936,16 +946,20 @@ class Battle():
 
     def convertweathertime(self):
         for item in self.weatherevent.items():
-            newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
-            self.weatherevent[item[0]] = newtime, item[2]
+            newtime = datetime.datetime.strptime(item[1][0], '%H:%M:%S').time()
+            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+            self.weatherevent[item[0]] = newtime, item[1][1]
 
     def rungame(self):
         self.setuparmyicon()
         try:
             self.weatherevent = csv_read('weather.csv', ["data", "map", self.mapselected])
+            self.weatherevent.pop('weatherid')
             self.convertweathertime()
         except:## If no weather found use default light sunny weather
-            self.weatherevent = {5: [datetime.datetime.strptime("00:00:00", "%H:%M:%S").time(), 1]}
+            newtime = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
+            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+            self.weatherevent = {5: [newtime, 1]}
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -1102,7 +1116,6 @@ class Battle():
                         else:
                             keypress = event.key
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
-            # self.mapupdater.update(self.dt,self.camerapos,self.camerascale)
             # self.screen.blit(self.background, self.camerapos)
             if self.gamestate == 1:
                 self.uiupdater.update()  # update ui
@@ -1237,6 +1250,36 @@ class Battle():
                                 self.speednumber.speedupdate(self.gamespeed)
                             elif mouse_right: self.uicheck = 1
                         break
+                for weather in self.weatherevent.items(): ## Weather system
+                    if self.timenumber.timenum >= weather[1][0]:
+                        del self.currentweather
+                        if weather[0] != 0:
+                            self.currentweather = gameweather.Weather(weather[0], weather[1][1], self.allweather)
+                        else: ## Random weather
+                            self.currentweather = gameweather.Weather(random.randint(0,11), random.randint(0,2), self.allweather)
+                        self.weatherevent.pop(weather[0])
+                        break
+                if self.currentweather.spawnrate > 0 and len(self.weathermatter) < self.currentweather.spawnrate * 10:
+                    spawnnum = range(0,self.currentweather.spawnrate)
+                    for spawn in spawnnum:
+                        truepos = (random.randint(10, SCREENRECT.width), 0)
+                        target = (truepos[0], SCREENRECT.height)
+                        if self.currentweather.spawnangle == 225:
+                            startpos = random.randint(10, SCREENRECT.width*2)
+                            truepos = (startpos,0)
+                            if startpos >= SCREENRECT.width:
+                                startpos = SCREENRECT.width
+                                truepos = (startpos, random.randint(0,SCREENRECT.height))
+                            if truepos[1] > 0: ## start position simulate from beyond top right of screen
+                                target = (truepos[1]*self.weatherscreenadjust, SCREENRECT.height)
+                            elif truepos[0] < SCREENRECT.width: ## start position inside screen width
+                                target = (0, truepos[0]/self.weatherscreenadjust)
+                        elif self.currentweather.spawnangle == 270:
+                            truepos = (SCREENRECT.width, random.randint(0, SCREENRECT.height))
+                            target = (0, truepos[1])
+                        randompic = random.randint(0,len(self.weatherimgs[self.currentweather.type])-1)
+                        self.weathermatter.add(gameweather.Mattersprite(truepos, target,
+                                                                        self.currentweather.speed, self.weatherimgs[self.currentweather.type][randompic]))
                 for army in self.allunitlist:
                     if army.gameid < 2000:
                         self.playerposlist[army.gameid] = army.basepos
@@ -1571,6 +1614,7 @@ class Battle():
                         self.combattimer = 0
                 self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
                 self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt, self.camerascale)
+                self.weatherupdater.update(self.dt)
                 self.combattimer += self.dt
                 self.uitimer += self.dt
                 self.camera.update(self.camerapos, self.allcamera)
