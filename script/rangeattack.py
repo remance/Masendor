@@ -148,12 +148,14 @@ class Rangearrow(pygame.sprite.Sprite):
         if move_length >= 1:
             move.normalize_ip()
             move = move * self.speed * dt
-            if move.length() > move_length:
-                move = self.basetarget - self.basepos
-                move.normalize_ip()
-            self.basepos += move
-            self.pos = self.basepos * viewmode
-            self.rect.center = list(int(v) for v in self.pos)
+            if move.length() <= move_length:
+                self.basepos += move
+                self.pos = self.basepos * viewmode
+                self.rect.center = list(int(v) for v in self.pos)
+            else:
+                self.basepos = self.basetarget
+                self.pos = self.basepos * viewmode
+                self.rect.center = self.pos
             self.mask = pygame.mask.from_surface(self.image)
         else:
             self.registerhit(who, target, squadlist, squadindexlist)

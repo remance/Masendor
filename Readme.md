@@ -15,6 +15,10 @@ Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dram
 
 4.9 Weather effect
 
+++ add weather icon to timer
+
+++ add weather special effect to map (fog,darkness,whatver)
+
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 
 Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle, custom unit editor, improve main menu

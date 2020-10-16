@@ -10,12 +10,29 @@ class Weather:
     def __init__(self, type, level, weatherlist):
         self.type = type
         stat = weatherlist[type]
-        self.temperature = stat[16]
         self.level = level ## Weather level 0 = Light, 1 = Normal, 2 = Strong
-        self.spawnrate = stat[18] * (level + 1)
+        self.meleeatk_buff = stat[1] * (self.level+1)
+        self.meleedef_buff = stat[2] * (self.level+1)
+        self.rangedef_buff = stat[3] * (self.level+1)
+        self.armour_buff = stat[4] * (self.level+1)
+        self.speed_buff = stat[5] * (self.level+1)
+        self.accuracy_buff = stat[6] * (self.level+1)
+        self.reload_buff = stat[7] * (self.level+1)
+        self.charge_buff = stat[8] * (self.level+1)
+        self.chargedef_buff = stat[9] * (self.level+1)
+        self.hpregen_buff = stat[10] * (self.level+1)
+        self.staminaregen_buff = stat[11] * (self.level+1)
+        self.morale_buff = stat[12] * (self.level+1)
+        self.discipline_buff = stat[13] * (self.level+1)
+        # self.sight_buff = stat[14] * (self.level+1)
+        # self.hidden_buff = stat[15] * (self.level+1)
+        self.temperature = stat[16] * (self.level+1)
+        self.elem = (stat[17], (self.level+1))
+        self.spawnrate = stat[18] * (self.level + 1)
         self.statuseffect = stat[19]
+        self.specialeffect = stat[20]
         self.spawnangle = stat[21]
-        self.speed = stat[22] * (level + 1)
+        self.speed = stat[22] * (self.level + 1)
 
     # def weatherchange(self, level):
     #     self.level = level
@@ -38,10 +55,12 @@ class Mattersprite(pygame.sprite.Sprite):
         if move_length > 0.1:
             move.normalize_ip()
             move = move * self.speed  * dt
-            self.pos += move
-            self.rect.center = list(int(v) for v in self.pos)
-            if move.length() > move_length:
-                self.kill()
+            if move.length() <= move_length:
+                self.pos += move
+                self.rect.center = list(int(v) for v in self.pos)
+            else:
+                self.pos = self.target
+                self.rect.center = self.target
         else :
             self.kill()
 

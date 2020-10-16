@@ -404,6 +404,7 @@ class Battle():
         gamebattalion.Unitarmy.gamemap = self.battlemap ## add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
+        gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255,255,255))
@@ -466,7 +467,7 @@ class Battle():
         self.popgameui = self.gameui
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
         self.timenumber = gameui.Timer(self.timeui.rect.topleft)
-        self.speednumber = gameui.Speednumber((self.timeui.rect.center[0]+65, self.timeui.rect.center[1]), self.gamespeed)
+        self.speednumber = gameui.Speednumber((self.timeui.rect.center[0]+35, self.timeui.rect.center[1]), self.gamespeed)
         self.buttonui = [gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 10, topimage[3], 0),
                          gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 70, topimage[4], 1),
                          gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 30, topimage[7], 2),
@@ -491,9 +492,9 @@ class Battle():
                         gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 3), self.buttonui[8].pos[1], topimage[27],3),
                         gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 5), self.buttonui[8].pos[1], topimage[28],4),
                         gameui.Uibutton(self.buttonui[8].pos[0] + (topimage[24].get_width() * 6), self.buttonui[8].pos[1], topimage[29],5),
-                        gameui.Uibutton(self.timeui.rect.center[0] - 10 , self.timeui.rect.center[1], topimage[32],0),
-                        gameui.Uibutton(self.timeui.rect.center[0] + 20, self.timeui.rect.center[1], topimage[33], 1),
-                        gameui.Uibutton(self.timeui.rect.midright[0] - 30, self.timeui.rect.center[1], topimage[34],2)]
+                        gameui.Uibutton(self.timeui.rect.center[0] - 30 , self.timeui.rect.center[1], topimage[32],0),
+                        gameui.Uibutton(self.timeui.rect.center[0], self.timeui.rect.center[1], topimage[33], 1),
+                        gameui.Uibutton(self.timeui.rect.midright[0] - 60, self.timeui.rect.center[1], topimage[34],2)]
         self.allui.add(self.buttonui[8:17])
         self.screenbuttonlist = self.buttonui[8:17] ## List of button always on screen (for now just eventlog)
         self.squadselectedborder = gameui.Selectedsquad(topimage[-1])
@@ -743,7 +744,7 @@ class Battle():
         who.unithealth -= round(targetdmg * (dmgeffect / 100))
         who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
         if target.elemrange not in (0, 5):  ## apply element effect if atk has element
-            who.elemcount[target.elemrange - 1] += round((targetdmg * (dmgeffect / 100)) / 100 * who.elemresist[target.elemrange - 1])
+            who.elemcount[target.elemrange - 1] += round((targetdmg * (dmgeffect / 100)) * (100 - who.elemresist[target.elemrange - 1]/100))
         target.basemorale += round((targetmoraledmg * (dmgeffect / 100) / 2))
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
@@ -836,6 +837,7 @@ class Battle():
             self.buttonui[6].kill()
 
     def traitskillblit(self):
+        """For blitting skill and trait icon"""
         position = self.gameui[2].rect.topleft
         position = [position[0] + 70 , position[1] + 60]
         startrow = position[0]
@@ -857,6 +859,7 @@ class Battle():
                 position[0] = startrow
 
     def effecticonblit(self):
+        """For blitting all status effect icon"""
         position = self.gameui[2].rect.topleft
         position = [position[0] + 70, position[1] + 140]
         startrow = position[0]
@@ -1069,7 +1072,7 @@ class Battle():
                                 self.mapviewmode = 0
                                 self.showmap.changemode(self.mapviewmode)
                             self.mapshown.changescale(self.camerascale)
-                        elif event.key == pygame.K_p:  ## Pause Button
+                        elif event.key == pygame.K_p:  ## Speed Pause Button
                             if self.gamespeed == 1:
                                 self.gamespeed = 0
                             else:
@@ -1259,8 +1262,8 @@ class Battle():
                             self.currentweather = gameweather.Weather(random.randint(0,11), random.randint(0,2), self.allweather)
                         self.weatherevent.pop(weather[0])
                         break
-                if self.currentweather.spawnrate > 0 and len(self.weathermatter) < self.currentweather.spawnrate * 10:
-                    spawnnum = range(0,self.currentweather.spawnrate)
+                if self.currentweather.spawnrate > 0 and len(self.weathermatter) < self.currentweather.speed:
+                    spawnnum = range(0,int(self.currentweather.spawnrate*self.dt*random.randint(0,10)))
                     for spawn in spawnnum:
                         truepos = (random.randint(10, SCREENRECT.width), 0)
                         target = (truepos[0], SCREENRECT.height)
@@ -1488,7 +1491,7 @@ class Battle():
                                     else:
                                         for icon in self.traiticon.sprites(): icon.kill()
                                         for icon in self.effecticon.sprites(): icon.kill()
-                            for button in self.buttonui:  ## Change unit card option based on button clicking
+                            for button in self.buttonui[0:4]:  ## Change unit card option based on button clicking
                                 if button.rect.collidepoint(self.mousepos):
                                     self.clickcheck = 1
                                     self.uicheck = 1
@@ -1504,6 +1507,7 @@ class Battle():
                                         else:
                                             for icon in self.traiticon.sprites(): icon.kill()
                                             for icon in self.effecticon.sprites(): icon.kill()
+                                    break
                         if (self.squadlastselected is not None and self.uitimer >= 0.5 and self.gameui[2].option != 0 ) or self.beforeselected != self.lastselected:  ## Update value of the clicked squad
                             self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                       leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
@@ -1612,7 +1616,7 @@ class Battle():
                             elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
                                 thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
                         self.combattimer = 0
-                self.unitupdater.update(self.gameunitstat.statuslist, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
+                self.unitupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
                 self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt)
                 self.combattimer += self.dt

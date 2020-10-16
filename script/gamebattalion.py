@@ -229,7 +229,7 @@ class Hitbox(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.clickcheck = False
 
-    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
+    def update(self, weather, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.viewmode != abs(viewmode - 11) or self.clickcheck:
             self.viewmode = abs(viewmode - 11)
             self.image_original = self.image_original2.copy()
@@ -266,6 +266,7 @@ class Unitarmy(pygame.sprite.Sprite):
     gamemap = None
     gamemapfeature = None
     gamemapheight = None
+    statuslist = None
     maxviewmode = 10
 
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
@@ -577,7 +578,7 @@ class Unitarmy(pygame.sprite.Sprite):
     # def draw(self,gamescreen):
     #     pygame.draw.rect(gamescreen, (0, 0, 0), self.rect,2)
 
-    def statusupdate(self, statuslist):
+    def statusupdate(self):
         """calculate stat from stamina and morale state"""
         self.moralestate = round((self.morale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
@@ -671,7 +672,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.changeposscale()
         self.rotate()
 
-    def update(self, statuslist, squadgroup, dt, viewmode, playerposlist, enemyposlist):
+    def update(self, weather, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.gamestart == False:
             self.startset(squadgroup)
             self.gamestart = True
@@ -755,7 +756,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.offsety = self.rect.y
             self.charging = False
             self.setuparmy()
-            self.statusupdate(statuslist)
+            self.statusupdate()
             if self.authrecalnow:
                 self.authrecal()
                 self.authrecalnow = False
@@ -803,7 +804,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.state = 10
                     for squad in self.squadsprite:
                         if 9 not in squad.statuseffect:
-                            squad.statuseffect[9] = self.gameunitstat.statuslist[9].copy()
+                            squad.statuseffect[9] = self.statuslist[9].copy()
                     if random.randint(0, 100) > 99: self.changefaction = True
             elif self.state in (98,99) and self.morale >= 20: ## state become normal again when morale reach 20
                 self.state = 0
