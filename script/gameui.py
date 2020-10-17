@@ -4,7 +4,7 @@ import datetime
 
 
 class Uibutton(pygame.sprite.Sprite):
-    def __init__(self, X, Y, image, event, newlayer=8):
+    def __init__(self, X, Y, image, event, newlayer=10):
         self._layer = newlayer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (X, Y)
@@ -18,7 +18,7 @@ class Uibutton(pygame.sprite.Sprite):
 
 class Switchuibutton(pygame.sprite.Sprite):
     def __init__(self, X, Y, image):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (X, Y)
         self.images = image
@@ -37,7 +37,7 @@ class Switchuibutton(pygame.sprite.Sprite):
 
 class Popupicon(pygame.sprite.Sprite):
     def __init__(self, X, Y, image, event, gameui, itemid=""):
-        self._layer = 8
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X, self.Y = X, Y
         self.image = image
@@ -52,7 +52,7 @@ class Popupicon(pygame.sprite.Sprite):
 
 class Gameui(pygame.sprite.Sprite):
     def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.X, self.Y = X, Y
@@ -74,8 +74,8 @@ class Gameui(pygame.sprite.Sprite):
                 position += 90
             self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
                              7: "Forced Walk", 8: "Forced Run",
-                             10: "Fighting", 11: "shooting", 68: "Dancing", 69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating",
-                             99: "Broken", 100: "Destroyed"}
+                             10: "Fighting", 11: "shooting",65:"Sleeping", 66: "Camping",67:"Resting", 68: "Dancing",
+                             69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating",99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Inspired"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
@@ -311,7 +311,7 @@ class Skillcardicon(pygame.sprite.Sprite):
     activeskill = None
 
     def __init__(self, image, pos, type, id = None):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.type = type
         self.id = id
@@ -358,7 +358,7 @@ class Skillcardicon(pygame.sprite.Sprite):
 class Effectcardicon(pygame.sprite.Sprite):
 
     def __init__(self, image, pos, type, id = None):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.type = type
         self.id = id
@@ -371,7 +371,7 @@ class Effectcardicon(pygame.sprite.Sprite):
 
 class FPScount(pygame.sprite.Sprite):
     def __init__(self):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.image_original = self.image.copy()
@@ -387,7 +387,7 @@ class FPScount(pygame.sprite.Sprite):
 
 class Selectedsquad(pygame.sprite.Sprite):
     def __init__(self,image):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = image
 
@@ -396,7 +396,7 @@ class Selectedsquad(pygame.sprite.Sprite):
 
 class Minimap(pygame.sprite.Sprite):
     def __init__(self, X, Y,image, camera):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.X = X
         self.Y = Y
@@ -444,7 +444,7 @@ class Minimap(pygame.sprite.Sprite):
 class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
 
     def __init__(self, image, pos):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", 16)
         self.pos = pos
@@ -535,7 +535,7 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
 
 class Uiscroller(pygame.sprite.Sprite):
     def __init__(self, pos, uiheight, maxrowshow):
-        self._layer = 9
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.uiheight = uiheight
         self.pos = pos
@@ -585,7 +585,7 @@ class Uiscroller(pygame.sprite.Sprite):
 
 class Armyselect(pygame.sprite.Sprite):
     def __init__(self, pos, image):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = image
         self.pos = pos
@@ -597,7 +597,7 @@ class Armyselect(pygame.sprite.Sprite):
 
 class Armyicon(pygame.sprite.Sprite):
     def __init__(self, pos, army):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.army = army
         army.icon = self
@@ -632,7 +632,7 @@ class Armyicon(pygame.sprite.Sprite):
 
 class Timer(pygame.sprite.Sprite):
     def __init__(self, pos, textsize = 20):
-        self._layer = 9
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.pos = pos
@@ -659,7 +659,7 @@ class Timer(pygame.sprite.Sprite):
 
 class Timeui(pygame.sprite.Sprite):
     def __init__(self, pos, image):
-        self._layer = 8
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.image = image.copy()
@@ -667,7 +667,7 @@ class Timeui(pygame.sprite.Sprite):
 
 class Speednumber(pygame.sprite.Sprite):
     def __init__(self, pos, speed, textsize = 20):
-        self._layer = 9
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.pos = pos

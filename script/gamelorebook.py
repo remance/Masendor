@@ -22,7 +22,7 @@ class Lorebook(pygame.sprite.Sprite):
     landmarkstat = None
 
     def __init__(self, image, textsize=18):
-        self._layer = 11
+        self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.fontheader = pygame.font.SysFont("oldenglish", 48)
@@ -115,14 +115,14 @@ class Lorebook(pygame.sprite.Sprite):
 
 class Subsectionlist(pygame.sprite.Sprite):
     def __init__(self, pos, image):
-        self._layer = 11
+        self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = image
         self.rect = self.image.get_rect(topright=pos)
 
 class Subsectionname(pygame.sprite.Sprite):
     def __init__(self, pos, name, textsize=16):
-        self._layer = 12
+        self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.image = pygame.Surface((100,25))
@@ -137,13 +137,13 @@ class Subsectionname(pygame.sprite.Sprite):
 
 class Selectionbox(pygame.sprite.Sprite):
     def __init__(self, pos, lorebook):
-        self._layer = 11
+        self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.Surface(300, lorebook.image.get_height())
 
 class Searchbox(pygame.sprite.Sprite):
     def __init__(self, textsize=16):
-        self._layer = 12
+        self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.image = pygame.Surface(100,50)

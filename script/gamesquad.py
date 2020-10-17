@@ -16,7 +16,7 @@ class Unitsquad(pygame.sprite.Sprite):
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
         # super().__init__()
-        self._layer = 9
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = 0
         self.mouse_over = False
@@ -401,9 +401,11 @@ class Unitsquad(pygame.sprite.Sprite):
             tempreach = tempreach * (100 - self.heatres)/100
         if self.tempcount != tempreach:
             if tempreach > 0:
-                self.tempcount += dt * (100 - self.heatres)/100
+                if self.tempcount < tempreach:
+                    self.tempcount += dt * (100 - self.heatres)/100
             elif tempreach < 0:
-                self.tempcount -= dt * (100 - self.coldres)/100
+                if self.tempcount > tempreach:
+                    self.tempcount -= dt * (100 - self.coldres)/100
             else:
                 if self.tempcount > 0:
                     self.tempcount -= dt * (100 - self.heatres)/100

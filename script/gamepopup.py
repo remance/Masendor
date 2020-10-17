@@ -5,7 +5,7 @@ class Terrainpopup(pygame.sprite.Sprite):
     images = []
 
     def __init__(self):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
         self.font = pygame.font.SysFont("helvetica", 12)
@@ -43,7 +43,7 @@ class Terrainpopup(pygame.sprite.Sprite):
 
 class Onelinepopup(pygame.sprite.Sprite):
     def __init__(self):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", 18)
         self.pos = (0,0)
@@ -65,7 +65,7 @@ class Onelinepopup(pygame.sprite.Sprite):
 
 class Effecticonpopup(pygame.sprite.Sprite):
     def __init__(self):
-        self._layer = 10
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.headfont = pygame.font.SysFont("helvetica", 16)
         self.font = pygame.font.SysFont("helvetica", 12)
