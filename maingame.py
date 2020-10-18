@@ -1110,15 +1110,15 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Army selector')
+                            self.textdrama.queue.append('Showcase: Game speed option and Weather system')
                         elif event.key == pygame.K_3:
-                            self.eventlog.addlog([0, "Some leader just die so event show up in war and lead tabs"], [0,2])
+                            self.textdrama.queue.append('Game speed can by adjusted at anytime in game')
                         elif event.key == pygame.K_4:
-                            self.eventlog.addlog([0, "Battalion routed so it show up in war and army tabs"], [0,1])
+                            self.textdrama.queue.append('The weather effect will occur at set time')
                         elif event.key == pygame.K_5:
-                            self.eventlog.addlog([0, "Leader talk or use skill, this show only in lead tab"], [2])
+                            self.textdrama.queue.append('Weather effect affect the unit in many ways')
                         elif event.key == pygame.K_6:
-                            self.eventlog.addlog([0, "Squad destroyed. show only in unit tab"], [3])
+                            self.textdrama.queue.append('Current special effect still need rework')
                         elif event.key == pygame.K_n and self.lastselected is not None:
                             if whoinput.gameid < 2000:
                                 self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex, self.enactment)
@@ -1271,7 +1271,6 @@ class Battle():
                             elif mouse_right: self.uicheck = 1
                         break
                 for index, weather in enumerate(self.weatherevent): ## Weather system
-                    print(weather)
                     if self.timenumber.timenum >= weather[1]:
                         del self.currentweather
                         if weather[0] != 0:
@@ -1724,12 +1723,10 @@ class Battle():
                             if button.rect.collidepoint(self.mousepos):
                                 self.lorebook.changesection(button.event)
                                 break
-            self.screen.blit(self.camera.image, (0,0))
-            self.allui.draw(self.screen)  ## Draw the scene
-            # pygame.display.update(dirty)
+            self.screen.blit(self.camera.image, (0,0)) ## Draw the game in camera
+            self.allui.draw(self.screen)  ## Draw the UI
             # dirty = self.allui.draw(self.screen)
-            # pygame.display.update(dirty)
-            pygame.display.flip()
+            pygame.display.update()
         if pygame.mixer:
             pygame.mixer.music.fadeout(1000)
         pygame.time.wait(1000)

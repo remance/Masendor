@@ -10,6 +10,7 @@ SoundVolume = mainmenu.SoundVolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
+## Battle related script
 
 def die(battle, who, group, enemygroup):
     """remove battalion,hitbox when it dies"""

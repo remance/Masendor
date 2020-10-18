@@ -12,7 +12,6 @@ class Weather:
     def __init__(self, timeui, type, level, weatherlist):
         self.type = type
         stat = weatherlist[type]
-        print(stat)
         self.level = level ## Weather level 0 = Light, 1 = Normal, 2 = Strong
         if self.level > 2: ## In case adding higher level number by mistake
             self.level = 2

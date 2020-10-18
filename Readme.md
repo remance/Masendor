@@ -9,11 +9,11 @@ Plan
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
 
-4.7 Encyclopedia
+++ change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
 
-4.8 Encyclopedia popup
+4.8 Encyclopedia
 
-4.9 Weather effect
+4.9 Encyclopedia popup
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
 

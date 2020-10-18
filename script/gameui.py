@@ -197,9 +197,9 @@ class Gameui(pygame.sprite.Sprite):
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
                           int(who.accuracy),
                           int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef,
-                          who.description]
+                          who.tempcount]
             self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
-            self.description = self.value[-1]
+            self.description = who.description
             if type(self.description) == list: self.description = self.description[0]
             if self.value != self.lastvalue or changeoption == 1 or who.gameid != self.lastwho:
                 self.image = self.image_original.copy()
@@ -224,8 +224,8 @@ class Gameui(pygame.sprite.Sprite):
                     #     for i in sorted(deletelist, reverse = True):
                     #         self.value.pop(i)
                     #         text.pop(i)
-                    self.value, text = self.value[0:-1], self.fronttext[1:]
-                    for n, value in enumerate(self.value[1:]):
+                    newvalue, text = self.value[0:-1], self.fronttext[1:]
+                    for n, value in enumerate(newvalue[1:]):
                         self.textsurface = self.font.render(text[n] + str(value), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
@@ -235,52 +235,6 @@ class Gameui(pygame.sprite.Sprite):
                         if row == 9: positionx, position = 200, 35
                 elif self.option == 0:  ## description card
                     self.blit_text(self.image, self.description, (42, 25), self.fontlong)
-                # elif self.option == 2:  ## unit skill card
-                #     pass
-                    # position2 = positionx + 20
-                    # for trait in self.value2[0]:  ## property list
-                    #     # if trait in self.value2[2] : cd = int(self.value2[2][trait])
-                    #     # self.textsurface = self.font.render("--Unit Properties--", 1, (0, 0, 0))
-                    #     self.textsurface = self.font.render(str(self.value2[0][trait][0]), 1, (0, 0, 0))
-                    #     self.textrect = self.textsurface.get_rect(
-                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    #     self.image.blit(self.textsurface, self.textrect)
-                    #     position += 20
-                    # for skill in self.value2[1]:  ## skill cooldown
-                    #     if skill in self.value2[2]:
-                    #         cd = int(self.value2[2][skill])
-                    #     else:
-                    #         cd = 0
-                    #     self.textsurface = self.font.render(str(self.value2[1][skill][0]) + ":" + str(cd), 1, (0, 0, 0))
-                    #     self.textrect = self.textsurface.get_rect(
-                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    #     self.image.blit(self.textsurface, self.textrect)
-                    #     # position2 += 25
-                    #     # if position2 >= 90:
-                    #     #     position2 = positionx + 20
-                    #     position += 20
-                    # # position += 20
-                    # position2 = positionx + 20
-                    # for status in self.value2[3]:  ## skill effect list
-                    #     self.textsurface = self.font.render(str(self.value2[3][status][0]) + ": " + str(int(self.value2[3][status][3])), 1, (0, 0, 0))
-                    #     self.textrect = self.textsurface.get_rect(
-                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    #     self.image.blit(self.textsurface, self.textrect)
-                    #     # position2 += 25
-                    #     # if position2 >= 90:
-                    #     #     position2 = positionx + 20
-                    #     position += 20
-                    # # position += 20
-                    # position2 = positionx + 20
-                    # for status in self.value2[4]:  ## status list
-                    #     self.textsurface = self.font.render(str(self.value2[4][status][0]) + ": " + str(int(self.value2[4][status][3])), 1, (0, 0, 0))
-                    #     self.textrect = self.textsurface.get_rect(
-                    #         midleft=(self.image.get_rect()[0] + position2, self.image.get_rect()[1] + position))
-                    #     self.image.blit(self.textsurface, self.textrect)
-                    #     # position2 += 25
-                    #     # if position2 >= 90:
-                    #     #     position2 = positionx + 20
-                    #     position += 20
                 elif self.option == 3:  ## equipment and terrain
                     terrain = self.terrainlist[who.battalion.terrain]
                     if who.battalion.feature is not None: terrain += "/" + self.featurelist[who.battalion.feature]
@@ -311,7 +265,7 @@ class Skillcardicon(pygame.sprite.Sprite):
     activeskill = None
 
     def __init__(self, image, pos, type, id = None):
-        self._layer = 12
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.type = type
         self.id = id
@@ -358,7 +312,7 @@ class Skillcardicon(pygame.sprite.Sprite):
 class Effectcardicon(pygame.sprite.Sprite):
 
     def __init__(self, image, pos, type, id = None):
-        self._layer = 12
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.type = type
         self.id = id

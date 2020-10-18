@@ -69,12 +69,14 @@ import numpy as np
 #         if len(n)>50:
 import pygame
 import timeit
+import re
 test = (500,500)
 starttime = timeit.default_timer()
-k = np.uint8(8)
-b = 8
+# k = 0.1
+# b = 10/100
 print("The start time is :",starttime)
 for h in range(0,1000000):
-    h*k
+    h*10/100
 print("The time difference is :", timeit.default_timer() - starttime)
-
+the_string = "555.55"
+print(re.search('[a-zA-Z]', the_string) is None)
