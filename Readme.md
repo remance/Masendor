@@ -5,6 +5,8 @@ Requires PIL 7.2 module for map filtering effect, numpy for array, . Also the ga
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
+The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/data/leader/non_historic/portrait/52.png?raw=true)
+
 Plan
 
 Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
