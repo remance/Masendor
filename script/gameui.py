@@ -488,8 +488,8 @@ class Eventlog(pygame.sprite.Sprite): ## Maybe Add timestamp to eventlog if havi
             self.recreateimage()
 
 class Uiscroller(pygame.sprite.Sprite):
-    def __init__(self, pos, uiheight, maxrowshow):
-        self._layer = 11
+    def __init__(self, pos, uiheight, maxrowshow, layer=11):
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.uiheight = uiheight
         self.pos = pos

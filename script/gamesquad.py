@@ -369,14 +369,14 @@ class Unitsquad(pygame.sprite.Sprite):
         ## Map feature modifier
         mapfeaturemod = self.battalion.gamemapfeature.featuremod[self.battalion.feature]
         if mapfeaturemod[self.featuremod] != 100:
-            speedmod = mapfeaturemod[self.featuremod] / 100
+            speedmod = mapfeaturemod[self.featuremod]
             self.speed *= speedmod
             self.charge *= speedmod
         if mapfeaturemod[self.featuremod + 1] != 100:
             # combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
-            self.attack *= mapfeaturemod[self.featuremod + 1]/100
+            self.attack *= mapfeaturemod[self.featuremod + 1]
         if mapfeaturemod[self.featuremod + 2] != 100:
-            combatmod = mapfeaturemod[self.featuremod + 2] / 100
+            combatmod = mapfeaturemod[self.featuremod + 2]
             self.meleedef *= combatmod
             self.chargedef *= combatmod
         if mapfeaturemod[10] != [0]:

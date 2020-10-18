@@ -366,6 +366,7 @@ class Battle():
         self.timenumber = pygame.sprite.Group()
         self.speednumber = pygame.sprite.Group()
         self.lorenamelist = pygame.sprite.Group()
+        self.lorescroll = pygame.sprite.Group()
         self.subsectionname = pygame.sprite.Group()
         self.weathermatter = pygame.sprite.Group()
         self.weathereffect = pygame.sprite.Group()
@@ -390,7 +391,7 @@ class Battle():
         gameui.Skillcardicon.containers = self.traiticon, self.skillicon, self.allui
         gameui.Effectcardicon.containers = self.effecticon, self.allui
         gameui.Eventlog.containers = self.eventlog, self.allui
-        gameui.Uiscroller.containers = self.logscroll, self.selectscroll, self.allui
+        gameui.Uiscroller.containers = self.logscroll, self.selectscroll, self.lorescroll, self.allui
         gameui.Armyselect.containers = self.armyselector, self.allui
         gameui.Armyicon.containers = self.armyicon, self.allui
         gameui.Timeui.containers = self.timeui, self.allui
@@ -406,7 +407,7 @@ class Battle():
         gamemenu.Valuebox.containers = self.valuebox
         gamelorebook.Lorebook.containers = self.lorebook
         gamelorebook.Subsectionlist.containers = self.lorenamelist
-        gamelorebook.Subsectionname.containers = self.subsectionname
+        gamelorebook.Subsectionname.containers = self.subsectionname, self.allui
         gameweather.Mattersprite.containers = self.weathermatter, self.allui, self.weatherupdater
         gameweather.Specialeffect.containers = self.weathereffect, self.allui, self.weatherupdater
         ## create the background map
@@ -523,11 +524,13 @@ class Battle():
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
         gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data','lore'])
+        gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data','lore'])
         gamelorebook.Lorebook.factionlore = None
         gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
         gamelorebook.Lorebook.unitlore = None
         gamelorebook.Lorebook.armourstat = self.allarmour.armourlist
         gamelorebook.Lorebook.weaponstat = self.allweapon.weaponlist
+        gamelorebook.Lorebook.mountstat = self.gameunitstat.mountlist
         gamelorebook.Lorebook.statusstat = self.gameunitstat.statuslist
         gamelorebook.Lorebook.skillstat = self.gameunitstat.abilitylist
         gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
@@ -538,18 +541,17 @@ class Battle():
         imgs = load_images(['ui','lorebook_ui'],loadorder=False)
         self.lorebook = gamelorebook.Lorebook(imgs[0])
         self.lorenamelist = gamelorebook.Subsectionlist(self.lorebook.rect.topleft, imgs[1])
-        self.subsectionname
         imgs = load_images(['ui','lorebook_ui','button'],loadorder=False)
-        self.lorebuttonui = [gameui.Uibutton(self.lorebook.rect.topleft[0] + imgs[0].get_width(), self.lorebook.rect.topleft[1] + (imgs[0].get_height()/2), imgs[0], 0, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5), self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[1], 1, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 2, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[2], 2, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 3, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[3], 3, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 4, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[4], 4, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 5, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[5], 5, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 6, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[6], 6, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 7, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[7], 7, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 8, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[8], 8, 10),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 9, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[9], 9, 10)]
+        self.lorebuttonui = [gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5), self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2), imgs[0], 0, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 2, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[1], 1, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 3, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[2], 2, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 4, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[3], 3, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 5, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[4], 4, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 6, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[5], 5, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 7, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[6], 6, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 8, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[7], 7, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 9, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[8], 8, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 10, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[9], 9, 13)]
         buttonimage = load_images(['ui','battlemenu_ui','button'], loadorder=False)
         self.battlemenubutton = [gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 100), text="Resume", size=14),
                                  gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 50), text="Encyclopedia", size=14),
@@ -1006,9 +1008,11 @@ class Battle():
                         self.allui.add(self.battlemenu)
                         self.allui.add(*self.battlemenubutton)
                     else:
-                        self.gamestate = 1
                         if self.battlemenu.mode == 2:
-                            self.allui.remove(self.lorebook)
+                            self.allui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist)
+                            for name in self.subsectionname:
+                                name.kill()
+                                del name
                             self.battlemenu.changemode(0)
                         else:
                             if self.battlemenu.mode == 1:
@@ -1021,10 +1025,30 @@ class Battle():
                             self.allui.remove(*self.optionmenubutton)
                             self.allui.remove(*self.slidermenu)
                             self.allui.remove(*self.valuebox)
+                            self.gamestate = 1
                 if pygame.mouse.get_pressed()[0]: ## Hold left click
                     mouse_down = True
-                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1: ## left click
-                    mouse_up = True
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1: ## left click
+                        mouse_up = True
+                    elif event.button == 4:
+                        if self.gamestate == 0 and self.battlemenu.mode == 2:  ## Scrolling at lore book subsection list
+                            if self.lorenamelist.rect.collidepoint(self.mousepos):
+                                self.lorebook.currentsubsectionrow -= 1
+                                if self.lorebook.currentsubsectionrow < 0:
+                                    self.lorebook.currentsubsectionrow = 0
+                                else:
+                                    self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname)
+                                    self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
+                    elif event.button == 5:
+                        if self.gamestate == 0 and self.battlemenu.mode == 2:  ## Scrolling at lore book subsection list
+                            if self.lorenamelist.rect.collidepoint(self.mousepos):
+                                self.lorebook.currentsubsectionrow += 1
+                                if self.lorebook.currentsubsectionrow + self.lorebook.maxsubsectionshow - 1 < self.lorebook.logsize:
+                                    self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname)
+                                    self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
+                                else:
+                                    self.lorebook.currentsubsectionrow -= 1
                 if self.gamestate == 1:
                     if event.type == pygame.MOUSEBUTTONUP:
                         # if event.button == 1:  ## left click
@@ -1670,7 +1694,10 @@ class Battle():
                                 elif button.text == "Encyclopedia":
                                     self.battlemenu.mode = 2
                                     self.allui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui)
-                                    self.lorebook.changesection(0)
+                                    self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
+                                                                        self.lorebook.maxsubsectionshow, layer=14)
+                                    self.lorebook.changesection(0, self.lorenamelist, self.subsectionname, self.lorescroll)
+                                    # self.lorebook.setupsubsectionlist(self.lorenamelist, listgroup)
                                 elif button.text == "Option":
                                     self.battlemenu.changemode(1)
                                     self.allui.remove(*self.battlemenubutton)
@@ -1717,12 +1744,18 @@ class Battle():
                         if slider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):
                             slider.update(self.mousepos, self.valuebox[0])
                             self.mixervolume = float(slider.value / 100)
-                elif self.battlemenu.mode == 2:
+                elif self.battlemenu.mode == 2: ## Encyclopedia mode
                     if mouse_up == True:
                         for button in self.lorebuttonui:
                             if button.rect.collidepoint(self.mousepos):
-                                self.lorebook.changesection(button.event)
+                                self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll)
                                 break
+                        for name in self.subsectionname:
+                            if name.rect.collidepoint(self.mousepos):
+                                self.lorebook.changesubsection(name.subsection)
+                                break
+                        if self.lorescroll.rect.collidepoint(self.mousepos):
+                            self.lorescroll.update(self.mousepos)
             self.screen.blit(self.camera.image, (0,0)) ## Draw the game in camera
             self.allui.draw(self.screen)  ## Draw the UI
             # dirty = self.allui.draw(self.screen)

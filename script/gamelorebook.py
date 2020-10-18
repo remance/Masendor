@@ -5,14 +5,15 @@ from RTS import mainmenu
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
-
-
 class Lorebook(pygame.sprite.Sprite):
     conceptlore = None
+    historylore = None
     factionlore = None
     unitstat = None
     unitlore = None
-    equipmentstat = None
+    armourstat = None
+    weaponstat = None
+    mountstat = None
     statusstat = None
     skillstat = None
     traitstat = None
@@ -29,14 +30,24 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = image
         self.image_original = self.image.copy()
         self.section = 0 ## 0 = welcome/concept, 1 world history, 2 = faction, 3 = unit, 4 = equipment, 5 = unit status, 6 = unit skill, 7 = unit trait, 8 = leader, 9 terrain, 10 = landmark
-        self.subsection = 0 ## subsection of that section e.g. swordmen unit in unit section
+        self.subsection = 1 ## subsection of that section e.g. swordmen unit in unit section Start with 1 instead of 0
         self.statdata = None ## for getting the section stat data
         self.loredata = None ## for getting the section lore data
         self.showsubsection = None ## Subsection stat showing
         self.showsubsection2 = None ## Subsection lore showing
-        self.sectionlist = ((self.conceptlore,None),(None,None),(self.factionlore,None),(self.unitstat,self.unitlore),
+        self.subsectionlist = None
+        self.equipmentstat = {}
+        run = 1
+        for statlist in (self.weaponstat, self.armourstat, self.mountstat): ## Make new equipment list that contain all type
+            for index in statlist:
+                self.equipmentstat[run] = statlist[index]
+                run += 1
+        self.sectionlist = ((self.conceptlore,None),(self.historylore,None),(self.factionlore,None),(self.unitstat,self.unitlore),
                             (self.equipmentstat,None),(self.statusstat,None),(self.skillstat,None),
                             (self.traitstat,None),(self.leaderstat,self.leaderlore),(self.terrainstat,None))
+        self.currentsubsectionrow = 0
+        self.maxsubsectionshow = 20
+        self.logsize = 0
         self.page = 0
         self.rect = self.image.get_rect(center=(SCREENRECT.width/1.9, SCREENRECT.height/1.9))
         self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
@@ -46,12 +57,18 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         self.pagedesign()
 
-    def changesection(self, section):
+    def changesection(self, section, listsurface, listgroup, lorescroll):
         self.section = section
         self.page = 0
-        self.subsection = 0
+        self.subsection = 1
         self.statdata = self.sectionlist[self.section][0]
         self.loredata = self.sectionlist[self.section][1]
+        thislist = self.statdata.values()
+        self.subsectionlist = [name[0] for name in thislist][1:]
+        self.logsize = len(self.subsectionlist)
+        self.setupsubsectionlist(listsurface, listgroup)
+        self.image = self.image_original.copy()
+        lorescroll.changeimage(logsize=self.logsize)
         self.pagedesign()
 
     def changesubsection(self, subsection):
@@ -60,6 +77,7 @@ class Lorebook(pygame.sprite.Sprite):
         if self.loredata is not None:
             self.showsubsection2 = self.loredata[self.subsection]
         self.page = 0
+        self.image = self.image_original.copy()
         self.pagedesign()
 
     def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
@@ -80,26 +98,34 @@ class Lorebook(pygame.sprite.Sprite):
             y += word_height  ## start on new row
 
     def setupsubsectionlist(self, listsurface, listgroup):
-        row = 5
-        column = 5
+        row = 15
+        column = 15
         list = self.statdata
         pos = listsurface.rect.topleft
-        for stuff in listgroup:
-            stuff.kill()
-            del stuff
-        for item in list.values():
-            name = item[0]
-            listgroup.add(Subsectionname((pos[0] + row, pos[1] + column),name))
-            row += 20
+        if self.currentsubsectionrow > self.logsize - self.maxsubsectionshow:
+            self.currentsubsectionrow = self.logsize - self.maxsubsectionshow
+        # self.selectscroll.changeimage(newrow=self.lorenamelist.currentrow)
+        if len(listgroup) > 0:
+            for stuff in listgroup:
+                stuff.kill()
+                del stuff
+        for index, item in enumerate(list.values()):
+            if index != 0 and index >= self.currentsubsectionrow:
+                name = item[0]
+                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row),name, index))
+                row += 30
+                if len(listgroup) > self.maxsubsectionshow: break
+
+        # self.selectscroll.changeimage(logsize=self.lorenamelist.logsize)
 
     def pagedesign(self): #, portrait
         """Lore book format position of the text"""
         firstpagecol = 50
         secondpagecol = 650
-        stat = self.statdata[self.page]
+        stat = self.statdata[self.subsection]
         name = stat[0]
         textsurface = self.fontheader.render(str(name), 1, (0, 0, 0))
-        textrect = textsurface.get_rect(topleft=(10, 10))
+        textrect = textsurface.get_rect(topleft=(30, 10))
         self.image.blit(textsurface, textrect)  ## Add name of item to the top of page
         # portraitrect = portrait.get_rect(topleft=(20, 60))
         # self.image.blit(portrait, portraitrect)
@@ -109,7 +135,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.blit_text(descriptionsurface, description, (5, 5), self.font)
         self.image.blit(descriptionsurface, descriptionrect)
         if self.page == 0:
-            frontstattext = self.statdata[0]
+            frontstattext = self.statdata[self.subsection]
 
         # else:
 
@@ -121,7 +147,7 @@ class Subsectionlist(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topright=pos)
 
 class Subsectionname(pygame.sprite.Sprite):
-    def __init__(self, pos, name, textsize=16):
+    def __init__(self, pos, name, subsection, textsize=16):
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
@@ -129,11 +155,14 @@ class Subsectionname(pygame.sprite.Sprite):
         self.image.fill((0,0,0))
         smallimage = pygame.Surface((98,23))
         smallimage.fill((255,255,255))
-        smallrect = smallimage.get_rect((1,1))
+        smallrect = smallimage.get_rect(topleft=(1,1))
         self.image.blit(smallimage,smallrect)
         textsurface = self.font.render(str(name), 1, (0, 0, 0))
-        textrect = self.textsurface.get_rect(centerleft=(3, self.image.get_height()/2))
+        textrect = textsurface.get_rect(midleft=(3, self.image.get_height()/2))
         self.image.blit(textsurface,textrect)
+        self.subsection = subsection
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
 
 class Selectionbox(pygame.sprite.Sprite):
     def __init__(self, pos, lorebook):

@@ -91,15 +91,22 @@ class Mapfeature(pygame.sprite.Sprite):
         self.featuremod = {}
         with open(main_dir + "\data\map" + '\\unit_terrainbonus.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            run = 0
             for row in rd:
                 for n, i in enumerate(row):
-                    if n == 11:
-                        if "," in i:
-                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                        elif i.isdigit():
-                            row[n] = [int(i)]
-                    elif i.isdigit() or "-" in i:
-                        row[n] = int(i)
+                    if run != 0:
+                        if n == 11:
+                            if "," in i:
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                            elif i.isdigit():
+                                row[n] = [int(i)]
+                        elif n in (2,3,4,5,6,7):
+                            if i != "":
+                                row[n] = float(i) / 100
+                            else: i = 1.0
+                        elif i.isdigit() or "-" in i:
+                            row[n] = int(i)
+                run += 1
                 self.featuremod[row[0]] = row[1:]
         unitfile.close()
 
