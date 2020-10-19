@@ -21,6 +21,8 @@ class Lorebook(pygame.sprite.Sprite):
     leaderlore = None
     terrainstat = None
     landmarkstat = None
+    unitgradestat = None
+    unitclasslist = None
 
     def __init__(self, image, textsize=18):
         self._layer = 13
@@ -38,10 +40,14 @@ class Lorebook(pygame.sprite.Sprite):
         self.subsectionlist = None
         self.equipmentstat = {}
         run = 1
+        self.equipmentlastindex = []
         for statlist in (self.weaponstat, self.armourstat, self.mountstat): ## Make new equipment list that contain all type
             for index in statlist:
-                self.equipmentstat[run] = statlist[index]
-                run += 1
+                if index != "ID":
+                    self.equipmentstat[run] = statlist[index]
+                    run += 1
+                else: self.equipmentstat[index+str(run)] = statlist[index]
+            self.equipmentlastindex.append(run)
         self.sectionlist = ((self.conceptlore,None),(self.historylore,None),(self.factionlore,None),(self.unitstat,self.unitlore),
                             (self.equipmentstat,None),(self.statusstat,None),(self.skillstat,None),
                             (self.traitstat,None),(self.leaderstat,self.leaderlore),(self.terrainstat,None))
@@ -64,7 +70,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.statdata = self.sectionlist[self.section][0]
         self.loredata = self.sectionlist[self.section][1]
         thislist = self.statdata.values()
-        self.subsectionlist = [name[0] for name in thislist][1:]
+        self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]]
         self.logsize = len(self.subsectionlist)
         self.setupsubsectionlist(listsurface, listgroup)
         self.image = self.image_original.copy()
@@ -100,7 +106,6 @@ class Lorebook(pygame.sprite.Sprite):
     def setupsubsectionlist(self, listsurface, listgroup):
         row = 15
         column = 15
-        list = self.statdata
         pos = listsurface.rect.topleft
         if self.currentsubsectionrow > self.logsize - self.maxsubsectionshow:
             self.currentsubsectionrow = self.logsize - self.maxsubsectionshow
@@ -109,34 +114,65 @@ class Lorebook(pygame.sprite.Sprite):
             for stuff in listgroup:
                 stuff.kill()
                 del stuff
-        for index, item in enumerate(list.values()):
-            if index != 0 and index >= self.currentsubsectionrow:
-                name = item[0]
-                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row),name, index))
+        for index, item in enumerate(self.subsectionlist):
+            if index >= self.currentsubsectionrow:
+                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, index+1))
                 row += 30
                 if len(listgroup) > self.maxsubsectionshow: break
 
         # self.selectscroll.changeimage(logsize=self.lorenamelist.logsize)
 
-    def pagedesign(self): #, portrait
+    def pagedesign(self, portrait = None):
         """Lore book format position of the text"""
         firstpagecol = 50
         secondpagecol = 650
         stat = self.statdata[self.subsection]
+        if self.section != 4:
+            statheader = self.sectionlist[self.section][0]['ID'][1:-2]
+        else:
+            statheader = []
+            for index in self.sectionlist[self.section][0]:
+                if type(index) != int and "ID" in index:
+                    statheader.append(self.sectionlist[self.section][0][index][1:-2])
         name = stat[0]
         textsurface = self.fontheader.render(str(name), 1, (0, 0, 0))
         textrect = textsurface.get_rect(topleft=(30, 10))
         self.image.blit(textsurface, textrect)  ## Add name of item to the top of page
         # portraitrect = portrait.get_rect(topleft=(20, 60))
         # self.image.blit(portrait, portraitrect)
+        print(stat)
         description = stat[-1]
-        descriptionsurface = pygame.Surface((300, 200), pygame.SRCALPHA)
+        print(description)
+        descriptionsurface = pygame.Surface((300, 300), pygame.SRCALPHA)
         descriptionrect = descriptionsurface.get_rect(topleft=(100, 60))
         self.blit_text(descriptionsurface, description, (5, 5), self.font)
         self.image.blit(descriptionsurface, descriptionrect)
         if self.page == 0:
-            frontstattext = self.statdata[self.subsection]
-
+            if self.section in (0,1,2):
+                pass
+            elif self.section in (3,4,5,6,7):
+                row = 350
+                col = 60
+                frontstattext = stat[1:-2]
+                # newtext = []
+                for index, text in enumerate(frontstattext):
+                    if text != "":
+                        if self.section != 4:
+                            createtext = statheader[index] + ": " + str(text)
+                        else: ## Header depends on equipment type
+                            for thisindex, lastindex in enumerate(self.equipmentlastindex):
+                                if self.subsection < lastindex:
+                                    newstatheader = statheader[thisindex]
+                                    break
+                            createtext = newstatheader[index] + ": " + str(text)
+                        textsurface = self.font.render(createtext, 1, (0, 0, 0))
+                        textrect = textsurface.get_rect(topleft=(col, row))
+                        self.image.blit(textsurface, textrect)
+                        # newtext += createtext
+                        row += 25
+                        if row >= 600:
+                            col = 600
+                            row = 50
         # else:
 
 class Subsectionlist(pygame.sprite.Sprite):
@@ -151,9 +187,9 @@ class Subsectionname(pygame.sprite.Sprite):
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
-        self.image = pygame.Surface((100,25))
+        self.image = pygame.Surface((150,25))
         self.image.fill((0,0,0))
-        smallimage = pygame.Surface((98,23))
+        smallimage = pygame.Surface((148,23))
         smallimage.fill((255,255,255))
         smallrect = smallimage.get_rect(topleft=(1,1))
         self.image.blit(smallimage,smallrect)

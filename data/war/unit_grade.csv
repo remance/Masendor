@@ -1,4 +1,4 @@
-"gradeid","grade","atk_bonus","def_bonus","speed_bonus","accuracy_bonus","reload_bonus","charge_bonus","health_effect","stamina_effect","morale_bonus","discipline_bonus","grade_property"
+"ID","Name","Melee Attack Bonus","Melee Defense Bonus","Speed Bonus","Accuracy Bonus","Reload Bonus","Charge Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Properties"
 0,"Novice",-10,-5,-10,-20,-15,-20,100,90,-10,-10,"3,5"
 1,"Militant",0,0,0,-5,0,0,105,100,-5,-5,3
 2,"Professional",5,5,10,5,5,5,110,110,5,0,0

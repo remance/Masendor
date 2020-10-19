@@ -538,6 +538,8 @@ class Battle():
         gamelorebook.Lorebook.leaderlore = None
         gamelorebook.Lorebook.terrainstat = None
         gamelorebook.Lorebook.landmarkstat = None
+        gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
+        gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
         imgs = load_images(['ui','lorebook_ui'],loadorder=False)
         self.lorebook = gamelorebook.Lorebook(imgs[0])
         self.lorenamelist = gamelorebook.Subsectionlist(self.lorebook.rect.topleft, imgs[1])
@@ -1745,17 +1747,19 @@ class Battle():
                             slider.update(self.mousepos, self.valuebox[0])
                             self.mixervolume = float(slider.value / 100)
                 elif self.battlemenu.mode == 2: ## Encyclopedia mode
-                    if mouse_up == True:
-                        for button in self.lorebuttonui:
-                            if button.rect.collidepoint(self.mousepos):
-                                self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll)
-                                break
-                        for name in self.subsectionname:
-                            if name.rect.collidepoint(self.mousepos):
-                                self.lorebook.changesubsection(name.subsection)
-                                break
+                    if mouse_up or mouse_down:
+                        if mouse_up:
+                            for button in self.lorebuttonui:
+                                if button.rect.collidepoint(self.mousepos):
+                                    self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll)
+                                    break
+                            for name in self.subsectionname:
+                                if name.rect.collidepoint(self.mousepos):
+                                    self.lorebook.changesubsection(name.subsection)
+                                    break
                         if self.lorescroll.rect.collidepoint(self.mousepos):
-                            self.lorescroll.update(self.mousepos)
+                            self.lorebook.currentsubsectionrow = self.lorescroll.update(self.mousepos)
+                            self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname)
             self.screen.blit(self.camera.image, (0,0)) ## Draw the game in camera
             self.allui.draw(self.screen)  ## Draw the UI
             # dirty = self.allui.draw(self.screen)

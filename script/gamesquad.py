@@ -32,7 +32,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.gamestart = 0
         self.nocombat = 0
         self.battalion = battalion
-        stat = statlist.unitlist[int(unitid)]
+        stat = statlist.unitlist[int(unitid)].copy()
         self.leader = None
         self.boardpos = None ## Used for event log position of squad (Assigned in maingame unit setup)
         self.name = stat[0]
@@ -41,7 +41,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.race = stat[3]
         self.trait = stat[4]
         self.trait = self.trait + statlist.gradelist[self.grade][11]
-        self.skill = stat[5]
+        skill = stat[5]
         self.skillcooldown = {}
         self.cost = stat[6]
         self.baseattack = round(stat[7] + int(statlist.gradelist[self.grade][1]), 0)
@@ -59,8 +59,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basechargedef = 10
         self.chargeskill = stat[17]
         self.charging = False
-        self.skill.insert(0, self.chargeskill)
-        self.skill = {x: statlist.abilitylist[x] for x in self.skill if x != 0}
+        skill = [self.chargeskill] + skill
+        self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0}
         self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100))
         self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
         self.mana = stat[20]

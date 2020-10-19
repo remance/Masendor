@@ -1,15 +1,15 @@
-"id","name","speed","health","charge_bonus","cost","properties"
-0,"None",0,0,0,0,0
-1,"Horse",90,100,40,,0
-2,"Camel",75,100,30,,265
-3,"Elephant",60,500,60,,0
-4,"Armoured Horse",75,200,30,,
-5,"Armoured Camel",60,200,20,,265
-6,"Armoured Elephant",50,1000,50,,
-7,"Chariot",70,400,50,,
-8,"Heavy Chariot",55,700,40,,
-9,,,,,,
-10,,,,,,
-11,,,,,,
-12,,,,,,
-13,,,,,,
+"ID","Name","Speed","Health","Charge Bonus","Cost","Properties","Description"
+1,"None",0,0,0,0,0,
+2,"Horse",90,100,40,,0,
+3,"Camel",75,100,30,,265,
+4,"Elephant",60,500,60,,0,
+5,"Armoured Horse",75,200,30,,,
+6,"Armoured Camel",60,200,20,,265,
+7,"Armoured Elephant",50,1000,50,,,
+8,"Chariot",70,400,50,,,
+9,"Heavy Chariot",55,700,40,,,
+10,,,,,,,
+11,,,,,,,
+12,,,,,,,
+13,,,,,,,
+14,,,,,,,
