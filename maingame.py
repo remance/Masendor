@@ -23,7 +23,7 @@ from pygame.locals import *
 from pygame.transform import scale
 
 from RTS import mainmenu
-from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, gamelorebook, gameweather
+from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, gamelorebook, gameweather, gamefaction
 
 config = mainmenu.config
 SoundVolume = mainmenu.SoundVolume
@@ -223,6 +223,14 @@ class Battle():
         gamemap.Beautifulmap.textureimages = maptexture
         gamemap.Beautifulmap.loadtexturelist = loadtexturefolder
         gamemap.Beautifulmap.emptyimage = empty
+        ## Faction
+        self.allfaction = gamefaction.Factiondata(option="\historical")
+        ## coa imagelist
+        imgsold = load_images(['leader', 'historical', 'coa'])
+        imgs = []
+        for img in imgsold:
+            imgs.append(img)
+        self.coa = imgs
         ## create unit
         imgsold = load_images(['war', 'unit_ui'])
         imgs = []
@@ -260,14 +268,8 @@ class Battle():
         gameui.Skillcardicon.cooldown = cooldown
         self.gameunitstat = gamebattalion.Unitstat()
         ## create leader list
-        imgs, order = load_images(['leader', 'historic', 'portrait'],loadorder=False, returnorder=True)
-        self.allleader = gameleader.Leaderdata(imgs, order, option="\historic")
-        ## coa imagelist
-        imgsold = load_images(['leader', 'historic', 'coa'])
-        imgs = []
-        for img in imgsold:
-            imgs.append(img)
-        self.coa = imgs
+        imgs, order = load_images(['leader', 'historical', 'portrait'],loadorder=False, returnorder=True)
+        self.allleader = gameleader.Leaderdata(imgs, order, option="\historical")
         ## Weather list
         self.allweather = csv_read('weather.csv', ['data','map','weather'])
         self.weathermatterimgs = []
@@ -410,7 +412,7 @@ class Battle():
         gamelorebook.Subsectionname.containers = self.subsectionname, self.allui
         gameweather.Mattersprite.containers = self.weathermatter, self.allui, self.weatherupdater
         gameweather.Specialeffect.containers = self.weathereffect, self.allui, self.weatherupdater
-        ## create the background map
+        ## create the battle map
         self.camerapos = pygame.Vector2(500,500) ## Camera pos at the current zoom
         self.basecamerapos = pygame.Vector2(500,500) ## Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1 ## Camera zoom
@@ -525,7 +527,7 @@ class Battle():
         self.battlemenu = gamemenu.Menubox()
         gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data','lore'])
         gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data','lore'])
-        gamelorebook.Lorebook.factionlore = None
+        gamelorebook.Lorebook.factionlore = self.allfaction.factionlist
         gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
         gamelorebook.Lorebook.unitlore = None
         gamelorebook.Lorebook.armourstat = self.allarmour.armourlist
@@ -536,7 +538,7 @@ class Battle():
         gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
         gamelorebook.Lorebook.leaderstat = self.allleader.leaderlist
         gamelorebook.Lorebook.leaderlore = None
-        gamelorebook.Lorebook.terrainstat = None
+        gamelorebook.Lorebook.terrainstat = self.battlemapfeature.featuremod
         gamelorebook.Lorebook.landmarkstat = None
         gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
         gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role

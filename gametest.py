@@ -80,3 +80,15 @@ for h in range(0,1000000):
 print("The time difference is :", timeit.default_timer() - starttime)
 the_string = "555.55"
 print(re.search('[a-zA-Z]', the_string) is None)
+
+def encdat(dat):
+    if(type(dat) == complex):
+        finalanswer1 = int(dat.real)
+        finalanswer2 = str(dat.imag)
+        finalanswer = (str(finalanswer1) + "+" + finalanswer2)
+        print(finalanswer)
+        return finalanswer
+    else:
+        finalanswer = str(dat)
+        return finalanswer
+print(encdat(0))

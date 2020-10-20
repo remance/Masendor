@@ -75,6 +75,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.setupsubsectionlist(listsurface, listgroup)
         self.image = self.image_original.copy()
         lorescroll.changeimage(logsize=self.logsize)
+        lorescroll.changeimage(newrow=self.currentsubsectionrow)
         self.pagedesign()
 
     def changesubsection(self, subsection):
@@ -116,7 +117,10 @@ class Lorebook(pygame.sprite.Sprite):
                 del stuff
         for index, item in enumerate(self.subsectionlist):
             if index >= self.currentsubsectionrow:
-                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, index+1))
+                if self.section != 9:
+                    listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, index+1))
+                else:
+                    listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, index))
                 row += 30
                 if len(listgroup) > self.maxsubsectionshow: break
 
@@ -140,9 +144,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.image.blit(textsurface, textrect)  ## Add name of item to the top of page
         # portraitrect = portrait.get_rect(topleft=(20, 60))
         # self.image.blit(portrait, portraitrect)
-        print(stat)
         description = stat[-1]
-        print(description)
         descriptionsurface = pygame.Surface((300, 300), pygame.SRCALPHA)
         descriptionrect = descriptionsurface.get_rect(topleft=(100, 60))
         self.blit_text(descriptionsurface, description, (5, 5), self.font)
@@ -150,7 +152,7 @@ class Lorebook(pygame.sprite.Sprite):
         if self.page == 0:
             if self.section in (0,1,2):
                 pass
-            elif self.section in (3,4,5,6,7):
+            elif self.section in (3,4,5,6,7,8,9):
                 row = 350
                 col = 60
                 frontstattext = stat[1:-2]
@@ -187,9 +189,9 @@ class Subsectionname(pygame.sprite.Sprite):
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
-        self.image = pygame.Surface((150,25))
+        self.image = pygame.Surface((180,25))
         self.image.fill((0,0,0))
-        smallimage = pygame.Surface((148,23))
+        smallimage = pygame.Surface((178,23))
         smallimage.fill((255,255,255))
         smallrect = smallimage.get_rect(topleft=(1,1))
         self.image.blit(smallimage,smallrect)
