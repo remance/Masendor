@@ -23,12 +23,13 @@ class Lorebook(pygame.sprite.Sprite):
     landmarkstat = None
     unitgradestat = None
     unitclasslist = None
+    racelist = None
 
     def __init__(self, image, textsize=18):
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
-        self.fontheader = pygame.font.SysFont("oldenglish", 48)
+        self.fontheader = pygame.font.SysFont("oldenglishtext", 40)
         self.image = image
         self.image_original = self.image.copy()
         self.section = 0 ## 0 = welcome/concept, 1 world history, 2 = faction, 3 = unit, 4 = equipment, 5 = unit status, 6 = unit skill, 7 = unit trait, 8 = leader, 9 terrain, 10 = landmark
@@ -55,6 +56,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.maxsubsectionshow = 20
         self.logsize = 0
         self.page = 0
+        self.maxpage = 0
         self.rect = self.image.get_rect(center=(SCREENRECT.width/1.9, SCREENRECT.height/1.9))
         self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
 
@@ -65,26 +67,25 @@ class Lorebook(pygame.sprite.Sprite):
 
     def changesection(self, section, listsurface, listgroup, lorescroll):
         self.section = section
-        self.page = 0
         self.subsection = 1
         self.statdata = self.sectionlist[self.section][0]
         self.loredata = self.sectionlist[self.section][1]
+        self.maxpage = 0
         thislist = self.statdata.values()
         self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]]
         self.logsize = len(self.subsectionlist)
         self.setupsubsectionlist(listsurface, listgroup)
-        self.image = self.image_original.copy()
+        self.changesubsection(self.subsection)
         lorescroll.changeimage(logsize=self.logsize)
         lorescroll.changeimage(newrow=self.currentsubsectionrow)
         self.pagedesign()
 
     def changesubsection(self, subsection):
         self.subsection = subsection
-        self.showsubsection = self.statdata[self.subsection]
-        if self.loredata is not None:
-            self.showsubsection2 = self.loredata[self.subsection]
         self.page = 0
         self.image = self.image_original.copy()
+        if self.loredata is not None:
+            self.maxpage = 1 + int(len(self.loredata[subsection])/4)
         self.pagedesign()
 
     def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
@@ -140,7 +141,7 @@ class Lorebook(pygame.sprite.Sprite):
                     statheader.append(self.sectionlist[self.section][0][index][1:-2])
         name = stat[0]
         textsurface = self.fontheader.render(str(name), 1, (0, 0, 0))
-        textrect = textsurface.get_rect(topleft=(30, 10))
+        textrect = textsurface.get_rect(topleft=(28, 10))
         self.image.blit(textsurface, textrect)  ## Add name of item to the top of page
         # portraitrect = portrait.get_rect(topleft=(20, 60))
         # self.image.blit(portrait, portraitrect)
@@ -161,9 +162,20 @@ class Lorebook(pygame.sprite.Sprite):
                     if text != "":
                         if self.section != 4:
                             createtext = statheader[index] + ": " + str(text)
+                            if statheader[index] == "Grade":
+                                createtext = statheader[index] + ": " + self.unitgradestat[text][0]
+                            # elif statheader[index] == "Class": ## Skip the class stat since it is used only for image
+                            #     createtext = statheader[index] + ": " + self.weaponstat[text+1][0]
+                            elif statheader[index] == "ImageID":
+                                createtext = ""
+                                pass
+                            elif statheader[index] == "Unit Type":
+                                createtext = statheader[index] + ": " + self.unitclasslist[text][0]
+                            elif statheader[index] == "Race":
+                                createtext = statheader[index] + ": " + self.racelist[text][0]
                         else: ## Header depends on equipment type
                             for thisindex, lastindex in enumerate(self.equipmentlastindex):
-                                if self.subsection < lastindex:
+                                if self.subsection < lastindex: ## Check if this index pass the last index of each type
                                     newstatheader = statheader[thisindex]
                                     break
                             createtext = newstatheader[index] + ": " + str(text)
@@ -175,7 +187,25 @@ class Lorebook(pygame.sprite.Sprite):
                         if row >= 600:
                             col = 600
                             row = 50
-        # else:
+        else:
+            if self.loredata is not None:
+                lore = self.loredata[self.subsection][(self.page-1)*4:]
+                row = 400
+                col = 60
+                for index, text in enumerate(lore):
+                    if text != "":
+                        textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
+                        textrect = descriptionsurface.get_rect(topleft=(col, row))
+                        self.blit_text(textsurface, text, (5, 5), self.font)
+                        self.image.blit(textsurface, textrect)
+                        row += 200
+                        if row >= 600:
+                            if col == 550:
+                                break
+                            else:
+                                col = 550
+                                row = 50
+
 
 class Subsectionlist(pygame.sprite.Sprite):
     def __init__(self, pos, image):

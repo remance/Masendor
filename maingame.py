@@ -358,7 +358,6 @@ class Battle():
         self.battlemenubutton = pygame.sprite.Group()
         self.optionmenubutton = pygame.sprite.Group()
         self.lorebook = pygame.sprite.Group()
-        self.lorebookbutton = pygame.sprite.Group()
         self.slidermenu = pygame.sprite.Group()
         self.valuebox = pygame.sprite.Group()
         self.armyselector = pygame.sprite.Group()
@@ -529,7 +528,7 @@ class Battle():
         gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data','lore'])
         gamelorebook.Lorebook.factionlore = self.allfaction.factionlist
         gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
-        gamelorebook.Lorebook.unitlore = None
+        gamelorebook.Lorebook.unitlore = self.gameunitstat.unitlore
         gamelorebook.Lorebook.armourstat = self.allarmour.armourlist
         gamelorebook.Lorebook.weaponstat = self.allweapon.weaponlist
         gamelorebook.Lorebook.mountstat = self.gameunitstat.mountlist
@@ -542,6 +541,7 @@ class Battle():
         gamelorebook.Lorebook.landmarkstat = None
         gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
         gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
+        gamelorebook.Lorebook.racelist = self.gameunitstat.racelist
         imgs = load_images(['ui','lorebook_ui'],loadorder=False)
         self.lorebook = gamelorebook.Lorebook(imgs[0])
         self.lorenamelist = gamelorebook.Subsectionlist(self.lorebook.rect.topleft, imgs[1])
@@ -555,7 +555,10 @@ class Battle():
                              gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 7, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[6], 6, 13),
                              gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 8, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[7], 7, 13),
                              gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 9, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[8], 8, 13),
-                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 10, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[9], 9, 13)]
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 10, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[9], 9, 13),
+                             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width()+5) * 13, self.lorebook.rect.topleft[1] - (imgs[0].get_height()/2),imgs[11], 19, 13),
+                             gameui.Uibutton(self.lorebook.rect.bottomleft[0] + (imgs[12].get_width()), self.lorebook.rect.bottomleft[1] - imgs[12].get_height(),imgs[12], 20, 13),
+                             gameui.Uibutton(self.lorebook.rect.bottomright[0] - (imgs[13].get_width()), self.lorebook.rect.bottomright[1] - imgs[13].get_height(),imgs[13], 21, 13)]
         buttonimage = load_images(['ui','battlemenu_ui','button'], loadorder=False)
         self.battlemenubutton = [gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 100), text="Resume", size=14),
                                  gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 50), text="Encyclopedia", size=14),
@@ -764,11 +767,11 @@ class Battle():
                 47 in target.trait and whoside in (1, 3)): targetdefense = 0
         whodmg, whomoraledmg, wholeaderdmg = self.losscal(who, target, whohit, targetdefense, 0)
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
-        who.unithealth -= round(targetdmg * (dmgeffect / 100))
-        who.basemorale -= round(targetmoraledmg * (dmgeffect / 100))
+        who.unithealth -= round(targetdmg * dmgeffect)
+        who.basemorale -= round(targetmoraledmg * dmgeffect)
         if target.elemrange not in (0, 5):  ## apply element effect if atk has element
-            who.elemcount[target.elemrange - 1] += round((targetdmg * (dmgeffect / 100)) * (100 - who.elemresist[target.elemrange - 1]/100))
-        target.basemorale += round((targetmoraledmg * (dmgeffect / 100) / 2))
+            who.elemcount[target.elemrange - 1] += round((targetdmg * dmgeffect) * (100 - who.elemresist[target.elemrange - 1]/100))
+        target.basemorale += round((targetmoraledmg * dmgeffect / 2))
         if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
             who.leader.health -= targetleaderdmg
             if who.leader.health <= 0:
@@ -784,11 +787,11 @@ class Battle():
                 else:
                     self.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2])
                 self.setuparmyicon()
-        target.unithealth -= round(whodmg * (targetdmgeffect / 100))
-        target.basemorale -= round(whomoraledmg * (targetdmgeffect / 100))
+        target.unithealth -= round(whodmg * targetdmgeffect)
+        target.basemorale -= round(whomoraledmg * targetdmgeffect)
         if who.elemrange not in (0, 5):  ## apply element effect if atk has element
-            target.elemcount[who.elemrange - 1] += round(whodmg * (targetdmgeffect / 100) / 100 * target.elemresist[who.elemrange - 1])
-        who.basemorale += round((whomoraledmg * (targetdmgeffect / 100) / 2))
+            target.elemcount[who.elemrange - 1] += round(whodmg * targetdmgeffect / 100 * target.elemresist[who.elemrange - 1])
+        who.basemorale += round((whomoraledmg * targetdmgeffect / 2))
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
             target.leader.health -= wholeaderdmg
             if target.leader.health <= 0:
@@ -811,7 +814,7 @@ class Battle():
                 if squad != 0 and squad.state != 100:
                     targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
                     whodmg, whomoraledmg = self.losscal(who, squad, whohit, targetdefense, 0)
-                    squad.unithealth -= round(whodmg * (dmgeffect / 100))
+                    squad.unithealth -= round(whodmg * dmgeffect)
                     squad.basemorale -= whomoraledmg
         """inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion"""
         if who.inflictstatus != {}:
@@ -1753,7 +1756,20 @@ class Battle():
                         if mouse_up:
                             for button in self.lorebuttonui:
                                 if button.rect.collidepoint(self.mousepos):
-                                    self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll)
+                                    if button.event in range(0,10):
+                                        self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll)
+                                    elif button.event == 19: ## Close button
+                                        self.allui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist)
+                                        for name in self.subsectionname:
+                                            name.kill()
+                                            del name
+                                        self.battlemenu.changemode(0)
+                                    elif button.event == 20: ## Previous page button
+                                        if self.lorebook.page == 0: pass
+                                        else: self.lorebook.changepage(self.lorebook.page-1)
+                                    elif button.event == 21: ## Next page button
+                                        if self.lorebook.page == self.lorebook.maxpage: pass
+                                        else: self.lorebook.changepage(self.lorebook.page+1)
                                     break
                             for name in self.subsectionname:
                                 if name.rect.collidepoint(self.mousepos):

@@ -77,6 +77,15 @@ class Unitstat():
                             row[n] = [int(i)]
                 self.unitlist[row[0]] = row[1:]
             unitfile.close()
+        self.unitlore = {}
+        with open(main_dir + "\data\war" + '\\unit_lore.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                self.unitlore[row[0]] = row[1:]
+            unitfile.close()
         self.statuslist = {}
         with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -100,7 +109,21 @@ class Unitstat():
                 self.statuslist[row[0]] = row[1:]
                 run += 1
         unitfile.close()
-        """Unit grade list"""
+        ## Race List
+        self.racelist = {}
+        with open(main_dir + "\data\war" + '\\unit_race.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit(): row[n] = int(i)  ## No need to be float
+                    # if n == 12:
+                    #     if "," in i:
+                    #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    #     elif i.isdigit():
+                    #         row[n] = [int(i)]
+                self.racelist[row[0]] = row[1:]
+        unitfile.close()
+        ##Unit grade list
         self.gradelist = {}
         with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)

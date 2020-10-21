@@ -100,9 +100,9 @@ class Unitsquad(pygame.sprite.Sprite):
         self.heatres = 0
         self.coldres = 0
         poisonres = 0
-        self.criteffect = 100
-        self.frontdmgeffect = 100
-        self.sidedmgeffect = 100
+        self.criteffect = 1
+        self.frontdmgeffect = 1
+        self.sidedmgeffect = 1
         self.corneratk = False
         self.flankbonus = 1
         self.flankdef = 0
@@ -331,8 +331,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.charge = (self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2)
         self.shootrange = self.baserange
         self.criteffect = 100
-        self.frontdmgeffect = 100
-        self.sidedmgeffect = 100
+        self.frontdmgeffect = 1
+        self.sidedmgeffect = 1
         self.authpenalty = self.baseauthpenalty
         self.corneratk = False
         self.hpregen = self.basehpregen
@@ -437,9 +437,9 @@ class Unitsquad(pygame.sprite.Sprite):
                 # self.sight += calstatus[18]
                 # self.hidden += calstatus[19]
                 self.criteffect = round(self.criteffect * calstatus[23], 0)
-                self.frontdmgeffect = round(self.frontdmgeffect * (calstatus[24] / 100), 0)
+                self.frontdmgeffect = round(self.frontdmgeffect * calstatus[24], 0)
                 if calstatus[2] in (2, 3) and calstatus[24] != 100:
-                    self.sidedmgeffect = round(self.sidedmgeffect * (calstatus[24] / 100), 0)
+                    self.sidedmgeffect = round(self.sidedmgeffect * calstatus[24], 0)
                     if calstatus[2] == 3: self.corneratk = True
                 """Apply status to self if there is one in skill effect"""
                 if calstatus[27] != [0]:

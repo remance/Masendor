@@ -1,4 +1,4 @@
-"ID","Name","Damage","Armour Penetration","Weight","imageid","Description"
+"ID","Name","Damage","Armour Penetration","Weight","ImageID","Description"
 1,"None",0,0,0,0,"No weapon"
 2,"Sword",10,15,10,1,"Sword is the most balanced weapon one can have. Simple to use but still difficult to master. It is also good for both offense and defense. The only weakness is that it has somewhat lower armour penetration capability than mace and hammer. It is worth mentioning that historically sword is somewhat expensive and rare weapon that mostly used by the rich or professional army. But it is still possible for lowly commoner to possess low quality or salvaged sword."
 3,"Greatsword",19,35,20,1,
