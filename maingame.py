@@ -4,6 +4,7 @@ Change speed stat to something else
 battalion sometimes go through enemy sprite to the pos center
 Hitbox still behave weirdly in melee combat
 Optimise list
+change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
 seem like status update and skill usage of squad cause some fps drop
 maybe best remove all for loop in main and move them to update
 remove index and change call to the sprite itself

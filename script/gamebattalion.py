@@ -30,7 +30,7 @@ class Weaponstat():
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2]:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if i.isdigit():
                             row[n] = int(i)
@@ -47,7 +47,7 @@ class Armourstat():
         with open(main_dir + "\data\war" + '\\unit_armour.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2]:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if n == 5:
                             if "," in i:
@@ -92,7 +92,7 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2] or run == 0:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
                             if n in (5,6,7,8,9,10,11,12):
@@ -116,7 +116,7 @@ class Unitstat():
         with open(main_dir + "\data\war" + '\\unit_race.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2]:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if i.isdigit(): row[n] = int(i)  ## No need to be float
                         # if n == 12:
@@ -144,7 +144,7 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2] or run == 0:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if run != 0: # Skip first row header
                             if n in (11, 12, 13, 14, 15, 16, 17, 18, 24, 25):
@@ -174,7 +174,7 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2] or run == 0:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if run != 0:
                             if n in (3,4,5,6,8,9,10,11,12):
@@ -207,7 +207,7 @@ class Unitstat():
         with open(main_dir + "\data\war" + '\\unit_mount.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] == "0" or str(ruleset) == row[-2]:
+                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if n == 6:
                             if "," in i:

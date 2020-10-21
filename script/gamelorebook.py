@@ -134,11 +134,11 @@ class Lorebook(pygame.sprite.Sprite):
         stat = self.statdata[self.subsection]
         if self.section != 4:
             statheader = self.sectionlist[self.section][0]['ID'][1:-2]
-        else:
+        else: ## Equipment section use slightly different stat header
             statheader = []
-            for index in self.sectionlist[self.section][0]:
+            for index in self.equipmentstat:
                 if type(index) != int and "ID" in index:
-                    statheader.append(self.sectionlist[self.section][0][index][1:-2])
+                    statheader.append(self.equipmentstat[index][1:-2])
         name = stat[0]
         textsurface = self.fontheader.render(str(name), 1, (0, 0, 0))
         textrect = textsurface.get_rect(topleft=(28, 10))

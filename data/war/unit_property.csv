@@ -19,7 +19,7 @@
 18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,0,"This squad can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial."
 19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken)."
 20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,2,"This squad magic casting is not affected by morale (It still cannot cast magic when broken)."
-21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,0,
+21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,2,
 22,"Anti-Flyer",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,0,"What goes up must come down. This squad is specialised in combat against flyer squads."
 23,"Anti-Cavalry",1,,,,,0,,,,,,20,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,0,"This squad is specialised in combat against cavalry squads. Bring an end to the age of cavalry one step at a time."
 24,"Anti-Mage",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,2,"This squad is specialised in combat against armoured squads. Not even the heaviest armoured knight can stand against this squad's devastating blow."
