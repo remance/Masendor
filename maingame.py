@@ -1,9 +1,10 @@
 """
-still not sure how collision should work in final (now main problem is when in melee combat and another unit can snuck in with rotate will finalised this after big map update 0.4+)
+Change speed stat to something else
 ## Known problem
 battalion sometimes go through enemy sprite to the pos center
 Hitbox still behave weirdly in melee combat
 Optimise list
+seem like status update and skill usage of squad cause some fps drop
 maybe best remove all for loop in main and move them to update
 remove index and change call to the sprite itself
 """
@@ -26,10 +27,9 @@ from RTS import mainmenu
 from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, gamelorebook, gameweather, gamefaction
 
 config = mainmenu.config
-SoundVolume = mainmenu.SoundVolume
+SoundVolume = mainmenu.Soundvolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
-
 
 def load_image(file, subfolder=""):
     """loads an image, prepares it for play"""
@@ -90,100 +90,8 @@ def load_sound(file):
     sound = pygame.mixer.Sound(file)
     return sound
 
-
-def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
-    squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
-    squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
-    army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
-                                  squadlist=squadlist, imgsize=imagesize,
-                                  colour=colour, control=control, coa=coa, commander=command, startangle=startangle)
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - 10, 2),
-                   gamebattalion.Hitbox(army, 1, 2, army.rect.height - 10),
-                   gamebattalion.Hitbox(army, 2, 2, army.rect.height - 10),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - 10, 2)]
-    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
-                   gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
-                   gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
-                   gameleader.Leader(leader[3], leader[7], 3, army, leaderstat)]
-    return army
-
-
-def unitsetup(playerarmy, enemyarmy, battle, imagewidth, imageheight, allweapon, allarmour, allleader, gameunitstat, coa, squad, inspectuipos,
-              enactment=False):
-    """squadindexlist is list of every squad index in the game for indexing the squad group"""
-    # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-    letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
-    numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")
-    boardpos = []
-    for dd in numberboard:
-        for ll in letterboard:
-            boardpos.append(ll + dd)
-    squadindexlist = []
-    unitlist = []
-    playercolour = (144, 167, 255)
-    enemycolour = (255, 114, 114)
-    """army num is list index for battalion in either player or enemy group"""
-    playerstart, enemystart = 0, 0
-    """squadindex is list index for all squad group"""
-    squadindex = 0
-    """firstsquad check if it the first ever in group"""
-    squadgameid = 10000
-    with open(main_dir + "\data" + "\map" + battle + "\\unit_pos.csv", 'r') as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-        for row in rd:
-            for n, i in enumerate(row):
-                if i.isdigit():
-                    row[n] = int(i)
-                if n in range(1, 12):
-                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-            if row[0] < 2000:
-                if row[0] == 1:
-                    """First player battalion as commander"""
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour,
-                                   (imagewidth, imageheight), row[10] + row[11], allleader, gameunitstat, True, coa[row[12]], True,
-                                   startangle=row[13])
-                else:
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour, (imagewidth, imageheight), row[10] + row[11], allleader, gameunitstat, True, coa[row[12]],
-                                   startangle=row[13])
-                playerarmy.append(army)
-                playerstart += 1
-            elif row[0] >= 2000:
-                if row[0] == 2000:
-                    """First enemy battalion as commander"""
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   enemycolour,
-                                   (imagewidth, imageheight), row[10] + row[11], allleader, gameunitstat, enactment, coa[row[12]], True,
-                                   startangle=row[13])
-                elif row[0] > 2000:
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   enemycolour,
-                                   (imagewidth, imageheight), row[10] + row[11], allleader, gameunitstat, enactment, coa[row[12]], startangle=row[13])
-                enemyarmy.append(army)
-                enemystart += 1
-            """armysquadindex is list index for squad list in a specific army"""
-            armysquadindex = 0
-            """Setup squad in army to squad group"""
-            for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
-                if squadnum != 0:
-                    addsquad = gamesquad.Unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=allweapon, armourlist=allarmour,
-                                                   statlist=gameunitstat,
-                                                   battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=inspectuipos)
-                    squad.append(addsquad)
-                    addsquad.boardpos = boardpos[armysquadindex]
-                    squadnum[...] = squadgameid
-                    army.squadsprite.append(addsquad)
-                    squadindexlist.append(squadgameid)
-                    squadgameid += 1
-                    squadindex += 1
-                armysquadindex += 1
-    unitfile.close()
-    return squadindexlist
-
-
 class Battle():
-    def __init__(self, winstyle):
+    def __init__(self, winstyle, ruleset, rulesetfolder):
         # Initialize pygame
         pygame.init()
         if pygame.mixer and not pygame.mixer.get_init():
@@ -200,10 +108,12 @@ class Battle():
         # self.screen.blit(self.battle_surf, the_position)
         # Load images, assign to sprite classes
         # (do this before the classes are used, after screen setup)
+        self.ruleset = ruleset
+        self.rulesetfolder = rulesetfolder
         ## create game map
         featurelist = ["Grassland","Draught","Bushland","Forest","Inland Water","Road","Building","Farm","Pandemonium","Mana Flux","Creeping Rot","Mud","Savanna","Draught","Tropical Shrubland","Jungle","Inland Water","Road","Building","Farm","Pandemonium","Heat Mana","Creeping Rot","Mud","Volcanic Soil","Scorched Land","","","","Road","","Fertile Farm","Pandemonium","Fire Mana","Creeping Rot","","Desert Plain","Desert Sand","Desert Shrubland","Desert Forest","Oasis","Sand Road","Desert Dwelling","Desert Farm","Pandemonium","Earth Mana","Creeping Rot","Quicksand","Snow","Tundra","Arctic Shrubland","Arctic Forest","Frozen Water","Snow Road","Warm Shelter","Arctic Farm","Pandemonium","Ice Mana","Preserving Rot","Ice Ground","","","","","Poisoned Water","","","","Pandemonium","Poisoned Mana","Creeping Rot","","","Void","","","","","","","","Leyline","Creeping Rot","","","","","","","","","","Pandemonium","","Creeping Rot","","","","","","","","","","Pandemonium","","Rotten Land","","Lively Water","Empty Water","Marsh","Swamp","Water","Bridge","Swamp Building","Swamp Farm","Pandemonium","Cold Mana","Creeping Rot","","Sea","Ocean","Coral Reef","Underwater Forest","Fresh Water","Bridge","Sunken City","Fishery","Pandemonium","Water Mana","Creeping Rot",""]
         self.mapselected = "testmap"
-        imgs = load_images(['map', self.mapselected],loadorder=False)
+        imgs = load_images(['ruleset',self.rulesetfolder.strip("\\"),'map', self.mapselected],loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
         gamemap.Mapfeature.images = [imgs[1]]
         gamemap.Mapheight.images = [imgs[2]]
@@ -224,9 +134,9 @@ class Battle():
         gamemap.Beautifulmap.loadtexturelist = loadtexturefolder
         gamemap.Beautifulmap.emptyimage = empty
         ## Faction
-        self.allfaction = gamefaction.Factiondata(option="\historical")
+        self.allfaction = gamefaction.Factiondata(option=self.rulesetfolder)
         ## coa imagelist
-        imgsold = load_images(['leader', 'historical', 'coa'])
+        imgsold = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'faction', 'coa'])
         imgs = []
         for img in imgsold:
             imgs.append(img)
@@ -251,11 +161,11 @@ class Battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))
             imgs.append(img)
-        self.allweapon = gamebattalion.Weaponstat(imgs)  ## create weapon class
+        self.allweapon = gamebattalion.Weaponstat(imgs, self.ruleset)  ## create weapon class
         imgs = load_images(['ui','battlemenu_ui'],loadorder=False)
         gamemenu.Menubox.images = imgs ## Create ESC Menu box
         imgs = load_images(['war', 'unit_ui', 'armour'])
-        self.allarmour = gamebattalion.Armourstat(imgs)  ## create armour class
+        self.allarmour = gamebattalion.Armourstat(imgs, self.ruleset)  ## create armour class
         self.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
         self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
         self.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
@@ -266,10 +176,10 @@ class Battle():
         activeskill.fill((170,220,77,200))
         gameui.Skillcardicon.activeskill = activeskill
         gameui.Skillcardicon.cooldown = cooldown
-        self.gameunitstat = gamebattalion.Unitstat()
+        self.gameunitstat = gamebattalion.Unitstat(self.ruleset, self.rulesetfolder)
         ## create leader list
-        imgs, order = load_images(['leader', 'historical', 'portrait'],loadorder=False, returnorder=True)
-        self.allleader = gameleader.Leaderdata(imgs, order, option="\historical")
+        imgs, order = load_images(['ruleset', self.rulesetfolder.strip("\\"),'leader', 'portrait'],loadorder=False, returnorder=True)
+        self.allleader = gameleader.Leaderdata(imgs, order, option=self.rulesetfolder)
         ## Weather list
         self.allweather = csv_read('weather.csv', ['data','map','weather'])
         self.weathermatterimgs = []
@@ -524,8 +434,8 @@ class Battle():
         self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
-        gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data','lore'])
-        gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data','lore'])
+        gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"),'lore'])
+        gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"),'lore'])
         gamelorebook.Lorebook.factionlore = self.allfaction.factionlist
         gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
         gamelorebook.Lorebook.unitlore = self.gameunitstat.unitlore
@@ -575,10 +485,7 @@ class Battle():
         self.playerarmy, self.enemyarmy, self.squad = [], [], []
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
                              self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
-        self.squadindexlist = unitsetup(self.playerarmy, self.enemyarmy, '\\' + self.mapselected,
-                                        self.imagewidth, self.imageheight, self.allweapon, self.allarmour, self.allleader,
-                                        self.gameunitstat, self.coa, self.squad,
-                                        self.inspectuipos, enactment=self.enactment)
+        self.squadindexlist = gamelongscript.unitsetup(self)
         self.allunitlist = self.playerarmy.copy()
         self.allunitlist = self.allunitlist + self.enemyarmy
         self.allunitindex = [army.gameid for army in self.allunitlist]
@@ -982,7 +889,7 @@ class Battle():
     def rungame(self):
         self.setuparmyicon()
         try:
-            self.weatherevent = csv_read('weather.csv', ["data", "map", self.mapselected], 1)
+            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset',self.rulesetfolder.strip("\\"),'map', self.mapselected], 1)
             self.weatherevent = self.weatherevent[1:]
             self.convertweathertime()
         except:## If no weather found use default light sunny weather
@@ -1141,7 +1048,7 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the Update Video')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Game speed option and Weather system')
+                            self.textdrama.queue.append('Showcase: Encyclopedia')
                         elif event.key == pygame.K_3:
                             self.textdrama.queue.append('Game speed can by adjusted at anytime in game')
                         elif event.key == pygame.K_4:

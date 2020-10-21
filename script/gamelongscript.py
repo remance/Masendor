@@ -1,14 +1,108 @@
 import numpy as np
 import pygame
 import pygame.freetype
+import csv
 
 from RTS import mainmenu
-from RTS.script import gamebattalion
+from RTS.script import gamebattalion, gameleader, gamesquad
 
 config = mainmenu.config
-SoundVolume = mainmenu.SoundVolume
+SoundVolume = mainmenu.Soundvolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
+
+## Battle Start related script
+
+def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
+    squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
+    squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
+    army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
+                                  squadlist=squadlist, imgsize=imagesize,
+                                  colour=colour, control=control, coa=coa, commander=command, startangle=startangle)
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - 10, 2),
+                   gamebattalion.Hitbox(army, 1, 2, army.rect.height - 10),
+                   gamebattalion.Hitbox(army, 2, 2, army.rect.height - 10),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - 10, 2)]
+    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
+                   gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
+                   gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
+                   gameleader.Leader(leader[3], leader[7], 3, army, leaderstat)]
+    return army
+
+
+def unitsetup(maingame):
+    """squadindexlist is list of every squad index in the game for indexing the squad group"""
+    # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+    letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
+    numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")
+    boardpos = []
+    for dd in numberboard:
+        for ll in letterboard:
+            boardpos.append(ll + dd)
+    squadindexlist = []
+    unitlist = []
+    playercolour = (144, 167, 255)
+    enemycolour = (255, 114, 114)
+    """army num is list index for battalion in either player or enemy group"""
+    playerstart, enemystart = 0, 0
+    """squadindex is list index for all squad group"""
+    squadindex = 0
+    """firstsquad check if it the first ever in group"""
+    squadgameid = 10000
+    with open(main_dir + "\data\\ruleset" + maingame.rulesetfolder + "\map\\" + maingame.mapselected + "\\unit_pos.csv", 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        for row in rd:
+            for n, i in enumerate(row):
+                if i.isdigit():
+                    row[n] = int(i)
+                if n in range(1, 12):
+                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+            if row[0] < 2000:
+                if row[0] == 1:
+                    """First player battalion as commander"""
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                                   playercolour,
+                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, True, maingame.coa[row[12]], True,
+                                   startangle=row[13])
+                else:
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                                   playercolour, (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, True, maingame.coa[row[12]],
+                                   startangle=row[13])
+                maingame.playerarmy.append(army)
+                playerstart += 1
+            elif row[0] >= 2000:
+                if row[0] == 2000:
+                    """First enemy battalion as commander"""
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                                   enemycolour,
+                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, maingame.enactment, maingame.coa[row[12]], True,
+                                   startangle=row[13])
+                elif row[0] > 2000:
+                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                                   enemycolour,
+                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, maingame.enactment, maingame.coa[row[12]], startangle=row[13])
+                maingame.enemyarmy.append(army)
+                enemystart += 1
+            """armysquadindex is list index for squad list in a specific army"""
+            armysquadindex = 0
+            """Setup squad in army to squad group"""
+            for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
+                if squadnum != 0:
+                    addsquad = gamesquad.Unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=maingame.allweapon, armourlist=maingame.allarmour,
+                                                   statlist=maingame.gameunitstat,
+                                                   battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=maingame.inspectuipos)
+                    maingame.squad.append(addsquad)
+                    addsquad.boardpos = boardpos[armysquadindex]
+                    squadnum[...] = squadgameid
+                    army.squadsprite.append(addsquad)
+                    squadindexlist.append(squadgameid)
+                    squadgameid += 1
+                    squadindex += 1
+                armysquadindex += 1
+    unitfile.close()
+    return squadindexlist
+
+
 
 ## Battle related script
 

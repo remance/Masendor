@@ -13,7 +13,7 @@ class Leaderdata():
         self.imgs = img
         self.imgorder = imgorder
         self.leaderlist = {}
-        with open(main_dir + "\data\leader" + str(option) + '\\historical_leader.csv', 'r') as unitfile:
+        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\historical_leader.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -25,7 +25,7 @@ class Leaderdata():
         unitfile.close()
 
         self.leaderclass = {}
-        with open(main_dir + "\data\leader" + '\\leader_class.csv', 'r') as unitfile:
+        with open(main_dir + "\data\leader" + "\\leader_class.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):

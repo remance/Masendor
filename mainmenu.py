@@ -10,12 +10,13 @@ from pygame.locals import *
 
 from RTS import maingame
 
+
 config = configparser.ConfigParser()
 config.read_file(open('configuration.ini'))
 ScreenHeight = int(config['DEFAULT']['ScreenHeight'])
 ScreenWidth = int(config['DEFAULT']['ScreenWidth'])
 FULLSCREEN = int(config['DEFAULT']['Fullscreen'])
-SoundVolume = float(config['DEFAULT']['SoundVolume'])
+Soundvolume = float(config['DEFAULT']['SoundVolume'])
 
 SCREENRECT = Rect(0, 0, ScreenWidth, ScreenHeight)
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -289,13 +290,13 @@ class Mainmenu():
         img3 = load_image('scoll_button_click.png', 'ui')
         img4 = load_image('numbervalue_icon.jpg', 'ui')
         self.sliderbutton1 = Slidermenu(barimage=img, buttonimage=[img2, img3], textimage=img4, pos=(SCREENRECT.width / 2, SCREENRECT.height / 3),
-                                        value=SoundVolume, min_value=0, max_value=100)
+                                        value=Soundvolume, min_value=0, max_value=100)
         img = load_image('volume_icon.png', 'ui')
         self.volumeicon = Menuicon(images=[img], pos=(self.sliderbutton1.pos[0] - 150, self.sliderbutton1.pos[1]), imageresize=50)
         pygame.display.set_caption('Window of Insight')
         pygame.mouse.set_visible(1)
         if pygame.mixer:
-            self.mixervolume = float(SoundVolume / 100)
+            self.mixervolume = float(Soundvolume / 100)
             pygame.mixer.music.set_volume(self.mixervolume)
             self.SONG_END = pygame.USEREVENT + 1
             # musiclist = os.path.join(main_dir, 'data/sound/')
@@ -304,6 +305,9 @@ class Mainmenu():
             pygame.mixer.music.play(-1)
         self.all = pygame.sprite.RenderUpdates()
         self.menustate = "mainmenu"
+        self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data','ruleset'])
+        self.ruleset = 1
+        self.rulesetfolder = "\\" + str(self.rulesetlist[self.ruleset][1])
         addmorebar = "no"
 
     def run(self, maingamefunc):
@@ -328,7 +332,7 @@ class Mainmenu():
                 self.menubutton3.update(pygame.mouse.get_pos(), mouse_up)
                 self.menubutton3.draw(self.screen)
                 if self.menubutton.event == True:
-                    self.battlegame = maingamefunc.Battle(self.winstyle)
+                    self.battlegame = maingamefunc.Battle(self.winstyle, self.ruleset, self.rulesetfolder)
                     self.battlegame.rungame()
                     self.menubutton.event = False
                 if self.menubutton3.event == True:

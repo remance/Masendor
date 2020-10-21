@@ -7,7 +7,6 @@ from pygame.transform import scale
 
 from RTS import mainmenu
 
-main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
 
 class Unitsquad(pygame.sprite.Sprite):
@@ -44,12 +43,12 @@ class Unitsquad(pygame.sprite.Sprite):
         skill = stat[5]
         self.skillcooldown = {}
         self.cost = stat[6]
-        self.baseattack = round(stat[7] + int(statlist.gradelist[self.grade][1]), 0)
-        self.basemeleedef = round(stat[8] + int(statlist.gradelist[self.grade][2]), 0)
-        self.baserangedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
-        self.armourgear = stat[10]
-        self.basearmour = armourlist.armourlist[stat[10][0]][1] * (
-                    armourlist.quality[stat[10][1]] / 100)  ## Armour stat is cal from based armour * quality
+        self.baseattack = round(stat[8] + int(statlist.gradelist[self.grade][1]), 0)
+        self.basemeleedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
+        self.baserangedef = round(stat[10] + int(statlist.gradelist[self.grade][2]), 0)
+        self.armourgear = stat[11]
+        self.basearmour = armourlist.armourlist[stat[11][0]][1] * (
+                    armourlist.quality[stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
         self.baseaccuracy = stat[12]
         self.baserange = stat[13]
         self.ammo = stat[14]
@@ -60,7 +59,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.chargeskill = stat[17]
         self.charging = False
         skill = [self.chargeskill] + skill
-        self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0}
+        self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0 and x in statlist.abilitylist}
         self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100))
         self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
         self.mana = stat[20]
@@ -71,14 +70,14 @@ class Unitsquad(pygame.sprite.Sprite):
         self.troopnumber = stat[27]
         self.basespeed = 50
         self.mount = statlist.mountlist[stat[29]]
-        if stat[29] != 0:
+        if stat[29] != 1:
             self.basespeed = self.mount[1]
             self.troophealth += self.mount[2]
             self.basecharge += self.mount[3]
             self.trait = self.trait + self.mount[5] ## Apply mount trait to unit
         self.weight = weaponlist.weaponlist[stat[21][0]][3] + weaponlist.weaponlist[stat[22][0]][3] + \
-                      armourlist.armourlist[stat[10][0]][2]
-        self.trait = self.trait + armourlist.armourlist[stat[10][0]][4]
+                      armourlist.armourlist[stat[11][0]][2]
+        self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
         if stat[28] in (1, 2):
             self.unittype = stat[28] - 1
@@ -118,7 +117,7 @@ class Unitsquad(pygame.sprite.Sprite):
         """Add trait to base stat"""
         self.trait = list(set([trait for trait in self.trait if trait != 0]))
         if len(self.trait) > 0:
-            self.trait = {x: statlist.traitlist[x] for x in self.trait}
+            self.trait = {x: statlist.traitlist[x] for x in self.trait if x in statlist.traitlist} ## Any trait not available in ruleset will be ignored
             for trait in self.trait.values():
                 self.baseattack *= trait[3]
                 self.basemeleedef *= trait[4]

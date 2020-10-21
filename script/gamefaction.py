@@ -13,7 +13,7 @@ class Factiondata():
     def __init__(self, option):
         """Unit stat data read"""
         self.factionlist = {}
-        with open(main_dir + "\data" + "\\faction" + option + '\\faction.csv', 'r') as unitfile:
+        with open(main_dir + "\data" + "\\ruleset" + option + "\\faction"  + '\\faction.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
