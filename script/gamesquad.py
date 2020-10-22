@@ -20,6 +20,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.wholastselect = 0
         self.mouse_over = False
         self.gameid = gameid
+        self.unitid = int(unitid)
         self.angle, self.newangle = 0, 0
         """index of battleside: 0 = front 1 = left 2 =rear 3 =right (different than battalion for proper combat rotation)"""
         """battleside keep index of enemy battalion -1 is no combat 0 is no current enemy (idle in combat)"""
@@ -31,7 +32,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.gamestart = 0
         self.nocombat = 0
         self.battalion = battalion
-        stat = statlist.unitlist[int(unitid)].copy()
+        stat = statlist.unitlist[self.unitid].copy()
         self.leader = None
         self.boardpos = None ## Used for event log position of squad (Assigned in maingame unit setup)
         self.name = stat[0]
@@ -47,8 +48,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basemeleedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
         self.baserangedef = round(stat[10] + int(statlist.gradelist[self.grade][2]), 0)
         self.armourgear = stat[11]
-        self.basearmour = armourlist.armourlist[stat[11][0]][1] * (
-                    armourlist.quality[stat[11][1]] / 100)  ## Armour stat is cal from based armour * quality
+        self.basearmour = armourlist.armourlist[self.armourgear[0]][1] * (
+                    armourlist.quality[self.armourgear[1]] / 100)  ## Armour stat is cal from based armour * quality
         self.baseaccuracy = stat[12]
         self.baserange = stat[13]
         self.ammo = stat[14]
@@ -65,6 +66,14 @@ class Unitsquad(pygame.sprite.Sprite):
         self.mana = stat[20]
         self.meleeweapon = stat[21]
         self.rangeweapon = stat[22]
+        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * (weaponlist.quality[self.meleeweapon[1]] / 100)
+        self.penetrate = weaponlist.weaponlist[self.meleeweapon[0]][2] * (weaponlist.quality[self.meleeweapon[1]] / 100)
+        if self.penetrate > 100: self.penetrate == 100
+        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * (weaponlist.quality[self.rangeweapon[1]] / 100)
+        self.rangepenetrate = weaponlist.weaponlist[self.rangeweapon[0]][2] * (weaponlist.quality[self.rangeweapon[1]] / 100)
+        self.trait = self.trait + weaponlist.weaponlist[self.meleeweapon[0]][4] ## apply trait from range weapon
+        self.trait = self.trait + weaponlist.weaponlist[self.rangeweapon[0]][4] ## apply trait from melee weapon
+        if self.rangepenetrate > 100: self.rangepenetrate == 100
         self.basemorale = int(stat[23] + int(statlist.gradelist[self.grade][9]))
         self.basediscipline = int(stat[24] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = stat[27]
@@ -77,7 +86,7 @@ class Unitsquad(pygame.sprite.Sprite):
             self.trait = self.trait + self.mount[5] ## Apply mount trait to unit
         self.weight = weaponlist.weaponlist[stat[21][0]][3] + weaponlist.weaponlist[stat[22][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
-        self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]
+        self.trait = self.trait + armourlist.armourlist[stat[11][0]][4] ## Apply armour trait to unit
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
         if stat[28] in (1, 2):
             self.unittype = stat[28] - 1
@@ -205,13 +214,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.staminaimage, self.staminaimagerect)
         """weapon class in circle"""
-        image1 = weaponlist.imgs[weaponlist.weaponlist[self.unitclass][4]]
-        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * (weaponlist.quality[self.meleeweapon[1]] / 100)
-        self.penetrate = weaponlist.weaponlist[self.meleeweapon[0]][2] * (weaponlist.quality[self.meleeweapon[1]] / 100)
-        if self.penetrate > 100: self.penetrate == 100
-        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * (weaponlist.quality[self.rangeweapon[1]] / 100)
-        self.rangepenetrate = weaponlist.weaponlist[self.rangeweapon[0]][2] * (weaponlist.quality[self.rangeweapon[1]] / 100)
-        if self.rangepenetrate > 100: self.rangepenetrate == 100
+        image1 = weaponlist.imgs[weaponlist.weaponlist[self.unitclass][5]]
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()

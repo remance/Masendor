@@ -85,6 +85,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = 0
         self.image = self.image_original.copy()
         if self.loredata is not None:
+            print(self.loredata, subsection)
             self.maxpage = 1 + int(len(self.loredata[subsection])/4)
         self.pagedesign()
 

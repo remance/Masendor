@@ -44,7 +44,7 @@ class Leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leaderstat.leaderlist[leaderid]
-        self.gameid = leaderid
+        self.gameid = leaderid # Different than unit game id, leadergameid is only used as reference to the id data
         self.name = stat[0]
         self.health = stat[1]
         self.authority = stat[2]
@@ -54,7 +54,7 @@ class Leader(pygame.sprite.Sprite):
         self.combat = stat[6]
         self.social = leaderstat.leaderclass[stat[7]]
         self.description = stat[-1]
-        self.squadpos = squadposition  ## squad position is the index of squad in squad sprite loop
+        self.squadpos = squadposition  # Squad position is the index of squad in squad sprite loop
         # self.trait = stat
         # self.skill = stat
         self.state = 0  ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead

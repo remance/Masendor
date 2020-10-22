@@ -268,7 +268,7 @@ class Skillcardicon(pygame.sprite.Sprite):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.type = type
-        self.id = id
+        self.gameid = id
         self.pos = pos
         self.font = pygame.font.SysFont("helvetica", 18)
         self.cooldowncheck = 0
@@ -315,7 +315,7 @@ class Effectcardicon(pygame.sprite.Sprite):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.type = type
-        self.id = id
+        self.gameid = id
         self.pos = pos
         self.cooldowncheck = 0
         self.activecheck = 0

@@ -32,7 +32,12 @@ class Weaponstat():
             for row in rd:
                 if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
-                        if i.isdigit():
+                        if n == 5:
+                            if "," in i:
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                            elif i.isdigit():
+                                row[n] = [int(i)]
+                        elif i.isdigit():
                             row[n] = int(i)
                     self.weaponlist[row[0]] = row[1:]
         unitfile.close()
