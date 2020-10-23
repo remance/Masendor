@@ -715,7 +715,7 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.viewmode != 1:  ## battalion view
             self.image_original = self.image_original3.copy()
             self.changescale()
-        elif self.viewmode == 1:  ## Squad view when zoom closest
+        elif self.viewmode == 1:  ## Squad view when zoom closest (10 in other class without need zoom image)
             self.image_original = self.image_original2.copy()
             self.squadtoarmy(squadgroup)
             self.changescale()

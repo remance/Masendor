@@ -2,6 +2,8 @@ import numpy as np
 import pygame
 import pygame.freetype
 import csv
+import random
+import datetime
 
 from RTS import mainmenu
 from RTS.script import gamebattalion, gameleader, gamesquad
@@ -10,6 +12,14 @@ config = mainmenu.config
 SoundVolume = mainmenu.Soundvolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
+
+## Other battle script
+
+def convertweathertime(weatherevent):
+    for index, item in enumerate(weatherevent):
+        newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
+        newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+        weatherevent[index] = [item[0], newtime, item[2]]
 
 ## Battle Start related script
 
@@ -105,6 +115,80 @@ def unitsetup(maingame):
 
 
 ## Battle related script
+
+def squadselectside(targetside, side, position):
+    """side 0 is left 1 is right"""
+    thisposition = position
+    if side == 0:
+        max = 0
+        while targetside[thisposition] <= 1 and thisposition != max:
+            thisposition -= 1
+    else:
+        max = 7
+        while targetside[thisposition] <= 1 and thisposition != max:
+            thisposition += 1
+    if thisposition < 0:
+        thisposition = 0
+    elif thisposition > 7:
+        thisposition = 7
+    if targetside[thisposition] != 0:
+        fronttarget = targetside[thisposition]
+    else:
+        fronttarget = 0
+    return fronttarget
+
+def changecombatside(side, position):
+    """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right"""
+    """side is side of attack for rotating to find the correct side the defender got attack accordingly (e.g. left attack on right side is front)"""
+    subposition = position
+    if subposition == 2:
+        subposition = 3
+    elif subposition == 3:
+        subposition = 2
+    changepos = 1
+    if subposition == 2:
+        changepos = -1
+    finalposition = subposition + changepos  ## right
+    if side == 0: finalposition = subposition - changepos  ## left
+    if finalposition == -1:
+        finalposition = 3
+    elif finalposition == 4:
+        finalposition = 0
+    return finalposition
+
+def losscal(who, target, hit, defense, type):
+    heightadventage = who.battalion.height - target.battalion.height
+    whotrait = who.trait
+    if type == 1: heightadventage = int((who.battalion.height - target.battalion.height)/2)
+    hit += heightadventage
+    if hit < 0: hit = 0
+    if defense < 0 or 30 in whotrait: defense = 0 ## Ignore def trait
+    hitchance = hit - defense
+    combatscore = round(hitchance/20, 1)
+    if combatscore == 0 and random.randint(0, 10) > 9: ## Final chence to not miss
+        combatscore = 0.1
+    leaderdmgbonus = 0
+    if who.leader is not None: leaderdmgbonus = who.leader.combat * 10
+    if type == 0:  # Melee damage
+        dmg = who.dmg
+        """include charge in dmg if charging, ignore charge defense if have ignore trait"""
+        if who.charging:
+            if 29 not in whotrait:
+                dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
+            elif 29 in whotrait:
+                dmg = round(dmg + (who.charge / 10))
+        leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
+        dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
+        if target.state in (1, 2, 3, 4, 5, 6, 7, 8, 9): dmg = dmg * 5
+    elif type == 1:  # Range Damage
+        leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
+        dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
+    if (21 in whotrait and target.type in (1, 2)) or (23 in whotrait and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
+        dmg = dmg * 1.25
+    if dmg > target.unithealth:
+        dmg = target.unithealth
+    moraledmg = round(dmg / 100)
+    return dmg, moraledmg, leaderdmg
 
 def die(battle, who, group, enemygroup):
     """remove battalion,hitbox when it dies"""

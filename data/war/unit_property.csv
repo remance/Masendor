@@ -19,7 +19,7 @@
 18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"This squad can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial."
 19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"This squad accuracy is not affected by morale (It still cannot shoot when broken)."
 20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"This squad magic casting is not affected by morale (It still cannot cast magic when broken)."
-21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2," *This trait can be obtained from certain weapons."
+21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0," *This trait can be obtained from certain weapons."
 22,"Anti-Flyer",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"What goes up must come down. This squad is specialised in combat against flyer squads."
 23,"Anti-Cavalry",1,,,,,0,,,,,,20,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"This squad is specialised in combat against cavalry squads. Bring an end to the age of cavalry one step at a time. *This trait can be obtained from certain weapons."
 24,"Anti-Mage",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"This squad is specialised in combat against mage squads. Not even the wisest wizards can survive this hunt."
@@ -109,7 +109,7 @@
 108,"Inner Demon",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
 109,"Fanatical Backstabbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them."
 110,"Tireless",1,,,,,0,,,,,,0,0,100,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Absolute killing machine! This squad's fatigue cannot be decreased making its combat effectiveness stay at best condition for the whole fight."
-111,"Unbreakable",1,,,150,150,0,,,,,,0,0,0,50,10,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Fleeing or surrendering is never an option for those with true honour and bravery. Death is a better option than dishonour."
+111,"Unbreakable",1,,,110,110,0,,,,,,0,0,0,10000,20,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Fleeing or surrendering is never an option for those with true honour and bravery. Death is a better option than dishonour."
 112,"Savage Looter",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"This squad know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army."
 113,"Catcher Expert",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0," A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble."
 114,"Marvelous Athletic",1,,,,,0,,,,,,0,0,1,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"This squad being athletic superior makes them much more effective in long activity such as fighting."

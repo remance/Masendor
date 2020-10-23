@@ -365,6 +365,9 @@ class Battle():
         self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height
         self.splitunit = gamelongscript.splitunit
         self.die = gamelongscript.die
+        self.losscal = gamelongscript.losscal
+        self.squadselectside = gamelongscript.squadselectside
+        self.changecombatside = gamelongscript.changecombatside
         self.leadernow = []
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
@@ -494,46 +497,6 @@ class Battle():
         self.enemyposlist = {}
         self.showingsquad = []
 
-    def squadselectside(self, targetside, side, position):
-        """side 0 is left 1 is right"""
-        thisposition = position
-        if side == 0:
-            max = 0
-            while targetside[thisposition] <= 1 and thisposition != max:
-                thisposition -= 1
-        else:
-            max = 7
-            while targetside[thisposition] <= 1 and thisposition != max:
-                thisposition += 1
-        if thisposition < 0:
-            thisposition = 0
-        elif thisposition > 7:
-            thisposition = 7
-        if targetside[thisposition] != 0:
-            fronttarget = targetside[thisposition]
-        else:
-            fronttarget = 0
-        return fronttarget
-
-    def changecombatside(self, side, position):
-        """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right"""
-        """side is side of attack for rotating to find the correct side the defender got attack accordingly (e.g. left attack on right side is front)"""
-        subposition = position
-        if subposition == 2:
-            subposition = 3
-        elif subposition == 3:
-            subposition = 2
-        changepos = 1
-        if subposition == 2:
-            changepos = -1
-        finalposition = subposition + changepos  ## right
-        if side == 0: finalposition = subposition - changepos  ## left
-        if finalposition == -1:
-            finalposition = 3
-        elif finalposition == 4:
-            finalposition = 0
-        return finalposition
-
     def combatpositioncal(self, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
         for thiswho in sortmidfront:
             if thiswho > 1:
@@ -588,48 +551,6 @@ class Battle():
                             target.frontline[targetside][6],
                             target.frontline[targetside][0], target.frontline[targetside][7]]
             self.combatpositioncal(sortmidfront, target, who, targetside, whoside, squadwhoside)
-
-    def losscal(self, who, target, hit, defense, type):
-        heightadventage = who.battalion.height - target.battalion.height
-        if type == 1: heightadventage = int((who.battalion.height - target.battalion.height)/2)
-        hit += heightadventage
-        if hit < 0: hit = 0
-        if defense < 0 or 30 in who.trait: defense = 0 ## Ignore def trait
-        hitchance = hit - defense
-        if hitchance > 80:
-            combatscore = 1.5
-        elif hitchance > 40:
-            combatscore = 1
-        elif hitchance > 20:
-            combatscore = 0.5
-        elif hitchance > 10:
-            combatscore = 0.1
-        elif hitchance <= 10:
-            combatscore = 0
-            if random.randint(0, 100) > 90: ## Final chence
-                combatscore = 0.1
-        leaderdmgbonus = 0
-        if who.leader is not None: leaderdmgbonus = who.leader.combat * 10
-        if type == 0:  ##melee dmg
-            dmg = who.dmg
-            """include charge in dmg if charging, ignore charge defense if have ignore trait"""
-            if who.charging:
-                if 29 not in who.trait:
-                    dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
-                elif 29 in who.trait:
-                    dmg = round(dmg + (who.charge / 10))
-            leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
-            dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
-            if target.state in (1, 2, 3, 4, 5, 6, 7, 8, 9): dmg = dmg * 5
-        elif type == 1:  ##range dmg
-            leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
-            dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
-        if (21 in who.trait and target.type in (1, 2)) or (23 in who.trait and target.type in (4, 5, 6, 7)):  ## Anti trait dmg bonus
-            dmg = dmg * 1.25
-        if dmg > target.unithealth:
-            dmg = target.unithealth
-        moraledmg = round(dmg / 100)
-        return dmg, moraledmg, leaderdmg
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -806,7 +727,6 @@ class Battle():
 
     def countdownskillicon(self):
         for skill in self.skillicon:
-            print(skill)
             cd = 0
             activetime = 0
             if skill.gameid in self.gameui[2].value2[2]:
@@ -900,18 +820,12 @@ class Battle():
                 break
         return effectmouseover
 
-    def convertweathertime(self):
-        for index, item in enumerate(self.weatherevent):
-            newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
-            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-            self.weatherevent[index] = [item[0], newtime, item[2]]
-
     def rungame(self):
         self.setuparmyicon()
         try:
             self.weatherevent = csv_read('weather.csv', ["data", 'ruleset',self.rulesetfolder.strip("\\"),'map', self.mapselected], 1)
             self.weatherevent = self.weatherevent[1:]
-            self.convertweathertime()
+            gamelongscript.convertweathertime(self.weatherevent)
         except:## If no weather found use default light sunny weather
             newtime = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
             newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)

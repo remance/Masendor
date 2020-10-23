@@ -15,6 +15,10 @@ import math
 # column to list
 # https://convert.town/column-to-comma-separated-list
 
+## Flash screen
+
+## https://stackoverflow.com/questions/41255357/cpu-efficient-way-to-flash-the-screen-a-certain-color-in-pygame
+
 import random
 import sys
 import os

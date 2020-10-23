@@ -77,7 +77,8 @@ class Gameui(pygame.sprite.Sprite):
                              10: "Fighting", 11: "shooting",65:"Sleeping", 66: "Camping",67:"Resting", 68: "Dancing",
                              69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating",99: "Broken", 100: "Destroyed"}
             self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Inspired"}
+                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
+                             14: "Inspired", 15: "Fervent"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                              7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}
         elif self.uitype == "commandbar":
@@ -130,6 +131,7 @@ class Gameui(pygame.sprite.Sprite):
             self.value[2] = round(self.value[2] / 10)
             if self.value[2] in self.options2:
                 self.value[2] = self.options2[self.value[2]]
+            else: self.value[2] = self.options2[15]
             self.value[1] = round(self.value[1] / 10)
             if self.value[1] in self.options3:
                 self.value[1] = self.options3[self.value[1]]

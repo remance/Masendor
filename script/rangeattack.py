@@ -6,8 +6,7 @@ import pygame
 import pygame.freetype
 from pygame.transform import scale
 
-from RTS import maingame
-
+from RTS.script import gamelongscript
 
 class Rangearrow(pygame.sprite.Sprite):
     images = []
@@ -95,7 +94,7 @@ class Rangearrow(pygame.sprite.Sprite):
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck
         if targetdefense < 0: targetdefense = 0
-        whodmg, whomoraledmg, wholeaderdmg = maingame.Battle.losscal(maingame.Battle, who, target, whohit, targetdefense, 1)
+        whodmg, whomoraledmg, wholeaderdmg = gamelongscript.losscal(who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
         if who.elemrange not in (0, 5):  ## apply element effect if atk has element

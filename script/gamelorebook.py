@@ -49,6 +49,7 @@ class Lorebook(pygame.sprite.Sprite):
                     run += 1
                 else: self.equipmentstat[index+str(run)] = statlist[index]
             self.equipmentlastindex.append(run)
+        print(self.equipmentstat)
         self.sectionlist = ((self.conceptlore,None),(self.historylore,None),(self.factionlore,None),(self.unitstat,self.unitlore),
                             (self.equipmentstat,None),(self.statusstat,None),(self.skillstat,None),
                             (self.traitstat,None),(self.leaderstat,self.leaderlore),(self.terrainstat,None))
@@ -71,11 +72,12 @@ class Lorebook(pygame.sprite.Sprite):
         self.statdata = self.sectionlist[self.section][0]
         self.loredata = self.sectionlist[self.section][1]
         self.maxpage = 0
+        self.currentsubsectionrow = 0
         thislist = self.statdata.values()
         self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]]
         self.logsize = len(self.subsectionlist)
-        self.setupsubsectionlist(listsurface, listgroup)
         self.changesubsection(self.subsection)
+        self.setupsubsectionlist(listsurface, listgroup)
         lorescroll.changeimage(logsize=self.logsize)
         lorescroll.changeimage(newrow=self.currentsubsectionrow)
         self.pagedesign()
@@ -85,7 +87,6 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = 0
         self.image = self.image_original.copy()
         if self.loredata is not None:
-            print(self.loredata, subsection)
             self.maxpage = 1 + int(len(self.loredata[subsection])/4)
         self.pagedesign()
 
@@ -117,12 +118,10 @@ class Lorebook(pygame.sprite.Sprite):
             for stuff in listgroup:
                 stuff.kill()
                 del stuff
+        listloop = [item for item in list(self.statdata.keys()) if type(item) != str]
         for index, item in enumerate(self.subsectionlist):
             if index >= self.currentsubsectionrow:
-                if self.section != 9:
-                    listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, index+1))
-                else:
-                    listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, index))
+                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, listloop[index]))
                 row += 30
                 if len(listgroup) > self.maxsubsectionshow: break
 
@@ -163,31 +162,91 @@ class Lorebook(pygame.sprite.Sprite):
                     if text != "":
                         if self.section != 4:
                             createtext = statheader[index] + ": " + str(text)
-                            if statheader[index] == "Grade":
-                                createtext = statheader[index] + ": " + self.unitgradestat[text][0]
-                            # elif statheader[index] == "Class": ## Skip the class stat since it is used only for image
-                            #     createtext = statheader[index] + ": " + self.weaponstat[text+1][0]
-                            elif statheader[index] == "ImageID":
+                            if statheader[index] == "ImageID":
                                 createtext = ""
                                 pass
-                            elif statheader[index] == "Unit Type":
-                                createtext = statheader[index] + ": " + self.unitclasslist[text][0]
-                            elif statheader[index] == "Race":
-                                createtext = statheader[index] + ": " + self.racelist[text][0]
+                            elif statheader[index] == "Properties":
+                                traitlist = ""
+                                if text != [0]:
+                                    for thistext in text:
+                                        if thistext in self.traitstat: ## In case user put in trait not existed in ruleset
+                                            traitlist += self.traitstat[thistext][0] + ", "
+                                    traitlist = traitlist[0:-2]
+                                    createtext = statheader[index] + ": " + traitlist
+                                else:
+                                    createtext = ""
+                                    pass
+                            elif statheader[index] == "Status" or statheader[index] == "Enemy Status" :
+                                statuslist = ""
+                                if text != [0]:
+                                    for thistext in text:
+                                        if thistext in self.statusstat:  ## In case user put in trait not existed in ruleset
+                                            statuslist += self.statusstat[thistext][0] + ", "
+                                    statuslist = statuslist[0:-2]
+                                    createtext = statheader[index] + ": " + statuslist
+                                else:
+                                    createtext = ""
+                                    pass
+                            if self.section == 3:
+                                if statheader[index] == "Grade":
+                                    createtext = statheader[index] + ": " + self.unitgradestat[text][0]
+                                elif "Weapon" in statheader[index]:
+                                    qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.weaponstat[text[0]][0]
+                                    if statheader[index] == "Range Weapon" and text[0] == 1:
+                                        createtext = ""
+                                        pass
+                                elif statheader[index] == "Armour":
+                                    qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armourstat[text[0]][0]
+                                elif statheader[index] == "Unit Type":
+                                    createtext = statheader[index] + ": " + self.unitclasslist[text][0]
+                                elif statheader[index] == "Race":
+                                    createtext = statheader[index] + ": " + self.racelist[text][0]
+                                elif statheader[index] == "Mount":
+                                    createtext = statheader[index] + ": " + self.mountstat[text][0]
+                                    if self.mountstat[text][0] == "None":
+                                        createtext = ""
+                                        pass
+                                elif statheader[index] == "Abilities":
+                                    abilitylist = ""
+                                    if text != [0]:
+                                        for thistext in text:
+                                            if thistext in self.skillstat:  ## In case user put in trait not existed in ruleset
+                                                abilitylist += self.skillstat[thistext][0] + ", "
+                                        abilitylist = abilitylist[0:-2]
+                                        createtext = statheader[index] + ": " + abilitylist
+                                    else:
+                                        createtext = ""
+                                        pass
                         else: ## Header depends on equipment type
                             for thisindex, lastindex in enumerate(self.equipmentlastindex):
                                 if self.subsection < lastindex: ## Check if this index pass the last index of each type
                                     newstatheader = statheader[thisindex]
                                     break
                             createtext = newstatheader[index] + ": " + str(text)
-                        textsurface = self.font.render(createtext, 1, (0, 0, 0))
-                        textrect = textsurface.get_rect(topleft=(col, row))
-                        self.image.blit(textsurface, textrect)
-                        # newtext += createtext
-                        row += 25
-                        if row >= 600:
-                            col = 600
-                            row = 50
+                            if newstatheader[index] == "ImageID":
+                                createtext = ""
+                                pass
+                            elif newstatheader[index] == "Properties":
+                                traitlist = ""
+                                if text != [0]:
+                                    for thistext in text:
+                                        if thistext in self.traitstat:  ## In case user put in trait not existed in ruleset
+                                            traitlist += self.traitstat[thistext][0] + ", "
+                                    traitlist = traitlist[0:-2]
+                                    createtext = newstatheader[index] + ": " + traitlist
+                                else:
+                                    createtext = ""
+                                    pass
+                        if createtext != "":
+                            textsurface = self.font.render(createtext, 1, (0, 0, 0))
+                            textrect = textsurface.get_rect(topleft=(col, row))
+                            self.image.blit(textsurface, textrect)
+                            row += 25
+                            if row >= 600:
+                                col = 600
+                                row = 50
         else:
             if self.loredata is not None:
                 lore = self.loredata[self.subsection][(self.page-1)*4:]

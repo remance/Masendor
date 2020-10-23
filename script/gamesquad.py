@@ -214,7 +214,10 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.staminaimage, self.staminaimagerect)
         """weapon class in circle"""
-        image1 = weaponlist.imgs[weaponlist.weaponlist[self.unitclass][5]]
+        if self.unitclass == 0:
+            image1 = weaponlist.imgs[weaponlist.weaponlist[self.meleeweapon[0]][5]]
+        else:
+            image1 = weaponlist.imgs[weaponlist.weaponlist[self.rangeweapon[0]][5]]
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
@@ -543,62 +546,63 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.state != 100:
             """Stamina and Health bar function"""
             ## TODO Make all squad image blit happen only when zoom closest or squad shown in inspectui
-            if self.oldlasthealth != self.unithealth:
-                if self.unithealth > self.health75:
-                    if self.lasthealthstate != 4:
-                        self.healthimage = self.images[3]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 4
-                elif self.unithealth > self.health50:
-                    if self.lasthealthstate != 3:
-                        self.healthimage = self.images[4]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 3
-                elif self.unithealth > self.health25:
-                    if self.lasthealthstate != 2:
-                        self.healthimage = self.images[5]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 2
-                elif self.unithealth > 0:
-                    if self.lasthealthstate != 1:
-                        self.healthimage = self.images[6]
-                        self.image_original.blit(self.healthimage, self.healthimagerect)
-                        self.lasthealthstate = 1
-                self.oldlasthealth = self.unithealth
-            if self.oldlaststamina != self.stamina:
-                if self.stamina > self.stamina75:
-                    if self.laststaminastate != 4:
-                        self.staminaimage = self.images[8]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 4
-                elif self.stamina > self.stamina50:
-                    if self.laststaminastate != 3:
-                        self.staminaimage = self.images[9]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 3
-                elif self.stamina > self.stamina25:
-                    if self.laststaminastate != 2:
-                        self.staminaimage = self.images[10]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 2
-                elif self.stamina > 0 and self.state != 97:
-                    if self.laststaminastate != 1:
-                        self.staminaimage = self.images[11]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 1
-                elif self.state == 97:
-                    if self.laststaminastate != 0:
-                        self.staminaimage = self.images[12]
-                        self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                        self.laststaminastate = 0
-                self.oldlaststamina = self.stamina
-            if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
-                for index, side in enumerate(self.battleside):
-                    if side > 0:
-                        self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
-                        self.image.blit(self.images[14 + index], self.imagerect)
-            else:
-                self.image = self.image_original.copy()
+            if self.wholastselect == self.gameid or self.viewmode == 10:
+                if self.oldlasthealth != self.unithealth:
+                    if self.unithealth > self.health75:
+                        if self.lasthealthstate != 4:
+                            self.healthimage = self.images[3]
+                            self.image_original.blit(self.healthimage, self.healthimagerect)
+                            self.lasthealthstate = 4
+                    elif self.unithealth > self.health50:
+                        if self.lasthealthstate != 3:
+                            self.healthimage = self.images[4]
+                            self.image_original.blit(self.healthimage, self.healthimagerect)
+                            self.lasthealthstate = 3
+                    elif self.unithealth > self.health25:
+                        if self.lasthealthstate != 2:
+                            self.healthimage = self.images[5]
+                            self.image_original.blit(self.healthimage, self.healthimagerect)
+                            self.lasthealthstate = 2
+                    elif self.unithealth > 0:
+                        if self.lasthealthstate != 1:
+                            self.healthimage = self.images[6]
+                            self.image_original.blit(self.healthimage, self.healthimagerect)
+                            self.lasthealthstate = 1
+                    self.oldlasthealth = self.unithealth
+                if self.oldlaststamina != self.stamina:
+                    if self.stamina > self.stamina75:
+                        if self.laststaminastate != 4:
+                            self.staminaimage = self.images[8]
+                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 4
+                    elif self.stamina > self.stamina50:
+                        if self.laststaminastate != 3:
+                            self.staminaimage = self.images[9]
+                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 3
+                    elif self.stamina > self.stamina25:
+                        if self.laststaminastate != 2:
+                            self.staminaimage = self.images[10]
+                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 2
+                    elif self.stamina > 0 and self.state != 97:
+                        if self.laststaminastate != 1:
+                            self.staminaimage = self.images[11]
+                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 1
+                    elif self.state == 97:
+                        if self.laststaminastate != 0:
+                            self.staminaimage = self.images[12]
+                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 0
+                    self.oldlaststamina = self.stamina
+                if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
+                    for index, side in enumerate(self.battleside):
+                        if side > 0:
+                            self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
+                            self.image.blit(self.images[14 + index], self.imagerect)
+                else:
+                    self.image = self.image_original.copy()
             self.attackpos = self.battalion.baseattackpos
             if self.battalion.attacktarget != 0:
                 self.attackpos = self.battalion.attacktarget.basepos
