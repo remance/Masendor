@@ -6,14 +6,15 @@ from RTS import mainmenu
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
 
+
 class Camera():
     def __init__(self, startpos, viewmode):
         self.viewmode = viewmode
         self.pos = startpos
-        self.image = pygame.Surface((SCREENRECT.width,SCREENRECT.height))
+        self.image = pygame.Surface((SCREENRECT.width, SCREENRECT.height))
 
     def update(self, pos, surfaces):
-        self.image.fill((0,0,0))
+        self.image.fill((0, 0, 0))
         self.pos = pos
         camera_w, camera_h = self.image.get_rect().size
         camera_x = self.pos[0] - camera_w / 2

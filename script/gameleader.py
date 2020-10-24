@@ -44,7 +44,7 @@ class Leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leaderstat.leaderlist[leaderid]
-        self.gameid = leaderid # Different than unit game id, leadergameid is only used as reference to the id data
+        self.gameid = leaderid  # Different than unit game id, leadergameid is only used as reference to the id data
         self.name = stat[0]
         self.health = stat[1]
         self.authority = stat[2]
@@ -68,9 +68,9 @@ class Leader(pygame.sprite.Sprite):
         ## put leader image into leader slot
         try:
             self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
-        except: ## Use Unknown leader image if there is none in list
+        except:  ## Use Unknown leader image if there is none in list
             self.fullimage = leaderstat.imgs[-1].copy()
-        self.image = pygame.transform.scale(self.fullimage, (int(self.fullimage.get_width()/2), int(self.fullimage.get_height()/2)))
+        self.image = pygame.transform.scale(self.fullimage, (int(self.fullimage.get_width() / 2), int(self.fullimage.get_height() / 2)))
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
         self.badmorale = (20, 30)  ## other position morale lost
@@ -94,7 +94,7 @@ class Leader(pygame.sprite.Sprite):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
-        if self.state not in (96,97,98,99,100):
+        if self.state not in (96, 97, 98, 99, 100):
             if self.health <= 0:
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0

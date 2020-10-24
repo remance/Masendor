@@ -1,9 +1,11 @@
 import pygame
 import pygame.freetype
+
 from RTS import mainmenu
 
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
+
 
 class Menubox(pygame.sprite.Sprite):
     images = []
@@ -11,7 +13,7 @@ class Menubox(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = (SCREENRECT.width/2, SCREENRECT.height/2)
+        self.pos = (SCREENRECT.width / 2, SCREENRECT.height / 2)
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
         self.mode = 0
@@ -39,6 +41,7 @@ class Menubutton(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
         self.event = False
 
+
 class Slidermenu(pygame.sprite.Sprite):
     def __init__(self, barimage, buttonimage, pos, value, type):
         self._layer = 11
@@ -49,16 +52,16 @@ class Slidermenu(pygame.sprite.Sprite):
         self.buttonimagelist = buttonimage
         self.buttonimage = self.buttonimagelist[0]
         self.slidersize = self.image.get_size()[0] - 20
-        self.min_value = self.pos[0] - (self.image.get_width()/2) + 10.5
-        self.max_value = self.pos[0] + (self.image.get_width()/2) - 10.5
+        self.min_value = self.pos[0] - (self.image.get_width() / 2) + 10.5
+        self.max_value = self.pos[0] + (self.image.get_width() / 2) - 10.5
         self.value = value
-        self.mouse_value = (self.slidersize * value / 100)+10.5
+        self.mouse_value = (self.slidersize * value / 100) + 10.5
         self.image_original = self.image.copy()
-        self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height()/2))
+        self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.buttonimage, self.buttonrect)
         self.rect = self.image.get_rect(center=self.pos)
 
-    def update(self, mouse_pos, valuebox, forcedvalue = False):
+    def update(self, mouse_pos, valuebox, forcedvalue=False):
         if forcedvalue is False:
             self.mouse_value = mouse_pos[0]
             if self.mouse_value > self.max_value:
@@ -66,14 +69,15 @@ class Slidermenu(pygame.sprite.Sprite):
             if self.mouse_value < self.min_value:
                 self.mouse_value = self.min_value
             self.value = (self.mouse_value - self.min_value) / 2
-            self.mouse_value = (self.slidersize * self.value / 100)+10.5
-        else: ## For revert or cancel
+            self.mouse_value = (self.slidersize * self.value / 100) + 10.5
+        else:  ## For revert or cancel
             self.value = mouse_pos
             self.mouse_value = (self.slidersize * self.value / 100) + 10.5
         self.image = self.image_original.copy()
-        self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height()/2))
+        self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.buttonimage, self.buttonrect)
         valuebox.update(self.value)
+
 
 class Valuebox(pygame.sprite.Sprite):
     def __init__(self, textimage, pos, value, textsize=16):

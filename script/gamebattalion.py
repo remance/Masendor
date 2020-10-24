@@ -1,10 +1,10 @@
 import csv
 import math
 import random
+import re
 from statistics import mean
 
 import numpy as np
-import re
 import pygame
 import pygame.freetype
 from pygame.transform import scale
@@ -13,6 +13,7 @@ from RTS import mainmenu
 
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
+
 
 def rotationxy(origin, point, angle):
     ox, oy = origin
@@ -30,7 +31,7 @@ class Weaponstat():
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if n == 5:
                             if "," in i:
@@ -52,7 +53,7 @@ class Armourstat():
         with open(main_dir + "\data\war" + '\\unit_armour.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if n == 5:
                             if "," in i:
@@ -69,13 +70,13 @@ class Armourstat():
 class Unitstat():
     def __init__(self, ruleset, rulesetfolder):
         """Unit stat data read"""
-        self.unitlist = {} ## Unit stat list
+        self.unitlist = {}  ## Unit stat list
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_preset.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
-                        row[n] = int(i) ## No need to make it float
+                        row[n] = int(i)  ## No need to make it float
                     if n in (5, 6, 12, 22, 23):
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -83,7 +84,7 @@ class Unitstat():
                             row[n] = [int(i)]
                 self.unitlist[row[0]] = row[1:]
             unitfile.close()
-        self.unitlore = {} ## Unit lore list
+        self.unitlore = {}  ## Unit lore list
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_lore.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -97,20 +98,21 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
-                            if n in (5,6,7,8,9,10,11,12):
+                            if n in (5, 6, 7, 8, 9, 10, 11, 12):
                                 if i == "":
                                     row[n] = 1.0
                                 else:
-                                    row[n] = float(i)/100  ## Need to make it float for percentage cal
+                                    row[n] = float(i) / 100  ## Need to make it float for percentage cal
                             elif n in (2, 3):
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
-                                else: row[n] = []
+                                else:
+                                    row[n] = []
                             elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 20):
                                 row[n] = int(i)
                     self.statuslist[row[0]] = row[1:]
@@ -121,7 +123,7 @@ class Unitstat():
         with open(main_dir + "\data\war" + '\\unit_race.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if i.isdigit(): row[n] = int(i)  ## No need to be float
                         # if n == 12:
@@ -131,12 +133,12 @@ class Unitstat():
                         #         row[n] = [int(i)]
                     self.racelist[row[0]] = row[1:]
         unitfile.close()
-        self.gradelist = {}   ##Unit grade list
+        self.gradelist = {}  ##Unit grade list
         with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i) ## No need to be float
+                    if i.isdigit(): row[n] = int(i)  ## No need to be float
                     if n == 12:
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -149,14 +151,14 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
-                        if run != 0: # Skip first row header
+                        if run != 0:  # Skip first row header
                             if n in (11, 12, 13, 14, 15, 16, 17, 18, 24, 25):
                                 if i == "":
                                     row[n] = 1.0
                                 else:
-                                    row[n] = float(i) / 100 # Need to be float for percentage cal
+                                    row[n] = float(i) / 100  # Need to be float for percentage cal
                             elif n in (6, 7, 28, 31):
                                 """Convert all condition and status to list"""
                                 if "," in i:
@@ -179,20 +181,21 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if run != 0:
-                            if n in (3,4,5,6,8,9,10,11,12):
+                            if n in (3, 4, 5, 6, 8, 9, 10, 11, 12):
                                 if i == "":
                                     row[n] = 1.0
                                 else:
-                                    row[n] = float(i) / 100 ## Need to be float
+                                    row[n] = float(i) / 100  ## Need to be float
                             elif n in (19, 32, 33):
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
-                                else: row[n] = []
+                                else:
+                                    row[n] = []
                             elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 34, 35):
                                 row[n] = int(i)
                     self.traitlist[row[0]] = row[1:]
@@ -212,16 +215,18 @@ class Unitstat():
         with open(main_dir + "\data\war" + '\\unit_mount.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[-2] in ("0","Ruleset") or str(ruleset) == row[-2]:
+                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
                         if n == 6:
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
                                 row[n] = [int(i)]
-                        elif i.isdigit(): row[n] = int(i)
+                        elif i.isdigit():
+                            row[n] = int(i)
                     self.mountlist[row[0]] = row[1:]
         unitfile.close()
+
 
 class Directionarrow(pygame.sprite.Sprite):
     def __init__(self, who):
@@ -271,7 +276,7 @@ class Hitbox(pygame.sprite.Sprite):
         self.clickimage = self.image.copy()
         self.clickimage.fill((0, 0, 0, 128))
         self.notclickimage = self.image.copy()
-        self.image_original,self.image_original2 = self.image.copy(), self.image.copy()
+        self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
         self.image = pygame.transform.rotate(self.image_original, self.who.angle)
         self.oldpos = self.who.hitboxpos[self.side]
         self.rect = self.image.get_rect(center=self.who.hitboxpos[self.side])
@@ -285,7 +290,7 @@ class Hitbox(pygame.sprite.Sprite):
             self.image_original = self.image_original2.copy()
             scalewidth = self.image_original.get_width()
             scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
-            if self.side in (0,3):
+            if self.side in (0, 3):
                 scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
                 scaleheight = self.image_original.get_height()
             self.dim = pygame.Vector2(scalewidth, scaleheight)
@@ -302,14 +307,15 @@ class Hitbox(pygame.sprite.Sprite):
     def clicked(self):
         self.image_original2 = self.clickimage.copy()
         self.clickcheck = True
-        self.update(None,None,None,abs(11 - self.viewmode),None,None)
+        self.update(None, None, None, abs(11 - self.viewmode), None, None)
         self.clickcheck = False
 
     def release(self):
         self.image_original2 = self.notclickimage.copy()
         self.clickcheck = True
-        self.update(None,None,None,abs(11 - self.viewmode),None,None)
+        self.update(None, None, None, abs(11 - self.viewmode), None, None)
         self.clickcheck = False
+
 
 class Unitarmy(pygame.sprite.Sprite):
     images = []
@@ -333,7 +339,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.startwhere = []
         self.hitbox = []
         self.squadsprite = []  ##list of squad sprite(not index)
-        self.icon = None ## for linking with army selection ui, got linked when icon created in gameui.Armyicon
+        self.icon = None  ## for linking with army selection ui, got linked when icon created in gameui.Armyicon
         self.justsplit = False
         self.viewmode = 10
         self.imgsize = imgsize
@@ -342,9 +348,10 @@ class Unitarmy(pygame.sprite.Sprite):
             1] * self.viewmode
         self.gameid = gameid
         self.control = control
-        self.basepos = pygame.Vector2(startposition) ## Basepos is for true pos that is used for ingame calculation
+        self.basepos = pygame.Vector2(startposition)  ## Basepos is for true pos that is used for ingame calculation
         self.baseattackpos = 0
-        self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11), self.baseattackpos * abs(self.viewmode - 11) ## pos is for showing on screen
+        self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11), self.baseattackpos * abs(
+            self.viewmode - 11)  ## pos is for showing on screen
         self.angle, self.newangle = startangle, startangle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         self.pause = False
@@ -407,13 +414,13 @@ class Unitarmy(pygame.sprite.Sprite):
         self.coa = coa
         self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.coa, self.imagerect)
-        self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy() ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
+        self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
         self.rect = self.image.get_rect(center=startposition)
         self.testangle = math.radians(360 - startangle)
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
-        self.allsidepos = [(self.basepos[0], (self.basepos[1] - (self.heightbox / 10) / 2)), ## Generate all four side position
+        self.allsidepos = [(self.basepos[0], (self.basepos[1] - (self.heightbox / 10) / 2)),  ## Generate all four side position
                            ((self.basepos[0] - (self.widthbox / 10) / 2), self.basepos[1]),
                            ((self.basepos[0] + (self.widthbox / 10) / 2), self.basepos[1]),
                            (self.basepos[0], (self.basepos[1] + (self.heightbox / 10) / 2))]
@@ -422,11 +429,11 @@ class Unitarmy(pygame.sprite.Sprite):
                            rotationxy(self.basepos, self.allsidepos[2], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
         self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)),
-                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
-                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
-                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
+                          ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
+                          ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
+                          (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
         self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle),
-                           rotationxy(self.rect.center, self.hitboxpos[1], self.testangle)
+                          rotationxy(self.rect.center, self.hitboxpos[1], self.testangle)
             , rotationxy(self.rect.center, self.hitboxpos[2], self.testangle), rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
         self.squadpositionlist = []
         self.battleside = [0, 0, 0,
@@ -446,8 +453,9 @@ class Unitarmy(pygame.sprite.Sprite):
     def changescale(self):
         scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
         scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
-        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * abs(self.viewmode - 11) / self.maxviewmode, len(self.armysquad) * self.imgsize[
-            1] * abs(self.viewmode - 11) / self.maxviewmode
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * abs(self.viewmode - 11) / self.maxviewmode, len(
+            self.armysquad) * self.imgsize[
+                                                1] * abs(self.viewmode - 11) / self.maxviewmode
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.image_original = self.image.copy()
@@ -659,12 +667,13 @@ class Unitarmy(pygame.sprite.Sprite):
     def makeallsidepos(self):
         """generate all four side position"""
         self.allsidepos = [(self.basepos[0], (self.basepos[1] - (self.heightbox / 10) / 2)),
-                       ((self.basepos[0] - (self.widthbox / 10) / 2), self.basepos[1]), ((self.basepos[0] + (self.widthbox / 10) / 2), self.basepos[1]),
-                       (self.basepos[0], (self.basepos[1] + (self.heightbox / 10) / 2))]
+                           ((self.basepos[0] - (self.widthbox / 10) / 2), self.basepos[1]),
+                           ((self.basepos[0] + (self.widthbox / 10) / 2), self.basepos[1]),
+                           (self.basepos[0], (self.basepos[1] + (self.heightbox / 10) / 2))]
         self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
-                       rotationxy(self.basepos, self.allsidepos[1], self.testangle),
-                       rotationxy(self.basepos, self.allsidepos[2], self.testangle),
-                       rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
+                           rotationxy(self.basepos, self.allsidepos[1], self.testangle),
+                           rotationxy(self.basepos, self.allsidepos[2], self.testangle),
+                           rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
         self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)),
                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
@@ -736,7 +745,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.viewmode != 1:
                     if self.oldarmyhealth != self.troopnumber:
                         if self.troopnumber > self.health75:
-                            if self.lasthealthstate != 4: ## Cannot use and on this if elif
+                            if self.lasthealthstate != 4:  ## Cannot use and on this if elif
                                 self.healthimage = self.images[0]
                                 self.image_original3.blit(self.healthimage, self.healthimagerect)
                                 self.lasthealthstate = 4
@@ -850,13 +859,13 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.retreattimer = 0.1
                 if self.morale <= 0:  ## Broken state
                     self.morale, self.state = 0, 99
-                if 0 not in self.battleside: ## Fight to the death
+                if 0 not in self.battleside:  ## Fight to the death
                     self.state = 10
                     for squad in self.squadsprite:
                         if 9 not in squad.statuseffect:
                             squad.statuseffect[9] = self.statuslist[9].copy()
                     if random.randint(0, 100) > 99: self.changefaction = True
-            elif self.state in (98,99) and self.morale >= 20: ## state become normal again when morale reach 20
+            elif self.state in (98, 99) and self.morale >= 20:  ## state become normal again when morale reach 20
                 self.state = 0
                 self.retreattimer = 0
                 self.retreatstart = 0
@@ -884,22 +893,27 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.set_target(target)
                         self.combatcheck = 0
                     self.retreattimer = self.retreatmax
-            if self.hold == 1: ## skirmishing
+            if self.hold == 1:  ## skirmishing
                 minrange = self.minrange
                 if minrange == 0: minrange = 100
                 if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange / 5:
                     self.state = 96
                     target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
-                    if target[0] < 0: target[0] = 0
-                    elif target[0] > 1000: target[0] = 1000
-                    if target[1] < 0: target[1] = 0
-                    elif target[1] > 1000: target[1] = 1000
+                    if target[0] < 0:
+                        target[0] = 0
+                    elif target[0] > 1000:
+                        target[0] = 1000
+                    if target[1] < 0:
+                        target[1] = 0
+                    elif target[1] > 1000:
+                        target[1] = 1000
                     self.set_target(target)
             if self.state == 10 and self.battleside == [0, 0, 0, 0] and (
                     self.attacktarget == 0 or (self.attacktarget != 0 and self.attacktarget.state == 100)):
                 if self.target == self.allsidepos[0]:
                     self.state = 0
-                else: self.state = self.commandstate
+                else:
+                    self.state = self.commandstate
                 self.attacktarget = 0
             """Rotate Function"""
             if self.angle != round(self.newangle) and self.stamina > 0 and (
@@ -949,7 +963,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.allsidepos[0] != self.basetarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
-                if self.state in (0, 3, 4, 5,6, 10) and self.attacktarget != 0 \
+                if self.state in (0, 3, 4, 5, 6, 10) and self.attacktarget != 0 \
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for hitbox in self.hitbox:
@@ -963,13 +977,14 @@ class Unitarmy(pygame.sprite.Sprite):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
-                    if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[list(side2.keys())[1]].collide == 0) or self.combatpreparestate == 1) \
+                    if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[
+                        list(side2.keys())[1]].collide == 0) or self.combatpreparestate == 1) \
                             and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = False
                         move = self.basetarget - self.allsidepos[0]
                         move_length = move.length()
                         if move_length < 0.1 and self.battleside == [0, 0, 0,
-                                0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
+                                                                     0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""
                             self.allsidepos[0] = self.commandtarget
                             self.state = 0
@@ -978,7 +993,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         elif move_length > 0.1:
                             # if self.state != 3 and self.retreatcommand == 1:
                             heightdiff = (self.height / self.sideheight[0]) ** 2
-                            if self.state in (96,98,99):
+                            if self.state in (96, 98, 99):
                                 heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
                             move.normalize_ip()
                             if self.state in (2, 4, 6, 96, 98, 99):
@@ -986,7 +1001,7 @@ class Unitarmy(pygame.sprite.Sprite):
                             elif self.state in (1, 3, 5):
                                 move = move * self.walkspeed * heightdiff * dt
                             elif self.state == 10:
-                                move =  move * 3 * heightdiff * dt
+                                move = move * 3 * heightdiff * dt
                             if move.length() > move_length:
                                 move = self.basetarget - self.allsidepos[0]
                                 move.normalize_ip()
@@ -1001,7 +1016,8 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
                     elif (self.hitbox[
-                              list(side2.keys())[0]].collide != 0 and self.combatpreparestate == 0) and self.moverotate == 0 and self.rotateonly != True:
+                              list(side2.keys())[
+                                  0]].collide != 0 and self.combatpreparestate == 0) and self.moverotate == 0 and self.rotateonly != True:
                         self.pause = True
                     elif self.moverotate == 0 and self.rotateonly:
                         self.state = 0
@@ -1133,8 +1149,8 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.processretreat(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
                     except:
                         self.processretreat(mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate)
-                            # self.combatcheck = 0
-            elif othercommand == 1 and self.state not in (10,96,97,98,99,100):  ## Pause all action except combat
+                        # self.combatcheck = 0
+            elif othercommand == 1 and self.state not in (10, 96, 97, 98, 99, 100):  ## Pause all action except combat
                 if self.charging:
                     self.leader[0].authority -= self.authpenalty
                     self.authrecal()
@@ -1162,6 +1178,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.recreatesprite()
         self.changescale()
         return allunitindex
+
 
 class Deadarmy(pygame.sprite.Sprite):
     def __init__(self):

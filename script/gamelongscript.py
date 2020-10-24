@@ -1,9 +1,10 @@
+import csv
+import datetime
+import random
+
 import numpy as np
 import pygame
 import pygame.freetype
-import csv
-import random
-import datetime
 
 from RTS import mainmenu
 from RTS.script import gamebattalion, gameleader, gamesquad
@@ -13,6 +14,7 @@ SoundVolume = mainmenu.Soundvolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
+
 ## Other battle script
 
 def convertweathertime(weatherevent):
@@ -20,6 +22,7 @@ def convertweathertime(weatherevent):
         newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
         newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
         weatherevent[index] = [item[0], newtime, item[2]]
+
 
 ## Battle Start related script
 
@@ -72,11 +75,13 @@ def unitsetup(maingame):
                     """First player battalion as commander"""
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    playercolour,
-                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, True, maingame.coa[row[12]], True,
+                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, True,
+                                   maingame.coa[row[12]], True,
                                    startangle=row[13])
                 else:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour, (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, True, maingame.coa[row[12]],
+                                   playercolour, (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader,
+                                   maingame.gameunitstat, True, maingame.coa[row[12]],
                                    startangle=row[13])
                 maingame.playerarmy.append(army)
                 playerstart += 1
@@ -85,12 +90,14 @@ def unitsetup(maingame):
                     """First enemy battalion as commander"""
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    enemycolour,
-                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, maingame.enactment, maingame.coa[row[12]], True,
+                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat,
+                                   maingame.enactment, maingame.coa[row[12]], True,
                                    startangle=row[13])
                 elif row[0] > 2000:
                     army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                                    enemycolour,
-                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, maingame.enactment, maingame.coa[row[12]], startangle=row[13])
+                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat,
+                                   maingame.enactment, maingame.coa[row[12]], startangle=row[13])
                 maingame.enemyarmy.append(army)
                 enemystart += 1
             """armysquadindex is list index for squad list in a specific army"""
@@ -100,7 +107,8 @@ def unitsetup(maingame):
                 if squadnum != 0:
                     addsquad = gamesquad.Unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=maingame.allweapon, armourlist=maingame.allarmour,
                                                    statlist=maingame.gameunitstat,
-                                                   battalion=army, position=army.squadpositionlist[armysquadindex], inspectuipos=maingame.inspectuipos)
+                                                   battalion=army, position=army.squadpositionlist[armysquadindex],
+                                                   inspectuipos=maingame.inspectuipos)
                     maingame.squad.append(addsquad)
                     addsquad.boardpos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
@@ -111,7 +119,6 @@ def unitsetup(maingame):
                 armysquadindex += 1
     unitfile.close()
     return squadindexlist
-
 
 
 ## Battle related script
@@ -137,6 +144,7 @@ def squadselectside(targetside, side, position):
         fronttarget = 0
     return fronttarget
 
+
 def changecombatside(side, position):
     """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right"""
     """side is side of attack for rotating to find the correct side the defender got attack accordingly (e.g. left attack on right side is front)"""
@@ -156,16 +164,17 @@ def changecombatside(side, position):
         finalposition = 0
     return finalposition
 
+
 def losscal(who, target, hit, defense, type):
     heightadventage = who.battalion.height - target.battalion.height
     whotrait = who.trait
-    if type == 1: heightadventage = int((who.battalion.height - target.battalion.height)/2)
+    if type == 1: heightadventage = int((who.battalion.height - target.battalion.height) / 2)
     hit += heightadventage
     if hit < 0: hit = 0
-    if defense < 0 or 30 in whotrait: defense = 0 ## Ignore def trait
+    if defense < 0 or 30 in whotrait: defense = 0  ## Ignore def trait
     hitchance = hit - defense
-    combatscore = round(hitchance/20, 1)
-    if combatscore == 0 and random.randint(0, 10) > 9: ## Final chence to not miss
+    combatscore = round(hitchance / 20, 1)
+    if combatscore == 0 and random.randint(0, 10) > 9:  ## Final chence to not miss
         combatscore = 0.1
     leaderdmgbonus = 0
     if who.leader is not None: leaderdmgbonus = who.leader.combat * 10
@@ -178,7 +187,7 @@ def losscal(who, target, hit, defense, type):
             elif 29 in whotrait:
                 dmg = round(dmg + (who.charge / 10))
         leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
-        dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
+        dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus) / 5)
         if target.state in (1, 2, 3, 4, 5, 6, 7, 8, 9): dmg = dmg * 5
     elif type == 1:  # Range Damage
         leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
@@ -189,6 +198,7 @@ def losscal(who, target, hit, defense, type):
         dmg = target.unithealth
     moraledmg = round(dmg / 100)
     return dmg, moraledmg, leaderdmg
+
 
 def die(battle, who, group, enemygroup):
     """remove battalion,hitbox when it dies"""
@@ -212,6 +222,7 @@ def die(battle, who, group, enemygroup):
     for thisarmy in group:  ## morale dmg to every squad in army when allied battalion destroyed
         for squad in thisarmy.squadsprite:
             squad.basemorale -= 20
+
 
 def splitunit(battle, who, how, gameleader):
     """split battalion either by row or column into two seperate battalion"""
@@ -354,5 +365,3 @@ def splitunit(battle, who, how, gameleader):
                    gamebattalion.Hitbox(army, 2, 1, army.rect.height - (army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 1)]
     army.autosquadplace = False
-
-

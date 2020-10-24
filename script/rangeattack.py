@@ -8,6 +8,7 @@ from pygame.transform import scale
 
 from RTS.script import gamelongscript
 
+
 class Rangearrow(pygame.sprite.Sprite):
     images = []
 
@@ -25,13 +26,14 @@ class Rangearrow(pygame.sprite.Sprite):
         self.passwho = 0
         self.side = None
         randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 5)  ## randpos1 is for left or right random
-        hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 2)) / 100 ## the further hitchance from 0 the further arrow will land from target
+        hitchance = self.accuracy * (
+                    100 - ((shootrange * 100 / maxrange) / 2)) / 100  ## the further hitchance from 0 the further arrow will land from target
         if hitchance == 0: hitchance = 1
         """73 no range penalty, 74 long rance accuracy"""
         if 73 in self.shooter.trait:
             hitchance = self.accuracy
         elif 74 in self.shooter.trait:
-            hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100 ## range penalty half
+            hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  ## range penalty half
         howlong = shootrange / self.speed
         targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
@@ -40,7 +42,7 @@ class Rangearrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * howlong))/11)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * howlong)) / 11)
                     if 17 not in self.shooter.trait: hitchance -= 10
                 else:
                     targetnow = self.shooter.attacktarget.basepos
@@ -48,17 +50,19 @@ class Rangearrow(pygame.sprite.Sprite):
                 targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
-                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * howlong))/11)
+                    targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * howlong)) / 11)
                     if 17 not in self.shooter.trait: hitchance -= 20
                 else:
                     targetnow = self.shooter.attacktarget.basepos
-        hitchance = random.randint(int(hitchance),100)
-        if random.randint(0,100) > hitchance:
-            if randomposition1 == 0: hitchance = 100 + (hitchance/20)
-            else: hitchance = 100 - (hitchance/20)
+        hitchance = random.randint(int(hitchance), 100)
+        if random.randint(0, 100) > hitchance:
+            if randomposition1 == 0:
+                hitchance = 100 + (hitchance / 20)
+            else:
+                hitchance = 100 - (hitchance / 20)
             self.basetarget = pygame.Vector2(targetnow[0] * hitchance / 100, targetnow[1] * hitchance / 100)
         else:
-            self.basetarget = targetnow * random.uniform(0.99,1.01)
+            self.basetarget = targetnow * random.uniform(0.99, 1.01)
         myradians = math.atan2(self.basetarget[1] - self.shooter.battalion.basepos[1], self.basetarget[0] - self.shooter.battalion.basepos[0])
         self.angle = math.degrees(myradians)
         # """upper left and upper right"""

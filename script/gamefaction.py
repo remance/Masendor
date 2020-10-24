@@ -1,11 +1,11 @@
-import pygame
-import pygame.freetype
 import csv
-from pygame.transform import scale
 
+import pygame.freetype
 
 from RTS import mainmenu
+
 main_dir = mainmenu.main_dir
+
 
 class Factiondata():
     images = []
@@ -13,7 +13,7 @@ class Factiondata():
     def __init__(self, option):
         """Unit stat data read"""
         self.factionlist = {}
-        with open(main_dir + "\data" + "\\ruleset" + option + "\\faction"  + '\\faction.csv', 'r') as unitfile:
+        with open(main_dir + "\data" + "\\ruleset" + option + "\\faction" + '\\faction.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -26,6 +26,7 @@ class Factiondata():
                     #         row[n] = [int(i)]
                 self.factionlist[row[0]] = row[1:]
             unitfile.close()
+
 
 class Faction(pygame.sprite.Sprite):
     factionlist = None

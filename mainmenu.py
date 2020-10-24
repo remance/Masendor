@@ -10,7 +10,6 @@ from pygame.locals import *
 
 from RTS import maingame
 
-
 config = configparser.ConfigParser()
 config.read_file(open('configuration.ini'))
 ScreenHeight = int(config['DEFAULT']['ScreenHeight'])
@@ -140,7 +139,7 @@ class Slidermenu(pygame.sprite.Sprite):
     def update(self, mouse_pos, mouse_up, mouse_down):
         if self.rects.collidepoint(mouse_pos):
             self.mouse_over = True
-            if mouse_up or  mouse_down:
+            if mouse_up or mouse_down:
                 self.mouse_value = mouse_pos[0]
                 if self.mouse_value > self.max_value:
                     self.mouse_value = self.max_value
@@ -305,7 +304,7 @@ class Mainmenu():
             pygame.mixer.music.play(-1)
         self.all = pygame.sprite.RenderUpdates()
         self.menustate = "mainmenu"
-        self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data','ruleset'])
+        self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data', 'ruleset'])
         self.ruleset = 1
         self.rulesetfolder = "\\" + str(self.rulesetlist[self.ruleset][1])
         addmorebar = "no"

@@ -1,6 +1,5 @@
-#make exe
+# make exe
 # import cx_Freeze
-import math
 # executables = [cx_Freeze.Executable("mainmenu.py")]
 #
 # cx_Freeze.setup(
@@ -19,13 +18,7 @@ import math
 
 ## https://stackoverflow.com/questions/41255357/cpu-efficient-way-to-flash-the-screen-a-certain-color-in-pygame
 
-import random
-import sys
 import os
-import csv
-import pygame
-from pygame.transform import scale
-from pygame.locals import *
 
 main_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -46,9 +39,6 @@ gradelist = {}
 # options = {0:"Broken", 1:"Retreating", 2:"Breaking", 3:"Poor", 4:"Wavering",  5:"Balanced", 6:"Steady", 7:"Fine", 8:"Confident", 9:"Eager", 10:"Ready"}
 # if 0 in options:
 #     print(options[0])
-
-import sys
-import numpy as np
 
 # skilllist = {}
 # with open(main_dir + "\data" + '\\unit_ability.csv', 'r') as unitfile:
@@ -71,16 +61,16 @@ import numpy as np
 # while len(k) > 0:
 #     for i in k:
 #         if len(n)>50:
-import pygame
 import timeit
 import re
-test = (500,500)
+
+test = (500, 500)
 starttime = timeit.default_timer()
 # k = 0.1
 # b = 10/100
-print("The start time is :",starttime)
-for h in range(0,1000000):
-    h*10/100
+print("The start time is :", starttime)
+for h in range(0, 1000000):
+    h * 10 / 100
 print("The time difference is :", timeit.default_timer() - starttime)
 the_string = "555.55"
 print(re.search('[a-zA-Z]', the_string) is None)
