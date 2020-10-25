@@ -23,6 +23,7 @@ class Lorebook(pygame.sprite.Sprite):
     leaderlore = None
     terrainstat = None
     landmarkstat = None
+    weatherstat = None
     unitgradestat = None
     unitclasslist = None
     racelist = None
@@ -54,7 +55,7 @@ class Lorebook(pygame.sprite.Sprite):
             self.equipmentlastindex.append(run)
         self.sectionlist = ((self.conceptlore, None), (self.historylore, None), (self.factionlore, None), (self.unitstat, self.unitlore),
                             (self.equipmentstat, None), (self.statusstat, None), (self.skillstat, None),
-                            (self.traitstat, None), (self.leaderstat, self.leaderlore), (self.terrainstat, None))
+                            (self.traitstat, None), (self.leaderstat, self.leaderlore), (self.terrainstat, None), (self.weatherstat, None))
         self.currentsubsectionrow = 0
         self.maxsubsectionshow = 20
         self.logsize = 0
@@ -155,7 +156,7 @@ class Lorebook(pygame.sprite.Sprite):
         if self.page == 0:
             if self.section in (0, 1, 2):
                 pass
-            elif self.section in (3, 4, 5, 6, 7, 8, 9):
+            elif self.section in (3, 4, 5, 6, 7, 8, 9, 10):
                 row = 350
                 col = 60
                 frontstattext = stat[1:-2]
@@ -220,7 +221,7 @@ class Lorebook(pygame.sprite.Sprite):
                                         pass
                                 elif statheader[index] == "Armour":
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armourstat[text[0]][0]
+                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armourstat[text[0]][0] + ", Base Armour: " + str(basearmour)
                                 elif statheader[index] == "Unit Type":
                                     createtext = statheader[index] + ": " + self.unitclasslist[text][0]
                                 elif statheader[index] == "Race":
@@ -234,9 +235,8 @@ class Lorebook(pygame.sprite.Sprite):
                                     abilitylist = ""
                                     if statheader[index] == "Charge Skill":
                                         if text in self.skillstat:  ## In case user put in trait not existed in ruleset
-                                            abilitylist += self.skillstat[text][0] + ", "
-                                        abilitylist = abilitylist[0:-2]
-                                        createtext = statheader[index] + ": " + abilitylist
+                                            abilitylist += self.skillstat[text][0]
+                                        createtext = statheader[index] + ": " + abilitylist + ", Base Speed: " + str(speed)
                                     elif text != [0]:
                                         for thistext in text:
                                             if thistext in self.skillstat:  ## In case user put in trait not existed in ruleset
@@ -267,6 +267,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     createtext = ""
                                     pass
                         if createtext != "":
+                            print(createtext)
                             textsurface = self.font.render(createtext, 1, (0, 0, 0))
                             textrect = textsurface.get_rect(topleft=(col, row))
                             self.image.blit(textsurface, textrect)

@@ -470,6 +470,7 @@ class Battle():
         gamelorebook.Lorebook.leaderstat = self.allleader.leaderlist
         gamelorebook.Lorebook.leaderlore = None
         gamelorebook.Lorebook.terrainstat = self.battlemapfeature.featuremod
+        gamelorebook.Lorebook.weatherstat = self.allweather
         gamelorebook.Lorebook.landmarkstat = None
         gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
         gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
@@ -499,12 +500,14 @@ class Battle():
                             imgs[8], 8, 13),
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
                             self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13),
+            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
+                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13),
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[11], 19, 13),
-            gameui.Uibutton(self.lorebook.rect.bottomleft[0] + (imgs[12].get_width()), self.lorebook.rect.bottomleft[1] - imgs[12].get_height(),
-                            imgs[12], 20, 13),
-            gameui.Uibutton(self.lorebook.rect.bottomright[0] - (imgs[13].get_width()), self.lorebook.rect.bottomright[1] - imgs[13].get_height(),
-                            imgs[13], 21, 13)]
+                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),
+            gameui.Uibutton(self.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), self.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
+                            imgs[13], 20, 13),
+            gameui.Uibutton(self.lorebook.rect.bottomright[0] - (imgs[14].get_width()), self.lorebook.rect.bottomright[1] - imgs[14].get_height(),
+                            imgs[14], 21, 13)]
         buttonimage = load_images(['ui', 'battlemenu_ui', 'button'], loadorder=False)
         self.battlemenubutton = [
             gamemenu.Menubutton(buttonimage, (self.battlemenu.rect.center[0], self.battlemenu.rect.center[1] - 100), text="Resume", size=14),
@@ -1659,7 +1662,7 @@ class Battle():
                         if mouse_up:
                             for button in self.lorebuttonui:
                                 if button.rect.collidepoint(self.mousepos):
-                                    if button.event in range(0, 10):
+                                    if button.event in range(0, 11):
                                         self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll)
                                     elif button.event == 19:  ## Close button
                                         self.allui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist)

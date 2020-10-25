@@ -31,6 +31,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.state = 0
         self.gamestart = 0
         self.nocombat = 0
+        self.timer = 0
         self.battalion = battalion
         stat = statlist.unitlist[self.unitid].copy()
         self.leader = None
@@ -537,8 +538,6 @@ class Unitsquad(pygame.sprite.Sprite):
             self.statusupdate(weather, dt)
             self.gamestart = 1
         self.viewmode = viewmode
-        if dt > 0:
-            self.statusupdate(weather, dt)
         if self.state != 100:
             """Stamina and Health bar function"""
             ## TODO Make all squad image blit happen only when zoom closest or squad shown in inspectui
@@ -605,16 +604,21 @@ class Unitsquad(pygame.sprite.Sprite):
             self.attacktarget = self.battalion.attacktarget
             if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100):
                 self.state = self.battalion.state
-            self.availableskill = []
-            if self.useskillcond != 3:
-                self.checkskillcondition()
-            if self.state in (3, 4):
-                if self.attackpos.distance_to(self.combatpos) < 30 \
-                        and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
-                    self.useskill(0)
-            skillchance = random.randint(0, 10)
-            if skillchance >= 6 and len(self.availableskill) > 0 and dt != 0:
-                self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
+            if dt > 0:
+                self.timer += dt
+                if self.timer > 0.5:
+                    self.statusupdate(weather, self.timer)
+                    self.availableskill = []
+                    if self.useskillcond != 3:
+                        self.checkskillcondition()
+                    if self.state in (3, 4):
+                        if self.attackpos.distance_to(self.combatpos) < 30 \
+                                and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                            self.useskill(0)
+                    skillchance = random.randint(0, 10)
+                    if skillchance >= 6 and len(self.availableskill) > 0 and dt != 0:
+                        self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
+                    self.timer -= 0.5
             """Melee combat act"""
             if self.nocombat > 0:  # For avoiding squad go into idle state while battalion auto move in melee combat
                 self.nocombat += dt
