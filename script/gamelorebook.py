@@ -2,13 +2,16 @@ import pygame
 import pygame.freetype
 
 from RTS import mainmenu
+from RTS.script import gamelongscript
 
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
 
 class Lorebook(pygame.sprite.Sprite):
+    conceptstat = None
     conceptlore = None
+    historystat = None
     historylore = None
     factionlore = None
     unitstat = None
@@ -53,7 +56,7 @@ class Lorebook(pygame.sprite.Sprite):
                 else:
                     self.equipmentstat[index + str(run)] = statlist[index]
             self.equipmentlastindex.append(run)
-        self.sectionlist = ((self.conceptlore, None), (self.historylore, None), (self.factionlore, None), (self.unitstat, self.unitlore),
+        self.sectionlist = ((self.conceptstat,self.conceptlore), (self.historystat, self.historylore), (self.factionlore, None), (self.unitstat, self.unitlore),
                             (self.equipmentstat, None), (self.statusstat, None), (self.skillstat, None),
                             (self.traitstat, None), (self.leaderstat, self.leaderlore), (self.terrainstat, None), (self.weatherstat, None))
         self.currentsubsectionrow = 0
@@ -116,7 +119,6 @@ class Lorebook(pygame.sprite.Sprite):
         pos = listsurface.rect.topleft
         if self.currentsubsectionrow > self.logsize - self.maxsubsectionshow:
             self.currentsubsectionrow = self.logsize - self.maxsubsectionshow
-        # self.selectscroll.changeimage(newrow=self.lorenamelist.currentrow)
         if len(listgroup) > 0:
             for stuff in listgroup:
                 stuff.kill()
@@ -127,8 +129,6 @@ class Lorebook(pygame.sprite.Sprite):
                 listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, listloop[index]))
                 row += 30
                 if len(listgroup) > self.maxsubsectionshow: break
-
-        # self.selectscroll.changeimage(logsize=self.lorenamelist.logsize)
 
     def pagedesign(self, portrait=None):
         """Lore book format position of the text"""
@@ -154,11 +154,30 @@ class Lorebook(pygame.sprite.Sprite):
         self.blit_text(descriptionsurface, description, (5, 5), self.font)
         self.image.blit(descriptionsurface, descriptionrect)
         if self.page == 0:
+            row = 350
+            col = 60
             if self.section in (0, 1, 2):
-                pass
+                for index, text in enumerate(stat[:-1]):
+                    frontstattext = stat[1:-1]
+                    # newtext = []
+                    for index, text in enumerate(frontstattext):
+                        # if text != "":
+                        if "IMAGE:" not in text:
+                            textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
+                            textrect = descriptionsurface.get_rect(topleft=(col, row))
+                            self.blit_text(textsurface, text, (5, 5), self.font)
+                        else:
+                            textsurface = gamelongscript.load_image(main_dir+text[6:])
+                            textrect = descriptionsurface.get_rect(topleft=(col, row))
+                        self.image.blit(textsurface, textrect)
+                        row += 200
+                        if row >= 600:
+                            if col == 500:
+                                break
+                            else:
+                                col = 520
+                                row = 50
             elif self.section in (3, 4, 5, 6, 7, 8, 9, 10):
-                row = 350
-                col = 60
                 frontstattext = stat[1:-2]
                 # newtext = []
                 for index, text in enumerate(frontstattext):
@@ -267,22 +286,24 @@ class Lorebook(pygame.sprite.Sprite):
                                     createtext = ""
                                     pass
                         if createtext != "":
-                            print(createtext)
                             textsurface = self.font.render(createtext, 1, (0, 0, 0))
                             textrect = textsurface.get_rect(topleft=(col, row))
                             self.image.blit(textsurface, textrect)
                             row += 25
                             if row >= 600:
-                                col = 600
+                                col = 520
                                 row = 50
-        else:
+        else: # Lore page, the paragraph can be in text or image (IMAGE:)
             if self.loredata is not None:
                 lore = self.loredata[self.subsection][(self.page - 1) * 4:]
                 row = 400
                 col = 60
                 for index, text in enumerate(lore):
                     if text != "":
-                        textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
+                        if "IMAGE:" not in text:
+                            textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
+                        else:
+                            textsurface = gamelongscript.load_image(main_dir+text[6:])
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.blit_text(textsurface, text, (5, 5), self.font)
                         self.image.blit(textsurface, textrect)
@@ -293,7 +314,6 @@ class Lorebook(pygame.sprite.Sprite):
                             else:
                                 col = 550
                                 row = 50
-
 
 class Subsectionlist(pygame.sprite.Sprite):
     def __init__(self, pos, image):

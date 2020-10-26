@@ -33,68 +33,10 @@ SoundVolume = mainmenu.Soundvolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
 
-
-def load_image(file, subfolder=""):
-    """loads an image, prepares it for play"""
-    file = os.path.join(main_dir, 'data', subfolder, file)
-    try:
-        surface = pygame.image.load(file).convert_alpha()
-    except pygame.error:
-        raise SystemExit('Could not load image "%s" %s' % (file, pygame.get_error()))
-    return surface.convert_alpha()
-
-
-def load_images(subfolder=[], loadorder=True, returnorder=False):
-    """loads all images(files) in folder using loadorder list file use only png file"""
-    imgs = []
-    dirpath = os.path.join(main_dir, 'data')
-    if subfolder != []:
-        for folder in subfolder:
-            dirpath = os.path.join(dirpath, folder)
-    if loadorder:
-        loadorderfile = open(dirpath + "/load_order.txt", "r")
-        loadorderfile = ast.literal_eval(loadorderfile.read())
-        for file in loadorderfile:
-            imgs.append(load_image(dirpath + "/" + file))
-    else:
-        loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
-        loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
-        for file in loadorderfile:
-            imgs.append(load_image(dirpath + "/" + file))
-    if returnorder == False:
-        return imgs
-    else:
-        loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
-        return imgs, loadorderfile
-
-
-def csv_read(file, subfolder=[], outputtype=0):
-    """output type 0 = dict, 1 = list"""
-    returnoutput = {}
-    if outputtype == 1: returnoutput = []
-    folderlist = ""
-    for folder in subfolder:
-        folderlist += "\\" + folder
-    folderlist += "\\" + file
-    with open(main_dir + folderlist, 'r') as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-        for row in rd:
-            for n, i in enumerate(row):
-                if i.isdigit() or "-" in i:
-                    row[n] = int(i)
-            if outputtype == 0:
-                returnoutput[row[0]] = row[1:]
-            elif outputtype == 1:
-                returnoutput.append(row)
-        unitfile.close()
-    return returnoutput
-
-
-def load_sound(file):
-    file = os.path.join(main_dir, "data/sound/", file)
-    sound = pygame.mixer.Sound(file)
-    return sound
-
+load_image = gamelongscript.load_image
+load_images = gamelongscript.load_images
+csv_read = gamelongscript.csv_read
+load_sound = gamelongscript.load_sound
 
 class Battle():
     def __init__(self, winstyle, ruleset, rulesetfolder):
@@ -208,7 +150,7 @@ class Battle():
             imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
             imgs = []
             for img in imgsold:
-                img = pygame.transform.scale(img, (int(SCREENRECT.width), SCREENRECT.height))
+                img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
                 imgs.append(img)
             self.weathereffectimgs.append(imgs)
         imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  ## Load weather icon
@@ -456,7 +398,9 @@ class Battle():
         self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
+        gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
         gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
+        gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
         gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
         gamelorebook.Lorebook.factionlore = self.allfaction.factionlist
         gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
@@ -1203,6 +1147,10 @@ class Battle():
                         else:  ## Random weather
                             self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2), self.allweather)
                         self.weatherevent.pop(index)
+                        try:
+                            nextendtime = self.weatherevent[0][1]
+                        except:
+                            nextendtime = None
                         break
                 if self.currentweather.spawnrate > 0 and len(self.weathermatter) < self.currentweather.speed:
                     spawnnum = range(0, int(self.currentweather.spawnrate * self.dt * random.randint(0, 10)))
@@ -1231,15 +1179,15 @@ class Battle():
                         truepos = (SCREENRECT.width, SCREENRECT.height / 2)
                         target = (-SCREENRECT.width, SCREENRECT.height / 2)
                         self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
-                                                                         self.weathereffectimgs[self.currentweather.type][self.currentweather.level]))
-                    elif len(self.weathereffect) == 1:
-                        for weathereffect in self.weathereffect:
-                            if weathereffect.pos[0] <= 0:
-                                truepos = (SCREENRECT.width, SCREENRECT.height / 2)
-                                target = (-SCREENRECT.width, SCREENRECT.height / 2)
-                                self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
-                                                                                 self.weathereffectimgs[self.currentweather.type][
-                                                                                     self.currentweather.level]))
+                                                        self.weathereffectimgs[self.currentweather.type][self.currentweather.level],nextendtime))
+                    # elif len(self.weathereffect) == 1:
+                    #     for weathereffect in self.weathereffect:
+                    #         if weathereffect.rect.center[0] <= SCREENRECT.width+100:
+                    #             truepos = (weathereffect.rect.midright[0], SCREENRECT.height / 2)
+                    #             target = (-SCREENRECT.width, SCREENRECT.height / 2)
+                    #             self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
+                    #                                                              self.weathereffectimgs[self.currentweather.type][
+                    #                                                                  self.currentweather.level]))
                 for army in self.allunitlist:
                     if army.gameid < 2000:
                         self.playerposlist[army.gameid] = army.basepos
@@ -1585,7 +1533,7 @@ class Battle():
                         self.combattimer = 0
                 self.unitupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
                 self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt, self.camerascale)
-                self.weatherupdater.update(self.dt)
+                self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 self.combattimer += self.dt
                 self.uitimer += self.dt
                 self.camera.update(self.camerapos, self.allcamera)

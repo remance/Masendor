@@ -1,6 +1,9 @@
 import csv
 import datetime
 import random
+import os
+import ast
+import re
 
 import numpy as np
 import pygame
@@ -13,6 +16,68 @@ config = mainmenu.config
 SoundVolume = mainmenu.Soundvolume
 SCREENRECT = mainmenu.SCREENRECT
 main_dir = mainmenu.main_dir
+
+## Data Loading script
+
+def load_image(file, subfolder=""):
+    """loads an image, prepares it for play"""
+    thisfile = os.path.join(main_dir, 'data', subfolder, file)
+    try:
+        surface = pygame.image.load(thisfile).convert_alpha()
+    except pygame.error:
+        raise SystemExit('Could not load image "%s" %s' % (thisfile, pygame.get_error()))
+    return surface.convert_alpha()
+
+def load_images(subfolder=[], loadorder=True, returnorder=False):
+    """loads all images(files) in folder using loadorder list file use only png file"""
+    imgs = []
+    dirpath = os.path.join(main_dir, 'data')
+    if subfolder != []:
+        for folder in subfolder:
+            dirpath = os.path.join(dirpath, folder)
+    if loadorder:
+        loadorderfile = open(dirpath + "/load_order.txt", "r")
+        loadorderfile = ast.literal_eval(loadorderfile.read())
+        for file in loadorderfile:
+            imgs.append(load_image(dirpath + "/" + file))
+    else:
+        loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
+        loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
+        for file in loadorderfile:
+            imgs.append(load_image(dirpath + "/" + file))
+    if returnorder == False:
+        return imgs
+    else:
+        loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
+        return imgs, loadorderfile
+
+
+def csv_read(file, subfolder=[], outputtype=0):
+    """output type 0 = dict, 1 = list"""
+    returnoutput = {}
+    if outputtype == 1: returnoutput = []
+    folderlist = ""
+    for folder in subfolder:
+        folderlist += "\\" + folder
+    folderlist += "\\" + file
+    with open(main_dir + folderlist, 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        for row in rd:
+            for n, i in enumerate(row):
+                if i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None):
+                    row[n] = int(i)
+            if outputtype == 0:
+                returnoutput[row[0]] = row[1:]
+            elif outputtype == 1:
+                returnoutput.append(row)
+        unitfile.close()
+    return returnoutput
+
+
+def load_sound(file):
+    file = os.path.join(main_dir, "data/sound/", file)
+    sound = pygame.mixer.Sound(file)
+    return sound
 
 
 ## Other battle script

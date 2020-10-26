@@ -58,7 +58,7 @@ class Mattersprite(pygame.sprite.Sprite):
         self.image = image
         self.rect = self.image.get_rect(center=self.pos)
 
-    def update(self, dt):
+    def update(self, dt, timer):
         move = self.target - self.pos
         move_length = move.length()
         if move_length > 0.1:
@@ -77,7 +77,7 @@ class Mattersprite(pygame.sprite.Sprite):
 class Specialeffect(pygame.sprite.Sprite):
     """Special effect from weather beyond sprite such as thunder, fog etc."""
 
-    def __init__(self, pos, target, speed, image):
+    def __init__(self, pos, target, speed, image, endtime):
         self._layer = 8
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pygame.Vector2(pos)
@@ -85,20 +85,24 @@ class Specialeffect(pygame.sprite.Sprite):
         self.speed = speed
         self.image = image
         self.rect = self.image.get_rect(center=self.pos)
+        self.endtime = endtime
 
-    def update(self, dt):
+    def update(self, dt, timer):
         move = self.target - self.pos
         move_length = move.length()
-        if move_length > 0.1:
+        if (self.rect.midleft[0] > 0 and timer < self.endtime) or (self.endtime is not None and timer >= self.endtime and self.rect.midright[0] > 0):
             move.normalize_ip()
             move = move * self.speed * dt
             if move.length() <= move_length:
                 self.pos += move
-                self.rect.midleft = list(int(v) for v in self.pos)
+                if timer < self.endtime and self.pos[0] > 0: ## Do not go beyond 0 if weather event not end yet
+                    self.rect.midleft = list(int(v) for v in self.pos)
+                else:
+                    self.rect.midleft = pygame.Vector2(0,self.pos[1])
             else:
-                self.pos = self.target
                 self.rect.midleft = self.target
-        else:
+        elif timer >= self.endtime and self.rect.midright[0] < 0:
+            print('why')
             self.kill()
 
 
