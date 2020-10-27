@@ -1538,8 +1538,7 @@ class Battle():
                 self.uitimer += self.dt
                 self.camera.update(self.camerapos, self.allcamera)
                 self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner], self.playerposlist, self.enemyposlist)
-                self.clock.tick(60)
-                self.dt = (self.clock.tick(60) / 500) * self.gamespeed
+                self.dt = (self.clock.get_time() / 1000) * self.gamespeed
                 self.timenumber.timerupdate(self.dt)
                 self.uidt = self.dt
             else:
@@ -1642,6 +1641,7 @@ class Battle():
             self.allui.draw(self.screen)  ## Draw the UI
             # dirty = self.allui.draw(self.screen)
             pygame.display.update()
+            self.clock.tick(60)
         if pygame.mixer:
             pygame.mixer.music.fadeout(1000)
         pygame.time.wait(1000)

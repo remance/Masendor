@@ -13,13 +13,11 @@ Meaning: I am totally ignoring so many issues right now eventhough they cause pe
 
 Plan
 
-Ver 0.4 Window of Insight: More complex UI function (Event log, popup box), Dramatic Text based on important event at the center top of screen, also weather effect, changable game speed
-
-4.8 Encyclopedia
-
-4.9 Encyclopedia popup
-
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
+
+0.5.1-0.5.5 focus on optimisation
+
+5.5.6+ focus on documentation
 
 Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle, custom unit editor, improve main menu
 

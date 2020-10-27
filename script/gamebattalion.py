@@ -703,7 +703,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.leadersocial = self.leader[0].social
         if self.autosquadplace:
             for leader in self.leader:
-                if leader.gameid != 0:
+                if leader.gameid != 1:
                     self.squadsprite[leader.squadpos].leader = leader  ## put in leader to squad with the set pos
         self.authrecal()
         self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,

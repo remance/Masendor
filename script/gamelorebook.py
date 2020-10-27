@@ -157,26 +157,25 @@ class Lorebook(pygame.sprite.Sprite):
             row = 350
             col = 60
             if self.section in (0, 1, 2):
-                for index, text in enumerate(stat[:-1]):
-                    frontstattext = stat[1:-1]
-                    # newtext = []
-                    for index, text in enumerate(frontstattext):
-                        # if text != "":
-                        if "IMAGE:" not in text:
-                            textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
-                            textrect = descriptionsurface.get_rect(topleft=(col, row))
-                            self.blit_text(textsurface, text, (5, 5), self.font)
+                frontstattext = stat[1:-1]
+                # newtext = []
+                for index, text in enumerate(frontstattext):
+                    # if text != "":
+                    if "IMAGE:" not in text:
+                        textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
+                        textrect = descriptionsurface.get_rect(topleft=(col, row))
+                        self.blit_text(textsurface, text, (5, 5), self.font)
+                    else:
+                        textsurface = gamelongscript.load_image(main_dir+text[6:])
+                        textrect = descriptionsurface.get_rect(topleft=(col, row))
+                    self.image.blit(textsurface, textrect)
+                    row += 200
+                    if row >= 600:
+                        if col == 500:
+                            break
                         else:
-                            textsurface = gamelongscript.load_image(main_dir+text[6:])
-                            textrect = descriptionsurface.get_rect(topleft=(col, row))
-                        self.image.blit(textsurface, textrect)
-                        row += 200
-                        if row >= 600:
-                            if col == 500:
-                                break
-                            else:
-                                col = 520
-                                row = 50
+                            col = 520
+                            row = 50
             elif self.section in (3, 4, 5, 6, 7, 8, 9, 10):
                 frontstattext = stat[1:-2]
                 # newtext = []

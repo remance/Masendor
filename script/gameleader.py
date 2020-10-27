@@ -76,7 +76,7 @@ class Leader(pygame.sprite.Sprite):
         self.badmorale = (20, 30)  ## other position morale lost
         self.commander = False
         if self.armyposition == 0:
-            squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10)
+            squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10) # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
             self.badmorale = (30, 50)  ## main general morale lost when die
             if self.battalion.commander:
