@@ -558,9 +558,9 @@ class Battle():
         targetluck = random.randint(-50, 50)
         whopercent = self.battlesidecal[whoside]
         """34 battlemaster no flanked penalty"""
-        if 34 in who.trait or 91 in who.statuseffect: whopercent = 1
+        if who.fulldef or 91 in who.statuseffect: whopercent = 1
         targetpercent = self.battlesidecal[targetside]
-        if 34 in target.trait or 91 in target.statuseffect: targetpercent = 1
+        if target.fulldef or 91 in target.statuseffect: targetpercent = 1
         dmgeffect = who.frontdmgeffect
         targetdmgeffect = target.frontdmgeffect
         if whoside != 0 and whopercent != 1:  ## if attack or defend from side will use discipline to help reduce penalty a bit
@@ -573,10 +573,10 @@ class Battle():
             if targetpercent > 1: targetpercent = 1
         whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
         """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
-        if (33 in target.trait and whoside == 2) or (55 in who.trait and whoside == 2) or (47 in who.trait and targetside in (1, 3)): whodefense = 0
+        if (target.backstab and whoside == 2) or (who.oblivious and whoside == 2) or (who.flanker and targetside in (1, 3)): whodefense = 0
         targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
-        if (33 in who.trait and targetside == 2) or (55 in target.trait and targetside == 2) or (
-                47 in target.trait and whoside in (1, 3)): targetdefense = 0
+        if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
+                target.flanker and whoside in (1, 3)): targetdefense = 0
         whodmg, whomoraledmg, wholeaderdmg = self.losscal(who, target, whohit, targetdefense, 0)
         targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
         who.unithealth -= round(targetdmg * dmgeffect)
@@ -1471,7 +1471,6 @@ class Battle():
                     collidelist = pygame.sprite.spritecollide(hitbox, self.hitboxs, dokill=False, collided=pygame.sprite.collide_mask)
                     for hitbox2 in collidelist:
                         if hitbox.who.gameid != hitbox2.who.gameid and hitbox.who.gameid < 2000 and hitbox2.who.gameid >= 2000:
-                            # if pygame.sprite.collide_mask(hitbox, hitbox2) is not None:
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
                             """run combatprepare when combat start if army is the attacker"""
                             if hitbox.who.gameid not in hitbox.who.battleside:

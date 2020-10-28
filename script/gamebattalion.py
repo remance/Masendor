@@ -283,6 +283,7 @@ class Hitbox(pygame.sprite.Sprite):
         self.pos = self.rect.center
         self.mask = pygame.mask.from_surface(self.image)
         self.clickcheck = False
+        self.stillclick = False
 
     def update(self, weather, squadgroup, dt, viewmode, playerposlist, enemyposlist):
         if self.viewmode != abs(viewmode - 11) or self.clickcheck:
@@ -309,12 +310,14 @@ class Hitbox(pygame.sprite.Sprite):
         self.clickcheck = True
         self.update(None, None, None, abs(11 - self.viewmode), None, None)
         self.clickcheck = False
+        self.stillclick = True
 
     def release(self):
         self.image_original2 = self.notclickimage.copy()
         self.clickcheck = True
         self.update(None, None, None, abs(11 - self.viewmode), None, None)
         self.clickcheck = False
+        self.stillclick = False
 
 
 class Unitarmy(pygame.sprite.Sprite):
@@ -965,10 +968,14 @@ class Unitarmy(pygame.sprite.Sprite):
                 # if self.state not in [10]: self.target = self.commandtarget
                 if self.state in (0, 3, 4, 5, 6, 10) and self.attacktarget != 0 \
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
+                    print('chase', self.forcedmelee)
                     cantchase = False
                     for hitbox in self.hitbox:
-                        if hitbox.collide != 0: cantchase = True
+                        if hitbox.collide != 0:
+                            print(hitbox.collide)
+                            cantchase = True
                     if cantchase == False and self.forcedmelee:
+                        print('chasetrue')
                         self.state = self.commandstate
                         self.set_target(self.attacktarget.basepos)
                         self.setrotate(self.target, instant=True)
@@ -1002,12 +1009,14 @@ class Unitarmy(pygame.sprite.Sprite):
                                 move = move * self.walkspeed * heightdiff * dt
                             elif self.state == 10:
                                 move = move * 3 * heightdiff * dt
-                            if move.length() > move_length:
-                                move = self.basetarget - self.allsidepos[0]
-                                move.normalize_ip()
-                            self.basepos += move
-                            self.pos = self.basepos * abs(self.viewmode - 11)
-                        self.rect.center = list(int(v) for v in self.pos)
+                            if move.length() <= move_length:
+                                self.basepos += move
+                                self.pos = self.basepos * abs(self.viewmode - 11)
+                                self.rect.center = list(int(v) for v in self.pos)
+                            else:
+                                self.allsidepos[0] = self.basetarget
+                                self.pos = self.basepos * abs(self.viewmode - 11)
+                                self.rect.center = list(int(v) for v in self.pos)
                         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
                         self.height = self.gamemapheight.getheight(self.basepos)
                         self.makeallsidepos()
@@ -1098,6 +1107,7 @@ class Unitarmy(pygame.sprite.Sprite):
         if keystate[pygame.K_LALT] or (whomouseover != 0 and (
                 (self.gameid < 2000 and whomouseover.gameid >= 2000) or (self.gameid >= 2000 and whomouseover.gameid < 2000))):
             if self.ammo <= 0 or keystate[pygame.K_LCTRL]:
+                self.forcedmelee = True
                 self.state = 3
             elif self.ammo > 0:  ##Move to range attack
                 self.state = 5

@@ -18,11 +18,11 @@ class Rangearrow(pygame.sprite.Sprite):
         self.speed = 50
         self.image = self.images[0]
         self.arcshot = False
-        if 16 in shooter.trait: self.arcshot = True
+        if shooter.arcshot: self.arcshot = True
         self.image_original = self.image.copy()
         self.shooter = shooter
-        self.accuracy = shooter.accuracy
-        if self.shooter.state in (12, 13) and 17 not in self.shooter.trait: self.accuracy -= 10
+        self.accuracy = self.shooter.accuracy
+        if self.shooter.state in (12, 13) and self.shooter.agileaim == False: self.accuracy -= 10
         self.passwho = 0
         self.side = None
         randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 5)  ## randpos1 is for left or right random
@@ -30,9 +30,9 @@ class Rangearrow(pygame.sprite.Sprite):
                     100 - ((shootrange * 100 / maxrange) / 2)) / 100  ## the further hitchance from 0 the further arrow will land from target
         if hitchance == 0: hitchance = 1
         """73 no range penalty, 74 long rance accuracy"""
-        if 73 in self.shooter.trait:
+        if self.shooter.norangepenal:
             hitchance = self.accuracy
-        elif 74 in self.shooter.trait:
+        elif self.shooter.longrangeacc:
             hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  ## range penalty half
         howlong = shootrange / self.speed
         targetnow = self.shooter.battalion.baseattackpos
@@ -43,7 +43,7 @@ class Rangearrow(pygame.sprite.Sprite):
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
                     targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * howlong)) / 11)
-                    if 17 not in self.shooter.trait: hitchance -= 10
+                    if self.shooter.agileaim == False: hitchance -= 10
                 else:
                     targetnow = self.shooter.attacktarget.basepos
             elif self.shooter.attacktarget.state in (2, 4, 6, 8, 96, 98, 99) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
@@ -51,7 +51,7 @@ class Rangearrow(pygame.sprite.Sprite):
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
                     targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.runspeed * howlong)) / 11)
-                    if 17 not in self.shooter.trait: hitchance -= 20
+                    if self.shooter.agileaim == False: hitchance -= 20
                 else:
                     targetnow = self.shooter.attacktarget.basepos
         hitchance = random.randint(int(hitchance), 100)

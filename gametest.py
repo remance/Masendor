@@ -64,13 +64,15 @@ gradelist = {}
 import timeit
 import re
 
-test = (500, 500)
 starttime = timeit.default_timer()
-# k = 0.1
-# b = 10/100
+trait = {1:"a",2:"5",3:"12",4:"15",15:"66"}
+arcshot = False
+if 15 in trait: arcshot = True
 print("The start time is :", starttime)
-for h in range(0, 1000000):
-    h * 10 / 100
+for i in range(0,10000):
+    if arcshot:
+        1+1
 print("The time difference is :", timeit.default_timer() - starttime)
-the_string = "555.55"
-print(re.search('[a-zA-Z]', the_string) is None)
+#0.0008561620000000006
+#0.0017251539999999996
+#0.0014471780000000004

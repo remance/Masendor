@@ -232,11 +232,10 @@ def changecombatside(side, position):
 
 def losscal(who, target, hit, defense, type):
     heightadventage = who.battalion.height - target.battalion.height
-    whotrait = who.trait
     if type == 1: heightadventage = int((who.battalion.height - target.battalion.height) / 2)
     hit += heightadventage
     if hit < 0: hit = 0
-    if defense < 0 or 30 in whotrait: defense = 0  ## Ignore def trait
+    if defense < 0 or who.ignoredef: defense = 0  ## Ignore def trait
     hitchance = hit - defense
     combatscore = round(hitchance / 20, 1)
     if combatscore == 0 and random.randint(0, 10) > 9:  ## Final chence to not miss
@@ -245,11 +244,10 @@ def losscal(who, target, hit, defense, type):
     if who.leader is not None: leaderdmgbonus = who.leader.combat * 10
     if type == 0:  # Melee damage
         dmg = who.dmg
-        """include charge in dmg if charging, ignore charge defense if have ignore trait"""
-        if who.charging:
-            if 29 not in whotrait:
+        if who.charging: ## Include charge in dmg if charging
+            if who.ignorechargedef == False: ## Ignore charge defense if have ignore trait
                 dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
-            elif 29 in whotrait:
+            elif who.ignorechargedef:
                 dmg = round(dmg + (who.charge / 10))
         leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
         dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus) / 5)
@@ -257,10 +255,13 @@ def losscal(who, target, hit, defense, type):
     elif type == 1:  # Range Damage
         leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
         dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
-    if (21 in whotrait and target.type in (1, 2)) or (23 in whotrait and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
+    if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         dmg = dmg * 1.25
     if dmg > target.unithealth:
         dmg = target.unithealth
+    elif leaderdmg < 0:
+        leaderdmg = 0
+        dmg = 0
     moraledmg = round(dmg / 100)
     return dmg, moraledmg, leaderdmg
 

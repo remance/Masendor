@@ -124,7 +124,21 @@ class Unitsquad(pygame.sprite.Sprite):
         self.skilleffect = {}
         self.baseinflictstatus = {}
         self.specialstatus = []
-        """Add trait to base stat"""
+        ## Set up trait variable
+        self.arcshot = False
+        self.antiinf = False
+        self.anticav = False
+        self.shootmove = False
+        self.agileaim = False
+        self.norangepenal = False
+        self.longrangeacc = False
+        self.ignorechargedef = False
+        self.ignoredef = False
+        self.fulldef = False
+        self.backstab = False
+        self.oblivious = False
+        self.flanker = False
+        ##Add trait to base stat
         self.trait = list(set([trait for trait in self.trait if trait != 0]))
         if len(self.trait) > 0:
             self.trait = {x: statlist.traitlist[x] for x in self.trait if
@@ -173,6 +187,19 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.basediscipline += random.randint(-10, 10)
             if 149 in self.trait:  ## Impetuous
                 self.baseauthpenalty += 0.5
+            ## Change trait variable
+            if 16 in self.trait: self.arcshot = True
+            if 17 in self.trait: self.agileaim = True
+            if 18 in self.trait: self.shootmove = True
+            if 29 in self.trait: self.ignorechargedef = True
+            if 30 in self.trait: self.ignoredef = True
+            if 34 in self.trait: self.fulldef = True
+            if 33 in self.trait: self.backstab = True
+            if 47 in self.trait: self.flanker = True
+            if 55 in self.trait: self.oblivious = True
+            if 73 in self.trait: self.norangepenal = True
+            if 74 in self.trait: self.longrangeacc = True
+            ##
         # self.loyalty
         self.elemresist = (fireres, waterres, airres, earthres, poisonres)
         self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
@@ -540,29 +567,16 @@ class Unitsquad(pygame.sprite.Sprite):
         self.viewmode = viewmode
         if self.state != 100:
             """Stamina and Health bar function"""
-            ## TODO Make all squad image blit happen only when zoom closest or squad shown in inspectui
-            if self.wholastselect == self.gameid or self.viewmode == 10:
+            if self.battalion.hitbox[0].stillclick or self.viewmode == 10:
                 if self.oldlasthealth != self.unithealth:
-                    if self.unithealth > self.health75:
-                        if self.lasthealthstate != 4:
-                            self.healthimage = self.images[3]
-                            self.image_original.blit(self.healthimage, self.healthimagerect)
-                            self.lasthealthstate = 4
-                    elif self.unithealth > self.health50:
-                        if self.lasthealthstate != 3:
-                            self.healthimage = self.images[4]
-                            self.image_original.blit(self.healthimage, self.healthimagerect)
-                            self.lasthealthstate = 3
-                    elif self.unithealth > self.health25:
-                        if self.lasthealthstate != 2:
-                            self.healthimage = self.images[5]
-                            self.image_original.blit(self.healthimage, self.healthimagerect)
-                            self.lasthealthstate = 2
-                    elif self.unithealth > 0:
-                        if self.lasthealthstate != 1:
-                            self.healthimage = self.images[6]
-                            self.image_original.blit(self.healthimage, self.healthimagerect)
-                            self.lasthealthstate = 1
+                    healthlist = (self.health75, self.health50, self.health25, 0)
+                    for index, health in enumerate(healthlist):
+                        if self.unithealth > health:
+                            if self.lasthealthstate != abs(4-index):
+                                self.healthimage = self.images[index+3]
+                                self.image_original.blit(self.healthimage, self.healthimagerect)
+                                self.lasthealthstate = abs(4-index)
+                            break
                     self.oldlasthealth = self.unithealth
                 if self.oldlaststamina != self.stamina:
                     if self.stamina > self.stamina75:
@@ -591,13 +605,12 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.image_original.blit(self.staminaimage, self.staminaimagerect)
                             self.laststaminastate = 0
                     self.oldlaststamina = self.stamina
+                self.image = self.image_original.copy()
                 if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
                     for index, side in enumerate(self.battleside):
                         if side > 0:
                             self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
                             self.image.blit(self.images[14 + index], self.imagerect)
-                else:
-                    self.image = self.image_original.copy()
             self.attackpos = self.battalion.baseattackpos
             if self.battalion.attacktarget != 0:
                 self.attackpos = self.battalion.attacktarget.basepos
@@ -627,7 +640,7 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.battalion.state == 10 and self.state != 97:
                 if any(battle > 0 for battle in self.battleside):
                     self.state = 10
-                elif self.ammo > 0 and 16 in self.trait:  # Help range attack when battalion in melee combat if has arcshot
+                elif self.ammo > 0 and self.arcshot:  # Help range attack when battalion in melee combat if has arcshot
                     self.state = 11
                 elif any(battle > 0 for battle in self.battleside) == False:
                     if self.nocombat == 0:
@@ -641,7 +654,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 else:
                     self.state = 0
             elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in (1, 2, 3, 4, 5, 6)
-                                                                         and 18 in self.trait)) and self.ammo > 0:  # Fire at will
+                                                                         and self.shootmove)) and self.ammo > 0:  # Fire at will
                 if self.attacktarget == 0 and self.battalion.neartarget != 0 and len(
                         self.battalion.neartarget) > 0:  # get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
@@ -662,6 +675,8 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.basemorale < self.maxmorale and self.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
                 self.basemorale += dt
             self.troopnumber = self.unithealth / self.troophealth
+            # if self.troopnumber < self.maxtroop and self.state == 10:
+            #     print(self.unithealth, self.troopnumber, self.gameid)
             if round(self.troopnumber) < self.troopnumber:  # Calculate how many troop left based on current hp
                 self.troopnumber = round(self.troopnumber + 1)
             else:
@@ -679,6 +694,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.troopnumber = round(self.troopnumber)
             if self.unithealth < 0: self.unithealth = 0
             if self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
+            self.battleside = [-1, -1, -1, -1] # Reset battleside to defualt
             if self.stamina <= 0:
                 self.state = 97
                 self.stamina = 0
