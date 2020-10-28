@@ -1,22 +1,18 @@
 """
-Change speed stat to something else
 ## Known problem
-battalion sometimes go through enemy sprite to the pos center
 Hitbox still behave weirdly in melee combat
+1 melee combat cause 10 fps drop
 Optimise list
 change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
-seem like status update and skill usage of squad cause some fps drop
 maybe best remove all for loop in main and move them to update
 remove index and change call to the sprite itself
 """
-import ast
-import csv
+
 import datetime
 import glob
 import os
 import os.path
 import random
-import re
 
 import numpy as np
 import pygame
@@ -38,6 +34,7 @@ load_images = gamelongscript.load_images
 csv_read = gamelongscript.csv_read
 load_sound = gamelongscript.load_sound
 
+
 class Battle():
     def __init__(self, winstyle, ruleset, rulesetfolder):
         # Initialize pygame
@@ -47,15 +44,6 @@ class Battle():
         # Set the display mode
         self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)
         self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)
-        # for when implement game and map camera
-        # self.battle_surf = pygame.surface.Surface(width, height)
-        # in your main loop
-        # or however you draw your sprites
-        # your_sprite_group.draw(game_surf)
-        # then blit to screen
-        # self.screen.blit(self.battle_surf, the_position)
-        # Load images, assign to sprite classes
-        # (do this before the classes are used, after screen setup)
         self.ruleset = ruleset
         self.rulesetfolder = rulesetfolder
         ## create game map
@@ -101,12 +89,7 @@ class Battle():
             imgs.append(img)
         self.coa = imgs
         ## create unit
-        imgsold = load_images(['war', 'unit_ui'])
-        imgs = []
-        for img in imgsold:
-            # x, y = img.get_width(), img.get_height()
-            # img = pygame.transform.scale(img, (int(x),int(y/2)))
-            imgs.append(img)
+        imgs = load_images(['war', 'unit_ui'])
         gamesquad.Unitsquad.images = imgs
         self.imagewidth, self.imageheight = imgs[0].get_width(), imgs[0].get_height()
         imgs = []
@@ -190,7 +173,10 @@ class Battle():
         """Initialize Game Groups"""
         self.allcamera = pygame.sprite.LayeredUpdates()  ## the layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow, 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = squad inspect, 12 pop up
         self.allui = pygame.sprite.LayeredUpdates()
-        self.unitupdater = pygame.sprite.Group()
+        self.battalionupdater = pygame.sprite.Group()
+        self.hitboxupdater = pygame.sprite.Group()
+        self.squadupdater = pygame.sprite.Group()
+        self.leaderupdater = pygame.sprite.Group()
         self.uiupdater = pygame.sprite.Group()
         self.weatherupdater = pygame.sprite.Group()
         self.effectupdater = pygame.sprite.Group()
@@ -202,7 +188,7 @@ class Battle():
         self.enemyarmy = pygame.sprite.Group()
         self.squad = pygame.sprite.Group()
         self.armyleader = pygame.sprite.Group()
-        self.hitboxs = pygame.sprite.Group()
+        self.hitboxes = pygame.sprite.Group()
         self.arrows = pygame.sprite.Group()
         self.directionarrows = pygame.sprite.Group()
         self.deadunit = pygame.sprite.Group()
@@ -244,11 +230,11 @@ class Battle():
         gamemap.Mapfeature.containers = self.battlemapfeature
         gamemap.Mapheight.containers = self.battlemapheight
         gamemap.Beautifulmap.containers = self.showmap, self.allcamera
-        gamebattalion.Unitarmy.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad, self.allcamera
-        gamesquad.Unitsquad.containers = self.playerarmy, self.enemyarmy, self.unitupdater, self.squad
-        gamebattalion.Deadarmy.containers = self.deadunit, self.unitupdater, self.allcamera
-        gamebattalion.Hitbox.containers = self.hitboxs, self.unitupdater, self.allcamera
-        gameleader.Leader.containers = self.armyleader, self.unitupdater
+        gamebattalion.Unitarmy.containers = self.playerarmy, self.enemyarmy, self.battalionupdater, self.squad, self.allcamera
+        gamesquad.Unitsquad.containers = self.playerarmy, self.enemyarmy, self.squadupdater, self.squad
+        gamebattalion.Deadarmy.containers = self.deadunit, self.battalionupdater, self.allcamera
+        gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater, self.allcamera
+        gameleader.Leader.containers = self.armyleader, self.leaderupdater
         rangeattack.Rangearrow.containers = self.arrows, self.effectupdater, self.allcamera
         gamebattalion.Directionarrow.containers = self.directionarrows, self.effectupdater, self.allcamera
         gameui.Gameui.containers = self.gameui, self.uiupdater
@@ -292,6 +278,7 @@ class Battle():
         gamebattalion.Unitarmy.gamemapfeature = self.battlemapfeature  ## add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
         gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
+        gamebattalion.Unitarmy.maingame = self
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255, 255, 255))
@@ -1070,32 +1057,27 @@ class Battle():
                         elif mouse_right and self.lastselected is None:
                             pass
                     elif self.logscroll.rect.collidepoint(self.mousepos):  ## Have to run logscroll before event log
-                        if (mouse_down or mouse_up):
-                            self.clickcheck = 1
-                            self.uicheck = 1
+                        self.clickcheck = 1
+                        self.uicheck = 1
+                        if mouse_down or mouse_up:
                             newrow = self.logscroll.update(self.mousepos)
                             if self.eventlog.currentstartrow != newrow:
                                 self.eventlog.currentstartrow = newrow
                                 self.eventlog.recreateimage()
-                        elif mouse_right:
-                            self.clickcheck = 1
-                            self.uicheck = 1
                     elif self.selectscroll.rect.collidepoint(self.mousepos):  ## Have to run logscroll before event log
-                        if (mouse_down or mouse_up):
-                            # print(self.armyselector.logsize, self.selectscroll.logsize)
-                            self.clickcheck = 1
-                            self.uicheck = 1
+                        self.clickcheck = 1
+                        self.uicheck = 1
+                        if mouse_down or mouse_up:
                             newrow = self.selectscroll.update(self.mousepos)
                             if self.armyselector.currentrow != newrow:
                                 self.armyselector.currentrow = newrow
                                 self.setuparmyicon()
-                        elif mouse_right:
-                            self.clickcheck = 1
-                            self.uicheck = 1
                     elif self.eventlog.rect.collidepoint(self.mousepos):
-                        if mouse_up or mouse_right:
-                            self.clickcheck = 1
-                            self.uicheck = 1
+                        self.clickcheck = 1
+                        self.uicheck = 1
+                    elif self.timeui.rect.collidepoint(self.mousepos):
+                        self.clickcheck = 1
+                        self.uicheck = 1
                     elif self.armyselector.rect.collidepoint(self.mousepos):
                         if self.armyiconmouseover(mouse_up, mouse_right) == 1:
                             pass
@@ -1179,7 +1161,8 @@ class Battle():
                         truepos = (SCREENRECT.width, SCREENRECT.height / 2)
                         target = (-SCREENRECT.width, SCREENRECT.height / 2)
                         self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
-                                                        self.weathereffectimgs[self.currentweather.type][self.currentweather.level],nextendtime))
+                                                                         self.weathereffectimgs[self.currentweather.type][self.currentweather.level],
+                                                                         nextendtime))
                     # elif len(self.weathereffect) == 1:
                     #     for weathereffect in self.weathereffect:
                     #         if weathereffect.rect.center[0] <= SCREENRECT.width+100:
@@ -1189,34 +1172,12 @@ class Battle():
                     #                                                              self.weathereffectimgs[self.currentweather.type][
                     #                                                                  self.currentweather.level]))
                 for army in self.allunitlist:
-                    if army.gameid < 2000:
-                        self.playerposlist[army.gameid] = army.basepos
-                    else:
-                        self.enemyposlist[army.gameid] = army.basepos
                     if army.basepos[0] < 0 or army.basepos[0] > 1000 or army.basepos[1] < 0 or army.basepos[
                         1] > 1000:  ## remove unit when it go out of battlemap
                         self.allunitindex.remove(army.gameid)
                         army.kill()
                         for hitbox in army.hitbox:
                             hitbox.kill()
-                    if army.rect.collidepoint(self.battlemousepos[0]):
-                        posmask = int(self.battlemousepos[0][0] - army.rect.x), int(self.battlemousepos[0][1] - army.rect.y)
-                        try:
-                            if army.mask.get_at(posmask) == 1:
-                                army.mouse_over = True
-                                self.lastmouseover = army
-                                if mouse_up and self.uicheck == 0:
-                                    self.lastselected = army
-                                    for hitbox in self.lastselected.hitbox:
-                                        hitbox.clicked()
-                                    if self.beforeselected is not None and self.beforeselected != self.lastselected:
-                                        for hitbox in self.beforeselected.hitbox:
-                                            hitbox.release()
-                                    self.clickcheck = 1
-                        except:
-                            army.mouse_over = False
-                    else:
-                        army.mouse_over = False
                     if army.changefaction:  ## change side via surrender or betrayal
                         if army.gameid < 2000:
                             self.allunitindex = army.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
@@ -1467,8 +1428,8 @@ class Battle():
                     self.leadernow = []
                 # fight_sound.play()
                 """Combat and unit update"""
-                for hitbox in self.hitboxs:
-                    collidelist = pygame.sprite.spritecollide(hitbox, self.hitboxs, dokill=False, collided=pygame.sprite.collide_mask)
+                for hitbox in self.hitboxes:
+                    collidelist = pygame.sprite.spritecollide(hitbox, self.hitboxes, dokill=False, collided=pygame.sprite.collide_mask)
                     for hitbox2 in collidelist:
                         if hitbox.who.gameid != hitbox2.who.gameid and hitbox.who.gameid < 2000 and hitbox2.who.gameid >= 2000:
                             hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
@@ -1485,13 +1446,6 @@ class Battle():
                                     if battle != 0:
                                         self.squadcombatcal(hitbox.who, hitbox2.who, hitbox.who.battleside.index(battle),
                                                             hitbox2.who.battleside.index(hitbox.who.gameid))
-                            """Rotate army side to the enemyside"""
-                            if hitbox.who.combatpreparestate == 1:
-                                if hitbox.who.allsidepos != hitbox2.who.allsidepos:
-                                    hitbox.who.setrotate(settarget=hitbox2.who.pos, instant=True)
-                            if hitbox2.who.combatpreparestate == 1:
-                                if hitbox.who.allsidepos != hitbox2.who.allsidepos:
-                                    hitbox2.who.setrotate(settarget=hitbox.who.pos, instant=True)
                         elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000)
                                                                           or (
                                                                                   hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
@@ -1530,8 +1484,11 @@ class Battle():
                             elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
                                 thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
                         self.combattimer = 0
-                self.unitupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist)
-                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxs, self.squad, self.squadindexlist, self.dt, self.camerascale)
+                self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist, self.battlemousepos[0], mouse_up)
+                self.hitboxupdater.update(self.camerascale)
+                self.leaderupdater.update()
+                self.squadupdater.update(self.currentweather, self.dt, self.camerascale)
+                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 self.combattimer += self.dt
                 self.uitimer += self.dt

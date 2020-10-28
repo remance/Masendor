@@ -558,7 +558,7 @@ class Unitsquad(pygame.sprite.Sprite):
             b[3] -= dt
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
 
-    def update(self, weather, squadgroup, dt, viewmode, playerposlist, poslist):
+    def update(self, weather, dt, viewmode):
         if self.gamestart == 0:
             self.rotate()
             self.findnearbysquad()

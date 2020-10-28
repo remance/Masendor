@@ -102,7 +102,6 @@ class Specialeffect(pygame.sprite.Sprite):
             else:
                 self.rect.midleft = self.target
         elif timer >= self.endtime and self.rect.midright[0] < 0:
-            print('why')
             self.kill()
 
 

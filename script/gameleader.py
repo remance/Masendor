@@ -101,7 +101,7 @@ class Leader(pygame.sprite.Sprite):
             leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2)
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
 
-    def update(self, weather, squadgroup, dt, viewmode, playerposlist, enemyposlist):
+    def update(self):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
