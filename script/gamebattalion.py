@@ -885,7 +885,14 @@ class Unitarmy(pygame.sprite.Sprite):
                     for squad in self.squadsprite:
                         if 9 not in squad.statuseffect:
                             squad.statuseffect[9] = self.statuslist[9].copy()
-                    if random.randint(0, 100) > 99: self.changefaction = True
+                    if random.randint(0, 100) > 99: ## change side via surrender or betrayal
+                        if self.gameid < 2000:
+                            self.maingame.allunitindex = self.switchfaction(self.maingame.playerarmy, self.maingame.enemyarmy,
+                                                                            self.maingame.playerposlist, self.maingame.allunitindex, self.enactment)
+                        else:
+                            self.maingame.allunitindex = self.switchfaction(self.maingame.enemyarmy, self.maingame.playerarmy,
+                                                                            self.maingame.enemyposlist, self.maingame.allunitindex, self.maingame.enactment)
+                        self.maingame.setuparmyicon()
             elif self.state in (98, 99) and self.morale >= 20:  ## state become normal again when morale reach 20
                 self.state = 0
                 self.retreattimer = 0
@@ -1075,7 +1082,21 @@ class Unitarmy(pygame.sprite.Sprite):
                                 if random.randint(0, 1) == 0:
                                     leader.state = 100
                 self.state = 100
-            # self.rect.topleft = self.pos[0],self.pos[1]
+            if self.basepos[0] < 0 or self.basepos[0] > 1000 or self.basepos[1] < 0 or self.basepos[
+                1] > 1000:  ## remove unit when it go out of battlemap
+                self.maingame.allunitindex.remove(self.gameid)
+                self.kill()
+                for hitbox in self.hitbox:
+                    hitbox.kill()
+        else:
+            if self.gotkilled == 0:
+                if self.gameid < 2000:
+                    self.maingame.die(self.maingame, self, self.maingame.playerarmy, self.maingame.enemyarmy)
+                    self.maingame.setuparmyicon()
+                else:
+                    self.maingame.die(self.maingame, self, self.maingame.enemyarmy, self.maingame.playerarmy)
+                    self.maingame.setuparmyicon()
+                self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion is destroyed"], [0, 1])
 
     def set_target(self, pos):
         self.basetarget = pygame.Vector2(pos)

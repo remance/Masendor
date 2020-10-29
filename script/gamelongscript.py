@@ -275,7 +275,7 @@ def die(battle, who, group, enemygroup):
                 squad.basemorale -= 30
     for hitbox in who.hitbox:
         battle.allcamera.remove(hitbox)
-        battle.hitboxs.remove(hitbox)
+        battle.hitboxes.remove(hitbox)
         hitbox.kill()
     battle.allunitlist.remove(who)
     battle.allunitindex.remove(who.gameid)

@@ -1171,30 +1171,6 @@ class Battle():
                     #             self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
                     #                                                              self.weathereffectimgs[self.currentweather.type][
                     #                                                                  self.currentweather.level]))
-                for army in self.allunitlist:
-                    if army.basepos[0] < 0 or army.basepos[0] > 1000 or army.basepos[1] < 0 or army.basepos[
-                        1] > 1000:  ## remove unit when it go out of battlemap
-                        self.allunitindex.remove(army.gameid)
-                        army.kill()
-                        for hitbox in army.hitbox:
-                            hitbox.kill()
-                    if army.changefaction:  ## change side via surrender or betrayal
-                        if army.gameid < 2000:
-                            self.allunitindex = army.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
-                                                                   self.enactment)
-                        else:
-                            self.allunitindex = army.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
-                                                                   self.enactment)
-                        army.changefaction = False
-                        self.setuparmyicon()
-                    if army.state == 100 and army.gotkilled == 0:
-                        if army.gameid < 2000:
-                            self.die(self, army, self.playerarmy, self.enemyarmy)
-                            self.setuparmyicon()
-                        else:
-                            self.die(self, army, self.enemyarmy, self.playerarmy)
-                            self.setuparmyicon()
-                        self.eventlog.addlog([0, str(army.leader[0].name) + "'s battalion is destroyed"], [0, 1])
                 if self.lastselected is not None and self.lastselected.state != 100:
                     """if not found in army class then it is in dead class"""
                     whoinput = self.lastselected
