@@ -188,6 +188,61 @@ def unitsetup(maingame):
 
 ## Battle related script
 
+def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
+    for thiswho in sortmidfront:
+        if thiswho > 1:
+            position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
+            fronttarget = receiver.frontline[receiverside][position]
+            """check if squad not already fighting if true skip picking new enemy """
+            if any(battle > 1 for battle in squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside) == False:
+                """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
+                if fronttarget > 1:
+                    """only attack if the side is already free else just wait until it free"""
+                    if squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[squadside] in (-1, 0):
+                        squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
+                        squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[squadside] = thiswho
+                else:
+                    """pick flank attack if no enemy already fighting and not already fighting"""
+                    chance = random.randint(0, 1)
+                    secondpick = 0
+                    if chance == 0: secondpick = 1
+                    """attack left array side of the squad if get random 0, right if 1"""
+                    truetargetside = changecombatside(chance, receiverside)
+                    fronttarget = squadselectside(receiver.frontline[receiverside], chance, position)
+                    """attack if the found defender at that side is free if not check other side"""
+                    if fronttarget > 1:
+                        if squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
+                            squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
+                            squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
+                    else:
+                        """Switch to another side if above not found"""
+                        truetargetside = changecombatside(secondpick, receiverside)
+                        fronttarget = squadselectside(receiver.frontline[receiverside], secondpick, position)
+                        if fronttarget > 1:
+                            if squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
+                                squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
+                                squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
+                        else:
+                            squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[receiverside] = 0
+def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
+    """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
+    squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
+    squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
+    sortmidfront = [who.frontline[whoside][3], who.frontline[whoside][4], who.frontline[whoside][2], who.frontline[whoside][5],
+                    who.frontline[whoside][1], who.frontline[whoside][6], who.frontline[whoside][0], who.frontline[whoside][7]]
+    """only calculate if the attack is attack with the front side"""
+    if whoside == 0:
+        combatpositioncal(squadlist, squadindexlist, sortmidfront, who, target, whoside, targetside, squadtargetside)
+    """only calculate if the target is attacked on the front side"""
+    if targetside == 0:
+        sortmidfront = [target.frontline[targetside][3], target.frontline[targetside][4],
+                        target.frontline[targetside][2],
+                        target.frontline[targetside][5], target.frontline[targetside][1],
+                        target.frontline[targetside][6],
+                        target.frontline[targetside][0], target.frontline[targetside][7]]
+        combatpositioncal(squadlist, squadindexlist, sortmidfront, target, who, targetside, whoside, squadwhoside)
+
+
 def squadselectside(targetside, side, position):
     """side 0 is left 1 is right"""
     thisposition = position
@@ -208,7 +263,6 @@ def squadselectside(targetside, side, position):
     else:
         fronttarget = 0
     return fronttarget
-
 
 def changecombatside(side, position):
     """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right"""

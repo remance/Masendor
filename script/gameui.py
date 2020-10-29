@@ -340,12 +340,12 @@ class FPScount(pygame.sprite.Sprite):
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.image_original = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
-        self.rect = self.image.get_rect(center=(30, 30))
+        self.rect = self.image.get_rect(center=(30, 110))
 
     def fpsshow(self, clock):
         self.image = self.image_original.copy()
         fps = str(int(clock.get_fps()))
-        fps_text = self.font.render(fps, 1, pygame.Color("black"))
+        fps_text = self.font.render(fps, 1, pygame.Color("blue"))
         self.textrect = fps_text.get_rect(center=(25, 25))
         self.image.blit(fps_text, self.textrect)
 

@@ -8,12 +8,12 @@ import numpy as np
 import pygame
 import pygame.freetype
 from pygame.transform import scale
+from RTS.script import gamelongscript
 
 from RTS import mainmenu
 
 main_dir = mainmenu.main_dir
 SCREENRECT = mainmenu.SCREENRECT
-
 
 def rotationxy(origin, point, angle):
     ox, oy = origin
@@ -328,6 +328,8 @@ class Unitarmy(pygame.sprite.Sprite):
     statuslist = None
     maxviewmode = 10
     maingame = None
+    squadcombatcal = gamelongscript.squadcombatcal
+    die = gamelongscript.die
 
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
         # super().__init__()
@@ -415,6 +417,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.staminaimage, self.staminaimagerect)
         self.coa = coa
+        self.faction = self.coa
         self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
@@ -659,6 +662,7 @@ class Unitarmy(pygame.sprite.Sprite):
         # for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
         # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
         # self.attackpos = pygame.Vector2(side[list(side2.keys())[0]])
+        self.attacktarget = enemyhitbox.who
         self.baseattackpos = enemyhitbox.who.allsidepos[enemyhitbox.side]
         self.attackpos = self.baseattackpos * abs(self.viewmode - 11)
         # if list(side2.keys())[0] == 1:
@@ -739,80 +743,58 @@ class Unitarmy(pygame.sprite.Sprite):
             self.startset(squadgroup)
             self.gamestart = True
         """redraw if troop num or stamina change"""
-        if (self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina) or self.viewmode != abs(viewmode - 11):
+        if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.viewmode != abs(viewmode - 11):
             if self.viewmode != abs(viewmode - 11):
                 self.viewmode = abs(viewmode - 11)
                 self.viewmodechange(squadgroup)
+            """Change health and stamina bar Function"""
+            if self.viewmode != 1:
+                if self.oldarmyhealth != self.troopnumber:
+                    healthlist = (self.health75, self.health50, self.health25, 0, -1)
+                    for index, health in enumerate(healthlist):
+                        if self.troopnumber > health:
+                            if self.lasthealthstate != abs(4 - index):
+                                self.healthimage = self.images[index]
+                                self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                self.lasthealthstate = abs(4 - index)
+                                self.viewmodechange(squadgroup)
+                            break
+                    self.oldarmyhealth = self.troopnumber
+                if self.oldarmystamina != self.stamina:
+                    if self.stamina > self.stamina75:
+                        if self.laststaminastate != 4:
+                            self.staminaimage = self.images[5]
+                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 4
+                            self.viewmodechange(squadgroup)
+                    elif self.stamina > self.stamina50:
+                        if self.laststaminastate != 3:
+                            self.staminaimage = self.images[6]
+                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 3
+                            self.viewmodechange(squadgroup)
+                    elif self.stamina > self.stamina25:
+                        if self.laststaminastate != 2:
+                            self.staminaimage = self.images[7]
+                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 2
+                            self.viewmodechange(squadgroup)
+                    elif self.stamina > 0:
+                        if self.laststaminastate != 1:
+                            self.staminaimage = self.images[8]
+                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 1
+                            self.viewmodechange(squadgroup)
+                    elif self.stamina <= 0:
+                        if self.laststaminastate != 0:
+                            self.staminaimage = self.images[9]
+                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
+                            self.laststaminastate = 0
+                            self.viewmodechange(squadgroup)
+                    self.oldarmystamina = self.stamina
             else:
-                """Change health and stamina bar Function"""
-                if self.viewmode != 1:
-                    if self.oldarmyhealth != self.troopnumber:
-                        if self.troopnumber > self.health75:
-                            if self.lasthealthstate != 4:  ## Cannot use and on this if elif
-                                self.healthimage = self.images[0]
-                                self.image_original3.blit(self.healthimage, self.healthimagerect)
-                                self.lasthealthstate = 4
-                                self.rotate()
-                        elif self.troopnumber > self.health50:
-                            if self.lasthealthstate != 3:
-                                self.healthimage = self.images[1]
-                                self.image_original3.blit(self.healthimage, self.healthimagerect)
-                                self.lasthealthstate = 3
-                                self.rotate()
-                        elif self.troopnumber > self.health25:
-                            if self.lasthealthstate != 2:
-                                self.healthimage = self.images[2]
-                                self.image_original3.blit(self.healthimage, self.healthimagerect)
-                                self.lasthealthstate = 2
-                                self.rotate()
-                        elif self.troopnumber > 0:
-                            if self.lasthealthstate != 1:
-                                self.healthimage = self.images[3]
-                                self.image_original3.blit(self.healthimage, self.healthimagerect)
-                                self.lasthealthstate = 1
-                                self.rotate()
-                        elif self.troopnumber <= 0:
-                            if self.lasthealthstate != 0:
-                                self.healthimage = self.images[4]
-                                self.image_original3.blit(self.healthimage, self.healthimagerect)
-                                self.lasthealthstate = 0
-                                self.rotate()
-                        self.oldarmyhealth = self.troopnumber
-                    if self.oldarmystamina != self.stamina:
-                        if self.stamina > self.stamina75:
-                            if self.laststaminastate != 4:
-                                self.staminaimage = self.images[5]
-                                self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                                self.laststaminastate = 4
-                                self.rotate()
-                        elif self.stamina > self.stamina50:
-                            if self.laststaminastate != 3:
-                                self.staminaimage = self.images[6]
-                                self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                                self.laststaminastate = 3
-                                self.rotate()
-                        elif self.stamina > self.stamina25:
-                            if self.laststaminastate != 2:
-                                self.staminaimage = self.images[7]
-                                self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                                self.laststaminastate = 2
-                                self.rotate()
-                        elif self.stamina > 0:
-                            if self.laststaminastate != 1:
-                                self.staminaimage = self.images[8]
-                                self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                                self.laststaminastate = 1
-                                self.rotate()
-                        elif self.stamina <= 0:
-                            if self.laststaminastate != 0:
-                                self.staminaimage = self.images[9]
-                                self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                                self.laststaminastate = 0
-                                self.rotate()
-                        self.oldarmystamina = self.stamina
-                else:
-                    self.squadtoarmy(squadgroup)
-                    self.rotate()
+                self.squadtoarmy(squadgroup)
+                self.rotate()
         if self.state != 100:
             if self.gameid < 2000:
                 self.maingame.playerposlist[self.gameid] = self.basepos
@@ -840,14 +822,37 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.authrecalnow:
                 self.authrecal()
                 self.authrecalnow = False
-            """setup frontline again when any squad die"""
+            # Setup frontline again when any squad die
             if self.deadchange == 1:
                 self.setupfrontline()
                 for squad in self.squadsprite:
                     squad.basemorale -= 10
                 self.deadchange = 0
+            # ^End setup frontline when squad die
+            # Combat and unit update
+            self.battleside = [0, 0, 0, 0]
+            for hitbox in self.hitbox:
+                collidelist = pygame.sprite.spritecollide(hitbox, self.maingame.hitboxes, dokill=False, collided=pygame.sprite.collide_mask)
+                for hitbox2 in collidelist:
+                    if self.gameid != hitbox2.who.gameid and self.faction != hitbox2.who.faction:
+                        hitbox.collide, hitbox2.collide = hitbox2.who.gameid, self.gameid
+                        """run combatprepare when combat start if army is the attacker"""
+                        if self.gameid not in hitbox2.who.battleside:
+                            self.battleside[hitbox.side] = hitbox2.who.gameid
+                            hitbox2.who.battleside[hitbox2.side] = self.gameid
+                            """set up army position to the enemyside"""
+                            if self.combatpreparestate == 0 and hitbox.side == 0 and hitbox2.who.combatpreparestate == 0 and self.state in (1, 2, 3, 4, 5, 6):
+                                self.combatprepare(hitbox2)
+                            for battle in self.battleside:
+                                if battle != 0:
+                                    self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, hitbox2.who, self.battleside.index(battle),
+                                                        hitbox2.who.battleside.index(self.gameid))
+                    elif self.gameid != hitbox2.who.gameid and ((self.gameid < 2000 and hitbox2.who.gameid < 2000) or (
+                                                                    self.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
+                        hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
+            # ^End combat update
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
-            """recal stat involve leader if one die"""
+            # Recal stat involve leader if one die
             if self.leaderchange:
                 self.authrecal()
                 for leader in self.leader:
@@ -857,10 +862,11 @@ class Unitarmy(pygame.sprite.Sprite):
                                     (self.leader[0].cavcommand - 5) * 0.1]
                 self.startauth = self.authority
                 self.leaderchange = False
-            """near target is enemy that is nearest"""
+            # ^End recal stat when leader die
+            # Find near enemy target
             thisposlist = enemyposlist.copy()
             if self.gameid >= 2000: thisposlist = playerposlist.copy()
-            self.neartarget = {}
+            self.neartarget = {} # Near target is enemy that is nearest
             for n, thisside in thisposlist.items(): self.neartarget[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
             self.neartarget = {k: v for k, v in sorted(self.neartarget.items(), key=lambda item: item[1])}
             for n in thisposlist:
@@ -872,7 +878,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.state not in (96, 98, 99):
                     self.state = 10
             if self.rangecombatcheck == 1: self.state = 11
-            self.mask = pygame.mask.from_surface(self.image)
+            # Retreat function
             if round(self.morale) <= 20:  ## Retreat state
                 self.state = 98
                 if self.retreatstart == 0:
@@ -944,7 +950,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.attacktarget = 0
             """Rotate Function"""
             if self.combatpreparestate == 1: # Rotate army side to the enemyside
-                self.setrotate(settarget=self.attackpos, instant=True)
+                self.setrotate(settarget=self.attacktarget.pos, instant=True)
             if self.angle != round(self.newangle) and self.stamina > 0 and (
                     (self.hitbox[0].collide == 0 and self.hitbox[3].collide == 0) or self.combatpreparestate == 1):
                 self.rotatecal = abs(round(self.newangle) - self.angle)
@@ -972,6 +978,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         if self.angle < self.newangle: self.angle = round(self.newangle)
                 self.rotate()
                 self.makeallsidepos()
+                self.mask = pygame.mask.from_surface(self.image)
             else:
                 self.moverotate = 0
                 """Can only enter range attack state after finishing rotate"""
@@ -1034,6 +1041,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                 self.allsidepos[0] = self.basetarget
                                 self.pos = self.basepos * abs(self.viewmode - 11)
                                 self.rect.center = self.pos
+                            self.mask = pygame.mask.from_surface(self.image)
                         elif move_length < 0.1 and self.battleside == [0, 0, 0,
                                                                      0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""
@@ -1070,7 +1078,6 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.state == 97 and self.stamina > 1000: self.state = 0
             if self.battleside == [0, 0, 0, 0] and self.hold == 0 and self.attacktarget == 0:
                 self.combatpreparestate = 0
-            self.battleside = [0, 0, 0, 0]
             if self.troopnumber <= 0:
                 self.stamina, self.morale, self.speed, self.discipline = 0, 0, 0, 0
                 for leader in self.leader:
@@ -1091,10 +1098,10 @@ class Unitarmy(pygame.sprite.Sprite):
         else:
             if self.gotkilled == 0:
                 if self.gameid < 2000:
-                    self.maingame.die(self.maingame, self, self.maingame.playerarmy, self.maingame.enemyarmy)
+                    self.die(self.maingame, self, self.maingame.playerarmy, self.maingame.enemyarmy)
                     self.maingame.setuparmyicon()
                 else:
-                    self.maingame.die(self.maingame, self, self.maingame.enemyarmy, self.maingame.playerarmy)
+                    self.die(self.maingame, self, self.maingame.enemyarmy, self.maingame.playerarmy)
                     self.maingame.setuparmyicon()
                 self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion is destroyed"], [0, 1])
 
@@ -1133,6 +1140,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.newangle = 270 - self.newangle
         if instant:
             self.rotate()
+            self.mask = pygame.mask.from_surface(self.image)
 
     def processcommand(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate):
         self.state = 1

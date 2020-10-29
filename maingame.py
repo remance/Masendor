@@ -309,10 +309,7 @@ class Battle():
         self.currentweather = None
         self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height
         self.splitunit = gamelongscript.splitunit
-        self.die = gamelongscript.die
         self.losscal = gamelongscript.losscal
-        self.squadselectside = gamelongscript.squadselectside
-        self.changecombatside = gamelongscript.changecombatside
         self.leadernow = []
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
@@ -467,61 +464,16 @@ class Battle():
         self.playerposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
-
-    def combatpositioncal(self, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
-        for thiswho in sortmidfront:
-            if thiswho > 1:
-                position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
-                fronttarget = receiver.frontline[receiverside][position]
-                """check if squad not already fighting if true skip picking new enemy """
-                if any(battle > 1 for battle in self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside) == False:
-                    """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
-                    if fronttarget > 1:
-                        """only attack if the side is already free else just wait until it free"""
-                        if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] in (-1, 0):
-                            self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
-                            self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[squadside] = thiswho
-                    else:
-                        """pick flank attack if no enemy already fighting and not already fighting"""
-                        chance = random.randint(0, 1)
-                        secondpick = 0
-                        if chance == 0: secondpick = 1
-                        """attack left array side of the squad if get random 0, right if 1"""
-                        truetargetside = self.changecombatside(chance, receiverside)
-                        fronttarget = self.squadselectside(receiver.frontline[receiverside], chance, position)
-                        """attack if the found defender at that side is free if not check other side"""
-                        if fronttarget > 1:
-                            if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
-                                self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
-                                self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
-                        else:
-                            """Switch to another side if above not found"""
-                            truetargetside = self.changecombatside(secondpick, receiverside)
-                            fronttarget = self.squadselectside(receiver.frontline[receiverside], secondpick, position)
-                            if fronttarget > 1:
-                                if self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
-                                    self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
-                                    self.squad[np.where(self.squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
-                            else:
-                                self.squad[np.where(self.squadindexlist == thiswho)[0][0]].battleside[receiverside] = 0
-
-    def squadcombatcal(self, who, target, whoside, targetside):
-        """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
-        squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
-        squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
-        sortmidfront = [who.frontline[whoside][3], who.frontline[whoside][4], who.frontline[whoside][2], who.frontline[whoside][5],
-                        who.frontline[whoside][1], who.frontline[whoside][6], who.frontline[whoside][0], who.frontline[whoside][7]]
-        """only calculate if the attack is attack with the front side"""
-        if whoside == 0:
-            self.combatpositioncal(sortmidfront, who, target, whoside, targetside, squadtargetside)
-        """only calculate if the target is attacked on the front side"""
-        if targetside == 0:
-            sortmidfront = [target.frontline[targetside][3], target.frontline[targetside][4],
-                            target.frontline[targetside][2],
-                            target.frontline[targetside][5], target.frontline[targetside][1],
-                            target.frontline[targetside][6],
-                            target.frontline[targetside][0], target.frontline[targetside][7]]
-            self.combatpositioncal(sortmidfront, target, who, targetside, whoside, squadwhoside)
+        # Load weather schedule
+        try:
+            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 1)
+            self.weatherevent = self.weatherevent[1:]
+            gamelongscript.convertweathertime(self.weatherevent)
+        except:  ## If no weather found use default light sunny weather
+            newtime = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
+            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+            self.weatherevent = [4, newtime, 0]
+        self.weatherschedule = self.weatherevent[0][1]
 
     def applystatustoenemy(self, inflictstatus, receiver, attackerside):
         for status in inflictstatus.items():
@@ -792,16 +744,26 @@ class Battle():
                 break
         return effectmouseover
 
+    def camerafix(self):
+        if self.camerapos[0] > self.mapshown.image.get_width():
+            self.camerapos[0] = self.mapshown.image.get_width()
+        elif self.camerapos[0] < 0:
+            self.camerapos[0] = 0
+        if self.camerapos[1] > self.mapshown.image.get_height():
+            self.camerapos[1] = self.mapshown.image.get_height()
+        elif self.camerapos[1] < 0:
+            self.camerapos[1] = 0
+        if self.basecamerapos[0] > 1000:
+            self.basecamerapos[0] = 1000
+        elif self.basecamerapos[0] < 0:
+            self.basecamerapos[0] = 0
+        if self.basecamerapos[1] > 1000:
+            self.basecamerapos[1] = 1000
+        elif self.basecamerapos[1] < 0:
+            self.basecamerapos[1] = 0
+
     def rungame(self):
         self.setuparmyicon()
-        try:
-            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 1)
-            self.weatherevent = self.weatherevent[1:]
-            gamelongscript.convertweathertime(self.weatherevent)
-        except:  ## If no weather found use default light sunny weather
-            newtime = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
-            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-            self.weatherevent = [4, newtime, 0]
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -994,31 +956,19 @@ class Battle():
                 if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  ## down
                     self.basecamerapos[1] += 5 * abs(11 - self.camerascale)
                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
+                    self.camerafix()
                 elif keystate[K_w] or self.mousepos[1] <= 5:  ## up
                     self.basecamerapos[1] -= 5 * abs(11 - self.camerascale)
                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
+                    self.camerafix()
                 if keystate[K_a] or self.mousepos[0] <= 5:  ## left
                     self.basecamerapos[0] -= 5 * abs(11 - self.camerascale)
                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
+                    self.camerafix()
                 elif keystate[K_d] or self.mousepos[0] >= self.rightcorner:  ## right
                     self.basecamerapos[0] += 5 * abs(11 - self.camerascale)
                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
-                if self.camerapos[0] > self.mapshown.image.get_width():
-                    self.camerapos[0] = self.mapshown.image.get_width()
-                elif self.camerapos[0] < 0:
-                    self.camerapos[0] = 0
-                if self.camerapos[1] > self.mapshown.image.get_height():
-                    self.camerapos[1] = self.mapshown.image.get_height()
-                elif self.camerapos[1] < 0:
-                    self.camerapos[1] = 0
-                if self.basecamerapos[0] > 1000:
-                    self.basecamerapos[0] = 1000
-                elif self.basecamerapos[0] < 0:
-                    self.basecamerapos[0] = 0
-                if self.basecamerapos[1] > 1000:
-                    self.basecamerapos[1] = 1000
-                elif self.basecamerapos[1] < 0:
-                    self.basecamerapos[1] = 0
+                    self.camerafix()
                 self.cameraupcorner = (self.camerapos[0] - self.centerscreen[0], self.camerapos[1] - self.centerscreen[1])
                 self.battlemousepos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
                                                         self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])
@@ -1027,16 +977,6 @@ class Battle():
                     self.timer += self.uidt
                     if self.timer >= 0.5:
                         self.timer = 0
-                if self.dramatimer == 0 and len(self.textdrama.queue) != 0:  ## Start timer and add to allui If there is event queue
-                    self.allui.add(self.textdrama)
-                    self.textdrama.processqueue()
-                    self.dramatimer = 0.1
-                elif self.dramatimer > 0:
-                    self.textdrama.playanimation()
-                    self.dramatimer += self.uidt
-                    if self.dramatimer > 3:
-                        self.dramatimer = 0
-                        self.allui.remove(self.textdrama)
                 self.lastmouseover = 0
                 if self.terraincheck in self.allui and (
                         self.terraincheck.pos != self.mousepos or keystate[K_s] or keystate[K_w] or keystate[K_a] or keystate[K_d]):
@@ -1092,48 +1032,45 @@ class Battle():
                             featurepop = self.battlemapfeature.featuremod[featurepop]
                             self.terraincheck.pop(self.mousepos, featurepop)
                             self.allui.add(self.terraincheck)
-                for index, button in enumerate(self.screenbuttonlist):  ## Event log button and timer button click
-                    if button.rect.collidepoint(self.mousepos):
-                        if index in (0, 1, 2, 3, 4, 5):  ## eventlog button
-                            if mouse_up:
-                                if button.event in (0, 1, 2, 3):
-                                    self.eventlog.changemode(button.event)
-                                elif button.event == 4:
-                                    self.eventlog.cleartab()
-                                elif button.event == 5:
-                                    self.eventlog.cleartab(alltab=True)
+                    for index, button in enumerate(self.screenbuttonlist):  ## Event log button and timer button click
+                        if button.rect.collidepoint(self.mousepos):
+                            if index in (0, 1, 2, 3, 4, 5):  ## eventlog button
                                 self.uicheck = 1
-                            elif mouse_right:
+                                if mouse_up:
+                                    if button.event in (0, 1, 2, 3):
+                                        self.eventlog.changemode(button.event)
+                                    elif button.event == 4:
+                                        self.eventlog.cleartab()
+                                    elif button.event == 5:
+                                        self.eventlog.cleartab(alltab=True)
+                            elif index in (6, 7, 8):  ## timer button
                                 self.uicheck = 1
-                        elif index in (6, 7, 8):  ## timer button
-                            if mouse_up:
-                                if button.event == 0:
-                                    self.gamespeed = 0
-                                elif button.event == 1:
-                                    newindex = self.gamespeedset.index(self.gamespeed) - 1
-                                    if newindex >= 0:
-                                        self.gamespeed = self.gamespeedset[newindex]
-                                elif button.event == 2:
-                                    newindex = self.gamespeedset.index(self.gamespeed) + 1
-                                    if newindex < len(self.gamespeedset):
-                                        self.gamespeed = self.gamespeedset[newindex]
-                                self.speednumber.speedupdate(self.gamespeed)
-                            elif mouse_right:
-                                self.uicheck = 1
-                        break
-                for index, weather in enumerate(self.weatherevent):  ## Weather system
-                    if self.timenumber.timenum >= weather[1]:
-                        del self.currentweather
-                        if weather[0] != 0:
-                            self.currentweather = gameweather.Weather(self.timeui, weather[0], weather[2], self.allweather)
-                        else:  ## Random weather
-                            self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2), self.allweather)
-                        self.weatherevent.pop(index)
-                        try:
-                            nextendtime = self.weatherevent[0][1]
-                        except:
-                            nextendtime = None
-                        break
+                                if mouse_up:
+                                    if button.event == 0:
+                                        self.gamespeed = 0
+                                    elif button.event == 1:
+                                        newindex = self.gamespeedset.index(self.gamespeed) - 1
+                                        if newindex >= 0:
+                                            self.gamespeed = self.gamespeedset[newindex]
+                                    elif button.event == 2:
+                                        newindex = self.gamespeedset.index(self.gamespeed) + 1
+                                        if newindex < len(self.gamespeedset):
+                                            self.gamespeed = self.gamespeedset[newindex]
+                                    self.speednumber.speedupdate(self.gamespeed)
+                            break
+                # Weather system
+                if self.weatherschedule is not None and self.timenumber.timenum >= self.weatherschedule:
+                    del self.currentweather
+                    weather = self.weatherevent[0]
+                    if weather[0] != 0:
+                        self.currentweather = gameweather.Weather(self.timeui, weather[0], weather[2], self.allweather)
+                    else: # Random weather
+                        self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2), self.allweather)
+                    self.weatherevent.pop(0)
+                    try: # Get end time of next event which is now index 0
+                        self.weatherschedule = self.weatherevent[0][1]
+                    except:
+                        self.weatherschedule = None
                 if self.currentweather.spawnrate > 0 and len(self.weathermatter) < self.currentweather.speed:
                     spawnnum = range(0, int(self.currentweather.spawnrate * self.dt * random.randint(0, 10)))
                     for spawn in spawnnum:
@@ -1162,7 +1099,7 @@ class Battle():
                         target = (-SCREENRECT.width, SCREENRECT.height / 2)
                         self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
                                                                          self.weathereffectimgs[self.currentweather.type][self.currentweather.level],
-                                                                         nextendtime))
+                                                                         self.weatherschedule))
                     # elif len(self.weathereffect) == 1:
                     #     for weathereffect in self.weathereffect:
                     #         if weathereffect.rect.center[0] <= SCREENRECT.width+100:
@@ -1171,6 +1108,47 @@ class Battle():
                     #             self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
                     #                                                              self.weathereffectimgs[self.currentweather.type][
                     #                                                                  self.currentweather.level]))
+                self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist,
+                                             self.battlemousepos[0], mouse_up)
+                self.hitboxupdater.update(self.camerascale)
+                self.leaderupdater.update()
+                """Calculate squad combat dmg"""
+                if self.combattimer >= 0.5:
+                    for thissquad in self.squad:
+                        if any(battle > 1 for battle in thissquad.battleside):
+                            for index, combat in enumerate(thissquad.battleside):
+                                if combat > 1:
+                                    if thissquad.gameid not in self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside:
+                                        thissquad.battleside[index] = -1
+                                    else:
+                                        self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
+                                                    self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
+                        if thissquad.state in (11, 12, 13):
+                            if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
+                                if thissquad.attacktarget in self.allunitindex:
+                                    thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                                else:
+                                    thissquad.attackpos = 0
+                                    thissquad.attacktarget = 0
+                                    for target in list(thissquad.battalion.neartarget.values()):
+                                        if target in self.allunitindex:
+                                            thissquad.attackpos = target[1]
+                                            thissquad.attacktarget = target[1]
+                                            thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
+                                            break
+                            if thissquad.reloadtime >= thissquad.reload and (
+                                    (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (
+                                    thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
+                                rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.shootrange,
+                                                       self.camerascale)
+                                thissquad.ammo -= 1
+                                thissquad.reloadtime = 0
+                            elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
+                                thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
+                        self.combattimer = 0
+                self.squadupdater.update(self.currentweather, self.dt, self.camerascale)
+                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
+                self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 if self.lastselected is not None and self.lastselected.state != 100:
                     """if not found in army class then it is in dead class"""
                     whoinput = self.lastselected
@@ -1211,8 +1189,9 @@ class Battle():
                         self.switchbuttonui[3].event = whoinput.useminrange
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
-                    self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
-                    self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                    if self.uitimer >= 0.5:
+                        self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                        self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                     self.splithappen = False
                     if self.buttonui[4].rect.collidepoint(self.mousepos) or (
                             mouse_up and self.inspectui == 1 and self.clickcheck2 == 1):
@@ -1371,7 +1350,7 @@ class Battle():
                             else:
                                 for icon in self.skillicon.sprites(): icon.kill()
                                 for icon in self.effecticon.sprites(): icon.kill()
-                            self.uitimer = 0
+
                         if self.effecticonmouseover(self.skillicon, mouse_right):
                             pass
                         elif self.effecticonmouseover(self.effecticon, mouse_right):
@@ -1382,6 +1361,8 @@ class Battle():
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()
                     self.beforeselected = self.lastselected
+                    if self.uitimer >= 5:
+                        self.uitimer = 0
                 """remove the pop up ui when click at no group"""
                 if self.clickcheck != 1:
                     if self.lastselected is not None:
@@ -1403,69 +1384,18 @@ class Battle():
                     self.allui.remove(self.squadselectedborder)
                     self.leadernow = []
                 # fight_sound.play()
-                """Combat and unit update"""
-                for hitbox in self.hitboxes:
-                    collidelist = pygame.sprite.spritecollide(hitbox, self.hitboxes, dokill=False, collided=pygame.sprite.collide_mask)
-                    for hitbox2 in collidelist:
-                        if hitbox.who.gameid != hitbox2.who.gameid and hitbox.who.gameid < 2000 and hitbox2.who.gameid >= 2000:
-                            hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
-                            """run combatprepare when combat start if army is the attacker"""
-                            if hitbox.who.gameid not in hitbox.who.battleside:
-                                hitbox.who.battleside[hitbox.side] = hitbox2.who.gameid
-                                hitbox2.who.battleside[hitbox2.side] = hitbox.who.gameid
-                                """set up army position to the enemyside"""
-                                if hitbox.side == 0 and hitbox.who.state in (1, 2, 3, 4, 5, 6) and hitbox.who.combatpreparestate == 0:
-                                    hitbox.who.combatprepare(hitbox2)
-                                elif hitbox2.side == 0 and hitbox2.who.state in (1, 2, 3, 4, 5, 6) and hitbox2.who.combatpreparestate == 0:
-                                    hitbox2.who.combatprepare(hitbox)
-                                for battle in hitbox.who.battleside:
-                                    if battle != 0:
-                                        self.squadcombatcal(hitbox.who, hitbox2.who, hitbox.who.battleside.index(battle),
-                                                            hitbox2.who.battleside.index(hitbox.who.gameid))
-                        elif hitbox.who.gameid != hitbox2.who.gameid and ((hitbox.who.gameid < 2000 and hitbox2.who.gameid < 2000)
-                                                                          or (
-                                                                                  hitbox.who.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
-                            hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
-                """Calculate squad combat dmg"""
-                if self.combattimer >= 0.5:
-                    for thissquad in self.squad:
-                        if any(battle > 1 for battle in thissquad.battleside):
-                            for index, combat in enumerate(thissquad.battleside):
-                                if combat > 1:
-                                    if thissquad.gameid not in self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside:
-                                        thissquad.battleside[index] = -1
-                                    else:
-                                        self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
-                                                    self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
-                        if thissquad.state in (11, 12, 13):
-                            if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
-                                if thissquad.attacktarget in self.allunitindex:
-                                    thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
-                                else:
-                                    thissquad.attackpos = 0
-                                    thissquad.attacktarget = 0
-                                    for target in list(thissquad.battalion.neartarget.values()):
-                                        if target in self.allunitindex:
-                                            thissquad.attackpos = target[1]
-                                            thissquad.attacktarget = target[1]
-                                            thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
-                                            break
-                            if thissquad.reloadtime >= thissquad.reload and (
-                                    (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (
-                                    thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
-                                rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.shootrange,
-                                                       self.camerascale)
-                                thissquad.ammo -= 1
-                                thissquad.reloadtime = 0
-                            elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
-                                thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
-                        self.combattimer = 0
-                self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist, self.battlemousepos[0], mouse_up)
-                self.hitboxupdater.update(self.camerascale)
-                self.leaderupdater.update()
-                self.squadupdater.update(self.currentweather, self.dt, self.camerascale)
-                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
-                self.weatherupdater.update(self.dt, self.timenumber.timenum)
+                ## Drama text function
+                if self.dramatimer == 0 and len(self.textdrama.queue) != 0:  ## Start timer and add to allui If there is event queue
+                    self.allui.add(self.textdrama)
+                    self.textdrama.processqueue()
+                    self.dramatimer = 0.1
+                elif self.dramatimer > 0:
+                    self.textdrama.playanimation()
+                    self.dramatimer += self.uidt
+                    if self.dramatimer > 3:
+                        self.dramatimer = 0
+                        self.allui.remove(self.textdrama)
+                ##
                 self.combattimer += self.dt
                 self.uitimer += self.dt
                 self.camera.update(self.camerapos, self.allcamera)
@@ -1473,7 +1403,7 @@ class Battle():
                 self.dt = (self.clock.get_time() / 1000) * self.gamespeed
                 self.timenumber.timerupdate(self.dt)
                 self.uidt = self.dt
-            else:
+            else: ## Complete game pause either menu or enclycopedia
                 if self.battlemenu.mode == 0:
                     for button in self.battlemenubutton:
                         if button.rect.collidepoint(self.mousepos):
