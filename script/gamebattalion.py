@@ -8,6 +8,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 from pygame.transform import scale
+
 from RTS.script import gamelongscript
 
 from RTS import mainmenu
@@ -21,7 +22,6 @@ def rotationxy(origin, point, angle):
     x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
     y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
     return pygame.Vector2(x, y)
-
 
 class Weaponstat():
     def __init__(self, img, ruleset):
@@ -1098,10 +1098,10 @@ class Unitarmy(pygame.sprite.Sprite):
         else:
             if self.gotkilled == 0:
                 if self.gameid < 2000:
-                    self.die(self.maingame, self, self.maingame.playerarmy, self.maingame.enemyarmy)
+                    self.die(self.maingame, self.maingame.playerarmy, self.maingame.enemyarmy)
                     self.maingame.setuparmyicon()
                 else:
-                    self.die(self.maingame, self, self.maingame.enemyarmy, self.maingame.playerarmy)
+                    self.die(self.maingame, self.maingame.enemyarmy, self.maingame.playerarmy)
                     self.maingame.setuparmyicon()
                 self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion is destroyed"], [0, 1])
 

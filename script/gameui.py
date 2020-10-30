@@ -134,7 +134,7 @@ class Gameui(pygame.sprite.Sprite):
             self.value[2] = round(self.value[2] / 10)
             if self.value[2] in self.options2:
                 self.value[2] = self.options2[self.value[2]]
-            else:
+            elif self.value[2] > 15:
                 self.value[2] = self.options2[15]
             self.value[1] = round(self.value[1] / 10)
             if self.value[1] in self.options3:

@@ -1,5 +1,6 @@
 """
 ## Known problem
+unit somehow become unclickable during broken and getting attack, auto placement also become buggy during chase
 Hitbox still behave weirdly in melee combat
 1 melee combat cause 10 fps drop
 Optimise list
@@ -279,6 +280,9 @@ class Battle():
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
         gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
         gamebattalion.Unitarmy.maingame = self
+        gamesquad.Unitsquad.maingame = self
+        # gamesquad.Unitsquad.squadcombatcal = gamelongscript.squadcombatcal
+        # gamesquad.Unitsquad.die = gamelongscript.die
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255, 255, 255))
@@ -475,104 +479,6 @@ class Battle():
             self.weatherevent = [4, newtime, 0]
         self.weatherschedule = self.weatherevent[0][1]
 
-    def applystatustoenemy(self, inflictstatus, receiver, attackerside):
-        for status in inflictstatus.items():
-            if status[1] == 1 and attackerside == 0:
-                receiver.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
-            elif status[1] in (2, 3):
-                receiver.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
-                if status[1] == 3:
-                    for squad in receiver.nearbysquadlist[0:2]:
-                        if squad != 0:
-                            squad.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
-            elif status[1] == 4:
-                for squad in receiver.battalion.spritearray.flat:
-                    if squad.state != 100:
-                        squad.statuseffect[status[0]] = self.gameunitstat.statuslist[status[0]].copy()
-
-    def dmgcal(self, who, target, whoside, targetside):
-        """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
-        # print(target.gameid, target.battleside)
-        wholuck = random.randint(-50, 50)
-        targetluck = random.randint(-50, 50)
-        whopercent = self.battlesidecal[whoside]
-        """34 battlemaster no flanked penalty"""
-        if who.fulldef or 91 in who.statuseffect: whopercent = 1
-        targetpercent = self.battlesidecal[targetside]
-        if target.fulldef or 91 in target.statuseffect: targetpercent = 1
-        dmgeffect = who.frontdmgeffect
-        targetdmgeffect = target.frontdmgeffect
-        if whoside != 0 and whopercent != 1:  ## if attack or defend from side will use discipline to help reduce penalty a bit
-            whopercent = self.battlesidecal[whoside] + (who.discipline / 300)
-            dmgeffect = who.sidedmgeffect
-            if whopercent > 1: whopercent = 1
-        if targetside != 0 and targetpercent != 1:
-            targetpercent = self.battlesidecal[targetside] + (target.discipline / 300)
-            targetdmgeffect = target.sidedmgeffect
-            if targetpercent > 1: targetpercent = 1
-        whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
-        """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
-        if (target.backstab and whoside == 2) or (who.oblivious and whoside == 2) or (who.flanker and targetside in (1, 3)): whodefense = 0
-        targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
-        if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
-                target.flanker and whoside in (1, 3)): targetdefense = 0
-        whodmg, whomoraledmg, wholeaderdmg = self.losscal(who, target, whohit, targetdefense, 0)
-        targetdmg, targetmoraledmg, targetleaderdmg = self.losscal(target, who, targethit, whodefense, 0)
-        who.unithealth -= round(targetdmg * dmgeffect)
-        who.basemorale -= round(targetmoraledmg * dmgeffect)
-        if target.elemrange not in (0, 5):  ## apply element effect if atk has element
-            who.elemcount[target.elemrange - 1] += round((targetdmg * dmgeffect) * (100 - who.elemresist[target.elemrange - 1] / 100))
-        target.basemorale += round((targetmoraledmg * dmgeffect / 2))
-        if who.leader is not None and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
-            who.leader.health -= targetleaderdmg
-            if who.leader.health <= 0:
-                if who.leader.battalion.commander and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
-                    self.textdrama.queue.append(str(who.leader.name) + " is dead")
-                    self.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2])
-                    whicharmy = self.enemyarmy
-                    if who.battalion.gameid < 2000:
-                        whicharmy = self.playerarmy
-                    for army in whicharmy:
-                        for squad in army.squadsprite:
-                            squad.basemorale -= 20
-                else:
-                    self.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2])
-                self.setuparmyicon()
-        target.unithealth -= round(whodmg * targetdmgeffect)
-        target.basemorale -= round(whomoraledmg * targetdmgeffect)
-        if who.elemrange not in (0, 5):  ## apply element effect if atk has element
-            target.elemcount[who.elemrange - 1] += round(whodmg * targetdmgeffect / 100 * target.elemresist[who.elemrange - 1])
-        who.basemorale += round((whomoraledmg * targetdmgeffect / 2))
-        if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
-            target.leader.health -= wholeaderdmg
-            if target.leader.health <= 0:
-                if target.leader.battalion.commander and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
-                    self.textdrama.queue.append(str(target.leader.name) + " is dead")
-                    self.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2])
-                    whicharmy = self.enemyarmy
-                    if target.battalion.gameid < 2000:
-                        whicharmy = self.playerarmy
-                    for army in whicharmy:
-                        for squad in army.squadsprite:
-                            squad.basemorale -= 30
-                else:
-                    self.eventlog.addlog([0, str(target.leader.name) + " is dead"], [0, 2])
-                self.setuparmyicon()
-        if who.corneratk:  ##attack corner (side) of self with aoe attack
-            listloop = target.nearbysquadlist[2:4]
-            if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
-            for squad in listloop:
-                if squad != 0 and squad.state != 100:
-                    targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
-                    whodmg, whomoraledmg = self.losscal(who, squad, whohit, targetdefense, 0)
-                    squad.unithealth -= round(whodmg * dmgeffect)
-                    squad.basemorale -= whomoraledmg
-        """inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion"""
-        if who.inflictstatus != {}:
-            self.applystatustoenemy(who.inflictstatus, target, whoside)
-        if target.inflictstatus != {}:
-            self.applystatustoenemy(target.inflictstatus, who, targetside)
-
     def setuparmyicon(self):
         row = 30
         startcolumn = 25
@@ -764,6 +670,7 @@ class Battle():
 
     def rungame(self):
         self.setuparmyicon()
+        self.eventlog.addlog([0, "Welcome, this is a test battle map. The year is unknown in the past when no record is kept."], [0])
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -893,31 +800,32 @@ class Battle():
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                                     self.mapshown.changescale(self.camerascale)
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_TAB:
-                            if self.mapviewmode == 0:  ## Currently in normal mode
-                                self.mapviewmode = 1
-                                self.showmap.changemode(self.mapviewmode)
-                            else:  ## Currently in height mode
-                                self.mapviewmode = 0
-                                self.showmap.changemode(self.mapviewmode)
-                            self.mapshown.changescale(self.camerascale)
-                        elif event.key == pygame.K_p:  ## Speed Pause Button
-                            if self.gamespeed == 1:
-                                self.gamespeed = 0
-                            else:
-                                self.gamespeed = 1
-                        elif event.key == pygame.K_PAGEUP:  ## Go to top of event log
-                            self.eventlog.currentstartrow = 0
-                            self.eventlog.recreateimage()
-                            self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
-                        elif event.key == pygame.K_PAGEDOWN:  ## Go to bottom of event log
-                            if self.eventlog.lencheck > self.eventlog.maxrowshow:
-                                self.eventlog.currentstartrow = self.eventlog.lencheck - self.eventlog.maxrowshow
+                        if self.gamestate == 1:
+                            if event.key == pygame.K_TAB:
+                                if self.mapviewmode == 0:  ## Currently in normal mode
+                                    self.mapviewmode = 1
+                                    self.showmap.changemode(self.mapviewmode)
+                                else:  ## Currently in height mode
+                                    self.mapviewmode = 0
+                                    self.showmap.changemode(self.mapviewmode)
+                                self.mapshown.changescale(self.camerascale)
+                            elif event.key == pygame.K_p:  ## Speed Pause Button
+                                if self.gamespeed == 1:
+                                    self.gamespeed = 0
+                                else:
+                                    self.gamespeed = 1
+                            elif event.key == pygame.K_PAGEUP:  ## Go to top of event log
+                                self.eventlog.currentstartrow = 0
                                 self.eventlog.recreateimage()
                                 self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
-                        elif event.key == pygame.K_SPACE and self.lastselected is not None:
-                            whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
-                                             self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
+                            elif event.key == pygame.K_PAGEDOWN:  ## Go to bottom of event log
+                                if self.eventlog.lencheck > self.eventlog.maxrowshow:
+                                    self.eventlog.currentstartrow = self.eventlog.lencheck - self.eventlog.maxrowshow
+                                    self.eventlog.recreateimage()
+                                    self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
+                            elif event.key == pygame.K_SPACE and self.lastselected is not None:
+                                whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
+                                                 self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
                         ### FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the Update Video')
@@ -946,7 +854,7 @@ class Battle():
                                 squad.unithealth -= squad.unithealth
                         elif event.key == pygame.K_m and self.lastselected is not None:
                             self.lastselected.leader[0].health -= 1000
-                        ###
+                        ### End For development test
                         else:
                             keypress = event.key
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
@@ -1113,40 +1021,9 @@ class Battle():
                 self.hitboxupdater.update(self.camerascale)
                 self.leaderupdater.update()
                 """Calculate squad combat dmg"""
+                self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
                 if self.combattimer >= 0.5:
-                    for thissquad in self.squad:
-                        if any(battle > 1 for battle in thissquad.battleside):
-                            for index, combat in enumerate(thissquad.battleside):
-                                if combat > 1:
-                                    if thissquad.gameid not in self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside:
-                                        thissquad.battleside[index] = -1
-                                    else:
-                                        self.dmgcal(thissquad, self.squad[np.where(self.squadindexlist == combat)[0][0]], index,
-                                                    self.squad[np.where(self.squadindexlist == combat)[0][0]].battleside.index(thissquad.gameid))
-                        if thissquad.state in (11, 12, 13):
-                            if type(thissquad.attacktarget) == int and thissquad.attacktarget != 0:
-                                if thissquad.attacktarget in self.allunitindex:
-                                    thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
-                                else:
-                                    thissquad.attackpos = 0
-                                    thissquad.attacktarget = 0
-                                    for target in list(thissquad.battalion.neartarget.values()):
-                                        if target in self.allunitindex:
-                                            thissquad.attackpos = target[1]
-                                            thissquad.attacktarget = target[1]
-                                            thissquad.attacktarget = self.allunitlist[self.allunitindex.index(thissquad.attacktarget)]
-                                            break
-                            if thissquad.reloadtime >= thissquad.reload and (
-                                    (thissquad.attacktarget == 0 and thissquad.attackpos != 0) or (
-                                    thissquad.attacktarget != 0 and thissquad.attacktarget.state != 100)):
-                                rangeattack.Rangearrow(thissquad, thissquad.combatpos.distance_to(thissquad.attackpos), thissquad.shootrange,
-                                                       self.camerascale)
-                                thissquad.ammo -= 1
-                                thissquad.reloadtime = 0
-                            elif thissquad.attacktarget != 0 and thissquad.attacktarget.state == 100:
-                                thissquad.battalion.rangecombatcheck, thissquad.battalion.attacktarget = 0, 0
-                        self.combattimer = 0
-                self.squadupdater.update(self.currentweather, self.dt, self.camerascale)
+                    self.combattimer = 0
                 self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 if self.lastselected is not None and self.lastselected.state != 100:
@@ -1396,13 +1273,14 @@ class Battle():
                         self.dramatimer = 0
                         self.allui.remove(self.textdrama)
                 ##
-                self.combattimer += self.dt
-                self.uitimer += self.dt
                 self.camera.update(self.camerapos, self.allcamera)
                 self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner], self.playerposlist, self.enemyposlist)
-                self.dt = (self.clock.get_time() / 1000) * self.gamespeed
-                self.timenumber.timerupdate(self.dt)
+                self.dt = self.clock.get_time() / 1000 * self.gamespeed # dt before gamespeed
+                self.uitimer += self.dt
                 self.uidt = self.dt
+                self.dt = self.dt * self.gamespeed # dt with gamespeed for ingame cal
+                self.combattimer += self.dt
+                self.timenumber.timerupdate(self.dt)
             else: ## Complete game pause either menu or enclycopedia
                 if self.battlemenu.mode == 0:
                     for button in self.battlemenubutton:

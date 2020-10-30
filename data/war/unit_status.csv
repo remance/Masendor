@@ -51,20 +51,20 @@
 50,"Clear Mind",7,,10,,,,,,,,,0,0,0,,,,,2,
 51,"Bounty Issued",,,,,,,,,,,,0,0,0,,,,,2,
 52,"Bleeding",,,60,,,,,,,,,0,-20,,,,,,0,"Bleeding wound is often not much emergency issue in face of life and death in battle. Such wound still takes its toll in long term though."
-53,"Deaf",,,60,,70,60,,,,,,-20,,,,-20,-1,,2,
+53,"Deaf",,,60,,70,60,,,,,,-20,0,0,,-20,-1,,2,
 54,"Decay",,,120,,,,,,,,,0,-15,,,,,,2,
 55,"Infect",,49,120,80,80,80,,80,80,80,60,0,-5,,,,,,2,
-56,"Side Flanked",,,1,,,,,,,,,0,,,-20,,,,0,
-57,"Rear Flanked",,,1,,,,,,,,,0,,,-40,,,,0,
-58,"Marked",,,,,,,,,,,,0,,,,,,,2,"Marked for death to embrace the grip of life. Endure the pain and you may live to see another day."
+56,"Side Flanked",,,1,,,,,,,,,0,0,0,-20,,,,0,
+57,"Rear Flanked",,,1,,,,,,,,,0,0,0,-40,,,,0,
+58,"Marked",,,,,,,,,,,,0,0,0,,,,,2,"Marked for death to embrace the grip of life. Endure the pain and you may live to see another day."
 59,"Weaken",,,60,,,,,,,,,-30,,,,,,,2,"Weaken but not unwilling to fight. May the lord grants them strength once again."
 60,"Strengthen",,,60,,,,,,,,,30,,,,,,,2,
-61,"Meleelock",,,30,,,,,0,,,,0,,,,,,,2,
+61,"Meleelock",,,30,,,,,0,,,,0,0,0,,,,,2,
 62,"Smoke",,,,,,,,,,,,30,,,,,,,0,"Smoke reduce the sight of the unit making it less effective in combat but improve range defense."
 63,"Poison Smoke",,,,,,,,,,,,0,,,,,,,2,
 64,"Sleep Smoke",,,,,,,,,,,,0,,,,,,,2,
-65,"Suppressed",,,15,,,120,,10,,,,0,,,,,,,0,"This unit is being suppressed by range attacks making them almost unable to move but increase their range defense."
-66,"Armour Shattered",,,,,,,30,,,,,0,,,,,,,2,
+65,"Suppressed",,,15,,,120,,10,,,,0,0,0,,,,,0,"This unit is being suppressed by range attacks making them almost unable to move but increase their range defense."
+66,"Armour Shattered",,,,,,,30,,,,,0,0,0,,,,,2,
 67,"Final Drive",,,300,,,,,,,,,0,,,,-80,,,2,"Last dance of life, to embrace death willingly."
 68,"Whip Cracked",,,,,,,,,,,,0,,,,,,,2,
 69,"Spell Bind",,,,,,,,,,,,0,,,,,,,2,
@@ -75,30 +75,30 @@
 74,"Eight Gates Of Heaven",,,,,,,,,,,,0,,,,,,,2,
 75,"Calm Berserk",,,,,,,,,,,,0,,,,,,,2,"Controlled chaos is nothing short of unnatural. By the process of intensive training. Calm berserk allows this unit to unleash its wrath without losing control."
 76,"Breaching",,,,,,,,,,,,0,,,,,,,0,"Breaching through a mass of battalion is no easy task even for the finest cavalry force, hold fast and be tenecious."
-77,"Insane",,,,,,,,,,,,0,,,,,,,2,
+77,"Insane",,,,,,,,,,,,0,0,0,,,,,2,
 78,"Gobbling",,,,,,,,,,,,0,,,,,,,2,
 79,"Polymorph",,,,,,,,,,,,0,,,,,,,2,
 80,"Shapeshift",,,,,,,,,,,,0,,,,,,,2,
 81,"Pain Reflect",,,,,,,,,,,,0,,,,,,,2,
 82,"Benediction",,,,115,115,115,115,115,115,115,115,115,,,20,,,,2,
 83,"Turn Undead",,,,,,,,,,,,0,,,,,,,2,
-84,"Sacrifical Brand",,,,,,,,,,,,0,,,,,,,2,
-85,"Indictment",,,,,,,,,,,,0,,,,,,,2,
+84,"Sacrifical Brand",,,,,,,,,,,,0,0,0,,,,,2,
+85,"Indictment",,,,,,,,,,,,0,0,0,,,,,2,
 86,"Awaken",10,,,,,,,,,,,0,,,,,,,2,
 87,"Reviving",,,,,,,,,,,,0,,,,,,,2,
 88,"Angel Guardian",,,,,,,,,,,,0,,,,,,,2,"Receive 50% of damage from damage taken by nearby friendly squads"
-89,"Provoke",,,,130,50,50,,,,,,0,,,,,,,0,
+89,"Provoke",,,,130,50,50,,,,,,0,0,0,,,,,0,
 90,"Taint",,,,,,,,,,,,0,,,,,,,2,
 91,"All Round Defense",,,5,,,,,,,,,0,,,,,,,0,
 92,"Severe Burning",,"29,93,101,102,104",10,,,,,,,,,0,-100,0,-50,0,0,0,0,"The burning become so severe now that simply drenching the fire may not save the person anymore. This also causes panic among the troop trying to flee from such fire."
-93,"Drench",,,60,,,,,50,,,50,0,,,,,,,0,"Wet from head to toes almost as if swimming in the water. Avoid cold temperature or air elemental damage at all cost."
-94,"Electrocution",,,,,,,,,,,,,,,,,,,0,
+93,"Drench",,,60,,,,,50,,,50,0,0,0,0,0,0,0,0,"Wet from head to toes almost as if swimming in the water. Avoid cold temperature or air elemental damage at all cost."
+94,"Electrocution",,,,,,,,,,,,,-20,-5,-20,-30,0,0,0,
 95,"Cold",,96,10,70,90,90,,80,80,80,80,0,0,-2,-10,0,0,0,0,"Cold and shivering, not a good sign for winter warfare. Find some place warm or light up the fire."
 96,"Hot",,95,10,70,90,90,,80,80,80,80,0,0,-2,-10,0,0,0,0,
 97,"Heatstroke",,95,30,50,50,50,,30,50,50,50,-50,-10,-10,-30,-20,0,,0,
 98,"Decimated",,,60,,,,,,,,,0,0,0,50,40,0,0,0,"Decimation can increase morale of the troop for a short while so they can fight longer, before they realise that surrender maybe an option after all. "
 99,"Enraged",,,60,200,,,,,,,150,0,0,0,50,,,,0,"Anger clouded rational judgment. Exploit this momentary weakness or suffer the punishment. "
-100,"Dishonourable Displayed",,,,,,,,,,,,,,,-30,-25,0,,0,
+100,"Dishonourable Displayed",,,,,,,,,,,,,0,0,-30,-25,0,,0,
 101,"Sink",,"39,40",2,,,,,,,,,0,-30,-5,-30,-10,0,,0,
 102,"Drown",,"39,40",2,,,,,,,,,0,-50,-10,-50,-30,0,,0,
 103,"Quicksand Sink",,"39,40",1,,,,,,,,,0,-20,-5,-20,0,0,,0,

@@ -10,7 +10,6 @@ import pygame
 import pygame.freetype
 
 from RTS import mainmenu
-from RTS.script import gamebattalion, gameleader, gamesquad
 
 config = mainmenu.config
 SoundVolume = mainmenu.Soundvolume
@@ -92,6 +91,7 @@ def convertweathertime(weatherevent):
 ## Battle Start related script
 
 def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
+    from RTS.script import gamebattalion, gameleader
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
@@ -109,6 +109,7 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
 
 
 def unitsetup(maingame):
+    from RTS.script import gamesquad
     """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
     letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
@@ -185,8 +186,25 @@ def unitsetup(maingame):
     unitfile.close()
     return squadindexlist
 
-
 ## Battle related script
+
+def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
+    """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
+    squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
+    squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
+    sortmidfront = [who.frontline[whoside][3], who.frontline[whoside][4], who.frontline[whoside][2], who.frontline[whoside][5],
+                    who.frontline[whoside][1], who.frontline[whoside][6], who.frontline[whoside][0], who.frontline[whoside][7]]
+    """only calculate if the attack is attack with the front side"""
+    if whoside == 0:
+        combatpositioncal(squadlist, squadindexlist, sortmidfront, who, target, whoside, targetside, squadtargetside)
+    """only calculate if the target is attacked on the front side"""
+    if targetside == 0:
+        sortmidfront = [target.frontline[targetside][3], target.frontline[targetside][4],
+                        target.frontline[targetside][2],
+                        target.frontline[targetside][5], target.frontline[targetside][1],
+                        target.frontline[targetside][6],
+                        target.frontline[targetside][0], target.frontline[targetside][7]]
+        combatpositioncal(squadlist, squadindexlist, sortmidfront, target, who, targetside, whoside, squadwhoside)
 
 def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
     for thiswho in sortmidfront:
@@ -224,24 +242,6 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                                 squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
                         else:
                             squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[receiverside] = 0
-def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
-    """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
-    squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
-    squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
-    sortmidfront = [who.frontline[whoside][3], who.frontline[whoside][4], who.frontline[whoside][2], who.frontline[whoside][5],
-                    who.frontline[whoside][1], who.frontline[whoside][6], who.frontline[whoside][0], who.frontline[whoside][7]]
-    """only calculate if the attack is attack with the front side"""
-    if whoside == 0:
-        combatpositioncal(squadlist, squadindexlist, sortmidfront, who, target, whoside, targetside, squadtargetside)
-    """only calculate if the target is attacked on the front side"""
-    if targetside == 0:
-        sortmidfront = [target.frontline[targetside][3], target.frontline[targetside][4],
-                        target.frontline[targetside][2],
-                        target.frontline[targetside][5], target.frontline[targetside][1],
-                        target.frontline[targetside][6],
-                        target.frontline[targetside][0], target.frontline[targetside][7]]
-        combatpositioncal(squadlist, squadindexlist, sortmidfront, target, who, targetside, whoside, squadwhoside)
-
 
 def squadselectside(targetside, side, position):
     """side 0 is left 1 is right"""
@@ -283,7 +283,6 @@ def changecombatside(side, position):
         finalposition = 0
     return finalposition
 
-
 def losscal(who, target, hit, defense, type):
     heightadventage = who.battalion.height - target.battalion.height
     if type == 1: heightadventage = int((who.battalion.height - target.battalion.height) / 2)
@@ -320,7 +319,106 @@ def losscal(who, target, hit, defense, type):
     return dmg, moraledmg, leaderdmg
 
 
-def die(battle, who, group, enemygroup):
+def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
+    for status in inflictstatus.items():
+        if status[1] == 1 and attackerside == 0:
+            receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
+        elif status[1] in (2, 3):
+            receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
+            if status[1] == 3:
+                for squad in receiver.nearbysquadlist[0:2]:
+                    if squad != 0:
+                        squad.statuseffect[status[0]] = statuslist[status[0]].copy()
+        elif status[1] == 4:
+            for squad in receiver.battalion.spritearray.flat:
+                if squad.state != 100:
+                    squad.statuseffect[status[0]] = statuslist[status[0]].copy()
+
+def dmgcal(who, maingame, target, whoside, targetside, statuslist):
+    """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
+    # print(target.gameid, target.battleside)
+    wholuck = random.randint(-50, 50)
+    targetluck = random.randint(-50, 50)
+    whopercent = maingame.battlesidecal[whoside]
+    """34 battlemaster no flanked penalty"""
+    if who.fulldef or 91 in who.statuseffect: whopercent = 1
+    targetpercent = maingame.battlesidecal[targetside]
+    if target.fulldef or 91 in target.statuseffect: targetpercent = 1
+    dmgeffect = who.frontdmgeffect
+    targetdmgeffect = target.frontdmgeffect
+    if whoside != 0 and whopercent != 1:  ## if attack or defend from side will use discipline to help reduce penalty a bit
+        whopercent = maingame.battlesidecal[whoside] + (who.discipline / 300)
+        dmgeffect = who.sidedmgeffect
+        if whopercent > 1: whopercent = 1
+    if targetside != 0 and targetpercent != 1:
+        targetpercent = maingame.battlesidecal[targetside] + (target.discipline / 300)
+        targetdmgeffect = target.sidedmgeffect
+        if targetpercent > 1: targetpercent = 1
+    whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
+    """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
+    if (target.backstab and whoside == 2) or (who.oblivious and whoside == 2) or (who.flanker and targetside in (1, 3)): whodefense = 0
+    targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
+    if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
+            target.flanker and whoside in (1, 3)): targetdefense = 0
+    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0)
+    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0)
+    who.unithealth -= round(targetdmg * dmgeffect)
+    who.basemorale -= round(targetmoraledmg * dmgeffect)
+    if target.elemrange not in (0, 5):  ## apply element effect if atk has element
+        who.elemcount[target.elemrange - 1] += round((targetdmg * dmgeffect) * (100 - who.elemresist[target.elemrange - 1] / 100))
+    target.basemorale += round((targetmoraledmg * dmgeffect / 2))
+    if who.leader is not None and who.leader.name != "None" and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
+        who.leader.health -= targetleaderdmg
+        if who.leader.health <= 0:
+            if who.leader.battalion.commander and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+                maingame.textdrama.queue.append(str(who.leader.name) + " is dead")
+                who.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2])
+                whicharmy = maingame.enemyarmy
+                if who.battalion.gameid < 2000:
+                    whicharmy = maingame.playerarmy
+                for army in whicharmy:
+                    for squad in army.squadsprite:
+                        squad.basemorale -= 20
+            else:
+                maingame.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2])
+            maingame.setuparmyicon()
+    target.unithealth -= round(whodmg * targetdmgeffect)
+    target.basemorale -= round(whomoraledmg * targetdmgeffect)
+    if who.elemrange not in (0, 5):  ## apply element effect if atk has element
+        target.elemcount[who.elemrange - 1] += round(whodmg * targetdmgeffect / 100 * target.elemresist[who.elemrange - 1])
+    who.basemorale += round((whomoraledmg * targetdmgeffect / 2))
+    if target.leader is not None and target.leader.name != "None" and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
+        target.leader.health -= wholeaderdmg
+        if target.leader.health <= 0:
+            if target.leader.battalion.commander and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
+                maingame.textdrama.queue.append(str(target.leader.name) + " is dead")
+                maingame.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2])
+                whicharmy = maingame.enemyarmy
+                if target.battalion.gameid < 2000:
+                    whicharmy = maingame.playerarmy
+                for army in whicharmy:
+                    for squad in army.squadsprite:
+                        squad.basemorale -= 30
+            else:
+                maingame.eventlog.addlog([0, str(target.leader.name) + " is dead"], [0, 2])
+            maingame.setuparmyicon()
+    if who.corneratk:  ##attack corner (side) of self with aoe attack
+        listloop = target.nearbysquadlist[2:4]
+        if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
+        for squad in listloop:
+            if squad != 0 and squad.state != 100:
+                targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
+                whodmg, whomoraledmg = losscal(who, squad, whohit, targetdefense, 0)
+                squad.unithealth -= round(whodmg * dmgeffect)
+                squad.basemorale -= whomoraledmg
+    """inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion"""
+    if who.inflictstatus != {}:
+        applystatustoenemy(statuslist, who.inflictstatus, target, whoside)
+    if target.inflictstatus != {}:
+        applystatustoenemy(statuslist, target.inflictstatus, who, targetside)
+
+
+def die( who, battle, group, enemygroup):
     """remove battalion,hitbox when it dies"""
     battle.deadindex += 1
     if who.commander:  ## more morale penalty if the battalion is a command battalion
@@ -346,6 +444,7 @@ def die(battle, who, group, enemygroup):
 
 def splitunit(battle, who, how, gameleader):
     """split battalion either by row or column into two seperate battalion"""
+    from RTS.script import gamebattalion, gameleader
     if how == 0:  ## split by row
         newarmysquad = np.array_split(who.armysquad, 2)[1]
         who.armysquad = np.array_split(who.armysquad, 2)[0]

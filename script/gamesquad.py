@@ -1,20 +1,16 @@
 import random
-
+import numpy as np
 import pygame
 import pygame.freetype
 from pygame.transform import scale
-
-from RTS import mainmenu
-
-SCREENRECT = mainmenu.SCREENRECT
-
+from RTS.script import rangeattack, gamelongscript
 
 class Unitsquad(pygame.sprite.Sprite):
     images = []
-    eventlog = None
+    maingame = None
+    dmgcal = gamelongscript.dmgcal
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
-        # super().__init__()
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = 0
@@ -340,7 +336,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 elem = 0
         return elem
 
-    def statusupdate(self, thisweather, dt):
+    def statusupdate(self, thisweather):
         """calculate stat from stamina, morale state, skill, status, terrain"""
         ## Maybe make trigger for status update instead of doing it every update for optimise
         self.morale = self.basemorale
@@ -420,9 +416,9 @@ class Unitsquad(pygame.sprite.Sprite):
             if 2 in mapfeaturemod[10]:  ## Rot feature
                 self.statuseffect[54] = self.statuslist[54].copy()
             if 3 in mapfeaturemod[10]:  ## Poison
-                self.elemcount[4] += (dt * (100 - self.elemresist[5]) / 100)
+                self.elemcount[4] += ((100 - self.elemresist[5]) / 100)
         if weather.elem[0] != 0:
-            self.elemcount[weather.elem[0]] += (dt * weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100)
+            self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
         self.rangedef += mapfeaturemod[7]
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
         tempreach = mapfeaturemod[9] + weather.temperature
@@ -433,15 +429,15 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.tempcount != tempreach:
             if tempreach > 0:
                 if self.tempcount < tempreach:
-                    self.tempcount += dt * (100 - self.heatres) / 100
+                    self.tempcount += (100 - self.heatres) / 100
             elif tempreach < 0:
                 if self.tempcount > tempreach:
-                    self.tempcount -= dt * (100 - self.coldres) / 100
+                    self.tempcount -= (100 - self.coldres) / 100
             else:
                 if self.tempcount > 0:
-                    self.tempcount -= dt * (100 - self.heatres) / 100
+                    self.tempcount -= (100 - self.heatres) / 100
                 else:
-                    self.tempcount += dt * (100 - self.coldres) / 100
+                    self.tempcount += (100 - self.coldres) / 100
         """apply effect from skill"""
         if len(self.skilleffect) > 0:
             for status in self.skilleffect:  ## apply elemental effect to dmg if skill has element
@@ -494,7 +490,7 @@ class Unitsquad(pygame.sprite.Sprite):
             self.elemcount[2] = self.thresholdcount(self.elemcount[2], 30, 94)
             self.elemcount[3] = self.thresholdcount(self.elemcount[3], 23, 35)
             self.elemcount[4] = self.thresholdcount(self.elemcount[4], 26, 27)
-            self.elemcount = [elem - dt if elem > 0 else elem for elem in self.elemcount]
+            self.elemcount = [elem - 1 if elem > 0 else elem for elem in self.elemcount]
         """temperature effect"""
         if self.tempcount > 50:
             self.statuseffect[96] = self.statuslist[96].copy()
@@ -548,21 +544,21 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.chargedef < 0: self.chargedef = 0
         if self.discipline < 0: self.discipline = 0
         """remove cooldown if time reach 0"""
-        self.skillcooldown = {key: val - dt for key, val in self.skillcooldown.items()}
+        self.skillcooldown = {key: val - 0.5 for key, val in self.skillcooldown.items()}
         self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0}
         """remove effect if time reach 0 and restriction is met"""
         for a, b in self.skilleffect.items():
-            b[3] -= dt
+            b[3] -= 0.5
         self.skilleffect = {key: val for key, val in self.skilleffect.items() if val[3] > 0 and self.state in val[5]}
         for a, b in self.statuseffect.items():
-            b[3] -= dt
+            b[3] -= 0.5
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
 
-    def update(self, weather, dt, viewmode):
+    def update(self, weather, dt, viewmode, combattimer):
         if self.gamestart == 0:
             self.rotate()
             self.findnearbysquad()
-            self.statusupdate(weather, dt)
+            self.statusupdate(weather)
             self.gamestart = 1
         self.viewmode = viewmode
         if self.state != 100:
@@ -620,7 +616,7 @@ class Unitsquad(pygame.sprite.Sprite):
             if dt > 0:
                 self.timer += dt
                 if self.timer > 0.5:
-                    self.statusupdate(weather, self.timer)
+                    self.statusupdate(weather)
                     self.availableskill = []
                     if self.useskillcond != 3:
                         self.checkskillcondition()
@@ -648,6 +644,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     if self.nocombat > 1:
                         self.state = 0
                         self.nocombat = 1
+            ## Range attack function
             if self.battalion.state == 11:
                 if self.ammo > 0 and self.attackpos != 0 and self.shootrange >= self.attackpos.distance_to(self.combatpos):
                     self.state = 11
@@ -667,6 +664,40 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.state = 13
             if self.state in (11, 12, 13) and self.reloadtime < self.reload:
                 self.reloadtime += dt
+            ## ^ End range attack function
+            if combattimer >= 0.5:
+                squadindexlist = self.maingame.squadindexlist
+                if any(battle > 1 for battle in self.battleside):
+                    for index, combat in enumerate(self.battleside):
+                        if combat > 1:
+                            if self.gameid not in self.maingame.squad[np.where(squadindexlist == combat)[0][0]].battleside:
+                                self.battleside[index] = -1
+                            else:
+                                self.dmgcal(self.maingame, self.maingame.squad[np.where(squadindexlist == combat)[0][0]], index,
+                                            self.maingame.squad[np.where(squadindexlist == combat)[0][0]].battleside.index(self.gameid), self.maingame.gameunitstat.statuslist)
+                if self.state in (11, 12, 13):
+                    allunitindex = self.maingame.allunitindex
+                    if type(self.attacktarget) == int and self.attacktarget != 0:
+                        if self.attacktarget in allunitindex:
+                            self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
+                        else:
+                            self.attackpos = 0
+                            self.attacktarget = 0
+                            for target in list(self.battalion.neartarget.values()):
+                                if target in allunitindex:
+                                    self.attackpos = target[1]
+                                    self.attacktarget = target[1]
+                                    self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
+                                    break
+                    if self.reloadtime >= self.reload and (
+                            (self.attacktarget == 0 and self.attackpos != 0) or (
+                            self.attacktarget != 0 and self.attacktarget.state != 100)):
+                        rangeattack.Rangearrow(self, self.combatpos.distance_to(self.attackpos), self.shootrange,
+                                               self.viewmode)
+                        self.ammo -= 1
+                        self.reloadtime = 0
+                    elif self.attacktarget != 0 and self.attacktarget.state == 100:
+                        self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
             self.stamina = self.stamina - (dt * 3) if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
                     dt * 7) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
@@ -730,7 +761,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.leader = None
                                 break
                 self.state = 100
-                self.eventlog.addlog(
+                self.maingame.eventlog.addlog(
                     [0, str(self.boardpos) + " " + str(self.name) + " in " + self.battalion.leader[0].name + "'s battalion is destroyed"], [3])
         # else:
         #     self.morale = 0
