@@ -122,7 +122,7 @@ class Gameui(pygame.sprite.Sprite):
             x = pos[0]  ## reset x
             y += word_height  ## start on new row
 
-    def valueinput(self, who, weaponlist="", armourlist="", leader="", button="", changeoption=0, gameunitstat="", splithappen=False):
+    def valueinput(self, who, weaponlist="", armourlist="", button="", changeoption=0, splithappen=False):
         for thisbutton in button:
             thisbutton.draw(self.image)
         position = 65

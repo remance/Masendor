@@ -63,6 +63,7 @@ gradelist = {}
 #         if len(n)>50:
 import timeit
 import re
+import numpy as np
 
 starttime = timeit.default_timer()
 trait = {1:"a",2:"5",3:"12",4:"15",15:"66"}
@@ -73,6 +74,5 @@ for i in range(0,10000):
     if arcshot:
         1+1
 print("The time difference is :", timeit.default_timer() - starttime)
-#0.0008561620000000006
-#0.0017251539999999996
-#0.0014471780000000004
+k = np.array([[0,5],[7,8]])
+print(k>0, (k > 0))

@@ -21,6 +21,7 @@ class Unitsquad(pygame.sprite.Sprite):
         """index of battleside: 0 = front 1 = left 2 =rear 3 =right (different than battalion for proper combat rotation)"""
         """battleside keep index of enemy battalion -1 is no combat 0 is no current enemy (idle in combat)"""
         self.battleside = [-1, -1, -1, -1]
+        self.haveredcorner = False
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         # self.offset = pygame.Vector2(-25, 0)
         """state 0 = idle, 1 = walking, 2 = running, 3 = attacking/fighting, 4 = retreating"""
@@ -569,44 +570,41 @@ class Unitsquad(pygame.sprite.Sprite):
                     for index, health in enumerate(healthlist):
                         if self.unithealth > health:
                             if self.lasthealthstate != abs(4-index):
-                                self.healthimage = self.images[index+3]
-                                self.image_original.blit(self.healthimage, self.healthimagerect)
+                                self.image_original.blit(self.images[index+3], self.healthimagerect)
                                 self.lasthealthstate = abs(4-index)
+                                self.image = self.image_original.copy()
+                                self.battalion.squadimgchange.append(self.gameid)
                             break
                     self.oldlasthealth = self.unithealth
                 if self.oldlaststamina != self.stamina:
-                    if self.stamina > self.stamina75:
-                        if self.laststaminastate != 4:
-                            self.staminaimage = self.images[8]
-                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 4
-                    elif self.stamina > self.stamina50:
-                        if self.laststaminastate != 3:
-                            self.staminaimage = self.images[9]
-                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 3
-                    elif self.stamina > self.stamina25:
-                        if self.laststaminastate != 2:
-                            self.staminaimage = self.images[10]
-                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 2
-                    elif self.stamina > 0 and self.state != 97:
-                        if self.laststaminastate != 1:
-                            self.staminaimage = self.images[11]
-                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 1
-                    elif self.state == 97:
-                        if self.laststaminastate != 0:
-                            self.staminaimage = self.images[12]
-                            self.image_original.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 0
+                    staminalist = (self.stamina75, self.stamina50, self.stamina25, 0, -1)
+                    for index, stamina in enumerate(staminalist):
+                        if self.stamina > stamina:
+                            if self.laststaminastate != abs(4 - index):
+                                if index != 3:
+                                    self.image_original.blit(self.images[index + 8], self.staminaimagerect)
+                                    self.laststaminastate = abs(4 - index)
+                                    self.image = self.image_original.copy()
+                                    self.battalion.squadimgchange.append(self.gameid)
+                                else:
+                                    if self.state != 97:
+                                        self.image_original.blit(self.images[12], self.staminaimagerect)
+                                        self.laststaminastate = 0
+                                        self.oldlaststamina = self.stamina
+                                        self.image = self.image_original.copy()
+                                        self.battalion.squadimgchange.append(self.gameid)
+                            break
                     self.oldlaststamina = self.stamina
-                self.image = self.image_original.copy()
                 if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
                     for index, side in enumerate(self.battleside):
                         if side > 0:
                             self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
                             self.image.blit(self.images[14 + index], self.imagerect)
+                            self.battalion.squadimgchange.append(self.gameid)
+                            self.haveredcorner = True
+                elif self.haveredcorner == True:
+                    self.image = self.image_original.copy()
+                    self.haveredcorner = False
             self.attackpos = self.battalion.baseattackpos
             if self.battalion.attacktarget != 0:
                 self.attackpos = self.battalion.attacktarget.basepos
@@ -699,9 +697,9 @@ class Unitsquad(pygame.sprite.Sprite):
                     elif self.attacktarget != 0 and self.attacktarget.state == 100:
                         self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
-            self.stamina = self.stamina - (dt * 2) if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
-                    dt * 5) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
-                else self.stamina - (dt * 4) if self.state == 12 else self.stamina - (dt * 10) if self.state == 13 else self.stamina + (
+            self.stamina = self.stamina - dt if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
+                    dt * 3) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
+                else self.stamina - (dt * 4) if self.state == 12 else self.stamina - (dt * 5) if self.state == 13 else self.stamina + (
                     dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale and self.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
                 self.basemorale += dt
@@ -738,11 +736,10 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.morale < 0:self.morale = 0
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
             if self.troopnumber <= 0:  ## enter dead state
-                if self.lasthealthstate != 0:
-                    self.healthimage = self.images[7]
-                    self.image_original.blit(self.healthimage, self.healthimagerect)
-                    self.lasthealthstate = 0
+                self.image_original.blit(self.images[7], self.healthimagerect)
+                self.lasthealthstate = 0
                 self.image = self.image_original.copy()
+                self.battalion.squadimgchange.append(self.gameid)
                 if self.leader != None and self.leader.state != 100:
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:

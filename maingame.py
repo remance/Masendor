@@ -1,5 +1,6 @@
 """
 ## Known problem
+closest zoom fps drop extremely (Likely because of squad blit)
 collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
 inspect ui cause almost 10 fps drop in large unit (smaller in other ui but need optimise)
@@ -1026,7 +1027,7 @@ class Battle():
                 self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
                 if self.combattimer >= 0.5:
                     self.combattimer = 0
-                self.effectupdater.update(self.playerarmy, self.enemyarmy, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
+                self.effectupdater.update(self.allunitlist, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 if self.lastselected is not None and self.lastselected.state != 100:
                     """if not found in army class then it is in dead class"""
@@ -1049,8 +1050,8 @@ class Battle():
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
                         self.checksplit(whoinput)
-                        self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
-                        self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                        self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
+                        self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     elif self.beforeselected != self.lastselected:  ## change ui when click other battalion
                         if self.inspectui == 1:
                             self.clickcheck2 = 1
@@ -1064,12 +1065,12 @@ class Battle():
                         self.switchbuttonui[3].event = whoinput.useminrange
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
-                        self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
-                        self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                        self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
+                        self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     else:
                         if self.uitimer >= 1.1:
-                            self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
-                            self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                            self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
+                            self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     self.splithappen = False
                     if self.buttonui[4].rect.collidepoint(self.mousepos) or (
                             mouse_up and self.inspectui == 1 and self.clickcheck2 == 1):
@@ -1086,8 +1087,7 @@ class Battle():
                             self.squadselectedborder.pop(self.showingsquad[0].inspposition)
                             self.allui.add(self.squadselectedborder)
                             self.gameui[2].valueinput(who=self.showingsquad[0], weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                      leader=self.allleader,
-                                                      gameunitstat=self.gameunitstat, splithappen=self.splithappen)
+                                                        splithappen=self.splithappen)
                         elif mouse_up and self.inspectui == 1:  ## Remove when click again and the ui already open
                             self.allui.remove(*self.showingsquad)
                             self.allui.remove(self.squadselectedborder)
@@ -1190,8 +1190,7 @@ class Battle():
                                              self.squadlastselected.battalion.leader[0].name + "'s battalion is clicked"], [3])
                                         self.allui.add(self.squadselectedborder)
                                         self.gameui[2].valueinput(who=squad, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                                  leader=self.allleader,
-                                                                  gameunitstat=self.gameunitstat, splithappen=self.splithappen)
+                                                                     splithappen=self.splithappen)
                                         if self.gameui[2].option == 2:
                                             self.traitskillblit()
                                             self.effecticonblit()
@@ -1209,8 +1208,7 @@ class Battle():
                                     if self.gameui[2].option != button.event:
                                         self.gameui[2].option = button.event
                                         self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                                  leader=self.allleader, changeoption=1, gameunitstat=self.gameunitstat,
-                                                                  splithappen=self.splithappen)
+                                                                changeoption=1, splithappen=self.splithappen)
                                         if self.gameui[2].option == 2:
                                             self.traitskillblit()
                                             self.effecticonblit()
@@ -1222,7 +1220,7 @@ class Battle():
                         if (self.squadlastselected is not None and self.uitimer >= 1.1 and self.gameui[
                             2].option != 0) or self.beforeselected != self.lastselected:  ## Update value of the clicked squad
                             self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                      leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
+                                                    splithappen=self.splithappen)
                             if self.gameui[2].option == 2:
                                 self.countdownskillicon()
                                 self.effecticonblit()

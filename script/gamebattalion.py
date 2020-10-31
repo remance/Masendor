@@ -396,6 +396,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.state = 0  ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
         self.commandstate = self.state
         self.deadchange = 0
+        self.squadimgchange = []
         self.gamestart = False
         self.authrecalnow = False
         self.autosquadplace = True
@@ -411,12 +412,10 @@ class Unitarmy(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
         self.imagerect = self.images[10].get_rect(center=self.image.get_rect().center)
         self.image.blit(self.images[10], self.imagerect)
-        self.healthimage = self.images[0]
-        self.healthimagerect = self.healthimage.get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.healthimage, self.healthimagerect)
-        self.staminaimage = self.images[5]
-        self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.staminaimage, self.staminaimagerect)
+        self.healthimagerect = self.images[0].get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.images[0], self.healthimagerect)
+        self.staminaimagerect = self.images[5].get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.images[5], self.staminaimagerect)
         self.coa = coa
         self.faction = self.coa
         self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
@@ -501,22 +500,17 @@ class Unitarmy(pygame.sprite.Sprite):
         self.offsety = self.rect.y
         self.setuparmy()
 
-    def squadtoarmy(self, squads):
+    def squadtoarmy(self):
         """drawing squad into battalion sprite"""
         squadnum = 0
         truesquadnum = 0
         width, height = 0, 0
         for squad in self.armysquad.flat:
             if squad != 0:
-                # def drawtobattalion(self, startposition, battalion):
-                # self.rect = self.image.get_rect(topleft=(battalion.image.get_rect(startposition)))
-                # self.image.blit(self.image, self.rect)
-                self.squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
-                self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), self.squadrect)
-                # squad.pos = pygame.Vector2((width,height))
-                # squads[self.groupsquadindex[truesquadnum]].drawtobattalion(startposition=(width,height),battalion=self.image)
-                # squads[self.groupsquadindex[truesquadnum]].pos = pygame.Vector2(width,height)
-                truesquadnum += 1
+                if self.squadimgchange == [] or (self.squadimgchange != [] and squad in self.squadimgchange):
+                    self.squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
+                    self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), self.squadrect)
+                    truesquadnum += 1
             width += self.imgsize[0]
             squadnum += 1
             if squadnum >= len(self.armysquad[0]):
@@ -690,11 +684,13 @@ class Unitarmy(pygame.sprite.Sprite):
             , rotationxy(self.rect.center, self.hitboxpos[2], self.testangle), rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
 
     def authrecal(self):
-        self.authority = round(
+        self.authority = int(
             self.leader[0].authority + (self.leader[1].authority / 3) + (self.leader[2].authority / 3) + (self.leader[3].authority / 5))
-        if self.armysquad.size > 20:
-            self.authority = round(
-                (self.leader[0].authority * (100 - (self.armysquad.size)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+        bigarmysize = self.armysquad > 0
+        bigarmysize = bigarmysize.sum()
+        if bigarmysize > 20:
+            self.authority = int(
+                (self.leader[0].authority * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
                 self.leader[3].authority / 4)
 
     def startset(self, squadgroup):
@@ -727,13 +723,13 @@ class Unitarmy(pygame.sprite.Sprite):
         self.changescale()
         self.changeposscale()
 
-    def viewmodechange(self, squadgroup):
+    def viewmodechange(self):
         if self.viewmode != 1:  ## battalion view
             self.image_original = self.image_original3.copy()
             self.changescale()
         elif self.viewmode == 1:  ## Squad view when zoom closest (10 in other class without need zoom image)
             self.image_original = self.image_original2.copy()
-            self.squadtoarmy(squadgroup)
+            self.squadtoarmy()
             self.changescale()
         self.changeposscale()
         self.rotate()
@@ -747,55 +743,40 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.viewmode != abs(viewmode - 11):
             if self.viewmode != abs(viewmode - 11):
                 self.viewmode = abs(viewmode - 11)
-                self.viewmodechange(squadgroup)
+                self.viewmodechange()
             """Change health and stamina bar Function"""
             if self.viewmode != 1:
                 if self.oldarmyhealth != self.troopnumber:
                     healthlist = (self.health75, self.health50, self.health25, 0, -1)
-                    for index, health in enumerate(healthlist):
+                    for index, health in enumerate(healthlist): ## Loop to find appropiate hp circle image
                         if self.troopnumber > health:
                             if self.lasthealthstate != abs(4 - index):
-                                self.healthimage = self.images[index]
-                                self.image_original3.blit(self.healthimage, self.healthimagerect)
+                                self.image_original3.blit(self.images[index], self.healthimagerect)
                                 self.lasthealthstate = abs(4 - index)
-                                self.viewmodechange(squadgroup)
+                                self.viewmodechange()
                             break
                     self.oldarmyhealth = self.troopnumber
                 if self.oldarmystamina != self.stamina:
-                    if self.stamina > self.stamina75:
-                        if self.laststaminastate != 4:
-                            self.staminaimage = self.images[5]
-                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 4
-                            self.viewmodechange(squadgroup)
-                    elif self.stamina > self.stamina50:
-                        if self.laststaminastate != 3:
-                            self.staminaimage = self.images[6]
-                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 3
-                            self.viewmodechange(squadgroup)
-                    elif self.stamina > self.stamina25:
-                        if self.laststaminastate != 2:
-                            self.staminaimage = self.images[7]
-                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 2
-                            self.viewmodechange(squadgroup)
-                    elif self.stamina > 0:
-                        if self.laststaminastate != 1:
-                            self.staminaimage = self.images[8]
-                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 1
-                            self.viewmodechange(squadgroup)
-                    elif self.stamina <= 0:
-                        if self.laststaminastate != 0:
-                            self.staminaimage = self.images[9]
-                            self.image_original3.blit(self.staminaimage, self.staminaimagerect)
-                            self.laststaminastate = 0
-                            self.viewmodechange(squadgroup)
+                    staminalist = (self.stamina75, self.stamina50, self.stamina25, 0, -1)
+                    for index, stamina in enumerate(staminalist): ## Loop to find appropiate stamina circle image
+                        if self.stamina > stamina:
+                            if self.laststaminastate != abs(4 - index):
+                                if index != 3:
+                                    self.image_original3.blit(self.images[index + 5], self.staminaimagerect)
+                                    self.laststaminastate = abs(4 - index)
+                                    self.viewmodechange()
+                                else:
+                                    if self.state != 97:
+                                        self.image_original3.blit(self.images[8], self.staminaimagerect)
+                                        self.laststaminastate = 1
+                                        self.viewmodechange()
+                            break
                     self.oldarmystamina = self.stamina
             else:
-                self.squadtoarmy(squadgroup)
-                self.rotate()
+                if self.squadimgchange != []:
+                    self.squadtoarmy()
+                    self.rotate()
+                    self.squadimgchange = []
         if self.state != 100:
             if self.gameid < 2000:
                 self.maingame.playerposlist[self.gameid] = self.basepos

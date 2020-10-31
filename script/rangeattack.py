@@ -83,7 +83,6 @@ class Rangearrow(pygame.sprite.Sprite):
             self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] + randomposition2, self.shooter.battalion.basepos[1] + randomposition2)
         self.pos = self.basepos * viewmode
         self.target = self.basetarget * viewmode
-        self.mask = pygame.mask.from_surface(self.image)
 
     def rangedmgcal(self, who, target, targetside):
         """Calculate hitchance and defense chance"""
@@ -91,6 +90,7 @@ class Rangearrow(pygame.sprite.Sprite):
             targetside = 3
         elif targetside == 3:
             targetside = 2
+        ##TODO check target side if work correctly
         wholuck = random.randint(-20, 20)
         targetluck = random.randint(-20, 20)
         targetpercent = [1, 0.7, 0.4, 0.7][targetside]
@@ -106,26 +106,22 @@ class Rangearrow(pygame.sprite.Sprite):
         if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
             target.leader.health -= wholeaderdmg
 
-    def registerhit(self, who, target, squadlist, squadindexlist):
+    def registerhit(self, unitlist, squadlist, squadindexlist):
         """Calculatte damage when arrow reach target"""
         if self.arcshot:
             if self.side is None: self.side = random.randint(0, 3)
-            for unit in pygame.sprite.spritecollide(self, who, 0, collided=pygame.sprite.collide_mask):
-                calsquadlist = np.where(unit.squadalive > 1, unit.armysquad, unit.squadalive).flat
-                calsquadlist = np.delete(calsquadlist,
-                                         (calsquadlist <= 1).nonzero()[0][:round((np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
-                squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
-                if squadhit not in (0, 1):
-                    squadhit = np.where(squadindexlist == squadhit)[0][0]
-                    self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
-            for unit in pygame.sprite.spritecollide(self, target, 0, collided=pygame.sprite.collide_mask):
-                calsquadlist = np.where(unit.squadalive > 1, unit.armysquad, unit.squadalive).flat
-                calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
-                    (np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
-                squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
-                if squadhit not in (0, 1):
-                    squadhit = np.where(squadindexlist == squadhit)[0][0]
-                    self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
+            for unit in pygame.sprite.spritecollide(self, unitlist, 0):
+                posmask = int(self.pos[0] - unit.rect.x), int(self.pos[1] - unit.rect.y)
+                try:
+                    if unit.mask.get_at(posmask) == 1:
+                        calsquadlist = np.where(unit.squadalive > 1, unit.armysquad, unit.squadalive).flat
+                        calsquadlist = np.delete(calsquadlist,
+                                                 (calsquadlist <= 1).nonzero()[0][:round((np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
+                        squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
+                        if squadhit not in (0, 1):
+                            squadhit = np.where(squadindexlist == squadhit)[0][0]
+                            self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
+                except: pass
         elif self.arcshot == False and self.passwho != 0:
             calsquadlist = self.passwho.frontline[self.side]
             calsquadlist = np.delete(calsquadlist, (calsquadlist == 0).nonzero()[0])
@@ -136,18 +132,23 @@ class Rangearrow(pygame.sprite.Sprite):
                 squadhit = np.where(squadindexlist == squadhit)[0][0]
                 self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
 
-    def update(self, who, target, hitbox, squadlist, squadindexlist, dt, viewmode):
+    def update(self, unitlist, hitbox, squadlist, squadindexlist, dt, viewmode):
         """Who is the player battalion group, target is the enemy battalion group"""
         move = self.basetarget - self.basepos
         move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""
-        for thishitbox in pygame.sprite.spritecollide(self, hitbox, 0, collided=pygame.sprite.collide_mask):
+        for thishitbox in pygame.sprite.spritecollide(self, hitbox, 0):
             if thishitbox.who.gameid != self.shooter.battalion.gameid:
-                self.passwho = thishitbox.who
-                self.side = thishitbox.side
-                if self.arcshot == False:
-                    self.registerhit(who, target, squadlist, squadindexlist)
-                    self.kill()
+                posmask = int(self.pos[0] - thishitbox.rect.x), int(self.pos[1] - thishitbox.rect.y)
+                try:
+                    if thishitbox.mask.get_at(posmask) == 1:
+                        self.passwho = thishitbox.who
+                        self.side = thishitbox.side
+                        if self.arcshot == False:
+                            self.registerhit(unitlist, squadlist, squadindexlist)
+                            self.kill()
+                except:
+                    pass
         if move_length >= 1:
             move.normalize_ip()
             move = move * self.speed * dt
@@ -159,7 +160,6 @@ class Rangearrow(pygame.sprite.Sprite):
                 self.basepos = self.basetarget
                 self.pos = self.basepos * viewmode
                 self.rect.center = self.pos
-            self.mask = pygame.mask.from_surface(self.image)
         else:
-            self.registerhit(who, target, squadlist, squadindexlist)
+            self.registerhit(unitlist, squadlist, squadindexlist)
             self.kill()
