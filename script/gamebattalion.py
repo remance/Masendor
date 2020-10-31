@@ -1180,6 +1180,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.state = 5
             if keystate[pygame.K_LALT]:
                 self.set_target(mouse_pos[1])
+                if self.ammo > 0:
+                    self.baseattackpos = mouse_pos[1]
             else:
                 self.attacktarget = whomouseover
                 self.baseattackpos = whomouseover.basepos

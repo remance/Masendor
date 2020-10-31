@@ -53,7 +53,7 @@ class Popupicon(pygame.sprite.Sprite):
 
 
 class Gameui(pygame.sprite.Sprite):
-    def __init__(self, X, Y, screen, image, icon, uitype, text="", textsize=16):
+    def __init__(self, X, Y, image, icon, uitype, text="", textsize=16):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)

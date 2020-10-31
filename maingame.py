@@ -2,6 +2,7 @@
 ## Known problem
 collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
+inspect ui cause almost 10 fps drop in large unit (smaller in other ui but need optimise)
 1 melee combat cause 10 fps drop
 Optimise list
 change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
@@ -328,20 +329,19 @@ class Battle():
         self.armyselector = gameui.Armyselect((0, 0), topimage[30])
         self.selectscroll = gameui.Uiscroller(self.armyselector.rect.topright, topimage[30].get_height(), self.armyselector.maxrowshow)
         self.gameui = [
-            gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
+            gameui.Gameui(X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
                           icon=iconimage, uitype="topbar")]
         iconimage = load_images(['ui', 'battle_ui', 'commandbar_icon'])
         self.gameui.append(
-            gameui.Gameui(screen=self.screen, X=topimage[1].get_size()[0] / 2,
-                          Y=(topimage[1].get_size()[1] / 2) + self.armyselector.image.get_height(), image=topimage[1], icon=iconimage,
-                          uitype="commandbar"))
+            gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + self.armyselector.image.get_height(),
+                          image=topimage[1], icon=iconimage, uitype="commandbar"))
         iconimage = load_images(['ui', 'battle_ui', 'unitcard_icon'])
         self.gameui.append(
-            gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=SCREENRECT.height - 310, image=topimage[2],
+            gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=SCREENRECT.height - 310, image=topimage[2],
                           icon="", uitype="unitcard"))
         self.gameui[2].featurelist = featurelist
         self.gameui.append(
-            gameui.Gameui(screen=self.screen, X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] + 150,
+            gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] + 150,
                           image=topimage[5], icon="", uitype="armybox"))
         self.popgameui = self.gameui
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
@@ -510,11 +510,13 @@ class Battle():
     def checksplit(self, whoinput):
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
                 whoinput.leader[1].name != "None":
+            print(whoinput.leader[1].name)
             self.allui.add(self.buttonui[5])
         elif self.buttonui[5] in self.allui:
             self.buttonui[5].kill()
         if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[
             1].name != "None":
+            print(whoinput.leader[1].name)
             self.allui.add(self.buttonui[6])
         elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
@@ -1046,13 +1048,7 @@ class Battle():
                         self.switchbuttonui[3].event = whoinput.useminrange
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
-                        if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[
-                            1].size >= 10 and \
-                                whoinput.leader[0].name != "None":
-                            self.allui.add(self.buttonui[5])  ## add column split button
-                        if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and \
-                                whoinput.leader[0].name != "None":
-                            self.allui.add(self.buttonui[6])  ## add row split button
+                        self.checksplit(whoinput)
                         self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                     elif self.beforeselected != self.lastselected:  ## change ui when click other battalion
@@ -1071,7 +1067,7 @@ class Battle():
                         self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                     else:
-                        if self.uitimer >= 0.5:
+                        if self.uitimer >= 1.1:
                             self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                             self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                     self.splithappen = False
@@ -1205,6 +1201,7 @@ class Battle():
                                             for icon in self.effecticon.sprites(): icon.kill()
                                     elif mouse_right:
                                         self.popoutlorebook(3, squad.unitid)
+                                    break
                             for button in self.buttonui[0:4]:  ## Change unit card option based on button clicking
                                 if button.rect.collidepoint(self.mousepos):
                                     self.clickcheck = 1
@@ -1222,7 +1219,7 @@ class Battle():
                                             for icon in self.skillicon.sprites(): icon.kill()
                                             for icon in self.effecticon.sprites(): icon.kill()
                                     break
-                        if (self.squadlastselected is not None and self.uitimer >= 0.5 and self.gameui[
+                        if (self.squadlastselected is not None and self.uitimer >= 1.1 and self.gameui[
                             2].option != 0) or self.beforeselected != self.lastselected:  ## Update value of the clicked squad
                             self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                       leader=self.allleader, gameunitstat=self.gameunitstat, splithappen=self.splithappen)
@@ -1246,9 +1243,9 @@ class Battle():
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()
                     self.beforeselected = self.lastselected
-                    if self.uitimer >= 5:
+                    if self.uitimer >= 1.1:
                         self.uitimer = 0
-                """remove the pop up ui when click at no group"""
+                """remove the unit ui when click at no group"""
                 if self.clickcheck != 1:
                     if self.lastselected is not None:
                         for hitbox in self.lastselected.hitbox:
@@ -1283,7 +1280,7 @@ class Battle():
                 ##
                 self.camera.update(self.camerapos, self.allcamera)
                 self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner], self.playerposlist, self.enemyposlist)
-                self.dt = self.clock.get_time() / 1000 * self.gamespeed # dt before gamespeed
+                self.dt = self.clock.get_time() / 1000 # dt before gamespeed
                 self.uitimer += self.dt
                 self.uidt = self.dt
                 self.dt = self.dt * self.gamespeed # dt with gamespeed for ingame cal
