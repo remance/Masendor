@@ -1,6 +1,6 @@
 """
 ## Known problem
-unit somehow become unclickable during broken and getting attack, auto placement also become buggy during chase
+collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
 1 melee combat cause 10 fps drop
 Optimise list
@@ -299,7 +299,7 @@ class Battle():
         self.clock = pygame.time.Clock()
         self.lastmouseover = 0
         self.gamespeed = 1
-        self.gamespeedset = (0, 0.5, 1, 2, 4, 6)
+        self.gamespeedset = (0, 0.5, 1, 2, 4)
         self.clickcheck = 0  ## For checking if unit or ui is clicked
         self.clickcheck2 = 0  ##  For checking if another unit is clicked when inspect ui open"
         self.inspectui = 0
@@ -1053,6 +1053,8 @@ class Battle():
                         if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and \
                                 whoinput.leader[0].name != "None":
                             self.allui.add(self.buttonui[6])  ## add row split button
+                        self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                        self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                     elif self.beforeselected != self.lastselected:  ## change ui when click other battalion
                         if self.inspectui == 1:
                             self.clickcheck2 = 1
@@ -1066,9 +1068,12 @@ class Battle():
                         self.switchbuttonui[3].event = whoinput.useminrange
                         self.leadernow = whoinput.leader
                         self.allui.add(*self.leadernow)
-                    if self.uitimer >= 0.5:
                         self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                    else:
+                        if self.uitimer >= 0.5:
+                            self.gameui[0].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
+                            self.gameui[1].valueinput(who=whoinput, leader=self.allleader, splithappen=self.splithappen)
                     self.splithappen = False
                     if self.buttonui[4].rect.collidepoint(self.mousepos) or (
                             mouse_up and self.inspectui == 1 and self.clickcheck2 == 1):
@@ -1084,6 +1089,9 @@ class Battle():
                             self.squadlastselected = self.showingsquad[0]
                             self.squadselectedborder.pop(self.showingsquad[0].inspposition)
                             self.allui.add(self.squadselectedborder)
+                            self.gameui[2].valueinput(who=self.showingsquad[0], weaponlist=self.allweapon, armourlist=self.allarmour,
+                                                      leader=self.allleader,
+                                                      gameunitstat=self.gameunitstat, splithappen=self.splithappen)
                         elif mouse_up and self.inspectui == 1:  ## Remove when click again and the ui already open
                             self.allui.remove(*self.showingsquad)
                             self.allui.remove(self.squadselectedborder)

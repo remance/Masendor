@@ -418,9 +418,13 @@ def dmgcal(who, maingame, target, whoside, targetside, statuslist):
         applystatustoenemy(statuslist, target.inflictstatus, who, targetside)
 
 
-def die( who, battle, group, enemygroup):
+def die(who, battle, group, enemygroup):
     """remove battalion,hitbox when it dies"""
     battle.deadindex += 1
+    if who.gameid < 2000:
+        battle.playerposlist.pop(who.gameid)
+    else:
+        battle.enemyposlist.pop(who.gameid)
     if who.commander:  ## more morale penalty if the battalion is a command battalion
         for army in group:
             for squad in army.squadsprite:

@@ -611,7 +611,7 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.battalion.attacktarget != 0:
                 self.attackpos = self.battalion.attacktarget.basepos
             self.attacktarget = self.battalion.attacktarget
-            if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100):
+            if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100) and self.state not in (96,97,98,99):
                 self.state = self.battalion.state
             if dt > 0:
                 self.timer += dt
@@ -699,9 +699,9 @@ class Unitsquad(pygame.sprite.Sprite):
                     elif self.attacktarget != 0 and self.attacktarget.state == 100:
                         self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
             if self.stamina < self.maxstamina: self.stamina += (dt * self.staminaregen)
-            self.stamina = self.stamina - (dt * 3) if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
-                    dt * 7) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
-                else self.stamina - (dt * 6) if self.state == 12 else self.stamina - (dt * 14) if self.state == 13 else self.stamina + (
+            self.stamina = self.stamina - (dt * 2) if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
+                    dt * 5) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
+                else self.stamina - (dt * 4) if self.state == 12 else self.stamina - (dt * 10) if self.state == 13 else self.stamina + (
                     dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale and self.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
                 self.basemorale += dt
@@ -726,15 +726,16 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.unithealth < 0: self.unithealth = 0
             if self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
             self.battleside = [-1, -1, -1, -1] # Reset battleside to defualt
-            if self.stamina <= 0:
+            if self.stamina <= 0: # Collapse and cannot act
                 self.state = 97
                 self.stamina = 0
-            if self.state == 97 and self.stamina > 1000: self.state = 0
+            if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0
             """cannot be higher than max hp and max stamina"""
             if self.basemorale <= 0:
                 self.basemorale = 0
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt
+            if self.morale < 0:self.morale = 0
             if self.stamina > self.maxstamina: self.stamina = self.maxstamina
             if self.troopnumber <= 0:  ## enter dead state
                 if self.lasthealthstate != 0:
