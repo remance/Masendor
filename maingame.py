@@ -1,6 +1,5 @@
 """
 ## Known problem
-closest zoom fps drop extremely (Likely because of squad blit)
 collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
 inspect ui cause almost 10 fps drop in large unit (smaller in other ui but need optimise)
@@ -817,6 +816,17 @@ class Battle():
                                     self.gamespeed = 0
                                 else:
                                     self.gamespeed = 1
+                                self.speednumber.speedupdate(self.gamespeed)
+                            elif event.key == pygame.K_KP_MINUS:
+                                newindex = self.gamespeedset.index(self.gamespeed) - 1
+                                if newindex >= 0:
+                                    self.gamespeed = self.gamespeedset[newindex]
+                                self.speednumber.speedupdate(self.gamespeed)
+                            elif event.key == pygame.K_KP_PLUS:
+                                newindex = self.gamespeedset.index(self.gamespeed) + 1
+                                if newindex < len(self.gamespeedset):
+                                    self.gamespeed = self.gamespeedset[newindex]
+                                self.speednumber.speedupdate(self.gamespeed)
                             elif event.key == pygame.K_PAGEUP:  ## Go to top of event log
                                 self.eventlog.currentstartrow = 0
                                 self.eventlog.recreateimage()
@@ -829,37 +839,37 @@ class Battle():
                             elif event.key == pygame.K_SPACE and self.lastselected is not None:
                                 whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
                                                  self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
-                        ### FOR DEVELOPMENT DELETE LATER
-                        elif event.key == pygame.K_1:
-                            self.textdrama.queue.append('Hello and Welcome to the Update Video')
-                        elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Encyclopedia')
-                        elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('Game speed can by adjusted at anytime in game')
-                        elif event.key == pygame.K_4:
-                            self.textdrama.queue.append('The weather effect will occur at set time')
-                        elif event.key == pygame.K_5:
-                            self.textdrama.queue.append('Weather effect affect the unit in many ways')
-                        elif event.key == pygame.K_6:
-                            self.textdrama.queue.append('Current special effect still need rework')
-                        elif event.key == pygame.K_n and self.lastselected is not None:
-                            if whoinput.gameid < 2000:
-                                self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
-                                                                           self.enactment)
+                            ### FOR DEVELOPMENT DELETE LATER
+                            elif event.key == pygame.K_1:
+                                self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                            elif event.key == pygame.K_2:
+                                self.textdrama.queue.append('Showcase: FPS testing and leader authority')
+                            elif event.key == pygame.K_3:
+                                self.textdrama.queue.append('relationship with battalion size')
+                            elif event.key == pygame.K_4:
+                                self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
+                            elif event.key == pygame.K_5:
+                                self.textdrama.queue.append('Weather effect affect the unit in many ways')
+                            elif event.key == pygame.K_6:
+                                self.textdrama.queue.append('Current special effect still need rework')
+                            elif event.key == pygame.K_n and self.lastselected is not None:
+                                if whoinput.gameid < 2000:
+                                    self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
+                                                                               self.enactment)
+                                else:
+                                    self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
+                                                                               self.enactment)
+                            elif event.key == pygame.K_l and self.lastselected is not None:
+                                for squad in whoinput.squadsprite:
+                                    squad.basemorale = 0
+                            elif event.key == pygame.K_k and self.lastselected is not None:
+                                for squad in self.lastselected.squadsprite:
+                                    squad.unithealth -= squad.unithealth
+                            elif event.key == pygame.K_m and self.lastselected is not None:
+                                self.lastselected.leader[0].health -= 1000
+                            ### End For development test
                             else:
-                                self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
-                                                                           self.enactment)
-                        elif event.key == pygame.K_l and self.lastselected is not None:
-                            for squad in whoinput.squadsprite:
-                                squad.basemorale = 0
-                        elif event.key == pygame.K_k and self.lastselected is not None:
-                            for squad in self.lastselected.squadsprite:
-                                squad.unithealth -= squad.unithealth
-                        elif event.key == pygame.K_m and self.lastselected is not None:
-                            self.lastselected.leader[0].health -= 1000
-                        ### End For development test
-                        else:
-                            keypress = event.key
+                                keypress = event.key
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
             # self.screen.blit(self.background, self.camerapos)
             if self.gamestate == 1:
@@ -1230,13 +1240,13 @@ class Battle():
                             else:
                                 for icon in self.skillicon.sprites(): icon.kill()
                                 for icon in self.effecticon.sprites(): icon.kill()
-
-                        if self.effecticonmouseover(self.skillicon, mouse_right):
-                            pass
-                        elif self.effecticonmouseover(self.effecticon, mouse_right):
-                            pass
-                        else:
-                            self.allui.remove(self.effectpopup)
+                        if self.gameui[2].option == 2:
+                            if self.effecticonmouseover(self.skillicon, mouse_right):
+                                pass
+                            elif self.effecticonmouseover(self.effecticon, mouse_right):
+                                pass
+                            else:
+                                self.allui.remove(self.effectpopup)
                     else:
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()

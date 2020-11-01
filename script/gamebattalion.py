@@ -397,6 +397,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.commandstate = self.state
         self.deadchange = 0
         self.squadimgchange = []
+        self.zoomviewchange = False
         self.gamestart = False
         self.authrecalnow = False
         self.autosquadplace = True
@@ -507,10 +508,10 @@ class Unitarmy(pygame.sprite.Sprite):
         width, height = 0, 0
         for squad in self.armysquad.flat:
             if squad != 0:
-                if self.squadimgchange == [] or (self.squadimgchange != [] and squad in self.squadimgchange):
+                if self.zoomviewchange == True or squad in self.squadimgchange:
                     self.squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
                     self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), self.squadrect)
-                    truesquadnum += 1
+                truesquadnum += 1
             width += self.imgsize[0]
             squadnum += 1
             if squadnum >= len(self.armysquad[0]):
@@ -642,9 +643,9 @@ class Unitarmy(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         if self.troopnumber > 0 and self.staminastate != self.laststaminastate:
             self.walkspeed, self.runspeed = (self.speed + self.discipline / 100) / 15, (self.speed + self.discipline / 100) / 10
-            self.rotatespeed = round(self.runspeed * 50) / (self.troopnumber / 100)
+            self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size/2))
             if self.state in (1, 3, 5):
-                self.rotatespeed = round(self.walkspeed * 50) / (self.troopnumber / 100)
+                self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size/2))
             if self.rotatespeed > 10: self.rotatespeed = 10
             if self.rotatespeed < 1:
                 self.rotatespeed = 1
@@ -742,6 +743,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """redraw if troop num or stamina change"""
         if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.viewmode != abs(viewmode - 11):
             if self.viewmode != abs(viewmode - 11):
+                self.zoomviewchange = True
                 self.viewmode = abs(viewmode - 11)
                 self.viewmodechange()
             """Change health and stamina bar Function"""
@@ -773,10 +775,11 @@ class Unitarmy(pygame.sprite.Sprite):
                             break
                     self.oldarmystamina = self.stamina
             else:
-                if self.squadimgchange != []:
+                if self.squadimgchange != [] or self.zoomviewchange == True:
                     self.squadtoarmy()
                     self.rotate()
                     self.squadimgchange = []
+                    self.zoomviewchange = False
         if self.state != 100:
             if self.gameid < 2000:
                 self.maingame.playerposlist[self.gameid] = self.basepos
