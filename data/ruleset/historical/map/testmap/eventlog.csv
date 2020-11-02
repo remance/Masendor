@@ -1,1 +1,5 @@
-"who","text","modelist","time"
+"id","who","text","modelist","time"
+"t0",0,"Welcome, this is a test battle map. The year is unknown in the past when no record is kept.",0,"00:00:00"
+"t1",0,"One minute has passed.",0,"00:01:00"
+"ld0",0,"The death of this player commander causes time paradox. The future can no longer be observed and you are no longer existed.",0,"0"
+"ld1",0,"The death of this enemy commander is recorded in extreme detailed by the historian. He is disembowelled and decapitated amid chaotic combat. His head is then paraded during and after the battle causing the enemy army to flee completely from the sight. His head and body were then buried in the Church of No bug one year later.",0,"0"

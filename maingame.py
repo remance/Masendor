@@ -1,4 +1,5 @@
 """
+check range dmg on leader and see why it so low
 ## Known problem
 collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
@@ -24,7 +25,7 @@ from pygame.transform import scale
 
 from RTS import mainmenu
 from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
-    gamelorebook, gameweather, gamefaction
+    gamelorebook, gameweather, gamefaction, gameunitstat
 
 config = mainmenu.config
 SoundVolume = mainmenu.Soundvolume
@@ -105,11 +106,11 @@ class Battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))
             imgs.append(img)
-        self.allweapon = gamebattalion.Weaponstat(imgs, self.ruleset)  ## create weapon class
+        self.allweapon = gameunitstat.Weaponstat(imgs, self.ruleset)  ## create weapon class
         imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
         gamemenu.Menubox.images = imgs  ## Create ESC Menu box
         imgs = load_images(['war', 'unit_ui', 'armour'])
-        self.allarmour = gamebattalion.Armourstat(imgs, self.ruleset)  ## create armour class
+        self.allarmour = gameunitstat.Armourstat(imgs, self.ruleset)  ## create armour class
         self.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
         self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
         self.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
@@ -120,7 +121,7 @@ class Battle():
         activeskill.fill((170, 220, 77, 200))
         gameui.Skillcardicon.activeskill = activeskill
         gameui.Skillcardicon.cooldown = cooldown
-        self.gameunitstat = gamebattalion.Unitstat(self.ruleset, self.rulesetfolder)
+        self.gameunitstat = gameunitstat.Unitstat(self.ruleset, self.rulesetfolder)
         ## create leader list
         imgs, order = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'leader', 'portrait'], loadorder=False, returnorder=True)
         self.allleader = gameleader.Leaderdata(imgs, order, option=self.rulesetfolder)
@@ -337,11 +338,11 @@ class Battle():
                           image=topimage[1], icon=iconimage, uitype="commandbar"))
         iconimage = load_images(['ui', 'battle_ui', 'unitcard_icon'])
         self.gameui.append(
-            gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=SCREENRECT.height - 310, image=topimage[2],
+            gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1], image=topimage[2],
                           icon="", uitype="unitcard"))
         self.gameui[2].featurelist = featurelist
         self.gameui.append(
-            gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] + 150,
+            gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1]*4,
                           image=topimage[5], icon="", uitype="armybox"))
         self.popgameui = self.gameui
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
@@ -359,12 +360,24 @@ class Battle():
                                gameui.Switchuibutton(self.gameui[1].X - 30, self.gameui[1].Y + 96, topimage[15:17]),
                                gameui.Switchuibutton(self.gameui[1].X, self.gameui[1].Y + 96, topimage[17:20]),
                                gameui.Switchuibutton(self.gameui[1].X + 40, self.gameui[1].Y + 96, topimage[20:22])]
+        try:
+            mapevent = csv_read('eventlog.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 0)
+            gameui.Eventlog.mapevent = mapevent
+        except:
+            mapevent = {}
         self.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
+        self.eventschedule = None
+        self.eventlist = []
+        for index, event in enumerate(self.eventlog.mapevent):
+            if self.eventlog.mapevent[event][3] is not None:
+                if index == 0:
+                    self.eventmapid = event
+                    self.eventschedule = self.eventlog.mapevent[event][3]
+                self.eventlist.append(event)
+        print(self.eventlist)
         self.logscroll = gameui.Uiscroller(self.eventlog.rect.topright, topimage[23].get_height(), self.eventlog.maxrowshow)
-        self.eventlog.logscroll = self.logscroll  ## Link scroller to ui since it is easier to do here with the current order
-        ### Assign eventlog to unit class to broadcast event to the log
-        gamesquad.Unitsquad.eventlog = self.eventlog
-        ###
+        self.eventlog.logscroll = self.logscroll  # Link scroller to ui since it is easier to do here with the current order
+        gamesquad.Unitsquad.eventlog = self.eventlog # Assign eventlog to unit class to broadcast event to the log
         self.buttonui.append(gameui.Uibutton(self.eventlog.pos[0] + (topimage[24].get_width() / 2),
                                              self.eventlog.pos[1] - self.eventlog.image.get_height() - (topimage[24].get_height() / 2), topimage[24],
                                              0))
@@ -480,6 +493,7 @@ class Battle():
         self.weatherschedule = self.weatherevent[0][1]
 
     def setuparmyicon(self):
+        """Setup army selection list in army selector ui top left of screen"""
         row = 30
         startcolumn = 25
         column = startcolumn
@@ -508,15 +522,14 @@ class Battle():
         self.selectscroll.changeimage(logsize=self.armyselector.logsize)
 
     def checksplit(self, whoinput):
+        """Check if army can be splitted, if not remove splitting button"""
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
                 whoinput.leader[1].name != "None":
-            print(whoinput.leader[1].name)
             self.allui.add(self.buttonui[5])
         elif self.buttonui[5] in self.allui:
             self.buttonui[5].kill()
         if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[
             1].name != "None":
-            print(whoinput.leader[1].name)
             self.allui.add(self.buttonui[6])
         elif self.buttonui[6] in self.allui:
             self.buttonui[6].kill()
@@ -672,7 +685,7 @@ class Battle():
 
     def rungame(self):
         self.setuparmyicon()
-        self.eventlog.addlog([0, "Welcome, this is a test battle map. The year is unknown in the past when no record is kept."], [0])
+        # self.eventlog.addlog([0, "Welcome, this is a test battle map. The year is unknown in the past when no record is kept."], [0])
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -874,19 +887,19 @@ class Battle():
             # self.screen.blit(self.background, self.camerapos)
             if self.gamestate == 1:
                 self.uiupdater.update()  # update ui
-                if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  ## down
+                if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  # Camera move down
                     self.basecamerapos[1] += 5 * abs(11 - self.camerascale)
                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                     self.camerafix()
-                elif keystate[K_w] or self.mousepos[1] <= 5:  ## up
+                elif keystate[K_w] or self.mousepos[1] <= 5:  # Camera move up
                     self.basecamerapos[1] -= 5 * abs(11 - self.camerascale)
                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                     self.camerafix()
-                if keystate[K_a] or self.mousepos[0] <= 5:  ## left
+                if keystate[K_a] or self.mousepos[0] <= 5:  # Camera move left
                     self.basecamerapos[0] -= 5 * abs(11 - self.camerascale)
                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                     self.camerafix()
-                elif keystate[K_d] or self.mousepos[0] >= self.rightcorner:  ## right
+                elif keystate[K_d] or self.mousepos[0] >= self.rightcorner:  # Camera move right
                     self.basecamerapos[0] += 5 * abs(11 - self.camerascale)
                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                     self.camerafix()
@@ -913,10 +926,9 @@ class Battle():
                             self.basecamerapos = posmask * 5
                             self.camerapos = self.basecamerapos * self.camerascale
                             self.clickcheck = 1
-                        elif mouse_right and self.lastselected is not None:
-                            self.uicheck = 1
-                        elif mouse_right and self.lastselected is None:
-                            pass
+                        elif mouse_right:
+                            if self.lastselected is not None:
+                                self.uicheck = 1
                     elif self.logscroll.rect.collidepoint(self.mousepos):  ## Have to run logscroll before event log
                         self.clickcheck = 1
                         self.uicheck = 1
@@ -940,8 +952,7 @@ class Battle():
                         self.clickcheck = 1
                         self.uicheck = 1
                     elif self.armyselector.rect.collidepoint(self.mousepos):
-                        if self.armyiconmouseover(mouse_up, mouse_right) == 1:
-                            pass
+                        self.armyiconmouseover(mouse_up, mouse_right)
                     elif self.uimouseover() == 1:
                         pass
                     elif self.buttonmouseover(mouse_right) == 1:
@@ -979,6 +990,15 @@ class Battle():
                                             self.gamespeed = self.gamespeedset[newindex]
                                     self.speednumber.speedupdate(self.gamespeed)
                             break
+                # Event log timer
+                if self.eventschedule is not None and self.eventlist != [] and self.timenumber.timenum >= self.eventschedule:
+                    self.eventlog.addlog(None,None,eventmapid=self.eventmapid)
+                    for event in self.eventlog.mapevent:
+                        if self.eventlog.mapevent[event][3] is not None and self.eventlog.mapevent[event][3] > self.timenumber.timenum:
+                            self.eventmapid = event
+                            self.eventschedule = self.eventlog.mapevent[event][3]
+                            break
+                    self.eventlist = self.eventlist[1:]
                 # Weather system
                 if self.weatherschedule is not None and self.timenumber.timenum >= self.weatherschedule:
                     del self.currentweather
@@ -1078,7 +1098,7 @@ class Battle():
                         self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     else:
-                        if self.uitimer >= 1.1:
+                        if self.uitimer >= 1.1: # Update ui value every 1.1 seconds
                             self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                             self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     self.splithappen = False

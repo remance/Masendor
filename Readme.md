@@ -19,7 +19,7 @@ Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code docu
 
 5.5.6+ focus on documentation
 
-Ver 0.6 Dream Decision: Battle selection, preparation and result screen, custom battle, custom unit editor, improve main menu
+Ver 0.6 Dream Decision: Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu
 
 Ver 0.7 Future Visionary: Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight
 
@@ -41,6 +41,6 @@ Ver 1.6: Commander, strategist and leader duel with dynamic result and event (Mo
 
 ver 1.7: leader rapport and affect on authority and control mechanic including surrender and betrayal 
 
-Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon, ), dynamic squad facing position and maybe "saved" formation that player can rotate in battle 
+Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved" formation that player can rotate in battle, swapable squad position
 
 Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command, order dalay?

@@ -78,7 +78,7 @@ class Gameui(pygame.sprite.Sprite):
                              7: "Forced Walk", 8: "Forced Run",
                              10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
                              69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
-            self.options2 = {0: "Broken", 1: "Retreating", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
+            self.options2 = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
                              14: "Inspired", 15: "Fervent"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
@@ -128,16 +128,16 @@ class Gameui(pygame.sprite.Sprite):
         position = 65
         if self.uitype == "topbar":
             self.value = [str(who.troopnumber) + " (" + str(who.maxhealth) + ")", who.staminastate, who.moralestate, who.state]
-            if self.value[3] in self.options1:
+            if self.value[3] in self.options1: # Check unit state and blit name
                 self.value[3] = self.options1[self.value[3]]
             # if type(self.value[2]) != str:
             self.value[2] = round(self.value[2] / 10)
-            if self.value[2] in self.options2:
+            if self.value[2] in self.options2: # Check if morale state in the list and blit the name
                 self.value[2] = self.options2[self.value[2]]
             elif self.value[2] > 15:
                 self.value[2] = self.options2[15]
             self.value[1] = round(self.value[1] / 10)
-            if self.value[1] in self.options3:
+            if self.value[1] in self.options3: # Check if stamina state and blit the name
                 self.value[1] = self.options3[self.value[1]]
             if self.value != self.lastvalue or splithappen:
                 self.image = self.image_original.copy()
@@ -154,7 +154,7 @@ class Gameui(pygame.sprite.Sprite):
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
         elif self.uitype == "commandbar":
-            if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change unit (will add condition if leader die or changed later)
+            if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change unit
                 usecolour = self.white
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
@@ -189,7 +189,7 @@ class Gameui(pygame.sprite.Sprite):
                 self.image_original2 = self.image.copy()
                 # for thisleader in who.leaderwho:
                 #     self.leaderpiclist.append(thisleader[1])
-            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  ## authority number
+            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  ## authority number change only when not same as last
                 self.image = self.image_original2.copy()
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(
@@ -409,6 +409,7 @@ class Minimap(pygame.sprite.Sprite):
 
 
 class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
+    mapevent = None # Extra historical messege event
 
     def __init__(self, image, pos):
         self._layer = 10
@@ -426,7 +427,20 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         self.currentstartrow = 0
         self.maxrowshow = 9
         self.lencheck = 0
-        self.logscroll = None  ## Link from maingame after creation of both object
+        self.logscroll = None  # Link from maingame after creation of both object
+        if self.mapevent != {}:
+            self.mapevent.pop('id')
+            for event in self.mapevent:
+                if type(self.mapevent[event][2]) == int:
+                    self.mapevent[event][2] = [self.mapevent[event][2]]
+                elif "," in self.mapevent[event][2]: # Change mode list to list here since csvread don't have that function
+                    self.mapevent[event][2] = [int(item) if item.isdigit() else item for item in self.mapevent[event][2].split(',')]
+                if self.mapevent[event][3] != 0: # change time string to time delta same reason as above
+                    newtime = datetime.datetime.strptime(self.mapevent[event][3], '%H:%M:%S').time()
+                    newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+                    self.mapevent[event][3] = newtime
+                else:
+                    self.mapevent[event][3] = None
 
     def changemode(self, mode):
         self.mode = mode
@@ -461,17 +475,12 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
             self.image.blit(textsurface, textrect)
             row += 20
 
-    def addlog(self, log, modelist):
-        """Add log to appropiate event log, the log must be in list format following this rule [who (gameid), logtext]"""
+    def logtextprocess(self, who, modelist, textoutput):
         imagechange = False
-        atlastrow = False
-        if self.currentstartrow + self.maxrowshow >= self.lencheck:
-            atlastrow = True
         for mode in modelist:
             thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode]
-            textoutput = ": " + log[1]
             if len(textoutput) <= 47:
-                thislog.append([log[0], textoutput])
+                thislog.append([who, textoutput])
             else:  ## Cut the text log into multiple row
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
                 howmanyloop = len(textoutput) / 47
@@ -485,22 +494,37 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                     if run == howmanyloop:
                         finaltextoutput = textoutput[startingindex:]
                     if run == 1:
-                        thislog.append([log[0], finaltextoutput])
+                        thislog.append([who, finaltextoutput])
                     else:
                         thislog.append([-1, finaltextoutput])
                     startingindex = cutnumber + 1
             if len(thislog) > 1000:
-                del thislog[0]
+                logtodel = len(thislog) - 1000
+                del thislog[0:logtodel]
             if mode == self.mode:
                 imagechange = True
-        if imagechange:
+        return imagechange
+
+    def addlog(self, log, modelist, eventmapid=None):
+        """Add log to appropiate event log, the log must be in list format following this rule [who (gameid), logtext]"""
+        atlastrow = False
+        imagechange = False
+        imagechange2 = False
+        if self.currentstartrow + self.maxrowshow >= self.lencheck:
+            atlastrow = True
+        if log is not None:
+            textoutput = ": " + log[1]
+            imagechange = self.logtextprocess(log[0], modelist, textoutput)
+        if eventmapid is not None and eventmapid in self.mapevent: # Process whether there is historical commentary to add to event log
+            textoutput = self.mapevent[eventmapid]
+            imagechange2 = self.logtextprocess(textoutput[0], textoutput[2], ": " +textoutput[1])
+        if imagechange or imagechange2:
             self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
             if atlastrow and self.lencheck > 9:
                 self.currentstartrow = self.lencheck - self.maxrowshow
                 self.logscroll.currentrow = self.currentstartrow
             self.logscroll.changeimage(logsize=self.lencheck)
             self.recreateimage()
-
 
 class Uiscroller(pygame.sprite.Sprite):
     def __init__(self, pos, uiheight, maxrowshow, layer=11):

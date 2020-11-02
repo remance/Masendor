@@ -93,7 +93,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = 0
         self.image = self.image_original.copy()
         if self.loredata is not None:
-            self.maxpage = 1 + int(len(self.loredata[subsection]) / 4)
+            self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
         self.pagedesign()
 
     def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):

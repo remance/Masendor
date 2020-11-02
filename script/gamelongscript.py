@@ -372,7 +372,10 @@ def dmgcal(who, maingame, target, whoside, targetside, statuslist):
         if who.leader.health <= 0:
             if who.leader.battalion.commander and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
                 maingame.textdrama.queue.append(str(who.leader.name) + " is dead")
-                who.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2])
+                eventmapid = "ld0"
+                if who.gameid > 2000:
+                    eventmapid = "ld1"
+                who.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2], eventmapid)
                 whicharmy = maingame.enemyarmy
                 if who.battalion.gameid < 2000:
                     whicharmy = maingame.playerarmy
@@ -380,7 +383,7 @@ def dmgcal(who, maingame, target, whoside, targetside, statuslist):
                     for squad in army.squadsprite:
                         squad.basemorale -= 20
             else:
-                maingame.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2])
+                maingame.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2], "ld1")
             maingame.setuparmyicon()
     target.unithealth -= round(whodmg * targetdmgeffect)
     target.basemorale -= round(whomoraledmg * targetdmgeffect)
@@ -392,7 +395,10 @@ def dmgcal(who, maingame, target, whoside, targetside, statuslist):
         if target.leader.health <= 0:
             if target.leader.battalion.commander and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
                 maingame.textdrama.queue.append(str(target.leader.name) + " is dead")
-                maingame.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2])
+                eventmapid = "ld0"
+                if who.gameid > 2000:
+                    eventmapid = "ld1"
+                maingame.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2], eventmapid)
                 whicharmy = maingame.enemyarmy
                 if target.battalion.gameid < 2000:
                     whicharmy = maingame.playerarmy

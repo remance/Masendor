@@ -355,7 +355,7 @@ class Mainmenu():
                         bar.draw(self.screen)
                         if bar.event == True:
                             # change button value based on selected
-                            self.scrollbar1.changestate(self.screen, bar.text)
+                            self.scrollbar1.changestate(bar.text)
                             self.scrollbar1.draw(self.screen)
                             resolutionchange = bar.text.split()
                             # print(resolutionchange)

@@ -74,5 +74,6 @@ for i in range(0,10000):
     if arcshot:
         1+1
 print("The time difference is :", timeit.default_timer() - starttime)
-k = np.array([[0,5],[7,8]])
-print(k>0, (k > 0))
+k = [0,1,2,3,4,5]
+del k[0:2]
+print(k)

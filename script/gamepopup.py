@@ -11,8 +11,8 @@ class Terrainpopup(pygame.sprite.Sprite):
         self.image = self.images[0]
         self.font = pygame.font.SysFont("helvetica", 12)
         self.imgpos = ((24, 34), (24, 53), (24, 70), (58, 34), (58, 53), (58, 70))  ## inf speed, atk, def, cav speed, atk, def, all range def
-        self.modlist = (150, 120, 100, 70, 50, 0)
-        self.bonuslist = (40, 20, 0)
+        self.modlist = (1.5, 1.2, 1, 0.7, 0.5, 0) # Stat effect from terrain (*percentage)
+        self.bonuslist = (40, 20, 0) # Stat bonus from terrain (+-)
         self.image_original = self.image.copy()
 
     def pop(self, pos, input):
@@ -22,7 +22,7 @@ class Terrainpopup(pygame.sprite.Sprite):
         self.textrect = self.textsurface.get_rect(topleft=(5, 5))
         self.image.blit(self.textsurface, self.textrect)
         for index, pos in enumerate(self.imgpos):
-            if input[index + 1] == 100:
+            if input[index + 1] == 1:
                 self.imagerect = self.images[7].get_rect(center=pos)
                 self.image.blit(self.images[7], self.imagerect)
             else:
