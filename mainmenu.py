@@ -292,7 +292,7 @@ class Mainmenu():
                                         value=Soundvolume, min_value=0, max_value=100)
         img = load_image('volume_icon.png', 'ui')
         self.volumeicon = Menuicon(images=[img], pos=(self.sliderbutton1.pos[0] - 150, self.sliderbutton1.pos[1]), imageresize=50)
-        pygame.display.set_caption('Window of Insight')
+        pygame.display.set_caption('Preparation for Chaos')
         pygame.mouse.set_visible(1)
         if pygame.mixer:
             self.mixervolume = float(Soundvolume / 100)

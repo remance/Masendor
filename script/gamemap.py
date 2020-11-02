@@ -59,14 +59,6 @@ class Basemap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(0, 0))
         self.terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
 
-    def changescale(self, scale):
-        self.scale = scale
-        self.image = self.image_original.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
-        self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-
     def getterrain(self, pos):
         terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
         terrainindex = self.terraincolour.index(terrain)
@@ -114,14 +106,6 @@ class Mapfeature(pygame.sprite.Sprite):
                 run += 1
                 self.featuremod[row[0]] = row[1:]
         unitfile.close()
-
-    def changescale(self, scale):
-        self.scale = scale
-        self.image = self.image_original.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
-        self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
     def getfeature(self, pos, gamemap):
         terrainindex = gamemap.getterrain(pos)

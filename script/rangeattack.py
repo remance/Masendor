@@ -86,14 +86,9 @@ class Rangearrow(pygame.sprite.Sprite):
 
     def rangedmgcal(self, who, target, targetside):
         """Calculate hitchance and defense chance"""
-        if targetside == 2:
-            targetside = 3
-        elif targetside == 3:
-            targetside = 2
-        ##TODO check target side if work correctly
         wholuck = random.randint(-20, 20)
         targetluck = random.randint(-20, 20)
-        targetpercent = [1, 0.7, 0.4, 0.7][targetside]
+        targetpercent = [1, 0.7, 0.7, 0.4][targetside]
         whohit = float(self.accuracy) + wholuck
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck

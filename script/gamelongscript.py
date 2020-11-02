@@ -452,7 +452,7 @@ def die(who, battle, group, enemygroup):
             squad.basemorale -= 20
 
 
-def splitunit(battle, who, how, gameleader):
+def splitunit(battle, who, how):
     """split battalion either by row or column into two seperate battalion"""
     from RTS.script import gamebattalion, gameleader
     if how == 0:  ## split by row
@@ -504,9 +504,9 @@ def splitunit(battle, who, how, gameleader):
             squad.rect = squad.image.get_rect(topleft=squad.inspposition)
             squad.pos = pygame.Vector2(squad.rect.centerx, squad.rect.centery)
             squadnum += 1
-    newleader = [who.leader[1], gameleader.Leader(0, 0, 1, who, battle.allleader), gameleader.Leader(0, 0, 2, who, battle.allleader),
-                 gameleader.Leader(0, 0, 3, who, battle.allleader)]
-    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(0, 0, 3, who, battle.allleader)]
+    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.allleader), gameleader.Leader(1, 0, 2, who, battle.allleader),
+                 gameleader.Leader(1, 0, 3, who, battle.allleader)]
+    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.allleader)]
     for index, leader in enumerate(who.leader):  ## also change army position of all leader in that battalion
         leader.armyposition = index  ## change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]
@@ -514,10 +514,9 @@ def splitunit(battle, who, how, gameleader):
     coa = who.coa
     who.recreatesprite()
     who.makeallsidepos()
-    who.setuparmy()
     who.setupfrontline()
     who.viewmode = battle.camerascale
-    who.changescale()
+    who.viewmodechange()
     who.height = who.gamemapheight.getheight(who.basepos)
     for thishitbox in who.hitbox: thishitbox.kill()
     who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - (who.rect.width * 0.1), 1),
@@ -549,7 +548,7 @@ def splitunit(battle, who, how, gameleader):
         colour = (144, 167, 255)
         army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                       squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
-                                      colour=colour, control=playercommand, coa=coa, commander=False)
+                                      colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
         battle.playerarmy.append(army)
     else:
         playercommand = battle.enactment
@@ -567,10 +566,12 @@ def splitunit(battle, who, how, gameleader):
         if how == 0:
             leader.squadpos -= newarmysquad.size  ## just minus the row gone to find new position
         else:
-            for index, squad in enumerate(army.squadsprite):  ## loop to find new squad pos based on new squadsprite list
-                if squad.gameid == leader.squad.gameid:
-                    leader.squadpos = index
-                break
+            if leader.name != "None":
+                for index, squad in enumerate(army.squadsprite):  ## loop to find new squad pos based on new squadsprite list
+                    if squad.gameid == leader.squad.gameid:
+                        leader.squadpos = index
+                    break
+            else: leader.squadpos = 0
         leader.battalion = army  ## set leader battalion to new one
         leader.armyposition = index  ## change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]  ## change image pos
@@ -581,11 +582,12 @@ def splitunit(battle, who, how, gameleader):
     army.authrecal()
     battle.allunitlist.append(army)
     battle.allunitindex.append(army.gameid)
-    army.newangle = army.angle
-    army.rotate()
     army.viewmode = battle.camerascale
-    army.changescale()
+    army.recreatesprite()
     army.makeallsidepos()
+    army.viewmodechange()
+    army.angle = army.angle
+    army.rotate()
     army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
     army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                         army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]

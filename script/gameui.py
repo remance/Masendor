@@ -69,7 +69,7 @@ class Gameui(pygame.sprite.Sprite):
         self.lastwho = 0
         if self.uitype == "topbar":
             position = 10
-            for ic in self.icon:
+            for ic in self.icon: # Blit icon into topbar ui
                 self.iconimagerect = ic.get_rect(
                     topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
                 self.image.blit(ic, self.iconimagerect)

@@ -209,3 +209,43 @@ class Unitstat():
                     self.mountlist[row[0]] = row[1:]
         unitfile.close()
 
+
+class Leaderstat():
+    def __init__(self, img, imgorder, option):
+        self.imgs = img
+        self.imgorder = imgorder
+        self.leaderlist = {}
+        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\historical_leader.csv", "r") as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit(): row[n] = int(i)
+                    # if and n in []:
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    # else: row[n] = [int(i)]
+                self.leaderlist[row[0]] = row[1:]
+        unitfile.close()
+        ## Add common leader to the leader list with gameid + 10000
+        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\historical_common_leader.csv", "r") as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit(): row[n] = int(i)
+                    # if and n in []:
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    # else: row[n] = [int(i)]
+                self.leaderlist[row[0]] = row[1:]
+        unitfile.close()
+
+        self.leaderclass = {}
+        with open(main_dir + "\data\leader" + "\\leader_class.csv", "r") as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit(): row[n] = int(i)
+                    # if and n in []:
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    # else: row[n] = [int(i)]
+                self.leaderclass[row[0]] = row[1:]
+        unitfile.close()
+
