@@ -3,7 +3,7 @@ The current code structure and documentation follows no standard guideline whats
 
 To start testing the game run mainmenu.py
 
-Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game currently use pygame 1.9.6 module and will not work with pygame 2 and there is no plan to upgrade it anytime soon until stable build come out.
+Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game now currently using pygame 2 module (much faster than 1.9.6).
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 

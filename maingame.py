@@ -3,7 +3,7 @@ check range dmg on leader and see why it so low
 ## Known problem
 collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
-inspect ui cause almost 10 fps drop in large unit (smaller in other ui but need optimise)
+inspect ui cause almost 10 fps drop in large unit (smaller in other ui but need optimise) squad update 10 fps, battalion update 30 fps
 1 melee combat cause 10 fps drop
 Optimise list
 change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
@@ -158,7 +158,7 @@ class Battle():
         # icon = pygame.transform.scale(icon, (32, 32))
         # pygame.display.set_icon(icon)
         pygame.display.set_caption('Masendor RTS')
-        pygame.mouse.set_visible(1)
+        pygame.mouse.set_visible(True)
         # #load the sound effects
         # boom_sound = load_sound('boom.wav')
         # shoot_sound = load_sound('car_door.wav')
@@ -1044,7 +1044,7 @@ class Battle():
                     #                                                              self.weathereffectimgs[self.currentweather.type][
                     #                                                                  self.currentweather.level]))
                 ## ^ End weather system
-                self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale, self.playerposlist, self.enemyposlist,
+                self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale,
                                              self.battlemousepos[0], mouse_up)
                 self.hitboxupdater.update(self.camerascale)
                 self.leaderupdater.update()
@@ -1302,7 +1302,7 @@ class Battle():
                     if self.dramatimer > 3:
                         self.dramatimer = 0
                         self.allui.remove(self.textdrama)
-                ##
+                ## ^ End drama
                 self.camera.update(self.camerapos, self.allcamera)
                 self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner], self.playerposlist, self.enemyposlist)
                 self.dt = self.clock.get_time() / 1000 # dt before gamespeed

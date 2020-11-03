@@ -28,7 +28,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.state = 0
         self.gamestart = 0
         self.nocombat = 0
-        self.timer = 0
+        self.timer = random.random()
         self.battalion = battalion
         stat = statlist.unitlist[self.unitid].copy()
         self.leader = None
@@ -650,8 +650,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.state = 0
             elif self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in (1, 2, 3, 4, 5, 6)
                                                                          and self.shootmove)) and self.ammo > 0:  # Fire at will
-                if self.attacktarget == 0 and self.battalion.neartarget != 0 and len(
-                        self.battalion.neartarget) > 0:  # get near target if no attack target yet
+                if self.attacktarget == 0 and self.battalion.neartarget != {}:  # get near target if no attack target yet
                     self.attackpos = list(self.battalion.neartarget.values())[0]
                     self.attacktarget = list(self.battalion.neartarget.keys())[0]
                     if self.shootrange >= self.attackpos.distance_to(self.combatpos):
@@ -740,6 +739,13 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.lasthealthstate = 0
                 self.image = self.image_original.copy()
                 self.battalion.squadimgchange.append(self.gameid)
+                ## Update squad alive list if squad die
+                deadindex = np.where(self.battalion.armysquad == self.gameid)
+                deadindex = [deadindex[0], deadindex[1]]
+                if self.battalion.squadalive[deadindex[0], deadindex[1]] != 1:
+                    self.battalion.squadalive[deadindex[0], deadindex[1]] = 1
+                    self.battalion.deadchange = 1
+                ## ^ End update
                 if self.leader != None and self.leader.state != 100:
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:

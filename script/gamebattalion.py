@@ -170,10 +170,13 @@ class Unitarmy(pygame.sprite.Sprite):
         self.retreatway = None
         self.rangecombatcheck = 0
         self.attacktarget = 0
-        self.neartarget = 0
+        self.neartarget = {}
         self.gotkilled = 0
         self.combatpreparestate = 0
         self.stopcombatmove = False
+        self.troopnumber = 0
+        self.stamina = 0
+        self.morale = 0
         self.ammo = 0
         self.minrange = 0
         self.maxrange = 0
@@ -191,6 +194,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.state = 0  ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
         self.commandstate = self.state
         self.deadchange = 0
+        self.timer = random.random()
         self.squadimgchange = []
         self.zoomviewchange = False
         self.gamestart = False
@@ -315,42 +319,43 @@ class Unitarmy(pygame.sprite.Sprite):
                 squadnum = 0
 
     def setuparmy(self):
-        self.stat = {'troop': [], 'stamina': [], 'morale': [], 'speed': [], 'disci': [], 'ammo': [], 'range': [], 'novice': [], 'militant': [],
-                     'pro': [], 'vet': [], 'elite': [], 'champ': [], 'hero': [], 'religmili': [], 'religelite': [], 'merc': [], 'noble': []}
+        self.troopnumber = 0
+        self.stamina = 0
+        self.morale = 0
+        allspeed = []
+        self.discipline = 0
+        self.ammo = 0
+        howmany = 0
+        allshootrange = []
         for squad in self.squadsprite:
-            self.stat['troop'].append(squad.troopnumber)
             if squad.state != 100:
-                self.stat['stamina'].append(squad.stamina)
-                self.stat['morale'].append(squad.morale)
-                self.stat['speed'].append(squad.speed)
-                self.stat['disci'].append(squad.discipline)
-                self.stat['ammo'].append(squad.ammo)
+                self.troopnumber += squad.troopnumber
+                self.stamina += squad.stamina
+                self.morale += squad.morale
+                allspeed.append(squad.speed)
+                self.discipline += squad.discipline
+                self.ammo += squad.ammo
                 if squad.shootrange > 0:
-                    self.stat['range'].append(squad.shootrange)
+                    allshootrange.append(squad.shootrange)
                 squad.combatpos = self.basepos
                 squad.useskillcond = self.useskillcond
                 if squad.charging and self.charging == False:
                     self.charging = True
-            # self.stat['speed'].append(squad.troopnumber)
-            # self.stat['speed'].append(squad.troopnumber)
-            else:
-                """Update squad alive list if squad die"""
-                deadindex = np.where(self.armysquad == squad.gameid)
-                deadindex = [deadindex[0], deadindex[1]]
-                if self.squadalive[deadindex[0], deadindex[1]] != 1:
-                    self.squadalive[deadindex[0], deadindex[1]] = 1
-                    self.deadchange = 1
-            # self.squadindex = np.where(self.squadalive > -1, self.armysquad, self.squadalive)
-        self.troopnumber = int(sum(self.stat['troop']))
-        if self.troopnumber > 0:
-            self.stamina = int(mean(self.stat['stamina']))
-            self.morale = int(mean(self.stat['morale']))
-            self.speed = min(self.stat['speed'])
-            self.discipline = mean(self.stat['disci'])
-            self.ammo = int(sum(self.stat['ammo']))
-            if len(self.stat['range']) > 0:
-                self.maxrange = max(self.stat['range'])
-                self.minrange = min(self.stat['range'])
+                howmany += 1
+        self.stamina = int(self.stamina/howmany)
+        self.morale = int(self.morale/howmany)
+        self.speed = min(allspeed)
+        self.discipline = self.discipline/howmany
+        self.walkspeed, self.runspeed = (self.speed + self.discipline / 100) / 15, (self.speed + self.discipline / 100) / 10
+        self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size/2))
+        if self.state in (1, 3, 5):
+            self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size/2))
+        if self.rotatespeed > 10: self.rotatespeed = 10
+        if self.rotatespeed < 1:
+            self.rotatespeed = 1
+        if len(allshootrange) > 0:
+            self.maxrange = max(allshootrange)
+            self.minrange = min(allshootrange)
         if self.gamestart == False:
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
                 self.stamina * 50 / 100), round(self.stamina * 25 / 100)
@@ -431,19 +436,6 @@ class Unitarmy(pygame.sprite.Sprite):
     #
     # def draw(self,gamescreen):
     #     pygame.draw.rect(gamescreen, (0, 0, 0), self.rect,2)
-
-    def statusupdate(self):
-        """calculate stat from stamina and morale state"""
-        self.moralestate = round((self.morale * 100) / self.maxmorale)
-        self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        if self.troopnumber > 0 and self.staminastate != self.laststaminastate:
-            self.walkspeed, self.runspeed = (self.speed + self.discipline / 100) / 15, (self.speed + self.discipline / 100) / 10
-            self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size/2))
-            if self.state in (1, 3, 5):
-                self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size/2))
-            if self.rotatespeed > 10: self.rotatespeed = 10
-            if self.rotatespeed < 1:
-                self.rotatespeed = 1
 
     def combatprepare(self, enemyhitbox):
         self.stopcombatmove = False
@@ -531,7 +523,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rotate()
         self.mask = pygame.mask.from_surface(self.image)
 
-    def update(self, weather, squadgroup, dt, viewmode, playerposlist, enemyposlist, mousepos, mouseup):
+    def update(self, weather, squadgroup, dt, viewmode, mousepos, mouseup):
         if self.gamestart == False:
             self.startset(squadgroup)
             self.gamestart = True
@@ -578,8 +570,11 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.state != 100:
             if self.gameid < 2000:
                 self.maingame.playerposlist[self.gameid] = self.basepos
+                thisposlist = self.maingame.playerposlist
             else:
                 self.maingame.enemyposlist[self.gameid] = self.basepos
+                thisposlist = self.maingame.enemyposlist
+            ## Mouse collision detect
             if self.rect.collidepoint(mousepos):
                 posmask = int(mousepos[0] - self.rect.x), int(mousepos[1] - self.rect.y)
                 try:
@@ -594,11 +589,23 @@ class Unitarmy(pygame.sprite.Sprite):
                                     hitbox.release()
                             self.maingame.clickcheck = 1
                 except: pass
+            ## ^ End mouse detect
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
             self.charging = False
-            self.setuparmy()
-            self.statusupdate()
+            if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps
+                self.timer += dt
+                if self.timer > 0.5:
+                    self.setuparmy()
+                    ## Find near enemy target
+                    self.neartarget = {}  # Near target is enemy that is nearest
+                    for n, thisside in thisposlist.items():
+                        self.neartarget[n] = pygame.Vector2(thisside).distance_to(self.basepos)
+                    self.neartarget = {k: v for k, v in sorted(self.neartarget.items(), key=lambda item: item[1])}
+                    for n in thisposlist:
+                        self.neartarget[n] = thisposlist[n]  ## change back near target list value to vector with sorted order
+                    ## ^ End find near target
+                    self.timer -= 0.5
             if self.authrecalnow:
                 self.authrecal()
                 self.authrecalnow = False
@@ -609,12 +616,12 @@ class Unitarmy(pygame.sprite.Sprite):
                     squad.basemorale -= 10
                 self.deadchange = 0
             # ^End setup frontline when squad die
-            # Combat and unit update
+            ## Combat and unit update
             self.battleside = [0, 0, 0, 0]
             for hitbox in self.hitbox:
                 collidelist = pygame.sprite.spritecollide(hitbox, self.maingame.hitboxes, dokill=False, collided=pygame.sprite.collide_mask)
                 for hitbox2 in collidelist:
-                    if self.gameid != hitbox2.who.gameid and self.faction != hitbox2.who.faction:
+                    if self.faction != hitbox2.who.faction:
                         hitbox.collide, hitbox2.collide = hitbox2.who.gameid, self.gameid
                         """run combatprepare when combat start if army is the attacker"""
                         self.battleside[hitbox.side] = hitbox2.who.gameid
@@ -626,12 +633,11 @@ class Unitarmy(pygame.sprite.Sprite):
                             if battle != 0:
                                 self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, hitbox2.who, self.battleside.index(battle),
                                                     hitbox2.who.battleside.index(self.gameid))
-                    elif self.gameid != hitbox2.who.gameid and ((self.gameid < 2000 and hitbox2.who.gameid < 2000) or (
-                                                                    self.gameid >= 2000 and hitbox2.who.gameid >= 2000)):  ##colide battalion in same faction
+                    elif self.gameid != hitbox2.who.gameid:  ##colide battalion in same faction
                         hitbox.collide, hitbox2.collide = hitbox2.who.gameid, hitbox.who.gameid
-            # ^End combat update
+            ## ^End combat update
             if self.attacktarget != 0: self.attackpos = self.attacktarget.pos
-            # Recal stat involve leader if one die
+            ## Recal stat involve leader if one die
             if self.leaderchange:
                 self.authrecal()
                 for leader in self.leader:
@@ -641,18 +647,9 @@ class Unitarmy(pygame.sprite.Sprite):
                                     (self.leader[0].cavcommand - 5) * 0.1]
                 self.startauth = self.authority
                 self.leaderchange = False
-            # ^End recal stat when leader die
-            # Find near enemy target
-            thisposlist = enemyposlist.copy()
-            if self.gameid >= 2000: thisposlist = playerposlist.copy()
-            self.neartarget = {} # Near target is enemy that is nearest
-            for n, thisside in thisposlist.items(): self.neartarget[n] = pygame.Vector2(thisside).distance_to(self.allsidepos[0])
-            self.neartarget = {k: v for k, v in sorted(self.neartarget.items(), key=lambda item: item[1])}
-            for n in thisposlist:
-                self.neartarget[n] = thisposlist[n]
+            ## ^End recal stat when leader die
             if self.battleside != [0, 0, 0, 0]:
-                """can not use range attack in melee combat"""
-                self.rangecombatcheck = 0
+                self.rangecombatcheck = 0 # can not use range attack in melee combat
                 """enter melee combat state when check"""
                 if self.state not in (96, 98, 99):
                     self.state = 10
@@ -760,7 +757,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.rotate()
                 self.makeallsidepos()
                 self.mask = pygame.mask.from_surface(self.image)
-            else: # Finish rotate
+            elif self.moverotate == 1 and self.angle == round(self.newangle):  # Finish rotate
                 self.moverotate = 0
                 """Can only enter range attack state after finishing rotate"""
                 shootrange = self.maxrange
