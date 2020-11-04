@@ -337,8 +337,12 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.ammo += squad.ammo
                 if squad.shootrange > 0:
                     allshootrange.append(squad.shootrange)
-                squad.combatpos = self.basepos
+                squad.combatpos = self.basepos # Squad pos same as battalion pos (for now)
                 squad.useskillcond = self.useskillcond
+                squad.attacktarget = self.attacktarget
+                squad.attackpos = self.baseattackpos
+                if self.attacktarget != 0:
+                    squad.attackpos = self.attacktarget.basepos
                 if squad.charging and self.charging == False:
                     self.charging = True
                 howmany += 1

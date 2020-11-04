@@ -66,14 +66,13 @@ import re
 import numpy as np
 
 starttime = timeit.default_timer()
-trait = {1:"a",2:"5",3:"12",4:"15",15:"66"}
-arcshot = False
-if 15 in trait: arcshot = True
+k = np.uint16(5000)
+# k = 5000
+print(k)
 print("The start time is :", starttime)
 for i in range(0,10000):
-    if arcshot:
-        1+1
+    o = k - i
+    # if o < 0:
+    #     o = 0
 print("The time difference is :", timeit.default_timer() - starttime)
-k = [0,1,2,3,4,5]
-del k[0:2]
-print(k)
+# 0.024936032999999996
