@@ -15,12 +15,12 @@
 14,"Malabel Igiela",0,1,10,60,"3,4,10","3,4",0,10,10,130,120,120,120,,,,150,20,0,-3,10,0,,,,0,1,,,0,0,2,"The great charge of Malabel cavalry may one day rest in a page of legend or history book, but today, let us offer condolences to the unfortunate victims of this charge."
 15,"Historic Moment",0,2,10,60,"3,4,10","3,4",0,10,10,120,,,115,,,,,0,0,-2.5,50,0,,,,0,0,,,0,0,2,"There are not many event in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
 16,"Hidden Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,90,,,,,0,0,-2,0,0,,,,0,6,,,0,0,2,"It should be practically impossible to charge while remain hidden. And how can someone defend against such impossible feat?"
-17,"Clumsy Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,,,0,0,0,"Some squads are just not suitable for charging whether it be because of their insufficient training or unsuitable equipment."
+17,"Clumsy Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,,,0,0,0,"Some troops are just not suitable for charging whether it be because of their insufficient training or unsuitable equipment."
 18,"Heroic Charge",0,2,10,60,"3,4,10","3,4",0,10,10,110,,,110,,,,,0,0,-2.5,20,0,,,,0,0,,,0,0,0,"Just follows the hero and everything will be alright. They become masters of battle by staying alive after all."
 19,"Weak Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,90,,,,40,0,0,-2,0,0,,,,0,0,,,0,0,1,"A weak charge can often time results in total disaster. Exercise charging tactic for unit with this skill with caution."
-20,"Slow Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,80,,,,50,0,0,-2,0,0,,,,0,0,,,0,0,1,"Due to the squad's weight, its charge is much slower than usual and less effective overall."
-21,"Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-2,0,0,,,,0,0,,,0,0,0,"An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemy squads that completely destroy their morale or it can be total disaster that result in retreat of the charge initiator instead."
-22,"Giant Rush",0,2,20,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-1.5,0,0,,,,0,0,,6,4,0,2,"A charge from giant squad can be count as one of the most devastating charge in history , it is almost impossible to hold position against such massive blows."
+20,"Slow Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,80,,,,50,0,0,-2,0,0,,,,0,0,,,0,0,1,"Due to the troop's weight, its charge is much slower than usual and less effective overall."
+21,"Charge",0,1,10,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-2,0,0,,,,0,0,,,0,0,0,"An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemies that completely destroy their morale or it can be total disaster that result in retreat of the charge initiator instead."
+22,"Giant Rush",0,2,20,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-1.5,0,0,,,,0,0,,6,4,0,2,"A charge from giants can be count as one of the most devastating charge in history , it is almost impossible to hold position against such massive blows."
 23,"Break Charge",0,1,10,100,10,10,0,45,10,,,,,,,,,0,0,-2,0,0,,,,0,0,,,0,0,2,
 24,"Counter Charge",0,1,10,60,10,10,0,55,10,,,,,,,,,30,0,-2,0,0,,,,0,0,,,0,0,2,
 25,"Carbidarleht Piper",0,4,60,60,0,0,0,65,5,125,125,125,125,125,125,125,125,0,0,-0.5,25,-5,,0,,0,0,,,0,0,2,
@@ -52,15 +52,15 @@
 51,"Silencing Glare",0,1,50,500,10,10,,25,20,,,,,,,,,0,0,0,0,0,,,,0,0,,,8,0,2,"The glare so intimidating it leave anyone in sight incapable of even producing coherent speech just from fear. Devastatingly useful against mage units that entirely rely on their chanting."
 52,"Cantabrian Circle",0,1,60,0,11,11,,50,25,,,135,,,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,"The maneuver only possible with the mastery of both equitation and archery. To attack even when moving is the pinnacle of warfare. "
 53,"Hold Ground",0,1,30,300,1,10,,58,10,,125,125,,,,,,15,0,0,0,0,,,,0,0,,,0,0,0,"""Hold your ground men! No enemy will pass through this place as long as we are here.""  "
-54,"Pikewall",0,1,30,0,"0,1,3","0,1,3",,45,20,,,,,,,,,80,0,-0.5,0,0,,,,0,0,,,0,0,0,"The deadly charge of cavalry was the domination tactic in battlefield until the invention of pikewall tactic. By simply having infantry squads holding pikes in line, an impregnable wall is created, "
+54,"Pikewall",0,1,30,0,"0,1,3","0,1,3",,45,20,,,,,,,,,80,0,-0.5,0,0,,,,0,0,,,0,0,0,"The deadly charge of cavalry was the domination tactic in battlefield until the invention of pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
 55,"Hidden Pike",0,1,30,5,2,0,,60,10,,,,,,,,,60,0,-0.7,0,0,,,,40,0,,,0,0,0,"A nasty surprise. Who can expect complete death trap in their charge to glory? Only fool fight a fair fight."
 56,"Overdrive",0,1,60,900,10,10,,40,0,120,120,120,120,120,,120,120,20,0,0.5,0,20,,,,0,0,,,0,0,2,
 57,"Death Volunteer",0,1,300,600,10,10,,70,0,150,150,,,,,,150,0,-100,2,0,0,,150,,0,0,,,0,0,2,"Volunteer to die is an act that surpass natural instinct. To excess oneself to death for victory is either madness or complete devotion."
 58,"Warcry",0,3,1,60,10,10,,38,30,,,,,,,,,0,0,0,0,0,,,,0,0,,6,0,0,2,
 59,"Deathshriek",0,3,1,60,10,10,,26,50,,,,,,,,,0,0,0,0,0,,,,0,0,,8,0,,2,"The voice of death instills terror no sight can ever achieve."
-60,"Abyssal Hatred",0,3,15,,10,10,,40,,,,,,,,,,0,0,,0,0,,,,0,0,,,0,0,2,"Next melee attack deal damage +1% per number of squad troop killed"
+60,"Abyssal Hatred",0,3,15,,10,10,,40,,,,,,,,,,0,0,,0,0,,,,0,0,,,0,0,2,"Next melee attack deal damage +1% per number of troop killed"
 61,"Second Wind",0,1,30,120,"0,1,2,3,4,5,6,7,8,9,10,11","0,1,2,3,4,5,6,7,8,9,10,11",,60,0,,,,,,,,,0,0,1,10,0,,,,0,0,,,0,0,0,"One more push to victory. Such chance never come often. "
-62,"Bloodlust",0,1,30,0,,,,50,2,,,,,,,,,0,0,-1,0,0,,,,0,0,,,0,0,2,"All stat +10%, stamina +10% for every enemy squad destroyed"
+62,"Bloodlust",0,1,30,0,,,,50,2,,,,,,,,,0,0,-1,0,0,,,,0,0,,,0,0,2,"All stat +10%, stamina +10% for every enemy destroyed"
 63,"Critical Measure",0,1,10,100,10,10,,60,,125,125,125,125,125,,125,125,25,0,-5,0,40,,,,0,2,,,0,0,2,"Critical measure must be taken for this crisis or we will not survive. "
 64,"Camaraderie",0,1,30,0,,,,70,1,,,,,,,,,0,0,0,0,0,,,,0,0,,,0,0,2,
 65,"Cripple Strike",0,1,1,15,10,10,,40,15,,,,,,,,,0,0,0,0,0,,,,0,0,,,34,0,2,"Why kill when you can cripple the enemy and make them suffer for all to see. "
@@ -100,8 +100,8 @@
 99,"Triple Slash",0,1,1,60,10,10,,60,70,,,,,,,,,0,0,0,0,0,,300,,0,0,,,0,0,2,"Thrice the damage, triple the prize!"
 100,"Great Sweep",0,3,1,60,10,10,,60,95,,,,,,,,,0,0,0,0,0,,115,,0,0,,,0,0,2,"“One great circle and the bodies will fall. No life shall be forgiven under the dying muttering.” Gasiernse Poem of Blade."
 101,"Pinpoint Shot",1,1,30,60,11,11,,70,45,,,,,200,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,
-102,"Flying",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,70,30,,,,,,,,,0,0,-1,0,0,,,,0,39,,,0,0,2,"Flying squad does not suffer terrain and height penalty while also can only be damaged by melee attack when the squad itself attacking."
-103,"Floating",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,,,,,,,,,,,0,0,-1,0,0,,,,0,40,,,0,0,2,"Floating squad does not suffer terrain penalty but still receive height penalty. Moreover, the squad also receive melee defense bonus against squad with no Anti-Cavalry and Anti-Flying."
+102,"Flying",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,70,30,,,,,,,,,0,0,-1,0,0,,,,0,39,,,0,0,2,"Flying troop does not suffer terrain and height penalty while also can only be damaged by melee attack when the troop itself attacking."
+103,"Floating",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,,,,,,,,,,,0,0,-1,0,0,,,,0,40,,,0,0,2,"Floating troop does not suffer terrain penalty but still receive height penalty. Moreover, the troop also receive melee defense bonus against enemy with no Anti-Cavalry and Anti-Flying."
 104,"Combine Determination",0,3,1,100,,,,80,30,130,130,130,130,130,,130,130,30,0,,130,50,,200,,0,0,,,,0,2,
 105,"Clear Mind",0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,,,0,0,2,
 106,"The Great Banner",0,4,1200,1200,,,,40,15,105,105,105,105,105,,105,105,5,0,0,110,5,,,,0,0,,,,0,2,
@@ -129,13 +129,13 @@
 128,"Valiant Struggle",0,1,,,,,,80,,,,,,,,,,0,0,,0,0,,,,0,0,,,,0,2,
 129,"Ground Shake",0,3,5,600,10,10,,40,80,,,,,,,,,0,0,0,0,0,,20,,0,0,,,23,0,2,
 130,"Spike Burst",0,1,2,120,,,,45,55,,,,,,,,,0,0,,0,0,,150,,0,0,,,23,4,2,
-131,"Deathblow",0,1,3,6000,10,10,,,70,,,,,,,,,0,0,0,,,,250,,,,,,,0,2,"This squad can muster its last strength to deals final blow before it die. Death in melee combat will cause damage to attacker."
+131,"Deathblow",0,1,3,6000,10,10,,,70,,,,,,,,,0,0,0,,,,250,,,,,,,0,2,"This sub-unit can muster its last strength to deals final blow before it die. Death in melee combat will cause damage to attacker."
 132,"Berserk",0,1,1,300,,,,30,20,,,,,,,,,0,0,0,,,,,,,12,,,,0,0,
 133,"Eight Gates Of Heaven",0,1,,6000,10,10,,100,30,,,,,,,,,0,0,-1,,,,,,,74,,,,,2,
 134,"Requiem",0,2,90,,,,,75,15,,,,,,,,,0,0,,,,,0,,,,,,,0,2,
 135,"Nature Awakening",0,1,,,,,,,10,135,135,135,135,135,135,135,135,35,1,,20,,,,,,86,,,,0,2,
 136,"Faithful Fury",0,1,,,,,,,55,140,,,130,,,,,0,0,,50,,,,,,50,,,,0,2,"Friendly to the followers. Faithful to the cause. Fury to the offenders. "
-137,"Armour Shatters",0,1,,,10,10,,,,,,,,,,,,0,0,,,,,150,,,,,,,0,2,"Armour is completely useless before this strike. Even worse, any squad that survive against this squad attack will receive armour shatter status."
+137,"Armour Shatters",0,1,,,10,10,,,,,,,,,,,,0,0,,,,,150,,,,,,,0,2,"Armour is completely useless before this strike. Even worse, any enemy that survive against this attack will receive armour shatter status."
 138,"Cheer To Death",0,1,3,,10,10,,70,85,,,,,,,,,0,0,,50,,,300,,,,,,,0,2,
 139,"Battle Rhythm",0,,30,,10,10,,65,,120,120,,,,,,,0,0,-1,,,,,,,,,,,0,2,
 140,"Heroic Counter",0,1,,,,,,75,60,,,,,,,,,15,0,,,,,,,,,,,,0,2,"Deal 20% of melee attack damage back to enemy when receive melee damage"
