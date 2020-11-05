@@ -1,5 +1,4 @@
 """
-check range dmg on leader and see why it so low
 ## Known problem
 collaspse still not working right (unit can still run while recover)
 Hitbox still behave weirdly in melee combat
