@@ -1,6 +1,6 @@
 # make exe
 # import cx_Freeze
-# executables = [cx_Freeze.Executable("mainmenu.py")]
+# executables = [cx_Freeze.Executable("main.py")]
 #
 # cx_Freeze.setup(
 #     name="RTS game",

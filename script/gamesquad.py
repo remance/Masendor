@@ -3,7 +3,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 from pygame.transform import scale
-from RTS.script import rangeattack, gamelongscript
+from . import rangeattack, gamelongscript
 
 class Unitsquad(pygame.sprite.Sprite):
     images = []
@@ -623,7 +623,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.timer += dt
                 if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100) and self.state not in (96, 97, 98, 99):
                     self.state = self.battalion.state
-                if self.timer > 0.5:
+                if self.timer > 1:
                     self.statusupdate(weather)
                     self.availableskill = []
                     if self.useskillcond != 3:
@@ -635,7 +635,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     skillchance = random.randint(0, 10)
                     if skillchance >= 6 and len(self.availableskill) > 0 and dt != 0:
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
-                    self.timer -= 0.5
+                    self.timer -= 1
                 """Melee combat act"""
                 if self.nocombat > 0:  # For avoiding squad go into idle state while battalion auto move in melee combat
                     self.nocombat += dt

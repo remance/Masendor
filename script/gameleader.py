@@ -1,11 +1,9 @@
-import csv
-
 import pygame
 import pygame.freetype
 
-from RTS import mainmenu
+from .. import main
 
-main_dir = mainmenu.main_dir
+main_dir = main.main_dir
 
 class Leader(pygame.sprite.Sprite):
 

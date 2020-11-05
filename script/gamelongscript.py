@@ -1,20 +1,21 @@
 import csv
 import datetime
 import random
-import os
 import ast
 import re
-
 import numpy as np
 import pygame
 import pygame.freetype
+import os
+import sys
+path = os.getcwd()
+parentpath = os.path.abspath(os.path.join(path, os.pardir))
+from .. import main
 
-from RTS import mainmenu
-
-config = mainmenu.config
-SoundVolume = mainmenu.Soundvolume
-SCREENRECT = mainmenu.SCREENRECT
-main_dir = mainmenu.main_dir
+config = main.config
+SoundVolume = main.Soundvolume
+SCREENRECT = main.SCREENRECT
+main_dir = main.main_dir
 
 ## Data Loading script
 

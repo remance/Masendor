@@ -1,10 +1,10 @@
 import pygame
 import pygame.freetype
 
-from RTS import mainmenu
+from .. import main
 
-SCREENRECT = mainmenu.SCREENRECT
-main_dir = mainmenu.main_dir
+SCREENRECT = main.SCREENRECT
+main_dir = main.main_dir
 
 
 class Weather:

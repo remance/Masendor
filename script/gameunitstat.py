@@ -1,9 +1,9 @@
 import csv
 import re
 
-from RTS import mainmenu
+from .. import main
 
-main_dir = mainmenu.main_dir
+main_dir = main.main_dir
 
 class Weaponstat():
     def __init__(self, img, ruleset):

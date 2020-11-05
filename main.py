@@ -8,7 +8,7 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 
-from RTS import maingame
+from RTS.script import maingame
 
 config = configparser.ConfigParser()
 config.read_file(open('configuration.ini'))
@@ -19,7 +19,6 @@ Soundvolume = float(config['DEFAULT']['SoundVolume'])
 
 SCREENRECT = Rect(0, 0, ScreenWidth, ScreenHeight)
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-
 
 class Menutext(pygame.sprite.Sprite):
     def __init__(self, images, pos, text="", size=16):

@@ -6,10 +6,10 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter
 
-from RTS import mainmenu
+from .. import main
 
-main_dir = mainmenu.main_dir
-SCREENRECT = mainmenu.SCREENRECT
+main_dir = main.main_dir
+SCREENRECT = main.SCREENRECT
 
 ## Terrain base colour
 Temperate = (166, 255, 107, 255)

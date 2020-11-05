@@ -6,7 +6,7 @@ import pygame
 import pygame.freetype
 from pygame.transform import scale
 
-from RTS.script import gamelongscript
+from . import gamelongscript
 
 
 class Rangearrow(pygame.sprite.Sprite):

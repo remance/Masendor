@@ -20,15 +20,15 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 from pygame.transform import scale
-
-from RTS import mainmenu
-from RTS.script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
+import os, sys
+from .. import main
+from . import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
     gamelorebook, gameweather, gamefaction, gameunitstat
 
-config = mainmenu.config
-SoundVolume = mainmenu.Soundvolume
-SCREENRECT = mainmenu.SCREENRECT
-main_dir = mainmenu.main_dir
+config = main.config
+SoundVolume = main.Soundvolume
+SCREENRECT = main.SCREENRECT
+main_dir = main.main_dir
 
 load_image = gamelongscript.load_image
 load_images = gamelongscript.load_images
@@ -1353,14 +1353,14 @@ class Battle():
                                 if button.text == "Confirm":
                                     self.oldsetting = self.mixervolume
                                     pygame.mixer.music.set_volume(self.mixervolume)
-                                    mainmenu.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
+                                    main.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
                                     self.battlemenu.changemode(0)
                                     self.allui.remove(*self.optionmenubutton, *self.slidermenu, *self.valuebox)
                                     self.allui.add(*self.battlemenubutton)
                                 elif button.text == "Apply":
                                     self.oldsetting = self.mixervolume
                                     pygame.mixer.music.set_volume(self.mixervolume)
-                                    mainmenu.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
+                                    main.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)
                                 elif button.text == "Cancel":
                                     self.mixervolume = self.oldsetting
                                     pygame.mixer.music.set_volume(self.mixervolume)

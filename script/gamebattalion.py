@@ -1,20 +1,12 @@
-import csv
 import math
 import random
-import re
-from statistics import mean
 
 import numpy as np
 import pygame
 import pygame.freetype
 from pygame.transform import scale
 
-from RTS.script import gamelongscript
-
-from RTS import mainmenu
-
-main_dir = mainmenu.main_dir
-SCREENRECT = mainmenu.SCREENRECT
+from . import gamelongscript
 
 def rotationxy(origin, point, angle):
     ox, oy = origin
@@ -599,7 +591,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.charging = False
             if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
-                if self.timer > 0.5:
+                if self.timer > 1:
                     self.setuparmy()
                     ## Find near enemy target
                     self.neartarget = {}  # Near target is enemy that is nearest
@@ -609,7 +601,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     for n in thisposlist:
                         self.neartarget[n] = thisposlist[n]  ## change back near target list value to vector with sorted order
                     ## ^ End find near target
-                    self.timer -= 0.5
+                    self.timer -= 1
             if self.authrecalnow:
                 self.authrecal()
                 self.authrecalnow = False
