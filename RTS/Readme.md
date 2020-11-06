@@ -7,7 +7,7 @@ Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
-The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
+The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/RTS/gamestate.png?raw=true)
 
 Meaning: I am totally ignoring so many issues right now eventhough they cause performance issue. (Will fix them for sure)
 
