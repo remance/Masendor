@@ -299,7 +299,6 @@ class Mainmenu():
             self.SONG_END = pygame.USEREVENT + 1
             # musiclist = os.path.join(main_dir, 'data/sound/')
             self.musiclist = glob.glob(main_dir + '/data/sound/*.mp3')
-            print(self.musiclist)
             if self.musiclist:
                 pygame.mixer.music.load(self.musiclist[0])
                 pygame.mixer.music.play(-1)

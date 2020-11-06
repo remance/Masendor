@@ -58,6 +58,9 @@ class Battle():
                        "Marsh", "Swamp", "Water", "Bridge", "Swamp Building", "Swamp Farm", "Pandemonium", "Cold Mana", "Creeping Rot", "", "Sea",
                        "Ocean", "Coral Reef", "Underwater Forest", "Fresh Water", "Bridge", "Sunken City", "Fishery", "Pandemonium", "Water Mana",
                        "Creeping Rot", ""]
+        
+        featurelist = ["Grassland", "Draught", "Bushland", "Forest", "Inland Water", "Road", "Farm",
+                       "Draught", "Desert Plain", "Desert Sand", "Lively Water", "Marsh"]
         self.mapselected = "testmap"
         imgs = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], loadorder=False)
         gamemap.Basemap.images = [imgs[0]]

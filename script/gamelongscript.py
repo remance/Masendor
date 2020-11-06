@@ -30,6 +30,7 @@ def load_image(file, subfolder=""):
 
 def load_images(subfolder=[], loadorder=True, returnorder=False):
     """loads all images(files) in folder using loadorder list file use only png file"""
+    print(subfolder)
     imgs = []
     dirpath = os.path.join(main_dir, 'data')
     if subfolder != []:
@@ -41,6 +42,7 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
     else:
+        print(dirpath)
         loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
         loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
         for file in loadorderfile:
