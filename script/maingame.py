@@ -111,7 +111,7 @@ class Battle():
         imgs = load_images(['war', 'unit_ui', 'armour'])
         self.allarmour = gameunitstat.Armourstat(imgs, self.ruleset)  ## create armour class
         self.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
-        self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
+        #self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
         self.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
         self.skillimgs = load_images(['ui', 'skill_icon'], loadorder=False)
         cooldown = pygame.Surface((self.skillimgs[0].get_width(), self.skillimgs[0].get_height()), pygame.SRCALPHA)
@@ -127,11 +127,11 @@ class Battle():
         ## Weather list
         self.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
         self.weathermatterimgs = []
-        for weather in ('0', '1', '2', '3'):  ## Load weather matter sprite image
+        for weather in ('1', '2', '4', '5', '6', '7'):  ## Load weather matter sprite image
             imgs = load_images(['map', 'weather', weather], loadorder=False)
             self.weathermatterimgs.append(imgs)
         self.weathereffectimgs = []
-        for weather in ('0', '1', '2', '3'):  ## Load weather effect sprite image
+        for weather in ('3'):  ## Load weather effect sprite image
             imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
             imgs = []
             for img in imgsold:
