@@ -1,22 +1,17 @@
 import pygame
 import pygame.freetype
 
-import main
-
-main_dir = main.main_dir
-SCREENRECT = main.SCREENRECT
-
-
 class Textdrama(pygame.sprite.Sprite):
     images = []
 
+    SCREENRECT = None
     def __init__(self):
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.body = self.images[0]
         self.leftcorner = self.images[1]
         self.rightcorner = self.images[2]
-        self.pos = (SCREENRECT.width / 2, SCREENRECT.height / 4)
+        self.pos = (self.SCREENRECT.width / 2, self.SCREENRECT.height / 4)
         self.font = pygame.font.SysFont("helvetica", 70)
         self.queue = []
 

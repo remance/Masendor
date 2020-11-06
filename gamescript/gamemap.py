@@ -6,11 +6,6 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter
 
-import main
-
-main_dir = main.main_dir
-SCREENRECT = main.SCREENRECT
-
 ## Terrain base colour
 Temperate = (166, 255, 107, 255)
 Tropical = (255, 199, 13, 255)
@@ -70,6 +65,7 @@ class Basemap(pygame.sprite.Sprite):
 class Mapfeature(pygame.sprite.Sprite):
     images = []
     maxviewmode = 10
+    main_dir = None
 
     def __init__(self, scale):
         self._layer = 0
@@ -85,7 +81,7 @@ class Mapfeature(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(0, 0))
         self.featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Wall, Mana, Rot, Wetground)
         self.featuremod = {}
-        with open(main_dir + "\data\map" + '\\unit_terrainbonus.csv', 'r') as unitfile:
+        with open(self.main_dir + "\data\map" + '\\unit_terrainbonus.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
@@ -155,6 +151,7 @@ class Beautifulmap(pygame.sprite.Sprite):
     effectimage = None
     placename = None
     loadtexturelist = None
+    main_dir = None
 
     def __init__(self, scale, basemap, featuremap, gamemapheight):
         self._layer = 0
@@ -163,7 +160,7 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.scale = scale
         self.mode = 0
         self.newcolourlist = {}
-        with open(main_dir + "\data\map" + '\\colourchange.csv', 'r') as unitfile:
+        with open(self.main_dir + "\data\map" + '\\colourchange.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):

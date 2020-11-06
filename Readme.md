@@ -1,6 +1,6 @@
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until end of ver 0.5).
-The repotary should be running file now. Stupid of me to not notice that Git does not include empty folder which I require it to exist.
+The repotary should be running fine now. Stupid of me to not notice that Git does not include empty folder which I require it to exist.
 
 To start testing the game run main.py
 

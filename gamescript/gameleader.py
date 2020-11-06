@@ -1,10 +1,6 @@
 import pygame
 import pygame.freetype
 
-import main
-
-main_dir = main.main_dir
-
 class Leader(pygame.sprite.Sprite):
 
     def __init__(self, leaderid, squadposition, armyposition, battalion, leaderstat):

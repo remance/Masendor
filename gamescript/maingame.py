@@ -20,7 +20,7 @@ import pygame.freetype
 from pygame.locals import *
 from pygame.transform import scale
 import main
-from script import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
+from gamescript import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
     gamelorebook, gameweather, gamefaction, gameunitstat
 
 config = main.config
@@ -62,8 +62,10 @@ class Battle():
         imgs = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
         gamemap.Mapfeature.images = [imgs[1]]
+        gamemap.Mapfeature.main_dir = main_dir
         gamemap.Mapheight.images = [imgs[2]]
         gamemap.Beautifulmap.placename = imgs[3]
+        gamemap.Beautifulmap.main_dir = main_dir
         img = load_image('effect.png', 'map')
         gamemap.Beautifulmap.effectimage = img
         empty = load_image('empty.png', 'map/texture')
@@ -80,6 +82,7 @@ class Battle():
         gamemap.Beautifulmap.loadtexturelist = loadtexturefolder
         gamemap.Beautifulmap.emptyimage = empty
         ## Faction
+        gamefaction.Factiondata.main_dir = main_dir
         self.allfaction = gamefaction.Factiondata(option=self.rulesetfolder)
         ## coa imagelist
         imgsold = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'faction', 'coa'])
@@ -102,11 +105,12 @@ class Battle():
             x, y = img.get_width(), img.get_height()
             img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))
             imgs.append(img)
-        self.allweapon = gameunitstat.Weaponstat(imgs, self.ruleset)  ## create weapon class
+        self.allweapon = gameunitstat.Weaponstat(main_dir, imgs, self.ruleset)  ## create weapon class
         imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
         gamemenu.Menubox.images = imgs  ## Create ESC Menu box
+        gamemenu.Menubox.SCREENRECT = SCREENRECT
         imgs = load_images(['war', 'unit_ui', 'armour'])
-        self.allarmour = gameunitstat.Armourstat(imgs, self.ruleset)  ## create armour class
+        self.allarmour = gameunitstat.Armourstat(main_dir, imgs, self.ruleset)  ## create armour class
         self.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
         self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
         self.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
@@ -117,10 +121,10 @@ class Battle():
         activeskill.fill((170, 220, 77, 200))
         gameui.Skillcardicon.activeskill = activeskill
         gameui.Skillcardicon.cooldown = cooldown
-        self.gameunitstat = gameunitstat.Unitstat(self.ruleset, self.rulesetfolder)
+        self.gameunitstat = gameunitstat.Unitstat(main_dir, self.ruleset, self.rulesetfolder)
         ## create leader list
         imgs, order = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'leader', 'portrait'], loadorder=False, returnorder=True)
-        self.allleader = gameunitstat.Leaderstat(imgs, order, option=self.rulesetfolder)
+        self.allleader = gameunitstat.Leaderstat(main_dir, imgs, order, option=self.rulesetfolder)
         ## Weather list
         self.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
         self.weathermatterimgs = []
@@ -279,6 +283,7 @@ class Battle():
         gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
         gamebattalion.Unitarmy.maingame = self
         gamesquad.Unitsquad.maingame = self
+        gamecamera.Camera.SCREENRECT = SCREENRECT
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
         self.background.fill((255, 255, 255))
@@ -389,6 +394,7 @@ class Battle():
         self.buttonnamepopup = gamepopup.Onelinepopup()
         self.leaderpopup = gamepopup.Onelinepopup()
         self.effectpopup = gamepopup.Effecticonpopup()
+        gamedrama.Textdrama.SCREENRECT = SCREENRECT
         self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
@@ -413,6 +419,8 @@ class Battle():
         gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
         gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
         gamelorebook.Lorebook.racelist = self.gameunitstat.racelist
+        gamelorebook.Lorebook.SCREENRECT = SCREENRECT
+        gamelorebook.Lorebook.main_dir = main_dir
         imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
         self.lorebook = gamelorebook.Lorebook(imgs[0])
         self.lorenamelist = gamelorebook.Subsectionlist(self.lorebook.rect.topleft, imgs[1])

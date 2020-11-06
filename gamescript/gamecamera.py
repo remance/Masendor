@@ -1,17 +1,12 @@
 import pygame
 import pygame.freetype
 
-import main
-
-main_dir = main.main_dir
-SCREENRECT = main.SCREENRECT
-
-
 class Camera():
+    SCREENRECT = None
     def __init__(self, startpos, viewmode):
         self.viewmode = viewmode
         self.pos = startpos
-        self.image = pygame.Surface((SCREENRECT.width, SCREENRECT.height))
+        self.image = pygame.Surface((self.SCREENRECT.width, self.SCREENRECT.height))
 
     def update(self, pos, surfaces):
         self.image.fill((0, 0, 0))

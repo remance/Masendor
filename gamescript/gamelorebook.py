@@ -1,12 +1,7 @@
 import pygame
 import pygame.freetype
 
-import main
-from script import gamelongscript
-
-SCREENRECT = main.SCREENRECT
-main_dir = main.main_dir
-
+from gamescript import gamelongscript
 
 class Lorebook(pygame.sprite.Sprite):
     conceptstat = None
@@ -30,6 +25,8 @@ class Lorebook(pygame.sprite.Sprite):
     unitgradestat = None
     unitclasslist = None
     racelist = None
+    SCREENRECT = None
+    main_dir = None
 
     def __init__(self, image, textsize=18):
         self._layer = 13
@@ -64,7 +61,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.logsize = 0
         self.page = 0
         self.maxpage = 0
-        self.rect = self.image.get_rect(center=(SCREENRECT.width / 1.9, SCREENRECT.height / 1.9))
+        self.rect = self.image.get_rect(center=(self.SCREENRECT.width / 1.9, self.SCREENRECT.height / 1.9))
         self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
 
     def changepage(self, page):
@@ -166,7 +163,7 @@ class Lorebook(pygame.sprite.Sprite):
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.blit_text(textsurface, text, (5, 5), self.font)
                     else:
-                        textsurface = gamelongscript.load_image(main_dir+text[6:])
+                        textsurface = gamelongscript.load_image(self.main_dir+text[6:])
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                     self.image.blit(textsurface, textrect)
                     row += 200
@@ -302,7 +299,7 @@ class Lorebook(pygame.sprite.Sprite):
                         if "IMAGE:" not in text:
                             textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
                         else:
-                            textsurface = gamelongscript.load_image(main_dir+text[6:])
+                            textsurface = gamelongscript.load_image(self.main_dir+text[6:])
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.blit_text(textsurface, text, (5, 5), self.font)
                         self.image.blit(textsurface, textrect)

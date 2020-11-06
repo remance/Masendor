@@ -1,19 +1,15 @@
 import pygame
 import pygame.freetype
 
-import main
-
-main_dir = main.main_dir
-SCREENRECT = main.SCREENRECT
-
 
 class Menubox(pygame.sprite.Sprite):
     images = []
+    SCREENRECT = None
 
     def __init__(self):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = (SCREENRECT.width / 2, SCREENRECT.height / 2)
+        self.pos = (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2)
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
         self.mode = 0

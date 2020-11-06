@@ -7,7 +7,6 @@ import numpy as np
 import pygame
 import pygame.freetype
 import os
-import sys
 import main
 
 config = main.config
@@ -15,7 +14,7 @@ SoundVolume = main.Soundvolume
 SCREENRECT = main.SCREENRECT
 main_dir = main.main_dir
 
-## Data Loading script
+## Data Loading gamescript
 
 def load_image(file, subfolder=""):
     """loads an image, prepares it for play"""
@@ -78,7 +77,7 @@ def load_sound(file):
     return sound
 
 
-## Other battle script
+## Other battle gamescript
 
 def convertweathertime(weatherevent):
     for index, item in enumerate(weatherevent):
@@ -87,10 +86,10 @@ def convertweathertime(weatherevent):
         weatherevent[index] = [item[0], newtime, item[2]]
 
 
-## Battle Start related script
+## Battle Start related gamescript
 
 def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
-    from script import gamebattalion, gameleader
+    from gamescript import gamebattalion, gameleader
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
@@ -108,7 +107,7 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
 
 
 def unitsetup(maingame):
-    from script import gamesquad
+    from gamescript import gamesquad
     """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
     letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
@@ -185,7 +184,7 @@ def unitsetup(maingame):
     unitfile.close()
     return squadindexlist
 
-## Battle related script
+## Battle related gamescript
 
 def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
     """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
@@ -453,7 +452,7 @@ def die(who, battle, group, enemygroup):
 
 def splitunit(battle, who, how):
     """split battalion either by row or column into two seperate battalion"""
-    from script import gamebattalion, gameleader
+    from gamescript import gamebattalion, gameleader
     if how == 0:  ## split by row
         newarmysquad = np.array_split(who.armysquad, 2)[1]
         who.armysquad = np.array_split(who.armysquad, 2)[0]

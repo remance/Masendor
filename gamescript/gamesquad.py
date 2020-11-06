@@ -3,7 +3,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 from pygame.transform import scale
-from script import rangeattack, gamelongscript
+from gamescript import rangeattack, gamelongscript
 
 class Unitsquad(pygame.sprite.Sprite):
     images = []

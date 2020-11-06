@@ -1,12 +1,8 @@
 import csv
 import re
 
-import main
-
-main_dir = main.main_dir
-
 class Weaponstat():
-    def __init__(self, img, ruleset):
+    def __init__(self, main_dir, img, ruleset):
         """Armour has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weaponlist = {}
@@ -28,7 +24,7 @@ class Weaponstat():
 
 
 class Armourstat():
-    def __init__(self, img, ruleset):
+    def __init__(self, main_dir, img, ruleset):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.armourlist = {}
@@ -50,7 +46,7 @@ class Armourstat():
 
 
 class Unitstat():
-    def __init__(self, ruleset, rulesetfolder):
+    def __init__(self, main_dir, ruleset, rulesetfolder):
         """Unit stat data read"""
         self.unitlist = {}  ## Unit stat list
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_preset.csv', 'r') as unitfile:
@@ -211,7 +207,7 @@ class Unitstat():
 
 
 class Leaderstat():
-    def __init__(self, img, imgorder, option):
+    def __init__(self, main_dir, img, imgorder, option):
         self.imgs = img
         self.imgorder = imgorder
         self.leaderlist = {}

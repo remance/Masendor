@@ -8,7 +8,7 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 
-from script import maingame
+from gamescript import maingame
 
 config = configparser.ConfigParser()
 config.read_file(open('configuration.ini'))

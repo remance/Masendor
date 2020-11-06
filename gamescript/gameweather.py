@@ -1,12 +1,6 @@
 import pygame
 import pygame.freetype
 
-import main
-
-SCREENRECT = main.SCREENRECT
-main_dir = main.main_dir
-
-
 class Weather:
     images = []
 
