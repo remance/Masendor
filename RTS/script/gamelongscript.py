@@ -8,9 +8,7 @@ import pygame
 import pygame.freetype
 import os
 import sys
-path = os.getcwd()
-parentpath = os.path.abspath(os.path.join(path, os.pardir))
-from .. import main
+import main
 
 config = main.config
 SoundVolume = main.Soundvolume
@@ -92,7 +90,7 @@ def convertweathertime(weatherevent):
 ## Battle Start related script
 
 def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
-    from RTS.script import gamebattalion, gameleader
+    from script import gamebattalion, gameleader
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
@@ -110,7 +108,7 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
 
 
 def unitsetup(maingame):
-    from RTS.script import gamesquad
+    from script import gamesquad
     """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
     letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
@@ -455,7 +453,7 @@ def die(who, battle, group, enemygroup):
 
 def splitunit(battle, who, how):
     """split battalion either by row or column into two seperate battalion"""
-    from RTS.script import gamebattalion, gameleader
+    from script import gamebattalion, gameleader
     if how == 0:  ## split by row
         newarmysquad = np.array_split(who.armysquad, 2)[1]
         who.armysquad = np.array_split(who.armysquad, 2)[0]

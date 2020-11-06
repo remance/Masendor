@@ -6,7 +6,7 @@ import pygame
 import pygame.freetype
 from pygame.transform import scale
 
-from . import gamelongscript
+from script import gamelongscript
 
 def rotationxy(origin, point, angle):
     ox, oy = origin

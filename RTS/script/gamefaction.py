@@ -2,7 +2,7 @@ import csv
 
 import pygame.freetype
 
-from .. import main
+import main
 
 main_dir = main.main_dir
 

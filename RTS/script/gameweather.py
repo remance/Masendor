@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-from .. import main
+import main
 
 SCREENRECT = main.SCREENRECT
 main_dir = main.main_dir

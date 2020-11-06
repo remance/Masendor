@@ -6,7 +6,7 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter
 
-from .. import main
+import main
 
 main_dir = main.main_dir
 SCREENRECT = main.SCREENRECT
