@@ -19,7 +19,6 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 from pygame.transform import scale
-import os, sys
 from .. import main
 from . import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
     gamelorebook, gameweather, gamefaction, gameunitstat
@@ -287,7 +286,7 @@ class Battle():
         """Create Starting Values"""
         self.enactment = True
         self.gamestate = 1
-        self.timer = 0
+        self.mousetimer = 0
         self.uitimer = 0
         self.dramatimer = 0
         self.dt = 0  ## Used for in game calculation
@@ -693,12 +692,12 @@ class Battle():
                     self.allcamera.clear(self.screen, self.background)
                     pygame.quit()
                     quit()
-                if event.type == self.SONG_END:
+                elif event.type == self.SONG_END:
                     # pygame.mixer.music.unload()
                     self.pickmusic = random.randint(1, 1)
                     pygame.mixer.music.load(self.musiclist[self.pickmusic])
                     pygame.mixer.music.play(0)
-                if event.type == KEYDOWN and event.key == K_ESCAPE:
+                elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     if self.gamestate == 1:
                         self.gamestate = 0
                         self.allui.add(self.battlemenu)
@@ -753,12 +752,12 @@ class Battle():
                         #     mouse_up = True
                         if event.button == 3:  ## Right Click
                             mouse_right = True
-                            if self.timer == 0:
-                                self.timer = 0.001  ##Start timer after first mouse click
-                            elif self.timer < 0.3:
+                            if self.mousetimer == 0:
+                                self.mousetimer = 0.001  ##Start timer after first mouse click
+                            elif self.mousetimer < 0.3:
                                 double_mouse_right = True
-                                self.timer = 0
-                        elif event.button == 4:
+                                self.mousetimer = 0
+                        elif event.button == 4: # Mouse scroll down
                             if self.eventlog.rect.collidepoint(self.mousepos):  ## Scrolling when mouse at event log
                                 self.eventlog.currentstartrow -= 1
                                 if self.eventlog.currentstartrow < 0:
@@ -781,7 +780,7 @@ class Battle():
                                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                                     self.mapshown.changescale(self.camerascale)
-                        elif event.button == 5:
+                        elif event.button == 5: # Mouse scroll up
                             if self.eventlog.rect.collidepoint(self.mousepos):  ## Scrolling when mouse at event log
                                 self.eventlog.currentstartrow += 1
                                 if self.eventlog.currentstartrow + self.eventlog.maxrowshow - 1 < self.eventlog.lencheck and self.eventlog.lencheck > 9:
@@ -807,74 +806,73 @@ class Battle():
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                                     self.mapshown.changescale(self.camerascale)
                     if event.type == pygame.KEYDOWN:
-                        if self.gamestate == 1:
-                            if event.key == pygame.K_TAB:
-                                if self.mapviewmode == 0:  # Currently in normal mode
-                                    self.mapviewmode = 1
-                                    self.showmap.changemode(self.mapviewmode)
-                                else:  # Currently in height mode
-                                    self.mapviewmode = 0
-                                    self.showmap.changemode(self.mapviewmode)
-                                self.mapshown.changescale(self.camerascale)
-                            elif event.key == pygame.K_p:  ## Speed Pause Button
-                                if self.gamespeed == 1:
-                                    self.gamespeed = 0
-                                else:
-                                    self.gamespeed = 1
-                                self.speednumber.speedupdate(self.gamespeed)
-                            elif event.key == pygame.K_KP_MINUS:
-                                newindex = self.gamespeedset.index(self.gamespeed) - 1
-                                if newindex >= 0:
-                                    self.gamespeed = self.gamespeedset[newindex]
-                                self.speednumber.speedupdate(self.gamespeed)
-                            elif event.key == pygame.K_KP_PLUS:
-                                newindex = self.gamespeedset.index(self.gamespeed) + 1
-                                if newindex < len(self.gamespeedset):
-                                    self.gamespeed = self.gamespeedset[newindex]
-                                self.speednumber.speedupdate(self.gamespeed)
-                            elif event.key == pygame.K_PAGEUP:  ## Go to top of event log
-                                self.eventlog.currentstartrow = 0
+                        if event.key == pygame.K_TAB:
+                            if self.mapviewmode == 0:  # Currently in normal mode
+                                self.mapviewmode = 1
+                                self.showmap.changemode(self.mapviewmode)
+                            else:  # Currently in height mode
+                                self.mapviewmode = 0
+                                self.showmap.changemode(self.mapviewmode)
+                            self.mapshown.changescale(self.camerascale)
+                        elif event.key == pygame.K_p:  ## Speed Pause Button
+                            if self.gamespeed == 1:
+                                self.gamespeed = 0
+                            else:
+                                self.gamespeed = 1
+                            self.speednumber.speedupdate(self.gamespeed)
+                        elif event.key == pygame.K_KP_MINUS:
+                            newindex = self.gamespeedset.index(self.gamespeed) - 1
+                            if newindex >= 0:
+                                self.gamespeed = self.gamespeedset[newindex]
+                            self.speednumber.speedupdate(self.gamespeed)
+                        elif event.key == pygame.K_KP_PLUS:
+                            newindex = self.gamespeedset.index(self.gamespeed) + 1
+                            if newindex < len(self.gamespeedset):
+                                self.gamespeed = self.gamespeedset[newindex]
+                            self.speednumber.speedupdate(self.gamespeed)
+                        elif event.key == pygame.K_PAGEUP:  ## Go to top of event log
+                            self.eventlog.currentstartrow = 0
+                            self.eventlog.recreateimage()
+                            self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
+                        elif event.key == pygame.K_PAGEDOWN:  ## Go to bottom of event log
+                            if self.eventlog.lencheck > self.eventlog.maxrowshow:
+                                self.eventlog.currentstartrow = self.eventlog.lencheck - self.eventlog.maxrowshow
                                 self.eventlog.recreateimage()
                                 self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
-                            elif event.key == pygame.K_PAGEDOWN:  ## Go to bottom of event log
-                                if self.eventlog.lencheck > self.eventlog.maxrowshow:
-                                    self.eventlog.currentstartrow = self.eventlog.lencheck - self.eventlog.maxrowshow
-                                    self.eventlog.recreateimage()
-                                    self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
-                            elif event.key == pygame.K_SPACE and self.lastselected is not None:
-                                whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
-                                                 self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
-                            ### FOR DEVELOPMENT DELETE LATER
-                            elif event.key == pygame.K_1:
-                                self.textdrama.queue.append('Hello and Welcome to the Update Video')
-                            elif event.key == pygame.K_2:
-                                self.textdrama.queue.append('Showcase: FPS testing and leader authority')
-                            elif event.key == pygame.K_3:
-                                self.textdrama.queue.append('relationship with battalion size')
-                            elif event.key == pygame.K_4:
-                                self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
-                            elif event.key == pygame.K_5:
-                                self.textdrama.queue.append('Weather effect affect the unit in many ways')
-                            elif event.key == pygame.K_6:
-                                self.textdrama.queue.append('Current special effect still need rework')
-                            elif event.key == pygame.K_n and self.lastselected is not None:
-                                if whoinput.gameid < 2000:
-                                    self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
-                                                                               self.enactment)
-                                else:
-                                    self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
-                                                                               self.enactment)
-                            elif event.key == pygame.K_l and self.lastselected is not None:
-                                for squad in whoinput.squadsprite:
-                                    squad.basemorale = 0
-                            elif event.key == pygame.K_k and self.lastselected is not None:
-                                for squad in self.lastselected.squadsprite:
-                                    squad.unithealth -= squad.unithealth
-                            elif event.key == pygame.K_m and self.lastselected is not None:
-                                self.lastselected.leader[0].health -= 1000
-                            ### End For development test
+                        elif event.key == pygame.K_SPACE and self.lastselected is not None:
+                            whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
+                                             self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
+                        ### FOR DEVELOPMENT DELETE LATER
+                        elif event.key == pygame.K_1:
+                            self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                        elif event.key == pygame.K_2:
+                            self.textdrama.queue.append('Showcase: FPS testing and leader authority')
+                        elif event.key == pygame.K_3:
+                            self.textdrama.queue.append('relationship with battalion size')
+                        elif event.key == pygame.K_4:
+                            self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
+                        elif event.key == pygame.K_5:
+                            self.textdrama.queue.append('Weather effect affect the unit in many ways')
+                        elif event.key == pygame.K_6:
+                            self.textdrama.queue.append('Current special effect still need rework')
+                        elif event.key == pygame.K_n and self.lastselected is not None:
+                            if whoinput.gameid < 2000:
+                                self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
+                                                                           self.enactment)
                             else:
-                                keypress = event.key
+                                self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
+                                                                           self.enactment)
+                        elif event.key == pygame.K_l and self.lastselected is not None:
+                            for squad in whoinput.squadsprite:
+                                squad.basemorale = 0
+                        elif event.key == pygame.K_k and self.lastselected is not None:
+                            for squad in self.lastselected.squadsprite:
+                                squad.unithealth -= squad.unithealth
+                        elif event.key == pygame.K_m and self.lastselected is not None:
+                            self.lastselected.leader[0].health -= 1000
+                        ### End For development test
+                        else:
+                            keypress = event.key
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
             # self.screen.blit(self.background, self.camerapos)
             if self.gamestate == 1:
@@ -899,10 +897,10 @@ class Battle():
                 self.battlemousepos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
                                                         self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])
                 self.battlemousepos[1] = self.battlemousepos[0] / self.camerascale
-                if self.timer != 0:
-                    self.timer += self.uidt
-                    if self.timer >= 0.5:
-                        self.timer = 0
+                if self.mousetimer != 0:
+                    self.mousetimer += self.uidt
+                    if self.mousetimer >= 0.5:
+                        self.mousetimer = 0
                 self.lastmouseover = 0
                 if self.terraincheck in self.allui and (
                         self.terraincheck.pos != self.mousepos or keystate[K_s] or keystate[K_w] or keystate[K_a] or keystate[K_d]):
@@ -1049,7 +1047,7 @@ class Battle():
                 self.leaderupdater.update()
                 self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
                 if self.combattimer >= 0.5:
-                    self.combattimer = 0
+                    self.combattimer -= 0.5
                 self.effectupdater.update(self.allunitlist, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 if self.lastselected is not None and self.lastselected.state != 100:
@@ -1088,8 +1086,8 @@ class Battle():
                         self.allui.add(*self.leadernow)
                         self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
-                    else:
-                        if self.uitimer >= 1.1: # Update ui value every 1.1 seconds
+                    else: # Update topbar and command ui value every 1.1 seconds
+                        if self.uitimer >= 1.1:
                             self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                             self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     if self.buttonui[4].rect.collidepoint(self.mousepos) or (
@@ -1194,7 +1192,7 @@ class Battle():
                     if self.inspectui == 1:
                         self.allui.add(*self.showingsquad)
                         if mouse_up or mouse_right:
-                            if self.gameui[3].rect.collidepoint(self.mousepos):
+                            if self.gameui[3].rect.collidepoint(self.mousepos): # if mouse pos inside armybox ui
                                 self.clickcheck = 1
                                 self.uicheck = 1  ## for avoiding clicking unit under ui
                                 for squad in self.showingsquad:
@@ -1268,7 +1266,7 @@ class Battle():
                         for icon in self.effecticon.sprites(): icon.kill()
                     self.beforeselected = self.lastselected
                     if self.uitimer >= 1.1:
-                        self.uitimer = 0
+                        self.uitimer -= 1.1
                 """remove the unit ui when click at no group"""
                 if self.clickcheck != 1:
                     if self.lastselected is not None:

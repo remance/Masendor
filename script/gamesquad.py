@@ -212,7 +212,6 @@ class Unitsquad(pygame.sprite.Sprite):
             self.unithealth * 50 / 100), round(self.unithealth * 25 / 100)
         self.oldlasthealth, self.oldlaststamina = self.unithealth, self.stamina
         self.maxtroop = self.troopnumber
-        self.walkspeed, self.runspeed = self.basespeed / 15, self.basespeed / 10
         self.moralestate = round((self.basemorale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.image = self.images[0]  ## squad block blue colour for player
@@ -342,19 +341,21 @@ class Unitsquad(pygame.sprite.Sprite):
         ## Maybe make trigger for status update instead of doing it every update for optimise
         self.morale = self.basemorale
         self.authority = self.battalion.authority
-        self.commandbuff = self.battalion.commandbuff[self.unittype]
+        self.commandbuff = self.battalion.commandbuff[self.unittype] * 2
         self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0)
+        moralestatecal = self.moralestate / 100
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        self.discipline = (self.basediscipline * (self.moralestate / 100)) * (self.staminastate / 100) + self.battalion.leadersocial[
+        staminastatecal = self.staminastate / 100
+        self.discipline = (self.basediscipline * moralestatecal) * staminastatecal + self.battalion.leadersocial[
             self.grade + 1] + (self.authority / 10)
-        self.attack = (self.baseattack * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2)
-        self.meleedef = (self.basemeleedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2)
-        self.rangedef = (self.baserangedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2)
-        self.accuracy = self.baseaccuracy * (self.staminastate / 100) + (self.commandbuff * 2)
+        self.attack = (self.baseattack * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
+        self.meleedef = (self.basemeleedef * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
+        self.rangedef = (self.baserangedef * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
+        self.accuracy = self.baseaccuracy * staminastatecal + self.commandbuff
         self.reload = self.basereload * ((200 - self.staminastate) / 100)
-        self.chargedef = (self.basechargedef * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2)
+        self.chargedef = (self.basechargedef * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
         self.speed = self.basespeed * self.staminastate / 100
-        self.charge = (self.basecharge * ((self.moralestate / 100) + 0.1)) * (self.staminastate / 100) + (self.commandbuff * 2)
+        self.charge = (self.basecharge * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
         self.shootrange = self.baserange
         self.criteffect = 100
         self.frontdmgeffect = 1
@@ -394,14 +395,14 @@ class Unitsquad(pygame.sprite.Sprite):
         self.discipline += weather.discipline_buff
         ## Map feature modifier
         mapfeaturemod = self.battalion.gamemapfeature.featuremod[self.battalion.feature]
-        if mapfeaturemod[self.featuremod] != 100:
+        if mapfeaturemod[self.featuremod] != 1:
             speedmod = mapfeaturemod[self.featuremod]
             self.speed *= speedmod
             self.charge *= speedmod
-        if mapfeaturemod[self.featuremod + 1] != 100:
+        if mapfeaturemod[self.featuremod + 1] != 1:
             # combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
             self.attack *= mapfeaturemod[self.featuremod + 1]
-        if mapfeaturemod[self.featuremod + 2] != 100:
+        if mapfeaturemod[self.featuremod + 2] != 1:
             combatmod = mapfeaturemod[self.featuremod + 2]
             self.meleedef *= combatmod
             self.chargedef *= combatmod
@@ -525,15 +526,16 @@ class Unitsquad(pygame.sprite.Sprite):
                 # self.sight += status[18]
                 # self.hidden += status[19]
         self.discipline = round(self.discipline, 0)
-        self.attack = round((self.attack + (self.discipline / 10)), 0)
-        self.meleedef = round((self.meleedef + (self.discipline / 10)), 0)
-        self.rangedef = round((self.rangedef + (self.discipline / 10)), 0)
+        disciplinecal = self.discipline / 10
+        self.attack = round((self.attack + disciplinecal), 0)
+        self.meleedef = round((self.meleedef + disciplinecal), 0)
+        self.rangedef = round((self.rangedef + disciplinecal), 0)
         self.armour = round(self.armour, 0)
-        self.speed = round(self.speed, 0)
+        self.speed = round(self.speed + disciplinecal, 0)
         self.accuracy = round(self.accuracy, 0)
         self.reload = round(self.reload, 0)
-        self.chargedef = round((self.chargedef + (self.discipline / 10)), 0)
-        self.charge = round((self.charge + (self.discipline / 10)), 0)
+        self.chargedef = round((self.chargedef + disciplinecal), 0)
+        self.charge = round((self.charge + disciplinecal), 0)
         if self.attack < 0: self.attack = 0
         if self.meleedef < 0: self.meleedef = 0
         if self.rangedef < 0: self.rangedef = 0
@@ -545,14 +547,14 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.chargedef < 0: self.chargedef = 0
         if self.discipline < 0: self.discipline = 0
         """remove cooldown if time reach 0"""
-        self.skillcooldown = {key: val - 0.5 for key, val in self.skillcooldown.items()}
+        self.skillcooldown = {key: val - self.timer for key, val in self.skillcooldown.items()}
         self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0}
         """remove effect if time reach 0 and restriction is met"""
         for a, b in self.skilleffect.items():
-            b[3] -= 0.5
+            b[3] -= self.timer
         self.skilleffect = {key: val for key, val in self.skilleffect.items() if val[3] > 0 and self.state in val[5]}
         for a, b in self.statuseffect.items():
-            b[3] -= 0.5
+            b[3] -= self.timer
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
 
     def update(self, weather, newdt, viewmode, combattimer):
@@ -621,9 +623,9 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.haveredcorner = False
             if dt > 0:
                 self.timer += dt
-                if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99, 100) and self.state not in (96, 97, 98, 99):
+                if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (96, 97, 98, 99):
                     self.state = self.battalion.state
-                if self.timer > 1:
+                if self.timer >= 1:
                     self.statusupdate(weather)
                     self.availableskill = []
                     if self.useskillcond != 3:

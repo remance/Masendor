@@ -315,7 +315,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.stamina = 0
         self.morale = 0
         allspeed = []
-        self.discipline = 0
         self.ammo = 0
         howmany = 0
         allshootrange = []
@@ -325,7 +324,6 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.stamina += squad.stamina
                 self.morale += squad.morale
                 allspeed.append(squad.speed)
-                self.discipline += squad.discipline
                 self.ammo += squad.ammo
                 if squad.shootrange > 0:
                     allshootrange.append(squad.shootrange)
@@ -341,8 +339,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.stamina = int(self.stamina/howmany)
         self.morale = int(self.morale/howmany)
         self.speed = min(allspeed)
-        self.discipline = self.discipline/howmany
-        self.walkspeed, self.runspeed = (self.speed + self.discipline / 100) / 15, (self.speed + self.discipline / 100) / 10
+        self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
         self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size/2))
         if self.state in (1, 3, 5):
             self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size/2))
@@ -591,7 +588,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.charging = False
             if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
-                if self.timer > 1:
+                if self.timer >= 1:
                     self.setuparmy()
                     ## Find near enemy target
                     self.neartarget = {}  # Near target is enemy that is nearest
@@ -875,7 +872,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.combatpreparestate = 0
                 self.stopcombatmove = False
             if self.troopnumber <= 0:
-                self.stamina, self.morale, self.speed, self.discipline = 0, 0, 0, 0
+                self.stamina, self.morale, self.speed = 0, 0, 0
                 for leader in self.leader:
                     if leader.state not in (96, 97, 98, 100):  ## leader get captured/flee/die when squad destroyed
                         leader.state = 96
