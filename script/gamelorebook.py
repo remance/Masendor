@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-from .. import main
+from . import main
 from . import gamelongscript
 
 SCREENRECT = main.SCREENRECT

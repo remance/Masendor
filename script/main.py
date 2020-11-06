@@ -158,7 +158,7 @@ class Slidermenu(pygame.sprite.Sprite):
 
 
 def load_image(file, subfolder):
-    file = os.path.join(main_dir, 'script/data', subfolder, file)
+    file = os.path.join(main_dir, 'data', subfolder, file)
     try:
         surface = pygame.image.load(file)
     except pygame.error:
@@ -299,10 +299,8 @@ class Mainmenu():
             self.SONG_END = pygame.USEREVENT + 1
             # musiclist = os.path.join(main_dir, 'data/sound/')
             self.musiclist = glob.glob(main_dir + '/data/sound/*.mp3')
-            print(self.musiclist)
-            if self.musiclist:
-                pygame.mixer.music.load(self.musiclist[0])
-                pygame.mixer.music.play(-1)
+            pygame.mixer.music.load(self.musiclist[0])
+            pygame.mixer.music.play(-1)
         self.all = pygame.sprite.RenderUpdates()
         self.menustate = "mainmenu"
         self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data', 'ruleset'])

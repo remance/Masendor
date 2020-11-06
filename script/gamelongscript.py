@@ -10,7 +10,7 @@ import os
 import sys
 path = os.getcwd()
 parentpath = os.path.abspath(os.path.join(path, os.pardir))
-from .. import main
+from . import main
 
 config = main.config
 SoundVolume = main.Soundvolume

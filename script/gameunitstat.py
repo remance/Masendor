@@ -1,7 +1,7 @@
 import csv
 import re
 
-from .. import main
+from . import main
 
 main_dir = main.main_dir
 

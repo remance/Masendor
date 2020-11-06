@@ -19,7 +19,7 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 from pygame.transform import scale
-from .. import main
+from . import main
 from . import gamesquad, gamebattalion, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
     gamelorebook, gameweather, gamefaction, gameunitstat
 
