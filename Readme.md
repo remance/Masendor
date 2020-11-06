@@ -1,3 +1,5 @@
+![alt text](https://github.com/remance/Masendor/blob/master/pygamelogo.gif?raw=true)
+
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until end of ver 0.5).
 The repotary should be running fine now. Stupid of me to not notice that Git does not include empty folder which I require it to exist.
@@ -8,7 +10,7 @@ Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
-The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/RTS/gamestate.png?raw=true)
+The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
 Meaning: I am totally ignoring so many issues right now eventhough they cause performance issue. (Will fix them for sure)
 
