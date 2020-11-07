@@ -34,7 +34,7 @@ class Leader(pygame.sprite.Sprite):
             self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
         except:  ## Use Unknown leader image if there is none in list
             self.fullimage = leaderstat.imgs[-1].copy()
-        self.image = pygame.transform.scale(self.fullimage, (int(self.fullimage.get_width() / 2), int(self.fullimage.get_height() / 2)))
+        self.image = pygame.transform.scale(self.fullimage, (50, 50))
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
         self.badmorale = (20, 30)  ## other position morale lost

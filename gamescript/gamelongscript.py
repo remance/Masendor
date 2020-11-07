@@ -282,6 +282,7 @@ def changecombatside(side, position):
     return finalposition
 
 def losscal(who, target, hit, defense, type):
+    """Calculate damage"""
     heightadventage = who.battalion.height - target.battalion.height
     if type == 1: heightadventage = int((who.battalion.height - target.battalion.height) / 2)
     hit += heightadventage
@@ -332,80 +333,65 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
                 if squad.state != 100:
                     squad.statuseffect[status[0]] = statuslist[status[0]].copy()
 
-def dmgcal(who, maingame, target, whoside, targetside, statuslist):
-    """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
-    # print(target.gameid, target.battleside)
-    wholuck = random.randint(-50, 50)
-    targetluck = random.randint(-50, 50)
-    whopercent = maingame.battlesidecal[whoside]
-    """34 battlemaster no flanked penalty"""
-    if who.fulldef or 91 in who.statuseffect: whopercent = 1
-    targetpercent = maingame.battlesidecal[targetside]
-    if target.fulldef or 91 in target.statuseffect: targetpercent = 1
-    dmgeffect = who.frontdmgeffect
-    targetdmgeffect = target.frontdmgeffect
-    if whoside != 0 and whopercent != 1:  ## if attack or defend from side will use discipline to help reduce penalty a bit
-        whopercent = maingame.battlesidecal[whoside] + (who.discipline / 300)
-        dmgeffect = who.sidedmgeffect
-        if whopercent > 1: whopercent = 1
-    if targetside != 0 and targetpercent != 1:
-        targetpercent = maingame.battlesidecal[targetside] + (target.discipline / 300)
-        targetdmgeffect = target.sidedmgeffect
-        if targetpercent > 1: targetpercent = 1
-    whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
-    """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
-    if (target.backstab and whoside == 2) or (who.oblivious and whoside == 2) or (who.flanker and targetside in (1, 3)): whodefense = 0
-    targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
-    if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
-            target.flanker and whoside in (1, 3)): targetdefense = 0
-    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0)
-    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0)
-    who.unithealth -= round(targetdmg * dmgeffect)
-    who.basemorale -= round(targetmoraledmg * dmgeffect)
-    if target.elemrange not in (0, 5):  ## apply element effect if atk has element
-        who.elemcount[target.elemrange - 1] += round((targetdmg * dmgeffect) * (100 - who.elemresist[target.elemrange - 1] / 100))
-    target.basemorale += round((targetmoraledmg * dmgeffect / 2))
-    if who.leader is not None and who.leader.name != "None" and who.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
-        who.leader.health -= targetleaderdmg
-        if who.leader.health <= 0:
-            if who.leader.battalion.commander and who.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
-                maingame.textdrama.queue.append(str(who.leader.name) + " is dead")
+def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
+    targetdmg = round(dmg * dmgeffect * timermod)
+    targetmoraledmg = round(moraledmg * dmgeffect * timermod)
+    targetleaderdmg = round(leaderdmg * timermod)
+    receiver.unithealth -= targetdmg
+    receiver.basemorale -= targetmoraledmg
+    if attacker.elemrange not in (0, 5):  ## apply element effect if atk has element
+        receiver.elemcount[attacker.elemrange - 1] += round(targetdmg * (100 - receiver.elemresist[attacker.elemrange - 1] / 100))
+    attacker.basemorale += round((targetmoraledmg / 2))
+    if receiver.leader is not None and receiver.leader.name != "None" and receiver.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
+        receiver.leader.health -= targetleaderdmg
+        if receiver.leader.health <= 0:
+            if receiver.leader.battalion.commander and receiver.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+                receiver.maingame.textdrama.queue.append(str(receiver.leader.name) + " is dead")
                 eventmapid = "ld0"
-                if who.gameid > 2000:
+                if receiver.gameid > 2000:
                     eventmapid = "ld1"
-                who.eventlog.addlog([0, "Commander " + str(who.leader.name) + " is dead"], [0, 1, 2], eventmapid)
-                whicharmy = maingame.enemyarmy
-                if who.battalion.gameid < 2000:
-                    whicharmy = maingame.playerarmy
+                receiver.eventlog.addlog([0, "Commander " + str(receiver.leader.name) + " is dead"], [0, 1, 2], eventmapid)
+                whicharmy = receiver.maingame.enemyarmy
+                if receiver.battalion.gameid < 2000:
+                    whicharmy = receiver.maingame.playerarmy
                 for army in whicharmy:
                     for squad in army.squadsprite:
                         squad.basemorale -= 20
             else:
-                maingame.eventlog.addlog([0, str(who.leader.name) + " is dead"], [0, 2], "ld1")
-            maingame.setuparmyicon()
-    target.unithealth -= round(whodmg * targetdmgeffect)
-    target.basemorale -= round(whomoraledmg * targetdmgeffect)
-    if who.elemrange not in (0, 5):  ## apply element effect if atk has element
-        target.elemcount[who.elemrange - 1] += round(whodmg * targetdmgeffect / 100 * target.elemresist[who.elemrange - 1])
-    who.basemorale += round((whomoraledmg * targetdmgeffect / 2))
-    if target.leader is not None and target.leader.name != "None" and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on target leader
-        target.leader.health -= wholeaderdmg
-        if target.leader.health <= 0:
-            if target.leader.battalion.commander and target.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg
-                maingame.textdrama.queue.append(str(target.leader.name) + " is dead")
-                eventmapid = "ld0"
-                if who.gameid > 2000:
-                    eventmapid = "ld1"
-                maingame.eventlog.addlog([0, "Commander " + str(target.leader.name) + " is dead"], [0, 1, 2], eventmapid)
-                whicharmy = maingame.enemyarmy
-                if target.battalion.gameid < 2000:
-                    whicharmy = maingame.playerarmy
-                for army in whicharmy:
-                    for squad in army.squadsprite:
-                        squad.basemorale -= 30
-            else:
-                maingame.eventlog.addlog([0, str(target.leader.name) + " is dead"], [0, 2])
-            maingame.setuparmyicon()
+                receiver.maingame.eventlog.addlog([0, str(receiver.leader.name) + " is dead"], [0, 2], "ld1")
+            receiver.maingame.setuparmyicon()
+
+
+def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
+    """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
+    wholuck = random.randint(-50, 50)
+    targetluck = random.randint(-50, 50)
+    whopercent = who.maingame.battlesidecal[whoside]
+    """34 battlemaster no flanked penalty"""
+    if who.fulldef or 91 in who.statuseffect: whopercent = 1
+    targetpercent = who.maingame.battlesidecal[targetside]
+    if target.fulldef or 91 in target.statuseffect: targetpercent = 1
+    dmgeffect = who.frontdmgeffect
+    targetdmgeffect = target.frontdmgeffect
+    if whoside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
+        whopercent = who.maingame.battlesidecal[whoside] + (who.discipline / 300)
+        dmgeffect = who.sidedmgeffect
+        if whopercent > 1: whopercent = 1
+    if targetside != 0 and targetpercent != 1: # same for the target
+        targetpercent = who.maingame.battlesidecal[targetside] + (target.discipline / 300)
+        targetdmgeffect = target.sidedmgeffect
+        if targetpercent > 1: targetpercent = 1
+    whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
+    targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
+    """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
+    if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
+            target.flanker and whoside in (1, 3)): # Apply only for attacker
+        targetdefense = 0
+    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0)
+    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0)
+    timermod = combattimer / 0.5 # since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
+    complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, targetdmgeffect, timermod)
+    complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, dmgeffect, timermod)
     if who.corneratk:  ##attack corner (side) of self with aoe attack
         listloop = target.nearbysquadlist[2:4]
         if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]

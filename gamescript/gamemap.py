@@ -169,8 +169,8 @@ class Beautifulmap(pygame.sprite.Sprite):
                     elif "," in i:
                         row[n] = ast.literal_eval(i)
                 self.newcolourlist[row[0]] = row[1:]
-        for rowcount, rowpos in enumerate(range(0, 1000)):  ## Recolour the map
-            for colcount, colpos in enumerate(range(0, 1000)):
+        for rowpos in range(0, 1000):  ## Recolour the map
+            for colpos in range(0, 1000):
                 terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)
                 newcolour = self.newcolourlist[feature][1]
                 rect = pygame.Rect(rowpos, colpos, 1, 1)

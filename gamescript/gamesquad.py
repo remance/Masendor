@@ -682,8 +682,8 @@ class Unitsquad(pygame.sprite.Sprite):
                             if self.gameid not in self.maingame.squad[np.where(squadindexlist == combat)[0][0]].battleside:
                                 self.battleside[index] = -1
                             else:
-                                self.dmgcal(self.maingame, self.maingame.squad[np.where(squadindexlist == combat)[0][0]], index,
-                                            self.maingame.squad[np.where(squadindexlist == combat)[0][0]].battleside.index(self.gameid), self.maingame.gameunitstat.statuslist)
+                                target = self.maingame.squad[np.where(squadindexlist == combat)[0][0]]
+                                self.dmgcal(target, index, target.battleside.index(self.gameid), self.maingame.gameunitstat.statuslist, combattimer)
                 elif self.state in (11, 12, 13):
                     if type(self.attacktarget) == int and self.attacktarget != 0:
                         allunitindex = self.maingame.allunitindex

@@ -360,7 +360,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
     def setupfrontline(self, specialcall=False):
-        """Setup frontline"""
+        """Setup frontline TODO change frontline list to keep sprite instead of index (same for squad combat cal)"""
         gotanother = 0
         startwhere = 0
         whoarray = np.where(self.squadalive > 1, self.armysquad, self.squadalive)

@@ -58,7 +58,7 @@ class Battle():
                        "Marsh", "Swamp", "Water", "Bridge", "Swamp Building", "Swamp Farm", "Pandemonium", "Cold Mana", "Creeping Rot", "", "Sea",
                        "Ocean", "Coral Reef", "Underwater Forest", "Fresh Water", "Bridge", "Sunken City", "Fishery", "Pandemonium", "Water Mana",
                        "Creeping Rot", ""]
-        self.mapselected = "testmap"
+        self.mapselected = "hastings"
         imgs = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
         gamemap.Mapfeature.images = [imgs[1]]
@@ -492,7 +492,7 @@ class Battle():
         except:  ## If no weather found use default light sunny weather
             newtime = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
             newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-            self.weatherevent = [4, newtime, 0]
+            self.weatherevent = [[4, newtime, 0]]
         self.weatherschedule = self.weatherevent[0][1]
 
     def setuparmyicon(self):
