@@ -823,7 +823,6 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.basepos += move
                                     self.pos = self.basepos * abs(self.viewmode - 11)
                                     self.rect.center = self.pos
-                                    print(self.gameid, self.pos, self.allsidepos[0], self.basetarget)
                                 else:  # Rotate army to the enemy sharply to stop
                                     move = self.basetarget - self.allsidepos[0]
                                     self.basepos += move
@@ -833,7 +832,14 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.setrotate(self.attacktarget.pos)
                                     self.angle = self.newangle
                                     self.rotate()
-                                    # move.normalize_ip()
+                            if self.state in (5, 6):
+                                shootrange = self.maxrange
+                                if self.useminrange == 0:
+                                    shootrange = self.minrange
+                                if (self.attacktarget != 0 and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange) or \
+                                        self.basepos.distance_to(self.baseattackpos) <= shootrange:
+                                    self.set_target(self.allsidepos[0])
+                                    self.rangecombatcheck = 1
                         elif move_length < 0.1 and self.battleside == [0, 0, 0,
                                                                      0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""

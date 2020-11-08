@@ -282,6 +282,7 @@ class Battle():
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
         gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
         gamebattalion.Unitarmy.maingame = self
+        rangeattack.Rangearrow.gamemapheight = self.battlemapheight
         gamesquad.Unitsquad.maingame = self
         gamecamera.Camera.SCREENRECT = SCREENRECT
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)

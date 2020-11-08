@@ -60,7 +60,7 @@ class Unitsquad(pygame.sprite.Sprite):
         skill = [self.chargeskill] + skill
         self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0 and x in statlist.abilitylist}
         self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100))
-        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
+        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 100
         self.mana = stat[20]
         self.meleeweapon = stat[21]
         self.rangeweapon = stat[22]
@@ -176,7 +176,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 # self.basearmour *= (random.randint(80, 120) / 100)
                 self.basespeed *= (random.randint(80, 120) / 100)
                 self.baseaccuracy *= (random.randint(80, 120) / 100)
-                self.baserange *= (random.randint(80, 120) / 100)
+                # self.baserange *= (random.randint(80, 120) / 100)
                 self.basereload *= (random.randint(80, 120) / 100)
                 self.basecharge *= (random.randint(80, 120) / 100)
                 self.basechargedef *= (random.randint(80, 120) / 100)
@@ -268,10 +268,10 @@ class Unitsquad(pygame.sprite.Sprite):
                                skill not in self.skillcooldown.keys() and self.state in self.skill[skill][
                                    6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][
                                    9] and skill != self.chargeskill]
-        if self.useskillcond == 1:
-            self.availableskill = [skill for skill in self.availableskill if self.staminastate > 50 or self.availableskill[skill][9] == 0]
-        elif self.useskillcond == 2:
-            self.availableskill = [skill for skill in self.availableskill if self.staminastate > 25 or self.availableskill[skill][9] == 0]
+        if self.useskillcond == 1 and self.staminastate < 50:
+            self.availableskill = []
+        elif self.useskillcond == 2 and self.staminastate < 25:
+            self.availableskill = []
 
     def findnearbysquad(self):
         """Find nearby friendly squads in the same battalion for applying buff"""
@@ -369,7 +369,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.elemrange = self.baseelemrange
         """apply height to range"""
         if self.battalion.height > 100:
-            self.shootrange = self.shootrange * self.battalion.height / 100
+            self.shootrange = self.shootrange + (self.battalion.height / 10)
         """apply status effect from trait"""
         if len(self.trait) > 1:
             for trait in self.trait.values():
@@ -669,8 +669,6 @@ class Unitsquad(pygame.sprite.Sprite):
                 if self.state in (11, 12, 13) and self.reloadtime < self.reload:
                     self.reloadtime += dt
                     self.stamina = self.stamina - (dt * 2)
-            if self.gameid == 10126:
-                print(self.state)
             ## ^ End range attack function
             if combattimer >= 0.5:
                 if any(battle > 1 for battle in self.battleside):

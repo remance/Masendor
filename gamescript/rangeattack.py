@@ -11,16 +11,18 @@ from gamescript import gamelongscript
 
 class Rangearrow(pygame.sprite.Sprite):
     images = []
+    gamemapheight = None
 
     def __init__(self, shooter, shootrange, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.speed = 50
         self.image = self.images[0]
-        self.arcshot = False
-        if shooter.arcshot: self.arcshot = True
         self.image_original = self.image.copy()
         self.shooter = shooter
+        self.arcshot = False
+        if self.shooter.arcshot: self.arcshot = True
+        self.startheight = self.shooter.battalion.height
         self.accuracy = self.shooter.accuracy
         if self.shooter.state in (12, 13) and self.shooter.agileaim == False: self.accuracy -= 10
         self.passwho = 0
@@ -63,6 +65,7 @@ class Rangearrow(pygame.sprite.Sprite):
             self.basetarget = pygame.Vector2(targetnow[0] * hitchance / 100, targetnow[1] * hitchance / 100)
         else:
             self.basetarget = targetnow * random.uniform(0.99, 1.01)
+        self.targetheight = self.gamemapheight.getheight(self.basetarget)
         myradians = math.atan2(self.basetarget[1] - self.shooter.battalion.basepos[1], self.basetarget[0] - self.shooter.battalion.basepos[0])
         self.angle = math.degrees(myradians)
         # """upper left and upper right"""
@@ -149,6 +152,9 @@ class Rangearrow(pygame.sprite.Sprite):
             move = move * self.speed * dt
             if move.length() <= move_length:
                 self.basepos += move
+                if self.arcshot == False: ## Non-arc range will not be able to shoot pass higher height terrain midway
+                    if self.gamemapheight.getheight(self.basepos) > self.targetheight + 20:
+                        self.kill()
                 self.pos = self.basepos * viewmode
                 self.rect.center = list(int(v) for v in self.pos)
             else:
