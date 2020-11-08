@@ -345,7 +345,17 @@ class Battle():
                           image=topimage[5], icon="", uitype="armybox"))
         self.popgameui = self.gameui
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
-        self.timenumber = gameui.Timer(self.timeui.rect.topleft)
+        # Load weather schedule
+        try:
+            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 1)
+            self.weatherevent = self.weatherevent[1:]
+            gamelongscript.convertweathertime(self.weatherevent)
+        except:  ## If no weather found use default light sunny weather start at 9.00
+            newtime = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
+            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+            self.weatherevent = [[4, newtime, 0]]
+        self.weatherschedule = self.weatherevent[0][1]
+        self.timenumber = gameui.Timer(self.timeui.rect.topleft, self.weatherschedule)
         self.speednumber = gameui.Speednumber((self.timeui.rect.center[0] + 40, self.timeui.rect.center[1]), self.gamespeed)
         self.buttonui = [gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 10, topimage[3], 0),
                          gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 70, topimage[4], 1),
@@ -418,6 +428,7 @@ class Battle():
         gamelorebook.Lorebook.landmarkstat = None
         gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
         gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
+        gamelorebook.Lorebook.leaderclasslist = self.allleader.leaderclass
         gamelorebook.Lorebook.racelist = self.gameunitstat.racelist
         gamelorebook.Lorebook.SCREENRECT = SCREENRECT
         gamelorebook.Lorebook.main_dir = main_dir
@@ -484,16 +495,6 @@ class Battle():
         self.playerposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
-        # Load weather schedule
-        try:
-            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 1)
-            self.weatherevent = self.weatherevent[1:]
-            gamelongscript.convertweathertime(self.weatherevent)
-        except:  ## If no weather found use default light sunny weather
-            newtime = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
-            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-            self.weatherevent = [[4, newtime, 0]]
-        self.weatherschedule = self.weatherevent[0][1]
 
     def setuparmyicon(self):
         """Setup army selection list in army selector ui top left of screen"""

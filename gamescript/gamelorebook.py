@@ -24,6 +24,7 @@ class Lorebook(pygame.sprite.Sprite):
     weatherstat = None
     unitgradestat = None
     unitclasslist = None
+    leaderclasslist = None
     racelist = None
     SCREENRECT = None
     main_dir = None
@@ -63,6 +64,11 @@ class Lorebook(pygame.sprite.Sprite):
         self.maxpage = 0
         self.rect = self.image.get_rect(center=(self.SCREENRECT.width / 1.9, self.SCREENRECT.height / 1.9))
         self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+        self.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
+                             7: "Forced Walk", 8: "Forced Run",
+                             10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
+                             69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
+        self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Untalented", "Unskilled", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
 
     def changepage(self, page):
         self.page = page
@@ -83,7 +89,6 @@ class Lorebook(pygame.sprite.Sprite):
         self.setupsubsectionlist(listsurface, listgroup)
         lorescroll.changeimage(logsize=self.logsize)
         lorescroll.changeimage(newrow=self.currentsubsectionrow)
-        self.pagedesign()
 
     def changesubsection(self, subsection):
         self.subsection = subsection
@@ -261,6 +266,21 @@ class Lorebook(pygame.sprite.Sprite):
                                     else:
                                         createtext = ""
                                         pass
+                            elif self.section == 6 and (statheader[index] == "Restriction" or statheader[index] == "Condition"):
+                                statelist = ""
+                                if text != "":
+                                    for thistext in text:
+                                        statelist += self.statetext[thistext] + ", "
+                                    statelist = statelist[0:-2]
+                                    createtext = statheader[index] + ": " + statelist
+                                else:
+                                    createtext = ""
+                                    pass
+                            elif self.section == 8:
+                                if statheader[index] in ("Melee Command", "Range Command", "Cavalry Command", "Combat"):
+                                    createtext = statheader[index] + ": " + self.leadertext[text]
+                                elif statheader[index] == "Social Class":
+                                    createtext = statheader[index] + ": " + self.leaderclasslist[text]
                         else:  ## Header depends on equipment type
                             for thisindex, lastindex in enumerate(self.equipmentlastindex):
                                 if self.subsection < lastindex:  ## Check if this index pass the last index of each type

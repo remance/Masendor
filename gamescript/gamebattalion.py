@@ -83,6 +83,7 @@ class Hitbox(pygame.sprite.Sprite):
                 scaleheight = self.image_original.get_height()
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+            self.mask = pygame.mask.from_surface(self.image)
             self.image_original = self.image.copy()
         if self.oldpos != self.who.hitboxpos[self.side] or self.clickcheck:
             self.image = pygame.transform.rotate(self.image_original, self.who.angle)
@@ -145,9 +146,11 @@ class Unitarmy(pygame.sprite.Sprite):
         self.baseattackpos = 0
         self.pos, self.attackpos = self.basepos * abs(self.viewmode - 11), self.baseattackpos * abs(
             self.viewmode - 11)  ## pos is for showing on screen
-        self.angle, self.newangle = startangle, startangle
+        self.angle = startangle
+        self.newangle = self.angle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
-        self.pause = False
+        self.walk = False
+        self.run = False
         self.leaderchange = False
         self.directionarrow = False
         self.rotateonly = False
@@ -340,12 +343,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.morale = int(self.morale/howmany)
         self.speed = min(allspeed)
         self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
-        self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size/2))
-        if self.state in (1, 3, 5):
-            self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size/2))
-        if self.rotatespeed > 10: self.rotatespeed = 10
-        if self.rotatespeed < 1:
-            self.rotatespeed = 1
         if len(allshootrange) > 0:
             self.maxrange = max(allshootrange)
             self.minrange = min(allshootrange)
@@ -563,10 +560,10 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.state != 100:
             if self.gameid < 2000:
                 self.maingame.playerposlist[self.gameid] = self.basepos
-                thisposlist = self.maingame.playerposlist
+                thisposlist = self.maingame.enemyposlist
             else:
                 self.maingame.enemyposlist[self.gameid] = self.basepos
-                thisposlist = self.maingame.enemyposlist
+                thisposlist = self.maingame.playerposlist
             ## Mouse collision detect
             if self.rect.collidepoint(mousepos):
                 posmask = int(mousepos[0] - self.rect.x), int(mousepos[1] - self.rect.y)
@@ -586,6 +583,8 @@ class Unitarmy(pygame.sprite.Sprite):
             self.offsetx = self.rect.x
             self.offsety = self.rect.y
             self.charging = False
+            self.walk = False
+            self.run = False
             if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
                 if self.timer >= 1:
@@ -722,7 +721,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 # and [round(elem,2) for elem in self.allsidepos[0]] != [round(elem,2) for elem in self.basetarget]
                 self.setrotate(self.attacktarget.pos)
             if self.angle != round(self.newangle) and self.stamina > 0 and (
-                    (self.hitbox[0].collide == 0 and self.hitbox[3].collide == 0) or self.combatpreparestate == 1):
+                    self.hitbox[0].collide == 0 or self.combatpreparestate == 1):
                 self.rotatecal = abs(round(self.newangle) - self.angle)
                 self.rotatecheck = 360 - self.rotatecal
                 self.moverotate = 1
@@ -730,6 +729,15 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.angle < 0:
                     self.testangle = math.radians(-self.angle)
                 ## Rotate logic to continuously rotate based on angle and shortest length
+                if self.state in (1, 3, 5):
+                    self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size / 2))
+                    self.walk = True
+                else:
+                    self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size / 2))
+                    self.run = True
+                if self.rotatespeed > 10: self.rotatespeed = 10
+                if self.rotatespeed < 1:
+                    self.rotatespeed = 1
                 rotatetiny = self.rotatespeed * dt
                 if round(self.newangle) > self.angle:
                     if self.rotatecal > 180: # rotate with the smallest angle direction
@@ -788,7 +796,6 @@ class Unitarmy(pygame.sprite.Sprite):
                     if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[
                         list(side2.keys())[1]].collide == 0) or self.combatpreparestate == 1) \
                             and self.moverotate == 0 and self.rotateonly != True:
-                        self.pause = False
                         move = self.basetarget - self.allsidepos[0]
                         move_length = move.length()
                         # if self.state == 5: self.target = self.pos
@@ -798,10 +805,12 @@ class Unitarmy(pygame.sprite.Sprite):
                             if self.state in (96, 98, 99):
                                 heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
                             move.normalize_ip()
-                            if self.state in (2, 4, 6, 10, 96, 98, 99):
-                                move = move * self.runspeed * heightdiff * dt
-                            elif self.state in (1, 3, 5):
+                            if self.state in (1, 3, 5):
                                 move = move * self.walkspeed * heightdiff * dt
+                                self.walk = True
+                            else: #  self.state in (2, 4, 6, 10, 96, 98, 99)
+                                move = move * self.runspeed * heightdiff * dt
+                                self.run = True
                             # elif self.state == 10:
                             #     move = move * 3 * heightdiff * dt
                             if move.length() <= move_length:
@@ -811,11 +820,11 @@ class Unitarmy(pygame.sprite.Sprite):
                             else:
                                 if self.combatpreparestate == 0:
                                     move = self.basetarget - self.allsidepos[0]
-                                    move.normalize_ip()
                                     self.basepos += move
                                     self.pos = self.basepos * abs(self.viewmode - 11)
                                     self.rect.center = self.pos
-                                elif self.combatpreparestate == 1:  # Rotate army to the enemy sharply to stop
+                                    print(self.gameid, self.pos, self.allsidepos[0], self.basetarget)
+                                else:  # Rotate army to the enemy sharply to stop
                                     move = self.basetarget - self.allsidepos[0]
                                     self.basepos += move
                                     self.pos = self.basepos * abs(self.viewmode - 11)
@@ -839,10 +848,6 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
                         self.mask = pygame.mask.from_surface(self.image)
-                    elif (self.hitbox[
-                              list(side2.keys())[
-                                  0]].collide != 0 and self.combatpreparestate == 0) and self.moverotate == 0 and self.rotateonly != True:
-                        self.pause = True
                     elif self.moverotate == 0 and self.rotateonly:
                         self.state = 0
                         self.commandstate = self.state

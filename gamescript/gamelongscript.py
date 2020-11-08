@@ -94,7 +94,7 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
-                                  colour=colour, control=control, coa=coa, commander=command, startangle=startangle)
+                                  colour=colour, control=control, coa=coa, commander=command, startangle=abs(360 - startangle))
     army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 2),
                    gamebattalion.Hitbox(army, 1, 2, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 2, 2, army.rect.height - int(army.rect.height * 0.1)),
@@ -298,15 +298,15 @@ def losscal(who, target, hit, defense, type):
         dmg = who.dmg
         if who.charging: ## Include charge in dmg if charging
             if who.ignorechargedef == False: ## Ignore charge defense if have ignore trait
-                dmg = round(dmg + (who.charge / 10) - (target.chargedef / 10))
+                dmg = dmg + (who.charge / 10) - (target.chargedef / 10)
             elif who.ignorechargedef:
-                dmg = round(dmg + (who.charge / 10))
+                dmg = dmg + (who.charge / 10)
         leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
-        dmg = round((leaderdmg * who.troopnumber) + leaderdmgbonus)
+        dmg = (leaderdmg * who.troopnumber) + leaderdmgbonus
         if target.state == 10: dmg = dmg / 5 ## More dmg against enemy not fighting
     elif type == 1:  # Range Damage
         leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
-        dmg = round(((leaderdmg * who.troopnumber) + leaderdmgbonus)/5)
+        dmg = (leaderdmg * who.troopnumber) + leaderdmgbonus
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         dmg = dmg * 1.25
     if dmg > target.unithealth:
@@ -314,6 +314,7 @@ def losscal(who, target, hit, defense, type):
     elif leaderdmg < 0:
         leaderdmg = 0
         dmg = 0
+    dmg = round(dmg/5)
     moraledmg = round(dmg / 100)
     return dmg, moraledmg, leaderdmg
 
@@ -520,10 +521,10 @@ def splitunit(battle, who, how):
     maxhealth = sum(maxhealth)
     maxstamina = sum(maxstamina) / len(maxstamina)
     maxmorale = sum(maxmorale) / len(maxmorale)
-    who.maxhealth, who.health75, who.health50, who.health25, = maxhealth, round(maxhealth * 75 / 100), round(
-        maxhealth * 50 / 100), round(maxhealth * 25 / 100)
-    who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 75 / 100), round(
-        maxstamina * 50 / 100), round(maxstamina * 25 / 100)
+    who.maxhealth, who.health75, who.health50, who.health25, = maxhealth, round(maxhealth * 0.75), round(
+        maxhealth * 0.50), round(maxhealth * 0.25)
+    who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 0.75), round(
+        maxstamina * 0.50), round(maxstamina * 0.25)
     who.maxmorale = maxmorale
     ## start making new battalion
     if who.gameid < 2000:

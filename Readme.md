@@ -28,7 +28,7 @@ Ver 0.7 Future Visionary: Fog of War, hidden stat, line of sight, battalion info
 
 Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image)
 
-Ver 0.9 Gaze of New Life: more complex AI (The most challenging step unless cut corner to the point of braindead AI), final code optimisation before full 1.0
+Ver 0.9 Gaze of New Life: AI and pathfinding (The most challenging step unless cut corner to the point of braindead AI), final code optimisation before full 1.0
 
 Ver 1 Pax Paradisum: historical battle simulation game
 

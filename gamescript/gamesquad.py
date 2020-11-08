@@ -199,8 +199,8 @@ class Unitsquad(pygame.sprite.Sprite):
             ##
         # self.loyalty
         self.elemresist = (fireres, waterres, airres, earthres, poisonres)
-        self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
-            self.stamina * 50 / 100), round(self.stamina * 25 / 100)
+        self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
+            self.stamina * 0.5), round(self.stamina * 0.25)
         self.unithealth = self.troophealth * self.troopnumber
         self.lasthealthstate, self.laststaminastate = 4, 4
         self.maxmorale = self.basemorale
@@ -208,8 +208,8 @@ class Unitsquad(pygame.sprite.Sprite):
             = self.baseattack, self.basemeleedef, self.baserangedef, self.basearmour, self.basespeed, self.baseaccuracy, self.basereload, self.basemorale, self.basediscipline, self.baserange, self.basecharge, self.basechargedef
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
-        self.maxhealth, self.health75, self.health50, self.health25, = self.unithealth, round(self.unithealth * 75 / 100), round(
-            self.unithealth * 50 / 100), round(self.unithealth * 25 / 100)
+        self.maxhealth, self.health75, self.health50, self.health25, = self.unithealth, round(self.unithealth * 0.75), round(
+            self.unithealth * 0.5), round(self.unithealth * 0.25)
         self.oldlasthealth, self.oldlaststamina = self.unithealth, self.stamina
         self.maxtroop = self.troopnumber
         self.moralestate = round((self.basemorale * 100) / self.maxmorale)
@@ -265,7 +265,7 @@ class Unitsquad(pygame.sprite.Sprite):
     def checkskillcondition(self):
         """Check which skill can be used"""
         self.availableskill = [skill for skill in self.skill if
-                               skill not in self.skillcooldown.keys() and skill not in self.skilleffect.keys() and self.state in self.skill[skill][
+                               skill not in self.skillcooldown.keys() and self.state in self.skill[skill][
                                    6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][
                                    9] and skill != self.chargeskill]
         if self.useskillcond == 1:
@@ -566,6 +566,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.viewmode = viewmode
         if self.state != 100:
             dt = newdt
+            self.walk = self.battalion.walk
+            self.run = self.battalion.run
             if self.battalion.hitbox[0].stillclick or self.viewmode == 10: #Stamina and Health bar function
                 if self.oldlasthealth != self.unithealth:
                     healthlist = (self.health75, self.health50, self.health25, 0)
@@ -603,13 +605,6 @@ class Unitsquad(pygame.sprite.Sprite):
                                         self.image = self.image_original.copy()
                                         self.battalion.squadimgchange.append(self.gameid)
                             break
-                    if self.stamina < self.maxstamina:
-                        self.stamina += (dt * self.staminaregen)
-                        if self.stamina <= 0:  # Collapse and cannot act
-                            self.state = 97
-                            self.stamina = 0
-                    elif self.stamina > self.maxstamina:
-                        self.stamina = self.maxstamina
                     self.oldlaststamina = self.stamina
                 if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
                     for index, side in enumerate(self.battleside):
@@ -643,36 +638,39 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.nocombat += dt
                     if self.battalion.state != 10:
                         self.nocombat = 0
-            if self.battalion.state == 10 and self.state != 97:
-                if any(battle > 0 for battle in self.battleside):
-                    self.state = 10
-                elif self.ammo > 0 and self.arcshot:  # Help range attack when battalion in melee combat if has arcshot
-                    self.state = 11
-                elif any(battle > 0 for battle in self.battleside) == False:
-                    if self.nocombat == 0:
-                        self.nocombat = 0.1
-                    if self.nocombat > 1:
-                        self.state = 0
-                        self.nocombat = 0
-            ## Range attack function
-            elif self.battalion.state == 11:
-                if self.ammo > 0 and self.attackpos != 0 and self.shootrange >= self.attackpos.distance_to(self.combatpos):
-                    self.state = 11
-                else:
-                    self.state = 0
-            elif self.ammo > 0 and self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in (1, 2, 3, 4, 5, 6)
-                                                                         and self.shootmove)):  # Fire at will
-                if self.attacktarget == 0 and self.battalion.neartarget != {}:  # get near target if no attack target yet
-                    self.attackpos = list(self.battalion.neartarget.values())[0]
-                    self.attacktarget = list(self.battalion.neartarget.keys())[0]
-                    if self.shootrange >= self.attackpos.distance_to(self.combatpos):
+                if self.battalion.state == 10 and self.state != 97:
+                    if any(battle > 0 for battle in self.battleside):
+                        self.state = 10
+                    elif self.ammo > 0 and self.arcshot:  # Help range attack when battalion in melee combat if has arcshot
                         self.state = 11
-                        if self.battalion.state in (1, 3, 5):  # Walk and shoot
-                            self.state = 12
-                        elif self.battalion.state in (2, 4, 6):  # Run and shoot
-                            self.state = 13
-            if self.state in (11, 12, 13) and self.reloadtime < self.reload:
-                self.reloadtime += dt
+                    elif any(battle > 0 for battle in self.battleside) == False:
+                        if self.nocombat == 0:
+                            self.nocombat = 0.1
+                        if self.nocombat > 1:
+                            self.state = 0
+                            self.nocombat = 0
+                ## Range attack function
+                elif self.battalion.state == 11:
+                    self.state = 0
+                    if self.ammo > 0 and self.attackpos != 0 and self.shootrange >= self.attackpos.distance_to(self.combatpos):
+                        self.state = 11
+                elif self.ammo > 0 and self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in (1, 2, 3, 4, 5, 6)
+                                                                             and self.shootmove)):  # Fire at will
+                    if self.battalion.neartarget != {}:  # get near target if no attack target yet
+                        if self.attacktarget == 0:
+                            self.attackpos = list(self.battalion.neartarget.values())[0]
+                            self.attacktarget = list(self.battalion.neartarget.keys())[0]
+                        if self.shootrange >= self.attackpos.distance_to(self.combatpos):
+                            self.state = 11
+                            if self.battalion.state in (1, 3, 5):  # Walk and shoot
+                                self.state = 12
+                            elif self.battalion.state in (2, 4, 6):  # Run and shoot
+                                self.state = 13
+                if self.state in (11, 12, 13) and self.reloadtime < self.reload:
+                    self.reloadtime += dt
+                    self.stamina = self.stamina - (dt * 2)
+            if self.gameid == 10126:
+                print(self.state)
             ## ^ End range attack function
             if combattimer >= 0.5:
                 if any(battle > 1 for battle in self.battleside):
@@ -684,6 +682,7 @@ class Unitsquad(pygame.sprite.Sprite):
                             else:
                                 target = self.maingame.squad[np.where(squadindexlist == combat)[0][0]]
                                 self.dmgcal(target, index, target.battleside.index(self.gameid), self.maingame.gameunitstat.statuslist, combattimer)
+                                self.stamina = self.stamina - combattimer
                 elif self.state in (11, 12, 13):
                     if type(self.attacktarget) == int and self.attacktarget != 0:
                         allunitindex = self.maingame.allunitindex
@@ -707,9 +706,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         self.reloadtime = 0
                     elif self.attacktarget != 0 and self.attacktarget.state == 100:
                         self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
-            self.stamina = self.stamina - dt if self.state in (1, 3, 5, 11) and self.battalion.pause == False else self.stamina - (
-                    dt * 3) if self.state in (2, 4, 6, 10, 96, 98, 99) and self.battalion.pause == False \
-                else self.stamina - (dt * 4) if self.state == 12 else self.stamina - (dt * 5) if self.state == 13 else self.stamina + (
+            self.stamina = self.stamina - (dt * 2) if self.walk else self.stamina - (dt * 4) if self.run else self.stamina + (
                     dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale:
                 if self.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
@@ -719,6 +716,14 @@ class Unitsquad(pygame.sprite.Sprite):
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt
             if self.morale < 0: self.morale = 0
+            ## Regen logic
+            if self.stamina < self.maxstamina:
+                if self.stamina <= 0:  # Collapse and cannot act
+                    self.state = 97
+                    self.stamina = 0
+                self.stamina += (dt * self.staminaregen)
+            elif self.stamina > self.maxstamina:
+                self.stamina = self.maxstamina
             if self.hpregen > 0 and self.unithealth % self.troophealth != 0:  ## hp regen cannot ressurect troop only heal to max hp
                 alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive unit
                 self.unithealth += self.hpregen * dt
@@ -732,6 +737,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.troopnumber = round(self.troopnumber)
             if self.unithealth < 0: self.unithealth = 0
             elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
+            ## ^End regen
             self.battleside = [-1, -1, -1, -1] # Reset battleside to defualt
             if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0
             if self.troopnumber <= 0:  ## enter dead state

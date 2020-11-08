@@ -630,17 +630,17 @@ class Armyicon(pygame.sprite.Sprite):
 
 
 class Timer(pygame.sprite.Sprite):
-    def __init__(self, pos, textsize=20):
+    def __init__(self, pos, timestart, textsize=20):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.pos = pos
-        self.timer = 0
-        self.oldtimer = 0
-        self.timenum = datetime.timedelta(seconds=self.timer)
+        self.timer = timestart.total_seconds()
+        self.oldtimer = self.timer
+        self.timenum = timestart #datetime.timedelta(seconds=self.timer)
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
         self.image_original = self.image.copy()
-        self.timersurface = self.font.render(str(round(self.timer, 2)), 1, (0, 0, 0))
+        self.timersurface = self.font.render(str(self.timer), 1, (0, 0, 0))
         self.timerrect = self.timersurface.get_rect(topleft=(5, 5))
         self.image.blit(self.timersurface, self.timerrect)
         self.rect = self.image.get_rect(topleft=pos)
