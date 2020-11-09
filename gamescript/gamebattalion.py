@@ -696,8 +696,9 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.retreattimer = self.retreatmax
             if self.hold == 1 and self.state not in (97,98,99):  ## skirmishing
                 minrange = self.minrange
-                if minrange == 0: minrange = 100
-                if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange / 5:
+                if minrange < 50: minrange = 50
+                if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange:
+                    print(minrange)
                     self.state = 96
                     target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
                     if target[0] < 0:
@@ -716,7 +717,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 else:
                     self.state = self.commandstate
                 self.attacktarget = 0
-            """Rotate Function"""
+            ##Rotate Function
             if self.combatpreparestate == 1 and self.stopcombatmove == False: # Rotate army side to the enemyside
                 # and [round(elem,2) for elem in self.allsidepos[0]] != [round(elem,2) for elem in self.basetarget]
                 self.setrotate(self.attacktarget.pos)
@@ -774,7 +775,8 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.rangecombatcheck = 0
                     self.set_target(self.attacktarget.basepos)
                     self.setrotate(self.target)
-            """Move Function"""
+            ## ^End rotate function
+            ## Move function
             if self.allsidepos[0] != self.basetarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
@@ -823,6 +825,10 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.basepos += move
                                     self.pos = self.basepos * abs(self.viewmode - 11)
                                     self.rect.center = self.pos
+                                    if self.battleside == [0, 0, 0, 0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
+                                        self.allsidepos[0] = self.commandtarget
+                                        self.state = 0
+                                        self.commandstate = self.state
                                 else:  # Rotate army to the enemy sharply to stop
                                     move = self.basetarget - self.allsidepos[0]
                                     self.basepos += move
@@ -866,11 +872,9 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
                         self.mask = pygame.mask.from_surface(self.image)
+            ## ^End move function
             if self.stamina <= 0:
                 self.state = 97
-                self.set_target(self.allsidepos[0])
-                # self.target = self.allsidepos[0]
-                self.rangecombatcheck = 0
             if self.state == 97:
                 awake = True
                 for squad in self.squadsprite:
@@ -972,7 +976,11 @@ class Unitarmy(pygame.sprite.Sprite):
         if keystate[pygame.K_LSHIFT]: self.rotateonly = True
         self.set_target(mouse_pos[1])
         self.commandtarget = self.target
-        self.setrotate()
+        if keystate[pygame.K_z] == False:
+            self.setrotate()
+        else: ## Revert unit without rotate, cannot run in this state
+            if double_mouse_right:
+                self.state -= 1
         if self.charging:
             self.leader[0].authority -= self.authpenalty
             self.authrecal()

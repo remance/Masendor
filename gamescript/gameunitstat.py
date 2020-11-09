@@ -92,7 +92,7 @@ class Unitstat():
                                 else:
                                     row[n] = []
                             elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 20):
-                                row[n] = int(i)
+                                row[n] = float(i)
                     self.statuslist[row[0]] = row[1:]
                 run += 1
         unitfile.close()
@@ -175,7 +175,7 @@ class Unitstat():
                                 else:
                                     row[n] = []
                             elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 34, 35):
-                                row[n] = int(i)
+                                row[n] = float(i)
                     self.traitlist[row[0]] = row[1:]
                     run += 1
         unitfile.close()

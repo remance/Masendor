@@ -301,11 +301,11 @@ def losscal(who, target, hit, defense, type):
                 dmg = dmg + (who.charge / 10) - (target.chargedef / 10)
             elif who.ignorechargedef:
                 dmg = dmg + (who.charge / 10)
-        leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 5)
+        leaderdmg = round((dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore) / 10)
         dmg = (leaderdmg * who.troopnumber) + leaderdmgbonus
         if target.state == 10: dmg = dmg / 5 ## More dmg against enemy not fighting
     elif type == 1:  # Range Damage
-        leaderdmg = round(who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore)
+        leaderdmg = round((who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore) / 10)
         dmg = (leaderdmg * who.troopnumber) + leaderdmgbonus
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         dmg = dmg * 1.25
@@ -314,7 +314,7 @@ def losscal(who, target, hit, defense, type):
     elif leaderdmg < 0:
         leaderdmg = 0
         dmg = 0
-    dmg = round(dmg/5)
+    dmg = round(dmg)
     moraledmg = round(dmg / 100)
     return dmg, moraledmg, leaderdmg
 

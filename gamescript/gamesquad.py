@@ -60,7 +60,7 @@ class Unitsquad(pygame.sprite.Sprite):
         skill = [self.chargeskill] + skill
         self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0 and x in statlist.abilitylist}
         self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100))
-        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 100
+        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100)) * 10
         self.mana = stat[20]
         self.meleeweapon = stat[21]
         self.rangeweapon = stat[22]
@@ -619,8 +619,8 @@ class Unitsquad(pygame.sprite.Sprite):
             if dt > 0:
                 self.timer += dt
                 if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (96, 97, 98, 99):
-                    self.state = self.battalion.state
-                if self.timer >= 1:
+                    self.state = self.battalion.state # Enforce battalion state to squad when moving and breaking
+                if self.timer >= 1: # Update status and skill use around every 1 second
                     self.statusupdate(weather)
                     self.availableskill = []
                     if self.useskillcond != 3:

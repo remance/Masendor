@@ -31,14 +31,14 @@
 30,"Keen Strike",0,1,3,55,10,10,0,75,90,250,,,,,,,,0,0,0,0,0,,,,0,0,,,0,0,2,
 31,"Graceful Evasion",0,1,30,300,10,10,0,80,10,,150,150,170,,,,,20,0,0,0,0,,,,0,0,,,0,0,2,"There is nothing more elegant than gracefully evading a blow from a brute."
 32,"Corpse Burst",0,2,1,300,10,10,,35,60,,,,,,,,,0,0,0,0,0,,,,0,0,,,,0,2,
-33,"Spearwall",0,1,120,0,"0,1,3,10","0,1,3",0,30,0,120,110,90,50,,,,,50,0,-1,0,0,,,,0,0,,,0,0,0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you rushing at full speed after all."
-34,"Spearguard",0,1,90,0,"0,1,3,10","0,1,3",0,50,0,110,115,,60,,,,,20,0,-0.5,0,0,,,,0,0,,,0,0,0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
+33,"Spearwall",0,1,120,0,"0,1,3,10","0,1,3",0,30,0,120,110,90,50,,,,,50,0,-0.1,0,0,,,,0,0,,,0,0,0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you rushing at full speed after all."
+34,"Spearguard",0,1,90,0,"0,1,3,10","0,1,3",0,50,0,110,115,,60,,,,,20,0,-0.1,0,0,,,,0,0,,,0,0,0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
 35,"Angel Guardian",0,3,20,200,,,0,80,25,,,,,,,,,10,0,-1,0,0,,,,0,88,,,0,0,2,
-36,"Shieldwall",0,1,120,0,"0,1,3,10","0,1,3",0,30,0,,130,120,50,,,,,25,0,-0.5,0,0,,,,0,0,,,0,0,0,"What is the most common tactic used in the most disciplined troops by every world conquering empires? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And the more experienced soldier make a more effective the army."
-37,"Shield Turtle",0,1,120,0,"0,1,3,10","0,1,3",0,50,0,,130,160,20,,,,,10,0,-2,0,0,,,,0,0,,,0,0,0,"Defensive yet still mobile. This tactic is superb against approaching enemy army that excel in range attack."
-38,"Shield Dome",0,1,180,60,"0,10",0,,60,20,80,150,200,0,,,,,40,0,-2,15,0,,,,0,0,,,0,0,0,"The ultimate defense tactic. This shield dome leaves no vulnerable spot for enemy to attack."
-39,"Shield Barrier",0,1,180,60,"0,10",0,,64,30,75,165,160,0,,,,,35,0,-2,25,0,,,,0,0,,,0,0,0,
-40,"Shield Fortress",0,1,180,90,"0,10",0,,72,40,,175,200,0,,,,,50,0,-2,0,0,,,,0,0,,,0,0,0,
+36,"Shieldwall",0,1,120,0,"0,1,3,10","0,1,3",0,30,0,,130,120,50,,,,,25,0,-0.1,0,0,,,,0,0,,,0,0,0,"What is the most common tactic used in the most disciplined troops by every world conquering empires? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And the more experienced soldier make a more effective the army."
+37,"Shield Turtle",0,1,120,0,"0,1,3,10","0,1,3",0,50,0,,130,160,20,,,,,10,0,-1,0,0,,,,0,0,,,0,0,0,"Defensive yet still mobile. This tactic is superb against approaching enemy army that excel in range attack."
+38,"Shield Dome",0,1,180,60,"0,10",0,,60,20,80,150,200,0,,,,,40,0,-1,15,0,,,,0,0,,,0,0,0,"The ultimate defense tactic. This shield dome leaves no vulnerable spot for enemy to attack."
+39,"Shield Barrier",0,1,180,60,"0,10",0,,64,30,75,165,160,0,,,,,35,0,-1,25,0,,,,0,0,,,0,0,0,
+40,"Shield Fortress",0,1,180,90,"0,10",0,,72,40,,175,200,0,,,,,50,0,-1,0,0,,,,0,0,,,0,0,0,
 41,"Rapid Shots",0,1,120,300,11,11,,35,10,,,,,,,120,,0,0,-2,0,0,,,,0,0,,,0,0,0,"Opportunity to attack is of the essence especially for archers in a battlefield, the more arrows remain in the quiver means the less enemy killed. "
 42,"Rapid Defense",0,1,120,300,"1,2,3,4,10","1,2,3,4,10",,45,10,,110,,110,,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,
 43,"Rapid Attack",0,1,120,300,"1,2,3,4,10","1,2,3,4,10",,50,10,110,,,110,,,,,0,0,-1.5,0,0,,,,0,0,,,0,0,0,"Strike fast enough and the enemy will never know what hit them."

@@ -301,7 +301,7 @@ class Battle():
         self.clock = pygame.time.Clock()
         self.lastmouseover = 0
         self.gamespeed = 1
-        self.gamespeedset = (0, 0.5, 1, 2, 4)
+        self.gamespeedset = (0, 0.5, 1, 2, 4, 6)
         self.clickcheck = 0  ## For checking if unit or ui is clicked
         self.clickcheck2 = 0  ##  For checking if another unit is clicked when inspect ui open"
         self.inspectui = 0
