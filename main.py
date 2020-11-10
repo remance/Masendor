@@ -263,10 +263,12 @@ class Mainmenu():
         # run game intro
         self.clock = pygame.time.Clock()
         game_intro(self.screen, self.clock, False)
-        bgdtile = load_image('background.jpg', 'ui')
+        bgdtile = load_image('background.jpg', 'ui').convert()
+        bgdtile = pygame.transform.scale(bgdtile, SCREENRECT.size)
         self.background = pygame.Surface(SCREENRECT.size)
-        for x in range(0, SCREENRECT.width, bgdtile.get_width()):
-            self.background.blit(bgdtile, (x, 0))
+        # for x in range(0, SCREENRECT.width, bgdtile.get_width()):
+        #     self.background.blit(bgdtile, (x, 0))
+        self.background.blit(bgdtile,(0,0))
         self.screen.blit(self.background, (0, 0))
         imagelist = load_base_button()
         self.menubutton = Menutext(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height / 2), text="START")
