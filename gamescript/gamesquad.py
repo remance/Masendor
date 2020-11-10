@@ -618,9 +618,10 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.haveredcorner = False
             if dt > 0:
                 self.timer += dt
-                if self.battalion.state in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (96, 97, 98, 99):
-                    self.state = self.battalion.state # Enforce battalion state to squad when moving and breaking
-                if self.timer >= 1: # Update status and skill use around every 1 second
+                battalionstate = self.battalion.state
+                if battalionstate in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (97, 98, 99):
+                    self.state = battalionstate # Enforce battalion state to squad when moving and breaking
+                if self.timer > 1: # Update status and skill use around every 1 second
                     self.statusupdate(weather)
                     self.availableskill = []
                     if self.useskillcond != 3:
@@ -630,15 +631,15 @@ class Unitsquad(pygame.sprite.Sprite):
                                 and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                             self.useskill(0)
                     skillchance = random.randint(0, 10)
-                    if skillchance >= 6 and len(self.availableskill) > 0 and dt != 0:
+                    if skillchance >= 6 and len(self.availableskill) > 0:
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
                     self.timer -= 1
                 """Melee combat act"""
                 if self.nocombat > 0:  # For avoiding squad go into idle state while battalion auto move in melee combat
                     self.nocombat += dt
-                    if self.battalion.state != 10:
+                    if battalionstate != 10:
                         self.nocombat = 0
-                if self.battalion.state == 10 and self.state != 97:
+                if battalionstate == 10 and self.state != 97:
                     if any(battle > 0 for battle in self.battleside):
                         self.state = 10
                     elif self.ammo > 0 and self.arcshot:  # Help range attack when battalion in melee combat if has arcshot
@@ -650,11 +651,11 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.state = 0
                             self.nocombat = 0
                 ## Range attack function
-                elif self.battalion.state == 11:
+                elif battalionstate == 11:
                     self.state = 0
                     if self.ammo > 0 and self.attackpos != 0 and self.shootrange >= self.attackpos.distance_to(self.combatpos):
                         self.state = 11
-                elif self.ammo > 0 and self.battalion.fireatwill == 0 and (self.state == 0 or (self.battalion.state in (1, 2, 3, 4, 5, 6)
+                elif self.ammo > 0 and self.battalion.fireatwill == 0 and (self.state == 0 or (battalionstate in (1, 2, 3, 4, 5, 6)
                                                                              and self.shootmove)):  # Fire at will
                     if self.battalion.neartarget != {}:  # get near target if no attack target yet
                         if self.attacktarget == 0:
@@ -662,9 +663,9 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.attacktarget = list(self.battalion.neartarget.keys())[0]
                         if self.shootrange >= self.attackpos.distance_to(self.combatpos):
                             self.state = 11
-                            if self.battalion.state in (1, 3, 5):  # Walk and shoot
+                            if battalionstate in (1, 3, 5):  # Walk and shoot
                                 self.state = 12
-                            elif self.battalion.state in (2, 4, 6):  # Run and shoot
+                            elif battalionstate in (2, 4, 6):  # Run and shoot
                                 self.state = 13
                 if self.state in (11, 12, 13) and self.reloadtime < self.reload:
                     self.reloadtime += dt
@@ -682,7 +683,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.dmgcal(target, index, target.battleside.index(self.gameid), self.maingame.gameunitstat.statuslist, combattimer)
                                 self.stamina = self.stamina - combattimer
                 elif self.state in (11, 12, 13):
-                    if type(self.attacktarget) == int and self.attacktarget != 0:
+                    if type(self.attacktarget) == int and self.attacktarget != 0: # For fire at will, which attacktarge is int
                         allunitindex = self.maingame.allunitindex
                         if self.attacktarget in allunitindex:
                             self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
@@ -743,6 +744,8 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.lasthealthstate = 0
                 self.image = self.image_original.copy()
                 self.battalion.squadimgchange.append(self.gameid)
+                self.skillcooldown = {}
+                self.skilleffect = {}
                 ## Update squad alive list if squad die
                 deadindex = np.where(self.battalion.armysquad == self.gameid)
                 deadindex = [deadindex[0], deadindex[1]]

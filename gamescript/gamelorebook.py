@@ -17,7 +17,7 @@ class Lorebook(pygame.sprite.Sprite):
     statusstat = None
     skillstat = None
     traitstat = None
-    leaderstat = None
+    leader = None
     leaderlore = None
     terrainstat = None
     landmarkstat = None
@@ -36,6 +36,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.fontheader = pygame.font.SysFont("oldenglishtext", 40)
         self.image = image
         self.image_original = self.image.copy()
+        self.leaderstat = self.leader.leaderlist
         self.section = 0  ## 0 = welcome/concept, 1 world history, 2 = faction, 3 = unit, 4 = equipment, 5 = unit status, 6 = unit skill, 7 = unit trait, 8 = leader, 9 terrain, 10 = landmark
         self.subsection = 1  ## subsection of that section e.g. swordmen unit in unit section Start with 1 instead of 0
         self.statdata = None  ## for getting the section stat data
@@ -43,6 +44,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.showsubsection = None  ## Subsection stat showing
         self.showsubsection2 = None  ## Subsection lore showing
         self.subsectionlist = None
+        self.portrait = None
         self.equipmentstat = {}
         run = 1
         self.equipmentlastindex = []
@@ -68,14 +70,15 @@ class Lorebook(pygame.sprite.Sprite):
                              7: "Forced Walk", 8: "Forced Run",
                              10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
                              69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
-        self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Untalented", "Unskilled", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
+        self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
 
-    def changepage(self, page):
+    def changepage(self, page, portrait=None):
         self.page = page
         self.image = self.image_original.copy()
         self.pagedesign()
 
     def changesection(self, section, listsurface, listgroup, lorescroll):
+        self.portrait = None
         self.section = section
         self.subsection = 1
         self.statdata = self.sectionlist[self.section][0]
@@ -94,9 +97,18 @@ class Lorebook(pygame.sprite.Sprite):
         self.subsection = subsection
         self.page = 0
         self.image = self.image_original.copy()
+        self.portrait = None
         if self.loredata is not None:
             self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
-        self.pagedesign()
+        if self.section != 8:
+            self.pagedesign()
+        else: ## leader section
+            try:
+                self.portrait = self.leader.imgs[self.leader.imgorder.index(self.subsection)].copy()
+            except:  ## Use Unknown leader image if there is none in list
+                self.portrait = self.leader.imgs[-1].copy()
+            self.portrait = pygame.transform.scale(self.portrait, (150, 150))
+            self.pagedesign()
 
     def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
         words = [word.split(' ') for word in text.splitlines()]  ## 2D array where each row is a list of words
@@ -132,7 +144,7 @@ class Lorebook(pygame.sprite.Sprite):
                 row += 30
                 if len(listgroup) > self.maxsubsectionshow: break
 
-    def pagedesign(self, portrait=None):
+    def pagedesign(self):
         """Lore book format position of the text"""
         firstpagecol = 50
         secondpagecol = 650
@@ -148,11 +160,12 @@ class Lorebook(pygame.sprite.Sprite):
         textsurface = self.fontheader.render(str(name), 1, (0, 0, 0))
         textrect = textsurface.get_rect(topleft=(28, 10))
         self.image.blit(textsurface, textrect)  ## Add name of item to the top of page
-        # portraitrect = portrait.get_rect(topleft=(20, 60))
-        # self.image.blit(portrait, portraitrect)
+        if self.portrait != None:
+            portraitrect = self.portrait.get_rect(topleft=(20, 60))
+            self.image.blit(self.portrait, portraitrect)
         description = stat[-1]
         descriptionsurface = pygame.Surface((300, 300), pygame.SRCALPHA)
-        descriptionrect = descriptionsurface.get_rect(topleft=(100, 60))
+        descriptionrect = descriptionsurface.get_rect(topleft=(180, 60))
         self.blit_text(descriptionsurface, description, (5, 5), self.font)
         self.image.blit(descriptionsurface, descriptionrect)
         if self.page == 0:

@@ -304,7 +304,6 @@ class Skillcardicon(pygame.sprite.Sprite):
                 self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
-
         elif cooldown != self.cooldowncheck and self.activecheck == 0:
             self.cooldowncheck = cooldown
             self.image = self.image_original.copy()
@@ -435,7 +434,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                     self.mapevent[event][2] = [self.mapevent[event][2]]
                 elif "," in self.mapevent[event][2]: # Change mode list to list here since csvread don't have that function
                     self.mapevent[event][2] = [int(item) if item.isdigit() else item for item in self.mapevent[event][2].split(',')]
-                if self.mapevent[event][3] != 0: # change time string to time delta same reason as above
+                if self.mapevent[event][3] != "": # change time string to time delta same reason as above
                     newtime = datetime.datetime.strptime(self.mapevent[event][3], '%H:%M:%S').time()
                     newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
                     self.mapevent[event][3] = newtime
@@ -471,7 +470,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         for index, text in enumerate(thislog[self.currentstartrow:]):
             if index == self.maxrowshow: break
             textsurface = self.font.render(text[1], 1, (0, 0, 0))
-            textrect = textsurface.get_rect(topleft=(50, row))
+            textrect = textsurface.get_rect(topleft=(40, row))
             self.image.blit(textsurface, textrect)
             row += 20
 
@@ -532,7 +531,7 @@ class Uiscroller(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.uiheight = uiheight
         self.pos = pos
-        self.image = pygame.Surface((15, self.uiheight))
+        self.image = pygame.Surface((10, self.uiheight))
         self.image.fill((255, 255, 255))
         self.image_original = self.image.copy()
         self.buttoncolour = (100, 100, 100)

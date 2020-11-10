@@ -305,7 +305,7 @@ def losscal(who, target, hit, defense, type):
         dmg = (leaderdmg * who.troopnumber) + leaderdmgbonus
         if target.state == 10: dmg = dmg / 5 ## More dmg against enemy not fighting
     elif type == 1:  # Range Damage
-        leaderdmg = round((who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore) / 10)
+        leaderdmg = round((who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore) / 5)
         dmg = (leaderdmg * who.troopnumber) + leaderdmgbonus
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         dmg = dmg * 1.25
@@ -359,7 +359,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
                     for squad in army.squadsprite:
                         squad.basemorale -= 20
             else:
-                receiver.maingame.eventlog.addlog([0, str(receiver.leader.name) + " is dead"], [0, 2], "ld1")
+                receiver.maingame.eventlog.addlog([0, str(receiver.leader.name) + " is dead"], [0, 2])
             receiver.maingame.setuparmyicon()
 
 

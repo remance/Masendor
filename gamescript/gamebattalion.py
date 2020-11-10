@@ -339,22 +339,23 @@ class Unitarmy(pygame.sprite.Sprite):
                 if squad.charging and self.charging == False:
                     self.charging = True
                 howmany += 1
-        self.stamina = int(self.stamina/howmany)
-        self.morale = int(self.morale/howmany)
-        self.speed = min(allspeed)
-        self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
-        if len(allshootrange) > 0:
-            self.maxrange = max(allshootrange)
-            self.minrange = min(allshootrange)
-        if self.gamestart == False:
-            self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
-                self.stamina * 50 / 100), round(self.stamina * 25 / 100)
-            self.lasthealthstate, self.laststaminastate = 4, 4
-            self.maxmorale = self.morale
-            self.maxhealth, self.health75, self.health50, self.health25, = self.troopnumber, round(self.troopnumber * 75 / 100), round(
-                self.troopnumber * 50 / 100), round(self.troopnumber * 25 / 100)
-        self.moralestate = round((self.morale * 100) / self.maxmorale)
-        self.staminastate = round((self.stamina * 100) / self.maxstamina)
+        if self.troopnumber > 0:
+            self.stamina = int(self.stamina/howmany)
+            self.morale = int(self.morale/howmany)
+            self.speed = min(allspeed)
+            self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
+            if len(allshootrange) > 0:
+                self.maxrange = max(allshootrange)
+                self.minrange = min(allshootrange)
+            if self.gamestart == False:
+                self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
+                    self.stamina * 50 / 100), round(self.stamina * 25 / 100)
+                self.lasthealthstate, self.laststaminastate = 4, 4
+                self.maxmorale = self.morale
+                self.maxhealth, self.health75, self.health50, self.health25, = self.troopnumber, round(self.troopnumber * 75 / 100), round(
+                    self.troopnumber * 50 / 100), round(self.troopnumber * 25 / 100)
+            self.moralestate = round((self.morale * 100) / self.maxmorale)
+            self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
     def setupfrontline(self, specialcall=False):
         """Setup frontline TODO change frontline list to keep sprite instead of index (same for squad combat cal)"""
@@ -437,6 +438,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.attacktarget = enemyhitbox.who
         self.baseattackpos = enemyhitbox.who.allsidepos[enemyhitbox.side]
         self.attackpos = self.baseattackpos * abs(self.viewmode - 11)
+        if enemyhitbox.side == 0:
+            enemyhitbox.who.attacktarget = self
         # if list(side2.keys())[0] == 1:
         # self.commandtarget = enemyhitbox.who.allsidepos[enemyhitbox.side]
         # enemyhitbox.who.battleside[enemyhitbox.side] = self.gameid
@@ -698,7 +701,6 @@ class Unitarmy(pygame.sprite.Sprite):
                 minrange = self.minrange
                 if minrange < 50: minrange = 50
                 if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange:
-                    print(minrange)
                     self.state = 96
                     target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
                     if target[0] < 0:
@@ -710,8 +712,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     elif target[1] > 1000:
                         target[1] = 1000
                     self.set_target(target)
-            if self.state == 10 and self.battleside == [0, 0, 0, 0] and (
-                    self.attacktarget == 0 or (self.attacktarget != 0 and self.attacktarget.state == 100)):
+            if self.state == 10 and self.battleside == [0, 0, 0, 0]:
                 if self.target == self.allsidepos[0]:
                     self.state = 0
                 else:
@@ -976,9 +977,10 @@ class Unitarmy(pygame.sprite.Sprite):
         if keystate[pygame.K_LSHIFT]: self.rotateonly = True
         self.set_target(mouse_pos[1])
         self.commandtarget = self.target
-        if keystate[pygame.K_z] == False:
-            self.setrotate()
-        else: ## Revert unit without rotate, cannot run in this state
+        self.setrotate()
+        if keystate[pygame.K_z] == True: ## Revert unit without rotate, cannot run in this state
+            self.newangle = self.angle
+            self.moverotate = 0
             if double_mouse_right:
                 self.state -= 1
         if self.charging:

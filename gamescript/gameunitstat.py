@@ -238,7 +238,8 @@ class Leaderstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)
+                    if i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None):
+                        row[n] = int(i)
                     # if and n in []:
                     #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                     # else: row[n] = [int(i)]

@@ -422,7 +422,7 @@ class Battle():
         gamelorebook.Lorebook.statusstat = self.gameunitstat.statuslist
         gamelorebook.Lorebook.skillstat = self.gameunitstat.abilitylist
         gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
-        gamelorebook.Lorebook.leaderstat = self.allleader.leaderlist
+        gamelorebook.Lorebook.leader = self.allleader
         gamelorebook.Lorebook.leaderlore = None
         gamelorebook.Lorebook.terrainstat = self.battlemapfeature.featuremod
         gamelorebook.Lorebook.weatherstat = self.allweather
@@ -854,9 +854,9 @@ class Battle():
                                              self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
                         ### FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
-                            self.textdrama.queue.append('Hello and Welcome to the Update Video')
+                            self.textdrama.queue.append('Hello and Welcome to the first playtest')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: FPS testing and leader authority')
+                            self.textdrama.queue.append('Showcase: Battle of Hastings')
                         elif event.key == pygame.K_3:
                             self.textdrama.queue.append('relationship with battalion size')
                         elif event.key == pygame.K_4:
@@ -1317,7 +1317,7 @@ class Battle():
                 self.uidt = self.dt
                 self.dt = self.dt * self.gamespeed # dt with gamespeed for ingame cal
                 self.combattimer += self.dt
-                self.timenumber.timerupdate(self.dt)
+                self.timenumber.timerupdate(self.dt*5)
             else: # Complete game pause either menu or enclycopedia
                 if self.battlemenu.mode == 0:
                     for button in self.battlemenubutton:
