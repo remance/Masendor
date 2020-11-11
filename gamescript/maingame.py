@@ -1,12 +1,9 @@
 """
 ## Known problem
-collaspse still not working right (unit can still run while recover)
-Hitbox still behave weirdly in melee combat
-inspect ui cause almost 10 fps drop in large unit (smaller in other ui but need optimise) squad update 10 fps, battalion update 30 fps
-1 melee combat cause 10 fps drop
+Hitbox still behave weirdly in melee combat (sometimes combatprepare is call for side before front)
 Optimise list
+melee combat need to be optimised more
 change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
-maybe best remove all for loop in main and move them to update
 remove index and change call to the sprite itself
 """
 
@@ -686,7 +683,6 @@ class Battle():
 
     def rungame(self):
         self.setuparmyicon()
-        # self.eventlog.addlog([0, "Welcome, this is a test battle map. The year is unknown in the past when no record is kept."], [0])
         while True:
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -858,7 +854,7 @@ class Battle():
                         elif event.key == pygame.K_2:
                             self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode')
                         elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('relationship with battalion size')
+                            self.textdrama.queue.append('Not yet balanced for historical enactment')
                         elif event.key == pygame.K_4:
                             self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
                         elif event.key == pygame.K_5:
@@ -1058,14 +1054,14 @@ class Battle():
                 self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
                 if self.combattimer >= 0.5:
                     self.combattimer -= 0.5
+                    for squad in self.squad: ## Reset every squad battleside after updater since doing it in updater cause bug for defender
+                        squad.battleside = [None, None, None, None]  # Reset battleside to defualt
+                        squad.battlesideid = [0, 0, 0, 0]
                 self.effectupdater.update(self.allunitlist, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 if self.lastselected is not None and self.lastselected.state != 100:
                     """if not found in army class then it is in dead class"""
                     whoinput = self.lastselected
-                    if (mouse_up or mouse_right) and self.uicheck == 0: # Unit command
-                        whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
-                                         self.lastmouseover, self.enemyposlist, keystate)
                     if self.beforeselected is None:  ## add back the pop up ui to group so it get shown when click unit with none selected before
                         self.gameui = self.popgameui
                         self.allui.add(*self.gameui[0:2])  ## add leader and top ui
@@ -1274,6 +1270,9 @@ class Battle():
                     else:
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()
+                    if (mouse_up or mouse_right) and self.uicheck == 0: # Unit command
+                        whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
+                                         self.lastmouseover, self.enemyposlist, keystate)
                     self.beforeselected = self.lastselected
                     if self.uitimer >= 1.1:
                         self.uitimer -= 1.1

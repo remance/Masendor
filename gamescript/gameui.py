@@ -251,7 +251,7 @@ class Gameui(pygame.sprite.Sprite):
                                      armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
                                  "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.battalion.height),
                                  "Temperature:" + str(int(who.tempcount))]
-                    if who.rangeweapon[0] != 0:
+                    if who.rangeweapon[0] != 1:
                         textvalue.insert(1,
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
@@ -486,7 +486,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                 if howmanyloop.is_integer() == False:
                     howmanyloop = int(howmanyloop) + 1
                 startingindex = 0
-                for run in range(1, howmanyloop + 1):
+                for run in range(1, int(howmanyloop) + 1):
                     textcutnumber = [number for number in cutspace if number <= run * 47]
                     cutnumber = textcutnumber[-1]
                     finaltextoutput = textoutput[startingindex:cutnumber]

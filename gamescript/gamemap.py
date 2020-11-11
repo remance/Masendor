@@ -151,6 +151,7 @@ class Mapheight(pygame.sprite.Sprite):
             colour = 255
         if colour == 0: colour = 255
         heightindex = 255 - colour  ##get colour at pos to obtain the terrain type
+        if heightindex <= 0: heightindex = 1
         return heightindex
 
 

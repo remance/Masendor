@@ -136,6 +136,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.backstab = False
         self.oblivious = False
         self.flanker = False
+        self.unbreakable = False
+        self.tempunbraekable = False
         ##Add trait to base stat
         self.trait = list(set([trait for trait in self.trait if trait != 0]))
         if len(self.trait) > 0:
@@ -197,6 +199,7 @@ class Unitsquad(pygame.sprite.Sprite):
             if 55 in self.trait: self.oblivious = True
             if 73 in self.trait: self.norangepenal = True
             if 74 in self.trait: self.longrangeacc = True
+            if 111 in self.trait: self.unbreakable = True
             ##
         # self.loyalty
         self.elemresist = (fireres, waterres, airres, earthres, poisonres)
@@ -269,6 +272,8 @@ class Unitsquad(pygame.sprite.Sprite):
                                skill not in self.skillcooldown.keys() and self.state in self.skill[skill][
                                    6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][
                                    9] and skill != self.chargeskill]
+        if self.chargeskill == 8 and 36 in self.skill and self.chargeskill in self.skilleffect:
+            self.availableskill.append(self.skill[36])# Shield charge can combo use shield wall at the same time while charging
         if self.useskillcond == 1 and self.staminastate < 50:
             self.availableskill = []
         elif self.useskillcond == 2 and self.staminastate < 25:
@@ -674,14 +679,14 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.stamina = self.stamina - (dt * 2)
                 ## ^ End range attack function
                 if combattimer >= 0.5:
-                    if any(battle > 1 for battle in self.battlesideid):
+                    if any(battle > 0 for battle in self.battlesideid):
                         for index, combat in enumerate(self.battleside):
                             if combat is not None:
                                 if self.gameid not in combat.battlesideid:
-                                    self.battleside[index] = -1
+                                    self.battleside[index] = 0
                                 else:
                                     self.dmgcal(combat, index, combat.battlesideid.index(self.gameid), self.maingame.gameunitstat.statuslist, combattimer)
-                                    self.stamina = self.stamina - combattimer
+                                    self.stamina = self.stamina - (combattimer * 2)
                     elif self.state in (11, 12, 13):
                         if type(self.attacktarget) == int and self.attacktarget != 0: # For fire at will, which attacktarge is int
                             allunitindex = self.maingame.allunitindex
@@ -708,10 +713,13 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.stamina = self.stamina - (dt * 2) if self.walk else self.stamina - (dt * 4) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale:
-                if self.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
-                    self.basemorale += dt
+                if self.battalion.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
+                    self.basemorale += dt # if not broken or missing main leader can replenish morale
+                elif self.state == 99 and self.battalion.state != 99:
+                    self.unithealth -= dt * 5 # unit begin to desert if broken but battalion keep fighting
                 if self.basemorale <= 0:
                     self.basemorale = 0
+                    self.state = 99
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt
             if self.morale < 0: self.morale = 0
@@ -738,8 +746,8 @@ class Unitsquad(pygame.sprite.Sprite):
             elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
             ## ^End regen
             # if self.state != 10:
-            self.battleside = [None, None, None, None] # Reset battleside to defualt
-            self.battlesideid = [0,0,0,0]
+            #     self.battleside = [None, None, None, None] # Reset battleside to defualt
+            #     self.battlesideid = [0,0,0,0]
             if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0
             if self.troopnumber <= 0:  ## enter dead state
                 self.image_original.blit(self.images[7], self.healthimagerect)

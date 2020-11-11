@@ -15,7 +15,7 @@ class Leader(pygame.sprite.Sprite):
         self.meleecommand = stat[3]
         self.rangecommand = stat[4]
         self.cavcommand = stat[5]
-        self.combat = stat[6]
+        self.combat = stat[6] * 10
         self.social = leaderstat.leaderclass[stat[7]]
         self.description = stat[-1]
         self.squadpos = squadposition  # Squad position is the index of squad in squad sprite loop
