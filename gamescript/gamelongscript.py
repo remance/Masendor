@@ -188,21 +188,14 @@ def unitsetup(maingame):
 
 def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
     """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
-    squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else 1 if whoside == 1 else 0][0]
-    squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else 1 if targetside == 1 else 0][0]
-    sortmidfront = [who.frontline[whoside][3], who.frontline[whoside][4], who.frontline[whoside][2], who.frontline[whoside][5],
-                    who.frontline[whoside][1], who.frontline[whoside][6], who.frontline[whoside][0], who.frontline[whoside][7]]
+    squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else whoside][0]
+    squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
+    whofrontline = who.frontline[whoside]
     """only calculate if the attack is attack with the front side"""
     if whoside == 0:
+        sortmidfront = [whofrontline[3], whofrontline[4], whofrontline[2], whofrontline[5],
+                        whofrontline[1], whofrontline[6], whofrontline[0], whofrontline[7]]
         combatpositioncal(squadlist, squadindexlist, sortmidfront, who, target, whoside, targetside, squadtargetside)
-    """only calculate if the target is attacked on the front side"""
-    if targetside == 0:
-        sortmidfront = [target.frontline[targetside][3], target.frontline[targetside][4],
-                        target.frontline[targetside][2],
-                        target.frontline[targetside][5], target.frontline[targetside][1],
-                        target.frontline[targetside][6],
-                        target.frontline[targetside][0], target.frontline[targetside][7]]
-        combatpositioncal(squadlist, squadindexlist, sortmidfront, target, who, targetside, whoside, squadwhoside)
 
 def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
     for thiswho in sortmidfront:
@@ -265,10 +258,9 @@ def squadselectside(targetside, side, position):
         thisposition = 0
     elif thisposition > 7:
         thisposition = 7
+    fronttarget = 0
     if targetside[thisposition] != 0:
         fronttarget = targetside[thisposition]
-    else:
-        fronttarget = 0
     return fronttarget
 
 def changecombatside(side, position):
@@ -290,8 +282,10 @@ def changecombatside(side, position):
         finalposition = 0
     return finalposition
 
-def losscal(who, target, hit, defense, type):
+def losscal(attacker, defender, hit, defense, type):
     """Calculate damage"""
+    who = attacker
+    target = defender
     heightadventage = who.battalion.height - target.battalion.height
     if type == 1: heightadventage = int((who.battalion.height - target.battalion.height) / 2)
     hit += heightadventage
@@ -374,12 +368,12 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
 
 def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
-    wholuck = random.randint(-50, 50)
-    targetluck = random.randint(-50, 50)
-    whopercent = who.maingame.battlesidecal[whoside]
+    wholuck = random.randint(-50, 50) # attacker luck
+    targetluck = random.randint(-50, 50) # defender luck
+    whopercent = who.maingame.battlesidecal[whoside] # attacker attack side modifier
     """34 battlemaster no flanked penalty"""
     if who.fulldef or 91 in who.statuseffect: whopercent = 1
-    targetpercent = who.maingame.battlesidecal[targetside]
+    targetpercent = who.maingame.battlesidecal[targetside] # defender defend side modifier
     if target.fulldef or 91 in target.statuseffect: targetpercent = 1
     dmgeffect = who.frontdmgeffect
     targetdmgeffect = target.frontdmgeffect
@@ -397,12 +391,12 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
             target.flanker and whoside in (1, 3)): # Apply only for attacker
         targetdefense = 0
-    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0)
-    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0)
+    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0) # get dmg by attacker
+    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0) # get dmg by defender
     timermod = combattimer / 0.5 # since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
-    complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, targetdmgeffect, timermod)
-    complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, dmgeffect, timermod)
-    if who.corneratk:  ##attack corner (side) of self with aoe attack
+    complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, targetdmgeffect, timermod) # inflict dmg to defender
+    complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, dmgeffect, timermod) # inflict dmg to attacker
+    if who.corneratk:  # Attack corner (side) of self with aoe attack
         listloop = target.nearbysquadlist[2:4]
         if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
         for squad in listloop:
@@ -411,11 +405,12 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
                 whodmg, whomoraledmg = losscal(who, squad, whohit, targetdefense, 0)
                 squad.unithealth -= round(whodmg * dmgeffect)
                 squad.basemorale -= whomoraledmg
-    """inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion"""
+    ## inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion
     if who.inflictstatus != {}:
         applystatustoenemy(statuslist, who.inflictstatus, target, whoside)
     if target.inflictstatus != {}:
         applystatustoenemy(statuslist, target.inflictstatus, who, targetside)
+    ## End inflict status
 
 
 def die(who, battle, group, enemygroup):

@@ -66,13 +66,12 @@ import re
 import numpy as np
 
 starttime = timeit.default_timer()
-k = np.uint16(5000)
-# k = 5000
-print(k)
 print("The start time is :", starttime)
 for i in range(0,10000):
-    o = k - i
+    if i in [1,2,3,4,5,6,7,8,9,10]:
+        print(i)
     # if o < 0:
     #     o = 0
 print("The time difference is :", timeit.default_timer() - starttime)
-print(str("kk"))
+#0.000859586999999995
+#0.0010708489999999848

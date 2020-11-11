@@ -15,7 +15,7 @@
 14,"Malabel Igiela",0,1,30,60,"3,4,10","3,4",0,10,10,130,120,120,120,,,,150,20,0,-3,10,0,,,,0,1,,,0,0,2,"The great charge of Malabel cavalry may one day rest in a page of legend or history book, but today, let us offer condolences to the unfortunate victims of this charge."
 15,"Historic Moment",0,2,30,60,"3,4,10","3,4",0,10,10,120,,,115,,,,,0,0,-2.5,50,0,,,,0,0,,,0,0,2,"There are not many event in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
 16,"Hidden Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,90,,,,,0,0,-2,0,0,,,,0,6,,,0,0,2,"It should be practically impossible to charge while remain hidden. And how can someone defend against such impossible feat?"
-17,"Clumsy Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,,,0,0,0,"Some troops are just not suitable for charging whether it be because of their insufficient training or unsuitable equipment."
+17,"Clumsy Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,,,0,0,0,"Some troops are just not suitable for charging whether it be because of their insufficient training or unsuitable equipment."
 18,"Heroic Charge",0,2,30,60,"3,4,10","3,4",0,10,10,110,,,110,,,,,0,0,-2.5,20,0,,,,0,0,,,0,0,0,"Just follows the hero and everything will be alright. They become masters of battle by staying alive after all."
 19,"Weak Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,40,0,0,-2,0,0,,,,0,0,,,0,0,1,"A weak charge can often time results in total disaster. Exercise charging tactic for unit with this skill with caution."
 20,"Slow Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,50,0,0,-2,0,0,,,,0,0,,,0,0,1,"Due to the troop's weight, its charge is much slower than usual and less effective overall."
