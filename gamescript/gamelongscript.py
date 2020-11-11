@@ -210,13 +210,17 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
             position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
             fronttarget = receiver.frontline[receiverside][position]
             """check if squad not already fighting if true skip picking new enemy """
-            if any(battle > 1 for battle in squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside) == False:
+            attackersquad = squadlist[np.where(squadindexlist == thiswho)[0][0]]
+            if any(battle > 1 for battle in attackersquad.battlesideid) == False:
                 """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
                 if fronttarget > 1:
+                    receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
                     """only attack if the side is already free else just wait until it free"""
-                    if squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[squadside] in (-1, 0):
-                        squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
-                        squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[squadside] = thiswho
+                    if receiversquad.battlesideid[squadside] == 0:
+                        attackersquad.battleside[attackerside] = receiversquad
+                        attackersquad.battlesideid[attackerside] = fronttarget
+                        receiversquad.battleside[squadside] = attackersquad
+                        receiversquad.battlesideid[squadside] = thiswho
                 else:
                     """pick flank attack if no enemy already fighting and not already fighting"""
                     chance = random.randint(0, 1)
@@ -225,21 +229,26 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                     """attack left array side of the squad if get random 0, right if 1"""
                     truetargetside = changecombatside(chance, receiverside)
                     fronttarget = squadselectside(receiver.frontline[receiverside], chance, position)
-                    """attack if the found defender at that side is free if not check other side"""
-                    if fronttarget > 1:
-                        if squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
-                            squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
-                            squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
-                    else:
-                        """Switch to another side if above not found"""
+                    if fronttarget > 1: # attack if the found defender at that side is free if not check other side
+                        receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
+                        if receiversquad.battlesideid[truetargetside] == 0:
+                            attackersquad.battleside[attackerside] = receiversquad
+                            attackersquad.battlesideid[attackerside] = fronttarget
+                            receiversquad.battleside[truetargetside] = attackersquad
+                            receiversquad.battlesideid[truetargetside] = thiswho
+                    else: # Switch to another side if above not found
                         truetargetside = changecombatside(secondpick, receiverside)
                         fronttarget = squadselectside(receiver.frontline[receiverside], secondpick, position)
                         if fronttarget > 1:
-                            if squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] in (-1, 0):
-                                squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[attackerside] = fronttarget
-                                squadlist[np.where(squadindexlist == fronttarget)[0][0]].battleside[truetargetside] = thiswho
+                            receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
+                            if receiversquad.battlesideid[truetargetside] == 0:
+                                attackersquad.battleside[attackerside] = receiversquad
+                                attackersquad.battlesideid[attackerside] = fronttarget
+                                receiversquad.battleside[truetargetside] = attackersquad
+                                receiversquad.battlesideid[truetargetside] = thiswho
                         else:
-                            squadlist[np.where(squadindexlist == thiswho)[0][0]].battleside[receiverside] = 0
+                            attackersquad.battleside[attackerside] = None
+                            attackersquad.battlesideid[attackerside] = 0
 
 def squadselectside(targetside, side, position):
     """side 0 is left 1 is right"""

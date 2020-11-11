@@ -516,7 +516,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
             imagechange = self.logtextprocess(log[0], modelist, textoutput)
         if eventmapid is not None and eventmapid in self.mapevent: # Process whether there is historical commentary to add to event log
             textoutput = self.mapevent[eventmapid]
-            imagechange2 = self.logtextprocess(textoutput[0], textoutput[2], ": " +textoutput[1])
+            imagechange2 = self.logtextprocess(textoutput[0], textoutput[2], str(textoutput[3]) + ": " +textoutput[1])
         if imagechange or imagechange2:
             self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
             if atlastrow and self.lencheck > 9:

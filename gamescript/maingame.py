@@ -675,12 +675,12 @@ class Battle():
             self.camerapos[1] = self.mapshown.image.get_height()
         elif self.camerapos[1] < 0:
             self.camerapos[1] = 0
-        if self.basecamerapos[0] > 1000:
-            self.basecamerapos[0] = 1000
+        if self.basecamerapos[0] > 999:
+            self.basecamerapos[0] = 999
         elif self.basecamerapos[0] < 0:
             self.basecamerapos[0] = 0
-        if self.basecamerapos[1] > 1000:
-            self.basecamerapos[1] = 1000
+        if self.basecamerapos[1] > 999:
+            self.basecamerapos[1] = 999
         elif self.basecamerapos[1] < 0:
             self.basecamerapos[1] = 0
 
@@ -856,7 +856,7 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the first playtest')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Battle of Hastings')
+                            self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode')
                         elif event.key == pygame.K_3:
                             self.textdrama.queue.append('relationship with battalion size')
                         elif event.key == pygame.K_4:
@@ -958,8 +958,8 @@ class Battle():
                     elif self.buttonmouseover(mouse_right) == 1:
                         pass
                     elif mouse_right and self.lastselected is None and self.uicheck != 1:
-                        if self.battlemousepos[1][0] >= 0 and self.battlemousepos[1][0] <= 1000 and self.battlemousepos[1][1] >= 0 and \
-                                self.battlemousepos[1][1] <= 1000:
+                        if self.battlemousepos[1][0] >= 0 and self.battlemousepos[1][0] <= 999 and self.battlemousepos[1][1] >= 0 and \
+                                self.battlemousepos[1][1] <= 999:
                             terrainpop, featurepop = self.battlemapfeature.getfeature(self.battlemousepos[1], self.battlemap)
                             featurepop = self.battlemapfeature.featuremod[featurepop]
                             self.terraincheck.pop(self.mousepos, featurepop)

@@ -55,8 +55,11 @@ class Basemap(pygame.sprite.Sprite):
         self.terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
 
     def getterrain(self, pos):
-        terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
-        terrainindex = self.terraincolour.index(terrain)
+        try:
+            terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
+            terrainindex = self.terraincolour.index(terrain)
+        except:
+            terrainindex = 0
         return terrainindex
 
     # def update(self, dt, pos, scale):
@@ -105,11 +108,14 @@ class Mapfeature(pygame.sprite.Sprite):
 
     def getfeature(self, pos, gamemap):
         terrainindex = gamemap.getterrain(pos)
-        feature = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
-        featureindex = None
-        if feature in self.featurecolour:
-            featureindex = self.featurecolour.index(feature)
-            featureindex = featureindex + (terrainindex * 12)
+        try:
+            feature = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
+            featureindex = None
+            if feature in self.featurecolour:
+                featureindex = self.featurecolour.index(feature)
+                featureindex = featureindex + (terrainindex * 12)
+        except:
+            featureindex = 0
         return terrainindex, featureindex
 
 
@@ -139,7 +145,10 @@ class Mapheight(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
     def getheight(self, pos):
-        colour = self.trueimage.get_at((int(pos[0]), int(pos[1])))[2]
+        try:
+            colour = self.trueimage.get_at((int(pos[0]), int(pos[1])))[2]
+        except:
+            colour = 255
         if colour == 0: colour = 255
         heightindex = 255 - colour  ##get colour at pos to obtain the terrain type
         return heightindex

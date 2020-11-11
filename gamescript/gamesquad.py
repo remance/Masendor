@@ -20,7 +20,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.angle, self.newangle = 0, 0
         """index of battleside: 0 = front 1 = left 2 =rear 3 =right (different than battalion for proper combat rotation)"""
         """battleside keep index of enemy battalion -1 is no combat 0 is no current enemy (idle in combat)"""
-        self.battleside = [-1, -1, -1, -1]
+        self.battleside = [None, None, None, None]
+        self.battlesideid = [0, 0, 0, ]
         self.haveredcorner = False
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         # self.offset = pygame.Vector2(-25, 0)
@@ -606,8 +607,8 @@ class Unitsquad(pygame.sprite.Sprite):
                                         self.battalion.squadimgchange.append(self.gameid)
                             break
                     self.oldlaststamina = self.stamina
-                if self.battleside != [-1, -1, -1, -1]:  ## red corner when engage in melee combat
-                    for index, side in enumerate(self.battleside):
+                if self.battleside != [None, None, None, None]:  ## red corner when engage in melee combat
+                    for index, side in enumerate(self.battlesideid):
                         if side > 0:
                             self.imagerect = self.images[14 + index].get_rect(center=self.image_original.get_rect().center)
                             self.image.blit(self.images[14 + index], self.imagerect)
@@ -626,9 +627,10 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.availableskill = []
                     if self.useskillcond != 3:
                         self.checkskillcondition()
-                    if self.state in (3, 4):
-                        if type(self.attackpos) != int and self.attackpos.distance_to(self.combatpos) < 40 \
-                                and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                    if self.state in (3, 4)  and type(self.attackpos) != int and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                        chargedistance = 40
+                        if self.speed < 50: chargedistance = 30
+                        if self.attackpos.distance_to(self.combatpos) < chargedistance:
                             self.useskill(0)
                     skillchance = random.randint(0, 10)
                     if skillchance >= 6 and len(self.availableskill) > 0:
@@ -640,11 +642,11 @@ class Unitsquad(pygame.sprite.Sprite):
                     if battalionstate != 10:
                         self.nocombat = 0
                 if battalionstate == 10 and self.state != 97:
-                    if any(battle > 0 for battle in self.battleside):
+                    if any(battle > 0 for battle in self.battlesideid):
                         self.state = 10
                     elif self.ammo > 0 and self.arcshot:  # Help range attack when battalion in melee combat if has arcshot
                         self.state = 11
-                    elif any(battle > 0 for battle in self.battleside) == False:
+                    elif any(battle > 0 for battle in self.battlesideid) == False:
                         if self.nocombat == 0:
                             self.nocombat = 0.1
                         if self.nocombat > 1:
@@ -670,43 +672,41 @@ class Unitsquad(pygame.sprite.Sprite):
                 if self.state in (11, 12, 13) and self.reloadtime < self.reload:
                     self.reloadtime += dt
                     self.stamina = self.stamina - (dt * 2)
-            ## ^ End range attack function
-            if combattimer >= 0.5:
-                if any(battle > 1 for battle in self.battleside):
-                    squadindexlist = self.maingame.squadindexlist
-                    for index, combat in enumerate(self.battleside):
-                        if combat > 1:
-                            if self.gameid not in self.maingame.squad[np.where(squadindexlist == combat)[0][0]].battleside:
-                                self.battleside[index] = -1
+                ## ^ End range attack function
+                if combattimer >= 0.5:
+                    if any(battle > 1 for battle in self.battlesideid):
+                        for index, combat in enumerate(self.battleside):
+                            if combat is not None:
+                                if self.gameid not in combat.battlesideid:
+                                    self.battleside[index] = -1
+                                else:
+                                    self.dmgcal(combat, index, combat.battlesideid.index(self.gameid), self.maingame.gameunitstat.statuslist, combattimer)
+                                    self.stamina = self.stamina - combattimer
+                    elif self.state in (11, 12, 13):
+                        if type(self.attacktarget) == int and self.attacktarget != 0: # For fire at will, which attacktarge is int
+                            allunitindex = self.maingame.allunitindex
+                            if self.attacktarget in allunitindex:
+                                self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
                             else:
-                                target = self.maingame.squad[np.where(squadindexlist == combat)[0][0]]
-                                self.dmgcal(target, index, target.battleside.index(self.gameid), self.maingame.gameunitstat.statuslist, combattimer)
-                                self.stamina = self.stamina - combattimer
-                elif self.state in (11, 12, 13):
-                    if type(self.attacktarget) == int and self.attacktarget != 0: # For fire at will, which attacktarge is int
-                        allunitindex = self.maingame.allunitindex
-                        if self.attacktarget in allunitindex:
-                            self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
-                        else:
-                            self.attackpos = 0
-                            self.attacktarget = 0
-                            for target in list(self.battalion.neartarget.values()):
-                                if target in allunitindex:
-                                    self.attackpos = target[1]
-                                    self.attacktarget = target[1]
-                                    self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
-                                    break
-                    if self.reloadtime >= self.reload and (
-                            (self.attacktarget == 0 and self.attackpos != 0) or (
-                            self.attacktarget != 0 and self.attacktarget.state != 100)):
-                        rangeattack.Rangearrow(self, self.combatpos.distance_to(self.attackpos), self.shootrange,
-                                               self.viewmode)
-                        self.ammo -= 1
-                        self.reloadtime = 0
-                    elif self.attacktarget != 0 and self.attacktarget.state == 100:
-                        self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
-            self.stamina = self.stamina - (dt * 2) if self.walk else self.stamina - (dt * 4) if self.run else self.stamina + (
-                    dt * self.staminaregen) if self.state == 97 else self.stamina
+                                self.attackpos = 0
+                                self.attacktarget = 0
+                                for target in list(self.battalion.neartarget.values()):
+                                    if target in allunitindex:
+                                        self.attackpos = target[1]
+                                        self.attacktarget = target[1]
+                                        self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
+                                        break
+                        if self.reloadtime >= self.reload and (
+                                (self.attacktarget == 0 and self.attackpos != 0) or (
+                                self.attacktarget != 0 and self.attacktarget.state != 100)):
+                            rangeattack.Rangearrow(self, self.combatpos.distance_to(self.attackpos), self.shootrange,
+                                                   self.viewmode)
+                            self.ammo -= 1
+                            self.reloadtime = 0
+                        elif self.attacktarget != 0 and self.attacktarget.state == 100:
+                            self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
+                self.stamina = self.stamina - (dt * 2) if self.walk else self.stamina - (dt * 4) if self.run else self.stamina + (
+                        dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale:
                 if self.state != 99 and self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
                     self.basemorale += dt
@@ -737,7 +737,9 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.unithealth < 0: self.unithealth = 0
             elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth
             ## ^End regen
-            self.battleside = [-1, -1, -1, -1] # Reset battleside to defualt
+            # if self.state != 10:
+            self.battleside = [None, None, None, None] # Reset battleside to defualt
+            self.battlesideid = [0,0,0,0]
             if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0
             if self.troopnumber <= 0:  ## enter dead state
                 self.image_original.blit(self.images[7], self.healthimagerect)
