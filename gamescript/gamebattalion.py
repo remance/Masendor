@@ -158,6 +158,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.forcedmelee = False
         self.forcedmarch = False
         self.changefaction = False
+        self.brokenlimit = 50
         self.hold = 0  ## 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fireatwill = 0  ## 0 = fire at will, 1 = no fire
         self.retreatstart = 0
@@ -188,7 +189,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.previousposition = self.basepreviousposition * abs(self.viewmode - 11)
         self.state = 0  ##  0 = idle, 1 = walking, 2 = running, 3 = attacking/walk, 4 = attacking/walk, 5 = melee combat, 6 = range attack
         self.commandstate = self.state
-        self.deadchange = 0
+        self.deadchange = False
         self.timer = random.random()
         self.squadimgchange = []
         self.zoomviewchange = False
@@ -359,7 +360,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
     def setupfrontline(self, specialcall=False):
-        """Setup frontline TODO change frontline list to keep sprite instead of index (same for squad combat cal)"""
+        """Setup frontline"""
         gotanother = 0
         startwhere = 0
         whoarray = np.where(self.squadalive > 1, self.armysquad, self.squadalive)
@@ -437,10 +438,13 @@ class Unitarmy(pygame.sprite.Sprite):
         # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
         # self.attackpos = pygame.Vector2(side[list(side2.keys())[0]])
         self.attacktarget = enemyhitbox.who
-        self.baseattackpos = enemyhitbox.who.allsidepos[enemyhitbox.side]
+        self.baseattackpos = self.attacktarget.allsidepos[enemyhitbox.side]
         self.attackpos = self.baseattackpos * abs(self.viewmode - 11)
         if enemyhitbox.side == 0:
-            enemyhitbox.who.attacktarget = self
+            self.attacktarget.attacktarget = self
+        else:
+            if self.attacktarget.state not in (96,97,98,99):
+                self.attacktarget.set_target(self.attacktarget.allsidepos[0]) ## stop moving when get hit
         # if list(side2.keys())[0] == 1:
         # self.commandtarget = enemyhitbox.who.allsidepos[enemyhitbox.side]
         # enemyhitbox.who.battleside[enemyhitbox.side] = self.gameid
@@ -606,11 +610,11 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.authrecal()
                 self.authrecalnow = False
             # Setup frontline again when any squad die
-            if self.deadchange == 1:
+            if self.deadchange == True:
                 self.setupfrontline()
                 for squad in self.squadsprite:
-                    squad.basemorale -= 10
-                self.deadchange = 0
+                    squad.basemorale -= 20
+                self.deadchange = False
             # ^End setup frontline when squad die
             ## Combat and unit update
             self.battleside = [None, None, None, None]
@@ -660,7 +664,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.retreatstart == 0:
                     self.retreatstart = 1
                     self.retreattimer = 0.1
-                if self.morale <= 0:  ## Broken state
+                if self.morale <= 10:  ## Broken state
                     self.morale, self.state = 0, 99
                 if 0 not in self.battlesideid:  ## Fight to the death
                     self.state = 10
@@ -675,12 +679,20 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.maingame.allunitindex = self.switchfaction(self.maingame.enemyarmy, self.maingame.playerarmy,
                                                                             self.maingame.enemyposlist, self.maingame.allunitindex, self.maingame.enactment)
                         self.maingame.setuparmyicon()
-            elif self.state in (98, 99) and self.morale >= 40:  ## state become normal again when morale reach 40
+            elif self.state == 98 and self.morale >= self.brokenlimit/2:  # quit retreat when morale reach increasing limit
                 self.state = 0
                 self.retreattimer = 0
                 self.retreatstart = 0
                 self.retreatway = None
                 self.set_target(self.basepos)
+                self.brokenlimit += random.randint(1,10)
+            elif self.state == 99 and self.morale >= self.brokenlimit: # quit broken when morale reach increasing limit
+                self.state = 0
+                self.retreattimer = 0
+                self.retreatstart = 0
+                self.retreatway = None
+                self.set_target(self.basepos)
+                self.brokenlimit += random.randint(5,15)
             """only start retreating when ready"""
             if self.retreattimer > 0:
                 self.retreattimer += dt
@@ -705,22 +717,23 @@ class Unitarmy(pygame.sprite.Sprite):
                 if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange:
                     self.state = 96
                     target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
-                    if target[0] < 0:
-                        target[0] = 0
-                    elif target[0] > 999:
-                        target[0] = 999
-                    if target[1] < 0:
-                        target[1] = 0
-                    elif target[1] > 999:
-                        target[1] = 999
+                    if target[0] < 1:
+                        target[0] = 1
+                    elif target[0] > 998:
+                        target[0] = 998
+                    if target[1] < 1:
+                        target[1] = 1
+                    elif target[1] > 998:
+                        target[1] = 998
                     self.set_target(target)
             if self.state == 10 and self.battlesideid == [0,0,0,0]:
                 self.combatpreparestate = 0
-                if self.target == self.allsidepos[0]:
-                    self.state = 0
+                self.state = self.commandstate
+                if type(self.attacktarget) != int and self.attacktarget.state == 100:
+                    self.attacktarget = 0
                 else:
-                    self.state = self.commandstate
-                self.attacktarget = 0
+                    if self.hold == 0:
+                        self.set_target(self.attacktarget.basepos)
             ##Rotate Function
             if self.combatpreparestate == 1 and self.stopcombatmove == False: # Rotate army side to the enemyside
                 # and [round(elem,2) for elem in self.allsidepos[0]] != [round(elem,2) for elem in self.basetarget]
@@ -787,8 +800,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.state in (0, 3, 4, 5, 6, 10) and self.attacktarget != 0 \
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
-                    for hitbox in self.hitbox:
-                        if hitbox.collide != 0:
+                    for side in self.battlesideid:
+                        if side != 0 and (side == self.attacktarget.gameid and self.combatpreparestate == 1):
                             cantchase = True
                     if cantchase == False and self.forcedmelee:
                         self.state = self.commandstate
@@ -799,8 +812,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
-                    if ((self.hitbox[list(side2.keys())[0]].collide == 0 and self.hitbox[
-                        list(side2.keys())[1]].collide == 0) or self.combatpreparestate == 1) \
+                    if (self.hitbox[list(side2.keys())[0]].collide == 0 or self.combatpreparestate == 1) \
                             and self.moverotate == 0 and self.rotateonly != True:
                         move = self.basetarget - self.allsidepos[0]
                         move_length = move.length()

@@ -95,10 +95,10 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
                                   colour=colour, control=control, coa=coa, commander=command, startangle=abs(360 - startangle))
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 2),
-                   gamebattalion.Hitbox(army, 1, 2, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 2, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 2)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 5),
+                   gamebattalion.Hitbox(army, 1, 5, army.rect.height - int(army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 2, 5, army.rect.height - int(army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 5)]
     army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
                    gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
                    gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
@@ -304,22 +304,23 @@ def losscal(attacker, defender, hit, defense, type):
                 dmg = dmg + (who.charge / 10) - (target.chargedef / 10)
             elif who.ignorechargedef:
                 dmg = dmg + (who.charge / 10)
-        dmg = dmg * ((100 - (target.armour * ((100 - who.penetrate) / 100))) / 100) * combatscore
+        dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
         if target.state == 10: dmg = dmg / 5 ## More dmg against enemy not fighting
     elif type == 1:  # Range Damage
-        dmg = who.rangedmg * ((100 - (target.armour * ((100 - who.rangepenetrate) / 100))) / 100) * combatscore
-    leaderdmg = dmg - (dmg * combatscore/100)
+        dmg = who.rangedmg * ((100 - (target.armour * who.rangepenetrate)) / 100) * combatscore
+    leaderdmg = dmg
     unitdmg = (dmg * who.troopnumber) + leaderdmgbonus
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         unitdmg = unitdmg * 1.25
-    unitdmg = round(unitdmg / 10)
-    leaderdmg = round(leaderdmg / 10)
-    moraledmg = round(dmg / 50)
+    if type == 0:
+        unitdmg = unitdmg / 10
+    moraledmg = dmg / 20
     if unitdmg > target.unithealth:
         unitdmg = target.unithealth
-    elif leaderdmg < 0:
-        leaderdmg = 0
+    elif unitdmg < 0:
         unitdmg = 0
+    if leaderdmg < 0:
+        leaderdmg = 0
     return unitdmg, moraledmg, leaderdmg
 
 
@@ -341,29 +342,16 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
     targetdmg = round(dmg * dmgeffect * timermod)
     targetmoraledmg = round(moraledmg * dmgeffect * timermod)
-    targetleaderdmg = round(leaderdmg * timermod)
     receiver.unithealth -= targetdmg
     receiver.basemorale -= targetmoraledmg
     if attacker.elemrange not in (0, 5):  ## apply element effect if atk has element
         receiver.elemcount[attacker.elemrange - 1] += round(targetdmg * (100 - receiver.elemresist[attacker.elemrange - 1] / 100))
     attacker.basemorale += round((targetmoraledmg / 2))
-    if receiver.leader is not None and receiver.leader.name != "None" and receiver.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on who leader
+    if receiver.leader is not None and receiver.leader.name != "None" and receiver.leader.health > 0 and random.randint(0, 10) > 2:  ## dmg on who leader
+        targetleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
+        if targetleaderdmg > receiver.leader.health:
+            targetleaderdmg = receiver.leader.health
         receiver.leader.health -= targetleaderdmg
-        if receiver.leader.health <= 0:
-            if receiver.leader.battalion.commander and receiver.leader.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
-                receiver.maingame.textdrama.queue.append(str(receiver.leader.name) + " is dead")
-                eventmapid = "ld0"
-                whicharmy = receiver.maingame.playerarmy
-                if receiver.battalion.gameid >= 2000:
-                    whicharmy = receiver.maingame.enemyarmy
-                    eventmapid = "ld1"
-                receiver.eventlog.addlog([0, "Commander " + str(receiver.leader.name) + " is dead"], [0, 1, 2], eventmapid)
-                for army in whicharmy:
-                    for squad in army.squadsprite:
-                        squad.basemorale -= 50
-            else:
-                receiver.maingame.eventlog.addlog([0, str(receiver.leader.name) + " is dead"], [0, 2])
-            receiver.maingame.setuparmyicon()
 
 
 def dmgcal(who, target, whoside, targetside, statuslist, combattimer):

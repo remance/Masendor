@@ -281,6 +281,7 @@ class Battle():
         gamebattalion.Unitarmy.maingame = self
         rangeattack.Rangearrow.gamemapheight = self.battlemapheight
         gamesquad.Unitsquad.maingame = self
+        gameleader.Leader.maingame = self
         gamecamera.Camera.SCREENRECT = SCREENRECT
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
         self.background = pygame.Surface(SCREENRECT.size)
@@ -854,7 +855,7 @@ class Battle():
                         elif event.key == pygame.K_2:
                             self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode')
                         elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('Not yet balanced for historical enactment')
+                            self.textdrama.queue.append('Not yet balanced for complete historical enactment')
                         elif event.key == pygame.K_4:
                             self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
                         elif event.key == pygame.K_5:
@@ -1098,8 +1099,9 @@ class Battle():
                             self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     if self.buttonui[4].rect.collidepoint(self.mousepos) or (
                             mouse_up and self.inspectui == 1 and self.clickcheck2 == 1):
-                        self.buttonnamepopup.pop(self.mousepos, "Inspect Squad")
-                        self.allui.add(self.buttonnamepopup)
+                        if self.buttonui[4].rect.collidepoint(self.mousepos):
+                            self.buttonnamepopup.pop(self.mousepos, "Inspect Squad")
+                            self.allui.add(self.buttonnamepopup)
                         if mouse_up:
                             if self.inspectui == 0 or (
                                     self.inspectui == 1 and self.clickcheck2 == 1):  ## Add army inspect ui when left click at ui button or when change unit with inspect open
@@ -1191,6 +1193,7 @@ class Battle():
                                     squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
                                     squad.unithealth -= round(squad.unithealth * 0.1)
                         elif self.leadermouseover(mouse_right):
+                            self.allui.remove(self.buttonnamepopup)
                             pass
                     else:
                         self.allui.remove(self.leaderpopup)

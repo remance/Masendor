@@ -2,6 +2,7 @@ import pygame
 import pygame.freetype
 
 class Leader(pygame.sprite.Sprite):
+    maingame = None
 
     def __init__(self, leaderid, squadposition, armyposition, battalion, leaderstat):
         self._layer = 10
@@ -82,4 +83,18 @@ class Leader(pygame.sprite.Sprite):
                 self.combat = 0
                 self.social = 0
                 pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)
+                if self.commander and self.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+                    self.maingame.textdrama.queue.append(str(self.name) + " is dead")
+                    eventmapid = "ld0"
+                    whicharmy = self.maingame.playerarmy
+                    if self.battalion.gameid >= 2000:
+                        whicharmy = self.maingame.enemyarmy
+                        eventmapid = "ld1"
+                    self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is dead"], [0, 1, 2], eventmapid)
+                    for army in whicharmy:
+                        for squad in army.squadsprite:
+                            squad.basemorale -= 50
+                else:
+                    self.maingame.eventlog.addlog([0, str(self.name) + " is dead"], [0, 2])
+                self.maingame.setuparmyicon()
                 self.battalion.leaderchange = True
