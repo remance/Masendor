@@ -188,7 +188,6 @@ def unitsetup(maingame):
 
 def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
     """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
-    squadwhoside = [2 if whoside == 3 else 3 if whoside == 2 else whoside][0]
     squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
     whofrontline = who.frontline[whoside]
     """only calculate if the attack is attack with the front side"""
@@ -247,11 +246,11 @@ def squadselectside(targetside, side, position):
     """side 0 is left 1 is right"""
     thisposition = position
     if side == 0:
-        max = 0
+        max = 0 # keep searching to the the left until reach the first squad
         while targetside[thisposition] <= 1 and thisposition != max:
             thisposition -= 1
     else:
-        max = 7
+        max = 7 # keep searching to the the right until reach the last squad
         while targetside[thisposition] <= 1 and thisposition != max:
             thisposition += 1
     if thisposition < 0:
@@ -287,12 +286,13 @@ def losscal(attacker, defender, hit, defense, type):
     who = attacker
     target = defender
     heightadventage = who.battalion.height - target.battalion.height
-    if type == 1: heightadventage = int((who.battalion.height - target.battalion.height) / 2)
+    if type == 1: heightadventage = int(heightadventage / 2)
     hit += heightadventage
-    if hit < 0: hit = 0
     if defense < 0 or who.ignoredef: defense = 0  ## Ignore def trait
     hitchance = hit - defense
-    combatscore = round(hitchance / 20, 1)
+    if hitchance < 0: hitchance = 0
+    elif hitchance > 200: hitchance = 200
+    combatscore = round(hitchance / 50, 1)
     if combatscore == 0 and random.randint(0, 10) > 9:  ## Final chence to not miss
         combatscore = 0.1
     leaderdmgbonus = 0
@@ -315,12 +315,14 @@ def losscal(attacker, defender, hit, defense, type):
     if type == 0:
         unitdmg = unitdmg / 10
     moraledmg = dmg / 20
-    if unitdmg > target.unithealth:
-        unitdmg = target.unithealth
-    elif unitdmg < 0:
+    if unitdmg < 0:
         unitdmg = 0
     if leaderdmg < 0:
         leaderdmg = 0
+    elif leaderdmg > 100:
+        print(leaderdmg, dmg, combatscore, hitchance, hit, defense)
+    if moraledmg < 0:
+        moraledmg = 0
     return unitdmg, moraledmg, leaderdmg
 
 
@@ -342,12 +344,14 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
     targetdmg = round(dmg * dmgeffect * timermod)
     targetmoraledmg = round(moraledmg * dmgeffect * timermod)
+    if targetdmg > receiver.unithealth:
+        targetdmg = receiver.unithealth
     receiver.unithealth -= targetdmg
     receiver.basemorale -= targetmoraledmg
-    if attacker.elemrange not in (0, 5):  ## apply element effect if atk has element
-        receiver.elemcount[attacker.elemrange - 1] += round(targetdmg * (100 - receiver.elemresist[attacker.elemrange - 1] / 100))
-    attacker.basemorale += round((targetmoraledmg / 2))
-    if receiver.leader is not None and receiver.leader.name != "None" and receiver.leader.health > 0 and random.randint(0, 10) > 2:  ## dmg on who leader
+    if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element
+        receiver.elemcount[attacker.elemmelee - 1] += round(targetdmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
+    attacker.basemorale += round((targetmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
+    if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 9:  # dmg on squad leader
         targetleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
         if targetleaderdmg > receiver.leader.health:
             targetleaderdmg = receiver.leader.health
@@ -358,19 +362,19 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
     wholuck = random.randint(-50, 50) # attacker luck
     targetluck = random.randint(-50, 50) # defender luck
-    whopercent = who.maingame.battlesidecal[whoside] # attacker attack side modifier
+    whopercent = who.battlesidecal[whoside] # attacker attack side modifier
     """34 battlemaster no flanked penalty"""
     if who.fulldef or 91 in who.statuseffect: whopercent = 1
-    targetpercent = who.maingame.battlesidecal[targetside] # defender defend side modifier
+    targetpercent = who.battlesidecal[targetside] # defender defend side modifier
     if target.fulldef or 91 in target.statuseffect: targetpercent = 1
     dmgeffect = who.frontdmgeffect
     targetdmgeffect = target.frontdmgeffect
     if whoside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
-        whopercent = who.maingame.battlesidecal[whoside] + (who.discipline / 300)
+        whopercent = who.battlesidecal[whoside] + (who.discipline / 300)
         dmgeffect = who.sidedmgeffect
         if whopercent > 1: whopercent = 1
     if targetside != 0 and targetpercent != 1: # same for the target
-        targetpercent = who.maingame.battlesidecal[targetside] + (target.discipline / 300)
+        targetpercent = who.battlesidecal[targetside] + (target.discipline / 300)
         targetdmgeffect = target.sidedmgeffect
         if targetpercent > 1: targetpercent = 1
     whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck

@@ -23,7 +23,9 @@ class Leader(pygame.sprite.Sprite):
         # self.trait = stat
         # self.skill = stat
         self.state = 0  ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
-        if self.name == "none": self.state = 100  ## no leader is same as dead so no need to update
+        if self.name == "none":
+            self.health = 0
+            self.state = 100  ## no leader is same as dead so no need to update
         self.battalion = battalion
         # self.mana = stat
         self.gamestart = 0
@@ -55,46 +57,55 @@ class Leader(pygame.sprite.Sprite):
             leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2)
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
 
+    def gone(self):
+        eventtext = {96:"retreat",97:"captured",98:"missing",99:"wounded",100:"dead"}
+        if self.battalion.leader[1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[1].name != "None":
+            self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
+        thisbadmorale = self.badmorale[0]
+        if self.state == 99: # wonnd inflict less morale penalty
+            thisbadmorale = self.badmorale[1]
+        for squad in self.battalion.squadsprite:
+            squad.basemorale -= thisbadmorale  ## decrease all squad morale when leader die depending on position
+        if self.commander and self.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+            self.maingame.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
+            eventmapid = "ld0"
+            whicharmy = self.maingame.playerarmy
+            if self.battalion.gameid >= 2000:
+                whicharmy = self.maingame.enemyarmy
+                eventmapid = "ld1"
+            self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
+            for army in whicharmy:
+                for squad in army.squadsprite:
+                    squad.basemorale -= 100
+        else:
+            self.maingame.eventlog.addlog([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])
+        for index, leader in enumerate(self.battalion.leader):  ## also change army position of all leader in that battalion
+            leader.armyposition = index  ## change army position to new one
+            if self.battalion.commander and leader.armyposition == 0:
+                self.commander = True
+            leader.imgposition = leader.baseimgposition[leader.armyposition]
+            leader.rect = leader.image.get_rect(center=leader.imgposition)
+            self.poschangestat(leader)
+        self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
+                                      (self.battalion.leader[0].cavcommand - 5) * 0.1]
+        self.authority = 0
+        self.meleecommand = 0
+        self.rangecommand = 0
+        self.cavcommand = 0
+        self.combat = 0
+        self.social = 0
+        pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)
+        self.maingame.setuparmyicon()
+        self.battalion.leaderchange = True
+
     def update(self):
         if self.gamestart == 0:
             self.squad = self.battalion.squadsprite[self.squadpos]
             self.gamestart = 1
         if self.state not in (96, 97, 98, 99, 100):
             if self.health <= 0:
+                self.health = 0
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
-                if self.battalion.leader[1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[1].name != "None":
-                    self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
-                for squad in self.battalion.squadsprite:
-                    squad.basemorale -= self.badmorale[1]  ## decrease all squad morale when leader die depending on position
-                for index, leader in enumerate(self.battalion.leader):  ## also change army position of all leader in that battalion
-                    leader.armyposition = index  ## change army position to new one
-                    if self.battalion.commander and leader.armyposition == 0:
-                        self.commander = True
-                    leader.imgposition = leader.baseimgposition[leader.armyposition]
-                    leader.rect = leader.image.get_rect(center=leader.imgposition)
-                    self.poschangestat(leader)
-                self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
-                                              (self.battalion.leader[0].cavcommand - 5) * 0.1]
-                self.authority = 0
-                self.meleecommand = 0
-                self.rangecommand = 0
-                self.cavcommand = 0
-                self.combat = 0
-                self.social = 0
-                pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)
-                if self.commander and self.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
-                    self.maingame.textdrama.queue.append(str(self.name) + " is dead")
-                    eventmapid = "ld0"
-                    whicharmy = self.maingame.playerarmy
-                    if self.battalion.gameid >= 2000:
-                        whicharmy = self.maingame.enemyarmy
-                        eventmapid = "ld1"
-                    self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is dead"], [0, 1, 2], eventmapid)
-                    for army in whicharmy:
-                        for squad in army.squadsprite:
-                            squad.basemorale -= 50
-                else:
-                    self.maingame.eventlog.addlog([0, str(self.name) + " is dead"], [0, 2])
-                self.maingame.setuparmyicon()
-                self.battalion.leaderchange = True
+                self.gone()
+        

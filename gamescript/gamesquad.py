@@ -9,6 +9,9 @@ class Unitsquad(pygame.sprite.Sprite):
     images = []
     maingame = None
     dmgcal = gamelongscript.dmgcal
+    ## battlesidecal is for melee combat side modifier
+    ## use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right
+    battlesidecal = (1, 0.5, 0.1, 0.5)
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
         self._layer = 11
@@ -220,6 +223,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.maxtroop = self.troopnumber
         self.moralestate = round((self.basemorale * 100) / self.maxmorale)
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
+        self.staminastatecal = self.staminastate / 100
+        self.moralestatecal = self.moralestate / 100
         self.image = self.images[0]  ## squad block blue colour for player
         """squad block colour"""
         if self.battalion.gameid >= 2000:
@@ -354,19 +359,19 @@ class Unitsquad(pygame.sprite.Sprite):
         self.authority = self.battalion.authority
         self.commandbuff = self.battalion.commandbuff[self.unittype] * 2
         self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0)
-        moralestatecal = self.moralestate / 100
+        self.moralestatecal = self.moralestate / 100
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        staminastatecal = self.staminastate / 100
-        self.discipline = (self.basediscipline * moralestatecal * staminastatecal) + self.battalion.leadersocial[
+        self.staminastatecal = self.staminastate / 100
+        self.discipline = (self.basediscipline * self.moralestatecal * self.staminastatecal) + self.battalion.leadersocial[
             self.grade + 1] + (self.authority / 10)
-        self.attack = (self.baseattack * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
-        self.meleedef = (self.basemeleedef * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
-        self.rangedef = (self.baserangedef * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
-        self.accuracy = self.baseaccuracy * staminastatecal + self.commandbuff
+        self.attack = (self.baseattack * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
+        self.meleedef = (self.basemeleedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
+        self.rangedef = (self.baserangedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
+        self.accuracy = self.baseaccuracy * self.staminastatecal + self.commandbuff
         self.reload = self.basereload * ((200 - self.staminastate) / 100)
-        self.chargedef = (self.basechargedef * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
+        self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
         self.speed = self.basespeed * self.staminastate / 100
-        self.charge = (self.basecharge * (moralestatecal + 0.1)) * staminastatecal + self.commandbuff
+        self.charge = (self.basecharge * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
         self.shootrange = self.baserange
         self.criteffect = 100
         self.frontdmgeffect = 1
@@ -591,8 +596,6 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.battalion.squadimgchange.append(self.gameid)
                             break
                     self.troopnumber = self.unithealth / self.troophealth
-                    # if self.troopnumber < self.maxtroop and self.state == 10:
-                    #     print(self.unithealth, self.troopnumber, self.gameid)
                     if round(self.troopnumber) < self.troopnumber:  # Calculate how many troop left based on current hp
                         self.troopnumber = round(self.troopnumber + 1)
                     else:
@@ -637,7 +640,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.availableskill = []
                     if self.useskillcond != 3:
                         self.checkskillcondition()
-                    if self.state in (3, 4)  and type(self.attackpos) != int and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
+                    if self.state in (3, 4) and type(self.attackpos) != int and self.chargeskill not in self.skillcooldown and self.moverotate == 0:
                         chargedistance = 40
                         if self.speed < 50: chargedistance = 30
                         if self.attackpos.distance_to(self.combatpos) < chargedistance:
@@ -651,7 +654,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.nocombat += dt
                     if battalionstate != 10:
                         self.nocombat = 0
-                if battalionstate == 10 and self.state != 97:
+                if battalionstate == 10 and self.state not in (97,98,99):
                     if any(battle > 0 for battle in self.battlesideid):
                         self.state = 10
                     elif self.ammo > 0 and self.arcshot:  # Help range attack when battalion in melee combat if has arcshot
@@ -663,7 +666,7 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.state = 0
                             self.nocombat = 0
                 ## Range attack function
-                elif battalionstate == 11:
+                elif battalionstate == 11 and self.state not in (97,98,99):
                     self.state = 0
                     if self.ammo > 0 and self.attackpos != 0 and self.shootrange >= self.attackpos.distance_to(self.combatpos):
                         self.state = 11
@@ -718,25 +721,31 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.stamina = self.stamina - (dt * 1.5) if self.walk else self.stamina - (dt * 3) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale:
+                if self.morale <= 0: # enter broken state when morale reach 0
+                    if self.state != 99:
+                        self.state = 99
+                        for squad in self.battalion.squadsprite:
+                            squad.basemorale -= 10
+                    self.morale = 0
+                if self.basemorale < 0:
+                    self.basemorale = 0
+                elif self.moralestatecal > 0.2: self.state = 0 # reset state to 0 when exit broken state
                 if self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
-                    self.basemorale += dt # if not broken or missing main leader can replenish morale
+                    self.basemorale += dt * self.staminastatecal # if not broken or missing main leader can replenish morale
                 elif self.state == 99 and self.battalion.state != 99:
                     self.unithealth -= dt # unit begin to desert if broken but battalion keep fighting
-                if self.basemorale <= 0: # enter broken state when morale reach 0
-                    if self.state != 99:
-                        for squad in self.battalion.squadsprite: # inflict morale dmg to every squad when one squad enter broken state
-                            squad.basemorale -= 5
-                        self.state = 99
-                    self.basemorale = 0
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt
             if self.morale < 0: self.morale = 0
             ## Regen logic
             if self.stamina < self.maxstamina:
                 if self.stamina <= 0:  # Collapse and cannot act
-                    self.state = 97
                     self.stamina = 0
+                    if self.state != 99:
+                        self.state = 97
                 self.stamina += (dt * self.staminaregen)
+                if self.state == 97 and self.stamina > self.stamina25: # exit collapse state
+                    self.state = 0
             elif self.stamina > self.maxstamina:
                 self.stamina = self.maxstamina
             if self.hpregen > 0 and self.unithealth % self.troophealth != 0:  ## hp regen cannot ressurect troop only heal to max hp
@@ -771,7 +780,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.battalion.squadalive[deadindex[0], deadindex[1]] = 1
                     self.battalion.deadchange = True
                 ## ^ End update
-                if self.leader != None and self.leader.state != 100:
+                if self.leader != None and self.leader.name != "None" and self.leader.state != 100:
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:
                             squad.leader = self.leader
@@ -789,6 +798,10 @@ class Unitsquad(pygame.sprite.Sprite):
                                 squad.leader.squadpos = index
                                 self.leader = None
                                 break
+                    if self.leader != None: # Can't find new squad so disappear with chance of different result
+                        self.leader.state = random.randint(97,98,99,100)
+                        self.leader.health = 0
+                        self.leader.gone()
                 self.state = 100
                 self.maingame.eventlog.addlog(
                     [0, str(self.boardpos) + " " + str(self.name) + " in " + self.battalion.leader[0].name + "'s battalion is destroyed"], [3])

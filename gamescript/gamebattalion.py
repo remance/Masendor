@@ -659,7 +659,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.state = 10
             if self.rangecombatcheck == 1: self.state = 11
             # Retreat function
-            if round(self.morale) <= 20 and self.state != 97:  ## Retreat state cannot surpass collapse state
+            if round(self.morale) <= 20 and self.state != 97:  ## Retreat state when morale lower than 20
                 self.state = 98
                 if self.retreatstart == 0:
                     self.retreatstart = 1
@@ -726,14 +726,15 @@ class Unitarmy(pygame.sprite.Sprite):
                     elif target[1] > 998:
                         target[1] = 998
                     self.set_target(target)
-            if self.state == 10 and self.battlesideid == [0,0,0,0]:
+            if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy
                 self.combatpreparestate = 0
                 self.state = self.commandstate
-                if type(self.attacktarget) != int and self.attacktarget.state == 100:
-                    self.attacktarget = 0
-                else:
-                    if self.hold == 0:
-                        self.set_target(self.attacktarget.basepos)
+                if type(self.attacktarget) != int:
+                    if self.attacktarget.state == 100:
+                        self.attacktarget = 0
+                    else:
+                        if self.hold == 0:
+                            self.set_target(self.attacktarget.basepos)
             ##Rotate Function
             if self.combatpreparestate == 1 and self.stopcombatmove == False: # Rotate army side to the enemyside
                 # and [round(elem,2) for elem in self.allsidepos[0]] != [round(elem,2) for elem in self.basetarget]
@@ -861,6 +862,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.rangecombatcheck = 1
                         elif move_length < 0.1 and self.battlesideid == [0,0,0,0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""
+                            print('done')
                             self.allsidepos[0] = self.commandtarget
                             self.state = 0
                             self.commandstate = self.state
@@ -894,7 +896,9 @@ class Unitarmy(pygame.sprite.Sprite):
                         awake = False
                         break
                 if awake == True:
-                    self.state = self.commandstate
+                    if self.morale > self.brokenlimit:
+                        self.state = self.commandstate
+                    else: self.state = 98
             if self.combatpreparestate == 1 and self.battlesideid == [0,0,0,0] and self.state != 10:
                 self.combatpreparestate = 0
                 self.stopcombatmove = False
@@ -912,6 +916,9 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
                 1] > 999:  ## remove unit when it go out of battlemap
                 self.maingame.allunitindex.remove(self.gameid)
+                self.leader[0].state = 98
+                self.leader[0].health = 0
+                self.leader[0].gone()
                 self.kill()
                 for hitbox in self.hitbox:
                     hitbox.kill()
@@ -963,7 +970,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rotateonly = False
         self.forcedmelee = False
         self.revert = False
-        if self.ammo <= 0: self.a = True
         self.attacktarget = 0
         self.baseattackpos = 0
         self.attackpos = 0
@@ -1003,6 +1009,11 @@ class Unitarmy(pygame.sprite.Sprite):
         if whomouseover == 0:
             self.state = 96
             self.commandstate = self.state
+            self.rotateonly = False
+            self.forcedmelee = False
+            self.attacktarget = 0
+            self.baseattackpos = 0
+            self.attackpos = 0
             if self.retreattimer == 0:
                 self.leader[0].authority -= self.authpenalty
                 self.authrecal()
@@ -1012,7 +1023,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.commandtarget = self.target
             self.combatpreparestate = 0
 
-    def command(self, mouse_pos, mouse_up, mouse_right, double_mouse_right, whomouseover, enemyposlist, keystate, othercommand=0):
+    def command(self, mouse_pos, mouse_right, double_mouse_right, whomouseover, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
         if self.control and self.state != 100:
             """check if right click in mask or not. if not, move unit"""
@@ -1030,7 +1041,7 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.processretreat(mouse_pos, whomouseover)
                     except:
                         self.processretreat(mouse_pos, whomouseover)
-            elif othercommand == 1 and self.state not in (10, 96, 97, 98, 99, 100):  ## Pause all action except combat
+            elif othercommand == 1 and self.state not in (10, 97, 98, 99, 100):  ## Pause all action except combat
                 if self.charging:
                     self.leader[0].authority -= self.authpenalty
                     self.authrecal()

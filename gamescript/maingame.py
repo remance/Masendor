@@ -1,5 +1,7 @@
 """
 ## Known problem
+collapse and broken cause reset
+leader die too fast sometimes (after broken?)
 Hitbox still behave weirdly in melee combat (sometimes combatprepare is call for side before front)
 Optimise list
 melee combat need to be optimised more
@@ -319,8 +321,6 @@ class Battle():
         self.bottomcorner = SCREENRECT.height - 5
         self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]
         self.battlemousepos = [0, 0]
-        """use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right"""
-        self.battlesidecal = [1, 0.5, 0.1, 0.5]
         """create game ui"""
         self.minimap = gameui.Minimap(SCREENRECT.width, SCREENRECT.height, self.showmap.trueimage, self.camera)
         topimage = load_images(['ui', 'battle_ui'])
@@ -847,8 +847,8 @@ class Battle():
                                 self.eventlog.recreateimage()
                                 self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
                         elif event.key == pygame.K_SPACE and self.lastselected is not None:
-                            whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
-                                             self.lastmouseover, self.enemyposlist, keystate, othercommand=1)
+                            whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
+                                             self.lastmouseover, keystate, othercommand=1)
                         ### FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the first playtest')
@@ -1274,8 +1274,8 @@ class Battle():
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()
                     if (mouse_up or mouse_right) and self.uicheck == 0: # Unit command
-                        whoinput.command(self.battlemousepos, mouse_up, mouse_right, double_mouse_right,
-                                         self.lastmouseover, self.enemyposlist, keystate)
+                        whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
+                                         self.lastmouseover, keystate)
                     self.beforeselected = self.lastselected
                     if self.uitimer >= 1.1:
                         self.uitimer -= 1.1

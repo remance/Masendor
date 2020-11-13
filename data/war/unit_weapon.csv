@@ -18,16 +18,16 @@
 17,"Glaive",21,40,30,23,8,0,
 18,"Whip",7,5,5,0,9,0,
 19,,,,,,,,
-20,"Sling",14,35,5,16,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
+20,"Sling",12,35,5,16,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
 21,"Blowgun",10,10,3,0,12,0,
 22,"Javelin",22,45,15,16,13,0,
 23,"Throwing Axe",19,50,20,21,14,0,
-24,"Longbow",22,50,15,16,15,0,"Longbow "
-25,"Shortbow",10,15,10,16,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
-26,"Greatbow",29,70,20,16,17,0,
-27,"Light Crossbow",15,45,10,0,18,0,"The pinnacle of warfare. Easier to use than bow that any peasant can use after few days of training to kill a knight that train for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
-28,"Heavy Crossbow",24,60,15,0,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
-29,"Repeater Crossbow",7,20,15,0,18,0,
+24,"Longbow",25,50,15,16,15,0,"Longbow "
+25,"Shortbow",16,15,10,16,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
+26,"Greatbow",33,70,20,16,17,0,
+27,"Light Crossbow",20,45,10,0,18,0,"The pinnacle of warfare. Easier to use than bow that any peasant can use after few days of training to kill a knight that train for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
+28,"Heavy Crossbow",28,60,15,0,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
+29,"Repeater Crossbow",10,20,15,0,18,0,
 30,"Arbalest",35,85,25,0,19,0,
 31,"Quarterstaff",9,45,10,0,20,0,
 32,"Stone",7,20,5,16,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
