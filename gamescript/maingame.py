@@ -849,13 +849,13 @@ class Battle():
                         elif event.key == pygame.K_SPACE and self.lastselected is not None:
                             whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
                                              self.lastmouseover, keystate, othercommand=1)
-                        ### FOR DEVELOPMENT DELETE LATER
+                        ## FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to the first playtest')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode')
+                            self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode (no AI)')
                         elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('Not yet balanced for complete historical enactment')
+                            self.textdrama.queue.append('Not yet balanced for completely historical enactment')
                         elif event.key == pygame.K_4:
                             self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
                         elif event.key == pygame.K_5:
@@ -877,11 +877,10 @@ class Battle():
                                 squad.unithealth -= squad.unithealth
                         elif event.key == pygame.K_m and self.lastselected is not None:
                             self.lastselected.leader[0].health -= 1000
-                        ### End For development test
+                        ## ^End For development test
                         else:
                             keypress = event.key
             self.allui.clear(self.screen, self.background)  ##clear sprite before update new one
-            # self.screen.blit(self.background, self.camerapos)
             if self.gamestate == 1:
                 self.uiupdater.update()  # update ui
                 if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  # Camera move down

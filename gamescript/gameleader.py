@@ -42,12 +42,14 @@ class Leader(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.badmorale = (20, 30)  ## other position morale lost
         self.commander = False
+        self.originalcommander = False
         if self.armyposition == 0:
             squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10) # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
             self.badmorale = (30, 50)  ## main general morale lost when die
             if self.battalion.commander:
                 self.commander = True
+                self.originalcommander = True
 
     def poschangestat(self, leader):
         """Change stat that related to army position such as in leader dead event"""
@@ -73,7 +75,9 @@ class Leader(pygame.sprite.Sprite):
             if self.battalion.gameid >= 2000:
                 whicharmy = self.maingame.enemyarmy
                 eventmapid = "ld1"
-            self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
+            if self.originalcommander:
+                self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
+            else: self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2])
             for army in whicharmy:
                 for squad in army.squadsprite:
                     squad.basemorale -= 100

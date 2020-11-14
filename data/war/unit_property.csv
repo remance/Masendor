@@ -13,7 +13,7 @@
 12,"Charge Defense Expert",1,,,,,0,,,,,,35,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Why settle for just defending when you can turn the enemies' charge into their own demise."
 13,"Weapon Expert",1,,120,115,,0,,115,,115,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Decades of perfection the weapon make these soldiers a pinnacle of all warriors. "
 14,"Evasive",1,,,130,130,0,,,,,,30,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can dodge melee and range attack when fighting in loose formation."
-15,"Divine Connection",1,190,,,,0,,,,,,,0,0,100,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
+15,"Divine Connection",1,190,,,,0,,,,,,0,0,0,100,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
 16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Arc shot allows archers to shoot pass the obstacle to hit the target they aiming for. *This trait can be obtained from certain weapons."
 17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also help improve accuracy against moving target."
 18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial."
@@ -44,7 +44,7 @@
 43,"Famed",2,,,,,0,,,,,,0,0,0,10,10,0,3,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for allies nearby while reducing for enemies."
 44,"Armistice Bringer",4,,,,,0,,,,,,0,0,0,-50,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
 45,"Shield Expert",1,,,120,120,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Survive to fight another day by improving your defense is never a bad idea."
-46,"Crumble",1,,60,60,100,-70,60,60,,60,60,100,0,0,60,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Nothing last forever, even for an inanimate material creatures. Time has render these troops much less powerful compare to its former glory."
+46,"Crumble",1,,60,60,100,-70,60,60,,60,60,-100,0,0,60,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Nothing last forever, even for an inanimate material creatures. Time has render these troops much less powerful compare to its former glory."
 47,"Superb Flanker",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops fight better against enemies from flanking position."
 48,"Bandit Honour",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to."
 49,"Indomitable",1,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
@@ -164,8 +164,8 @@
 163,"Fragile Will",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,0,"These troops will be affected by negative psychological effect even more than usual."
 164,"Overwhelming Presence",,,,,,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These creatures’ appearance are so overwhelming that leave both friendly and enemy troops in fear and worry."
 165,"Headshotter",,,,,,0,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-166,"Perfect Aims",,,,,,0,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Never a shot wasted when the enemies are lining up to be killed."
-167,"Personal Escort",,,,,,0,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Trained to escort important person to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
+166,"Perfect Aims",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Never a shot wasted when the enemies are lining up to be killed."
+167,"Personal Escort",,,,,,0,,,,,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Trained to escort important person to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
 168,"Domination Aura",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"When enemies becomes broken near these creatures, they will join these troops' side instead of freeing."
 169,"Fire Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,100,-50,0,0,0,50,0,0,,,,0,,2,"Fire damage actually heal these creatures instead of damaging them."
 170,"Water Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,100,-50,0,0,0,50,0,,,,0,,2,"Water damage actually heal these creatures instead of damaging them."
@@ -176,7 +176,7 @@
 175,"Calming Berserk",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
 176,"Spectacle Showdown",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
 177,"Pantheon's Favour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-178,"Magical Conflux",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
+178,"Magical Conflux",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
 179,"Shadow Fog",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
 180,"Penetration Shots",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops’ range attacks are so powerful that they can penetrate enemy body and damage more than sub-unit per shot. They can also shot through weak obstacle and deals minor damage to major obstacle."
 181,"Gallant Example",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,

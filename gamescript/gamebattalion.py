@@ -120,6 +120,7 @@ class Unitarmy(pygame.sprite.Sprite):
     die = gamelongscript.die
 
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
+        """Although battalion in code, this is referred as unit ingame"""
         # super().__init__()
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -613,7 +614,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.deadchange == True:
                 self.setupfrontline()
                 for squad in self.squadsprite:
-                    squad.basemorale -= 20
+                    squad.basemorale -= 30
                 self.deadchange = False
             # ^End setup frontline when squad die
             ## Combat and unit update
@@ -674,10 +675,11 @@ class Unitarmy(pygame.sprite.Sprite):
                     if random.randint(0, 100) > 99: ## change side via surrender or betrayal
                         if self.gameid < 2000:
                             self.maingame.allunitindex = self.switchfaction(self.maingame.playerarmy, self.maingame.enemyarmy,
-                                                                            self.maingame.playerposlist, self.maingame.allunitindex, self.enactment)
+                                                                            self.maingame.playerposlist, self.maingame.allunitindex, self.maingame.enactment)
                         else:
                             self.maingame.allunitindex = self.switchfaction(self.maingame.enemyarmy, self.maingame.playerarmy,
                                                                             self.maingame.enemyposlist, self.maingame.allunitindex, self.maingame.enactment)
+                        self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion surrender"], [0, 1])
                         self.maingame.setuparmyicon()
             elif self.state == 98 and self.morale >= self.brokenlimit/2:  # quit retreat when morale reach increasing limit
                 self.state = 0
@@ -802,7 +804,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for side in self.battlesideid:
-                        if side != 0 and (side == self.attacktarget.gameid and self.combatpreparestate == 1):
+                        if (side != 0 and side != self.attacktarget.gameid) or (side == self.attacktarget.gameid and self.combatpreparestate == 1):
                             cantchase = True
                     if cantchase == False and self.forcedmelee:
                         self.state = self.commandstate

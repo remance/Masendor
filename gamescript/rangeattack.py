@@ -87,8 +87,8 @@ class Rangearrow(pygame.sprite.Sprite):
         self.pos = self.basepos * viewmode
         self.target = self.basetarget * viewmode
 
-    def rangedmgcal(self, who, target, targetside,sidepercent = [1, 0.5, 0.5, 0.1]):
-        """Calculate hitchance and defense chance"""
+    def rangedmgcal(self, who, target, targetside,sidepercent = [1, 0.3, 0.3, 0]):
+        """Calculate hitchance and defense chance, sidepercent is more punishing than melee attack"""
         wholuck = random.randint(-20, 20)
         targetluck = random.randint(-20, 20)
         targetpercent = sidepercent[targetside]

@@ -14,6 +14,7 @@ class Unitsquad(pygame.sprite.Sprite):
     battlesidecal = (1, 0.5, 0.1, 0.5)
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
+        """Although squad in code, this is referred as sub-unit ingame"""
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = 0
@@ -24,7 +25,7 @@ class Unitsquad(pygame.sprite.Sprite):
         """index of battleside: 0 = front 1 = left 2 =rear 3 =right (different than battalion for proper combat rotation)"""
         """battleside keep index of enemy battalion -1 is no combat 0 is no current enemy (idle in combat)"""
         self.battleside = [None, None, None, None]
-        self.battlesideid = [0, 0, 0, ]
+        self.battlesideid = [0, 0, 0, 0]
         self.haveredcorner = False
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
         # self.offset = pygame.Vector2(-25, 0)
@@ -84,6 +85,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basespeed = 50
         self.mount = statlist.mountlist[stat[29]]
         if stat[29] != 1:
+            self.basechargedef = 5
             self.basespeed = self.mount[1]
             self.troophealth += self.mount[2]
             self.basecharge += self.mount[3]
@@ -158,7 +160,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.baserange *= trait[9]
                 self.basereload *= trait[10]
                 self.basecharge *= trait[11]
-                self.basechargedef *= trait[12]
+                self.basechargedef += trait[12]
                 self.basehpregen += trait[13]
                 self.basestaminaregen += trait[14]
                 self.basemorale += trait[15]
@@ -204,7 +206,9 @@ class Unitsquad(pygame.sprite.Sprite):
             if 55 in self.trait: self.oblivious = True
             if 73 in self.trait: self.norangepenal = True
             if 74 in self.trait: self.longrangeacc = True
-            if 111 in self.trait: self.unbreakable = True
+            if 111 in self.trait:
+                self.unbreakable = True
+                self.tempunbraekable = True
             ##
         # self.loyalty
         self.elemresist = (fireres, waterres, airres, earthres, poisonres)
@@ -721,19 +725,23 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.stamina = self.stamina - (dt * 1.5) if self.walk else self.stamina - (dt * 3) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.state == 97 else self.stamina
             if self.basemorale < self.maxmorale:
-                if self.morale <= 0: # enter broken state when morale reach 0
-                    if self.state != 99:
+                if (self.unbreakable or self.tempunbraekable) and self.morale < 50:
+                    self.morale = 50
+                elif self.morale <= 0: # enter broken state when morale reach 0
+                    if self.state != 99: ## this is top state above other states except dead for squad
                         self.state = 99
                         for squad in self.battalion.squadsprite:
-                            squad.basemorale -= 10
+                            squad.basemorale -= 15
                     self.morale = 0
                 if self.basemorale < 0:
                     self.basemorale = 0
-                elif self.moralestatecal > 0.2: self.state = 0 # reset state to 0 when exit broken state
                 if self.battalion.leader[0].state not in (96, 97, 98, 99, 100):
                     self.basemorale += dt * self.staminastatecal # if not broken or missing main leader can replenish morale
-                elif self.state == 99 and self.battalion.state != 99:
-                    self.unithealth -= dt # unit begin to desert if broken but battalion keep fighting
+                if self.state == 99:
+                    if self.battalion.state != 99:
+                        self.unithealth -= dt*100 # unit begin to desert if broken but battalion keep fighting
+                    if self.moralestatecal > 0.2:
+                        self.state = 0  # reset state to 0 when exit broken state
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt
             if self.morale < 0: self.morale = 0

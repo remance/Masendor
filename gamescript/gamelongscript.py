@@ -281,7 +281,7 @@ def changecombatside(side, position):
         finalposition = 0
     return finalposition
 
-def losscal(attacker, defender, hit, defense, type):
+def losscal(attacker, defender, hit, defense, type, defside = None):
     """Calculate damage"""
     who = attacker
     target = defender
@@ -301,7 +301,10 @@ def losscal(attacker, defender, hit, defense, type):
         dmg = who.dmg
         if who.charging: ## Include charge in dmg if charging
             if who.ignorechargedef == False: ## Ignore charge defense if have ignore trait
-                dmg = dmg + (who.charge / 10) - (target.chargedef / 10)
+                sidecal = who.battlesidecal[defside]
+                if target.fulldef == True:
+                    sidecal = 1
+                dmg = dmg + (who.charge / 10) - (target.chargedef * sidecal / 10)
             elif who.ignorechargedef:
                 dmg = dmg + (who.charge / 10)
         dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
@@ -319,8 +322,6 @@ def losscal(attacker, defender, hit, defense, type):
         unitdmg = 0
     if leaderdmg < 0:
         leaderdmg = 0
-    elif leaderdmg > 100:
-        print(leaderdmg, dmg, combatscore, hitchance, hit, defense)
     if moraledmg < 0:
         moraledmg = 0
     return unitdmg, moraledmg, leaderdmg
@@ -351,7 +352,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
     if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element
         receiver.elemcount[attacker.elemmelee - 1] += round(targetdmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
     attacker.basemorale += round((targetmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
-    if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 9:  # dmg on squad leader
+    if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 8:  # dmg on squad leader
         targetleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
         if targetleaderdmg > receiver.leader.health:
             targetleaderdmg = receiver.leader.health
@@ -383,8 +384,8 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
             target.flanker and whoside in (1, 3)): # Apply only for attacker
         targetdefense = 0
-    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0) # get dmg by attacker
-    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0) # get dmg by defender
+    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0, targetside) # get dmg by attacker
+    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0, whoside) # get dmg by defender
     timermod = combattimer / 0.5 # since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
     complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, targetdmgeffect, timermod) # inflict dmg to defender
     complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, dmgeffect, timermod) # inflict dmg to attacker

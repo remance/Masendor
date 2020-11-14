@@ -6,7 +6,7 @@ The repotary should be running fine now. Stupid of me to not notice that Git doe
 
 To start testing the game run main.py
 
-Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game now currently using pygame 2 module (much faster than 1.9.6).
+Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9.
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
