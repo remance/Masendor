@@ -478,16 +478,16 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         imagechange = False
         for mode in modelist:
             thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode]
-            if len(textoutput) <= 47:
+            if len(textoutput) <= 45: # eventlog each row cannot have more than 45 characters including space
                 thislog.append([who, textoutput])
             else:  ## Cut the text log into multiple row
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
-                howmanyloop = len(textoutput) / 47
+                howmanyloop = len(textoutput) / 45
                 if howmanyloop.is_integer() == False:
                     howmanyloop = int(howmanyloop) + 1
                 startingindex = 0
                 for run in range(1, int(howmanyloop) + 1):
-                    textcutnumber = [number for number in cutspace if number <= run * 47]
+                    textcutnumber = [number for number in cutspace if number <= run * 45]
                     cutnumber = textcutnumber[-1]
                     finaltextoutput = textoutput[startingindex:cutnumber]
                     if run == howmanyloop:

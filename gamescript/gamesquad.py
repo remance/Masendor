@@ -799,7 +799,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.leader = None
                                 break
                     if self.leader != None: # Can't find new squad so disappear with chance of different result
-                        self.leader.state = random.randint(97,98,99,100)
+                        self.leader.state = random.randint(97,100)
                         self.leader.health = 0
                         self.leader.gone()
                 self.state = 100

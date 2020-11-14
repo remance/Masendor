@@ -862,7 +862,6 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.rangecombatcheck = 1
                         elif move_length < 0.1 and self.battlesideid == [0,0,0,0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
                             """Stop moving when reach target and go to idle"""
-                            print('done')
                             self.allsidepos[0] = self.commandtarget
                             self.state = 0
                             self.commandstate = self.state
