@@ -725,8 +725,8 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.stamina = self.stamina - (dt * 1) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina
             if self.basemorale < self.maxmorale:
-                if (self.unbreakable or self.tempunbraekable) and self.morale < 50:
-                    self.morale = 50
+                if (self.unbreakable or self.tempunbraekable) and self.morale < 30:
+                    self.morale = 30
                 elif self.morale <= 0: # enter broken state when morale reach 0
                     if self.state != 99: ## this is top state above other states except dead for squad
                         self.state = 99

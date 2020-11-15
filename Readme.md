@@ -11,9 +11,9 @@ For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
 If anyone is interested in similar game like this, there is also another interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
-The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
+The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
-Meaning: I am totally ignoring so many issues right now eventhough they cause performance issue. (Will fix them for sure)
+Meaning: It's playable but it is still a bloody mess. More work to do.
 
 Plan
 
