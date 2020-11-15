@@ -1,7 +1,5 @@
 """
 ## Known problem
-collapse and broken cause reset
-leader die too fast sometimes (after broken?)
 Hitbox still behave weirdly in melee combat (sometimes combatprepare is call for side before front)
 Optimise list
 melee combat need to be optimised more
@@ -58,7 +56,7 @@ class Battle():
                        "Ocean", "Coral Reef", "Underwater Forest", "Fresh Water", "Bridge", "Sunken City", "Fishery", "Pandemonium", "Water Mana",
                        "Creeping Rot", ""]
         self.mapselected = "hastings"
-        imgs = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], loadorder=False)
+        imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
         gamemap.Mapfeature.images = [imgs[1]]
         gamemap.Mapfeature.main_dir = main_dir
@@ -84,7 +82,7 @@ class Battle():
         gamefaction.Factiondata.main_dir = main_dir
         self.allfaction = gamefaction.Factiondata(option=self.rulesetfolder)
         ## coa imagelist
-        imgsold = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'faction', 'coa'])
+        imgsold = load_images(['ruleset', self.rulesetfolder.strip("/"), 'faction', 'coa'])
         imgs = []
         for img in imgsold:
             imgs.append(img)
@@ -122,7 +120,7 @@ class Battle():
         gameui.Skillcardicon.cooldown = cooldown
         self.gameunitstat = gameunitstat.Unitstat(main_dir, self.ruleset, self.rulesetfolder)
         ## create leader list
-        imgs, order = load_images(['ruleset', self.rulesetfolder.strip("\\"), 'leader', 'portrait'], loadorder=False, returnorder=True)
+        imgs, order = load_images(['ruleset', self.rulesetfolder.strip("/"), 'leader', 'portrait'], loadorder=False, returnorder=True)
         self.allleader = gameunitstat.Leaderstat(main_dir, imgs, order, option=self.rulesetfolder)
         ## Weather list
         self.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
@@ -346,7 +344,7 @@ class Battle():
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
         # Load weather schedule
         try:
-            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 1)
+            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], 1)
             self.weatherevent = self.weatherevent[1:]
             gamelongscript.convertweathertime(self.weatherevent)
         except:  ## If no weather found use default light sunny weather start at 9.00
@@ -369,7 +367,7 @@ class Battle():
                                gameui.Switchuibutton(self.gameui[1].X, self.gameui[1].Y + 96, topimage[17:20]),
                                gameui.Switchuibutton(self.gameui[1].X + 40, self.gameui[1].Y + 96, topimage[20:22])]
         try:
-            mapevent = csv_read('eventlog.csv', ["data", 'ruleset', self.rulesetfolder.strip("\\"), 'map', self.mapselected], 0)
+            mapevent = csv_read('eventlog.csv', ["data", 'ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], 0)
             gameui.Eventlog.mapevent = mapevent
         except:
             mapevent = {}
@@ -407,10 +405,10 @@ class Battle():
         self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
-        gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
-        gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
-        gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
-        gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("\\"), 'lore'])
+        gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
+        gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
+        gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
+        gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
         gamelorebook.Lorebook.factionlore = self.allfaction.factionlist
         gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
         gamelorebook.Lorebook.unitlore = self.gameunitstat.unitlore

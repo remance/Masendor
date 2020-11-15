@@ -307,7 +307,7 @@ class Mainmenu():
         self.menustate = "mainmenu"
         self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data', 'ruleset'])
         self.ruleset = 1
-        self.rulesetfolder = "\\" + str(self.rulesetlist[self.ruleset][1])
+        self.rulesetfolder = "/" + str(self.rulesetlist[self.ruleset][1])
         addmorebar = "no"
 
     def run(self, maingamefunc):

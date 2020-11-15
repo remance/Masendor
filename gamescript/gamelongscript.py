@@ -55,8 +55,8 @@ def csv_read(file, subfolder=[], outputtype=0):
     if outputtype == 1: returnoutput = []
     folderlist = ""
     for folder in subfolder:
-        folderlist += "\\" + folder
-    folderlist += "\\" + file
+        folderlist += "/" + folder
+    folderlist += "/" + file
     with open(main_dir + folderlist, 'r') as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
@@ -95,10 +95,10 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
                                   colour=colour, control=control, coa=coa, commander=command, startangle=abs(360 - startangle))
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 5),
-                   gamebattalion.Hitbox(army, 1, 5, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 5, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 5)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 7),
+                   gamebattalion.Hitbox(army, 1, 7, army.rect.height - int(army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 2, 7, army.rect.height - int(army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 7)]
     army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
                    gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
                    gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
@@ -126,7 +126,7 @@ def unitsetup(maingame):
     squadindex = 0
     """firstsquad check if it the first ever in group"""
     squadgameid = 10000
-    with open(main_dir + "\data\\ruleset" + maingame.rulesetfolder + "\map\\" + maingame.mapselected + "\\unit_pos.csv", 'r') as unitfile:
+    with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos.csv", 'r') as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             for n, i in enumerate(row):
@@ -501,10 +501,10 @@ def splitunit(battle, who, how):
     who.viewmodechange()
     who.height = who.gamemapheight.getheight(who.basepos)
     for thishitbox in who.hitbox: thishitbox.kill()
-    who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - (who.rect.width * 0.1), 1),
-                  gamebattalion.Hitbox(who, 1, 1, who.rect.height - (who.rect.height * 0.1)),
-                  gamebattalion.Hitbox(who, 2, 1, who.rect.height - (who.rect.height * 0.1)),
-                  gamebattalion.Hitbox(who, 3, who.rect.width - (who.rect.width * 0.1), 1)]
+    who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - (who.rect.width * 0.1), 7),
+                  gamebattalion.Hitbox(who, 1, 7, who.rect.height - (who.rect.height * 0.1)),
+                  gamebattalion.Hitbox(who, 2, 7, who.rect.height - (who.rect.height * 0.1)),
+                  gamebattalion.Hitbox(who, 3, who.rect.width - (who.rect.width * 0.1), 7)]
     who.rotate()
     who.newangle = who.angle
     ## need to recal max stat again for the original battalion
@@ -573,8 +573,8 @@ def splitunit(battle, who, how):
     army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
     army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                         army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - (army.rect.width * 0.1), 1),
-                   gamebattalion.Hitbox(army, 1, 1, army.rect.height - (army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 1, army.rect.height - (army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 1)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - (army.rect.width * 0.1), 7),
+                   gamebattalion.Hitbox(army, 1, 7, army.rect.height - (army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 2, 7, army.rect.height - (army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 7)]
     army.autosquadplace = False

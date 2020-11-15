@@ -84,7 +84,7 @@ class Mapfeature(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(0, 0))
         self.featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Wall, Mana, Rot, Wetground)
         self.featuremod = {}
-        with open(self.main_dir + "\data\map" + '\\unit_terrainbonus.csv', 'r') as unitfile:
+        with open(self.main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
@@ -170,7 +170,7 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.scale = scale
         self.mode = 0
         self.newcolourlist = {}
-        with open(self.main_dir + "\data\map" + '\\colourchange.csv', 'r') as unitfile:
+        with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
