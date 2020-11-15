@@ -2,13 +2,14 @@
 
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until end of ver 0.5).
-The repotary should be running fine now. Stupid of me to not notice that Git does not include empty folder which I require it to exist.
 
-To start testing the game run main.py
+To start testing the game run main.py or main.exe if you use the release version.
 
-Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9.
+Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game is now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9.
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
+
+If anyone is interested in similar game like this, there is also another interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
 The current state of the game and code performance: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 

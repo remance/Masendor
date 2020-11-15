@@ -256,8 +256,8 @@ class Gameui(pygame.sprite.Sprite):
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
-                    if 0 not in who.mount:
-                        textvalue.insert(3, str(who.mount[0]))
+                    if 1 not in who.mount:
+                        textvalue.insert(3, "Mount:" + str(who.mount[0]))
                     for text in textvalue:
                         self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(

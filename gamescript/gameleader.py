@@ -61,14 +61,18 @@ class Leader(pygame.sprite.Sprite):
 
     def gone(self):
         eventtext = {96:"retreat",97:"captured",98:"missing",99:"wounded",100:"dead"}
-        if self.battalion.leader[1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[1].name != "None":
+        if self.commander and self.battalion.leader[3].state not in (96, 97, 98, 99, 100) and self.battalion.leader[3].name != "None":
+            ## If commander die will use strategist as next commander first
+            print('test')
+            self.battalion.leader[0], self.battalion.leader[3] = self.battalion.leader[3], self.battalion.leader[0]
+        elif self.battalion.leader[1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[1].name != "None":
             self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
         thisbadmorale = self.badmorale[0]
         if self.state == 99: # wonnd inflict less morale penalty
             thisbadmorale = self.badmorale[1]
         for squad in self.battalion.squadsprite:
             squad.basemorale -= thisbadmorale  ## decrease all squad morale when leader die depending on position
-        if self.commander and self.armyposition == 0:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+        if self.commander:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
             self.maingame.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0"
             whicharmy = self.maingame.playerarmy

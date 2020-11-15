@@ -722,8 +722,8 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.reloadtime = 0
                         elif self.attacktarget != 0 and self.attacktarget.state == 100:
                             self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
-                self.stamina = self.stamina - (dt * 1.5) if self.walk else self.stamina - (dt * 3) if self.run else self.stamina + (
-                        dt * self.staminaregen) if self.state == 97 else self.stamina
+                self.stamina = self.stamina - (dt * 1) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
+                        dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina
             if self.basemorale < self.maxmorale:
                 if (self.unbreakable or self.tempunbraekable) and self.morale < 50:
                     self.morale = 50
@@ -751,7 +751,6 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.stamina = 0
                     if self.state != 99:
                         self.state = 97
-                self.stamina += (dt * self.staminaregen)
                 if self.state == 97 and self.stamina > self.stamina25: # exit collapse state
                     self.state = 0
             elif self.stamina > self.maxstamina:

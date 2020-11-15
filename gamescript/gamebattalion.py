@@ -432,6 +432,7 @@ class Unitarmy(pygame.sprite.Sprite):
     #     pygame.draw.rect(gamescreen, (0, 0, 0), self.rect,2)
 
     def combatprepare(self, enemyhitbox):
+        print(self.gameid)
         self.stopcombatmove = False
         self.combatpreparestate = 1
         # side, side2 = enemy.allsidepos.copy(), {}
@@ -729,14 +730,22 @@ class Unitarmy(pygame.sprite.Sprite):
                         target[1] = 998
                     self.set_target(target)
             if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy
-                self.combatpreparestate = 0
-                self.state = self.commandstate
-                if type(self.attacktarget) != int:
-                    if self.attacktarget.state == 100:
-                        self.attacktarget = 0
-                    else:
-                        if self.hold == 0:
-                            self.set_target(self.attacktarget.basepos)
+                if self.nocombat > 0:  # For avoiding battalion bobble between two collided enemy
+                    self.nocombat += dt
+                    if self.nocombat > 1:
+                        self.nocombat = 0
+                        self.combatpreparestate = 0
+                        self.state = self.commandstate
+                        if type(self.attacktarget) != int:
+                            if self.attacktarget.state == 100:
+                                self.attacktarget = 0
+                            else:
+                                if self.commandstate in (3,4,5,6) and self.hold == 0:
+                                    self.set_target(self.attacktarget.basepos)
+                else:
+                    self.nocombat = 0.1
+            else:
+                self.nocombat = 0
             ##Rotate Function
             if self.combatpreparestate == 1 and self.stopcombatmove == False: # Rotate army side to the enemyside
                 # and [round(elem,2) for elem in self.allsidepos[0]] != [round(elem,2) for elem in self.basetarget]
@@ -800,7 +809,9 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.allsidepos[0] != self.basetarget and self.rangecombatcheck != 1:
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 # if self.state not in [10]: self.target = self.commandtarget
-                if self.state in (0, 3, 4, 5, 6, 10) and self.attacktarget != 0 \
+                if self.gameid >= 2000:
+                    print(self.gameid)
+                if self.state in (3, 4, 5, 6, 10) and self.commandstate in (3,4,5,6) and self.attacktarget != 0 \
                         and self.basetarget != self.attacktarget.basepos and self.hold == 0:  ## Chase target and rotate accordingly
                     cantchase = False
                     for side in self.battlesideid:
@@ -810,7 +821,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.state = self.commandstate
                         self.set_target(self.attacktarget.basepos)
                         self.setrotate(self.target)
-                """check for hitbox collide according to which ever closest to the target position"""
+                """check for hitbox collide according to which ever closest to the target position""" ## TODO try testing whether make charge ignore collide work well or not
                 if self.state not in (0, 97) and self.stamina > 0 and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
