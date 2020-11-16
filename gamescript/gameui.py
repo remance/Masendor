@@ -242,14 +242,14 @@ class Gameui(pygame.sprite.Sprite):
                 elif self.option == 0:  ## description card
                     self.blit_text(self.image, self.description, (42, 25), self.fontlong)
                 elif self.option == 3:  ## equipment and terrain
-                    terrain = self.terrainlist[who.battalion.terrain]
-                    if who.battalion.feature is not None: terrain += "/" + self.featurelist[who.battalion.feature]
+                    terrain = self.terrainlist[who.terrain]
+                    if who.feature is not None: terrain += "/" + self.featurelist[who.feature]
                     textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][3]),
                                  self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(
                                      armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
-                                 "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.battalion.height),
+                                 "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.height),
                                  "Temperature:" + str(int(who.tempcount))]
                     if who.rangeweapon[0] != 1:
                         textvalue.insert(1,

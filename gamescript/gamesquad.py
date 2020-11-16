@@ -38,6 +38,10 @@ class Unitsquad(pygame.sprite.Sprite):
         stat = statlist.unitlist[self.unitid].copy()
         self.leader = None
         self.boardpos = None  ## Used for event log position of squad (Assigned in maingame unit setup)
+        self.terrain = None
+        self.feature = None
+        self.height = None
+        self.gamemapfeature = self.battalion.gamemapfeature
         self.name = stat[0]
         self.unitclass = stat[1]
         self.grade = stat[2]
@@ -255,12 +259,16 @@ class Unitsquad(pygame.sprite.Sprite):
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
         """position in inspect ui"""
-        self.inspposition = (position[0] + inspectuipos[0], position[1] + inspectuipos[1])
+        self.armypos = position
+        self.inspposition = (self.armypos[0] + inspectuipos[0], self.armypos[1] + inspectuipos[1])
         self.rect = self.image.get_rect(topleft=self.inspposition)
         """self.pos is pos for army inspect ui"""
         self.pos = pygame.Vector2(self.rect.centerx, self.rect.centery)
         """self.combatpos is pos of battalion"""
         self.combatpos = 0
+        battaliontopleft = pygame.Vector2(self.battalion.basepos[0] - self.battalion.basewidthbox / 2,
+                           self.battalion.basepos[1] - self.battalion.baseheightbox / 2)
+        self.truepos = pygame.Vector2(battaliontopleft[0] + (self.armypos[0]/10), battaliontopleft[1] + (self.armypos[1]/10))
         self.attackpos = self.battalion.baseattackpos
 
     def useskill(self, whichskill):
@@ -388,8 +396,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
         """apply height to range"""
-        if self.battalion.height > 100:
-            self.shootrange = self.shootrange + (self.battalion.height / 10)
+        if self.height > 100:
+            self.shootrange = self.shootrange + (self.height / 10)
         """apply status effect from trait"""
         if len(self.trait) > 1:
             for trait in self.trait.values():
@@ -414,7 +422,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.morale += weather.morale_buff
         self.discipline += weather.discipline_buff
         ## Map feature modifier
-        mapfeaturemod = self.battalion.gamemapfeature.featuremod[self.battalion.feature]
+        mapfeaturemod = self.gamemapfeature.featuremod[self.feature]
         if mapfeaturemod[self.featuremod] != 1:
             speedmod = mapfeaturemod[self.featuremod]
             self.speed *= speedmod

@@ -139,6 +139,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.viewmode = 10
         self.imgsize = imgsize
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
+        self.basewidthbox, self.baseheightbox = self.widthbox / 10, self.heightbox / 10
         self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * self.viewmode, len(self.armysquad) * self.imgsize[
             1] * self.viewmode
         self.gameid = gameid
@@ -178,9 +179,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.maxrange = 0
         self.useminrange = 0
         self.useskillcond = 0
-        self.terrain = 0
-        self.height = 0
-        self.feature = None
         self.sidefeature = []
         self.sideheight = []
         self.getfeature = self.gamemapfeature.getfeature
@@ -223,10 +221,10 @@ class Unitarmy(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
-        self.allsidepos = [(self.basepos[0], (self.basepos[1] - (self.heightbox / 10) / 2)),  ## Generate all four side position
-                           ((self.basepos[0] - (self.widthbox / 10) / 2), self.basepos[1]),
-                           ((self.basepos[0] + (self.widthbox / 10) / 2), self.basepos[1]),
-                           (self.basepos[0], (self.basepos[1] + (self.heightbox / 10) / 2))]
+        self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  ## Generate all four side position
+                           ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
+                           ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
+                           (self.basepos[0], (self.basepos[1] + self.baseheightbox / 2))]
         self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
                            rotationxy(self.basepos, self.allsidepos[1], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[2], self.testangle),
@@ -275,6 +273,7 @@ class Unitarmy(pygame.sprite.Sprite):
     def recreatesprite(self):
         """redrawing sprite for when split happen since the size will change"""
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
+        self.basewidthbox, self.baseheightbox = self.widthbox / 10, self.heightbox / 10
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
         self.image.fill((255, 255, 255, 128))
         pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
@@ -442,10 +441,10 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def makeallsidepos(self):
         """generate all four side position"""
-        self.allsidepos = [(self.basepos[0], (self.basepos[1] - (self.heightbox / 10) / 2)),
-                           ((self.basepos[0] - (self.widthbox / 10) / 2), self.basepos[1]),
-                           ((self.basepos[0] + (self.widthbox / 10) / 2), self.basepos[1]),
-                           (self.basepos[0], (self.basepos[1] + (self.heightbox / 10) / 2))]
+        self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  ## Generate all four side position
+                           ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
+                           ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
+                           (self.basepos[0], (self.basepos[1] + self.baseheightbox / 2))]
         self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
                            rotationxy(self.basepos, self.allsidepos[1], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[2], self.testangle),
@@ -457,16 +456,23 @@ class Unitarmy(pygame.sprite.Sprite):
         self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle),
                           rotationxy(self.rect.center, self.hitboxpos[1], self.testangle)
             , rotationxy(self.rect.center, self.hitboxpos[2], self.testangle), rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
+        battaliontopleft = pygame.Vector2(self.basepos[0] - self.basewidthbox / 2,
+                                         self.basepos[1] - self.baseheightbox / 2)
+        for squad in self.squadsprite:
+            squad.truepos = (battaliontopleft[0] + (squad.armypos[0] / 10), battaliontopleft[1] + (squad.armypos[1] / 10))
+            squad.truepos = pygame.Vector2(rotationxy(self.basepos, squad.truepos, self.testangle))
+            squad.terrain, squad.feature = self.getfeature(squad.truepos, self.gamemap)
+            squad.height = self.gamemapheight.getheight(squad.truepos)
 
     def authrecal(self):
-        self.authority = int(
-            self.leader[0].authority + (self.leader[1].authority / 3) + (self.leader[2].authority / 3) + (self.leader[3].authority / 5))
-        bigarmysize = self.armysquad > 0
-        bigarmysize = bigarmysize.sum()
-        if bigarmysize > 20:
             self.authority = int(
-                (self.leader[0].authority * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
-                self.leader[3].authority / 4)
+                self.leader[0].authority + (self.leader[1].authority / 3) + (self.leader[2].authority / 3) + (self.leader[3].authority / 5))
+            bigarmysize = self.armysquad > 0
+            bigarmysize = bigarmysize.sum()
+            if bigarmysize > 20:
+                self.authority = int(
+                    (self.leader[0].authority * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+                    self.leader[3].authority / 4)
 
     def startset(self, squadgroup):
         self.setuparmy()
@@ -488,9 +494,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
                             (self.leader[0].cavcommand - 5) * 0.1]
         self.startauth = self.authority
-        self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
-        self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
-                            self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
         self.height = self.gamemapheight.getheight(self.basepos)
         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
@@ -870,14 +873,12 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.frontpos = self.commandtarget
                             self.state = 0
                             self.commandstate = self.state
-                        self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)
-                        self.height = self.gamemapheight.getheight(self.basepos)
                         self.makeallsidepos()
                         self.frontpos = self.allsidepos[0]
-                        self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
-                                            self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
+                        self.height = self.gamemapheight.getheight(self.basepos)
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
+                        self.mask = pygame.mask.from_surface(self.image)
                         self.mask = pygame.mask.from_surface(self.image)
                     elif self.rotateonly and self.moverotate == 0: # if rotate only input
                         self.state = 0
@@ -887,15 +888,14 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.rotateonly = False
                         self.makeallsidepos()
                         self.frontpos = self.allsidepos[0]
-                        self.sidefeature = [self.getfeature(self.allsidepos[0], self.gamemap), self.getfeature(self.allsidepos[1], self.gamemap),
-                                            self.getfeature(self.allsidepos[2], self.gamemap), self.getfeature(self.allsidepos[3], self.gamemap)]
+                        self.height = self.gamemapheight.getheight(self.basepos)
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
                         self.mask = pygame.mask.from_surface(self.image)
             ## ^End move function
             if self.stamina <= 0:
-                self.state = 97
-            if self.state == 97:
+                self.state = 97 # Enter collaspse state
+            if self.state == 97: # Awake from collapse when there is no squad in collaspe state
                 awake = True
                 for squad in self.squadsprite:
                     if squad.state == 97:
@@ -908,19 +908,19 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.combatpreparestate and self.battlesideid == [0,0,0,0] and self.state != 10:
                 self.combatpreparestate = False
                 self.stopcombatmove = False
-            if self.troopnumber <= 0:
+            if self.troopnumber <= 0: # Die when troop number reach 0
                 self.stamina, self.morale, self.speed = 0, 0, 0
                 for leader in self.leader:
-                    if leader.state not in (96, 97, 98, 100):  ## leader get captured/flee/die when squad destroyed
+                    if leader.state not in (96, 97, 98, 100):  ## Leader get captured/flee/die when squad destroyed
                         leader.state = 96
                         for hitbox in self.hitbox:
-                            if hitbox.collide != 0 and random.randint(0, 1) == 0:
+                            if hitbox.collide != 0 and random.randint(0, 1) == 0: # If there is hitbox collide, random change to get capture
                                 leader.state = 97
-                                if random.randint(0, 1) == 0:
+                                if random.randint(0, 1) == 0: # Also random chance to die
                                     leader.state = 100
                 self.state = 100
             if self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
-                1] > 999:  ## remove unit when it go out of battlemap
+                1] > 999:  # Remove unit when it go out of battlemap
                 self.maingame.allunitindex.remove(self.gameid)
                 self.leader[0].state = 98
                 self.leader[0].health = 0
@@ -932,23 +932,18 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.gotkilled == 0:
                 if self.gameid < 2000:
                     self.die(self.maingame, self.maingame.playerarmy, self.maingame.enemyarmy)
-                    self.maingame.setuparmyicon()
                 else:
                     self.die(self.maingame, self.maingame.enemyarmy, self.maingame.playerarmy)
-                    self.maingame.setuparmyicon()
+                self.maingame.setuparmyicon()
                 self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion is destroyed"], [0, 1])
 
     def set_target(self, pos):
-        self.basetarget = pygame.Vector2(pos)
-        self.target = self.basetarget * abs(self.viewmode - 11)
+        self.basetarget = pygame.Vector2(pos) # Set new base target
+        self.target = self.basetarget * abs(self.viewmode - 11) # Re-calculate target with current viewmode
 
     def rotate(self):
-        # Rotate the image.
-        self.image = pygame.transform.rotate(self.image_original, self.angle)
-        # Rotate the offset vector.
-        # offset_rotated = self.offset.rotate(self.angle)
-        # Create a new rect with the center of the sprite + the offset.
-        self.rect = self.image.get_rect(center=self.pos)  # +offset_rotated)
+        self.image = pygame.transform.rotate(self.image_original, self.angle) # Rotate the image
+        self.rect = self.image.get_rect(center=self.pos)  # Create a new rect with the center of the sprite
 
     def setrotate(self, settarget=0):
         """settarget should be in non-base"""
