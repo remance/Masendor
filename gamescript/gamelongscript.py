@@ -95,10 +95,10 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
                                   squadlist=squadlist, imgsize=imagesize,
                                   colour=colour, control=control, coa=coa, commander=command, startangle=abs(360 - startangle))
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 7),
-                   gamebattalion.Hitbox(army, 1, 7, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 7, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 7)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
+                   gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 20)]
     army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
                    gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
                    gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
@@ -243,20 +243,20 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                             attackersquad.battlesideid[attackerside] = 0
 
 def squadselectside(targetside, side, position):
-    """side 0 is left 1 is right"""
+    """Search squad from selected side to attack from nearby to furthest"""
     thisposition = position
-    if side == 0:
+    if side == 0: # left
         max = 0 # keep searching to the the left until reach the first squad
-        while targetside[thisposition] <= 1 and thisposition != max:
+        while targetside[thisposition] <= 1 and thisposition != max: # keep searching until found or it reach max
             thisposition -= 1
-    else:
+    else: # 1 right
         max = 7 # keep searching to the the right until reach the last squad
         while targetside[thisposition] <= 1 and thisposition != max:
             thisposition += 1
-    if thisposition < 0:
-        thisposition = 0
-    elif thisposition > 7:
-        thisposition = 7
+    # if thisposition < 0:
+    #     thisposition = 0
+    # elif thisposition > 7:
+    #     thisposition = 7
     fronttarget = 0
     if targetside[thisposition] != 0:
         fronttarget = targetside[thisposition]
@@ -291,7 +291,10 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     if defense < 0 or who.ignoredef: defense = 0  ## Ignore def trait
     hitchance = hit - defense
     if hitchance < 0: hitchance = 0
-    elif hitchance > 200: hitchance = 200
+    elif hitchance > 80: # Critical hit
+        hitchance *= who.criteffect # modify with crit effect further
+        if hitchance > 200:
+            hitchance = 200
     combatscore = round(hitchance / 50, 1)
     if combatscore == 0 and random.randint(0, 10) > 9:  ## Final chence to not miss
         combatscore = 0.1
@@ -343,20 +346,20 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
                     squad.statuseffect[status[0]] = statuslist[status[0]].copy()
 
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
-    targetdmg = round(dmg * dmgeffect * timermod)
-    targetmoraledmg = round(moraledmg * dmgeffect * timermod)
-    if targetdmg > receiver.unithealth:
-        targetdmg = receiver.unithealth
-    receiver.unithealth -= targetdmg
-    receiver.basemorale -= targetmoraledmg
+    finaldmg = round(dmg * dmgeffect * timermod)
+    finalmoraledmg = round(moraledmg * dmgeffect * timermod)
+    if finaldmg > receiver.unithealth:
+        finaldmg = receiver.unithealth
+    receiver.unithealth -= finaldmg
+    receiver.basemorale -= finalmoraledmg
     if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element
-        receiver.elemcount[attacker.elemmelee - 1] += round(targetdmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
-    attacker.basemorale += round((targetmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
+        receiver.elemcount[attacker.elemmelee - 1] += round(finaldmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
+    attacker.basemorale += round((finalmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
     if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 8:  # dmg on squad leader
-        targetleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
-        if targetleaderdmg > receiver.leader.health:
-            targetleaderdmg = receiver.leader.health
-        receiver.leader.health -= targetleaderdmg
+        finalleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
+        if finalleaderdmg > receiver.leader.health:
+            finalleaderdmg = receiver.leader.health
+        receiver.leader.health -= finalleaderdmg
 
 
 def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
@@ -372,9 +375,9 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     targetdmgeffect = target.frontdmgeffect
     if whoside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
         whopercent = who.battlesidecal[whoside] + (who.discipline / 300)
-        dmgeffect = who.sidedmgeffect
+        dmgeffect = who.sidedmgeffect # use side dmg effect as some skill boost only front dmg
         if whopercent > 1: whopercent = 1
-    if targetside != 0 and targetpercent != 1: # same for the target
+    if targetside != 0 and targetpercent != 1: # same for the target defender
         targetpercent = who.battlesidecal[targetside] + (target.discipline / 300)
         targetdmgeffect = target.sidedmgeffect
         if targetpercent > 1: targetpercent = 1
@@ -386,18 +389,17 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
         targetdefense = 0
     whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0, targetside) # get dmg by attacker
     targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0, whoside) # get dmg by defender
-    timermod = combattimer / 0.5 # since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
-    complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, targetdmgeffect, timermod) # inflict dmg to defender
-    complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, dmgeffect, timermod) # inflict dmg to attacker
+    timermod = combattimer / 0.5 # Since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
+    complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod) # Inflict dmg to defender
+    complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod) # Inflict dmg to attacker
     if who.corneratk:  # Attack corner (side) of self with aoe attack
-        listloop = target.nearbysquadlist[2:4]
-        if targetside in (0, 2): listloop = target.nearbysquadlist[0:2]
+        listloop = [target.nearbysquadlist[2], target.nearbysquadlist[5]] # Side attack get (2) front and (5) rear nearby squad
+        if targetside in (0, 2): listloop = target.nearbysquadlist[0:2] # Front/rear attack get (0) left and (1) right nearbysquad
         for squad in listloop:
             if squad != 0 and squad.state != 100:
                 targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
                 whodmg, whomoraledmg = losscal(who, squad, whohit, targetdefense, 0)
-                squad.unithealth -= round(whodmg * dmgeffect)
-                squad.basemorale -= whomoraledmg
+                complexdmg(who, squad, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
     ## inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion
     if who.inflictstatus != {}:
         applystatustoenemy(statuslist, who.inflictstatus, target, whoside)
@@ -501,10 +503,10 @@ def splitunit(battle, who, how):
     who.viewmodechange()
     who.height = who.gamemapheight.getheight(who.basepos)
     for thishitbox in who.hitbox: thishitbox.kill()
-    who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - (who.rect.width * 0.1), 7),
-                  gamebattalion.Hitbox(who, 1, 7, who.rect.height - (who.rect.height * 0.1)),
-                  gamebattalion.Hitbox(who, 2, 7, who.rect.height - (who.rect.height * 0.1)),
-                  gamebattalion.Hitbox(who, 3, who.rect.width - (who.rect.width * 0.1), 7)]
+    who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - (who.rect.width * 0.1), 20),
+                  gamebattalion.Hitbox(who, 1, 20, who.rect.height - (who.rect.height * 0.1)),
+                  gamebattalion.Hitbox(who, 2, 20, who.rect.height - (who.rect.height * 0.1)),
+                  gamebattalion.Hitbox(who, 3, who.rect.width - (who.rect.width * 0.1), 20)]
     who.rotate()
     who.newangle = who.angle
     ## need to recal max stat again for the original battalion
@@ -526,20 +528,17 @@ def splitunit(battle, who, how):
     ## start making new battalion
     if who.gameid < 2000:
         playercommand = True
-        newgameid = battle.playerarmy[-1].gameid + 1
+        whosearmy = battle.playerarmy
         colour = (144, 167, 255)
-        army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
-                                      squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
-                                      colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
-        battle.playerarmy.append(army)
     else:
         playercommand = battle.enactment
-        newgameid = battle.enemyarmy[-1].gameid + 1
+        whosearmy= battle.enemyarmy
         colour = (255, 114, 114)
-        army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
-                                      squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
-                                      colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
-        battle.enemyarmy.append(army)
+    newgameid = whosearmy.gameid + 1
+    army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
+                                  squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
+                                  colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
+    whosearmy.append(army)
     army.leader = newleader
     army.squadsprite = newsquadsprite
     for squad in army.squadsprite:
@@ -573,8 +572,8 @@ def splitunit(battle, who, how):
     army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
     army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                         army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - (army.rect.width * 0.1), 7),
-                   gamebattalion.Hitbox(army, 1, 7, army.rect.height - (army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 7, army.rect.height - (army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 7)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - (army.rect.width * 0.1), 20),
+                   gamebattalion.Hitbox(army, 1, 20, army.rect.height - (army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 2, 20, army.rect.height - (army.rect.height * 0.1)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 20)]
     army.autosquadplace = False

@@ -1052,7 +1052,7 @@ class Battle():
                 self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
                 if self.combattimer >= 0.5:
                     self.combattimer -= 0.5
-                    for squad in self.squad: ## Reset every squad battleside after updater since doing it in updater cause bug for defender
+                    for squad in self.squad: # Reset every squad battleside after updater since doing it in updater cause bug for defender
                         squad.battleside = [None, None, None, None]  # Reset battleside to defualt
                         squad.battlesideid = [0, 0, 0, 0]
                 self.effectupdater.update(self.allunitlist, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)

@@ -59,11 +59,11 @@ class Hitbox(pygame.sprite.Sprite):
         self.side = side
         self.collide = 0
         self.image = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 128))
+        self.image.fill((0, 0, 0, 128)) # Hitbox when unit not selected (black)
         self.clickimage = self.image.copy()
-        self.clickimage.fill((0, 0, 0, 128))
+        self.clickimage.fill((255, 0, 0, 128)) # Hitbox when unit selected (red)
         self.notclickimage = self.image.copy()
-        self.image_original, self.image_original2 = self.image.copy(), self.image.copy()
+        self.image_original, self.image_original2 = self.image.copy(), self.image.copy() # original 2 is true original at cloest zoom
         self.image = pygame.transform.rotate(self.image_original, self.who.angle)
         self.oldpos = self.who.hitboxpos[self.side]
         self.rect = self.image.get_rect(center=self.who.hitboxpos[self.side])
@@ -73,23 +73,20 @@ class Hitbox(pygame.sprite.Sprite):
         self.stillclick = False
 
     def update(self, viewmode):
-        if self.viewmode != abs(viewmode - 11) or self.clickcheck:
+        if self.viewmode != abs(viewmode - 11) or self.clickcheck: # When camera zoom change
             self.viewmode = abs(viewmode - 11)
             self.image_original = self.image_original2.copy()
-            scalewidth = self.image_original.get_width()
+            scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
             scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
-            if self.side in (0, 3):
-                scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
-                scaleheight = self.image_original.get_height()
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-            self.mask = pygame.mask.from_surface(self.image)
+            self.mask = pygame.mask.from_surface(self.image) # make new mask for collision
             self.image_original = self.image.copy()
-        if self.oldpos != self.who.hitboxpos[self.side] or self.clickcheck:
+        if self.oldpos != self.who.hitboxpos[self.side] or self.clickcheck: # When battalion change pos or rotate
             self.image = pygame.transform.rotate(self.image_original, self.who.angle)
             self.rect = self.image.get_rect(center=self.who.hitboxpos[self.side])
-            self.pos = self.rect.center
-            self.mask = pygame.mask.from_surface(self.image)
+            self.pos = self.rect.center # new pos at new center
+            self.mask = pygame.mask.from_surface(self.image) # make new mask for collision
             self.oldpos = self.who.hitboxpos[self.side]
         self.collide = 0
 
@@ -623,8 +620,9 @@ class Unitarmy(pygame.sprite.Sprite):
                             hitbox2.who.battleside[hitbox2.side] = self
                             hitbox2.who.battlesideid[hitbox2.side] = self.gameid
                             """set up army position to the enemyside"""
-                            if self.combatpreparestate == False and hitbox.side == 0 and hitbox2.who.combatpreparestate == False and self.state in (1, 2, 3, 4, 5, 6):
+                            if self.combatpreparestate == False and hitbox.side == 0 and (hitbox2.who.combatpreparestate == False or (hitbox2.who.combatpreparestate and hitbox2.who.attacktarget.gameid != self.gameid)) and self.state in (1, 2, 3, 4, 5, 6):
                                 self.combatprepare(hitbox2)
+                            break
             for index, battle in enumerate(self.battleside):
                 if battle is not None:
                     self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, battle, index,
@@ -816,7 +814,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.state in (3, 4) and type(self.baseattackpos) != int and self.moverotate == 0:
                     if self.baseattackpos.distance_to(self.frontpos) < 15:
                         self.charging = True
-                """check for hitbox collide according to which ever closest to the target position""" ## TODO try testing whether make charge ignore collide work well or not
+                """check for hitbox collide according to which ever closest to the target position"""
                 if self.state not in (0, 97) and self.stamina > 0 and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax):
                     side, side2 = self.allsidepos.copy(), {}
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)

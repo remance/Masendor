@@ -305,33 +305,33 @@ class Unitsquad(pygame.sprite.Sprite):
         for rowindex, rowlist in enumerate(self.battalion.armysquad.tolist()):
             if self.gameid in rowlist:
                 if rowlist.index(self.gameid) - 1 != -1:  ##get squad from left if not at first column
-                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) - 1])
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) - 1]) # 0
                 else:
                     self.nearbysquadlist.append(0)
                 if rowlist.index(self.gameid) + 1 != len(rowlist):  ##get squad from right if not at last column
-                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) + 1])
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) + 1]) # 1
                 else:
                     self.nearbysquadlist.append(0)
                 if rowindex != 0:  ##get top squad
-                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid)])
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid)]) # 2
                     if rowlist.index(self.gameid) - 1 != -1:  ##get top left squad
-                        cornersquad.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid) - 1])
+                        cornersquad.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid) - 1]) # 3
                     else:
                         cornersquad.append(0)
                     if rowlist.index(self.gameid) + 1 != len(rowlist):  ## get top right
-                        cornersquad.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid) + 1])
+                        cornersquad.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid) + 1]) # 4
                     else:
                         cornersquad.append(0)
                 else:
                     self.nearbysquadlist.append(0)
                 if rowindex != len(self.battalion.spritearray) - 1:  ##get bottom squad
-                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid)])
+                    self.nearbysquadlist.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid)]) # 5
                     if rowlist.index(self.gameid) - 1 != -1:  ##get bottom left squad
-                        cornersquad.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid) - 1])
+                        cornersquad.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid) - 1]) # 6
                     else:
                         cornersquad.append(0)
                     if rowlist.index(self.gameid) + 1 != len(rowlist):  ## get bottom  right squad
-                        cornersquad.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid) + 1])
+                        cornersquad.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid) + 1]) # 7
                     else:
                         cornersquad.append(0)
                 else:
@@ -385,7 +385,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.speed = self.basespeed * self.staminastate / 100
         self.charge = (self.basecharge * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
         self.shootrange = self.baserange
-        self.criteffect = 100
+        self.criteffect = 1
         self.frontdmgeffect = 1
         self.sidedmgeffect = 1
         self.authpenalty = self.baseauthpenalty
@@ -495,7 +495,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.frontdmgeffect = round(self.frontdmgeffect * calstatus[24], 0)
                 if calstatus[2] in (2, 3) and calstatus[24] != 100:
                     self.sidedmgeffect = round(self.sidedmgeffect * calstatus[24], 0)
-                    if calstatus[2] == 3: self.corneratk = True
+                    if calstatus[2] == 3: self.corneratk = True # if aoe 3 mean it can attack nearby enemy squads in corner
                 """Apply status to self if there is one in skill effect"""
                 if calstatus[27] != [0]:
                     for effect in calstatus[27]:
