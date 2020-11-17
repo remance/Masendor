@@ -332,6 +332,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 squad.useskillcond = self.useskillcond
                 squad.attacktarget = self.attacktarget
                 squad.attackpos = self.baseattackpos
+                if self.attacktarget != 0:
+                    squad.attackpos = self.attacktarget.basepos
                 howmany += 1
         if self.troopnumber > 0:
             self.stamina = int(self.stamina/howmany)
