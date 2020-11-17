@@ -302,15 +302,20 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     if who.leader is not None: leaderdmgbonus = who.leader.combat
     if type == 0:  # Melee damage
         dmg = who.dmg
-        if who.charging: ## Include charge in dmg if charging
+        if who.charging: # Include charge in dmg if charging
             if who.ignorechargedef == False: ## Ignore charge defense if have ignore trait
                 sidecal = who.battlesidecal[defside]
                 if target.fulldef == True:
                     sidecal = 1
                 dmg = dmg + (who.charge / 10) - (target.chargedef * sidecal / 10)
-            elif who.ignorechargedef:
+            else:
                 dmg = dmg + (who.charge / 10)
         dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
+        if target.charging and target.ignorechargedef == False: # Also include chargedef in dmg if enemy charging
+            chargedefcal = who.chargedef - target.charge
+            if chargedefcal < 0:
+                chargedefcal = 0
+            dmg = dmg + (chargedefcal) # if charge def is higher than enemy charge then deal back addtional dmg
         if target.state == 10: dmg = dmg / 5 ## More dmg against enemy not fighting
     elif type == 1:  # Range Damage
         dmg = who.rangedmg * ((100 - (target.armour * who.rangepenetrate)) / 100) * combatscore

@@ -572,13 +572,14 @@ class Battle():
 
     def countdownskillicon(self):
         for skill in self.skillicon:
-            cd = 0
-            activetime = 0
-            if skill.gameid in self.gameui[2].value2[2]:
-                cd = int(self.gameui[2].value2[2][skill.gameid])
-            if skill.gameid in self.gameui[2].value2[3]:
-                activetime = int(self.gameui[2].value2[3][skill.gameid][3])
-            skill.iconchange(cd, activetime)
+            if skill.type == 1: # only do skill icon not trait
+                cd = 0
+                activetime = 0
+                if skill.gameid in self.gameui[2].value2[2]:
+                    cd = int(self.gameui[2].value2[2][skill.gameid])
+                if skill.gameid in self.gameui[2].value2[3]:
+                    activetime = int(self.gameui[2].value2[3][skill.gameid][3])
+                skill.iconchange(cd, activetime)
         # for effect in self.effecticon:
         #     cd = 0
         #     if effect.id in self.gameui[2].value2[4]:
@@ -849,7 +850,7 @@ class Battle():
                                              self.lastmouseover, keystate, othercommand=1)
                         ## FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
-                            self.textdrama.queue.append('Hello and Welcome to the first playtest')
+                            self.textdrama.queue.append('Hello and Welcome to update video')
                         elif event.key == pygame.K_2:
                             self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode (no AI)')
                         elif event.key == pygame.K_3:
@@ -1055,6 +1056,11 @@ class Battle():
                     for squad in self.squad: # Reset every squad battleside after updater since doing it in updater cause bug for defender
                         squad.battleside = [None, None, None, None]  # Reset battleside to defualt
                         squad.battlesideid = [0, 0, 0, 0]
+                for battalion in self.allunitlist:
+                    battalion.battleside = [None, None, None, None]
+                    battalion.battlesideid = [0, 0, 0, 0]
+                    for hitbox in battalion.hitbox:
+                        hitbox.collide = 0
                 self.effectupdater.update(self.allunitlist, self.hitboxes, self.squad, self.squadindexlist, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
                 if self.lastselected is not None and self.lastselected.state != 100:

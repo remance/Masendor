@@ -87,23 +87,21 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basediscipline = int(stat[24] + int(statlist.gradelist[self.grade][10]))
         self.troopnumber = stat[27]
         self.basespeed = 50
+        self.unittype = stat[28] - 1
+        self.featuremod = 1  ## the starting column in unit_terrainbonus of infantry
         self.mount = statlist.mountlist[stat[29]]
-        if stat[29] != 1:
+        if stat[29] != 1: # have mount
             self.basechargedef = 5
             self.basespeed = self.mount[1]
             self.troophealth += self.mount[2]
             self.basecharge += self.mount[3]
             self.trait = self.trait + self.mount[5]  ## Apply mount trait to unit
+            self.unittype = 2
+            self.featuremod = 4  ## the starting column in unit_terrainbonus of cavalry
         self.weight = weaponlist.weaponlist[stat[21][0]][3] + weaponlist.weaponlist[stat[22][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2]
         self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]  ## Apply armour trait to unit
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0)
-        if stat[28] in (1, 2):
-            self.unittype = stat[28] - 1
-            self.featuremod = 1  ## the starting column in unit_terrainbonus of infantry
-        elif stat[28] in (3, 4, 5, 6, 7):
-            self.unittype = 2
-            self.featuremod = 3  ## the starting column in unit_terrainbonus of cavalry
         self.description = stat[-1]
         # if self.hidden
         self.baseelemmelee = 0
@@ -423,14 +421,14 @@ class Unitsquad(pygame.sprite.Sprite):
         self.discipline += weather.discipline_buff
         ## Map feature modifier
         mapfeaturemod = self.gamemapfeature.featuremod[self.feature]
-        if mapfeaturemod[self.featuremod] != 1:
+        if mapfeaturemod[self.featuremod] != 1: # speed/charge
             speedmod = mapfeaturemod[self.featuremod]
             self.speed *= speedmod
             self.charge *= speedmod
-        if mapfeaturemod[self.featuremod + 1] != 1:
+        if mapfeaturemod[self.featuremod + 1] != 1: # melee combat
             # combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
             self.attack *= mapfeaturemod[self.featuremod + 1]
-        if mapfeaturemod[self.featuremod + 2] != 1:
+        if mapfeaturemod[self.featuremod + 2] != 1: # melee/charge defense
             combatmod = mapfeaturemod[self.featuremod + 2]
             self.meleedef *= combatmod
             self.chargedef *= combatmod
@@ -449,7 +447,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.elemcount[4] += ((100 - self.elemresist[5]) / 100)
         if weather.elem[0] != 0:
             self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
-        self.rangedef += mapfeaturemod[7]
+        self.rangedef += mapfeaturemod[7] # range defense from terrain bonus
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
         tempreach = mapfeaturemod[9] + weather.temperature
         if tempreach < 0:
@@ -727,7 +725,7 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.reloadtime = 0
                         elif self.attacktarget != 0 and self.attacktarget.state == 100:
                             self.battalion.rangecombatcheck, self.battalion.attacktarget = 0, 0
-                self.stamina = self.stamina - (dt * 1) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
+                self.stamina = self.stamina - (dt * 0.5) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina
             if self.basemorale < self.maxmorale:
                 if (self.unbreakable or self.tempunbraekable) and self.morale < 30:

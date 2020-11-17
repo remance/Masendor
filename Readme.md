@@ -25,7 +25,7 @@ Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code docu
 
 Ver 0.6 Dream Decision: Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu
 
-Ver 0.7 Future Visionary: Fog of War, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight
+Ver 0.7 Future Visionary: Fog of War, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight
 
 Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image)
 
