@@ -481,7 +481,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.makeallsidepos()
         self.frontpos = self.allsidepos[0]
         self.set_target(self.frontpos)
-        self.commandtarget = self.target
+        self.commandtarget = self.basetarget
         self.spritearray = self.armysquad
         self.leadersocial = self.leader[0].social
         if self.autosquadplace:
@@ -623,7 +623,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                 if self.combatpreparestate == False and hitbox.side == 0 and self.state in (1, 2, 3, 4, 5, 6) and (hitbox2.who.combatpreparestate == False or (hitbox2.who.combatpreparestate and hitbox2.who.attacktarget.gameid != self.gameid)):
                                     self.combatprepare(hitbox2)
             for index, battle in enumerate(self.battleside):
-                if battle is not None:
+                if battle is not None and self.gameid in battle.battlesideid:
                     self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, battle, index,
                                         battle.battlesideid.index(self.gameid))
             ## ^End combat update
@@ -714,20 +714,25 @@ class Unitarmy(pygame.sprite.Sprite):
                     elif target[1] > 998:
                         target[1] = 998
                     self.set_target(target)
-            if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy
+            if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy now
                 if self.nocombat > 0:  # For avoiding battalion bobble between two collided enemy
                     self.nocombat += dt
-                    if self.nocombat > 1:
+                    if self.nocombat > 2:
                         self.nocombat = 0
                         self.combatpreparestate = False
                         self.gotcombatprepare = False
                         self.state = self.commandstate
-                        if type(self.attacktarget) != int:
-                            if self.attacktarget.state == 100:
+                        if self.commandstate in (3,4,5,6): # previous command is to attack enemy
+                            if self.attacktarget.state == 100: # if enemy already dead then stop
                                 self.attacktarget = 0
-                            else:
+                                self.set_target(self.frontpos)
+                            else: # if not dead yet then follow
                                 if self.commandstate in (3,4,5,6) and self.hold == 0:
                                     self.set_target(self.attacktarget.basepos)
+                        else:
+                            self.attacktarget = 0
+                            self.baseattackpos = 0
+                            self.set_target(self.commandtarget)
                 else:
                     self.nocombat = 0.1
             else:
@@ -850,6 +855,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                 self.rect.center = self.pos
                                 if self.combatpreparestate == False:
                                     self.retreattimer = 0
+                                    self.retreatstart = 0
                                     if self.battlesideid == [0,0,0,0]:
                                         if self.attacktarget == 0 and self.rangecombatcheck == 0:
                                             self.frontpos = self.commandtarget
@@ -870,11 +876,24 @@ class Unitarmy(pygame.sprite.Sprite):
                                         self.basepos.distance_to(self.baseattackpos) <= shootrange:
                                     self.set_target(self.frontpos)
                                     self.rangecombatcheck = 1
-                        elif move_length < 0.1 and self.battlesideid == [0,0,0,0] and self.attacktarget == 0 and self.rangecombatcheck == 0:
+                        elif move_length < 0.1:
                             """Stop moving when reach target and go to idle"""
-                            self.frontpos = self.commandtarget
-                            self.state = 0
-                            self.commandstate = self.state
+                            if self.combatpreparestate == False:
+                                self.retreattimer = 0
+                                self.retreatstart = 0
+                                if self.battlesideid == [0, 0, 0, 0]:
+                                    if self.attacktarget == 0 and self.rangecombatcheck == 0:
+                                        self.frontpos = self.commandtarget
+                                        self.state = 0
+                                        self.revert = False
+                                        self.commandstate = self.state
+                                else:
+                                    self.state = 10
+                            else:  # Rotate army to the enemy sharply to stop in combat prepare
+                                self.stopcombatmove = True
+                                self.setrotate(self.attacktarget.pos)
+                                self.angle = self.newangle
+                                self.rotate()
                         self.makeallsidepos()
                         self.frontpos = self.allsidepos[0]
                         self.height = self.gamemapheight.getheight(self.basepos)
@@ -886,7 +905,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.state = 0
                         self.commandstate = self.state
                         self.set_target(self.frontpos)
-                        self.commandtarget = self.target
+                        self.commandtarget = self.basetarget
                         self.rotateonly = False
                         self.makeallsidepos()
                         self.frontpos = self.allsidepos[0]
@@ -953,7 +972,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """settarget should be in non-base"""
         self.previousposition = self.pos
         if settarget == 0: # For auto chase rotate
-            myradians = math.atan2(self.commandtarget[1] - self.previousposition[1], self.commandtarget[0] - self.previousposition[0])
+            myradians = math.atan2(self.target[1] - self.previousposition[1], self.target[0] - self.previousposition[0])
         else: # Command move or rotate
             myradians = math.atan2(settarget[1] - self.previousposition[1], settarget[0] - self.previousposition[0])
         self.newangle = math.degrees(myradians)
@@ -997,7 +1016,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rangecombatcheck = 0
         if keystate[pygame.K_LSHIFT]: self.rotateonly = True
         self.set_target(mouse_pos[1])
-        self.commandtarget = self.target
+        self.commandtarget = self.basetarget
         self.setrotate()
         if keystate[pygame.K_z] == True: ## Revert unit without rotate, cannot run in this state
             self.newangle = self.angle
@@ -1017,13 +1036,13 @@ class Unitarmy(pygame.sprite.Sprite):
             self.forcedmelee = False
             self.attacktarget = 0
             self.baseattackpos = 0
-            if self.retreattimer == 0:
-                self.leader[0].authority -= self.authpenalty
-                self.authrecal()
-                self.retreattimer = 0.1
-                self.retreatstart = 1
+            self.moverotate = 0
+            self.leader[0].authority -= self.authpenalty
+            self.authrecal()
+            self.retreattimer = 0.1
+            self.retreatstart = 1
             self.set_target(mouse_pos[1])
-            self.commandtarget = self.target
+            self.commandtarget = self.basetarget
             self.combatpreparestate = False
 
     def command(self, mouse_pos, mouse_right, double_mouse_right, whomouseover, keystate, othercommand=0):
@@ -1051,7 +1070,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.state = 0
                 self.commandstate = self.state
                 self.set_target(self.frontpos)
-                self.commandtarget = self.target
+                self.commandtarget = self.basetarget
                 self.rangecombatcheck = 0
                 self.setrotate()
 
