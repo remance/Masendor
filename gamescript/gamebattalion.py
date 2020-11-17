@@ -332,8 +332,6 @@ class Unitarmy(pygame.sprite.Sprite):
                 squad.useskillcond = self.useskillcond
                 squad.attacktarget = self.attacktarget
                 squad.attackpos = self.baseattackpos
-                if self.attacktarget != 0:
-                    squad.attackpos = self.attacktarget.basepos
                 howmany += 1
         if self.troopnumber > 0:
             self.stamina = int(self.stamina/howmany)
@@ -695,8 +693,8 @@ class Unitarmy(pygame.sprite.Sprite):
                             else:
                                 getrandom = random.randint(0, len(retreatside) - 1)
                                 self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
-                            target = self.basepos + ((self.retreatway[0] - self.basepos)*100)
-                            self.set_target(target)
+                            basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*100)
+                            self.set_target(basetarget)
                         self.combatpreparestate = False
                     self.retreattimer = self.retreatmax
             if self.hold == 1 and self.state not in (97,98,99):  ## skirmishing
@@ -704,16 +702,16 @@ class Unitarmy(pygame.sprite.Sprite):
                 if minrange < 50: minrange = 50
                 if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange:
                     self.state = 96
-                    target = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
-                    if target[0] < 1:
-                        target[0] = 1
-                    elif target[0] > 998:
-                        target[0] = 998
-                    if target[1] < 1:
-                        target[1] = 1
-                    elif target[1] > 998:
-                        target[1] = 998
-                    self.set_target(target)
+                    basetarget = self.basepos - (list(self.neartarget.values())[0] - self.basepos)
+                    if basetarget[0] < 1:
+                        basetarget[0] = 1
+                    elif basetarget[0] > 998:
+                        basetarget[0] = 998
+                    if basetarget[1] < 1:
+                        basetarget[1] = 1
+                    elif basetarget[1] > 998:
+                        basetarget[1] = 998
+                    self.set_target(basetarget)
             if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy now
                 if self.nocombat > 0:  # For avoiding battalion bobble between two collided enemy
                     self.nocombat += dt
@@ -726,9 +724,9 @@ class Unitarmy(pygame.sprite.Sprite):
                             if self.attacktarget.state == 100: # if enemy already dead then stop
                                 self.attacktarget = 0
                                 self.set_target(self.frontpos)
-                            else: # if not dead yet then follow
-                                if self.commandstate in (3,4,5,6) and self.hold == 0:
-                                    self.set_target(self.attacktarget.basepos)
+                            # else: # if not dead yet then follow
+                            #     if self.commandstate in (3,4,5,6) and self.hold == 0:
+                            #         self.set_target(self.attacktarget.basepos)
                         else:
                             self.attacktarget = 0
                             self.baseattackpos = 0
@@ -739,7 +737,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.nocombat = 0
             ##Rotate Function
             if self.combatpreparestate and self.stopcombatmove == False: # Rotate army side to the enemyside
-                self.setrotate(self.attacktarget.pos)
+                self.setrotate(self.attacktarget.basepos)
             if self.angle != round(self.newangle) and self.stamina > 0 and (
                     self.hitbox[0].collide == 0 or self.combatpreparestate):
                 self.rotatecal = abs(round(self.newangle) - self.angle)
@@ -794,7 +792,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.state = self.commandstate
                     self.rangecombatcheck = 0
                     self.set_target(self.attacktarget.basepos)
-                    self.setrotate(self.target)
+                    self.setrotate(self.basetarget)
             ## ^End rotate function
             ## Move function
             if self.frontpos != self.basetarget and self.rangecombatcheck != 1:
@@ -802,7 +800,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
                 ## Chase target and rotate accordingly
                 if self.state in (3, 4, 5, 6, 10) and self.commandstate in (3,4,5,6) and self.attacktarget != 0 \
-                        and self.basetarget != self.attacktarget.basepos and self.combatpreparestate == False and self.hold == 0:
+                        and self.combatpreparestate == False and self.hold == 0:
                     cantchase = False
                     for side in self.battlesideid:
                         if (side != 0 and side != self.attacktarget.gameid) or (side == self.attacktarget.gameid and (self.combatpreparestate or self.gotcombatprepare)):
@@ -815,7 +813,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
                         self.set_target(self.attacktarget.allsidepos[list(side2.keys())[0]])
                         self.baseattackpos = self.basetarget
-                        self.setrotate(self.target)
+                        self.setrotate(self.basetarget)
                 ## ^End chase
                 if self.state in (3, 4) and type(self.baseattackpos) != int and self.moverotate == 0:
                     if self.baseattackpos.distance_to(self.frontpos) < 15:
@@ -865,7 +863,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                     else: self.state = 10
                                 else:  # Rotate army to the enemy sharply to stop in combat prepare
                                     self.stopcombatmove = True
-                                    self.setrotate(self.attacktarget.pos)
+                                    self.setrotate(self.attacktarget.basepos)
                                     self.angle = self.newangle
                                     self.rotate()
                             if self.state in (5, 6):
@@ -891,7 +889,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.state = 10
                             else:  # Rotate army to the enemy sharply to stop in combat prepare
                                 self.stopcombatmove = True
-                                self.setrotate(self.attacktarget.pos)
+                                self.setrotate(self.attacktarget.basepos)
                                 self.angle = self.newangle
                                 self.rotate()
                         self.makeallsidepos()
@@ -970,11 +968,12 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def setrotate(self, settarget=0):
         """settarget should be in non-base"""
-        self.previousposition = self.pos
+        self.basepreviousposition = self.basepos
+        self.previousposition = self.basepreviousposition * abs(self.viewmode - 11)
         if settarget == 0: # For auto chase rotate
-            myradians = math.atan2(self.target[1] - self.previousposition[1], self.target[0] - self.previousposition[0])
+            myradians = math.atan2(self.basetarget[1] - self.basepreviousposition[1], self.basetarget[0] - self.basepreviousposition[0])
         else: # Command move or rotate
-            myradians = math.atan2(settarget[1] - self.previousposition[1], settarget[0] - self.previousposition[0])
+            myradians = math.atan2(settarget[1] - self.basepreviousposition[1], settarget[0] - self.basepreviousposition[0])
         self.newangle = math.degrees(myradians)
         # """upper left -"""
         if self.newangle >= -180 and self.newangle <= -90:
