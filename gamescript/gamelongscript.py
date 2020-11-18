@@ -253,10 +253,6 @@ def squadselectside(targetside, side, position):
         max = 7 # keep searching to the the right until reach the last squad
         while targetside[thisposition] <= 1 and thisposition != max:
             thisposition += 1
-    # if thisposition < 0:
-    #     thisposition = 0
-    # elif thisposition > 7:
-    #     thisposition = 7
     fronttarget = 0
     if targetside[thisposition] != 0:
         fronttarget = targetside[thisposition]
@@ -286,7 +282,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     who = attacker
     target = defender
     heightadventage = who.battalion.height - target.battalion.height
-    if type == 1: heightadventage = int(heightadventage / 2)
+    if type == 1: heightadventage = int(heightadventage / 2) # Range attack use less height advantage
     hit += heightadventage
     if defense < 0 or who.ignoredef: defense = 0  ## Ignore def trait
     hitchance = hit - defense
@@ -299,13 +295,13 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     if combatscore == 0 and random.randint(0, 10) > 9:  ## Final chence to not miss
         combatscore = 0.1
     leaderdmgbonus = 0
-    if who.leader is not None: leaderdmgbonus = who.leader.combat
+    if who.leader is not None: leaderdmgbonus = who.leader.combat ## get extra damage from leader combat ability
     if type == 0:  # Melee damage
         dmg = who.dmg
         if who.charging: # Include charge in dmg if charging
-            if who.ignorechargedef == False: ## Ignore charge defense if have ignore trait
+            if who.ignorechargedef == False: # Ignore charge defense if have ignore trait
                 sidecal = who.battlesidecal[defside]
-                if target.fulldef == True:
+                if target.fulldef or target.tempfulldef: # Defense all side
                     sidecal = 1
                 dmg = dmg + (who.charge / 10) - (target.chargedef * sidecal / 10)
             else:
@@ -326,7 +322,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     if type == 0:
         unitdmg = unitdmg / 10
     moraledmg = dmg / 20
-    if unitdmg < 0:
+    if unitdmg < 0: # Damage cannot be negative (it would heal instead)
         unitdmg = 0
     if leaderdmg < 0:
         leaderdmg = 0
@@ -353,7 +349,7 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
     finaldmg = round(dmg * dmgeffect * timermod)
     finalmoraledmg = round(moraledmg * dmgeffect * timermod)
-    if finaldmg > receiver.unithealth:
+    if finaldmg > receiver.unithealth: # damage cannot be higher than remaining health
         finaldmg = receiver.unithealth
     receiver.unithealth -= finaldmg
     receiver.basemorale -= finalmoraledmg
@@ -397,7 +393,8 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     timermod = combattimer / 0.5 # Since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
     complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod) # Inflict dmg to defender
     complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod) # Inflict dmg to attacker
-    if who.corneratk:  # Attack corner (side) of self with aoe attack
+    ## Attack corner (side) of self with aoe attack
+    if who.corneratk:
         listloop = [target.nearbysquadlist[2], target.nearbysquadlist[5]] # Side attack get (2) front and (5) rear nearby squad
         if targetside in (0, 2): listloop = target.nearbysquadlist[0:2] # Front/rear attack get (0) left and (1) right nearbysquad
         for squad in listloop:
@@ -405,6 +402,7 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
                 targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
                 whodmg, whomoraledmg = losscal(who, squad, whohit, targetdefense, 0)
                 complexdmg(who, squad, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
+    ## ^End attack corner
     ## inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion
     if who.inflictstatus != {}:
         applystatustoenemy(statuslist, who.inflictstatus, target, whoside)
@@ -415,7 +413,6 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
 
 def die(who, battle, group, enemygroup):
     """remove battalion,hitbox when it dies"""
-    battle.deadindex += 1
     if who.gameid < 2000:
         battle.playerposlist.pop(who.gameid)
     else:
@@ -439,7 +436,6 @@ def die(who, battle, group, enemygroup):
     for thisarmy in group:  ## morale dmg to every squad in army when allied battalion destroyed
         for squad in thisarmy.squadsprite:
             squad.basemorale -= 20
-
 
 def splitunit(battle, who, how):
     """split battalion either by row or column into two seperate battalion"""
@@ -539,7 +535,7 @@ def splitunit(battle, who, how):
         playercommand = battle.enactment
         whosearmy= battle.enemyarmy
         colour = (255, 114, 114)
-    newgameid = whosearmy.gameid + 1
+    newgameid = whosearmy[-1].gameid + 1
     army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                   squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
                                   colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)

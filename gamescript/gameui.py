@@ -275,25 +275,25 @@ class Skillcardicon(pygame.sprite.Sprite):
     def __init__(self, image, pos, type, id=None):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.type = type
-        self.gameid = id
-        self.pos = pos
-        self.font = pygame.font.SysFont("helvetica", 18)
-        self.cooldowncheck = 0
-        self.activecheck = 0
+        self.type = type # type 0 is trait 1 is kill
+        self.gameid = id # ID of the skill
+        self.pos = pos # pos of the skill on ui
+        self.font = pygame.font.SysFont("helvetica", 18) # cd/active timer number font
+        self.cooldowncheck = 0 # cooldown number
+        self.activecheck = 0 # active timer number
         self.image = image
         self.rect = self.image.get_rect(center=pos)
-        self.image_original = self.image.copy()
-        self.cooldownrect = self.image.get_rect(topleft=(0, 0))
+        self.image_original = self.image.copy() # keep original image without number
+        self.cooldownrect = self.image.get_rect(topleft=(0, 0)) # position of cooldown number image
 
     def numberchange(self, number):
-        resultnumber = str(round(number / 1000, 1)) + "K"
-        return resultnumber
+        """Change number more than thousand to K digit e.g. 1k = 1000"""
+        return str(round(number / 1000, 1)) + "K"
 
     def iconchange(self, cooldown, activetimer):
         """Show active effect timer first if none show cooldown"""
         if activetimer != self.activecheck:
-            self.activecheck = activetimer
+            self.activecheck = activetimer # renew number
             self.image = self.image_original.copy()
             if self.activecheck > 0:
                 rect = self.image.get_rect(topleft=(0, 0))
@@ -304,7 +304,7 @@ class Skillcardicon(pygame.sprite.Sprite):
                 self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
-        elif cooldown != self.cooldowncheck and self.activecheck == 0:
+        elif cooldown != self.cooldowncheck and self.activecheck == 0: # Cooldown only get blit when skill is not active
             self.cooldowncheck = cooldown
             self.image = self.image_original.copy()
             if self.cooldowncheck > 0:

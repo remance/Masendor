@@ -619,9 +619,9 @@ class Unitarmy(pygame.sprite.Sprite):
                                 self.battlesideid[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = self
                                 hitbox2.who.battlesideid[hitbox2.side] = self.gameid
-                                """set up army position to the enemyside"""
-                                if self.combatpreparestate == False and hitbox.side == 0 and self.state in (1, 2, 3, 4, 5, 6) and (hitbox2.who.combatpreparestate == False or (hitbox2.who.combatpreparestate and hitbox2.who.attacktarget.gameid != self.gameid)):
-                                    self.combatprepare(hitbox2)
+                            """set up army position to the enemyside"""
+                            if self.combatpreparestate == False and hitbox.side == 0 and self.state in (1, 2, 3, 4, 5, 6) and (hitbox2.who.combatpreparestate == False or (hitbox2.who.combatpreparestate and hitbox2.who.attacktarget.gameid != self.gameid)):
+                                self.combatprepare(hitbox2)
             for index, battle in enumerate(self.battleside):
                 if battle is not None and self.gameid in battle.battlesideid:
                     self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, battle, index,

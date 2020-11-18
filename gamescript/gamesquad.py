@@ -142,6 +142,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.ignorechargedef = False
         self.ignoredef = False
         self.fulldef = False
+        self.tempfulldef = False
         self.backstab = False
         self.oblivious = False
         self.flanker = False
@@ -388,6 +389,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.sidedmgeffect = 1
         self.authpenalty = self.baseauthpenalty
         self.corneratk = False
+        self.tempunbraekable = False
+        self.tempfulldef = False
         self.hpregen = self.basehpregen
         self.staminaregen = self.basestaminaregen
         self.inflictstatus = self.baseinflictstatus
@@ -396,7 +399,7 @@ class Unitsquad(pygame.sprite.Sprite):
         """apply height to range"""
         if self.height > 100:
             self.shootrange = self.shootrange + (self.height / 10)
-        """apply status effect from trait"""
+        ## Apply status effect from trait
         if len(self.trait) > 1:
             for trait in self.trait.values():
                 if trait[18] != [0]:
@@ -404,6 +407,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         self.statuseffect[effect] = self.statuslist[effect].copy()
                         if trait[1] > 1:  # status buff range to nearby friend
                             self.statustonearby(trait[1], effect, self.statuslist[effect].copy())
+        ## ^End trait
         """apply effect from terrain and weather"""
         weather = thisweather
         self.attack += weather.meleeatk_buff
@@ -551,6 +555,10 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.discipline += calstatus[16]
                 # self.sight += status[18]
                 # self.hidden += status[19]
+                if status == 1:
+                    self.tempunbraekable = True
+                elif status == 91:
+                    self.tempfulldef = True
         self.discipline = round(self.discipline, 0)
         disciplinecal = self.discipline / 10
         self.attack = round((self.attack + disciplinecal), 0)
@@ -650,7 +658,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.availableskill = []
                     if self.useskillcond != 3:
                         self.checkskillcondition()
-                    if self.state in (3, 4) and self.battalion.charging and self.chargeskill not in self.skillcooldown:
+                    if self.state == 4 and self.battalion.charging and self.chargeskill not in self.skillcooldown: # use charge skill if run only
                         self.useskill(0) # Use charge skill
                     skillchance = random.randint(0, 10)
                     if skillchance >= 6 and len(self.availableskill) > 0:

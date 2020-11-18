@@ -12,9 +12,10 @@ class Menubox(pygame.sprite.Sprite):
         self.pos = (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2)
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
-        self.mode = 0
+        self.mode = 0 # Current menu mode
 
     def changemode(self, mode):
+        """Change between 0 menu, 1 option, 2 enclopedia mode"""
         self.mode = mode
         self.image = self.images[mode]
 

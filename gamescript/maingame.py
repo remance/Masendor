@@ -488,7 +488,6 @@ class Battle():
         self.allunitlist = self.playerarmy.copy()
         self.allunitlist = self.allunitlist + self.enemyarmy
         self.allunitindex = [army.gameid for army in self.allunitlist]
-        self.deadindex = 0
         self.playerposlist = {}
         self.enemyposlist = {}
         self.showingsquad = []
@@ -525,7 +524,7 @@ class Battle():
     def checksplit(self, whoinput):
         """Check if army can be splitted, if not remove splitting button"""
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
-                whoinput.leader[1].name != "None":
+                whoinput.leader[1].name != "None": # can only split if both battalion size will be larger than 10 and second leader exist
             self.allui.add(self.buttonui[5])
         elif self.buttonui[5] in self.allui:
             self.buttonui[5].kill()
@@ -536,9 +535,9 @@ class Battle():
             self.buttonui[6].kill()
 
     def traitskillblit(self):
-        """For blitting skill and trait icon"""
+        """For blitting skill and trait icon into squad info ui"""
         position = self.gameui[2].rect.topleft
-        position = [position[0] + 70, position[1] + 60]
+        position = [position[0] + 70, position[1] + 60] # start position
         startrow = position[0]
         for icon in self.skillicon.sprites(): icon.kill()
         for trait in self.gameui[2].value2[0]:
@@ -1170,7 +1169,7 @@ class Battle():
                             self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
                             self.allui.add(self.buttonnamepopup)
                             if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                self.allunitindex = self.splitunit(self, whoinput, 1)
+                                self.splitunit(self, whoinput, 1)
                                 self.splithappen = True
                                 self.checksplit(whoinput)
                                 self.allui.remove(*self.leadernow)
@@ -1181,7 +1180,7 @@ class Battle():
                             self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
                             self.allui.add(self.buttonnamepopup)
                             if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                self.allunitindex = self.splitunit(self, whoinput, 0)
+                                self.splitunit(self, whoinput, 0)
                                 self.splithappen = True
                                 self.checksplit(whoinput)
                                 self.allui.remove(*self.leadernow)

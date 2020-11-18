@@ -4,20 +4,19 @@ import pygame.freetype
 class Camera():
     SCREENRECT = None
     def __init__(self, startpos, viewmode):
-        self.viewmode = viewmode
-        self.pos = startpos
-        self.image = pygame.Surface((self.SCREENRECT.width, self.SCREENRECT.height))
+        self.viewmode = viewmode # Zoom level
+        self.pos = startpos # Starting camara pos
+        self.image = pygame.Surface((self.SCREENRECT.width, self.SCREENRECT.height)) # Camera image
 
     def update(self, pos, surfaces):
+        """Update game camera with sprite blit to camera image"""
         self.image.fill((0, 0, 0))
         self.pos = pos
-        camera_w, camera_h = self.image.get_rect().size
-        camera_x = self.pos[0] - camera_w / 2
-        camera_y = self.pos[1] - camera_h / 2
-        for surface in surfaces:
+        camera_w, camera_h = self.image.get_rect().size # get size of camera
+        camera_x = self.pos[0] - camera_w / 2 # Current center x
+        camera_y = self.pos[1] - camera_h / 2 # Current center y
+        for surface in surfaces: # Blit sprite to camara image
             surface_x, surface_y = surface.rect.left, surface.rect.top
             surface_w, surface_h = surface.image.get_rect().size
             rect = pygame.Rect(surface_x - camera_x, surface_y - camera_y, surface_w, surface_h)
-            # if hasattr(surface, 'gameid'):
-            #     print(surface.gameid, surface.pos, rect.center)
             self.image.blit(surface.image, rect)

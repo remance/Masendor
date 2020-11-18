@@ -78,12 +78,8 @@ class Rangearrow(pygame.sprite.Sprite):
         elif self.angle > 90 and self.angle <= 180:
             self.angle = 270 - self.angle
         self.image = pygame.transform.rotate(self.image, self.angle)
-        if randomposition1 == 0:
-            self.rect = self.image.get_rect(midbottom=(self.shooter.combatpos[0] - randomposition2, self.shooter.combatpos[1] - randomposition2))
-            self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] - randomposition2, self.shooter.battalion.basepos[1] - randomposition2)
-        else:
-            self.rect = self.image.get_rect(midbottom=(self.shooter.combatpos[0] + randomposition2, self.shooter.combatpos[1] + randomposition2))
-            self.basepos = pygame.Vector2(self.shooter.battalion.basepos[0] + randomposition2, self.shooter.battalion.basepos[1] + randomposition2)
+        self.rect = self.image.get_rect(midbottom=(self.shooter.truepos[0] , self.shooter.truepos[1]))
+        self.basepos = pygame.Vector2(self.shooter.truepos[0] , self.shooter.truepos[1])
         self.pos = self.basepos * viewmode
         self.target = self.basetarget * viewmode
 
@@ -92,7 +88,7 @@ class Rangearrow(pygame.sprite.Sprite):
         wholuck = random.randint(-20, 20)
         targetluck = random.randint(-20, 20)
         targetpercent = sidepercent[targetside]
-        if target.fulldef: targetpercent = 1
+        if target.fulldef or target.tempfulldef: targetpercent = 1
         whohit = float(self.accuracy) + wholuck
         if whohit < 0: whohit = 0
         targetdefense = float(target.rangedef * targetpercent) + targetluck
