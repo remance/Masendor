@@ -10,7 +10,7 @@ remove index and change call to the sprite itself
 import datetime
 import glob
 import random
-
+import csv
 import numpy as np
 import pygame
 import pygame.freetype
@@ -43,18 +43,13 @@ class Battle():
         self.ruleset = ruleset
         self.rulesetfolder = rulesetfolder
         ## create game map
-        featurelist = ["Grassland", "Draught", "Bushland", "Forest", "Inland Water", "Road", "Building", "Farm", "Pandemonium", "Mana Flux",
-                       "Creeping Rot", "Mud", "Savanna", "Draught", "Tropical Shrubland", "Jungle", "Inland Water", "Road", "Building", "Farm",
-                       "Pandemonium", "Heat Mana", "Creeping Rot", "Mud", "Volcanic Soil", "Scorched Land", "", "", "", "Road", "", "Fertile Farm",
-                       "Pandemonium", "Fire Mana", "Creeping Rot", "", "Desert Plain", "Desert Sand", "Desert Shrubland", "Desert Forest", "Oasis",
-                       "Sand Road", "Desert Dwelling", "Desert Farm", "Pandemonium", "Earth Mana", "Creeping Rot", "Quicksand", "Snow", "Tundra",
-                       "Arctic Shrubland", "Arctic Forest", "Frozen Water", "Snow Road", "Warm Shelter", "Arctic Farm", "Pandemonium", "Ice Mana",
-                       "Preserving Rot", "Ice Ground", "", "", "", "", "Poisoned Water", "", "", "", "Pandemonium", "Poisoned Mana", "Creeping Rot",
-                       "", "", "Void", "", "", "", "", "", "", "", "Leyline", "Creeping Rot", "", "", "", "", "", "", "", "", "", "Pandemonium", "",
-                       "Creeping Rot", "", "", "", "", "", "", "", "", "", "Pandemonium", "", "Rotten Land", "", "Lively Water", "Empty Water",
-                       "Marsh", "Swamp", "Water", "Bridge", "Swamp Building", "Swamp Farm", "Pandemonium", "Cold Mana", "Creeping Rot", "", "Sea",
-                       "Ocean", "Coral Reef", "Underwater Forest", "Fresh Water", "Bridge", "Sunken City", "Fishery", "Pandemonium", "Water Mana",
-                       "Creeping Rot", ""]
+        featurelist = []
+        with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                featurelist.append(row[1])
+        unitfile.close()
+        featurelist = featurelist[1:]
         self.mapselected = "hastings"
         imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], loadorder=False)
         gamemap.Basemap.images = [imgs[0]]
@@ -150,6 +145,7 @@ class Battle():
         ## Popup Ui
         imgs = load_images(['ui', 'popup_ui', 'terraincheck'], loadorder=False)
         gamepopup.Terrainpopup.images = imgs
+        gamepopup.Terrainpopup.SCREENRECT = SCREENRECT
         imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
         gamedrama.Textdrama.images = imgs
         # decorate the game window

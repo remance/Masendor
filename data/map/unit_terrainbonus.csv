@@ -1,5 +1,5 @@
 "ID","Name","Infantry Speed/Charge Effect","Infantry Combat Effect","Infantry Defense Effect","Cavalry Speed/Charge Effect","Cavalry Combat Effect","Cavalry Defense Effect","Range Defense Bonus","Hide Bonus","Temperature","Effect","Description"
-0,"Glassland",100,100,100,100,100,100,0,5,0,0,
+0,"Grassland",100,100,100,100,100,100,0,5,0,0,
 1,"Draught",100,100,100,100,100,100,0,0,0,0,
 2,"Bushland",90,100,120,80,85,85,15,30,0,0,
 3,"Forest",70,110,130,50,70,80,40,60,0,0,

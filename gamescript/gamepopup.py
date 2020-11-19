@@ -4,15 +4,22 @@ import pygame.freetype
 
 class Terrainpopup(pygame.sprite.Sprite):
     images = []
+    SCREENRECT = None
 
     def __init__(self):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.font = pygame.font.SysFont("helvetica", 12)
-        self.imgpos = ((24, 34), (24, 53), (24, 70), (58, 34), (58, 53), (58, 70))  ## inf speed, atk, def, cav speed, atk, def, all range def
+        self.scaleadjust = (self.SCREENRECT.width * self.SCREENRECT.height / (1366 * 768)) # For adjusting the image and text
+        print(self.SCREENRECT.size)
+        self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width()*self.scaleadjust),
+                                                             int(self.images[0].get_height()*self.scaleadjust)))
+        self.font = pygame.font.SysFont("helvetica", int(16*self.scaleadjust))
+        self.imgpos = ((24*self.scaleadjust, 34*self.scaleadjust), (24*self.scaleadjust, 53*self.scaleadjust), # inf speed, inf atk
+                       (24*self.scaleadjust, 70*self.scaleadjust), (58*self.scaleadjust, 34*self.scaleadjust), # inf def, cav speed
+                       (58*self.scaleadjust, 53*self.scaleadjust), (58*self.scaleadjust, 70*self.scaleadjust)) # cav atk, cav def
         self.modlist = (1.5, 1.2, 1, 0.7, 0.5, 0) # Stat effect from terrain (*percentage)
         self.bonuslist = (40, 20, 0) # Stat bonus from terrain (+-)
+
         self.image_original = self.image.copy()
 
     def pop(self, pos, input):
@@ -31,13 +38,13 @@ class Terrainpopup(pygame.sprite.Sprite):
                         self.imagerect = self.images[modindex + 1].get_rect(center=pos)
                         self.image.blit(self.images[modindex + 1], self.imagerect)
                         break
-        if input[7] == 0:
-            self.imagerect = self.images[7].get_rect(center=(90, 34))
+        if input[7] == 0: # all range def
+            self.imagerect = self.images[7].get_rect(center=(90*self.scaleadjust, 34*self.scaleadjust))
             self.image.blit(self.images[7], self.imagerect)
         else:
             for modindex, mod in enumerate(self.bonuslist):
                 if input[7] >= mod:
-                    self.imagerect = self.images[modindex + 1].get_rect(center=(90, 34))
+                    self.imagerect = self.images[modindex + 1].get_rect(center=(90*self.scaleadjust, 34*self.scaleadjust))
                     self.image.blit(self.images[modindex + 1], self.imagerect)
                     break
         self.rect = self.image.get_rect(bottomleft=self.pos)

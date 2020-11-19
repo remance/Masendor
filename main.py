@@ -2,7 +2,7 @@ import configparser
 import glob
 import os.path
 import sys
-
+import traceback
 # import basic pygame modules
 import pygame
 import pygame.freetype
@@ -19,6 +19,7 @@ Soundvolume = float(config['DEFAULT']['SoundVolume'])
 
 SCREENRECT = Rect(0, 0, ScreenWidth, ScreenHeight)
 main_dir = os.path.split(os.path.abspath(__file__))[0]
+
 
 class Menutext(pygame.sprite.Sprite):
     def __init__(self, images, pos, text="", size=16):
@@ -332,8 +333,17 @@ class Mainmenu():
                 self.menubutton3.update(pygame.mouse.get_pos(), mouse_up)
                 self.menubutton3.draw(self.screen)
                 if self.menubutton.event == True:
-                    self.battlegame = maingamefunc.Battle(self.winstyle, self.ruleset, self.rulesetfolder)
-                    self.battlegame.rungame()
+                    try:
+                        self.battlegame = maingamefunc.Battle(self.winstyle, self.ruleset, self.rulesetfolder)
+                        self.battlegame.rungame()
+                    except NameError: # Save error output to txt file
+                        f = open("error_report.txt", 'w')
+                        sys.stdout = f
+                        exc_type, exc_value, exc_traceback = sys.exc_info()
+                        lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                        print(''.join('!! ' + line for line in lines))  # Log it or whatever here
+                        f.close()
+                        return
                     self.menubutton.event = False
                 if self.menubutton3.event == True:
                     self.menustate = "option"
