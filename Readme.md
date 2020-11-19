@@ -5,7 +5,7 @@ The current code structure and documentation follows no standard guideline whats
 
 To start testing the game run main.py or main.exe if you use the release version.
 
-Requires PIL 7.2 module for map filtering effect, numpy for array. Also the game is now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9.
+Check the requirements.txt file for dependency requirement. Also the game is now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9.
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
