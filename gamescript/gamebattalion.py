@@ -218,22 +218,22 @@ class Unitarmy(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.offsetx = self.rect.x
         self.offsety = self.rect.y
-        self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  ## Generate all four side position
+        self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  # Generate all four side position
                            ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
                            ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
                            (self.basepos[0], (self.basepos[1] + self.baseheightbox / 2))]
-        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
+        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  # generate again but with rotation in calculation
                            rotationxy(self.basepos, self.allsidepos[1], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[2], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
-        self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)),
+        self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)), # Generate pos for all hitbox side
                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
-        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle),
+        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle), # Generate hitbox pos with current angle
                           rotationxy(self.rect.center, self.hitboxpos[1], self.testangle)
             , rotationxy(self.rect.center, self.hitboxpos[2], self.testangle), rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
-        self.frontpos = self.allsidepos[0]
+        self.frontpos = self.allsidepos[0] # The front center pos
         self.squadpositionlist = []
         self.battleside = [None, None, None, None] #battleside with enemy sprite
         self.battlesideid = [0,0,0,0]  # index of battleside (index of enemy fighting at the side of battalion) and frontline: 0 = front 1 = left 2 =right 3 =rear
@@ -312,6 +312,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 squadnum = 0
 
     def setuparmy(self):
+        """Grab stat from all squad"""
         self.troopnumber = 0
         self.stamina = 0
         self.morale = 0
@@ -336,14 +337,14 @@ class Unitarmy(pygame.sprite.Sprite):
                     squad.attackpos = self.attacktarget.basepos
                 howmany += 1
         if self.troopnumber > 0:
-            self.stamina = int(self.stamina/howmany)
-            self.morale = int(self.morale/howmany)
-            self.speed = min(allspeed)
+            self.stamina = int(self.stamina/howmany) # Average stamina of all squad
+            self.morale = int(self.morale/howmany) # Average moorale of all squad
+            self.speed = min(allspeed) # use slowest squad
             self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
             if len(allshootrange) > 0:
-                self.maxrange = max(allshootrange)
-                self.minrange = min(allshootrange)
-            if self.gamestart == False:
+                self.maxrange = max(allshootrange) # Max shoot range of all squad
+                self.minrange = min(allshootrange) # Min shoot range of all squad
+            if self.gamestart == False: # Only do once when game start
                 self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 75 / 100), round(
                     self.stamina * 50 / 100), round(self.stamina * 25 / 100)
                 self.lasthealthstate, self.laststaminastate = 4, 4
@@ -354,7 +355,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.staminastate = round((self.stamina * 100) / self.maxstamina)
 
     def setupfrontline(self, specialcall=False):
-        """Setup frontline"""
+        """Setup frontline array"""
         gotanother = 0
         startwhere = 0
         whoarray = np.where(self.squadalive > 1, self.armysquad, self.squadalive)

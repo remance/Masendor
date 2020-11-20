@@ -31,16 +31,16 @@ class Unitsquad(pygame.sprite.Sprite):
         # self.offset = pygame.Vector2(-25, 0)
         """state 0 = idle, 1 = walking, 2 = running, 3 = attacking/fighting, 4 = retreating"""
         self.state = 0
-        self.gamestart = 0
-        self.nocombat = 0
-        self.timer = random.random()
+        self.gamestart = False
+        self.nocombat = 0 # time when not fighting before going into idle (1 second)
+        self.timer = 0 ##random.random()
         self.battalion = battalion
         stat = statlist.unitlist[self.unitid].copy()
-        self.leader = None
-        self.boardpos = None  ## Used for event log position of squad (Assigned in maingame unit setup)
-        self.terrain = None
-        self.feature = None
-        self.height = None
+        self.leader = None # Leader in the sub-unit if there is one
+        self.boardpos = None  # Used for event log position of squad (Assigned in maingame unit setup)
+        self.terrain = None # Current terrain climate
+        self.feature = None # Current terrain feature
+        self.height = None # Current terrain height
         self.gamemapfeature = self.battalion.gamemapfeature
         self.name = stat[0]
         self.unitclass = stat[1]
@@ -55,8 +55,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.basemeleedef = round(stat[9] + int(statlist.gradelist[self.grade][2]), 0)
         self.baserangedef = round(stat[10] + int(statlist.gradelist[self.grade][2]), 0)
         self.armourgear = stat[11]
-        self.basearmour = armourlist.armourlist[self.armourgear[0]][1] * (
-                armourlist.quality[self.armourgear[1]] / 100)  ## Armour stat is cal from based armour * quality
+        self.basearmour = armourlist.armourlist[self.armourgear[0]][1] \
+                          * armourlist.quality[self.armourgear[1]]  ## Armour stat is cal from based armour * quality
         self.baseaccuracy = stat[12]
         self.baserange = stat[13]
         self.ammo = stat[14]
@@ -73,12 +73,12 @@ class Unitsquad(pygame.sprite.Sprite):
         self.mana = stat[20]
         self.meleeweapon = stat[21]
         self.rangeweapon = stat[22]
-        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * (weaponlist.quality[self.meleeweapon[1]] / 100)
-        self.penetrate = 1 - (weaponlist.weaponlist[self.meleeweapon[0]][2] * (weaponlist.quality[self.meleeweapon[1]] / 100)/100)
+        self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * weaponlist.quality[self.meleeweapon[1]]
+        self.penetrate = 1 - (weaponlist.weaponlist[self.meleeweapon[0]][2] * weaponlist.quality[self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
         if self.penetrate > 1: self.penetrate = 1
         elif self.penetrate < 0: self.penetrate = 0
-        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * (weaponlist.quality[self.rangeweapon[1]] / 100)
-        self.rangepenetrate = 1- (weaponlist.weaponlist[self.rangeweapon[0]][2] * (weaponlist.quality[self.rangeweapon[1]] / 100)/100)
+        self.rangedmg = weaponlist.weaponlist[self.rangeweapon[0]][1] * weaponlist.quality[self.rangeweapon[1]]
+        self.rangepenetrate = 1- (weaponlist.weaponlist[self.rangeweapon[0]][2] * weaponlist.quality[self.rangeweapon[1]]/100)
         self.trait = self.trait + weaponlist.weaponlist[self.meleeweapon[0]][4]  ## apply trait from range weapon
         self.trait = self.trait + weaponlist.weaponlist[self.rangeweapon[0]][4]  ## apply trait from melee weapon
         if self.rangepenetrate > 1: self.rangepenetrate = 1
@@ -403,12 +403,12 @@ class Unitsquad(pygame.sprite.Sprite):
         if len(self.trait) > 1:
             for trait in self.trait.values():
                 if trait[18] != [0]:
-                    for effect in trait[18]:
+                    for effect in trait[18]: #aplly status effect from trait
                         self.statuseffect[effect] = self.statuslist[effect].copy()
                         if trait[1] > 1:  # status buff range to nearby friend
                             self.statustonearby(trait[1], effect, self.statuslist[effect].copy())
         ## ^End trait
-        """apply effect from terrain and weather"""
+        ## apply effect from weather"""
         weather = thisweather
         self.attack += weather.meleeatk_buff
         self.meleedef += weather.meleedef_buff
@@ -423,21 +423,24 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminaregen += weather.staminaregen_buff
         self.morale += weather.morale_buff
         self.discipline += weather.discipline_buff
-        ## Map feature modifier
+        if weather.elem[0] != 0: ## weather can cause elemental effect such as wet
+            self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
+        ## ^End weather
+        ## Map feature modifier to stat
         mapfeaturemod = self.gamemapfeature.featuremod[self.feature]
         if mapfeaturemod[self.featuremod] != 1: # speed/charge
             speedmod = mapfeaturemod[self.featuremod]
             self.speed *= speedmod
             self.charge *= speedmod
-        if mapfeaturemod[self.featuremod + 1] != 1: # melee combat
+        if mapfeaturemod[self.featuremod + 1] != 1: # melee attack
             # combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
             self.attack *= mapfeaturemod[self.featuremod + 1]
         if mapfeaturemod[self.featuremod + 2] != 1: # melee/charge defense
             combatmod = mapfeaturemod[self.featuremod + 2]
             self.meleedef *= combatmod
             self.chargedef *= combatmod
-        if mapfeaturemod[10] != [0]:
-            if 1 in mapfeaturemod[10]:
+        if mapfeaturemod[10] != [0]: # Some terrain feature can also cause status effect such as swimming in water
+            if 1 in mapfeaturemod[10]: # Water type terrain
                 self.statuseffect[93] = self.statuslist[93].copy()
                 if self.weight > 60 or self.stamina <= 0:  ## Drowning
                     self.statuseffect[102] = self.statuslist[102].copy()
@@ -445,14 +448,14 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.statuseffect[101] = self.statuslist[101].copy()
                 elif self.weight < 30:  ## Swiming
                     self.statuseffect[104] = self.statuslist[104].copy()
-            if 2 in mapfeaturemod[10]:  ## Rot feature
+            if 2 in mapfeaturemod[10]:  ## Rot type terrain
                 self.statuseffect[54] = self.statuslist[54].copy()
-            if 3 in mapfeaturemod[10]:  ## Poison
+            if 3 in mapfeaturemod[10]:  ## Poison type terrain
                 self.elemcount[4] += ((100 - self.elemresist[5]) / 100)
-        if weather.elem[0] != 0:
-            self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
         self.rangedef += mapfeaturemod[7] # range defense from terrain bonus
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
+        ## ^End map feature
+        ## Temperature mod function from terrain and weather
         tempreach = mapfeaturemod[9] + weather.temperature
         if tempreach < 0:
             tempreach = tempreach * (100 - self.coldres) / 100
@@ -470,7 +473,8 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.tempcount -= (100 - self.heatres) / 100
                 else:
                     self.tempcount += (100 - self.coldres) / 100
-        """apply effect from skill"""
+        ## ^End temperature
+        ## Apply effect from skill
         if len(self.skilleffect) > 0:
             for status in self.skilleffect:  ## apply elemental effect to dmg if skill has element
                 calstatus = self.skilleffect[status]
@@ -515,28 +519,29 @@ class Unitsquad(pygame.sprite.Sprite):
             if self.chargeskill in self.skilleffect:
                 self.charging = True
                 self.authpenalty += 0.5
-        """apply effect if elem attack reach 100 threshold"""
-        if self.elemcount != [0, 0, 0, 0, 0]:
+        ## ^End skill effect
+        if self.elemcount != [0, 0, 0, 0, 0]: # Apply effect if elem threshold reach 50 or 100
             self.elemcount[0] = self.thresholdcount(self.elemcount[0], 28, 92)
             self.elemcount[1] = self.thresholdcount(self.elemcount[1], 31, 93)
             self.elemcount[2] = self.thresholdcount(self.elemcount[2], 30, 94)
             self.elemcount[3] = self.thresholdcount(self.elemcount[3], 23, 35)
             self.elemcount[4] = self.thresholdcount(self.elemcount[4], 26, 27)
             self.elemcount = [elem - 1 if elem > 0 else elem for elem in self.elemcount]
-        """temperature effect"""
-        if self.tempcount > 50:
+        ## Temperature effect
+        if self.tempcount > 50: # Hot
             self.statuseffect[96] = self.statuslist[96].copy()
-            if self.tempcount > 100:
+            if self.tempcount > 100: # Extremely hot
                 self.statuseffect[97] = self.statuslist[97].copy()
                 del self.statuseffect[96]
-        if self.tempcount < -50:
+        if self.tempcount < -50: # Cold
             self.statuseffect[95] = self.statuslist[95].copy()
-            if self.tempcount < -100:
+            if self.tempcount < -100: # Extremely cold
                 self.statuseffect[29] = self.statuslist[29].copy()
                 del self.statuseffect[95]
-        """apply effect from status effect"""
-        """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 7 no exp gain, 
-        7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""
+        ## ^End temperature effect related function
+        ## Apply effect and modifer from status effect
+        # """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 7 no exp gain,
+        # 7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""
         if len(self.statuseffect) > 0:
             for status in self.statuseffect:
                 calstatus = self.statuslist[status]
@@ -555,10 +560,12 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.discipline += calstatus[16]
                 # self.sight += status[18]
                 # self.hidden += status[19]
-                if status == 1:
+                if status == 1: # Fearless status
                     self.tempunbraekable = True
-                elif status == 91:
+                elif status == 91: # All round defense status
                     self.tempfulldef = True
+        ## ^End status effect
+        ## Rounding up, add discipline to stat and forbid negative int
         self.discipline = round(self.discipline, 0)
         disciplinecal = self.discipline / 10
         self.attack = round((self.attack + disciplinecal), 0)
@@ -580,23 +587,24 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.charge < 0: self.charge = 0
         if self.chargedef < 0: self.chargedef = 0
         if self.discipline < 0: self.discipline = 0
-        """remove cooldown if time reach 0"""
-        self.skillcooldown = {key: val - self.timer for key, val in self.skillcooldown.items()}
-        self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0}
-        """remove effect if time reach 0 and restriction is met"""
-        for a, b in self.skilleffect.items():
+        ## ^End rounding up
+        ## cooldown, active and effect timer function
+        self.skillcooldown = {key: val - self.timer for key, val in self.skillcooldown.items()} # cooldown decrease overtime
+        self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0} # remove cooldown if time reach 0
+        for a, b in self.skilleffect.items(): # Can't use dict comprehension here since value include all other skill stat
             b[3] -= self.timer
-        self.skilleffect = {key: val for key, val in self.skilleffect.items() if val[3] > 0 and self.state in val[5]}
+        self.skilleffect = {key: val for key, val in self.skilleffect.items() if val[3] > 0 and self.state in val[5]} # remove effect if time reach 0 and restriction is not met
         for a, b in self.statuseffect.items():
             b[3] -= self.timer
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
+        ## ^End timer effect
 
     def update(self, weather, newdt, viewmode, combattimer):
-        if self.gamestart == 0:
+        if self.gamestart == False:
             self.rotate()
             self.findnearbysquad()
             self.statusupdate(weather)
-            self.gamestart = 1
+            self.gamestart = True
         self.viewmode = viewmode
         if self.state != 100:
             dt = newdt

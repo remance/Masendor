@@ -3,7 +3,7 @@ import re
 
 class Weaponstat():
     def __init__(self, main_dir, img, ruleset):
-        """Armour has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
+        """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weaponlist = {}
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
@@ -20,7 +20,7 @@ class Weaponstat():
                             row[n] = int(i)
                     self.weaponlist[row[0]] = row[1:]
         unitfile.close()
-        self.quality = (25, 50, 75, 100, 125, 150, 175)
+        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75) # Quality modifer to weapon stat
 
 
 class Armourstat():
@@ -42,7 +42,7 @@ class Armourstat():
                             row[n] = int(i)
                     self.armourlist[row[0]] = row[1:]
         unitfile.close()
-        self.quality = (25, 50, 75, 100, 125, 150, 175)
+        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifer to armour stat
 
 
 class Unitstat():
