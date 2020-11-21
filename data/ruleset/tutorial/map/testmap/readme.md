@@ -22,7 +22,7 @@ Map data
 
 unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction | start angle |
 
-int	| 			int,int,int,int,int,int,int,int		      	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	|
+int	| 		int,int,int,int,int,int,int,int	(0 for none)      	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	|
 
 0+ = player  | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader |
 

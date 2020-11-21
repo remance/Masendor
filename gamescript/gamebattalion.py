@@ -216,8 +216,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=startposition)
         self.testangle = math.radians(360 - startangle)
         self.mask = pygame.mask.from_surface(self.image)
-        self.offsetx = self.rect.x
-        self.offsety = self.rect.y
         self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  # Generate all four side position
                            ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
                            ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
@@ -239,12 +237,12 @@ class Unitarmy(pygame.sprite.Sprite):
         self.battlesideid = [0,0,0,0]  # index of battleside (index of enemy fighting at the side of battalion) and frontline: 0 = front 1 = left 2 =right 3 =rear
         self.frontline = {0: [], 1: [], 2: [], 3: []}  ## frontline keep list of squad at the front of each side in combat
         width, height = 0, 0
-        squadnum = 0
+        squadnum = 0 # Number of squad based on the position in row and column
         for squad in self.armysquad.flat:  ## Set up squad position list for drawing
             width += self.imgsize[0]
             self.squadpositionlist.append((width, height))
             squadnum += 1
-            if squadnum >= len(self.armysquad[0]):
+            if squadnum >= len(self.armysquad[0]): # Reach the last squad in the row, go to the next one
                 width = 0
                 height += self.imgsize[1]
                 squadnum = 0
@@ -289,8 +287,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
         self.testangle = math.radians(360 - self.angle)
         self.mask = pygame.mask.from_surface(self.image)
-        self.offsetx = self.rect.x
-        self.offsety = self.rect.y
         self.setuparmy()
 
     def squadtoarmy(self):
@@ -580,8 +576,6 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.maingame.clickcheck = 1
                 except: pass
             ## ^ End mouse detect
-            self.offsetx = self.rect.x
-            self.offsety = self.rect.y
             self.walk = False
             self.run = False
             if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps

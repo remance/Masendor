@@ -11,7 +11,7 @@ class Weaponstat():
             for row in rd:
                 if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
-                        if n == 5:
+                        if n == 5: # Properties must be in list
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -33,7 +33,7 @@ class Armourstat():
             for row in rd:
                 if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
-                        if n == 5:
+                        if n == 5: # Properties must be in list
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -48,13 +48,14 @@ class Armourstat():
 class Unitstat():
     def __init__(self, main_dir, ruleset, rulesetfolder):
         """Unit stat data read"""
-        self.unitlist = {}  ## Unit stat list
+        #v Unit stat dict
+        self.unitlist = {}
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_preset.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
-                        row[n] = int(i)  ## No need to make it float
+                        row[n] = int(i)  # No need to make it float
                     if n in (5, 6, 12, 22, 23):
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -62,7 +63,9 @@ class Unitstat():
                             row[n] = [int(i)]
                 self.unitlist[row[0]] = row[1:]
             unitfile.close()
-        self.unitlore = {}  ## Unit lore list
+        #^ End unit stat list
+        #v Lore of the unit dict
+        self.unitlore = {}
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_lore.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -71,39 +74,46 @@ class Unitstat():
                         row[n] = int(i)
                 self.unitlore[row[0]] = row[1:]
             unitfile.close()
+        #^ End lore
+        #v Unit status effect dict
         self.statuslist = {}
         with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
-                if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
+                if "," in row[-2]: # make str with , into list
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                else:
+                    thisruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset)) for rule in thisruleset): # only grab effect that existed in the ruleset
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
                             if n in (5, 6, 7, 8, 9, 10, 11, 12):
-                                if i == "":
+                                if i == "": # empty stat become 1.0 so it mean nothing when calculate into unit
                                     row[n] = 1.0
                                 else:
-                                    row[n] = float(i) / 100  ## Need to make it float for percentage cal
-                            elif n in (2, 3):
+                                    row[n] = float(i) / 100  # Need to make it float / 100 for percentage cal 50 become 0.5
+                            elif n in (2, 3): # special effect and status conflict list
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
                                 else:
                                     row[n] = []
-                            elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 20):
+                            elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 20): # negative number
                                 row[n] = float(i)
                     self.statuslist[row[0]] = row[1:]
                 run += 1
         unitfile.close()
-        ## Race List
+        #^ End status effect
+        #v Race dict
         self.racelist = {}
         with open(main_dir + "\data\war" + '\\unit_race.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[-2] in ("0", "Ruleset") or str(ruleset) == row[-2]:
                     for n, i in enumerate(row):
-                        if i.isdigit(): row[n] = int(i)  ## No need to be float
+                        if i.isdigit(): row[n] = int(i)  # No need to be float
                         # if n == 12:
                         #     if "," in i:
                         #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -111,20 +121,24 @@ class Unitstat():
                         #         row[n] = [int(i)]
                     self.racelist[row[0]] = row[1:]
         unitfile.close()
-        self.gradelist = {}  ##Unit grade list
+        #^ End race
+        #v Unit grade dict
+        self.gradelist = {}
         with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)  ## No need to be float
+                    if i.isdigit(): row[n] = int(i)  # No need to be float
                     if n == 12:
-                        if "," in i:
+                        if "," in i: # Properties to unit in list
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():
                             row[n] = [int(i)]
                 self.gradelist[row[0]] = row[1:]
         unitfile.close()
-        self.abilitylist = {}  ## Unit skill list
+        #^ End unit grade
+        #v Unit skill dict
+        self.abilitylist = {}
         with open(main_dir + "\data\war" + '\\unit_ability.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -153,7 +167,8 @@ class Unitstat():
                     run += 1
                     self.abilitylist[row[0]] = row[1:]
         unitfile.close()
-        """Unit property list"""
+        #^ End unit skill
+        #v Unit property dict
         self.traitlist = {}
         with open(main_dir + "\data\war" + '\\unit_property.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -166,7 +181,7 @@ class Unitstat():
                                 if i == "":
                                     row[n] = 1.0
                                 else:
-                                    row[n] = float(i) / 100  ## Need to be float
+                                    row[n] = float(i) / 100  # Need to be float
                             elif n in (19, 32, 33):
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -179,7 +194,8 @@ class Unitstat():
                     self.traitlist[row[0]] = row[1:]
                     run += 1
         unitfile.close()
-        """unit role list"""
+        #^ End unit property
+        #v Unit role dict
         self.role = {}
         with open(main_dir + "\data\war" + '\\unit_type.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -188,7 +204,8 @@ class Unitstat():
                     if i.isdigit(): row[n] = float(i)
                 self.role[row[0]] = row[1:]
         unitfile.close()
-        """unit mount list"""
+        #^ End unit role
+        #v Unit mount dict
         self.mountlist = {}
         with open(main_dir + "\data\war" + '\\unit_mount.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -204,14 +221,14 @@ class Unitstat():
                             row[n] = int(i)
                     self.mountlist[row[0]] = row[1:]
         unitfile.close()
-
+        #^ End unit mount dict
 
 class Leaderstat():
     def __init__(self, main_dir, img, imgorder, option):
         self.imgs = img
         self.imgorder = imgorder
         self.leaderlist = {}
-        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\historical_leader.csv", "r") as unitfile:
+        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\leader.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -221,8 +238,8 @@ class Leaderstat():
                     # else: row[n] = [int(i)]
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
-        ## Add common leader to the leader list with gameid + 10000
-        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\historical_common_leader.csv", "r") as unitfile:
+        #v Add common leader to the leader list with gameid + 10000
+        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -232,7 +249,8 @@ class Leaderstat():
                     # else: row[n] = [int(i)]
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
-
+        #^ End common leader
+        #v Leader class dict
         self.leaderclass = {}
         with open(main_dir + "\data\leader" + "\\leader_class.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
