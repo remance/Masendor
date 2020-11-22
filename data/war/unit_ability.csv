@@ -1,200 +1,200 @@
 "ID","Name","Type","Area of Effect","Duration","Cooldown","Restriction","Condition","Mana Cost","Discipline Requirement","Stamina Cost","Melee Attack Effect","Melee Defense Effect","Range Defense Effect","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Charge Defense Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Damage Effect","Sight Bonus","Hide Bonus","Status","Stamina Damage","Morale Damage","Enemy Status","Element","Ruleset","description"
-1,"Fearless Charge",0,1,30,60,"3,4,10","3,4",0,10,10,105,90,90,120,,,,,0,0,-2,0,0,,,,0,1,,,0,0,0,"Fear only bring the weakest of men. To be fearless is to charge on even against the face of death itself."
-2,"Glorious Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,,0,0,-2,10,0,,,,0,0,,4,0,0,0,"Glory to those who brave the fear of death and charge onward to the unknown."
-3,"Steady Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,115,115,80,,,,,10,0,-1.5,10,0,,,,0,0,,,0,0,0,"Steady but not too slow will win even more races and battles."
-4,"Frenzied Charge",0,1,30,60,"3,4,10","3,4",0,10,10,160,50,50,130,,,,,-50,0,-4,0,0,115,,,0,1,,,0,0,0,"Mindless and aggressive make the most powerful charge."
-5,"Devastating Charge",0,1,30,60,"3,4,10","3,4",0,10,10,110,,,105,,,,120,0,0,-3,0,0,120,,,0,0,,,0,0,0,"What is better objective of a charge aside to devastate the enemies utterly."
-6,"Stampede",0,1,50,60,"3,4,10","3,4",0,10,10,,,,,,,,110,0,0,-2.5,0,0,,,,0,0,,,4,0,0,"Under the iron hooves and beneath the blazing sun, only the strongest can rise up again."
-7,"Breach",0,1,30,60,"3,4,10","3,4",0,10,10,110,,,,,,,110,0,0,-3,0,0,,,,0,76,,,0,0,0,"Breaching through the enemy's formation to crush whoever hiding behind is the greatest achievement every shock cavalry units should dream of."
-8,"Shield Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,130,130,85,,,,,20,0,-2,0,0,,,,0,0,,,0,0,0,"Risky yet safe, shield at the front and no archer or spearman can halt your advance."
-9,"Agile Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,120,120,120,,,,110,0,0,-2.5,0,0,,,,0,0,,,0,0,2,"Agility is the most important aspect of a charge. You don't really charging by standing still, do you?"
-10,"Charge Of Regret",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,130,0,0,-2,30,0,,,,0,2,,,2,0,2,"The only word to describe this momentous moment is regret. The regret to not be able to relive this same exact moment ever again no matter how many times it get replicated."
-11,"Dread Charge",0,1,30,60,"3,4,10","3,4",0,10,10,110,,,,,,,,0,0,-2.5,0,0,,,,0,0,,10,0,0,2,"Oh great horror, what sin did we do to bring you into us."
-12,"Leaping Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,140,0,0,-3.5,0,0,110,,,0,0,,,0,0,2,"Momentum gain from leaping can make any following blow a massive crushing power."
-13,"For Ancestor!",0,2,30,60,"3,4,10","3,4",0,10,10,,,,115,,,,,-10,0,-3,20,0,110,,,0,0,,,0,0,2,"The ancestors guide us not only in the past. For now we devote our life to our beloved forebears."
-14,"Malabel Igiela",0,1,30,60,"3,4,10","3,4",0,10,10,130,120,120,120,,,,150,20,0,-3,10,0,,,,0,1,,,0,0,2,"The great charge of Malabel cavalry may one day rest in a page of legend or history book, but today, let us offer condolences to the unfortunate victims of this charge."
-15,"Historic Moment",0,2,30,60,"3,4,10","3,4",0,10,10,120,,,115,,,,,0,0,-2.5,50,0,,,,0,0,,,0,0,2,"There are not many event in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
-16,"Hidden Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,90,,,,,0,0,-2,0,0,,,,0,6,,,0,0,2,"It should be practically impossible to charge while remain hidden. And how can someone defend against such impossible feat?"
-17,"Clumsy Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,,,0,0,0,"Some troops are just not suitable for charging whether it be because of their insufficient training or unsuitable equipment."
-18,"Heroic Charge",0,2,30,60,"3,4,10","3,4",0,10,10,110,,,110,,,,,0,0,-2.5,20,0,,,,0,0,,,0,0,0,"Just follows the hero and everything will be alright. They become masters of battle by staying alive after all."
-19,"Weak Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,40,0,0,-2,0,0,,,,0,0,,,0,0,1,"A weak charge can often time results in total disaster. Exercise charging tactic for unit with this skill with caution."
-20,"Slow Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,50,0,0,-2,0,0,,,,0,0,,,0,0,1,"Due to the troop's weight, its charge is much slower than usual and less effective overall."
-21,"Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-2,0,0,,,,0,0,,,0,0,0,"An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemies that completely destroy their morale or it can be total disaster that result in retreat of the charge initiator instead."
-22,"Giant Rush",0,2,60,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-1.5,0,0,,,,0,0,,6,4,0,2,"A charge from giants can be count as one of the most devastating charge in history , it is almost impossible to hold position against such massive blows."
-23,"Break Charge",0,1,30,100,10,10,0,45,10,,,,,,,,,0,0,-2,0,0,,,,0,0,,,0,0,2,
-24,"Counter Charge",0,1,30,60,10,10,0,55,10,,,,,,,,,30,0,-2,0,0,,,,0,0,,,0,0,2,
-25,"Carbidarleht Piper",0,4,60,60,0,0,0,65,5,125,125,125,125,125,125,125,125,0,0,-0.5,25,-5,,0,,0,0,,,0,0,2,
-26,"Spider Web Shot",1,1,1,60,10,10,0,20,20,,,,,,,,,0,0,0,0,0,,0,,0,0,,,"24,36",0,2,
-27,"Aging Touch",0,1,1,100,10,10,,40,60,,,,,,,,,0,0,0,0,0,,0,,0,0,,,45,0,2,"Aging is inevitable but what is worse one can do to other that escalating the process. Ability to turn a well toned soldier into a weak senile old fool is beyond terrifying."
-28,"Ashen Rising",0,1,20,10000,100,100,,0,,,,,,,,,,0,0,0,0,0,,,,0,87,,,0,0,2,"Rising from ash, the flame of life will never be extinguished."
-29,"Chain Lightning Strike",0,3,1,300,10,10,15,,100,,,,,,,,,0,0,0,0,0,,,,0,0,,,23,3,2,
-30,"Keen Strike",0,1,3,55,10,10,0,75,90,250,,,,,,,,0,0,0,0,0,,,,0,0,,,0,0,2,
-31,"Graceful Evasion",0,1,30,300,10,10,0,80,10,,150,150,170,,,,,20,0,0,0,0,,,,0,0,,,0,0,2,"There is nothing more elegant than gracefully evading a blow from a brute."
-32,"Corpse Burst",0,2,1,300,10,10,,35,60,,,,,,,,,0,0,0,0,0,,,,0,0,,,,0,2,
-33,"Spearwall",0,1,120,0,"0,1,3,10","0,1,3,10",0,35,0,120,110,90,50,,,,,50,0,-0.1,0,0,,,,0,0,,,0,0,0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you rushing at full speed after all."
-34,"Spearguard",0,1,90,0,"0,1,3,10","0,1,3,10",0,50,0,110,115,,60,,,,,20,0,-0.1,0,0,,,,0,0,,,0,0,0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
-35,"Angel Guardian",0,3,20,200,,,0,80,25,,,,,,,,,10,0,-1,0,0,,,,0,88,,,0,0,2,
-36,"Shieldwall",0,1,120,0,"0,1,3,10","0,1,3,10",0,40,0,,130,120,50,,,,,25,0,-0.1,0,0,,,,0,0,,,0,0,0,"What is the most common tactic used in the most disciplined troops by every world conquering empires? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And the more experienced soldier make a more effective the army."
-37,"Shield Turtle",0,1,120,0,"0,1,3,10","0,1,3,10",0,50,0,,130,160,20,,,,,10,0,-1,0,0,,,,0,0,,,0,0,0,"Defensive yet still mobile. This tactic is superb against approaching enemy army that excel in range attack."
-38,"Shield Dome",0,1,180,60,"0,10","0,10",,60,20,80,150,200,0,,,,,40,0,-1,15,0,,,,0,0,,,0,0,0,"The ultimate defense tactic. This shield dome leaves no vulnerable spot for enemy to attack."
-39,"Shield Barrier",0,1,180,60,"0,10","0,10",,64,30,75,165,160,0,,,,,35,0,-1,25,0,,,,0,0,,,0,0,0,
-40,"Shield Fortress",0,1,180,90,"0,10","0,10",,72,40,,175,200,0,,,,,50,0,-1,0,0,,,,0,0,,,0,0,0,
-41,"Rapid Shots",0,1,120,300,11,11,,35,10,,,,,,,120,,0,0,-2,0,0,,,,0,0,,,0,0,0,"Opportunity to attack is of the essence especially for archers in a battlefield, the more arrows remain in the quiver means the less enemy killed. "
-42,"Rapid Defense",0,1,120,300,"1,2,3,4,10","1,2,3,4,10",,45,10,,110,,110,,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,
-43,"Rapid Attack",0,1,120,300,"1,2,3,4,10","1,2,3,4,10",,50,10,110,,,110,,,,,0,0,-1.5,0,0,,,,0,0,,,0,0,0,"Strike fast enough and the enemy will never know what hit them."
-44,"Rapid Advance",0,1,120,300,"1,2,3,4","1,2,3,4",,41,10,,,,125,,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,"Speed can often determine the fate of a battle and even a war. Being faster than enemy is never a disadvantage."
-45,"Steady Aims",0,1,60,300,11,11,,44,10,,,,,120,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,"The most important part of range weaponry is to hit the target. Arrows missed are arrow wasted."
-46,"Steady Shield",0,1,60,0,"0,10","0,10",,48,10,,120,120,,,,,,20,0,-1,0,0,,,,0,0,,,0,0,0,"The art of defence begins with stability. No unsteady shield can defend harm for its user."
-47,"Victory Or Death",0,1,1200,10000,10,10,,51,0,,,,,,,,,0,0,0,50,50,,,,0,0,,,0,0,2,"Sometimes retreat is a valid option but not for this time."
-48,"Chain Attack",0,2,3,60,10,10,,49,50,,,,,,,,,0,0,0,0,0,,50,,0,0,,,0,0,2,"Hitting all enemy at once in a swift fashion is not an easy feat. Extremely powerful skill in battlefield combat with no end of enemies to slay."
-49,"Sweep Asunder",0,2,1,30,10,10,,55,70,,,,,,,,,0,0,0,0,0,,120,,0,0,,,0,0,2,"Only the strong can sweep a large weapon so powerful that the blow can leave all those stand at the front asunder."
-50,"Pledge Of Honour",0,3,300,600,10,10,,68,0,,,,,,,,,0,0,0,20,0,,,,0,0,,,0,0,2,
-51,"Silencing Glare",0,1,50,500,10,10,,25,20,,,,,,,,,0,0,0,0,0,,,,0,0,,,8,0,2,"The glare so intimidating it leave anyone in sight incapable of even producing coherent speech just from fear. Devastatingly useful against mage units that entirely rely on their chanting."
-52,"Cantabrian Circle",0,1,60,0,11,11,,50,25,,,135,,,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,"The maneuver only possible with the mastery of both equitation and archery. To attack even when moving is the pinnacle of warfare. "
-53,"Hold Ground",0,1,30,300,1,10,,58,10,,125,125,,,,,,15,0,0,0,0,,,,0,0,,,0,0,0,"""Hold your ground men! No enemy will pass through this place as long as we are here.""  "
-54,"Pikewall",0,1,30,0,"0,1,3","0,1,3",,45,20,,,,,,,,,80,0,-0.5,0,0,,,,0,0,,,0,0,0,"The deadly charge of cavalry was the domination tactic in battlefield until the invention of pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
-55,"Hidden Pike",0,1,30,5,2,0,,60,10,,,,,,,,,60,0,-0.7,0,0,,,,40,0,,,0,0,0,"A nasty surprise. Who can expect complete death trap in their charge to glory? Only fool fight a fair fight."
-56,"Overdrive",0,1,60,900,10,10,,40,0,120,120,120,120,120,,120,120,20,0,0.5,0,20,,,,0,0,,,0,0,2,
-57,"Death Volunteer",0,1,300,600,10,10,,70,0,150,150,,,,,,150,0,-100,2,0,0,,150,,0,0,,,0,0,2,"Volunteer to die is an act that surpass natural instinct. To excess oneself to death for victory is either madness or complete devotion."
-58,"Warcry",0,3,1,60,10,10,,38,30,,,,,,,,,0,0,0,0,0,,,,0,0,,6,0,0,2,
-59,"Deathshriek",0,3,1,60,10,10,,26,50,,,,,,,,,0,0,0,0,0,,,,0,0,,8,0,,2,"The voice of death instills terror no sight can ever achieve."
-60,"Abyssal Hatred",0,3,15,,10,10,,40,,,,,,,,,,0,0,,0,0,,,,0,0,,,0,0,2,"Next melee attack deal damage +1% per number of troop killed"
-61,"Second Wind",0,1,30,120,"0,1,2,3,4,5,6,7,8,9,10,11","0,1,2,3,4,5,6,7,8,9,10,11",,60,0,,,,,,,,,0,0,1,10,0,,,,0,0,,,0,0,0,"One more push to victory. Such chance never come often. "
-62,"Bloodlust",0,1,30,0,,,,50,2,,,,,,,,,0,0,-1,0,0,,,,0,0,,,0,0,2,"All stat +10%, stamina +10% for every enemy destroyed"
-63,"Critical Measure",0,1,10,100,10,10,,60,,125,125,125,125,125,,125,125,25,0,-5,0,40,,,,0,2,,,0,0,2,"Critical measure must be taken for this crisis or we will not survive. "
-64,"Camaraderie",0,1,30,0,,,,70,1,,,,,,,,,0,0,0,0,0,,,,0,0,,,0,0,2,
-65,"Cripple Strike",0,1,1,15,10,10,,40,15,,,,,,,,,0,0,0,0,0,,,,0,0,,,34,0,2,"Why kill when you can cripple the enemy and make them suffer for all to see. "
-66,"Random Throwing",1,1,30,10,11,11,,20,5,,,,,,,,,0,0,-0.5,0,0,,30,,0,0,,,0,0,0,"Sacrificing accuracy for speed can be beneficial if the situation does not permit taking time to aim."
-67,"Joy Of The Barbarian",0,2,1,30,10,10,,10,90,,,,,,,,,0,0,,0,0,,,,0,0,,4,0,0,2,"Pillage and destroy is the joy of savage. And it is the best feeling ever."
-68,"Sand Pocket",0,1,1,20,10,10,,30,20,,,,,,,,,0,0,0,0,0,,10,,0,0,,,7,0,0,"Throwing sand to the eyes is a trick as old as humanity itself."
-69,"Terror Strike",0,1,1,30,10,10,,50,70,,,,,,,,,0,0,0,0,0,,,,0,0,,,8,0,2,"Terror comes in all form. Physical appearance is often the key. Even more so if it is impactful."
-70,"Martrydom ",0,1,120,1000,10,10,,64,,125,10,10,130,0,,0,200,-100,0,0,200,50,,,,0,0,,,0,0,0,"To give your life for the cause is the ultimate purpose in life. Surely god will reward you for it."
-71,"Proud Force",0,1,,,10,10,,80,,,,,,,,,,0,0,0,0,0,,,,0,0,,,,0,2,
-72,"Petrifying gaze",0,1,,600,10,10,,28,25,,,,,,,,,0,0,-10,0,0,,,,0,0,,,35,4,2,
-73,"Hide In The Shell",0,1,60,300,10,10,,10,10,0,200,200,0,,,,,80,0,0.5,0,0,,,,0,0,,,0,0,2,
+1,"Fearless Charge",0,1,30,60,"3,4,10","3,4",0,10,10,105,90,90,120,,,,,0,0,-2,0,0,,,,0,1,0,0,0,0,0,"Fear only bring the weakest of men. To be fearless is to charge on even against the face of death itself."
+2,"Glorious Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,,0,0,-2,10,0,,,,0,0,0,4,0,0,0,"Glory to those who brave the fear of death and charge onward to the unknown."
+3,"Steady Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,115,115,80,,,,,10,0,-1.5,10,0,,,,0,0,0,0,0,0,0,"Steady but not too slow will win even more races and battles."
+4,"Frenzied Charge",0,1,30,60,"3,4,10","3,4",0,10,10,160,50,50,130,,,,,-50,0,-4,0,0,115,,,0,1,0,0,0,0,0,"Mindless and aggressive make the most powerful charge."
+5,"Devastating Charge",0,1,30,60,"3,4,10","3,4",0,10,10,110,,,105,,,,120,0,0,-3,0,0,120,,,0,0,0,2,0,0,0,"What is better objective of a charge aside to devastate the enemies utterly."
+6,"Stampede",0,1,50,60,"3,4,10","3,4",0,10,10,,,,,,,,110,0,0,-2.5,0,0,,,,0,0,0,1,4,0,0,"Under the iron hooves and beneath the blazing sun, only the strongest can rise up again."
+7,"Breach",0,1,30,60,"3,4,10","3,4",0,10,10,110,,,,,,,110,0,0,-3,0,0,,,,0,76,0,2,0,0,0,"Breaching through the enemy's formation to crush whoever hiding behind is the greatest achievement every shock cavalry units should dream of."
+8,"Shield Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,130,130,85,,,,,20,0,-2,0,0,,,,0,0,0,0,0,0,0,"Risky yet safe, shield at the front and no archer or spearman can halt your advance."
+9,"Agile Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,120,120,120,,,,110,0,0,-2.5,0,0,,,,0,0,0,0,0,0,2,"Agility is the most important aspect of a charge. You don't really charging by standing still, do you?"
+10,"Charge Of Regret",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,130,0,0,-2,30,0,,,,0,2,0,1,2,0,2,"The only word to describe this momentous moment is regret. The regret to not be able to relive this same exact moment ever again no matter how many times it get replicated."
+11,"Dread Charge",0,1,30,60,"3,4,10","3,4",0,10,10,110,,,,,,,,0,0,-2.5,0,0,,,,0,0,0,10,0,0,2,"Oh great horror, what sin did we do to bring you into us."
+12,"Leaping Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,,,,,140,0,0,-3.5,0,0,110,,,0,0,0,0,0,0,2,"Momentum gain from leaping can make any following blow a massive crushing power."
+13,"For Ancestor!",0,2,30,60,"3,4,10","3,4",0,10,10,,,,115,,,,,-10,0,-3,20,0,110,,,0,0,0,0,0,0,2,"The ancestors guide us not only in the past. For now we devote our life to our beloved forebears."
+14,"Malabel Igiela",0,1,30,60,"3,4,10","3,4",0,10,10,130,120,120,120,,,,150,20,0,-3,10,0,,,,0,1,0,5,0,0,2,"The great charge of Malabel cavalry may one day rest in a page of legend or history book, but today, let us offer condolences to the unfortunate victims of this charge."
+15,"Historic Moment",0,2,30,60,"3,4,10","3,4",0,10,10,120,,,115,,,,,0,0,-2.5,50,0,,,,0,0,0,0,0,0,2,"There are not many event in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
+16,"Hidden Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,90,,,,,0,0,-2,0,0,,,,0,6,0,0,0,0,2,"It should be practically impossible to charge while remain hidden. And how can someone defend against such impossible feat?"
+17,"Clumsy Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,0,0,0,0,0,"Some troops are just not suitable for charging whether it be because of their insufficient training or unsuitable equipment."
+18,"Heroic Charge",0,2,30,60,"3,4,10","3,4",0,10,10,110,,,110,,,,,0,0,-2.5,20,0,,,,0,0,0,1,0,0,0,"Just follows the hero and everything will be alright. They become masters of battle by staying alive after all."
+19,"Weak Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,40,0,0,-2,0,0,,,,0,0,0,0,0,0,1,"A weak charge can often time results in total disaster. Exercise charging tactic for unit with this skill with caution."
+20,"Slow Charge",0,1,15,60,"3,4,10","3,4",0,10,10,,,,,,,,50,0,0,-2,0,0,,,,0,0,0,0,0,0,1,"Due to the troop's weight, its charge is much slower than usual and less effective overall."
+21,"Charge",0,1,30,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-2,0,0,,,,0,0,0,0,0,0,0,"An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemies that completely destroy their morale or it can be total disaster that result in retreat of the charge initiator instead."
+22,"Giant Rush",0,2,60,60,"3,4,10","3,4",0,10,10,,,,110,,,,,0,0,-1.5,0,0,,,,0,0,0,6,4,0,2,"A charge from giants can be count as one of the most devastating charge in history , it is almost impossible to hold position against such massive blows."
+23,"Break Charge",0,1,30,100,10,10,0,45,10,,,,,,,,,0,0,-2,0,0,,,,0,0,0,0,0,0,2,
+24,"Counter Charge",0,1,30,60,10,10,0,55,10,,,,,,,,,30,0,-2,0,0,,,,0,0,0,1,0,0,2,
+25,"Carbidarleht Piper",0,4,60,60,0,0,0,65,5,125,125,125,125,125,125,125,125,0,0,-0.5,25,-5,,0,,0,0,0,0,0,0,2,
+26,"Spider Web Shot",1,1,1,60,10,10,0,20,20,,,,,,,,,0,0,0,0,0,,0,,0,0,5,3,"24,36",0,2,
+27,"Aging Touch",0,1,1,100,10,10,,40,60,,,,,,,,,0,0,0,0,0,,0,,0,0,10,5,45,0,2,"Aging is inevitable but what is worse one can do to other that escalating the process. Ability to turn a well toned soldier into a weak senile old fool is beyond terrifying."
+28,"Ashen Rising",0,1,20,10000,100,100,,0,,,,,,,,,,0,0,0,0,0,,,,0,87,0,0,0,0,2,"Rising from ash, the flame of life will never be extinguished."
+29,"Chain Lightning Strike",0,3,1,300,10,10,15,,100,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,23,3,2,
+30,"Keen Strike",0,1,3,55,10,10,0,75,90,250,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,2,
+31,"Graceful Evasion",0,1,30,300,10,10,0,80,10,,150,150,170,,,,,20,0,0,0,0,,,,0,0,0,0,0,0,2,"There is nothing more elegant than gracefully evading a blow from a brute."
+32,"Corpse Burst",0,2,1,300,10,10,,35,60,,,,,,,,,0,0,0,0,0,,,,0,0,0,3,,0,2,
+33,"Spearwall",0,1,120,0,"0,1,3,10","0,1,3,10",0,35,0,120,110,90,50,,,,,50,0,-0.1,0,0,,,,0,0,0,0,0,0,0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you rushing at full speed after all."
+34,"Spearguard",0,1,90,0,"0,1,3,10","0,1,3,10",0,50,0,110,115,,60,,,,,20,0,-0.1,0,0,,,,0,0,0,0,0,0,0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
+35,"Angel Guardian",0,3,20,200,,,0,80,25,,,,,,,,,10,0,-1,0,0,,,,0,88,0,0,0,0,2,
+36,"Shieldwall",0,1,120,0,"0,1,3,10","0,1,3,10",0,40,0,,130,120,50,,,,,25,0,-0.1,0,0,,,,0,0,0,0,0,0,0,"What is the most common tactic used in the most disciplined troops by every world conquering empires? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And the more experienced soldier make a more effective the army."
+37,"Shield Turtle",0,1,120,0,"0,1,3,10","0,1,3,10",0,50,0,,130,160,20,,,,,10,0,-1,0,0,,,,0,0,0,0,0,0,0,"Defensive yet still mobile. This tactic is superb against approaching enemy army that excel in range attack."
+38,"Shield Dome",0,1,180,60,"0,10","0,10",,60,20,80,150,200,0,,,,,40,0,-1,15,0,,,,0,0,0,0,0,0,0,"The ultimate defense tactic. This shield dome leaves no vulnerable spot for enemy to attack."
+39,"Shield Barrier",0,1,180,60,"0,10","0,10",,64,30,75,165,160,0,,,,,35,0,-1,25,0,,,,0,0,0,0,0,0,0,
+40,"Shield Fortress",0,1,180,90,"0,10","0,10",,72,40,,175,200,0,,,,,50,0,-1,0,0,,,,0,0,0,0,0,0,0,
+41,"Rapid Shots",0,1,120,300,11,11,,35,10,,,,,,,120,,0,0,-2,0,0,,,,0,0,0,0,0,0,0,"Opportunity to attack is of the essence especially for archers in a battlefield, the more arrows remain in the quiver means the less enemy killed. "
+42,"Rapid Defense",0,1,120,300,"1,2,3,4,10","1,2,3,4,10",,45,10,,110,,110,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,0,
+43,"Rapid Attack",0,1,120,300,"1,2,3,4,10","1,2,3,4,10",,50,10,110,,,110,,,,,0,0,-1.5,0,0,,,,0,0,0,0,0,0,0,"Strike fast enough and the enemy will never know what hit them."
+44,"Rapid Advance",0,1,120,300,"1,2,3,4","1,2,3,4",,41,10,,,,125,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,0,"Speed can often determine the fate of a battle and even a war. Being faster than enemy is never a disadvantage."
+45,"Steady Aims",0,1,60,300,11,11,,44,10,,,,,120,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,0,"The most important part of range weaponry is to hit the target. Arrows missed are arrow wasted."
+46,"Steady Shield",0,1,60,0,"0,10","0,10",,48,10,,120,120,,,,,,20,0,-1,0,0,,,,0,0,0,0,0,0,0,"The art of defence begins with stability. No unsteady shield can defend harm for its user."
+47,"Victory Or Death",0,1,1200,10000,10,10,,51,0,,,,,,,,,0,0,0,50,50,,,,0,0,0,0,0,0,2,"Sometimes retreat is a valid option but not for this time."
+48,"Chain Attack",0,2,3,60,10,10,,49,50,,,,,,,,,0,0,0,0,0,,50,,0,0,0,0,0,0,2,"Hitting all enemy at once in a swift fashion is not an easy feat. Extremely powerful skill in battlefield combat with no end of enemies to slay."
+49,"Sweep Asunder",0,2,1,30,10,10,,55,70,,,,,,,,,0,0,0,0,0,,120,,0,0,0,0,0,0,2,"Only the strong can sweep a large weapon so powerful that the blow can leave all those stand at the front asunder."
+50,"Pledge Of Honour",0,3,300,600,10,10,,68,0,,,,,,,,,0,0,0,20,0,,,,0,0,0,0,0,0,2,
+51,"Silencing Glare",0,1,50,500,10,10,,25,20,,,,,,,,,0,0,0,0,0,,,,0,0,0,1,8,0,2,"The glare so intimidating it leave anyone in sight incapable of even producing coherent speech just from fear. Devastatingly useful against mage units that entirely rely on their chanting."
+52,"Cantabrian Circle",0,1,60,0,11,11,,50,25,,,135,,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,0,"The maneuver only possible with the mastery of both equitation and archery. To attack even when moving is the pinnacle of warfare. "
+53,"Hold Ground",0,1,30,300,1,10,,58,10,,125,125,,,,,,15,0,0,0,0,,,,0,0,0,0,0,0,0,"""Hold your ground men! No enemy will pass through this place as long as we are here.""  "
+54,"Pikewall",0,1,30,0,"0,1,3","0,1,3",,45,20,,,,,,,,,80,0,-0.5,0,0,,,,0,0,0,0,0,0,0,"The deadly charge of cavalry was the domination tactic in battlefield until the invention of pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
+55,"Hidden Pike",0,1,30,5,2,0,,60,10,,,,,,,,,60,0,-0.7,0,0,,,,40,0,0,0,0,0,0,"A nasty surprise. Who can expect complete death trap in their charge to glory? Only fool fight a fair fight."
+56,"Overdrive",0,1,60,900,10,10,,40,0,120,120,120,120,120,,120,120,20,0,0.5,0,20,,,,0,0,0,0,0,0,2,
+57,"Death Volunteer",0,1,300,600,10,10,,70,0,150,150,,,,,,150,0,-100,2,0,0,,150,,0,0,0,0,0,0,2,"Volunteer to die is an act that surpass natural instinct. To excess oneself to death for victory is either madness or complete devotion."
+58,"Warcry",0,3,1,60,10,10,,38,30,,,,,,,,,0,0,0,0,0,,,,0,0,0,6,0,0,2,
+59,"Deathshriek",0,3,1,60,10,10,,26,50,,,,,,,,,0,0,0,0,0,,,,0,0,0,10,0,,2,"The voice of death instills terror no sight can ever achieve."
+60,"Abyssal Hatred",0,3,15,,10,10,,40,,,,,,,,,,0,0,,0,0,,,,0,0,0,5,0,0,2,"Next melee attack deal damage +1% per number of troop killed"
+61,"Second Wind",0,1,30,120,"0,1,2,3,4,5,6,7,8,9,10,11","0,1,2,3,4,5,6,7,8,9,10,11",,60,0,,,,,,,,,0,0,1,10,0,,,,0,0,0,0,0,0,0,"One more push to victory. Such chance never come often. "
+62,"Bloodlust",0,1,30,0,,,,50,2,,,,,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,2,"All stat +10%, stamina +10% for every enemy destroyed"
+63,"Critical Measure",0,1,10,100,10,10,,60,,125,125,125,125,125,,125,125,25,0,-5,0,40,,,,0,2,0,0,0,0,2,"Critical measure must be taken for this crisis or we will not survive. "
+64,"Camaraderie",0,1,30,0,,,,70,1,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,2,
+65,"Cripple Strike",0,1,1,15,10,10,,40,15,,,,,,,,,0,0,0,0,0,,,,0,0,10,3,34,0,2,"Why kill when you can cripple the enemy and make them suffer for all to see. "
+66,"Random Throwing",1,1,30,10,11,11,,20,5,,,,,,,,,0,0,-0.5,0,0,,30,,0,0,0,0,0,0,0,"Sacrificing accuracy for speed can be beneficial if the situation does not permit taking time to aim."
+67,"Joy Of The Barbarian",0,2,1,30,10,10,,10,90,,,,,,,,,0,0,,0,0,,,,0,0,0,4,0,0,2,"Pillage and destroy is the joy of savage. And it is the best feeling ever."
+68,"Sand Pocket",0,1,1,20,10,10,,30,20,,,,,,,,,0,0,0,0,0,,10,,0,0,1,1,7,0,0,"Throwing sand to the eyes is a trick as old as humanity itself."
+69,"Terror Strike",0,1,1,30,10,10,,50,70,,,,,,,,,0,0,0,0,0,,,,0,0,0,7,8,0,2,"Terror comes in all form. Physical appearance is often the key. Even more so if it is impactful."
+70,"Martrydom ",0,1,120,1000,10,10,,64,,125,10,10,130,0,,0,200,-100,0,0,200,50,,,,0,0,0,0,0,0,0,"To give your life for the cause is the ultimate purpose in life. Surely god will reward you for it."
+71,"Proud Force",0,1,,,10,10,,80,,,,,,,,,,0,0,0,0,0,,,,0,0,0,2,,0,2,
+72,"Petrifying gaze",0,1,,600,10,10,,28,25,,,,,,,,,0,0,-10,0,0,,,,0,0,4,4,35,4,2,
+73,"Hide In The Shell",0,1,60,300,10,10,,10,10,0,200,200,0,,,,,80,0,0.5,0,0,,,,0,0,0,0,0,0,2,
 74,"Baledarnnian",0,,,,,,,,,,,,,70,,200,,0,0,,0,0,,,,0,0,,,,,2,
-75,"Soothing Ritual",0,3,1000,6000,"0,1,2,3,4,5,6,7,8,9,10,11",0,,55,0,,,,,,,,,0,0,0,15,0,,,,0,0,,,0,0,2,
-76,"Sunstrike",0,1,1,120,10,10,,50,60,,,,,,,,,0,0,-10,0,0,,,,0,0,,,7,1,2,"Blinding like the sun, such brilliance will be feared by all."
-77,"Whirlwind Strike",0,3,1,240,10,10,,60,100,,,,,,,,,0,0,-20,0,0,,70,,0,0,,,0,0,2,
-78,"Arrow Shower",1,1,30,60,11,11,,55,60,,,,,70,,200,,0,0,-4,0,0,,,,0,0,,,0,0,0,
-79,"Poison Arrow",1,1,40,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,,,0,0,,,0,6,0,"The greatest tool of cowardice. Unleash hell to the enemy from safety and see them suffer."
-80,"Heavy Arrow",1,1,40,60,11,11,,40,0,,,,,80,,,,0,0,0,0,0,,,,0,0,,,0,0,0,"Arrow specifically made to pierce heavy armour. Less ideal for other use due to its heavy weight."
-81,"Inferno Trail Arrow",1,3,20,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,,,0,0,,,0,1,2,
-82,"Fire Arrow",1,1,30,60,11,11,,40,0,,,,,,,,,0,0,0,0,0,,70,,0,0,,,0,1,0,"Fire arrow is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale. "
-83,"Whistle Arrow",1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,,,32,0,0,"Whistle arrow by itself does little to no physical damage. The sound though does have a superstitious belief attach to it."
-84,"Curse Arrow",1,1,20,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,,,0,0,,,19,0,2,
-85,"Smoke Arrow",1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,,,62,0,2,
-86,"Magic Arrow",1,1,30,100,11,11,,60,0,,,,,,,,,0,0,0,0,0,,150,,0,0,,,0,5,2,
-87,"Fireblast Arrow",1,3,30,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,50,,0,0,,,0,1,2,"Exploding arrow is nothing short of innovative engineering between the new and the old."
-88,"Unwavering Resolve",0,1,30,120,10,10,,55,0,,,,,,,,,0,0,0,80,0,,,,0,0,,,0,0,0,
-89,"Heroic Resolve",0,1,45,120,10,10,,75,0,,,,,,,,,0,0,0,150,0,,,,0,0,,,0,0,0,
-90,"Sacrifical Strike",0,1,5,60,10,10,,61,50,130,0,0,,,,,,0,0,,0,0,,150,,0,0,,,0,0,2,
-91,"Stalwart Defense",0,1,60,90,10,10,,60,20,,130,130,,,,,,10,0,-1,0,0,,,,0,0,,,0,0,0,
-92,"Sudden Fortitude",0,1,1,180,10,10,,70,0,,,,,,,,,0,0,50,0,0,,0,,0,0,,,0,0,0,
-93,"Indestructible",0,1,50,100,10,10,,40,30,,170,170,,,,,,30,0,0,200,0,,,,0,0,,,0,0,2,"Why attack something that cannot be destroyed?"
-94,"Iron Wall",0,1,100,130,10,10,,50,30,,150,150,,,,,,40,0,-1,0,0,,,,0,0,,,0,0,0,"None shall pass!"
-95,"Focus Strike",0,1,1,30,10,10,,75,10,200,,,,,,,,0,0,0,0,0,,,,0,0,,,0,0,0,"Focus and steady!"
-96,"Absolute Devotion",0,1,150,600,,,,70,0,,,,,,,,,0,0,0,100,20,,,,0,0,,,0,0,0,"God rewards only those that give absolute devotion to him."
-97,"Provoke",0,2,30,30,10,10,,50,10,,,,,,,,,0,0,0,0,0,,,,0,0,,,89,0,0,"""Hey over here! Come and get me."" *all kind of rude gesture*"
-98,"Double Slash",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,200,,0,0,,,0,0,2,"Twice the slash, double the damage!"
-99,"Triple Slash",0,1,1,60,10,10,,60,70,,,,,,,,,0,0,0,0,0,,300,,0,0,,,0,0,2,"Thrice the damage, triple the prize!"
-100,"Great Sweep",0,3,1,60,10,10,,60,95,,,,,,,,,0,0,0,0,0,,115,,0,0,,,0,0,2,"“One great circle and the bodies will fall. No life shall be forgiven under the dying muttering.” Gasiernse Poem of Blade."
-101,"Pinpoint Shot",1,1,30,60,11,11,,70,45,,,,,200,,,,0,0,-1,0,0,,,,0,0,,,0,0,0,
-102,"Flying",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,70,30,,,,,,,,,0,0,-1,0,0,,,,0,39,,,0,0,2,"Flying troop does not suffer terrain and height penalty while also can only be damaged by melee attack when the troop itself attacking."
-103,"Floating",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,,,,,,,,,,,0,0,-1,0,0,,,,0,40,,,0,0,2,"Floating troop does not suffer terrain penalty but still receive height penalty. Moreover, the troop also receive melee defense bonus against enemy with no Anti-Cavalry and Anti-Flying."
-104,"Combine Determination",0,3,1,100,,,,80,30,130,130,130,130,130,,130,130,30,0,,130,50,,200,,0,0,,,,0,2,
-105,"Clear Mind",0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,,,0,0,2,
-106,"The Great Banner",0,4,1200,1200,,,,40,15,105,105,105,105,105,,105,105,5,0,0,110,5,,,,0,0,,,,0,2,
-107,"Hammer Of Faith",0,1,1,60,10,10,,60,40,,,,,,,,,0,0,0,0,0,,200,,0,3,,6,,0,2,
-108,"Blade Dance",0,2,10,60,10,10,,75,88,,,,,,,,,0,0,,0,0,,40,,0,0,,,,0,2,"The dance of death never end. A man and his sword never part until the stage turn red from the audiences’ gore."
-109,"Desperate Struggle",0,1,,,10,10,,20,0,130,130,130,130,130,,130,130,30,0,-1,-30,-10,,,,0,0,,,,0,2,
-110,"Payday Imminent",0,1,90,300,,,,50,15,125,,,150,,,,,0,0,,15,0,,,,0,0,,,,0,2,
-111,"Finest Hour",0,1,60,6000,,3,,70,30,150,150,150,150,150,,150,150,50,0,,150,100,,,,0,0,,,,0,2,
-112,"Final Strike",0,1,5,6000,10,10,,65,100,,,,,,,,,0,0,,0,0,,200,,0,0,,,,0,2,"Final breath in this world, one final farewell to the beloved enemy so we may meet together in the afterlife."
-113,"All Out Assault",0,1,20,300,10,10,,60,35,130,80,80,140,,,,130,-50,0,,0,0,,,,0,0,,,,0,2,
-114,"Poison Attack",0,2,1,60,10,10,,50,20,,,,,,,,,0,0,,0,0,,,,0,0,,,26,6,0,"Poison at the tip of a blade never fail to disappoint. Especially for those who receive it."
+75,"Soothing Ritual",0,3,1000,6000,"0,1,2,3,4,5,6,7,8,9,10,11",0,,55,0,,,,,,,,,0,0,0,15,0,,,,0,0,0,0,0,0,2,
+76,"Sunstrike",0,1,1,120,10,10,,50,60,,,,,,,,,0,0,-10,0,0,,,,0,0,0,3,7,1,2,"Blinding like the sun, such brilliance will be feared by all."
+77,"Whirlwind Strike",0,3,1,240,10,10,,60,100,,,,,,,,,0,0,-20,0,0,,70,,0,0,0,0,0,0,2,
+78,"Arrow Shower",1,1,30,60,11,11,,55,60,,,,,70,,200,,0,0,-4,0,0,,,,0,0,0,0,0,0,0,
+79,"Poison Arrow",1,1,40,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,,,0,0,0,1,0,6,0,"The greatest tool of cowardice. Unleash hell to the enemy from safety and see them suffer."
+80,"Heavy Arrow",1,1,40,60,11,11,,40,0,,,,,80,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,"Arrow specifically made to pierce heavy armour. Less ideal for other use due to its heavy weight."
+81,"Inferno Trail Arrow",1,3,20,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,,,0,0,0,3,0,1,2,
+82,"Fire Arrow",1,1,30,60,11,11,,40,0,,,,,,,,,0,0,0,0,0,,70,,0,0,0,1,0,1,0,"Fire arrow is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale. "
+83,"Whistle Arrow",1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,0,2,32,0,0,"Whistle arrow by itself does little to no physical damage. The sound though does have a superstitious belief attach to it."
+84,"Curse Arrow",1,1,20,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,,,0,0,0,5,19,0,2,
+85,"Smoke Arrow",1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,0,0,62,0,2,
+86,"Magic Arrow",1,1,30,100,11,11,,60,0,,,,,,,,,0,0,0,0,0,,150,,0,0,0,0,0,5,2,
+87,"Fireblast Arrow",1,3,30,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,50,,0,0,0,2,0,1,2,"Exploding arrow is nothing short of innovative engineering between the new and the old."
+88,"Unwavering Resolve",0,1,30,120,10,10,,55,0,,,,,,,,,0,0,0,80,0,,,,0,0,0,0,0,0,0,
+89,"Heroic Resolve",0,1,45,120,10,10,,75,0,,,,,,,,,0,0,0,150,0,,,,0,0,0,0,0,0,0,
+90,"Sacrifical Strike",0,1,5,60,10,10,,61,50,130,0,0,,,,,,0,0,,0,0,,150,,0,0,0,0,0,0,2,
+91,"Stalwart Defense",0,1,60,90,10,10,,60,20,,130,130,,,,,,10,0,-1,0,0,,,,0,0,0,0,0,0,0,
+92,"Sudden Fortitude",0,1,1,180,10,10,,70,0,,,,,,,,,0,0,50,0,0,,0,,0,0,0,0,0,0,0,
+93,"Indestructible",0,1,50,100,10,10,,40,30,,170,170,,,,,,30,0,0,200,0,,,,0,0,0,0,0,0,2,"Why attack something that cannot be destroyed?"
+94,"Iron Wall",0,1,100,130,10,10,,50,30,,150,150,,,,,,40,0,-1,0,0,,,,0,0,0,0,0,0,0,"None shall pass!"
+95,"Focus Strike",0,1,1,30,10,10,,75,10,200,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,0,"Focus and steady!"
+96,"Absolute Devotion",0,1,150,600,,,,70,0,,,,,,,,,0,0,0,100,20,,,,0,0,0,0,0,0,0,"God rewards only those that give absolute devotion to him."
+97,"Provoke",0,2,30,30,10,10,,50,10,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,89,0,0,"""Hey over here! Come and get me."" *all kind of rude gesture*"
+98,"Double Slash",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,200,,0,0,0,0,0,0,2,"Twice the slash, double the damage!"
+99,"Triple Slash",0,1,1,60,10,10,,60,70,,,,,,,,,0,0,0,0,0,,300,,0,0,0,0,0,0,2,"Thrice the damage, triple the prize!"
+100,"Great Sweep",0,3,1,60,10,10,,60,95,,,,,,,,,0,0,0,0,0,,115,,0,0,0,0,0,0,2,"“One great circle and the bodies will fall. No life shall be forgiven under the dying muttering.” Gasiernse Poem of Blade."
+101,"Pinpoint Shot",1,1,30,60,11,11,,70,45,,,,,200,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,0,
+102,"Flying",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,70,30,,,,,,,,,0,0,-1,0,0,,,,0,39,0,0,0,0,2,"Flying troop does not suffer terrain and height penalty while also can only be damaged by melee attack when the troop itself attacking."
+103,"Floating",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,,,,,,,,,,,0,0,-1,0,0,,,,0,40,0,0,0,0,2,"Floating troop does not suffer terrain penalty but still receive height penalty. Moreover, the troop also receive melee defense bonus against enemy with no Anti-Cavalry and Anti-Flying."
+104,"Combine Determination",0,3,1,100,,,,80,30,130,130,130,130,130,,130,130,30,0,,130,50,,200,,0,0,0,0,,0,2,
+105,"Clear Mind",0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,0,0,0,0,2,
+106,"The Great Banner",0,4,1200,1200,,,,40,15,105,105,105,105,105,,105,105,5,0,0,110,5,,,,0,0,0,0,,0,2,
+107,"Hammer Of Faith",0,1,1,60,10,10,,60,40,,,,,,,,,0,0,0,0,0,,200,,0,3,0,6,,0,2,
+108,"Blade Dance",0,2,10,60,10,10,,75,88,,,,,,,,,0,0,,0,0,,40,,0,0,0,0,,0,2,"The dance of death never end. A man and his sword never part until the stage turn red from the audiences’ gore."
+109,"Desperate Struggle",0,1,,,10,10,,20,0,130,130,130,130,130,,130,130,30,0,-1,-30,-10,,,,0,0,0,0,,0,2,
+110,"Payday Imminent",0,1,90,300,,,,50,15,125,,,150,,,,,0,0,,15,0,,,,0,0,0,0,,0,2,
+111,"Finest Hour",0,1,60,6000,,3,,70,30,150,150,150,150,150,,150,150,50,0,,150,100,,,,0,0,0,0,,0,2,
+112,"Final Strike",0,1,5,6000,10,10,,65,100,,,,,,,,,0,0,,0,0,,200,,0,0,0,0,,0,2,"Final breath in this world, one final farewell to the beloved enemy so we may meet together in the afterlife."
+113,"All Out Assault",0,1,20,300,10,10,,60,35,130,80,80,140,,,,130,-50,0,,0,0,,,,0,0,0,0,,0,2,
+114,"Poison Attack",0,2,1,60,10,10,,50,20,,,,,,,,,0,0,,0,0,,,,0,0,1,2,26,6,0,"Poison at the tip of a blade never fail to disappoint. Especially for those who receive it."
 115,"Delrmerh Festival",0,3,20,,10,10,,80,,,,,,,,,,0,0,,150,0,,,,0,3,,,2,0,2,
 116,"Fullmoon Strike",0,3,1,,10,10,,60,,,,,,,,,,0,0,,175,0,,,,0,0,,,,0,2,
 117,"Halfmoon Slit",0,2,1,,10,10,,70,,,,,,,,,,0,0,,150,0,,,,0,0,,,,0,2,
 118,"Crescentmoon Pierce",0,1,1,,10,10,,80,,,,,,,,,,0,0,,150,0,,,,0,0,,,,0,2,
 119,"Darkmoon Ritual",0,1,1,,10,10,,90,,,,,,,,,,0,0,,200,0,,,,0,0,,,,0,2,
-120,"Crushing Leap",0,1,1,120,10,10,,60,80,,,,,,,,,0,0,0,0,0,,120,,0,0,,,23,0,2,
-121,"Final Showdown",0,1,120,10000,10,10,,50,0,160,160,160,160,160,,160,160,60,0,-10,160,50,,,,0,0,,,,0,2,
-122,"Unto Demise",0,,,,,,,,20,,,,,,,,,0,0,,0,0,,,,0,0,,,,0,2,
-123,"Stun Strike",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,60,,0,0,,,23,0,2,
-124,"Purge The Infidels",0,1,,,,,,80,20,,,,,,,,,0,0,0,0,0,,,,0,0,,,,0,2,"The villains of the peace must be purged. For the true peace only existed in our lordâ€™s guidance."
-125,"Corrupted Mist",0,3,,,,,,30,40,,,,,,,,,0,0,,0,0,,0,,0,0,,,,6,2,
-126,"Grasp The Opportunity",0,,15,60,,,,50,,,,,,,,,,0,0,,0,0,,,,0,0,,,,0,2,
-127,"Blood Demand",0,,,,,,,75,,,,,,,,,,0,0,,0,0,,,,0,0,,,,0,2,"Demand to be made. Or this tribunal will never end."
-128,"Valiant Struggle",0,1,,,,,,80,,,,,,,,,,0,0,,0,0,,,,0,0,,,,0,2,
-129,"Ground Shake",0,3,5,600,10,10,,40,80,,,,,,,,,0,0,0,0,0,,20,,0,0,,,23,0,2,
-130,"Spike Burst",0,1,2,120,,,,45,55,,,,,,,,,0,0,,0,0,,150,,0,0,,,23,4,2,
-131,"Deathblow",0,1,3,6000,10,10,,,70,,,,,,,,,0,0,0,,,,250,,,,,,,0,2,"This sub-unit can muster its last strength to deals final blow before it die. Death in melee combat will cause damage to attacker."
-132,"Berserk",0,1,1,300,,,,30,20,,,,,,,,,0,0,0,,,,,,,12,,,,0,0,
-133,"Eight Gates Of Heaven",0,1,,6000,10,10,,100,30,,,,,,,,,0,0,-1,,,,,,,74,,,,,2,
-134,"Requiem",0,2,90,,,,,75,15,,,,,,,,,0,0,,,,,0,,,,,,,0,2,
-135,"Nature Awakening",0,1,,,,,,,10,135,135,135,135,135,135,135,135,35,1,,20,,,,,,86,,,,0,2,
-136,"Faithful Fury",0,1,,,,,,,55,140,,,130,,,,,0,0,,50,,,,,,50,,,,0,2,"Friendly to the followers. Faithful to the cause. Fury to the offenders. "
-137,"Armour Shatters",0,1,,,10,10,,,,,,,,,,,,0,0,,,,,150,,,,,,,0,2,"Armour is completely useless before this strike. Even worse, any enemy that survive against this attack will receive armour shatter status."
-138,"Cheer To Death",0,1,3,,10,10,,70,85,,,,,,,,,0,0,,50,,,300,,,,,,,0,2,
-139,"Battle Rhythm",0,,30,,10,10,,65,,120,120,,,,,,,0,0,-1,,,,,,,,,,,0,2,
-140,"Heroic Counter",0,1,,,,,,75,60,,,,,,,,,15,0,,,,,,,,,,,,0,2,"Deal 20% of melee attack damage back to enemy when receive melee damage"
-141,"Cursed Song",0,3,,,,,,10,20,,,,,,,,,0,0,,,,,0,,,,,,19,0,2,
-142,"By Beard And Hammer!",0,,100,,10,10,,35,,120,120,120,120,,,,120,20,0,,30,10,,,,,,,,,0,2,
-143,"Rushing Engagement",0,,,,10,10,,40,,115,20,20,140,,,,,-30,0,,50,20,,130,,,,,,,0,2,
+120,"Crushing Leap",0,1,1,120,10,10,,60,80,,,,,,,,,0,0,0,0,0,,120,,0,0,0,0,23,0,2,
+121,"Final Showdown",0,1,120,10000,10,10,,50,0,160,160,160,160,160,,160,160,60,0,-10,160,50,,,,0,0,0,0,,0,2,
+122,"Unto Demise",0,,,,,,,,20,,,,,,,,,0,0,,0,0,,,,0,0,20,5,,0,2,
+123,"Stun Strike",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,60,,0,0,0,0,23,0,2,
+124,"Purge The Infidels",0,1,,,,,,80,20,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,,0,2,"The villains of the peace must be purged. For the true peace only existed in our lordâ€™s guidance."
+125,"Corrupted Mist",0,3,,,,,,30,40,,,,,,,,,0,0,,0,0,,0,,0,0,5,5,,6,2,
+126,"Grasp The Opportunity",0,,15,60,,,,50,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,
+127,"Blood Demand",0,,,,,,,75,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,"Demand to be made. Or this tribunal will never end."
+128,"Valiant Struggle",0,1,,,,,,80,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,
+129,"Ground Shake",0,3,5,600,10,10,,40,80,,,,,,,,,0,0,0,0,0,,20,,0,0,0,0,23,0,2,
+130,"Spike Burst",0,1,2,120,,,,45,55,,,,,,,,,0,0,,0,0,,150,,0,0,0,0,23,4,2,
+131,"Deathblow",0,1,3,6000,10,10,,,70,,,,,,,,,0,0,0,,,,250,,,,0,0,,0,2,"This sub-unit can muster its last strength to deals final blow before it die. Death in melee combat will cause damage to attacker."
+132,"Berserk",0,1,1,300,,,,30,20,,,,,,,,,0,0,0,,,,,,,12,0,0,,0,0,
+133,"Eight Gates Of Heaven",0,1,,6000,10,10,,100,30,,,,,,,,,0,0,-1,,,,,,,74,0,0,,,2,
+134,"Requiem",0,2,90,,,,,75,15,,,,,,,,,0,0,,,,,0,,,,0,7,,0,2,
+135,"Nature Awakening",0,1,,,,,,,10,135,135,135,135,135,135,135,135,35,1,,20,,,,,,86,0,0,,0,2,
+136,"Faithful Fury",0,1,,,,,,,55,140,,,130,,,,,0,0,,50,,,,,,50,0,0,,0,2,"Friendly to the followers. Faithful to the cause. Fury to the offenders. "
+137,"Armour Shatters",0,1,,,10,10,,,,,,,,,,,,0,0,,,,,150,,,,0,0,,0,2,"Armour is completely useless before this strike. Even worse, any enemy that survive against this attack will receive armour shatter status."
+138,"Cheer To Death",0,1,3,,10,10,,70,85,,,,,,,,,0,0,,50,,,300,,,,0,5,,0,2,
+139,"Battle Rhythm",0,,30,,10,10,,65,,120,120,,,,,,,0,0,-1,,,,,,,,0,0,,0,2,
+140,"Heroic Counter",0,1,,,,,,75,60,,,,,,,,,15,0,,,,,,,,,0,0,,0,2,"Deal 20% of melee attack damage back to enemy when receive melee damage"
+141,"Cursed Song",0,3,,,,,,10,20,,,,,,,,,0,0,,,,,0,,,,0,10,19,0,2,
+142,"By Beard And Hammer!",0,,100,,10,10,,35,,120,120,120,120,,,,120,20,0,,30,10,,,,,,0,0,,0,2,
+143,"Rushing Engagement",0,,,,10,10,,40,,115,20,20,140,,,,,-30,0,,50,20,,130,,,,0,0,,0,2,
 144,"Final Drive",0,1,10,6000,10,10,,60,10,150,150,150,150,,,,150,0,,,100,,,,,,,,,,0,2,"Only few are prepared to meet their end. Even fewer dare to confront it."
-145,"Primal Carnage",0,1,20,,10,10,,10,30,135,30,30,150,,,150,120,-50,,,100,-20,,,,,,,,,0,2,
-146,"Great Hunt Of The Sentinels",0,,300,,,,,60,25,110,,,120,140,,,,0,,,30,,,,,,,,,,0,2,
+145,"Primal Carnage",0,1,20,,10,10,,10,30,135,30,30,150,,,150,120,-50,,,100,-20,,,,,,0,0,,0,2,
+146,"Great Hunt Of The Sentinels",0,,300,,,,,60,25,110,,,120,140,,,,0,,,30,,,,,,,0,0,,0,2,
 147,"Bloody Onslaught",0,,10,,10,10,,40,30,160,80,80,135,,,,,0,,,,,,,,,,,1,,0,2,
-148,"Crack The Whip",0,3,30,,,,,10,5,,,,,,,,,0,0,,,,,,,,68,,,,0,2,"Work for your master, slave! Nothing make slave work harder than the sound of whiplash."
-149,"Silver Arrow",1,1,20,60,11,11,,50,0,,,,,,,,,0,0,0,,,,,,,,,,,5,2,"Next range attack deals 100% and +100% damage to spirit, evil and demon squads"
+148,"Crack The Whip",0,3,30,,,,,10,5,,,,,,,,,0,0,,,,,,,,68,0,0,,0,2,"Work for your master, slave! Nothing make slave work harder than the sound of whiplash."
+149,"Silver Arrow",1,1,20,60,11,11,,50,0,,,,,,,,,0,0,0,,,,,,,,0,0,,5,2,"Next range attack deals 100% and +100% damage to spirit, evil and demon squads"
 150,"Rampage",0,1,5,,10,10,,20,50,120,,,125,,,,,0,,,,,,,,,,,,5,0,2,
 151,"Overpower",0,,10,,10,10,,60,40,300,,,,,,,,0,,,,,,,,,,,,,0,2,
 152,"Overwhelm",0,,10,,10,10,,60,40,130,,,,,,,,0,,,,,,130,,,,,,"5,46",0,2,
-153,"Flashy Display",0,3,25,,,,,70,5,,,,,,,,,0,0,,15,,,,,,,,-1,,0,2,
-154,"Spellbind",0,1,30,,,,,65,10,,,,,,,,,0,0,,,,,,,,,,,"8,69",5,2,
-155,"Callback Companion",0,1,1,,,,,40,0,,,,,,,,,0,0,,,,,,,,,,,,0,0,
-156,"Unleash Companion",0,1,,,,,,40,0,,,,,,,,,70,0,,,,,,,,,,,70,0,0,
-157,"Clear Insight",0,1,60,,,,,70,0,,,,,110,,,,20,0,0,15,10,,,,,50,,,,0,2,
+153,"Flashy Display",0,3,25,,,,,70,5,,,,,,,,,0,0,,15,,,,,,,,3,,0,2,
+154,"Spellbind",0,1,30,,,,,65,10,,,,,,,,,0,0,,,,,,,,,0,0,"8,69",5,2,
+155,"Callback Companion",0,1,1,,,,,40,0,,,,,,,,,0,0,,,,,,,,,0,0,,0,0,
+156,"Unleash Companion",0,1,,,,,,40,0,,,,,,,,,70,0,,,,,,,,,0,0,70,0,0,
+157,"Clear Insight",0,1,60,,,,,70,0,,,,,110,,,,20,0,0,15,10,,,,,50,0,0,,0,2,
 158,"Blood For Blood",0,,200,,,,,35,25,200,0,0,,,,,150,0,,,,,,,,,,,,,0,2,
 159,"Shield Breaking",0,,1,,10,10,,,35,,,,,,,,,0,0,,,,,,,,,,,,0,2,
-160,"Reconnaissance",0,,100,,,,,50,20,,,,,,,,,10,0,,,,,,125,,,,,,0,0,
-161,"Battle Prayer",0,1,200,,,,,65,5,105,105,105,105,105,105,105,,0,0,,10,5,,,,,,,,,0,0,"Prayer for safety and victory. Preparing for the departure. "
-162,"Disrupting Song",0,,1000,,,,,,15,,,,,,,,,0,0,,,,,,,,,,,5,0,2,
+160,"Reconnaissance",0,,100,,,,,50,20,,,,,,,,,10,0,,,,,,125,,,0,0,,0,0,
+161,"Battle Prayer",0,1,200,,,,,65,5,105,105,105,105,105,105,105,,0,0,,10,5,,,,,,0,0,,0,0,"Prayer for safety and victory. Preparing for the departure. "
+162,"Disrupting Song",0,,1000,,,,,,15,,,,,,,,,0,0,,,,,,,,,0,3,5,0,2,
 163,"Exact Justice",0,,1,,,,,,,,,,,,,,,0,0,,,,200,200,,,,,,,0,2,
-164,"Collect Corpse",0,1,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,0,2,"Good flesh and bone never should go to waste."
+164,"Collect Corpse",0,1,,,,,,,,,,,,,,,,0,,,,,,,,,,0,0,,0,2,"Good flesh and bone never should go to waste."
 165,"Unlife",0,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,71,,2,
-166,"Devour Corpse",0,,,,,,,,,,,,,,,,,0,5,,,,,,,,,,,,0,2,"All flesh can nourish life, especially if they are still fresh."
+166,"Devour Corpse",0,,,,,,,,,,,,,,,,,0,5,,,,,,,,,0,0,,0,2,"All flesh can nourish life, especially if they are still fresh."
 167,"Wail Of Death",0,4,20,,,,,,0,,,,,,,,,0,0,,,,,,,,,,,72,,2,"The deaths sing, all life follow."
-168,"Cleaving Strike",0,2,3,,10,10,,30,35,,,,,,,,,0,0,,,,0,120,,,,,,,0,2,
+168,"Cleaving Strike",0,2,3,,10,10,,30,35,,,,,,,,,0,0,,,,0,120,,,,0,0,,0,2,
 169,"Mark For Death",0,1,,,,,,50,,,,,,,,,,0,0,,,,,,,,,,,58,0,2,
 170,"Dominate",0,1,60,,,,,60,,,,,,,,,,0,0,,,,,,,,,,,73,5,2,
-171,"Will Release",0,1,1,,,,,60,,,,,,,,,,0,0,,,,,,,,50,,,,5,2,
-172,"Revival",0,1,1,,,,,0,,,,,,,,,,0,,,,,,,,,,,,,5,2,
-173,"Bounty Hunting",0,1,,,,,,60,,,,,,,,,,0,0,,,,,,,,,,,,0,2,
-174,"Put A Bounty",0,1,600,,,,,60,0,,,,,,,,,0,0,,,,,,,,,,,51,0,2,
-175,"Digging",0,1,,,,,,40,,,,,,,,,,0,0,,,,,,,,,,,,0,2,
-176,"Petal Slash",0,1,2,,,,,85,25,250,,,,,,,,0,0,,,,,150,,,,,,,0,2,
-177,"Paramount Effort",0,1,60,,,,,80,30,130,130,130,130,130,130,130,130,30,0,,30,30,,,,,"49,50",,,,0,2,
-178,"Brutal Cleave",0,2,2,,,,,,,,,,,,,,,0,0,,,,,75,,,,,,2,0,2,
-179,"Tar Ball Sling",1,1,1,,,,,,,,,,,,,,,0,0,,,,,5,,,,,,,0,2,
-180,"Storming Impact",0,1,1,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,0,2,
-181,"Skewing Impale",0,1,1,,,,,,,,,,,,,,,0,0,,,,,150,,,,,,52,0,2,
-182,"Into Insanity",0,1,,,,,,0,,,,,,,,,,0,0,,,,,,,,77,,,,0,2,
-183,"Gobble",0,1,,,,,,10,,,,,,,,,,0,,,,,,,,,78,,,,,2,
+171,"Will Release",0,1,1,,,,,60,,,,,,,,,,0,0,,,,,,,,50,0,0,,5,2,
+172,"Revival",0,1,1,,,,,0,,,,,,,,,,0,,,,,,,,,,0,0,,5,2,
+173,"Bounty Hunting",0,1,,,,,,60,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
+174,"Put A Bounty",0,1,600,,,,,60,0,,,,,,,,,0,0,,,,,,,,,0,0,51,0,2,
+175,"Digging",0,1,,,,,,40,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
+176,"Petal Slash",0,1,2,,,,,85,25,250,,,,,,,,0,0,,,,,150,,,,0,0,,0,2,
+177,"Paramount Effort",0,1,60,,,,,80,30,130,130,130,130,130,130,130,130,30,0,,30,30,,,,,"49,50",0,0,,0,2,
+178,"Brutal Cleave",0,2,2,,,,,,,,,,,,,,,0,0,,,,,75,,,,0,0,2,0,2,
+179,"Tar Ball Sling",1,1,1,,,,,,,,,,,,,,,0,0,,,,,5,,,,0,0,,0,2,
+180,"Storming Impact",0,1,1,,,,,,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
+181,"Skewing Impale",0,1,1,,,,,,,,,,,,,,,0,0,,,,,150,,,,0,0,52,0,2,
+182,"Into Insanity",0,1,,,,,,0,,,,,,,,,,0,0,,,,,,,,77,0,0,,0,2,
+183,"Gobble",0,1,,,,,,10,,,,,,,,,,0,,,,,,,,,78,0,0,,,2,
 184,"Vampiric Aura",0,2,,,,,,0,,,,,,,,,,0,,,,,,,,,,,,,,2,
 185,"Polymorph",0,1,,,,,,20,,,,,,,,,,0,,,,,,,,,79,,,,,2,
 186,"Shapeshift",0,1,,,,,,20,,,,,,,,,,0,,,,,,,,,80,,,,,2,
 187,"Pain Reflect",,1,,,,,,40,,,,,,,,,,,0,,,,,,,,81,,,,,2,
-188,"Courage Song",0,3,,,,,,62,,,,,,,,,,0,0,,40,,,,,,,,,,0,2,
-189,"Benediction",0,2,,,,,,64,,,,,,,,,,0,0,,,,,,,,,,,,0,2,
-190,"Healing Support",0,2,,,,,,68,,,,,,,,,,0,10,,,,,,,,,,,,0,0,"You will be healed and ready to takes up arm again to repeal the enemy once again."
+188,"Courage Song",0,3,,,,,,62,,,,,,,,,,0,0,,40,,,,,,,0,0,,0,2,
+189,"Benediction",0,2,,,,,,64,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
+190,"Healing Support",0,2,,,,,,68,,,,,,,,,,0,10,,,,,,,,,0,0,,0,0,"You will be healed and ready to takes up arm again to repeal the enemy once again."
 191,"Guidance To Heaven Embrace",0,2,,,,,,88,,,,,,,,,,0,,,,,,,,,,,,"7,83",,2,
 192,"Sacrifice Choosing",0,1,,,,,,50,,,,,,,,,,0,0,,,,,,,,,,,84,,2,
 193,"Indictment",0,1,,,,,,58,,,,,,,,,,0,0,,,,,150,,,,,3,85,0,2,
 194,"Massacre",0,2,10,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,0,2,
 195,"Swift Chant",0,1,,,,,,70,,,,,,,,,,0,0,,,,,,,60,,,,,,2,"Magic chanting always take time. Mage who can swift chant is considered to be a rare talent even among the learned."
-196,"Sneaky Ambush",0,,,,"0,1,3,5,7",,,,,,,,75,,,,,0,0,,,,,,,,,,,,0,2,
-197,"Guiding Wind",1,,,,11,11,,,,,,,,,,,,0,0,,,,,,,,,,,,,2,
-198,"Spear Schiltron",0,,,,,,,,,,,,,,,,,60,0,,,,,,,,,,,,0,0,
+196,"Sneaky Ambush",0,,,,"0,1,3,5,7",,,,,,,,75,,,,,0,0,,,,,,,,,0,5,,0,2,
+197,"Guiding Wind",1,,,,11,11,,,,,,,,,,,,0,0,,,,,,,,,0,0,,,2,
+198,"Spear Schiltron",0,,,,,,,,,,,,,,,,,60,0,,,,,,,,,0,0,,0,0,
 199,"Vacillation Influence",,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,2,

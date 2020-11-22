@@ -12,7 +12,7 @@ class Unitsquad(pygame.sprite.Sprite):
     battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier,
     # use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right
 
-    def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos):
+    def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos, starthp, startstamina):
         """Although squad in code, this is referred as sub-unit ingame"""
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -51,10 +51,10 @@ class Unitsquad(pygame.sprite.Sprite):
         self.armourgear = stat[11]
         self.basearmour = armourlist.armourlist[self.armourgear[0]][1] \
                           * armourlist.quality[self.armourgear[1]]  # Armour stat is cal from based armour * quality
-        self.baseaccuracy = stat[12]
+        self.baseaccuracy = stat[12] + int(statlist.gradelist[self.grade][4])
         self.baserange = stat[13]
         self.ammo = stat[14]
-        self.basereload = stat[15]
+        self.basereload = stat[15] - int(statlist.gradelist[self.grade][5])
         self.reloadtime = 0 # Unit can only shoot when reloadtime is equal or more than reload stat
         self.basecharge = stat[16]
         self.basechargedef = 10 # All infantry unit has default 10 charge defence
@@ -63,7 +63,7 @@ class Unitsquad(pygame.sprite.Sprite):
         skill = [self.chargeskill] + skill # Add charge skill as first item in the list
         self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0 and x in statlist.abilitylist} # grab skill stat into dict
         self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100)) # Health of each troop
-        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100))
+        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100) * (startstamina / 100))
         self.mana = stat[20] # Resource for magic skill
         self.meleeweapon = stat[21]
         self.rangeweapon = stat[22]
@@ -79,7 +79,7 @@ class Unitsquad(pygame.sprite.Sprite):
         elif self.rangepenetrate < 0: self.rangepenetrate = 0
         self.basemorale = int(stat[23] + int(statlist.gradelist[self.grade][9]))
         self.basediscipline = int(stat[24] + int(statlist.gradelist[self.grade][10]))
-        self.troopnumber = stat[27]
+        self.troopnumber = int(stat[27] * starthp / 100)
         self.basespeed = 50 # All infantry has base speed at 50
         self.unittype = stat[28] - 1 # 0 is melee infantry and 1 is range for command buff
         self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
@@ -116,6 +116,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.corneratk = False # Check if squad can attack corner enemy or not
         self.flankbonus = 1 # Combat bonus when flanking
         self.baseauthpenalty = 0.1 # penalty to authority when bad event happen
+        self.bonusmoraledmg = 0
+        self.bonusstaminadmg = 0
         self.authpenalty = 0.1
         self.basehpregen = 0
         self.basestaminaregen = 1
@@ -141,6 +143,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.flanker = False
         self.unbreakable = False
         self.tempunbraekable = False
+        self.stationplace = False
         #^ End setup trait variable
         #v Add trait to base stat
         self.trait = list(set([trait for trait in self.trait if trait != 0]))
@@ -506,7 +509,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 if calstatus[2] in (2, 3) and calstatus[24] != 100:
                     self.sidedmgeffect = round(self.sidedmgeffect * calstatus[24], 0)
                     if calstatus[2] == 3: self.corneratk = True # if aoe 3 mean it can attack nearby enemy squads in corner
-                """Apply status to self if there is one in skill effect"""
+                #v Apply status to friendly if there is one in skill effect
                 if calstatus[27] != [0]:
                     for effect in calstatus[27]:
                         self.statuseffect[effect] = self.statuslist[effect].copy()
@@ -515,6 +518,9 @@ class Unitsquad(pygame.sprite.Sprite):
                         # if status[2] > 1:
                         #     self.battalion.armysquad
                         # if status[2] > 2:
+                #^ End apply status to
+                self.bonusmoraledmg += calstatus[28]
+                self.bonusstaminadmg += calstatus[29]
                 """apply inflict status effect to enemy from skill to inflict list"""
                 if calstatus[30] != [0]:
                     for effect in calstatus[30]:
@@ -585,7 +591,7 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.meleedef < 0: self.meleedef = 0
         if self.rangedef < 0: self.rangedef = 0
         if self.armour < 0: self.armour = 0
-        if self.speed < 0: self.speed = 0
+        if self.speed < 1: self.speed = 1
         if self.accuracy < 0: self.accuracy = 0
         if self.reload < 0: self.reload = 0
         if self.charge < 0: self.charge = 0

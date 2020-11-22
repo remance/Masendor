@@ -88,13 +88,11 @@ def convertweathertime(weatherevent):
 
 ## Battle Start related gamescript
 
-def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command=False, startangle=0):
+def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina):
     from gamescript import gamebattalion, gameleader
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
-    army = gamebattalion.Unitarmy(startposition=position, gameid=gameid,
-                                  squadlist=squadlist, imgsize=imagesize,
-                                  colour=colour, control=control, coa=coa, commander=command, startangle=abs(360 - startangle))
+    army = gamebattalion.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina)
     army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
                    gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
@@ -118,8 +116,6 @@ def unitsetup(maingame):
             boardpos.append(ll + dd)
     squadindexlist = []
     unitlist = []
-    playercolour = (144, 167, 255)
-    enemycolour = (255, 114, 114)
     """army num is list index for battalion in either player or enemy group"""
     playerstart, enemystart = 0, 0
     """squadindex is list index for all squad group"""
@@ -135,44 +131,31 @@ def unitsetup(maingame):
                 if n in range(1, 12):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
             if row[0] < 2000:
-                if row[0] == 1:
-                    """First player battalion as commander"""
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour,
-                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, True,
-                                   maingame.coa[row[12]], True,
-                                   startangle=row[13])
-                else:
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   playercolour, (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader,
-                                   maingame.gameunitstat, True, maingame.coa[row[12]],
-                                   startangle=row[13])
-                maingame.playerarmy.append(army)
+                control = True
+                colour = (144, 167, 255)  # player colour
                 playerstart += 1
+                whicharmy = maingame.playerarmy
             elif row[0] >= 2000:
-                if row[0] == 2000:
-                    """First enemy battalion as commander"""
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   enemycolour,
-                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat,
-                                   maingame.enactment, maingame.coa[row[12]], True,
-                                   startangle=row[13])
-                elif row[0] > 2000:
-                    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                                   enemycolour,
-                                   (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat,
-                                   maingame.enactment, maingame.coa[row[12]], startangle=row[13])
-                maingame.enemyarmy.append(army)
+                control = maingame.enactment
+                colour = (255, 114, 114)
                 enemystart += 1
+                whicharmy = maingame.enemyarmy
+            command = False
+            if row[0] in (1,2000): # First battalion is commander
+                command = True
+            army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                           colour,
+                           (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
+                           maingame.coa[row[12]], command, row[13], row[14], row[15])
+            whicharmy.append(army)
             """armysquadindex is list index for squad list in a specific army"""
             armysquadindex = 0
             """Setup squad in army to squad group"""
             for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
-                    addsquad = gamesquad.Unitsquad(unitid=squadnum, gameid=squadgameid, weaponlist=maingame.allweapon, armourlist=maingame.allarmour,
-                                                   statlist=maingame.gameunitstat,
-                                                   battalion=army, position=army.squadpositionlist[armysquadindex],
-                                                   inspectuipos=maingame.inspectuipos)
+                    addsquad = gamesquad.Unitsquad(squadnum, squadgameid, maingame.allweapon, maingame.allarmour,
+                                                   maingame.gameunitstat, army, army.squadpositionlist[armysquadindex],
+                                                   maingame.inspectuipos, army.starthp, army.startstamina)
                     maingame.squad.append(addsquad)
                     addsquad.boardpos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
@@ -352,7 +335,8 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
     if finaldmg > receiver.unithealth: # damage cannot be higher than remaining health
         finaldmg = receiver.unithealth
     receiver.unithealth -= finaldmg
-    receiver.basemorale -= finalmoraledmg
+    receiver.basemorale -= (finalmoraledmg + attacker.bonusmoraledmg)
+    receiver.stamina -= attacker.bonusstaminadmg
     if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element
         receiver.elemcount[attacker.elemmelee - 1] += round(finaldmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
     attacker.basemorale += round((finalmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
@@ -578,3 +562,10 @@ def splitunit(battle, who, how):
                    gamebattalion.Hitbox(army, 2, 20, army.rect.height - (army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - (army.rect.width * 0.1), 20)]
     army.autosquadplace = False
+
+## Other scripts
+
+def playgif(imageset, framespeed = 100):
+    """framespeed in millisecond"""
+    animation = {}
+    frames = ["image1.png","image2.png"]

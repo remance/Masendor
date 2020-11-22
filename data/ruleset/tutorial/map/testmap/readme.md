@@ -20,11 +20,11 @@ Map data
 
 - unitpos: List of unit the csv data structure is as follows: 
 
-unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction | start angle |
+unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction | start angle | start health state | start stamina state
 
-int	| 		int,int,int,int,int,int,int,int	(0 for none)      	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	|
+int	| 		int,int,int,int,int,int,int,int			    	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	| int (0-100) 	     | int (0-100) |
 
-0+ = player  | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader |
+0+ = player  | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader | 
 
 2000+ = enemy |
 
@@ -32,3 +32,20 @@ int	| 		int,int,int,int,int,int,int,int	(0 for none)      	      |    int,int   
 
 - eventlog: 
 
+Both activate time in both weather and eventlog can be done for multiple days battle. If the even is sparse simply add pointless event at 23:59:59 to indicate the end of the day. For example
+
+Weather:
+
+sunny 10:00:00 <- day 1
+
+sunny 23:59:59 <- end day 1
+
+rain 10:00:00 <- day 2
+
+Eventlog:
+
+"Ok bye" 10:00:00 <- day 1
+
+"End of day 1" 23:59:59 <- end day 1
+
+"Ok hi" 10:00:00 <- day 2

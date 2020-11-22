@@ -666,7 +666,7 @@ class Battle():
                 if mouseright:
                     if icon.type == 0:  # Trait
                         section = 7
-                    if icon.type == 1:  # Skill
+                    elif icon.type == 1:  # Skill
                         section = 6
                     else:
                         section = 5  # Status effect

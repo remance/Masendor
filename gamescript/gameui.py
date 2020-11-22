@@ -649,6 +649,9 @@ class Timer(pygame.sprite.Sprite):
             self.timer += dt
             if self.timer - self.oldtimer > 1:
                 self.oldtimer = self.timer
+                if self.timer >= 86400: # Time pass midnight
+                    self.timer -= 86400 # Restart clock to 0
+                    self.oldtimer = self.timer
                 self.image = self.image_original.copy()
                 self.timenum = datetime.timedelta(seconds=self.timer)
                 timenum = str(self.timenum).split(".")[0]

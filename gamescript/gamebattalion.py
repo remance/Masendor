@@ -115,12 +115,14 @@ class Unitarmy(pygame.sprite.Sprite):
     squadcombatcal = gamelongscript.squadcombatcal
     die = gamelongscript.die
 
-    def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander=False, startangle=0):
+    def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander, startangle, starthp, startstamina):
         """Although battalion in code, this is referred as unit ingame"""
         # super().__init__()
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         # self.unitarray = unitarray
+        self.starthp = starthp
+        self.startstamina = startstamina
         self.armysquad = squadlist
         self.colour = colour
         self.commander = commander

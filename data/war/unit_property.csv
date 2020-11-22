@@ -220,7 +220,7 @@
 219,"Fantastic Beard",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops have impressive beard that inspires all other dwarfs in the realm and battle."
 220,"Hard Skull",,,,,,20,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,,2,
 221,"Brittle Bone",,,,,,-20,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,,2,
-222,,1,,,,,,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,,
+222,"Stationary Placement",1,,,,,,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,,
 223,"Mountain Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in mountain terrain."
 224,"Hill Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in hill terrain."
 225,"Forest Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in forest terrain."
