@@ -22,24 +22,24 @@
 21,"Blowgun",18,10,3,0,12,0,
 22,"Javelin",55,45,15,16,13,0,
 23,"Throwing Axe",50,50,20,21,14,0,
-24,"Longbow",55,50,15,16,15,0,"Longbow "
+24,"Longbow",55,40,15,16,15,0,"Longbow "
 25,"Shortbow",38,15,10,16,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
-26,"Greatbow",70,70,20,16,17,0,
-27,"Light Crossbow",40,45,10,0,18,0,"The pinnacle of warfare. Easier to use than bow that any peasant can use after few days of training to kill a knight that train for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
-28,"Heavy Crossbow",60,60,15,0,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
+26,"Greatbow",70,60,20,16,17,0,
+27,"Light Crossbow",40,30,10,0,18,0,"The pinnacle of warfare. Easier to use than bow that any peasant can use after few days of training to kill a knight that train for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
+28,"Heavy Crossbow",60,50,15,0,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
 29,"Repeater Crossbow",20,20,15,0,18,0,
-30,"Arbalest",80,85,25,0,19,0,
+30,"Arbalest",80,70,25,0,19,0,
 31,"Stone",14,20,5,16,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
 32,"Trebuchet",10000,100,95,"16,222",,0,
 33,"Catapult",5000,100,70,"16,222",,0,
 34,"Ballista",1000,100,60,"16,222",,0,
 35,"Scorpion",100,100,,"222",,0,
 36,"Onager",,100,,"16,222",,0,
-37,"Mangonel",,,,"16,222",,0,
-38,"Hwacha",,,,"16,222",,0,
-39,"Mounted Crossbow",,,,"16,222",,0,
-40,"Light Cannon",,,50,"16,222",,0,
-41,"Heavy Cannon",,,65,"16,222",,0,
-42,"Giant Cannon",100000,,95,"16,222",,0,
-43,"Mortar",,,65,"16,222",,0,
+37,"Mangonel",,100,,"16,222",,0,
+38,"Hwacha",,80,,"16,222",,0,
+39,"Mounted Crossbow",,90,,"16,222",,0,
+40,"Light Cannon",,100,50,"16,222",,0,
+41,"Heavy Cannon",,100,65,"16,222",,0,
+42,"Giant Cannon",100000,100,95,"16,222",,0,
+43,"Mortar",,100,65,"16,222",,0,
 44,,,,,,,,

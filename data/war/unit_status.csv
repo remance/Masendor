@@ -7,7 +7,7 @@
 6,"Hidden",,,30,,,,,,,,,0,0,0,0,0,,,0,"Unseen by enemy, ambush them at the right time and you may win this battle effortlessly."
 7,"Blind",,,60,50,50,30,,60,10,30,,-70,0,0,0,0,-500,,2,"Blindness is pretty much an equivalent of certain death in battle. Unable to both attack and defend, such disability must be treated as soon as possible."
 8,"Silence",6,,60,,,,,,,,,-10,0,0,0,0,,,2,"Unable to speak, unable to cast spell. Looking at the bright side, this is the time to replenish mana."
-9,"Fight To The Death","0,2",,5,,,,,,,,,30,0,0,0,0,,,0,"This unit is already broken but cannot flee from battle. It will fight to the last man."
+9,"Fight To The Death","0,2",,5,120,120,,,,,,,30,0,0,0,15,,,0,"This unit is already broken but cannot flee from battle. It will fight to the last man."
 10,"Sleep",0,,60,0,0,-50,,0,0,0,0,-100,0.5,1,0,0,,,0,"While sleeping is good for the body, sleeping at the wrong time and place is not a wise thing to do."
 11,"Panic",0,50,30,10,10,10,,10,10,10,10,-90,0,0,-50,-50,,,0,"""Forward!, I said forward you fool! Listen to my command!"""
 12,"Berserk",0,25,120,170,10,0,,150,0,0,150,-50,0,0,50,-70,,,0,"Desolation, destruction, elimination and eradication! Stop at nothing until your enemy is no more."

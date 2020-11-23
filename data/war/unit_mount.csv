@@ -1,4 +1,4 @@
-"ID","Name","Speed","Health","Charge Bonus","Cost","Properties","Ruleset","Description"
+"ID","Name","Speed","Health Bonus","Charge Bonus","Cost","Properties","Ruleset","Description"
 1,"None",0,0,0,0,0,0,
 2,"Horse",80,100,40,,0,0,
 3,"Camel",70,100,30,,265,0,

@@ -591,7 +591,8 @@ class Unitsquad(pygame.sprite.Sprite):
         if self.meleedef < 0: self.meleedef = 0
         if self.rangedef < 0: self.rangedef = 0
         if self.armour < 0: self.armour = 0
-        if self.speed < 1: self.speed = 1
+        elif self.armour > 100: self.armour = 100 # Armour cannot be higher than 100 since it is percentage reduction
+        if self.speed < 1: self.speed = 1 # speed cannot be lower than 1 or it won't be able to move
         if self.accuracy < 0: self.accuracy = 0
         if self.reload < 0: self.reload = 0
         if self.charge < 0: self.charge = 0

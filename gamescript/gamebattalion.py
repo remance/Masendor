@@ -642,7 +642,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.state not in (96, 98, 99):
                     self.state = 10
             if self.rangecombatcheck == 1: self.state = 11
-            # Retreat function
+            #v Retreat function
             if round(self.morale) <= 20 and self.state != 97:  ## Retreat state when morale lower than 20
                 self.state = 98
                 if self.retreatstart == 0:
@@ -650,20 +650,6 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.retreattimer = 0.1
                 if self.morale <= 10:  ## Broken state
                     self.morale, self.state = 0, 99
-                if 0 not in self.battlesideid:  ## Fight to the death
-                    self.state = 10
-                    for squad in self.squadsprite:
-                        if 9 not in squad.statuseffect:
-                            squad.statuseffect[9] = self.statuslist[9].copy()
-                    if random.randint(0, 100) > 99: ## change side via surrender or betrayal
-                        if self.gameid < 2000:
-                            self.maingame.allunitindex = self.switchfaction(self.maingame.playerarmy, self.maingame.enemyarmy,
-                                                                            self.maingame.playerposlist, self.maingame.allunitindex, self.maingame.enactment)
-                        else:
-                            self.maingame.allunitindex = self.switchfaction(self.maingame.enemyarmy, self.maingame.playerarmy,
-                                                                            self.maingame.enemyposlist, self.maingame.allunitindex, self.maingame.enactment)
-                        self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion surrender"], [0, 1])
-                        self.maingame.setuparmyicon()
             elif self.state == 98 and self.morale >= self.brokenlimit/2:  # quit retreat when morale reach increasing limit
                 self.state = 0
                 self.retreattimer = 0
@@ -678,24 +664,40 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.retreatway = None
                 self.set_target(self.basepos)
                 self.brokenlimit += random.randint(5,15)
-            """only start retreating when ready"""
             if self.retreattimer > 0:
                 self.retreattimer += dt
-            if self.retreatstart == 1 and 0 in self.battlesideid:
+            if self.retreatstart == 1:
                 retreatside = [hitbox.side for hitbox in self.hitbox if hitbox.collide == 0]
-                self.retreatmax = (4 - len(retreatside)) * 2
-                if self.retreattimer >= self.retreatmax:
-                    if self.state in (98, 99):
-                        if self.retreatway is None or self.retreatway[1] not in retreatside:
-                            if 3 in retreatside: # prioritise rear retreat
-                                self.retreatway = [self.allsidepos[3], 3]
-                            else:
-                                getrandom = random.randint(0, len(retreatside) - 1)
-                                self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
-                            basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*100)
-                            self.set_target(basetarget)
-                        self.combatpreparestate = False
-                    self.retreattimer = self.retreatmax
+                if len(retreatside) > 0:
+                    self.retreatmax = (4 - len(retreatside)) * 2
+                    if self.retreattimer >= self.retreatmax:
+                        if self.state in (98, 99):
+                            if self.retreatway is None or self.retreatway[1] not in retreatside:
+                                if 3 in retreatside: # prioritise rear retreat
+                                    self.retreatway = [self.allsidepos[3], 3]
+                                else:
+                                    getrandom = random.randint(0, len(retreatside) - 1)
+                                    self.retreatway = [self.allsidepos[retreatside[getrandom]], retreatside[getrandom]]
+                                basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*100)
+                                self.set_target(basetarget)
+                            self.combatpreparestate = False
+                        self.retreattimer = self.retreatmax
+                else:  ## Fight to the death
+                    self.state = 10
+                    for squad in self.squadsprite:
+                        if 9 not in squad.statuseffect:
+                            squad.statuseffect[9] = self.statuslist[9].copy()
+                    # if random.randint(0, 100) > 99:  ## change side via surrender or betrayal
+                    #     if self.gameid < 2000:
+                    #         self.maingame.allunitindex = self.switchfaction(self.maingame.playerarmy, self.maingame.enemyarmy,
+                    #                                                         self.maingame.playerposlist, self.maingame.allunitindex,
+                    #                                                         self.maingame.enactment)
+                    #     else:
+                    #         self.maingame.allunitindex = self.switchfaction(self.maingame.enemyarmy, self.maingame.playerarmy,
+                    #                                                         self.maingame.enemyposlist, self.maingame.allunitindex,
+                    #                                                         self.maingame.enactment)
+                    #     self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s battalion surrender"], [0, 1])
+                    #     self.maingame.setuparmyicon()
             if self.hold == 1 and self.state not in (97,98,99):  ## skirmishing
                 minrange = self.minrange
                 if minrange < 50: minrange = 50
@@ -734,6 +736,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.nocombat = 0.1
             else:
                 self.nocombat = 0
+            #^ End retreat function
             ##Rotate Function
             if self.combatpreparestate and self.stopcombatmove == False: # Rotate army side to the enemyside
                 self.setrotate(self.attacktarget.basepos)

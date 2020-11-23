@@ -857,35 +857,35 @@ class Battle():
                         elif event.key == pygame.K_SPACE and self.lastselected is not None:
                             whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
                                              self.lastmouseover, keystate, othercommand=1)
-                        # #v FOR DEVELOPMENT DELETE LATER
-                        # elif event.key == pygame.K_1:
-                        #     self.textdrama.queue.append('Hello and Welcome to update video')
-                        # elif event.key == pygame.K_2:
-                        #     self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode (no AI)')
-                        # elif event.key == pygame.K_3:
-                        #     self.textdrama.queue.append('Not yet balanced for completely historical enactment')
-                        # elif event.key == pygame.K_4:
-                        #     self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
-                        # elif event.key == pygame.K_5:
-                        #     self.textdrama.queue.append('Weather effect affect the unit in many ways')
-                        # elif event.key == pygame.K_6:
-                        #     self.textdrama.queue.append('Current special effect still need rework')
-                        # elif event.key == pygame.K_n and self.lastselected is not None:
-                        #     if whoinput.gameid < 2000:
-                        #         self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
-                        #                                                    self.enactment)
-                        #     else:
-                        #         self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
-                        #                                                    self.enactment)
-                        # elif event.key == pygame.K_l and self.lastselected is not None:
-                        #     for squad in whoinput.squadsprite:
-                        #         squad.basemorale = 0
-                        # elif event.key == pygame.K_k and self.lastselected is not None:
-                        #     for squad in self.lastselected.squadsprite:
-                        #         squad.unithealth -= squad.unithealth
-                        # elif event.key == pygame.K_m and self.lastselected is not None:
-                        #     self.lastselected.leader[0].health -= 1000
-                        #^ End For development test
+                        #v FOR DEVELOPMENT DELETE LATER
+                        elif event.key == pygame.K_1:
+                            self.textdrama.queue.append('Hello and Welcome to update video')
+                        elif event.key == pygame.K_2:
+                            self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode (no AI)')
+                        elif event.key == pygame.K_3:
+                            self.textdrama.queue.append('Not yet balanced for completely historical enactment')
+                        elif event.key == pygame.K_4:
+                            self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
+                        elif event.key == pygame.K_5:
+                            self.textdrama.queue.append('Weather effect affect the unit in many ways')
+                        elif event.key == pygame.K_6:
+                            self.textdrama.queue.append('Current special effect still need rework')
+                        elif event.key == pygame.K_n and self.lastselected is not None:
+                            if whoinput.gameid < 2000:
+                                self.allunitindex = whoinput.switchfaction(self.playerarmy, self.enemyarmy, self.playerposlist, self.allunitindex,
+                                                                           self.enactment)
+                            else:
+                                self.allunitindex = whoinput.switchfaction(self.enemyarmy, self.playerarmy, self.enemyposlist, self.allunitindex,
+                                                                           self.enactment)
+                        elif event.key == pygame.K_l and self.lastselected is not None:
+                            for squad in whoinput.squadsprite:
+                                squad.basemorale = 0
+                        elif event.key == pygame.K_k and self.lastselected is not None:
+                            for squad in self.lastselected.squadsprite:
+                                squad.unithealth -= squad.unithealth
+                        elif event.key == pygame.K_m and self.lastselected is not None:
+                            self.lastselected.leader[0].health -= 1000
+                        # ^ End For development test
                         else:
                             keypress = event.key
             self.allui.clear(self.screen, self.background)  # Clear sprite before update new one

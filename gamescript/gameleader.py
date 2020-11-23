@@ -63,9 +63,8 @@ class Leader(pygame.sprite.Sprite):
         eventtext = {96:"retreat",97:"captured",98:"missing",99:"wounded",100:"dead"}
         if self.commander and self.battalion.leader[3].state not in (96, 97, 98, 99, 100) and self.battalion.leader[3].name != "None":
             ## If commander die will use strategist as next commander first
-            print('test')
             self.battalion.leader[0], self.battalion.leader[3] = self.battalion.leader[3], self.battalion.leader[0]
-        elif self.battalion.leader[1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[1].name != "None":
+        elif self.armyposition + 1 != 4 and self.battalion.leader[self.armyposition+1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[self.armyposition+1].name != "None":
             self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
         thisbadmorale = self.badmorale[0]
         if self.state == 99: # wonnd inflict less morale penalty
