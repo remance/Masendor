@@ -1,5 +1,7 @@
 ![alt text](https://github.com/remance/Masendor/blob/master/pygamelogo.gif?raw=true)
 
+![alt text](https://github.com/remance/Masendor/blob/master/preview.png?raw=true)
+
 Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until end of ver 0.5).
 
@@ -48,3 +50,10 @@ ver 1.7: leader rapport and affect on authority and control mechanic including s
 Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved" formation that player can rotate in battle, swapable squad position
 
 Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command, order dalay?
+
+For those who have read this far, thank you for your interested in the game. To be honest, every single update begin with how do I even start with this. 
+I start developing this game with zero knowledge in video game development let alone how to use pygame. I start learning how to use pygame by tinkering 
+with alien.py in pygame examples folder and keep testing/changing it until it become what you can see right now (I keep most video update on youtube 
+which show the progress of improvement almost from the start). All of the plan I list for the future is the same. I have no idea how to do it, the only 
+thing I have is the picture of what I want to make it look like. Nevertheless, it is fun figuring stuff out and don't let the lack of knowledge stop 
+you making your own game :P. 
