@@ -53,10 +53,10 @@ class Leader(pygame.sprite.Sprite):
 
     def poschangestat(self, leader):
         """Change stat that related to army position such as in leader dead event"""
-        leader.badmorale = (20, 30)  ## sub general morale lost for bad event
-        if leader.armyposition == 0:
-            squadpenal = int((leader.squadpos / len(leader.battalion.armysquad[0])) * 10)
-            leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2)
+        leader.badmorale = (20, 30)  # sub general morale lost for bad event
+        if leader.armyposition == 0: # if leader become battalion commander
+            squadpenal = int((leader.squadpos / len(leader.battalion.armysquad[0])) * 10) # recalculate authority penalty based on squad position
+            leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2) # recalculate total authority
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
 
     def gone(self):

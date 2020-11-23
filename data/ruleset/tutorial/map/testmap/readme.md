@@ -10,9 +10,7 @@ Map image (should only be in png format and 1000x1000 size)
 
 - placename: The image of location name of the map. This data is for cosmetic purpose only but must be in full transparent base image. 
 
-
-Read Mapguide.doc for more detailed information
-
+Read data\map\Mapguide.doc for more detailed information on colour combination of terrain and feature and some other recommendation
 
 Map data
 
@@ -28,11 +26,15 @@ int	| 		int,int,int,int,int,int,int,int			    	      |    int,int     | int,int,
 
 2000+ = enemy |
 
-- weather: 
+- weather: the list of all weather event that will occur during the battle. The structure is as follows;
 
-- eventlog: 
+weatherid (see data/map/weather) | time the weather activiate and end of previous weather | weather level (0 = Light, 1 = Normal, 2 = Strong)
 
-Both activate time in both weather and eventlog can be done for multiple days battle. If the even is sparse simply add pointless event at 23:59:59 to indicate the end of the day. For example
+- eventlog: the list of all event that will appear on eventlog during the battle. Will add more detailed implementation later, still in process of development. modelist is the eventlog tabs that the event will appear (0=war,1=army(unit),2=leader,3=unit(sub-unit))
+
+Currently only 2 types of event: t+number (e.g.t10) for event that appear at time input in time column, ld+number (ld0 for player, ld1 for enemy) for the first commander death event. 
+
+Both activate time in both weather and eventlog can be done for multiple days battle. If the even is sparse simply add pointless event at 23:59:59 to indicate the end of the day. For examples;
 
 Weather:
 

@@ -408,26 +408,26 @@ class Minimap(pygame.sprite.Sprite):
 
 
 class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
-    mapevent = None # Extra historical messege event
+    mapevent = None # Extra map based messege event in eventlog.csv
 
     def __init__(self, image, pos):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", 16)
         self.pos = pos
-        self.mode = 0
+        self.mode = 0 # 0=war,1=army(unit),2=leader,3=unit(sub-unit)
         self.image = image
         self.image_original = self.image.copy()
-        self.battlelog = []
-        self.battalionlog = []
-        self.leaderlog = []
-        self.squadlog = []
+        self.battlelog = [] # 0 war
+        self.battalionlog = [] # 1 army
+        self.leaderlog = [] # 2 leader
+        self.squadlog = [] # 3 unit
         self.rect = self.image.get_rect(bottomleft=self.pos)
         self.currentstartrow = 0
-        self.maxrowshow = 9
-        self.lencheck = 0
+        self.maxrowshow = 9 # maximum 9 text rows can appear at once
+        self.lencheck = 0 # total number of row in the current mode
         self.logscroll = None  # Link from maingame after creation of both object
-        if self.mapevent != {}:
+        if self.mapevent != {}: # Edit map based event
             self.mapevent.pop('id')
             for event in self.mapevent:
                 if type(self.mapevent[event][2]) == int:
@@ -452,11 +452,12 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         self.recreateimage()
 
     def cleartab(self, alltab=False):
+        """Clear event from log for that mode"""
         self.lencheck = 0
         self.currentstartrow = 0
-        currentlog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
+        currentlog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode] # log to edit
         currentlog.clear()
-        if alltab:
+        if alltab: # Clear event from every mode
             for log in (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog):
                 log.clear()
         self.logscroll.currentrow = self.currentstartrow
@@ -464,7 +465,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         self.recreateimage()
 
     def recreateimage(self):
-        thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode]
+        thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode] # log to edit
         self.image = self.image_original.copy()
         row = 10
         for index, text in enumerate(thislog[self.currentstartrow:]):
@@ -472,15 +473,15 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
             textsurface = self.font.render(text[1], 1, (0, 0, 0))
             textrect = textsurface.get_rect(topleft=(40, row))
             self.image.blit(textsurface, textrect)
-            row += 20
+            row += 20 # Whitespace between text row
 
     def logtextprocess(self, who, modelist, textoutput):
         imagechange = False
         for mode in modelist:
-            thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode]
-            if len(textoutput) <= 45: # eventlog each row cannot have more than 45 characters including space
+            thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode] # log to edit
+            if len(textoutput) <= 45: # Eventlog each row cannot have more than 45 characters including space
                 thislog.append([who, textoutput])
-            else:  ## Cut the text log into multiple row
+            else:  # Cut the text log into multiple row if more than 45 char
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
                 howmanyloop = len(textoutput) / 45
                 if howmanyloop.is_integer() == False:
