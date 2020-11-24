@@ -300,25 +300,25 @@ class Battle():
         #v Create Starting Values
         self.enactment = True
         self.gamestate = 1
-        self.mousetimer = 0
-        self.uitimer = 0
-        self.dramatimer = 0
-        self.dt = 0  # Used for in game calculation
-        self.uidt = 0  # Used for ui timer
-        self.combattimer = 0
-        self.clock = pygame.time.Clock()
-        self.lastmouseover = 0
-        self.gamespeed = 1
-        self.gamespeedset = (0, 0.5, 1, 2, 4, 6)
+        self.mousetimer = 0 # This is timer for checking double mouse click, use realtime
+        self.uitimer = 0 # This is timer for ui update function, use realtime
+        self.dramatimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
+        self.dt = 0  # Realtime used for in game calculation
+        self.uidt = 0  # Realtime used for ui timer
+        self.combattimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
+        self.clock = pygame.time.Clock() # Game clock to keep track of realtime pass
+        self.lastmouseover = 0 # Which unit last mouse over
+        self.gamespeed = 1 # Current game speed
+        self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
         self.clickcheck = 0  # For checking if unit or ui is clicked
         self.clickcheck2 = 0  #  For checking if another unit is clicked when inspect ui open"
-        self.inspectui = 0
-        self.lastselected = None
+        self.inspectui = 0 # For checking if inspect ui is currently open or not
+        self.lastselected = None # Which army is currently selected
         self.mapviewmode = 0
         self.mapshown = self.showmap
         self.squadlastselected = None
-        self.beforeselected = None
-        self.splithappen = False
+        self.beforeselected = None # Which army is selected before
+        self.splithappen = False # Check if army get split in that loop
         self.splitbutton = False
         self.currentweather = None
         self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height
@@ -830,7 +830,7 @@ class Battle():
                                 self.showmap.changemode(self.mapviewmode)
                             self.mapshown.changescale(self.camerascale)
                         elif event.key == pygame.K_p:  # Speed Pause Button
-                            if self.gamespeed == 1:
+                            if self.gamespeed >= 1:
                                 self.gamespeed = 0
                             else:
                                 self.gamespeed = 1
@@ -861,7 +861,7 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to update video')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Battle of Hastings enactment mode (no AI)')
+                            self.textdrama.queue.append('Showcase: Changes made since the previous update')
                         elif event.key == pygame.K_3:
                             self.textdrama.queue.append('Not yet balanced for completely historical enactment')
                         elif event.key == pygame.K_4:

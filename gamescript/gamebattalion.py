@@ -716,7 +716,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy now
                 if self.nocombat > 0:  # For avoiding battalion bobble between two collided enemy
                     self.nocombat += dt
-                    if self.nocombat > 2:
+                    if self.nocombat > 5:
                         self.nocombat = 0
                         self.combatpreparestate = False
                         self.gotcombatprepare = False
@@ -755,30 +755,30 @@ class Unitarmy(pygame.sprite.Sprite):
                 else:
                     self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size / 2))
                     self.run = True
-                if self.rotatespeed > 10: self.rotatespeed = 10
+                if self.rotatespeed > 20 or self.state == 10: self.rotatespeed = 20 # state 10 melee combat rotate is auto placement
                 if self.rotatespeed < 1:
                     self.rotatespeed = 1
-                rotatetiny = self.rotatespeed * dt
-                if round(self.newangle) > self.angle:
+                rotatetiny = self.rotatespeed * dt # rotate little by little according to time
+                if round(self.newangle) > self.angle: # rotate to angle more than the current one
                     if self.rotatecal > 180: # rotate with the smallest angle direction
                         self.angle -= rotatetiny
                         self.rotatecheck -= rotatetiny
-                        if self.rotatecheck <= 0: self.angle = round(self.newangle)
+                        if self.rotatecheck <= 0: self.angle = round(self.newangle) # if rotate pass target angle, rotate to target angle
                     else:
                         self.angle += rotatetiny
-                        if self.angle >= self.newangle: self.angle = round(self.newangle)
-                elif round(self.newangle) < self.angle:
-                    if self.rotatecal > 180:
+                        if self.angle >= self.newangle: self.angle = round(self.newangle) # if rotate pass target angle, rotate to target angle
+                elif round(self.newangle) < self.angle:  # rotate to angle less than the current one
+                    if self.rotatecal > 180: # rotate with the smallest angle direction
                         self.angle += rotatetiny
                         self.rotatecheck -= rotatetiny
-                        if self.rotatecheck <= 0: self.angle = round(self.newangle)
+                        if self.rotatecheck <= 0: self.angle = round(self.newangle) # if rotate pass target angle, rotate to target angle
                     else:
                         self.angle -= rotatetiny
-                        if self.angle < self.newangle: self.angle = round(self.newangle)
-                self.rotate()
-                self.makeallsidepos()
+                        if self.angle < self.newangle: self.angle = round(self.newangle) # if rotate pass target angle, rotate to target angle
+                self.rotate() # rotate sprite to new angle
+                self.makeallsidepos() # generate new pos related to side
                 self.frontpos = self.allsidepos[0]
-                self.mask = pygame.mask.from_surface(self.image)
+                self.mask = pygame.mask.from_surface(self.image) # make new mask
             elif self.moverotate == 1 and self.angle == round(self.newangle):  # Finish rotate
                 self.moverotate = 0
                 """Can only enter range attack state after finishing rotate"""

@@ -2,7 +2,7 @@
 
 ![alt text](https://github.com/remance/Masendor/blob/master/preview.png?raw=true)
 
-Historical battle simulation game made with Pygame. There is no main name for the game but rather the name will be based on major update. 
+Historical wargame simulation made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until end of ver 0.5).
 
 To start testing the game run main.py or main.exe if you use the release version.
@@ -20,8 +20,6 @@ Meaning: It's playable but it is still a bloody mess. More work to do.
 Plan
 
 Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
-
-0.5.1-0.5.5 focus on optimisation
 
 5.5.6+ focus on documentation
 
