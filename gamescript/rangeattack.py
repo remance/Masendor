@@ -21,7 +21,7 @@ class Rangearrow(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.shooter = shooter
         self.arcshot = False
-        if self.shooter.arcshot: self.arcshot = True
+        if self.shooter.arcshot and self.shooter.battalion.shoothow != 2: self.arcshot = True
         self.startheight = self.shooter.battalion.height
         self.accuracy = self.shooter.accuracy
         if self.shooter.state in (12, 13) and self.shooter.agileaim == False: self.accuracy -= 10
@@ -128,7 +128,6 @@ class Rangearrow(pygame.sprite.Sprite):
                 self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
 
     def update(self, unitlist, hitbox, squadlist, squadindexlist, dt, viewmode):
-        """Who is the player battalion group, target is the enemy battalion group"""
         move = self.basetarget - self.basepos
         move_length = move.length()
         """Calculate which side arrow will hit when it pass unit"""

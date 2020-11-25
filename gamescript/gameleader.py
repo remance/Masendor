@@ -1,6 +1,8 @@
 import pygame
 import pygame.freetype
 
+"""This file contains leader class entity that contain attribute and most function related to it"""
+
 class Leader(pygame.sprite.Sprite):
     maingame = None
 
@@ -74,9 +76,9 @@ class Leader(pygame.sprite.Sprite):
         if self.commander:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
             self.maingame.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0"
-            whicharmy = self.maingame.playerarmy
+            whicharmy = self.maingame.team1army
             if self.battalion.gameid >= 2000:
-                whicharmy = self.maingame.enemyarmy
+                whicharmy = self.maingame.team2army
                 eventmapid = "ld1"
             if self.originalcommander:
                 self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)

@@ -1,5 +1,6 @@
 import csv
 import re
+"""This file contains all class and function that read unit/leader related data and save them into dict for ingame use"""
 
 class Weaponstat():
     def __init__(self, main_dir, img, ruleset):

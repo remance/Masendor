@@ -242,7 +242,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.staminastatecal = self.staminastate / 100
         self.moralestatecal = self.moralestate / 100
-        self.image = self.images[0]  # Squad block blue colour for player
+        self.image = self.images[0]  # Squad block blue colour for team1
         """squad block colour"""
         if self.battalion.gameid >= 2000:
             self.image = self.images[19]
@@ -746,9 +746,10 @@ class Unitsquad(pygame.sprite.Sprite):
                                         self.attacktarget = target[1]
                                         self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
                                         break # found new target break loop
-                        if self.reloadtime >= self.reload and (
-                                (self.attacktarget == 0 and self.attackpos != 0) or (
-                                self.attacktarget != 0 and self.attacktarget.state != 100)): # if reload finish and target existed and not dead
+                        if self.reloadtime >= self.reload and ((self.attacktarget != 0 and self.attacktarget.state != 100) or
+                                            (self.attacktarget == 0 and self.attackpos != 0)) \
+                                            and (self.arcshot or (self.arcshot == False and self.battalion.shoothow != 1)):
+                            # can shoot if reload finish and target existed and not dead. Non arcshot cannot shoot if forbidded
                             rangeattack.Rangearrow(self, self.combatpos.distance_to(self.attackpos), self.shootrange,
                                                    self.viewmode) # Shoot at enemy
                             self.ammo -= 1 # use 1 ammo

@@ -9,6 +9,8 @@ import pygame.freetype
 import os
 import main
 
+"""This file contains fuctions of various purposes"""
+
 config = main.config
 SoundVolume = main.Soundvolume
 SCREENRECT = main.SCREENRECT
@@ -104,7 +106,7 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     return army
 
 
-def unitsetup(maingame):
+def unitsetup(maingame,playerteam):
     from gamescript import gamesquad
     """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
@@ -116,8 +118,8 @@ def unitsetup(maingame):
             boardpos.append(ll + dd)
     squadindexlist = []
     unitlist = []
-    """army num is list index for battalion in either player or enemy group"""
-    playerstart, enemystart = 0, 0
+    """army num is list index for battalion in either team group"""
+    team1start, team2start = 0, 0
     """squadindex is list index for all squad group"""
     squadindex = 0
     """firstsquad check if it the first ever in group"""
@@ -130,27 +132,28 @@ def unitsetup(maingame):
                     row[n] = int(i)
                 if n in range(1, 12):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-            if row[0] < 2000:
-                control = True
-                colour = (144, 167, 255)  # player colour
-                playerstart += 1
-                whicharmy = maingame.playerarmy
-            elif row[0] >= 2000:
-                control = maingame.enactment
+            control = False
+            if row[0] < 2000: # team1 id less than 2000
+                if playerteam == 1 or maingame.enactment: # player can control only his team or both in enactment mode
+                    control = True
+                colour = (144, 167, 255)  # team1 colour
+                team1start += 1
+                whicharmy = maingame.team1army
+            elif row[0] >= 2000: # team2 id 2000+
+                if playerteam == 2 or maingame.enactment: # player can control only his team or both in enactment mode
+                    control = True
                 colour = (255, 114, 114)
-                enemystart += 1
-                whicharmy = maingame.enemyarmy
-            command = False
+                team2start += 1
+                whicharmy = maingame.team2army
+            command = False # Not commander battalion by default
             if row[0] in (1,2000): # First battalion is commander
                 command = True
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour,
-                           (maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
+                           colour,(maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
                            maingame.coa[row[12]], command, row[13], row[14], row[15])
             whicharmy.append(army)
-            """armysquadindex is list index for squad list in a specific army"""
-            armysquadindex = 0
-            """Setup squad in army to squad group"""
+            armysquadindex = 0 # armysquadindex is list index for squad list in a specific army
+            #v Setup squad in army to squad group
             for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
                     addsquad = gamesquad.Unitsquad(squadnum, squadgameid, maingame.allweapon, maingame.allarmour,
@@ -164,13 +167,14 @@ def unitsetup(maingame):
                     squadgameid += 1
                     squadindex += 1
                 armysquadindex += 1
+            #^ End squad setup
     unitfile.close()
     return squadindexlist
 
 ## Battle related gamescript
 
 def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
-    """calculate squad engagement using information after battalionengage who is player battalion, target is enemy battalion"""
+    """calculate squad engagement using information after battalionengage who is attacker, target is defender battalion"""
     squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
     whofrontline = who.frontline[whoside]
     """only calculate if the attack is attack with the front side"""
@@ -184,7 +188,7 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
         if thiswho > 1:
             position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
             fronttarget = receiver.frontline[receiverside][position]
-            """check if squad not already fighting if true skip picking new enemy """
+            """check if squad not already fighting if true skip picking new enemy"""
             attackersquad = squadlist[np.where(squadindexlist == thiswho)[0][0]]
             if any(battle > 1 for battle in attackersquad.battlesideid) == False:
                 """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
@@ -398,9 +402,9 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
 def die(who, battle, group, enemygroup):
     """remove battalion,hitbox when it dies"""
     if who.gameid < 2000:
-        battle.playerposlist.pop(who.gameid)
+        battle.team1poslist.pop(who.gameid)
     else:
-        battle.enemyposlist.pop(who.gameid)
+        battle.team2poslist.pop(who.gameid)
     if who.commander:  # more morale penalty if the battalion is a command battalion
         for army in group:
             for squad in army.squadsprite:
@@ -513,11 +517,11 @@ def splitunit(battle, who, how):
     ## start making new battalion
     if who.gameid < 2000:
         playercommand = True
-        whosearmy = battle.playerarmy
+        whosearmy = battle.team1army
         colour = (144, 167, 255)
     else:
         playercommand = battle.enactment
-        whosearmy= battle.enemyarmy
+        whosearmy= battle.team2army
         colour = (255, 114, 114)
     newgameid = whosearmy[-1].gameid + 1
     army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,

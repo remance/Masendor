@@ -371,38 +371,38 @@ class Minimap(pygame.sprite.Sprite):
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
         self.image_original = self.image.copy()
-        self.enemydot = pygame.Surface((8, 8))
-        self.enemydot.fill((0, 0, 0))
-        self.playerdot = pygame.Surface((8, 8))
-        self.playerdot.fill((0, 0, 0))
-        enemy = pygame.Surface((6, 6))
-        enemy.fill((255, 0, 0))
-        player = pygame.Surface((6, 6))
-        player.fill((0, 0, 255))
-        rect = self.enemydot.get_rect(topleft=(1, 1))
-        self.enemydot.blit(enemy, rect)
-        self.playerdot.blit(player, rect)
-        self.playerpos = []
-        self.enemypos = []
+        self.team2dot = pygame.Surface((8, 8)) # dot for team2 unit
+        self.team2dot.fill((0, 0, 0)) # black corner
+        self.team1dot = pygame.Surface((8, 8)) # dot for team1 unit
+        self.team1dot.fill((0, 0, 0)) # black corner
+        team2 = pygame.Surface((6, 6)) # size 6x6
+        team2.fill((255, 0, 0)) # red rect
+        team1 = pygame.Surface((6, 6))
+        team1.fill((0, 0, 255)) # blue rect
+        rect = self.team2dot.get_rect(topleft=(1, 1))
+        self.team2dot.blit(team2, rect)
+        self.team1dot.blit(team1, rect)
+        self.team1pos = []
+        self.team2pos = []
         self.cameraborder = [camera.image.get_width(), camera.image.get_height()]
         self.camerapos = camera.pos
         self.lastscale = 10
         self.rect = self.image.get_rect(bottomright=(self.X, self.Y))
 
-    def update(self, viewmode, camerapos, playerposlist, enemyposlist):
-        if self.playerpos != playerposlist.values() or self.enemypos != enemyposlist.values() or self.camerapos != camerapos or self.lastscale != viewmode:
-            self.playerpos = playerposlist.values()
-            self.enemypos = enemyposlist.values()
+    def update(self, viewmode, camerapos, team1poslist, team2poslist):
+        if self.team1pos != team1poslist.values() or self.team2pos != team2poslist.values() or self.camerapos != camerapos or self.lastscale != viewmode:
+            self.team1pos = team1poslist.values()
+            self.team2pos = team2poslist.values()
             self.camerapos = camerapos
             self.image = self.image_original.copy()
-            for player in playerposlist.values():
-                scaledpos = player / 5
-                rect = self.playerdot.get_rect(center=scaledpos)
-                self.image.blit(self.playerdot, rect)
-            for enemy in enemyposlist.values():
-                scaledpos = enemy / 5
-                rect = self.enemydot.get_rect(center=scaledpos)
-                self.image.blit(self.enemydot, rect)
+            for team1 in team1poslist.values():
+                scaledpos = team1 / 5
+                rect = self.team1dot.get_rect(center=scaledpos)
+                self.image.blit(self.team1dot, rect)
+            for team2 in team2poslist.values():
+                scaledpos = team2 / 5
+                rect = self.team2dot.get_rect(center=scaledpos)
+                self.image.blit(self.team2dot, rect)
             pygame.draw.rect(self.image, (0, 0, 0), (camerapos[1][0] / 5 / viewmode, camerapos[1][1] / 5 / viewmode,
                                                      self.cameraborder[0] * 10 / viewmode / 50, self.cameraborder[1] * 10 / viewmode / 50), 2)
 

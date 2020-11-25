@@ -45,14 +45,13 @@ class Mattersprite(pygame.sprite.Sprite):
         self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.speed = speed
-        # if type in (0,1,2):
-        #     self.speed =
-        self.pos = pygame.Vector2(pos)
-        self.target = pygame.Vector2(target)
+        self.pos = pygame.Vector2(pos) # should be at the end corner of screen
+        self.target = pygame.Vector2(target) # should be at another end corner of screen
         self.image = image
         self.rect = self.image.get_rect(center=self.pos)
 
     def update(self, dt, timer):
+        """Update sprite position movement"""
         move = self.target - self.pos
         move_length = move.length()
         if move_length > 0.1:
@@ -64,7 +63,7 @@ class Mattersprite(pygame.sprite.Sprite):
             else:
                 self.pos = self.target
                 self.rect.center = self.target
-        else:
+        else: # kill when it reach the end of screen
             self.kill()
 
 
