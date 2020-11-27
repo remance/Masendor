@@ -90,7 +90,7 @@ class Mapfeature(pygame.sprite.Sprite):
             for row in rd:
                 for n, i in enumerate(row):
                     if run != 0:
-                        if n == 11:
+                        if n == 12: # effect list
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():

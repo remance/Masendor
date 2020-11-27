@@ -242,10 +242,12 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.staminastatecal = self.staminastate / 100
         self.moralestatecal = self.moralestate / 100
-        self.image = self.images[0]  # Squad block blue colour for team1
+        self.image = self.images[0].copy()  # Squad block blue colour for team1
         """squad block colour"""
         if self.battalion.gameid >= 2000:
-            self.image = self.images[19]
+            self.image = self.images[19].copy()
+        if self.unittype == 2: # cavalry draw line on block
+            pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
         """armour circle colour"""
         image1 = self.images[1]
         if self.basearmour <= 50: image1 = self.images[2]
@@ -384,7 +386,7 @@ class Unitsquad(pygame.sprite.Sprite):
             self.grade + 1] + (self.authority / 10)
         self.attack = (self.baseattack * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
         self.meleedef = (self.basemeleedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
-        self.rangedef = (self.baserangedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
+        self.rangedef = (self.baserangedef * (self.moralestatecal + 0.1)) * self.staminastatecal + (self.commandbuff/2)
         self.accuracy = self.baseaccuracy * self.staminastatecal + self.commandbuff
         self.reload = self.basereload * ((200 - self.staminastate) / 100)
         self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff
@@ -446,8 +448,10 @@ class Unitsquad(pygame.sprite.Sprite):
             combatmod = mapfeaturemod[self.featuremod + 2] # get the defence mod appropiate to unit type
             self.meleedef *= combatmod
             self.chargedef *= combatmod
-        if mapfeaturemod[10] != [0]: # Some terrain feature can also cause status effect such as swimming in water
-            if 1 in mapfeaturemod[10]: # Water type terrain
+        self.rangedef += mapfeaturemod[7] # range defense bonus from terrain bonus
+        self.discipline += mapfeaturemod[9]  # discipline defense bonus from terrain bonus
+        if mapfeaturemod[11] != [0]: # Some terrain feature can also cause status effect such as swimming in water
+            if 1 in mapfeaturemod[11]: # Water type terrain
                 self.statuseffect[93] = self.statuslist[93].copy() # drench
                 if self.weight > 60 or self.stamina <= 0: # weight too much or tired will cause drowning
                     self.statuseffect[102] = self.statuslist[102].copy() # Drowning
@@ -455,15 +459,14 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.statuseffect[101] = self.statuslist[101].copy() # Sinking
                 elif self.weight < 30:  # Light weight squad has no trouble travel through water
                     self.statuseffect[104] = self.statuslist[104].copy() # Swiming
-            if 2 in mapfeaturemod[10]:  # Rot type terrain
+            if 2 in mapfeaturemod[11]:  # Rot type terrain
                 self.statuseffect[54] = self.statuslist[54].copy()
-            if 3 in mapfeaturemod[10]:  # Poison type terrain
+            if 3 in mapfeaturemod[11]:  # Poison type terrain
                 self.elemcount[4] += ((100 - self.elemresist[5]) / 100)
-        self.rangedef += mapfeaturemod[7] # range defense from terrain bonus
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]
         #^ End map feature
         #v Temperature mod function from terrain and weather
-        tempreach = mapfeaturemod[9] + weather.temperature # temperature the squad will change to based on current terrain feature and weather
+        tempreach = mapfeaturemod[10] + weather.temperature # temperature the squad will change to based on current terrain feature and weather
         if tempreach < 0: # cold temperature
             tempreach = tempreach * (100 - self.coldres) / 100 # lowest temperature the squad will change based on cold resist
         else: # hot temperature

@@ -514,6 +514,7 @@ def splitunit(battle, who, how):
     who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 0.75), round(
         maxstamina * 0.50), round(maxstamina * 0.25)
     who.maxmorale = maxmorale
+    who.ammo75, who.ammo50, who.ammo25 = round(who.ammo * 0.75), round(who.ammo * 0.50), round(who.ammo * 0.25)
     ## start making new battalion
     if who.gameid < 2000:
         playercommand = True

@@ -98,6 +98,7 @@ class Gameui(pygame.sprite.Sprite):
                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
                               "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense:"]
             self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+            self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"}
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
                                 "Deep water"]
         #     self.iconimagerect = self.icon[0].get_rect(
@@ -134,14 +135,14 @@ class Gameui(pygame.sprite.Sprite):
             self.value[2] = round(self.value[2] / 10)
             if self.value[2] in self.options2: # Check if morale state in the list and blit the name
                 self.value[2] = self.options2[self.value[2]]
-            elif self.value[2] > 15:
+            elif self.value[2] > 15: # if morale somehow too high use the highest morale state one
                 self.value[2] = self.options2[15]
             self.value[1] = round(self.value[1] / 10)
             if self.value[1] in self.options3: # Check if stamina state and blit the name
                 self.value[1] = self.options3[self.value[1]]
-            if self.value != self.lastvalue or splithappen:
+            if self.value != self.lastvalue or splithappen: # only blit new text when value change or unit split
                 self.image = self.image_original.copy()
-                for value in self.value:
+                for value in self.value: # blit value text
                     self.textsurface = self.font.render(str(value), 1, (0, 0, 0))
                     self.textrect = self.textsurface.get_rect(
                         center=(self.image.get_rect()[0] + position, self.image.get_rect()[1] + 25))
@@ -155,34 +156,34 @@ class Gameui(pygame.sprite.Sprite):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
         elif self.uitype == "commandbar":
             if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change unit
-                usecolour = self.white
+                usecolour = self.white # colour of the chess icon for leader, white for team 1
+                if who.team == 2: # black for team 2
+                    usecolour = self.black
                 self.leaderpiclist = []
                 self.image = self.image_original.copy()
-                if who.gameid >= 2000:
-                    usecolour = self.black
-                if who.commander:
+                if who.commander: # commander battalion use king and queen icon
                     ## main general
                     self.iconimagerect = usecolour[0].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[0], self.iconimagerect)
-                    ## special role
+                    ## sub commander/strategist role
                     self.iconimagerect = usecolour[1].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[1], self.iconimagerect)
-                else:
-                    ## left sub general
+                else: # the rest use rook and bishop
+                    ## general
                     self.iconimagerect = usecolour[2].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[2], self.iconimagerect)
-                    ## right sub general
+                    ## Special role
                     self.iconimagerect = usecolour[5].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[5], self.iconimagerect)
-                self.iconimagerect = usecolour[3].get_rect(center=(
+                self.iconimagerect = usecolour[3].get_rect(center=(                     # left sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[3], self.iconimagerect)
-                self.iconimagerect = usecolour[0].get_rect(center=(
+                self.iconimagerect = usecolour[0].get_rect(center=(                    ## right sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
@@ -197,8 +198,8 @@ class Gameui(pygame.sprite.Sprite):
                 self.image.blit(self.textsurface, self.textrect)
                 self.lastauth = who.authority
         elif self.uitype == "unitcard":
-            position = 15
-            positionx = 45
+            position = 15 # starting row
+            positionx = 45 # starting point of text
             self.value = [who.name, str(who.troopnumber) + " (" + str(who.maxtroop) + ")", int(who.stamina), int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
                           int(who.accuracy),
@@ -214,7 +215,7 @@ class Gameui(pygame.sprite.Sprite):
                 leadertext = ""
                 if who.leader is not None:
                     leadertext = "/" + str(who.leader.name)
-                    if who.leader.state == 100: leadertext += " (Dead)"
+                    if who.leader.state in self.leaderstatetext: leadertext += " " + "(" + self.leaderstatetext[who.leader.state] + ")"
                 self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0))  ##unit and leader name at the top
                 self.textrect = self.textsurface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
@@ -240,7 +241,7 @@ class Gameui(pygame.sprite.Sprite):
                         row += 1
                         if row == 9: positionx, position = 200, 35
                 elif self.option == 0:  ## description card
-                    self.blit_text(self.image, self.description, (42, 25), self.fontlong)
+                    self.blit_text(self.image, self.description, (42, 25), self.fontlong) # blit long description
                 elif self.option == 3:  ## equipment and terrain
                     terrain = self.terrainlist[who.terrain]
                     if who.feature is not None: terrain += "/" + self.featurelist[who.feature]
@@ -256,7 +257,7 @@ class Gameui(pygame.sprite.Sprite):
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
-                    if 1 not in who.mount:
+                    if 1 not in who.mount: # if mount is not the None mount id 1
                         textvalue.insert(3, "Mount:" + str(who.mount[0]))
                     for text in textvalue:
                         self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
@@ -340,12 +341,15 @@ class FPScount(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
         self.rect = self.image.get_rect(center=(30, 110))
+        fps = "60"
+        fps_text = self.font.render(fps, 1, pygame.Color("blue"))
+        self.textrect = fps_text.get_rect(center=(25, 25))
 
     def fpsshow(self, clock):
+        """Update current fps"""
         self.image = self.image_original.copy()
         fps = str(int(clock.get_fps()))
         fps_text = self.font.render(fps, 1, pygame.Color("blue"))
-        self.textrect = fps_text.get_rect(center=(25, 25))
         self.image.blit(fps_text, self.textrect)
 
 
@@ -356,6 +360,7 @@ class Selectedsquad(pygame.sprite.Sprite):
         self.image = image
 
     def pop(self, pos):
+        """pop out at the selected squad in inspect uo"""
         self.rect = self.image.get_rect(topleft=pos)
 
 

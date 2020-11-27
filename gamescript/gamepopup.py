@@ -17,7 +17,7 @@ class Terrainpopup(pygame.sprite.Sprite):
                        (24*self.scaleadjust, 70*self.scaleadjust), (58*self.scaleadjust, 34*self.scaleadjust), # inf def, cav speed
                        (58*self.scaleadjust, 53*self.scaleadjust), (58*self.scaleadjust, 70*self.scaleadjust)) # cav atk, cav def
         self.modlist = (1.5, 1.2, 1, 0.7, 0.5, 0) # Stat effect from terrain (*percentage)
-        self.bonuslist = (40, 20, 0) # Stat bonus from terrain (+-)
+        self.bonuslist = (40, 20, 10, -20, -50, -2000) # Stat bonus from terrain (+-)
 
         self.image_original = self.image.copy()
 
@@ -44,6 +44,15 @@ class Terrainpopup(pygame.sprite.Sprite):
             for modindex, mod in enumerate(self.bonuslist):
                 if input[7] >= mod:
                     self.imagerect = self.images[modindex + 1].get_rect(center=(90*self.scaleadjust, 34*self.scaleadjust))
+                    self.image.blit(self.images[modindex + 1], self.imagerect)
+                    break
+        if input[9] == 0: # discipline
+            self.imagerect = self.images[7].get_rect(center=(90*self.scaleadjust, 53*self.scaleadjust))
+            self.image.blit(self.images[7], self.imagerect)
+        else:
+            for modindex, mod in enumerate(self.bonuslist):
+                if input[9] >= mod:
+                    self.imagerect = self.images[modindex + 1].get_rect(center=(90*self.scaleadjust, 53*self.scaleadjust))
                     self.image.blit(self.images[modindex + 1], self.imagerect)
                     break
         self.rect = self.image.get_rect(bottomleft=self.pos)

@@ -310,7 +310,7 @@ class Battle():
         self.clock = pygame.time.Clock() # Game clock to keep track of realtime pass
         self.lastmouseover = 0 # Which unit last mouse over
         self.gamespeed = 1 # Current game speed
-        self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
+        self.gamespeedset = (0, 0.5, 1, 4, 7, 10) # availabe game speed
         self.clickcheck = 0  # For checking if unit or ui is clicked
         self.clickcheck2 = 0  #  For checking if another unit is clicked when inspect ui open"
         self.inspectui = 0 # For checking if inspect ui is currently open or not
@@ -1189,7 +1189,7 @@ class Battle():
                                     whoinput.shoothow = 0
                                 self.switchbuttonui[4].event = whoinput.shoothow
                             if self.switchbuttonui[4].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Allow both arc and direct shot", "Forbid direct shot", "Disable arc shot")
+                                poptext = ("Allow both arc and direct shot", "Allow only arc shot", "Allow only direct shot")
                                 self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[4].event])
                                 self.allui.add(self.buttonnamepopup)
                         elif self.switchbuttonui[5].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
