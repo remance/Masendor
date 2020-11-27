@@ -372,7 +372,7 @@ class Unitsquad(pygame.sprite.Sprite):
 
     def statusupdate(self, thisweather):
         """calculate stat from stamina, morale state, skill, status, terrain"""
-        if self.maxstamina > 100:
+        if self.maxstamina > 100: # Max stamina gradually decrease over time - (self.timer * 0.05)
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.maxstamina-(self.timer*0.05), round(self.maxstamina * 0.75), round(
                 self.maxstamina * 0.5), round(self.maxstamina * 0.25)
         self.morale = self.basemorale

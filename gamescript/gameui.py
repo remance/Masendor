@@ -159,8 +159,8 @@ class Gameui(pygame.sprite.Sprite):
                 usecolour = self.white # colour of the chess icon for leader, white for team 1
                 if who.team == 2: # black for team 2
                     usecolour = self.black
-                self.leaderpiclist = []
                 self.image = self.image_original.copy()
+                self.image.blit(who.coa,who.coa.get_rect(topleft=self.image.get_rect().topleft)) # blit coa
                 if who.commander: # commander battalion use king and queen icon
                     ## main general
                     self.iconimagerect = usecolour[0].get_rect(
@@ -188,8 +188,6 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
                 self.image_original2 = self.image.copy()
-                # for thisleader in who.leaderwho:
-                #     self.leaderpiclist.append(thisleader[1])
             if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  ## authority number change only when not same as last
                 self.image = self.image_original2.copy()
                 self.textsurface = self.font.render(str(who.authority), 1, (0, 0, 0))

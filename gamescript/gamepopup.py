@@ -9,15 +9,15 @@ class Terrainpopup(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.scaleadjust = (self.SCREENRECT.width * self.SCREENRECT.height / (1366 * 768)) # For adjusting the image and text
+        self.scaleadjust = (self.SCREENRECT.width * self.SCREENRECT.height / (1366 * 768)) # For adjusting the image and text according to screen size
         self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width()*self.scaleadjust),
                                                              int(self.images[0].get_height()*self.scaleadjust)))
         self.font = pygame.font.SysFont("helvetica", int(16*self.scaleadjust))
         self.imgpos = ((24*self.scaleadjust, 34*self.scaleadjust), (24*self.scaleadjust, 53*self.scaleadjust), # inf speed, inf atk
                        (24*self.scaleadjust, 70*self.scaleadjust), (58*self.scaleadjust, 34*self.scaleadjust), # inf def, cav speed
                        (58*self.scaleadjust, 53*self.scaleadjust), (58*self.scaleadjust, 70*self.scaleadjust)) # cav atk, cav def
-        self.modlist = (1.5, 1.2, 1, 0.7, 0.5, 0) # Stat effect from terrain (*percentage)
-        self.bonuslist = (40, 20, 10, -20, -50, -2000) # Stat bonus from terrain (+-)
+        self.modlist = (1.5, 1.2, 1, 0.7, 0.5, 0) # Stat effect level from terrain, used for select what mod image to use
+        self.bonuslist = (40, 20, 10, -20, -50, -2000) # Stat bonus level from terrain, used for select what mod image to use
 
         self.image_original = self.image.copy()
 

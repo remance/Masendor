@@ -202,26 +202,26 @@ class Unitarmy(pygame.sprite.Sprite):
         if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
         self.cansplitcol = False
         if np.array_split(self.armysquad, 2, axis=1)[0].size > 10 and np.array_split(self.armysquad, 2, axis=1)[1].size > 10: self.cansplitcol = True
-        self.authpenalty = 0
+        self.authpenalty = 0 # authority penalty
         self.tacticeffect = {}
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 128))
-        pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
-        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
-        self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.images[-1], self.imagerect)
+        self.image.fill((255, 255, 255, 128)) # draw black colour for black corner
+        pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2) # draw black corner
+        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2)) # draw block colour
+        self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center) # battalion ring
+        self.image.blit(self.images[-1], self.imagerect) # draw battalion ring into battalion image
         self.healthimagerect = self.images[0].get_rect(center=self.image.get_rect().center) # hp bar
-        self.image.blit(self.images[0], self.healthimagerect)
+        self.image.blit(self.images[0], self.healthimagerect) # draw hp bar into battalion image
         self.staminaimagerect = self.images[5].get_rect(center=self.image.get_rect().center) # stamina bar
-        self.image.blit(self.images[5], self.staminaimagerect)
+        self.image.blit(self.images[5], self.staminaimagerect) # draw stamina bar into battalion image
         self.ammoimagerect = self.images[14].get_rect(center=self.image.get_rect().center)  # ammo bar
-        self.image.blit(self.images[14], self.ammoimagerect)
-        self.coa = coa #TODO change coa to blit into leader ui instead, and change battalion ring to make it more useful (indicate range, cav)
+        self.image.blit(self.images[14], self.ammoimagerect) # draw ammo bar into battalion image
+        self.coa = coa # coat of arm image
         self.team = 1 # team1
         if self.gameid >= 2000:
             self.team = 2 # team2
-        self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.coa, self.imagerect)
+        # self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
+        # self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
         self.rect = self.image.get_rect(center=startposition)
         self.testangle = math.radians(360 - startangle)
@@ -283,8 +283,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.image.fill((255, 255, 255, 128))
         pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
-        self.imagerect = self.images[10].get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.images[10], self.imagerect)
+        self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center)  # battalion ring
+        self.image.blit(self.images[-1], self.imagerect)
         self.healthimage = self.images[0] # health bar
         self.healthimagerect = self.healthimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.healthimage, self.healthimagerect)
@@ -294,8 +294,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.ammoimage = self.images[10] # ammo bar
         self.ammoimagerect = self.ammoimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.ammoimage, self.ammoimagerect)
-        self.imagerect = self.coa.get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.coa, self.imagerect) # blit coat of arm
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()
         self.rect = self.image.get_rect(center=self.pos)
         self.testangle = math.radians(360 - self.angle)
@@ -590,14 +588,14 @@ class Unitarmy(pygame.sprite.Sprite):
                 try:
                     if self.mask.get_at(posmask) == 1:
                         self.maingame.lastmouseover = self
-                        if mouseup and self.maingame.uicheck == 0:
+                        if mouseup and self.maingame.uicheck == False:
                             self.maingame.lastselected = self
                             for hitbox in self.hitbox:
                                 hitbox.clicked()
                             if self.maingame.beforeselected is not None and self.maingame.beforeselected != self:
                                 for hitbox in self.maingame.beforeselected.hitbox:
                                     hitbox.release()
-                            self.maingame.clickcheck = 1
+                            self.maingame.clickcheck = True
                 except: pass
             ## ^ End mouse detect
             self.walk = False
@@ -1044,8 +1042,8 @@ class Unitarmy(pygame.sprite.Sprite):
             self.newangle = self.angle
             self.moverotate = 0
             self.revert = True
-            if double_mouse_right or self.runtoggle:
-                self.state -= 1
+            # if double_mouse_right or self.runtoggle:
+            #     self.state -= 1
         if self.charging:
             self.leader[0].authority -= self.authpenalty
             self.authrecal()
