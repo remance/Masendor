@@ -149,8 +149,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.angle = startangle
         self.newangle = self.angle
         self.moverotate, self.rotatecal, self.rotatecheck = 0, 0, 0
-        self.walk = False
-        self.run = False
+        self.walk = False # currently walking
+        self.run = False # currently running
         self.leaderchange = False
         self.directionarrow = False
         self.rotateonly = False # Order battalion to rotate to target direction
@@ -170,8 +170,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.attacktarget = 0
         self.neartarget = {}
         self.gotkilled = 0
-        self.combatpreparestate = False
-        self.gotcombatprepare = False
+        self.combatpreparestate = False # for initialise auto placement in melee combat
+        self.gotcombatprepare = False # for checking if the enemy is the one doing auto placement or not
         self.stopcombatmove = False
         self.troopnumber = 0
         self.stamina = 0
@@ -436,9 +436,10 @@ class Unitarmy(pygame.sprite.Sprite):
     def combatprepare(self, enemyhitbox):
         self.stopcombatmove = False
         self.combatpreparestate = True
+        self.enemyprepareside = enemyhitbox.side
         enemyhitbox.who.gotcombatprepare = True
         self.attacktarget = enemyhitbox.who
-        self.baseattackpos = self.attacktarget.allsidepos[enemyhitbox.side]
+        self.baseattackpos = self.attacktarget.allsidepos[self.enemyprepareside]
         if enemyhitbox.side == 0:
             self.attacktarget.attacktarget = self
         else:
@@ -630,15 +631,16 @@ class Unitarmy(pygame.sprite.Sprite):
                     if self.gameid != hitbox2.who.gameid:  ##colide battalion in same faction
                         hitbox.collide, hitbox2.collide = hitbox2.who.gameid, self.gameid
                         if self.team != hitbox2.who.team:
-                            """run combatprepare when combat start if army is the attacker"""
-                            if (self.combatpreparestate and hitbox2.who.gameid == self.attacktarget.gameid) or self.battlesideid[hitbox.side] == 0:
+                            if (self.combatpreparestate and hitbox2.who.gameid == self.attacktarget.gameid) \
+                                    or (self.battlesideid[hitbox.side] == 0 and hitbox2.who.battlesideid[hitbox2.side] == 0):
                                 self.battleside[hitbox.side] = hitbox2.who
                                 self.battlesideid[hitbox.side] = hitbox2.who.gameid
                                 hitbox2.who.battleside[hitbox2.side] = self
                                 hitbox2.who.battlesideid[hitbox2.side] = self.gameid
                             """set up army position to the enemyside"""
-                            if self.combatpreparestate == False and hitbox.side == 0 and self.state in (1, 2, 3, 4, 5, 6) and (hitbox2.who.combatpreparestate == False or (hitbox2.who.combatpreparestate and hitbox2.who.attacktarget.gameid != self.gameid)):
-                                self.combatprepare(hitbox2)
+                            if self.combatpreparestate == False and hitbox.side == 0 and self.state in (1, 2, 3, 4, 5, 6) and self.battleside[hitbox.side] == hitbox2.who and \
+                                    (hitbox2.who.combatpreparestate == False or (hitbox2.who.combatpreparestate and hitbox2.who.attacktarget.gameid != self.gameid)):
+                                self.combatprepare(hitbox2)    # run combatprepare when combat start if army is the attacker
             for index, battle in enumerate(self.battleside):
                 if battle is not None and self.gameid in battle.battlesideid:
                     self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, battle, index,
@@ -661,6 +663,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 """enter melee combat state when check"""
                 if self.state not in (96, 98, 99):
                     self.state = 10
+                    self.newangle = self.angle # stop rotating when get attacked
             if self.rangecombatcheck == 1: self.state = 11
             #v Retreat function
             if round(self.morale) <= 20 and self.state != 97:  ## Retreat state when morale lower than 20
@@ -734,12 +737,14 @@ class Unitarmy(pygame.sprite.Sprite):
                         basetarget[1] = 998
                     self.set_target(basetarget)
             if self.state == 10 and self.battlesideid == [0,0,0,0]: # Fight state but no collided enemy now
+                print(self.gameid, self.nocombat)
                 if self.nocombat > 0:  # For avoiding battalion bobble between two collided enemy
                     self.nocombat += dt
-                    if self.nocombat > 5:
+                    if self.nocombat > 5 or (self.attacktarget != 0 and self.attacktarget.state != 10):
                         self.nocombat = 0
                         self.combatpreparestate = False
                         self.gotcombatprepare = False
+                        self.enemyprepareside = None
                         self.state = self.commandstate
                         if self.commandstate in (3,4,5,6): # previous command is to attack enemy
                             if self.attacktarget.state == 100: # if enemy already dead then stop
@@ -752,6 +757,7 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.attacktarget = 0
                             self.baseattackpos = 0
                             self.set_target(self.commandtarget)
+                            self.setrotate()
                 else:
                     self.nocombat = 0.1
             else:
@@ -759,6 +765,7 @@ class Unitarmy(pygame.sprite.Sprite):
             #^ End retreat function
             ##Rotate Function
             if self.combatpreparestate and self.stopcombatmove == False: # Rotate army side to the enemyside
+                self.baseattackpos = self.attacktarget.allsidepos[self.enemyprepareside]
                 self.setrotate(self.attacktarget.basepos)
             if self.angle != round(self.newangle) and self.stamina > 0 and (
                     self.hitbox[0].collide == 0 or self.combatpreparestate):
@@ -882,6 +889,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                             self.state = 0
                                             self.revert = False
                                             self.commandstate = self.state
+                                            self.commandtarget = self.basetarget
                                     else: self.state = 10
                                 else:  # Rotate army to the enemy sharply to stop in combat prepare
                                     self.stopcombatmove = True
@@ -905,7 +913,8 @@ class Unitarmy(pygame.sprite.Sprite):
                                         self.frontpos = self.commandtarget
                                         self.state = 0 # idle
                                         self.revert = False
-                                        self.commandstate = self.state # command done
+                                        if self.commandtarget == self.basetarget:
+                                            self.commandstate = self.state # command done
                                 else:
                                     self.state = 10
                             else:  # Rotate army to the enemy sharply to stop in melee auto placement

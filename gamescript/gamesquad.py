@@ -589,6 +589,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.reload = round(self.reload, 0)
         self.chargedef = round((self.chargedef + disciplinecal), 0)
         self.charge = round((self.charge + disciplinecal), 0)
+        if self.ammo == 0:
+            self.shootrange = 0
         if self.attack < 0: self.attack = 0
         if self.meleedef < 0: self.meleedef = 0
         if self.rangedef < 0: self.rangedef = 0
