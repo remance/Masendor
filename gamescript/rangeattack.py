@@ -103,7 +103,7 @@ class Rangearrow(pygame.sprite.Sprite):
 
     def registerhit(self, unitlist, squadlist, squadindexlist):
         """Calculatte damage when arrow reach target"""
-        if self.arcshot:
+        if self.arcshot: # arcshot for now randomly pick squad in battalion including empty slot
             if self.side is None: self.side = random.randint(0, 3)
             for unit in pygame.sprite.spritecollide(self, unitlist, 0):
                 posmask = int(self.pos[0] - unit.rect.x), int(self.pos[1] - unit.rect.y)
@@ -112,25 +112,25 @@ class Rangearrow(pygame.sprite.Sprite):
                         calsquadlist = np.where(unit.squadalive > 1, unit.armysquad, unit.squadalive).flat
                         calsquadlist = np.delete(calsquadlist,
                                                  (calsquadlist <= 1).nonzero()[0][:round((np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
-                        squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
+                        squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)] # randomly pick one squad to receive damage
                         if squadhit not in (0, 1):
                             squadhit = np.where(squadindexlist == squadhit)[0][0]
                             self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
                 except: pass
-        elif self.arcshot == False and self.passwho != 0:
-            calsquadlist = self.passwho.frontline[self.side]
+        elif self.arcshot == False and self.passwho != 0: # direct shot will always hit squad in frontline of the side that get hit
+            calsquadlist = self.passwho.frontline[self.side] # get frontline of the side that get hit
             calsquadlist = np.delete(calsquadlist, (calsquadlist == 0).nonzero()[0])
             calsquadlist = np.delete(calsquadlist, (calsquadlist <= 1).nonzero()[0][:round(
                 (np.count_nonzero(calsquadlist <= 1)) * self.accuracy / 100)])
-            squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)]
-            if squadhit not in (0, 1):
-                squadhit = np.where(squadindexlist == squadhit)[0][0]
-                self.rangedmgcal(self.shooter, squadlist[squadhit], self.side)
+            squadhit = calsquadlist[random.randint(0, len(calsquadlist) - 1)] # randomly pick one squad to receive damage
+            if squadhit not in (0, 1): # if squad exist
+                squadhit = np.where(squadindexlist == squadhit)[0][0] # get squad object from index
+                self.rangedmgcal(self.shooter, squadlist[squadhit], self.side) # calculate damage
 
     def update(self, unitlist, hitbox, squadlist, squadindexlist, dt, viewmode):
         move = self.basetarget - self.basepos
         move_length = move.length()
-        """Calculate which side arrow will hit when it pass unit"""
+        #v Calculate which side arrow will hit when it pass unit's hitbox
         for thishitbox in pygame.sprite.spritecollide(self, hitbox, 0):
             if thishitbox.who.gameid != self.shooter.battalion.gameid:
                 posmask = int(self.pos[0] - thishitbox.rect.x), int(self.pos[1] - thishitbox.rect.y)
@@ -138,11 +138,14 @@ class Rangearrow(pygame.sprite.Sprite):
                     if thishitbox.mask.get_at(posmask) == 1:
                         self.passwho = thishitbox.who
                         self.side = thishitbox.side
-                        if self.arcshot == False:
+                        if self.arcshot == False: # if directshot then register damage right away when hit
                             self.registerhit(unitlist, squadlist, squadindexlist)
                             self.kill()
                 except:
                     pass
+        #^ End calculate side
+
+        #v Sprite move
         if move_length >= 1:
             move.normalize_ip()
             move = move * self.speed * dt
@@ -157,6 +160,6 @@ class Rangearrow(pygame.sprite.Sprite):
                 self.basepos = self.basetarget
                 self.pos = self.basepos * viewmode
                 self.rect.center = self.pos
-        else:
-            self.registerhit(unitlist, squadlist, squadindexlist)
-            self.kill()
+        else: # reach target
+            self.registerhit(unitlist, squadlist, squadindexlist) # register hit whatever unit the sprite land at
+            self.kill() # remove sprite

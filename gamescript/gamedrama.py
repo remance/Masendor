@@ -22,7 +22,7 @@ class Textdrama(pygame.sprite.Sprite):
 
     def slowdrama(self, input):
         self.textblit = False
-        self.currentlength = 20 # Current unfolded length
+        self.currentlength = 20 # Current unfolded length start at 20
         self.textinput = input
         self.leftcornerrect = self.leftcorner.get_rect(topleft=(0, 0)) # The starting point
         self.textsurface = self.font.render(self.textinput, 1, (0, 0, 0))

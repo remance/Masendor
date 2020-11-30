@@ -188,60 +188,62 @@ class Battle():
         #^ End music play
 
         #v Initialise Game Groups
-        self.allcamera = pygame.sprite.LayeredUpdates()  # the layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow, 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = squad inspect, 12 pop up
-        self.allui = pygame.sprite.LayeredUpdates()
-        self.battalionupdater = pygame.sprite.Group()
-        self.hitboxupdater = pygame.sprite.Group()
-        self.squadupdater = pygame.sprite.Group()
-        self.leaderupdater = pygame.sprite.Group()
-        self.uiupdater = pygame.sprite.Group()
-        self.weatherupdater = pygame.sprite.Group()
-        self.effectupdater = pygame.sprite.Group()
-        self.battlemap = pygame.sprite.Group()
-        self.battlemapfeature = pygame.sprite.Group()
-        self.battlemapheight = pygame.sprite.Group()
-        self.showmap = pygame.sprite.Group()
-        self.team1army = pygame.sprite.Group()
-        self.team2army = pygame.sprite.Group()
-        self.squad = pygame.sprite.Group()
-        self.armyleader = pygame.sprite.Group()
-        self.hitboxes = pygame.sprite.Group()
-        self.arrows = pygame.sprite.Group()
+        self.allcamera = pygame.sprite.LayeredUpdates() # this is layer drawer game camera, all image pos should be based on the map not screen
+        ## the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow,
+        ## 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = squad inspect, 12 pop up
+        self.allui = pygame.sprite.LayeredUpdates() # this is layer drawer for ui, all image pos should be based on the screen
+        self.battalionupdater = pygame.sprite.Group() # updater for battalion objects
+        self.hitboxupdater = pygame.sprite.Group() # updater for hitbox objects
+        self.squadupdater = pygame.sprite.Group() # updater for squad objects
+        self.leaderupdater = pygame.sprite.Group() # updater for leader objects
+        self.uiupdater = pygame.sprite.Group() # updater for ui objects
+        self.weatherupdater = pygame.sprite.Group() # updater for weather objects
+        self.effectupdater = pygame.sprite.Group() # updater for in-game effect objects (e.g. range attack sprite)
+        self.battlemap = pygame.sprite.Group() # base terrain map object
+        self.battlemapfeature = pygame.sprite.Group() # terrain feature map object
+        self.battlemapheight = pygame.sprite.Group() # height map object
+        self.showmap = pygame.sprite.Group() # beautiful map object that is shown in gameplay
+        self.team1army = pygame.sprite.Group() # taem 1 battalions group
+        self.team2army = pygame.sprite.Group() # team 2 battalions group
+        self.squad = pygame.sprite.Group() # all squads group
+        self.armyleader = pygame.sprite.Group() # all leaders group
+        self.hitboxes = pygame.sprite.Group() # all hitboxes group
+        self.arrows = pygame.sprite.Group() # all arrows group and maybe other range effect stuff later
         self.directionarrows = pygame.sprite.Group()
-        self.deadunit = pygame.sprite.Group()
-        self.gameui = pygame.sprite.Group()
-        self.minimap = pygame.sprite.Group()
-        self.eventlog = pygame.sprite.Group()
-        self.logscroll = pygame.sprite.Group()
-        self.buttonui = pygame.sprite.Group()
-        self.lorebuttonui = pygame.sprite.Group()
-        self.squadselectedborder = pygame.sprite.Group()
-        self.fpscount = pygame.sprite.Group()
-        self.switchbuttonui = pygame.sprite.Group()
-        self.terraincheck = pygame.sprite.Group()
-        self.buttonnamepopup = pygame.sprite.Group()
-        self.leaderpopup = pygame.sprite.Group()
-        self.effectpopup = pygame.sprite.Group()
-        self.skillicon = pygame.sprite.Group()
-        self.effecticon = pygame.sprite.Group()
-        self.textdrama = pygame.sprite.Group()
-        self.battlemenu = pygame.sprite.Group()
-        self.battlemenubutton = pygame.sprite.Group()
-        self.optionmenubutton = pygame.sprite.Group()
-        self.lorebook = pygame.sprite.Group()
+        self.deadunit = pygame.sprite.Group() # dead unit group
+        self.gameui = pygame.sprite.Group() # various game ui group
+        self.minimap = pygame.sprite.Group() # minimap ui
+        self.eventlog = pygame.sprite.Group() # event log ui
+        self.logscroll = pygame.sprite.Group() # scroller fro event log ui
+        self.buttonui = pygame.sprite.Group() # buttons for various ui group
+        self.lorebuttonui = pygame.sprite.Group() # buttons for enclycopedia group
+        self.squadselectedborder = pygame.sprite.Group() # squad selected border in inspect ui army box
+        self.fpscount = pygame.sprite.Group() # fps number counter
+        self.switchbuttonui = pygame.sprite.Group() # button that switch image based on current setting (e.g. battalion behaviour setting)
+        self.terraincheck = pygame.sprite.Group() # terrain information pop up ui
+        self.buttonnamepopup = pygame.sprite.Group() # button name pop up ui when mouse over button
+        self.leaderpopup = pygame.sprite.Group() # leader name pop up ui when mouse over leader image in command ui
+        self.effectpopup = pygame.sprite.Group() # effect name pop up ui when mouse over status effect icon
+        self.skillicon = pygame.sprite.Group() # skill and trait icon objects
+        self.effecticon = pygame.sprite.Group() # status effect icon objects
+        self.textdrama = pygame.sprite.Group() # dramatic text effect (announcement) object
+        self.battlemenu = pygame.sprite.Group() # esc menu object
+        self.battlemenubutton = pygame.sprite.Group() # buttons for esc menu object group
+        self.optionmenubutton = pygame.sprite.Group() # buttons for esc menu option object group
+        self.lorebook = pygame.sprite.Group() # encyclopedia object
         self.slidermenu = pygame.sprite.Group()
-        self.valuebox = pygame.sprite.Group()
-        self.armyselector = pygame.sprite.Group()
-        self.armyicon = pygame.sprite.Group()
-        self.selectscroll = pygame.sprite.Group()
-        self.timeui = pygame.sprite.Group()
-        self.timenumber = pygame.sprite.Group()
-        self.speednumber = pygame.sprite.Group()
-        self.lorenamelist = pygame.sprite.Group()
-        self.lorescroll = pygame.sprite.Group()
-        self.subsectionname = pygame.sprite.Group()
-        self.weathermatter = pygame.sprite.Group()
-        self.weathereffect = pygame.sprite.Group()
+        self.valuebox = pygame.sprite.Group() # value number and box in esc menu option
+        self.armyselector = pygame.sprite.Group() # army selector ui
+        self.armyicon = pygame.sprite.Group() # army icon object group in army selector ui
+        self.selectscroll = pygame.sprite.Group() # scoller object in army selector ui
+        self.timeui = pygame.sprite.Group() # time bar ui
+        self.timenumber = pygame.sprite.Group() # number text of in-game time
+        self.speednumber = pygame.sprite.Group() # number text of current game speed
+        self.lorenamelist = pygame.sprite.Group() # box sprite for showing subsection name list in encyclopedia
+        self.lorescroll = pygame.sprite.Group() # scroller for subsection name list in encyclopedia
+        self.subsectionname = pygame.sprite.Group() # subsection name objects group in encyclopedia blit on lorenamelist
+        self.weathermatter = pygame.sprite.Group() # sprite of weather effect group such as rain sprite
+        self.weathereffect = pygame.sprite.Group() # sprite of special weather effect group such as fog that cover whole screen
         #^ End initialise
 
         #v Assign default groups
@@ -290,9 +292,9 @@ class Battle():
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1  # Camera zoom
-        self.battlemap = gamemap.Basemap(self.camerascale)
-        self.battlemapfeature = gamemap.Mapfeature(self.camerascale)
-        self.battlemapheight = gamemap.Mapheight(self.camerascale)
+        self.battlemap = gamemap.Basemap(self.camerascale) # create base terrain map
+        self.battlemapfeature = gamemap.Mapfeature(self.camerascale) # create terrain feature map
+        self.battlemapheight = gamemap.Mapheight(self.camerascale) # create height map
         self.showmap = gamemap.Beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature, self.battlemapheight)
         del gamemap.Beautifulmap.textureimages  # remove texture image list to clear memory
         #^ End create battle map
@@ -315,6 +317,7 @@ class Battle():
 
         #v Create Starting Values
         self.mixervolume = SoundVolume
+        self.leaderposname = ("Commander","Sub-General","Sub-General","Sub-Commander","General","Sub-General","Sub-General","Advisor") # Name of leader position in battalion, the first 4 is for commander battalion
         self.playerteam = 1 # player selected team
         self.enactment = True # enactment mod, control both team
         self.gamestate = 1
@@ -677,7 +680,11 @@ class Battle():
         leadermouseover = False
         for leader in self.leadernow:
             if leader.rect.collidepoint(self.mousepos):
-                self.leaderpopup.pop(self.mousepos, leader.name)
+                if leader.battalion.commander:
+                    armyposition = self.leaderposname[leader.armyposition]
+                else:
+                    armyposition = self.leaderposname[leader.armyposition+4]
+                self.leaderpopup.pop(self.mousepos, armyposition + ": " + leader.name)
                 self.allui.add(self.leaderpopup)
                 leadermouseover = True
                 if mouseright:
@@ -733,7 +740,7 @@ class Battle():
             mouse_right = False # right click
             double_mouse_right = False # double right click
             keystate = pygame.key.get_pressed()
-            for event in pygame.event.get():  # get event input
+            for event in pygame.event.get():  # get event that happen
                 if event.type == QUIT: # quit game
                     self.allui.clear(self.screen, self.background)
                     self.allcamera.clear(self.screen, self.background)
@@ -747,8 +754,8 @@ class Battle():
                 elif event.type == KEYDOWN and event.key == K_ESCAPE: # open/close menu
                     if self.gamestate == 1: # in battle
                         self.gamestate = 0 # open munu
-                        self.allui.add(self.battlemenu)
-                        self.allui.add(*self.battlemenubutton)
+                        self.allui.add(self.battlemenu) # add menu to drawer
+                        self.allui.add(*self.battlemenubutton) # add menu button to drawer
                     else: # in menu
                         if self.battlemenu.mode in (0,1):  # in menu or option
                             if self.battlemenu.mode == 1: # option menu
@@ -793,6 +800,8 @@ class Battle():
                                     self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
                                 else:
                                     self.lorebook.currentsubsectionrow -= 1
+
+                #v register user input during gameplay
                 if self.gamestate == 1: # game in battle state
                     if event.type == pygame.MOUSEBUTTONUP:
                         if event.button == 3:  # Right Click
@@ -902,7 +911,7 @@ class Battle():
                         elif event.key == pygame.K_6:
                             self.textdrama.queue.append('Current special effect still need rework')
                         elif event.key == pygame.K_n and self.lastselected is not None:
-                            if whoinput.gameid < 2000:
+                            if whoinput.team == 1:
                                 self.allunitindex = whoinput.switchfaction(self.team1army, self.team2army, self.team1poslist, self.allunitindex,
                                                                            self.enactment)
                             else:
@@ -920,6 +929,8 @@ class Battle():
 
                         else:
                             keypress = event.key
+                #^ End register input
+
             self.allui.clear(self.screen, self.background)  # Clear sprite before update new one
             if self.gamestate == 1: # game in battle state
                 self.uiupdater.update()  # update ui

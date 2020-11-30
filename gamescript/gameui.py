@@ -67,7 +67,7 @@ class Gameui(pygame.sprite.Sprite):
         self.option = 0
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.lastwho = 0
-        if self.uitype == "topbar":
+        if self.uitype == "topbar": # setup variable for topbar ui
             position = 10
             for ic in self.icon: # Blit icon into topbar ui
                 self.iconimagerect = ic.get_rect(
@@ -83,14 +83,14 @@ class Gameui(pygame.sprite.Sprite):
                              14: "Inspired", 15: "Fervent"}
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                              7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}
-        elif self.uitype == "commandbar":
+        elif self.uitype == "commandbar": # setup variable for command bar ui
             self.iconimagerect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
             self.image.blit(self.icon[6], self.iconimagerect)
             self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]]
             self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]]
             self.lastauth = 0
-        elif self.uitype == "unitcard":
+        elif self.uitype == "unitcard": # setup variable for unit card ui
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
@@ -106,22 +106,23 @@ class Gameui(pygame.sprite.Sprite):
         #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))
         self.image_original = self.image.copy()
 
-    def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
+    def longtext(self, surface, text, pos, font, color=pygame.Color('black')):
+        """Blit long text into seperate row of text"""
         words = [word.split(' ') for word in text.splitlines()]  ## 2D array where each row is a list of words
         space = font.size(' ')[0]  ## the width of a space
-        max_width, max_height = surface.get_size()
+        maxwidth, maxheight = surface.get_size()
         x, y = pos
         for line in words:
             for word in line:
                 word_surface = font.render(word, 0, color)
-                word_width, word_height = word_surface.get_size()
-                if x + word_width >= max_width:
+                wordwidth, wordheight = word_surface.get_size()
+                if x + wordwidth >= maxwidth:
                     x = pos[0]  ## reset x
-                    y += word_height  ## start on new row.
+                    y += wordheight  ## start on new row.
                 surface.blit(word_surface, (x, y))
-                x += word_width + space
+                x += wordwidth + space
             x = pos[0]  ## reset x
-            y += word_height  ## start on new row
+            y += wordheight  ## start on new row
 
     def valueinput(self, who, weaponlist="", armourlist="", button="", changeoption=0, splithappen=False):
         for thisbutton in button:
@@ -179,11 +180,11 @@ class Gameui(pygame.sprite.Sprite):
                     self.iconimagerect = usecolour[5].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[5], self.iconimagerect)
-                self.iconimagerect = usecolour[3].get_rect(center=(                     # left sub general
+                self.iconimagerect = usecolour[3].get_rect(center=(      # left sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[3], self.iconimagerect)
-                self.iconimagerect = usecolour[0].get_rect(center=(                    ## right sub general
+                self.iconimagerect = usecolour[0].get_rect(center=(      # right sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
@@ -239,7 +240,7 @@ class Gameui(pygame.sprite.Sprite):
                         row += 1
                         if row == 9: positionx, position = 200, 35
                 elif self.option == 0:  ## description card
-                    self.blit_text(self.image, self.description, (42, 25), self.fontlong) # blit long description
+                    self.longtext(self.image, self.description, (42, 25), self.fontlong) # blit long description
                 elif self.option == 3:  ## equipment and terrain
                     terrain = self.terrainlist[who.terrain]
                     if who.feature is not None: terrain += "/" + self.featurelist[who.feature]
@@ -609,7 +610,7 @@ class Armyicon(pygame.sprite.Sprite):
         self.image.fill((0, 0, 0))
         centerimage = pygame.Surface((self.leaderimage.get_width() + 2, self.leaderimage.get_height() + 2))
         centerimage.fill((144, 167, 255))
-        if self.army.gameid >= 2000:
+        if self.army.team == 2:
             centerimage.fill((255, 114, 114))
         imagerect = centerimage.get_rect(topleft=(1, 1))
         self.image.blit(centerimage, imagerect)
@@ -618,13 +619,15 @@ class Armyicon(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
     def changepos(self, pos):
+        """change position of icon to new one"""
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
     def changeimage(self, newimage=None, changeside=False):
+        """For changing side"""
         if changeside:
             self.image.fill((144, 167, 255))
-            if self.army.gameid >= 2000:
+            if self.army.team == 2:
                 self.image.fill((255, 114, 114))
             self.image.blit(self.leaderimage, self.leaderrect)
         if newimage is not None:

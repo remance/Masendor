@@ -31,13 +31,12 @@ class Leader(pygame.sprite.Sprite):
         self.battalion = battalion
         # self.mana = stat
         self.gamestart = 0
-        self.armyposition = armyposition
-        self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]
-        self.imgposition = self.baseimgposition[self.armyposition]
-        ## put leader image into leader slot
-        try:
+        self.armyposition = armyposition # position in the battalion (e.g. general or sub-general)
+        self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)] # leader image position in command ui
+        self.imgposition = self.baseimgposition[self.armyposition] # image position based on armyposition
+        try:  # Put leader image into leader slot
             self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
-        except:  ## Use Unknown leader image if there is none in list
+        except:  # Use Unknown leader image if there is none in list
             self.fullimage = leaderstat.imgs[-1].copy()
         self.image = pygame.transform.scale(self.fullimage, (50, 50))
         self.rect = self.image.get_rect(center=self.imgposition)
@@ -62,6 +61,7 @@ class Leader(pygame.sprite.Sprite):
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
 
     def gone(self):
+        """leader no longer in command due to death or other events"""
         eventtext = {96:"retreat",97:"captured",98:"missing",99:"wounded",100:"dead"}
         if self.commander and self.battalion.leader[3].state not in (96, 97, 98, 99, 100) and self.battalion.leader[3].name != "None":
             ## If commander die will use strategist as next commander first
@@ -72,20 +72,22 @@ class Leader(pygame.sprite.Sprite):
         if self.state == 99: # wonnd inflict less morale penalty
             thisbadmorale = self.badmorale[1]
         for squad in self.battalion.squadsprite:
-            squad.basemorale -= thisbadmorale  ## decrease all squad morale when leader die depending on position
-        if self.commander:  ## reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
+            squad.basemorale -= thisbadmorale  ##decrease all squad morale when leader die depending on position
+            squad.moraleregen -= 0.3 # all squad morale regen slower per leader dead
+        if self.commander:  # reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
             self.maingame.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
-            eventmapid = "ld0"
+            eventmapid = "ld0" # read ld0 event log for special log when team 1 commander die, not used for other leader
             whicharmy = self.maingame.team1army
-            if self.battalion.gameid >= 2000:
+            if self.battalion.team == 2: # team2
                 whicharmy = self.maingame.team2army
-                eventmapid = "ld1"
-            if self.originalcommander:
+                eventmapid = "ld1" # read ld1 event log for special log when team 2 commander die, not used for other leader
+            if self.originalcommander and self.state == 100:
                 self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
             else: self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2])
             for army in whicharmy:
                 for squad in army.squadsprite:
-                    squad.basemorale -= 100
+                    squad.basemorale -= 100 # all squad morale -100 when commander die
+                    squad.moraleregen -= 0.5  #  all squad morale regen even slower per commander dead
         else:
             self.maingame.eventlog.addlog([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])
         for index, leader in enumerate(self.battalion.leader):  ## also change army position of all leader in that battalion
@@ -96,7 +98,7 @@ class Leader(pygame.sprite.Sprite):
             leader.rect = leader.image.get_rect(center=leader.imgposition)
             self.poschangestat(leader)
         self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
-                                      (self.battalion.leader[0].cavcommand - 5) * 0.1]
+                                      (self.battalion.leader[0].cavcommand - 5) * 0.1] # reset command buff to new leader
         self.authority = 0
         self.meleecommand = 0
         self.rangecommand = 0
@@ -109,10 +111,10 @@ class Leader(pygame.sprite.Sprite):
 
     def update(self):
         if self.gamestart == 0:
-            self.squad = self.battalion.squadsprite[self.squadpos]
+            self.squad = self.battalion.squadsprite[self.squadpos] # setup squad that leader belong
             self.gamestart = 1
         if self.state not in (96, 97, 98, 99, 100):
-            if self.health <= 0:
+            if self.health <= 0: # die
                 self.health = 0
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0

@@ -401,7 +401,7 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
 
 def die(who, battle, group, enemygroup):
     """remove battalion,hitbox when it dies"""
-    if who.gameid < 2000:
+    if who.team == 1:
         battle.team1poslist.pop(who.gameid)
     else:
         battle.team2poslist.pop(who.gameid)
@@ -516,7 +516,7 @@ def splitunit(battle, who, how):
     who.maxmorale = maxmorale
     who.ammo75, who.ammo50, who.ammo25 = round(who.ammo * 0.75), round(who.ammo * 0.50), round(who.ammo * 0.25)
     ## start making new battalion
-    if who.gameid < 2000:
+    if who.team == 1:
         playercommand = True
         whosearmy = battle.team1army
         colour = (144, 167, 255)

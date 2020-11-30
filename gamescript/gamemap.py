@@ -184,7 +184,8 @@ class Beautifulmap(pygame.sprite.Sprite):
                 newcolour = self.newcolourlist[feature][1]
                 rect = pygame.Rect(rowpos, colpos, 1, 1)
                 self.image.fill(newcolour, rect)
-        ## Comment out this part and import PIL above if not want to use blur filtering
+
+        #v Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, 'RGB')  ## Convert image to string data for filtering effect
         img = Image.frombytes('RGB', (1000, 1000), data)  ## Use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  ## Blue Image (or apply other filter in future)
@@ -194,7 +195,8 @@ class Beautifulmap(pygame.sprite.Sprite):
             (1000, 1000))  ## For unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
-        ## PIL module code till here
+        #^ PIL module code till here
+
         for rowpos in range(0, 991):  ## Put in terrain texture
             for colpos in range(0, 991):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
