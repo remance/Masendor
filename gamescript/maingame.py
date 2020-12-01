@@ -934,6 +934,8 @@ class Battle():
             self.allui.clear(self.screen, self.background)  # Clear sprite before update new one
             if self.gamestate == 1: # game in battle state
                 self.uiupdater.update()  # update ui
+
+                #v Camera movement
                 if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  # Camera move down
                     self.basecamerapos[1] += 5 * (11 - self.camerascale) # need "11 -" for converting cameral scale so the further zoom camera move faster
                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale # resize camera pos
@@ -951,18 +953,20 @@ class Battle():
                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale # resize camera pos
                     self.camerafix()
                 self.cameraupcorner = (self.camerapos[0] - self.centerscreen[0], self.camerapos[1] - self.centerscreen[1]) # calculate top left corner of camera position
+                #^ End camera movement
+
                 self.battlemousepos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
-                                                        self.mousepos[1] - self.centerscreen[1] + self.camerapos[1])
-                self.battlemousepos[1] = self.battlemousepos[0] / self.camerascale
+                                                        self.mousepos[1] - self.centerscreen[1] + self.camerapos[1]) # mouse pos on the map based on camare position
+                self.battlemousepos[1] = self.battlemousepos[0] / self.camerascale # mouse pos on the map at current camera zoom scale
                 if self.mousetimer != 0: # player click mouse once before
                     self.mousetimer += self.uidt # increase timer for mouse click using real time
-                    if self.mousetimer >= 0.3:
-                        self.mousetimer = 0
+                    if self.mousetimer >= 0.3: # time pass 0.3 second no longer count as double click
+                        self.mousetimer = 0 # reset timer
                 if self.terraincheck in self.allui and (
                         self.terraincheck.pos != self.mousepos or keystate[K_s] or keystate[K_w] or keystate[K_a] or keystate[K_d]):
                     self.allui.remove(self.terraincheck) # remove terrain popup when move mouse or camera
                 if mouse_up or mouse_right or mouse_down:
-                    self.uicheck = False
+                    self.uicheck = False # reset mouse check on ui, if stay false it mean mouse click is not on any ui
                     if mouse_up:
                         self.clickcheck = False
                         self.clickcheck2 = False

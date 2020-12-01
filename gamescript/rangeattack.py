@@ -16,39 +16,42 @@ class Rangearrow(pygame.sprite.Sprite):
     def __init__(self, shooter, shootrange, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.speed = 50
+        self.speed = 50 # arrow speed
         self.image = self.images[0]
         self.image_original = self.image.copy()
-        self.shooter = shooter
-        self.arcshot = False
-        if self.shooter.arcshot and self.shooter.battalion.shoothow != 2: self.arcshot = True
+        self.shooter = shooter # squad that shoot arrow
+        self.arcshot = False # direct shot will no go pass collided battalion
+        if self.shooter.arcshot and self.shooter.battalion.shoothow != 2: self.arcshot = True # arc shot will go pass battalion to land at final target
         self.startheight = self.shooter.battalion.height
         self.accuracy = self.shooter.accuracy
-        if self.shooter.state in (12, 13) and self.shooter.agileaim == False: self.accuracy -= 10
-        self.passwho = 0
-        self.side = None
-        randomposition1, randomposition2 = random.randint(0, 1), random.randint(0, 5)  ## randpos1 is for left or right random
+        if self.shooter.state in (12, 13) and self.shooter.agileaim == False: self.accuracy -= 10 # accuracy penalty for shoot while moving
+        self.passwho = 0 # check which battalion arrow passing through
+        self.side = None # hitbox side that arrow collided last
+        randomposition1 = random.randint(0, 1)  ## randpos1 is for left or right random
+
+        #v Calculate hitchance and final target where arrow will land
         hitchance = self.accuracy * (
                     100 - ((shootrange * 100 / maxrange) / 2)) / 100  ## the further hitchance from 0 the further arrow will land from target
         if hitchance == 0: hitchance = 1
-        """73 no range penalty, 74 long rance accuracy"""
-        if self.shooter.norangepenal:
+        if self.shooter.norangepenal: # 73 no range penalty
             hitchance = self.accuracy
-        elif self.shooter.longrangeacc:
+        elif self.shooter.longrangeacc: #  74 long rance accuracy
             hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  ## range penalty half
-        howlong = shootrange / self.speed
+        howlong = shootrange / self.speed # shooting distance divide arrow speed to find travel time
         targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
-            targetnow = self.shooter.attacktarget.basepos
-            if self.shooter.attacktarget.state in (1, 3, 5, 7) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
-                targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos
+            targetnow = self.shooter.attacktarget.basepos # target is at the enemy position
+
+            #v target moving, predictively find position the enemy will be at based on movement speed and arrow travel time
+            if self.shooter.attacktarget.state in (1, 3, 5, 7) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5: # target walking
+                targetmove = self.shooter.attacktarget.basetarget - self.shooter.attacktarget.basepos # calculate target movement distance
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
                     targetnow = self.shooter.attacktarget.basepos + ((targetmove * (self.shooter.attacktarget.walkspeed * howlong)) / 11)
                     if self.shooter.agileaim == False: hitchance -= 10
-                else:
+                else: # movement too short, simiply hit the current position
                     targetnow = self.shooter.attacktarget.basepos
-            elif self.shooter.attacktarget.state in (2, 4, 6, 8, 96, 98, 99) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5:
+            elif self.shooter.attacktarget.state in (2, 4, 6, 8, 96, 98, 99) and self.shooter.attacktarget.moverotate == 0 and howlong > 0.5: # target running
                 targetmove = self.shooter.attacktarget.target - self.shooter.attacktarget.basepos
                 if targetmove.length() > 1:
                     targetmove.normalize_ip()
@@ -56,16 +59,22 @@ class Rangearrow(pygame.sprite.Sprite):
                     if self.shooter.agileaim == False: hitchance -= 20
                 else:
                     targetnow = self.shooter.attacktarget.basepos
-        hitchance = random.randint(int(hitchance), 100)
-        if random.randint(0, 100) > hitchance:
-            if randomposition1 == 0:
+            #^ End target moving
+
+        hitchance = random.randint(int(hitchance), 100) # random hit chance
+        if random.randint(0, 100) > hitchance: # miss, not land exactly at target
+            if randomposition1 == 0: # hitchance convert to percentage from target
                 hitchance = 100 + (hitchance / 20)
             else:
                 hitchance = 100 - (hitchance / 20)
             self.basetarget = pygame.Vector2(targetnow[0] * hitchance / 100, targetnow[1] * hitchance / 100)
-        else:
+        else: # perfect hit, slightly (randomly) land near target
             self.basetarget = targetnow * random.uniform(0.99, 1.01)
-        self.targetheight = self.gamemapheight.getheight(self.basetarget)
+        self.targetheight = self.gamemapheight.getheight(self.basetarget) # get the height at target
+        #^ End calculate hitchance and target
+
+
+        #v Rotate arrow sprite
         myradians = math.atan2(self.basetarget[1] - self.shooter.battalion.basepos[1], self.basetarget[0] - self.shooter.battalion.basepos[0])
         self.angle = math.degrees(myradians)
         # """upper left and upper right"""
@@ -78,6 +87,8 @@ class Rangearrow(pygame.sprite.Sprite):
         elif self.angle > 90 and self.angle <= 180:
             self.angle = 270 - self.angle
         self.image = pygame.transform.rotate(self.image, self.angle)
+        #^ End rotate
+
         self.rect = self.image.get_rect(midbottom=(self.shooter.truepos[0] , self.shooter.truepos[1]))
         self.basepos = pygame.Vector2(self.shooter.truepos[0] , self.shooter.truepos[1])
         self.pos = self.basepos * viewmode
@@ -85,26 +96,26 @@ class Rangearrow(pygame.sprite.Sprite):
 
     def rangedmgcal(self, who, target, targetside,sidepercent = [1, 0.3, 0.3, 0]):
         """Calculate hitchance and defense chance, sidepercent is more punishing than melee attack"""
-        wholuck = random.randint(-20, 20)
-        targetluck = random.randint(-20, 20)
-        targetpercent = sidepercent[targetside]
-        if target.fulldef or target.tempfulldef: targetpercent = 1
-        whohit = float(self.accuracy) + wholuck
-        if whohit < 0: whohit = 0
-        targetdefense = float(target.rangedef * targetpercent) + targetluck
-        if targetdefense < 0: targetdefense = 0
+        wholuck = random.randint(-20, 20) # luck of the attacker squad
+        targetluck = random.randint(-20, 20) # luck of the defender squad
+        targetpercent = sidepercent[targetside] # side penalty
+        if target.fulldef or target.tempfulldef: targetpercent = 1 # no side penalty for all round defend
+        whohit = float(self.accuracy) + wholuck # calculate hit chance
+        if whohit < 0: whohit = 0 # hitchance cannot be negative
+        targetdefense = float(target.rangedef * targetpercent) + targetluck # calculate defense
+        if targetdefense < 0: targetdefense = 0 # defense cannot be negative
         whodmg, whomoraledmg, wholeaderdmg = gamelongscript.losscal(who, target, whohit, targetdefense, 1)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
-        if who.elemrange not in (0, 5):  ## apply element effect if atk has element
-            target.elemcount[who.elemrange - 1] += (whodmg / 100)
+        if who.elemrange not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
+            target.elemcount[who.elemrange - 1] += round(whodmg * (100 - target.elemresist[who.elemrange - 1] / 100))
         if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
             target.leader.health -= wholeaderdmg
 
     def registerhit(self, unitlist, squadlist, squadindexlist):
         """Calculatte damage when arrow reach target"""
         if self.arcshot: # arcshot for now randomly pick squad in battalion including empty slot
-            if self.side is None: self.side = random.randint(0, 3)
+            if self.side is None: self.side = random.randint(0, 3) # to prevent bug where somehow cannot find side of hitbox
             for unit in pygame.sprite.spritecollide(self, unitlist, 0):
                 posmask = int(self.pos[0] - unit.rect.x), int(self.pos[1] - unit.rect.y)
                 try:

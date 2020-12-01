@@ -45,10 +45,12 @@ class Lorebook(pygame.sprite.Sprite):
         self.showsubsection2 = None  ## Subsection lore showing
         self.subsectionlist = None
         self.portrait = None
+
+        #v Make new equipment list that contain all type
         self.equipmentstat = {}
         run = 1
         self.equipmentlastindex = []
-        for statlist in (self.weaponstat, self.armourstat, self.mountstat):  ## Make new equipment list that contain all type
+        for statlist in (self.weaponstat, self.armourstat, self.mountstat):
             for index in statlist:
                 if index != "ID":
                     self.equipmentstat[run] = statlist[index]
@@ -56,6 +58,8 @@ class Lorebook(pygame.sprite.Sprite):
                 else:
                     self.equipmentstat[index + str(run)] = statlist[index]
             self.equipmentlastindex.append(run)
+        #^ End new equipment list
+
         self.sectionlist = ((self.conceptstat,self.conceptlore), (self.historystat, self.historylore), (self.factionlore, None), (self.unitstat, self.unitlore),
                             (self.equipmentstat, None), (self.statusstat, None), (self.skillstat, None),
                             (self.traitstat, None), (self.leaderstat, self.leaderlore), (self.terrainstat, None), (self.weatherstat, None))
@@ -73,21 +77,23 @@ class Lorebook(pygame.sprite.Sprite):
         self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
 
     def changepage(self, page, portrait=None):
+        """Change page of the current subsection, either next or previous page"""
         self.page = page
-        self.image = self.image_original.copy()
-        self.pagedesign()
+        self.image = self.image_original.copy() # reset encyclopedia image
+        self.pagedesign() # draw new pages
 
     def changesection(self, section, listsurface, listgroup, lorescroll):
+        """Change to new section either by open encyclopedia or click section button"""
         self.portrait = None
-        self.section = section
-        self.subsection = 1
-        self.statdata = self.sectionlist[self.section][0]
-        self.loredata = self.sectionlist[self.section][1]
-        self.maxpage = 0
-        self.currentsubsectionrow = 0
-        thislist = self.statdata.values()
-        self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]]
-        self.logsize = len(self.subsectionlist)
+        self.section = section # get new section
+        self.subsection = 1 # reset subsection to the first one
+        self.statdata = self.sectionlist[self.section][0] # get new stat data of the new section
+        self.loredata = self.sectionlist[self.section][1] # get new lore data of the new section
+        self.maxpage = 0 # reset max page
+        self.currentsubsectionrow = 0 # reset subsection scroll to the top one
+        thislist = self.statdata.values() # list of subsection
+        self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]] # remove the header from subsection list
+        self.logsize = len(self.subsectionlist) # get size of subsection list
         self.changesubsection(self.subsection)
         self.setupsubsectionlist(listsurface, listgroup)
         lorescroll.changeimage(logsize=self.logsize)
@@ -95,54 +101,55 @@ class Lorebook(pygame.sprite.Sprite):
 
     def changesubsection(self, subsection):
         self.subsection = subsection
-        self.page = 0
-        self.image = self.image_original.copy()
-        self.portrait = None
-        if self.loredata is not None:
+        self.page = 0 # reset page to the first one
+        self.image = self.image_original.copy() # reset encyclopedia image
+        self.portrait = None # reset portrait
+        if self.loredata is not None: # some subsection may not have lore data
             self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
         if self.section != 8:
-            self.pagedesign()
-        else: ## leader section
+            self.pagedesign() # draw new pages
+        else: ## leader section exclusive for now (will merge wtih other section when add portrait for others)
             try:
-                self.portrait = self.leader.imgs[self.leader.imgorder.index(self.subsection)].copy()
-            except:  ## Use Unknown leader image if there is none in list
-                self.portrait = self.leader.imgs[-1].copy()
-            self.portrait = pygame.transform.scale(self.portrait, (150, 150))
+                self.portrait = self.leader.imgs[self.leader.imgorder.index(self.subsection)].copy() # get leader portrait based on subsection number as index
+            except:
+                self.portrait = self.leader.imgs[-1].copy() # Use Unknown leader image if there is none in list
+            self.portrait = pygame.transform.scale(self.portrait, (150, 150)) # scale leader image to 150x150
             self.pagedesign()
 
     def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
         words = [word.split(' ') for word in text.splitlines()]  ## 2D array where each row is a list of words
         space = font.size(' ')[0]  ## the width of a space
-        max_width, max_height = surface.get_size()
+        maxwidth, maxheight = surface.get_size()
         x, y = pos
         for line in words:
             for word in line:
-                word_surface = font.render(word, 0, color)
-                word_width, word_height = word_surface.get_size()
-                if x + word_width >= max_width:
+                wordsurface = font.render(word, 0, color)
+                wordwidth, wordheight = wordsurface.get_size()
+                if x + wordwidth >= maxwidth:
                     x = pos[0]  ## reset x
-                    y += word_height  ## start on new row.
-                surface.blit(word_surface, (x, y))
-                x += word_width + space
+                    y += wordheight  ## start on new row.
+                surface.blit(wordsurface, (x, y))
+                x += wordwidth + space
             x = pos[0]  ## reset x
-            y += word_height  ## start on new row
+            y += wordheight  ## start on new row
 
     def setupsubsectionlist(self, listsurface, listgroup):
+        """generate list of subsection of the left side of encyclopedia"""
         row = 15
         column = 15
         pos = listsurface.rect.topleft
         if self.currentsubsectionrow > self.logsize - self.maxsubsectionshow:
             self.currentsubsectionrow = self.logsize - self.maxsubsectionshow
-        if len(listgroup) > 0:
+        if len(listgroup) > 0: # remove previous subsection in the group before generate new one
             for stuff in listgroup:
                 stuff.kill()
                 del stuff
         listloop = [item for item in list(self.statdata.keys()) if type(item) != str]
         for index, item in enumerate(self.subsectionlist):
             if index >= self.currentsubsectionrow:
-                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, listloop[index]))
-                row += 30
-                if len(listgroup) > self.maxsubsectionshow: break
+                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, listloop[index])) # add new subsection sprite to group
+                row += 30 # next row
+                if len(listgroup) > self.maxsubsectionshow: break # will not generate more than space allowed
 
     def pagedesign(self):
         """Lore book format position of the text"""

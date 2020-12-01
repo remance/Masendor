@@ -341,7 +341,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
     receiver.unithealth -= finaldmg
     receiver.basemorale -= (finalmoraledmg + attacker.bonusmoraledmg)
     receiver.stamina -= attacker.bonusstaminadmg
-    if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element
+    if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
         receiver.elemcount[attacker.elemmelee - 1] += round(finaldmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
     attacker.basemorale += round((finalmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
     if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 8:  # dmg on squad leader

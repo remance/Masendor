@@ -448,41 +448,44 @@ class Unitarmy(pygame.sprite.Sprite):
         self.set_target(enemyhitbox.who.allsidepos[enemyhitbox.side]) # set new target to the position of enemy side for auto placement
 
     def makeallsidepos(self):
-        """generate all four side position"""
-        self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  ## Generate all four side position
+        """generate all four side, hitbox and squad positions"""
+        self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  # Generate all four side position
                            ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
                            ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
                            (self.basepos[0], (self.basepos[1] + self.baseheightbox / 2))]
-        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  ## generate again but with rotation in calculation
+        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  # rotate the new four side according to sprite rotation
                            rotationxy(self.basepos, self.allsidepos[1], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[2], self.testangle),
                            rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
-        self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)),
+        self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)), # generate new hitbox position for each side
                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
-        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle),
-                          rotationxy(self.rect.center, self.hitboxpos[1], self.testangle)
-            , rotationxy(self.rect.center, self.hitboxpos[2], self.testangle), rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
-        battaliontopleft = pygame.Vector2(self.basepos[0] - self.basewidthbox / 2,
+        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle), # rotate the four hitboxes according to sprite rotation
+                          rotationxy(self.rect.center, self.hitboxpos[1], self.testangle),
+                          rotationxy(self.rect.center, self.hitboxpos[2], self.testangle),
+                          rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
+        battaliontopleft = pygame.Vector2(self.basepos[0] - self.basewidthbox / 2, # get the top left corner of sprite to generate squad position
                                          self.basepos[1] - self.baseheightbox / 2)
-        for squad in self.squadsprite:
+        for squad in self.squadsprite: # generate position of each squad
             squad.truepos = (battaliontopleft[0] + (squad.armypos[0] / 10), battaliontopleft[1] + (squad.armypos[1] / 10))
-            squad.truepos = pygame.Vector2(rotationxy(self.basepos, squad.truepos, self.testangle))
-            squad.terrain, squad.feature = self.getfeature(squad.truepos, self.gamemap)
-            squad.height = self.gamemapheight.getheight(squad.truepos)
+            squad.truepos = pygame.Vector2(rotationxy(self.basepos, squad.truepos, self.testangle)) # rotate according to sprite current rotation
+            squad.terrain, squad.feature = self.getfeature(squad.truepos, self.gamemap) # get new terrain and feature at each squad position
+            squad.height = self.gamemapheight.getheight(squad.truepos) # get new height
 
     def authrecal(self):
+        """recalculate authority from all alive leaders"""
+        self.authority = int(
+            self.leader[0].authority + (self.leader[1].authority / 3) + (self.leader[2].authority / 3) + (self.leader[3].authority / 5))
+        bigarmysize = self.armysquad > 0
+        bigarmysize = bigarmysize.sum()
+        if bigarmysize > 20:
             self.authority = int(
-                self.leader[0].authority + (self.leader[1].authority / 3) + (self.leader[2].authority / 3) + (self.leader[3].authority / 5))
-            bigarmysize = self.armysquad > 0
-            bigarmysize = bigarmysize.sum()
-            if bigarmysize > 20:
-                self.authority = int(
-                    (self.leader[0].authority * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
-                    self.leader[3].authority / 4)
+                (self.leader[0].authority * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+                self.leader[3].authority / 4)
 
     def startset(self, squadgroup):
+        """Setup stuff at the start of game or when battalion spawn"""
         self.setuparmy()
         self.setupfrontline()
         self.setupfrontline(specialcall=True)
@@ -510,22 +513,23 @@ class Unitarmy(pygame.sprite.Sprite):
         self.changeposscale()
 
     def viewmodechange(self):
+        """camera zoom change and rescale the sprite and position scale"""
         if self.viewmode != 1:  ## battalion view
-            self.image_original = self.image_original3.copy()
+            self.image_original = self.image_original3.copy() # reset image for new scale
             self.changescale()
         elif self.viewmode == 1:  ## Squad view when zoom closest (10 in other class without need zoom image)
-            self.image_original = self.image_original2.copy()
+            self.image_original = self.image_original2.copy() # reset image to the closest zoom original
             self.squadtoarmy()
             self.changescale()
         self.changeposscale()
         self.rotate()
-        self.mask = pygame.mask.from_surface(self.image)
+        self.mask = pygame.mask.from_surface(self.image) # create new mask
 
     def update(self, weather, squadgroup, dt, viewmode, mousepos, mouseup):
         if self.gamestart == False:
             self.startset(squadgroup)
             self.gamestart = True
-        """redraw if troop num or stamina change"""
+        #v redraw if troop num or stamina change
         if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.ammo != self.oldammo or self.viewmode != (11 - viewmode):
             if self.viewmode != (11 - viewmode):
                 self.zoomviewchange = True
@@ -575,6 +579,8 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.rotate()
                     self.squadimgchange = []
                     self.zoomviewchange = False
+        #^ End redraw
+
         if self.state != 100:
             if self.team == 1:
                 self.maingame.team1poslist[self.gameid] = self.basepos
@@ -582,7 +588,7 @@ class Unitarmy(pygame.sprite.Sprite):
             else:
                 self.maingame.team2poslist[self.gameid] = self.basepos
                 thisposlist = self.maingame.team1poslist
-            ## Mouse collision detect
+            #v Mouse collision detect
             if self.rect.collidepoint(mousepos):
                 posmask = int(mousepos[0] - self.rect.x), int(mousepos[1] - self.rect.y)
                 try:
@@ -597,7 +603,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                     hitbox.release()
                             self.maingame.clickcheck = True
                 except: pass
-            ## ^ End mouse detect
+            #^ End mouse detect
             self.walk = False
             self.run = False
             if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps
@@ -616,14 +622,16 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.authrecalnow:
                 self.authrecal()
                 self.authrecalnow = False
-            # Setup frontline again when any squad die
+
+            #v Setup frontline again when any squad die
             if self.deadchange == True:
                 self.setupfrontline()
                 for squad in self.squadsprite:
                     squad.basemorale -= 30
                 self.deadchange = False
             # ^End setup frontline when squad die
-            ## Combat and unit update
+
+            #v Combat and unit update
             for hitbox in self.hitbox:
                 collidelist = pygame.sprite.spritecollide(hitbox, self.maingame.hitboxes, dokill=False, collided=pygame.sprite.collide_mask)
                 for hitbox2 in collidelist:
@@ -644,9 +652,11 @@ class Unitarmy(pygame.sprite.Sprite):
                 if battle is not None and self.gameid in battle.battlesideid:
                     self.squadcombatcal(self.maingame.squad, self.maingame.squadindexlist, battle, index,
                                         battle.battlesideid.index(self.gameid))
-            ## ^End combat update
+            #^ End combat update
+
             # if self.attacktarget != 0: self.baseattackpos = self.attacktarget.basepos
-            ## Recal stat involve leader if one die
+
+            #v Recal stat involve leader if one die
             if self.leaderchange:
                 self.authrecal()
                 for leader in self.leader:
@@ -656,7 +666,8 @@ class Unitarmy(pygame.sprite.Sprite):
                                     (self.leader[0].cavcommand - 5) * 0.1]
                 self.startauth = self.authority
                 self.leaderchange = False
-            ## ^End recal stat when leader die
+            #^ End recal stat when leader die
+
             if self.battlesideid != [0,0,0,0]:
                 self.rangecombatcheck = 0 # can not use range attack in melee combat
                 """enter melee combat state when check"""
@@ -664,6 +675,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.state = 10
                     self.newangle = self.angle # stop rotating when get attacked
             if self.rangecombatcheck == 1: self.state = 11
+
             #v Retreat function
             if round(self.morale) <= 20 and self.state != 97:  ## Retreat state when morale lower than 20
                 self.state = 98
@@ -673,20 +685,20 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.morale <= 10:  ## Broken state
                     self.morale, self.state = 0, 99
             elif self.state == 98 and self.morale >= self.brokenlimit/2:  # quit retreat when morale reach increasing limit
-                self.state = 0
+                self.state = 0 # become idle, not resume previous command
                 self.retreattimer = 0
                 self.retreatstart = 0
                 self.retreatway = None
                 self.set_target(self.basepos)
                 self.brokenlimit += random.randint(1,10)
             elif self.state == 99 and self.morale >= self.brokenlimit: # quit broken when morale reach increasing limit
-                self.state = 0
-                self.retreattimer = 0
+                self.state = 0 # become idle, not resume previous command
+                self.retreattimer = 0 # no longer retreat
                 self.retreatstart = 0
                 self.retreatway = None
                 self.set_target(self.basepos)
                 self.brokenlimit += random.randint(5,15)
-            if self.retreattimer > 0:
+            if self.retreattimer > 0: # update retreat timer
                 self.retreattimer += dt
             if self.retreatstart == 1:
                 retreatside = [hitbox.side for hitbox in self.hitbox if hitbox.collide == 0]
@@ -769,10 +781,10 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.nocombat = 0
             #^ End end of fight code
 
-            #V Rotate Function
-            if self.combatpreparestate and self.stopcombatmove == False: # Rotate army side to the enemyside
-                self.baseattackpos = self.attacktarget.allsidepos[self.enemyprepareside]
-                self.setrotate(self.attacktarget.basepos)
+            #v Rotate Function
+            if self.combatpreparestate and self.stopcombatmove == False: # Rotate army side to the enemyside during auto placement
+                self.baseattackpos = self.attacktarget.allsidepos[self.enemyprepareside] # set attack position to enemy side
+                self.setrotate(self.attacktarget.basepos) # rotate to enemy center position
             if self.angle != round(self.newangle) and self.stamina > 0 and (
                     self.hitbox[0].collide == 0 or self.combatpreparestate):
                 self.rotatecal = abs(round(self.newangle) - self.angle)
@@ -814,7 +826,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.mask = pygame.mask.from_surface(self.image) # make new mask
             elif self.moverotate and self.angle == round(self.newangle):  # Finish rotate
                 self.moverotate = False
-                """Can only enter range attack state after finishing rotate"""
+
+                #v Perform range attack, can only enter range attack state after finishing rotate
                 shootrange = self.maxrange
                 if self.useminrange == 0:
                     shootrange = self.minrange
@@ -828,13 +841,14 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.rangecombatcheck = 0
                     self.set_target(self.attacktarget.basepos)
                     self.setrotate(self.basetarget)
+                #^ End range attack state
             #^ End rotate function
 
-            #v Move function
+            #v Move function to given target position
             if self.frontpos != self.basetarget and self.rangecombatcheck != 1:
                 self.charging = False
-                # """Setup target to move to give target position, this can be changed in move fuction (i.e. stopped due to fight and resume moving after finish fight)"""
-                ## Chase target and rotate accordingly
+
+                #v Chase target and rotate accordingly
                 if self.state in (3, 4, 5, 6, 10) and self.commandstate in (3,4,5,6) and self.attacktarget != 0 \
                         and self.combatpreparestate == False and self.hold == 0:
                     cantchase = False
@@ -851,42 +865,40 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.baseattackpos = self.basetarget
                         self.setrotate(self.basetarget)
                 ## ^End chase
+
                 if self.state in (3, 4) and type(self.baseattackpos) != int and self.moverotate == False:
                     if self.baseattackpos.distance_to(self.frontpos) < 15:
                         self.charging = True
-                """check for hitbox collide according to which ever closest to the target position"""
                 if self.state not in (0, 97) and self.stamina > 0 and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax):
-                    side, side2 = self.allsidepos.copy(), {}
+                    side, side2 = self.allsidepos.copy(), {} # check for self hitbox collide according to which ever closest to the target position
                     for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.basetarget)
                     side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}
                     if (self.hitbox[list(side2.keys())[0]].collide == 0 or self.combatpreparestate or (self.state in (3,4) and self.baseattackpos.distance_to(self.frontpos) < 8)) \
-                            and self.moverotate == False and self.rotateonly == False:
-                        move = self.basetarget - self.frontpos
+                            and self.moverotate == False and self.rotateonly == False: # can move if hitbox closest to target is not collided, only auto placement can bypass collide
+                        move = self.basetarget - self.frontpos # distance between target and front side
                         move_length = move.length()
-                        # if self.state == 5: self.target = self.pos
-                        if move_length > 0.1:
-                            # if self.state != 3 and self.retreatcommand == 1:
+                        if move_length > 0.1: # not reach target yet
                             heightdiff = (self.height / self.sideheight[0]) ** 2 # walking down hill increase speed while walking up hill reduce speed
                             if self.state in (96, 98, 99) or self.revert:
                                 heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
                             move.normalize_ip()
-                            if self.state in (1, 3, 5):
-                                move = move * self.walkspeed * heightdiff * dt
+                            if self.state in (1, 3, 5): # walking
+                                move = move * self.walkspeed * heightdiff * dt # use walk speed
                                 self.walk = True
-                            else: #  self.state in (2, 4, 6, 10, 96, 98, 99)
-                                move = move * self.runspeed * heightdiff * dt
+                            else: #  self.state in (2, 4, 6, 10, 96, 98, 99), running
+                                move = move * self.runspeed * heightdiff * dt # use run speed
                                 self.run = True
                             # elif self.state == 10:
                             #     move = move * 3 * heightdiff * dt
-                            if move.length() <= move_length:
+                            if move.length() <= move_length: # move normally according to move speed
                                 self.basepos += move
                                 self.pos = self.basepos * (11 - self.viewmode)
-                                self.rect.center = list(int(v) for v in self.pos)
-                            else:
-                                move = self.basetarget - self.frontpos
+                                self.rect.center = list(int(v) for v in self.pos) # list rect so the sprite gradually move to position
+                            else:  # move length pass the target destination
+                                move = self.basetarget - self.frontpos # simply change move to whatever remaining distance
                                 self.basepos += move
                                 self.pos = self.basepos * (11 - self.viewmode)
-                                self.rect.center = self.pos
+                                self.rect.center = self.pos # no need to do list movement
                                 if self.combatpreparestate == False:
                                     self.retreattimer = 0
                                     self.retreatstart = 0
@@ -903,15 +915,15 @@ class Unitarmy(pygame.sprite.Sprite):
                                     self.setrotate(self.attacktarget.basepos)
                                     self.angle = self.newangle
                                     self.rotate()
-                            if self.state in (5, 6):
-                                shootrange = self.maxrange
-                                if self.useminrange == 0:
+                            if self.state in (5, 6): # move to shoot
+                                shootrange = self.maxrange # use max shoot range
+                                if self.useminrange == 0: # use min shoot range
                                     shootrange = self.minrange
                                 if (self.attacktarget != 0 and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange) or \
                                         self.basepos.distance_to(self.baseattackpos) <= shootrange:
-                                    self.set_target(self.frontpos)
-                                    self.rangecombatcheck = 1
-                        else: # either reach target or move left is too small
+                                    self.set_target(self.frontpos) # stop moving when reach shoot range
+                                    self.rangecombatcheck = 1 # start range combat
+                        else: # either reach target or move distance left is too small
                             if self.combatpreparestate == False: # not in melee auto placement
                                 self.retreattimer = 0 # reset all retreat
                                 self.retreatstart = 0
@@ -929,29 +941,28 @@ class Unitarmy(pygame.sprite.Sprite):
                                 self.setrotate(self.attacktarget.basepos)
                                 self.angle = self.newangle
                                 self.rotate()
-                        self.makeallsidepos()
-                        self.frontpos = self.allsidepos[0]
-                        self.height = self.gamemapheight.getheight(self.basepos)
+                        self.makeallsidepos() # make new all side position after moving
+                        self.frontpos = self.allsidepos[0] # get new front side position
+                        self.height = self.gamemapheight.getheight(self.basepos) # get new height at new position
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
-                                           self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
-                        self.mask = pygame.mask.from_surface(self.image)
-                        self.mask = pygame.mask.from_surface(self.image)
+                                           self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]  # get new height for other sides
+                        self.mask = pygame.mask.from_surface(self.image) # make new mask
                     elif self.rotateonly and self.moverotate == False: # if rotate only order
-                        self.state = 0
+                        self.state = 0 # idle state
                         self.commandstate = self.state
-                        self.set_target(self.frontpos)
+                        self.set_target(self.frontpos) # rotate only so reset target to front side
                         self.commandtarget = self.basetarget
-                        self.rotateonly = False
-                        self.makeallsidepos()
+                        self.rotateonly = False # reset rotate only condition
+                        self.makeallsidepos() # make new all side position after finish rotate
                         self.frontpos = self.allsidepos[0]
                         self.height = self.gamemapheight.getheight(self.basepos)
                         self.sideheight = [self.gamemapheight.getheight(self.allsidepos[0]), self.gamemapheight.getheight(self.allsidepos[1]),
                                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
-                        self.mask = pygame.mask.from_surface(self.image)
+                        self.mask = pygame.mask.from_surface(self.image) # make new mask
             #^ End move function
 
             #v Collapse related
-            if self.stamina <= 0:
+            if self.stamina <= 0: # battalion only enter collpase state when all squad stamina is 0
                 self.state = 97 # Enter collaspse state
             if self.state == 97: # Awake from collapse when there is no squad in collaspe state
                 awake = True
@@ -976,7 +987,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.troopnumber <= 0:
                 self.stamina, self.morale, self.speed = 0, 0, 0
                 for leader in self.leader:
-                    if leader.state not in (96, 97, 98, 100):  ## Leader get captured/flee/die when squad destroyed
+                    if leader.state not in (96, 97, 98, 100):  ## Leaders may get flee/captured/die when battalion destroyed
                         leader.state = 96
                         for hitbox in self.hitbox:
                             if hitbox.collide != 0 and random.randint(0, 1) == 0: # If there is hitbox collide, random change to get capture
@@ -1130,7 +1141,9 @@ class Unitarmy(pygame.sprite.Sprite):
         """Change army group and gameid when change side"""
         self.colour = (144, 167, 255)
         self.control = True
+        self.team = 1
         if self.gameid < 2000:
+            self.team = 2
             self.colour = (255, 114, 114)
             if enactment == False:
                 self.control = False
@@ -1142,6 +1155,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.gameid = newgameid
         self.recreatesprite()
         self.changescale()
+        self.icon.changeimage(changeside=True) # change army icon to new team
         return allunitindex
 
 

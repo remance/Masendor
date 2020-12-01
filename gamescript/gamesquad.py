@@ -218,7 +218,8 @@ class Unitsquad(pygame.sprite.Sprite):
             self.stamina * 0.5), round(self.stamina * 0.25)
         self.unithealth = self.troophealth * self.troopnumber # Total health of unit from all troop
         self.lasthealthstate, self.laststaminastate = 4, 4
-        #v Stat for after receive effect from various source
+
+        #v Stat after receive modifier effect from various sources, used for activity calculation
         self.maxmorale = self.basemorale
         self.attack = self.baseattack
         self.meleedef = self.basemeleedef
@@ -233,6 +234,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.charge = self.basecharge
         self.chargedef = self.basechargedef
         #^ End stat for status effect
+
         self.elemmelee = self.baseelemmelee
         self.elemrange = self.baseelemrange
         self.maxhealth, self.health75, self.health50, self.health25, = self.unithealth, round(self.unithealth * 0.75), round(
@@ -243,17 +245,22 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminastate = round((self.stamina * 100) / self.maxstamina)
         self.staminastatecal = self.staminastate / 100
         self.moralestatecal = self.moralestate / 100
+
+        #v squad block team colour
         self.image = self.images[0].copy()  # Squad block blue colour for team1
-        """squad block colour"""
         if self.battalion.gameid >= 2000:
             self.image = self.images[19].copy()
         if self.unittype == 2: # cavalry draw line on block
             pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
-        """armour circle colour"""
+        #^ End squad block team colour
+
+        #v armour circle colour (grey = light, gold = heavy)
         image1 = self.images[1]
         if self.basearmour <= 50: image1 = self.images[2]
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
+        #^ End armour colour
+
         """health circle"""
         self.healthimage = self.images[3]
         self.healthimagerect = self.healthimage.get_rect(center=self.image.get_rect().center)
@@ -262,7 +269,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.staminaimage = self.images[8]
         self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.staminaimage, self.staminaimagerect)
-        """weapon class in circle"""
+
+        #v weapon class icon in middle circle
         if self.unitclass == 0:
             image1 = weaponlist.imgs[weaponlist.weaponlist[self.meleeweapon[0]][5]]
         else:
@@ -270,6 +278,8 @@ class Unitsquad(pygame.sprite.Sprite):
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
+        #^ End weapon icon
+
         """position in inspect ui"""
         self.armypos = position
         self.inspposition = (self.armypos[0] + inspectuipos[0], self.armypos[1] + inspectuipos[1])

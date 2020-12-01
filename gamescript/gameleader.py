@@ -90,13 +90,17 @@ class Leader(pygame.sprite.Sprite):
                     squad.moraleregen -= 0.5  #  all squad morale regen even slower per commander dead
         else:
             self.maingame.eventlog.addlog([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])
-        for index, leader in enumerate(self.battalion.leader):  ## also change army position of all leader in that battalion
+
+        #v change army position of all leader in that battalion
+        for index, leader in enumerate(self.battalion.leader):
             leader.armyposition = index  ## change army position to new one
             if self.battalion.commander and leader.armyposition == 0:
                 self.commander = True
             leader.imgposition = leader.baseimgposition[leader.armyposition]
             leader.rect = leader.image.get_rect(center=leader.imgposition)
             self.poschangestat(leader)
+        #^ End change position
+
         self.battalion.commandbuff = [(self.battalion.leader[0].meleecommand - 5) * 0.1, (self.battalion.leader[0].rangecommand - 5) * 0.1,
                                       (self.battalion.leader[0].cavcommand - 5) * 0.1] # reset command buff to new leader
         self.authority = 0
