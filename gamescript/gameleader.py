@@ -42,8 +42,8 @@ class Leader(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
         self.badmorale = (20, 30)  ## other position morale lost
-        self.commander = False
-        self.originalcommander = False
+        self.commander = False # army commander
+        self.originalcommander = False # the first army commander at the start of battle
         if self.armyposition == 0:
             squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10) # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
@@ -59,6 +59,13 @@ class Leader(pygame.sprite.Sprite):
             squadpenal = int((leader.squadpos / len(leader.battalion.armysquad[0])) * 10) # recalculate authority penalty based on squad position
             leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2) # recalculate total authority
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
+            if leader.battalion.commander: ## become army commander
+                whicharmy = leader.maingame.team1army # team1
+                if leader.battalion.team == 2:  # team2
+                    whicharmy = self.maingame.team2army
+                for army in whicharmy:
+                    army.teamcommander = leader
+                    army.authrecal()
 
     def gone(self):
         """leader no longer in command due to death or other events"""

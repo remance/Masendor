@@ -46,7 +46,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.subsectionlist = None
         self.portrait = None
 
-        #v Make new equipment list that contain all type
+        #v Make new equipment list that contain all type weapon, armour, mount
         self.equipmentstat = {}
         run = 1
         self.equipmentlastindex = []
@@ -69,7 +69,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = 0
         self.maxpage = 0
         self.rect = self.image.get_rect(center=(self.SCREENRECT.width / 1.9, self.SCREENRECT.height / 1.9))
-        self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+        self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # text for item quality
         self.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
                              7: "Forced Walk", 8: "Forced Run",
                              10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",

@@ -1,7 +1,7 @@
 """
 ## Known problem
 Hitbox still behave weirdly in melee combat (sometimes combatprepare is call for side before front)
-autoplacement of 2 units somehow allow the other unit that stop from retreat to auto place to sid ealready occupied
+autoplacement of 2 units somehow allow the other unit that stop from retreat to auto place to the enemy side already occupied
 Optimise list
 melee combat need to be optimised more
 change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
