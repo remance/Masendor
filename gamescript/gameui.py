@@ -242,8 +242,12 @@ class Gameui(pygame.sprite.Sprite):
                 elif self.option == 0:  ## description card
                     self.longtext(self.image, self.description, (42, 25), self.fontlong) # blit long description
                 elif self.option == 3:  ## equipment and terrain
+                    #v Terrain text
                     terrain = self.terrainlist[who.terrain]
                     if who.feature is not None: terrain += "/" + self.featurelist[who.feature]
+                    #^ End terrain text
+
+                    #v Equipment text
                     textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(
                         weaponlist.weaponlist[who.meleeweapon[0]][3]),
@@ -251,13 +255,15 @@ class Gameui(pygame.sprite.Sprite):
                                      armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
                                  "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.height),
                                  "Temperature:" + str(int(who.tempcount))]
-                    if who.rangeweapon[0] != 1:
+                    if who.rangeweapon[0] != 1: # only add range weapon if it is not none
                         textvalue.insert(1,
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
                     if 1 not in who.mount: # if mount is not the None mount id 1
                         textvalue.insert(3, "Mount:" + str(who.mount[0]))
+                    #^ End equipment text
+
                     for text in textvalue:
                         self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
@@ -278,13 +284,13 @@ class Skillcardicon(pygame.sprite.Sprite):
         self.type = type # type 0 is trait 1 is kill
         self.gameid = id # ID of the skill
         self.pos = pos # pos of the skill on ui
-        self.font = pygame.font.SysFont("helvetica", 18) # cd/active timer number font
+        self.font = pygame.font.SysFont("helvetica", 18)
         self.cooldowncheck = 0 # cooldown number
         self.activecheck = 0 # active timer number
         self.image = image
         self.rect = self.image.get_rect(center=pos)
         self.image_original = self.image.copy() # keep original image without number
-        self.cooldownrect = self.image.get_rect(topleft=(0, 0)) # position of cooldown number image
+        self.cooldownrect = self.image.get_rect(topleft=(0, 0))
 
     def numberchange(self, number):
         """Change number more than thousand to K digit e.g. 1k = 1000"""
@@ -310,9 +316,9 @@ class Skillcardicon(pygame.sprite.Sprite):
             if self.cooldowncheck > 0:
                 self.image.blit(self.cooldown, self.cooldownrect)
                 outputnumber = str(self.cooldowncheck)
-                if self.cooldowncheck >= 1000:
+                if self.cooldowncheck >= 1000: # change thousand number into k (1k,2k)
                     outputnumber = self.numberchange(outputnumber)
-                self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
+                self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
 
@@ -653,6 +659,7 @@ class Timer(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
     def timerupdate(self, dt):
+        """Update in-game timer number"""
         if dt > 0:
             self.timer += dt
             if self.timer - self.oldtimer > 1:
@@ -691,6 +698,7 @@ class Speednumber(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def speedupdate(self, newspeed):
+        """change speed number text"""
         self.image = self.image_original.copy()
         self.speed = newspeed
         self.timersurface = self.font.render(str(self.speed), 1, (0, 0, 0))

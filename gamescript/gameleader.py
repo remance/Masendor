@@ -79,13 +79,13 @@ class Leader(pygame.sprite.Sprite):
         if self.state == 99: # wonnd inflict less morale penalty
             thisbadmorale = self.badmorale[1]
         for squad in self.battalion.squadsprite:
-            squad.basemorale -= thisbadmorale  ##decrease all squad morale when leader die depending on position
+            squad.basemorale -= thisbadmorale  # decrease all squad morale when leader die depending on position
             squad.moraleregen -= 0.3 # all squad morale regen slower per leader dead
         if self.commander:  # reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
             self.maingame.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0" # read ld0 event log for special log when team 1 commander die, not used for other leader
             whicharmy = self.maingame.team1army
-            if self.battalion.team == 2: # team2
+            if self.battalion.team == 2:
                 whicharmy = self.maingame.team2army
                 eventmapid = "ld1" # read ld1 event log for special log when team 2 commander die, not used for other leader
             if self.originalcommander and self.state == 100:
@@ -116,9 +116,9 @@ class Leader(pygame.sprite.Sprite):
         self.cavcommand = 0
         self.combat = 0
         self.social = 0
-        pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)
+        pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5) # draw dead cross on leader image
         self.maingame.setuparmyicon()
-        self.battalion.leaderchange = True
+        self.battalion.leaderchange = True # initiate leader change stat recalculation for battalion
 
     def update(self):
         if self.gamestart == 0:

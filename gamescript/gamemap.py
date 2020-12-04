@@ -55,10 +55,11 @@ class Basemap(pygame.sprite.Sprite):
         self.terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
 
     def getterrain(self, pos):
+        """get the base terrain at that exact position"""
         try:
             terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
             terrainindex = self.terraincolour.index(terrain)
-        except:
+        except: # for handle terrain checking that clipping off map
             terrainindex = 0
         return terrainindex
 
@@ -107,6 +108,7 @@ class Mapfeature(pygame.sprite.Sprite):
         unitfile.close()
 
     def getfeature(self, pos, gamemap):
+        """get the terrain feature at that exact position"""
         terrainindex = gamemap.getterrain(pos)
         try:
             feature = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
@@ -145,6 +147,7 @@ class Mapheight(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
     def getheight(self, pos):
+        """get the terrain height at that exact position"""
         try:
             colour = self.trueimage.get_at((int(pos[0]), int(pos[1])))[2]
         except:
@@ -225,10 +228,12 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(0, 0))
 
     def changemode(self, mode):
+        """Switch between normal and height map mode"""
         self.mode = mode
         self.changescale(self.scale)
 
     def changescale(self, scale):
+        """Change map scale based on current camera zoom"""
         self.scale = scale
         scalewidth = self.image_original.get_width() * self.scale
         scaleheight = self.image_original.get_height() * self.scale

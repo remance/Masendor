@@ -49,10 +49,10 @@ class Slidermenu(pygame.sprite.Sprite):
         self.buttonimagelist = buttonimage
         self.buttonimage = self.buttonimagelist[0]
         self.slidersize = self.image.get_size()[0] - 20
-        self.min_value = self.pos[0] - (self.image.get_width() / 2) + 10.5
-        self.max_value = self.pos[0] + (self.image.get_width() / 2) - 10.5
+        self.minvalue = self.pos[0] - (self.image.get_width() / 2) + 10.5 # min value position of the scroll bar
+        self.maxvalue = self.pos[0] + (self.image.get_width() / 2) - 10.5 # max value position
         self.value = value
-        self.mouse_value = (self.slidersize * value / 100) + 10.5
+        self.mouse_value = (self.slidersize * value / 100) + 10.5 # mouse position on the scroll bar convert to value
         self.image_original = self.image.copy()
         self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.buttonimage, self.buttonrect)
@@ -62,11 +62,11 @@ class Slidermenu(pygame.sprite.Sprite):
         """Update slider value and position"""
         if forcedvalue == False:
             self.mouse_value = mouse_pos[0]
-            if self.mouse_value > self.max_value:
-                self.mouse_value = self.max_value
-            if self.mouse_value < self.min_value:
-                self.mouse_value = self.min_value
-            self.value = (self.mouse_value - self.min_value) / 2
+            if self.mouse_value > self.maxvalue:
+                self.mouse_value = self.maxvalue
+            if self.mouse_value < self.minvalue:
+                self.mouse_value = self.minvalue
+            self.value = (self.mouse_value - self.minvalue) / 2
             self.mouse_value = (self.slidersize * self.value / 100) + 10.5
         else:  ## For revert, cancel or esc in the option menu
             self.value = mouse_pos

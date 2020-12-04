@@ -22,48 +22,61 @@ class Terrainpopup(pygame.sprite.Sprite):
 
         self.image_original = self.image.copy()
 
-    def pop(self, pos, input):
+    def pop(self, pos, feature, height):
         """pop out into screen, blit input into the image"""
         self.image = self.image_original.copy() # reset image to default empty one
         self.pos = pos # position to draw the image on screen
-        self.textsurface = self.font.render(input[0], 1, (0, 0, 0))  # terrain feature name
-        self.textrect = self.textsurface.get_rect(topleft=(5, 5)) # name text position at top left (5,5) of image
-        self.image.blit(self.textsurface, self.textrect) # blit name
-        for index, imgpos in enumerate(self.imgpos): # text for each stat modifier
-            if input[index + 1] == 1: # draw circle if modifier is 1 (no effect to stat)
+
+        #v Terrain feature name
+        self.textsurface = self.font.render(feature[0], 1, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(topleft=(5, 5))
+        self.image.blit(self.textsurface, self.textrect)
+        #^ End terrain feature
+
+        #v Height
+        self.textsurface = self.font.render(str(height), 1, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(topleft=(100, 5))
+        self.image.blit(self.textsurface, self.textrect)
+        # End height
+
+        for index, imgpos in enumerate(self.imgpos[0:6]): # text for each stat modifier
+            if feature[index + 1] == 1: # draw circle if modifier is 1 (no effect to stat)
                 self.imagerect = self.images[7].get_rect(center = imgpos) # images[7] is circle icon image
                 self.image.blit(self.images[7], self.imagerect)
             else: # upper or lower (^v) arrow icon to indicate modifier level
                 for modindex, mod in enumerate(self.modlist): # loop to find ^v arrow icon for the modifier
-                    if input[index + 1] >= mod: # draw appropiate icon if modifier is higher than the number of list item
-                        self.imagerect = self.images[modindex + 1].get_rect(center = imgpos) # arrow image icon based on modifier
+                    if feature[index + 1] >= mod: # draw appropiate icon if modifier is higher than the number of list item
+                        self.imagerect = self.images[modindex + 1].get_rect(center = imgpos)
                         self.image.blit(self.images[modindex + 1], self.imagerect)
                         break # found arrow image to blit end loop
 
         #v range def modifier for both infantry and cavalry
-        if input[7] == 0: # no bonus draw circle
+        print(feature[7:10])
+        if feature[7] == 0: # no bonus, draw circle
+            self.imagerect = self.images[7].get_rect(center=self.imgpos[6])
+            self.image.blit(self.images[7], self.imagerect)
+        else:
+            for modindex, mod in enumerate(self.bonuslist):
+                if feature[7] >= mod:
+                    self.imagerect = self.images[modindex + 1].get_rect(center = self.imgpos[6])
+                    self.image.blit(self.images[modindex + 1], self.imagerect)
+                    break
+        #^ End range def modifier
+
+        #v discipline modifier for both infantry and cavalry
+        if feature[9] == 0:
             self.imagerect = self.images[7].get_rect(center=self.imgpos[7])
             self.image.blit(self.images[7], self.imagerect)
         else:
             for modindex, mod in enumerate(self.bonuslist):
-                if input[7] >= mod:
-                    self.imagerect = self.images[modindex + 1].get_rect(center = self.imgpos[7]) # arrow image icon based on modifier
-                    self.image.blit(self.images[modindex + 1], self.imagerect)
-                    break # found arrow image to blit end loop
-        #^ End range def modifier
-
-        #v discipline modifier for both infantry and cavalry
-        if input[9] == 0: # no bonus draw circle
-            self.imagerect = self.images[7].get_rect(center=self.imgpos[8])
-            self.image.blit(self.images[7], self.imagerect)
-        else:
-            for modindex, mod in enumerate(self.bonuslist):
-                if input[9] >= mod:
-                    self.imagerect = self.images[modindex + 1].get_rect(center=self.imgpos[8])
+                if feature[9] >= mod:
+                    print(mod)
+                    self.imagerect = self.images[modindex + 1].get_rect(center = self.imgpos[7])
                     self.image.blit(self.images[modindex + 1], self.imagerect)
                     break
-        self.rect = self.image.get_rect(bottomleft=self.pos)
         # ^ End discipline modifier
+
+        self.rect = self.image.get_rect(bottomleft=self.pos)
 
 class Onelinepopup(pygame.sprite.Sprite):
     def __init__(self):

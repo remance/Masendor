@@ -41,8 +41,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.subsection = 1  ## subsection of that section e.g. swordmen unit in unit section Start with 1 instead of 0
         self.statdata = None  ## for getting the section stat data
         self.loredata = None  ## for getting the section lore data
-        self.showsubsection = None  ## Subsection stat showing
-        self.showsubsection2 = None  ## Subsection lore showing
+        self.showsubsection = None  ## Subsection stat currently viewing
+        self.showsubsection2 = None  ## Subsection lore currently viewing
         self.subsectionlist = None
         self.portrait = None
 
@@ -91,7 +91,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.loredata = self.sectionlist[self.section][1] # get new lore data of the new section
         self.maxpage = 0 # reset max page
         self.currentsubsectionrow = 0 # reset subsection scroll to the top one
-        thislist = self.statdata.values() # list of subsection
+        thislist = self.statdata.values() # get list of subsection
         self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]] # remove the header from subsection list
         self.logsize = len(self.subsectionlist) # get size of subsection list
         self.changesubsection(self.subsection)
@@ -102,8 +102,8 @@ class Lorebook(pygame.sprite.Sprite):
     def changesubsection(self, subsection):
         self.subsection = subsection
         self.page = 0 # reset page to the first one
-        self.image = self.image_original.copy() # reset encyclopedia image
-        self.portrait = None # reset portrait
+        self.image = self.image_original.copy()
+        self.portrait = None # reset portrait, possible for subsection to not have portrait
         if self.loredata is not None: # some subsection may not have lore data
             self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
         if self.section != 8:
@@ -183,11 +183,11 @@ class Lorebook(pygame.sprite.Sprite):
                 # newtext = []
                 for index, text in enumerate(frontstattext):
                     # if text != "":
-                    if "IMAGE:" not in text:
+                    if "IMAGE:" not in text: # blit text
                         textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.blit_text(textsurface, text, (5, 5), self.font)
-                    else:
+                    else:  # blit image instead of text
                         textsurface = gamelongscript.load_image(self.main_dir+text[6:])
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                     self.image.blit(textsurface, textrect)
@@ -336,12 +336,12 @@ class Lorebook(pygame.sprite.Sprite):
                 col = 60
                 for index, text in enumerate(lore):
                     if text != "":
-                        if "IMAGE:" not in text:
+                        if "IMAGE:" not in text: # blit paragraph of text
                             textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
-                        else:
+                            self.blit_text(textsurface, text, (5, 5), self.font)
+                        else: # blit image
                             textsurface = gamelongscript.load_image(self.main_dir+text[6:])
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
-                        self.blit_text(textsurface, text, (5, 5), self.font)
                         self.image.blit(textsurface, textrect)
                         row += 200
                         if row >= 600:

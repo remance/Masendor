@@ -418,7 +418,7 @@ def die(who, battle, group, enemygroup):
     group.remove(who)
     battle.deadunit.add(who)
     battle.allcamera.change_layer(sprite=who, new_layer=1)
-    who.gotkilled = 1
+    who.gotkilled = True
     for thisarmy in enemygroup:  # get bonus authority to the another army
         thisarmy.authority += 5
     for thisarmy in group:  # morale dmg to every squad in army when allied battalion destroyed
