@@ -81,6 +81,7 @@ class Specialeffect(pygame.sprite.Sprite):
         self.endtime = endtime
 
     def update(self, dt, timer):
+        """Update sprite movement and removal"""
         move = self.target - self.pos
         move_length = move.length()
         if (self.rect.midleft[0] > 0 and timer < self.endtime) or (self.endtime is not None and timer >= self.endtime and self.rect.midright[0] > 0):

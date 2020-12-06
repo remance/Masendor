@@ -66,7 +66,7 @@ class Gameui(pygame.sprite.Sprite):
         self.lastvalue = 0
         self.option = 0
         self.rect = self.image.get_rect(center=(self.X, self.Y))
-        self.lastwho = 0
+        self.lastwho = 0 # battalion last showed
         if self.uitype == "topbar": # setup variable for topbar ui
             position = 10
             for ic in self.icon: # Blit icon into topbar ui
@@ -77,18 +77,18 @@ class Gameui(pygame.sprite.Sprite):
             self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
                              7: "Forced Walk", 8: "Forced Run",
                              10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
-                             69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
+                             69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"} # battalion state name
             self.options2 = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
-                             14: "Inspired", 15: "Fervent"}
+                             14: "Inspired", 15: "Fervent"} # battalion morale state name
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
-                             7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}
+                             7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"} # battalion stamina state name
         elif self.uitype == "commandbar": # setup variable for command bar ui
             self.iconimagerect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
             self.image.blit(self.icon[6], self.iconimagerect)
-            self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]]
-            self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]]
+            self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]] # team 1 white chess head
+            self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]] # team 2 black chess head
             self.lastauth = 0
         elif self.uitype == "unitcard": # setup variable for unit card ui
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
@@ -96,11 +96,11 @@ class Gameui(pygame.sprite.Sprite):
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
             self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense:"]
-            self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-            self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"}
+                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense:"] # stat name
+            self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # item quality name
+            self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"} # leader state name
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
-                                "Deep water"]
+                                "Deep water"] # terrain climate name
         #     self.iconimagerect = self.icon[0].get_rect(
         #         center=(
         #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))
@@ -108,8 +108,8 @@ class Gameui(pygame.sprite.Sprite):
 
     def longtext(self, surface, text, pos, font, color=pygame.Color('black')):
         """Blit long text into seperate row of text"""
-        words = [word.split(' ') for word in text.splitlines()]  ## 2D array where each row is a list of words
-        space = font.size(' ')[0]  ## the width of a space
+        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
+        space = font.size(' ')[0]  # the width of a space
         maxwidth, maxheight = surface.get_size()
         x, y = pos
         for line in words:
@@ -117,12 +117,12 @@ class Gameui(pygame.sprite.Sprite):
                 word_surface = font.render(word, 0, color)
                 wordwidth, wordheight = word_surface.get_size()
                 if x + wordwidth >= maxwidth:
-                    x = pos[0]  ## reset x
-                    y += wordheight  ## start on new row.
+                    x = pos[0]  # reset x
+                    y += wordheight  # start on new row.
                 surface.blit(word_surface, (x, y))
                 x += wordwidth + space
-            x = pos[0]  ## reset x
-            y += wordheight  ## start on new row
+            x = pos[0]  # reset x
+            y += wordheight  # start on new row
 
     def valueinput(self, who, weaponlist="", armourlist="", button="", changeoption=0, splithappen=False):
         for thisbutton in button:
@@ -155,6 +155,7 @@ class Gameui(pygame.sprite.Sprite):
                 self.lastvalue = self.value
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
+
         elif self.uitype == "commandbar":
             if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change unit
                 usecolour = self.white # colour of the chess icon for leader, white for team 1
@@ -196,6 +197,7 @@ class Gameui(pygame.sprite.Sprite):
                     center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
                 self.image.blit(self.textsurface, self.textrect)
                 self.lastauth = who.authority
+
         elif self.uitype == "unitcard":
             position = 15 # starting row
             positionx = 45 # starting point of text
@@ -400,6 +402,7 @@ class Minimap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomright=(self.X, self.Y))
 
     def update(self, viewmode, camerapos, team1poslist, team2poslist):
+        """update battalion dot on map"""
         if self.team1pos != team1poslist.values() or self.team2pos != team2poslist.values() or self.camerapos != camerapos or self.lastscale != viewmode:
             self.team1pos = team1poslist.values()
             self.team2pos = team2poslist.values()
@@ -452,10 +455,11 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                     self.mapevent[event][3] = None
 
     def changemode(self, mode):
+        """Change tab"""
         self.mode = mode
         self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
         self.currentstartrow = 0
-        if self.lencheck > self.maxrowshow:
+        if self.lencheck > self.maxrowshow: # go to last row if there are more log than limit
             self.currentstartrow = self.lencheck - self.maxrowshow
         self.logscroll.currentrow = self.currentstartrow
         self.logscroll.changeimage(logsize=self.lencheck)
@@ -486,6 +490,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
             row += 20 # Whitespace between text row
 
     def logtextprocess(self, who, modelist, textoutput):
+        """Cut up whole log into seperate sentece based on space"""
         imagechange = False
         for mode in modelist:
             thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode] # log to edit
@@ -493,8 +498,8 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                 thislog.append([who, textoutput])
             else:  # Cut the text log into multiple row if more than 45 char
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
-                howmanyloop = len(textoutput) / 45
-                if howmanyloop.is_integer() == False:
+                howmanyloop = len(textoutput) / 45 # number of row
+                if howmanyloop.is_integer() == False: # always round up if there is decimal number
                     howmanyloop = int(howmanyloop) + 1
                 startingindex = 0
                 for run in range(1, int(howmanyloop) + 1):
@@ -508,9 +513,9 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                     else:
                         thislog.append([-1, finaltextoutput])
                     startingindex = cutnumber + 1
-            if len(thislog) > 1000:
+            if len(thislog) > 1000: # log cannot be more than 1000 length
                 logtodel = len(thislog) - 1000
-                del thislog[0:logtodel]
+                del thislog[0:logtodel] # remove the first few so only 1000 left
             if mode == self.mode:
                 imagechange = True
         return imagechange
@@ -522,7 +527,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         imagechange2 = False
         if self.currentstartrow + self.maxrowshow >= self.lencheck:
             atlastrow = True
-        if log is not None:
+        if log is not None: # when event map log commentary come in, log will be none
             textoutput = ": " + log[1]
             imagechange = self.logtextprocess(log[0], modelist, textoutput)
         if eventmapid is not None and eventmapid in self.mapevent: # Process whether there is historical commentary to add to event log

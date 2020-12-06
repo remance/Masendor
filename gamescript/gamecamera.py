@@ -13,8 +13,8 @@ class Camera():
         self.image.fill((0, 0, 0))
         self.pos = pos
         camera_w, camera_h = self.image.get_rect().size # get size of camera
-        camera_x = self.pos[0] - camera_w / 2 # Current center x
-        camera_y = self.pos[1] - camera_h / 2 # Current center y
+        camera_x = self.pos[0] - camera_w / 2 # Current camera center x
+        camera_y = self.pos[1] - camera_h / 2 # Current camera center y
         for surface in surfaces: # Blit sprite to camara image
             surface_x, surface_y = surface.rect.left, surface.rect.top
             surface_w, surface_h = surface.image.get_rect().size

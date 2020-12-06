@@ -25,6 +25,20 @@ Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code docu
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
+0.6.1: improve main.py (mainmenu) , start working on Battle of Megiddo
+
+0.6.2: battle selection screen, with team selection and battle estimation source setting
+
+0.6.3: preparation and battle result screen, add battle situation (colour bar to compare 2 team strength) in ui somewhere
+
+0.6.4: custom battle start working on Battle of Mohács
+
+0.6.5: in game custom unit editor
+
+0.6.6 and 0.6.7: random map generator
+
+0.6.8 and 0.6.9: multiple unit selection/move, also add border to selected unit on army selector ui
+
 Ver 0.7 Future Visionary: Fog of War(maybe), unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight, Battle of Walaja, Battle of Dorylaeum
 
 Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image), Battle of Isandlwana, Battle of Hwangsanbeol

@@ -13,6 +13,7 @@ class Terrainpopup(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width()*self.scaleadjust),
                                                              int(self.images[0].get_height()*self.scaleadjust)))
         self.font = pygame.font.SysFont("helvetica", int(16*self.scaleadjust))
+        self.heightfont = pygame.font.SysFont("helvetica", int(12 * self.scaleadjust))
         self.imgpos = ((24*self.scaleadjust, 34*self.scaleadjust), (24*self.scaleadjust, 53*self.scaleadjust), # inf speed, inf atk
                        (24*self.scaleadjust, 70*self.scaleadjust), (58*self.scaleadjust, 34*self.scaleadjust), # inf def, cav speed
                        (58*self.scaleadjust, 53*self.scaleadjust), (58*self.scaleadjust, 70*self.scaleadjust), # cav atk, cav def
@@ -33,9 +34,9 @@ class Terrainpopup(pygame.sprite.Sprite):
         self.image.blit(self.textsurface, self.textrect)
         #^ End terrain feature
 
-        #v Height
-        self.textsurface = self.font.render(str(height), 1, (0, 0, 0))
-        self.textrect = self.textsurface.get_rect(topleft=(100, 5))
+        #v Height number
+        self.textsurface = self.heightfont.render(str(height), 1, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(topleft=(self.image.get_width() - (self.image.get_width()/5), 5))
         self.image.blit(self.textsurface, self.textrect)
         # End height
 

@@ -517,7 +517,7 @@ def splitunit(battle, who, how):
     who.ammo75, who.ammo50, who.ammo25 = round(who.ammo * 0.75), round(who.ammo * 0.50), round(who.ammo * 0.25)
     ## start making new battalion
     if who.team == 1:
-        playercommand = True
+        playercommand = True #TODO change when player can select team
         whosearmy = battle.team1army
         colour = (144, 167, 255)
     else:

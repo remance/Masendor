@@ -678,10 +678,8 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.battalion.squadimgchange.append(self.gameid)
                             break
                     self.troopnumber = self.unithealth / self.troophealth # Calculate how many troop left based on current hp
-                    if round(self.troopnumber) < self.troopnumber: # always round up if there is decimal
-                        self.troopnumber = round(self.troopnumber + 1)
-                    else:
-                        self.troopnumber = round(self.troopnumber)
+                    if self.troopnumber.is_integer() == False: # always round up if there is decimal
+                        self.troopnumber = int(self.troopnumber + 1)
                     self.oldlasthealth = self.unithealth
                 #^ End hp bar
 

@@ -1117,7 +1117,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.revert = True
             # if double_mouse_right or self.runtoggle:
             #     self.state -= 1
-        if self.charging:
+        if self.charging: # change order when charging will cause authority penalty
             self.leader[0].authority -= self.authpenalty
             self.authrecal()
 
