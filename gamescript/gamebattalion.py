@@ -197,7 +197,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.deadchange = False # for checking when squad dead and run related code
         self.timer = random.random()
         self.squadimgchange = []
-        self.zoomviewchange = False
+        self.zoomchange = False
         self.gamestart = False # for running code that only require at the start of game or when battalion spawn
         self.authrecalnow = False # for recalculate authority of the battalion
         self.cansplitrow = False
@@ -227,23 +227,23 @@ class Unitarmy(pygame.sprite.Sprite):
         # self.image.blit(self.coa, self.imagerect)
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
         self.rect = self.image.get_rect(center=startposition)
-        self.testangle = math.radians(360 - startangle)
+        self.radians_angle = math.radians(360 - startangle) # radians for apply angle to position (allsidepos and squad)
         self.mask = pygame.mask.from_surface(self.image)
         self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),  # Generate all four side position
                            ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
                            ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
                            (self.basepos[0], (self.basepos[1] + self.baseheightbox / 2))]
-        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  # generate again but with rotation in calculation
-                           rotationxy(self.basepos, self.allsidepos[1], self.testangle),
-                           rotationxy(self.basepos, self.allsidepos[2], self.testangle),
-                           rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
+        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.radians_angle),  # generate again but with rotation in calculation
+                           rotationxy(self.basepos, self.allsidepos[1], self.radians_angle),
+                           rotationxy(self.basepos, self.allsidepos[2], self.radians_angle),
+                           rotationxy(self.basepos, self.allsidepos[3], self.radians_angle)]
         self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)), # Generate pos for all hitbox side
                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
-        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle), # Generate hitbox pos with current angle
-                          rotationxy(self.rect.center, self.hitboxpos[1], self.testangle)
-            , rotationxy(self.rect.center, self.hitboxpos[2], self.testangle), rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
+        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.radians_angle),  # Generate hitbox pos with current angle
+                          rotationxy(self.rect.center, self.hitboxpos[1], self.radians_angle)
+            , rotationxy(self.rect.center, self.hitboxpos[2], self.radians_angle), rotationxy(self.rect.center, self.hitboxpos[3], self.radians_angle)]
         self.frontpos = self.allsidepos[0] # The front center pos
         self.squadpositionlist = []
         self.battleside = [None, None, None, None] # battleside with enemy object
@@ -304,7 +304,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.image.blit(self.ammoimage, self.ammoimagerect)
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()
         self.rect = self.image.get_rect(center=self.pos)
-        self.testangle = math.radians(360 - self.angle)
+        self.radians_angle = math.radians(360 - self.angle)
         self.mask = pygame.mask.from_surface(self.image)
         self.setuparmy()
 
@@ -315,7 +315,7 @@ class Unitarmy(pygame.sprite.Sprite):
         width, height = 0, 0
         for squad in self.armysquad.flat:
             if squad != 0:
-                if self.zoomviewchange == True or squad in self.squadimgchange:
+                if self.zoomchange == True or squad in self.squadimgchange:
                     self.squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
                     self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), self.squadrect)
                 truesquadnum += 1
@@ -467,23 +467,23 @@ class Unitarmy(pygame.sprite.Sprite):
                            ((self.basepos[0] - self.basewidthbox / 2), self.basepos[1]),
                            ((self.basepos[0] + self.basewidthbox / 2), self.basepos[1]),
                            (self.basepos[0], (self.basepos[1] + self.baseheightbox / 2))]
-        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.testangle),  # rotate the new four side according to sprite rotation
-                           rotationxy(self.basepos, self.allsidepos[1], self.testangle),
-                           rotationxy(self.basepos, self.allsidepos[2], self.testangle),
-                           rotationxy(self.basepos, self.allsidepos[3], self.testangle)]
+        self.allsidepos = [rotationxy(self.basepos, self.allsidepos[0], self.radians_angle),  # rotate the new four side according to sprite rotation
+                           rotationxy(self.basepos, self.allsidepos[1], self.radians_angle),
+                           rotationxy(self.basepos, self.allsidepos[2], self.radians_angle),
+                           rotationxy(self.basepos, self.allsidepos[3], self.radians_angle)]
         self.hitboxpos = [(self.rect.center[0], (self.rect.center[1] - self.heightscale / 2)), # generate new hitbox position for each side
                           ((self.rect.center[0] - self.widthscale / 2), self.rect.center[1]),
                           ((self.rect.center[0] + self.widthscale / 2), self.rect.center[1]),
                           (self.rect.center[0], (self.rect.center[1] + self.heightscale / 2))]
-        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.testangle), # rotate the four hitboxes according to sprite rotation
-                          rotationxy(self.rect.center, self.hitboxpos[1], self.testangle),
-                          rotationxy(self.rect.center, self.hitboxpos[2], self.testangle),
-                          rotationxy(self.rect.center, self.hitboxpos[3], self.testangle)]
+        self.hitboxpos = [rotationxy(self.rect.center, self.hitboxpos[0], self.radians_angle),  # rotate the four hitboxes according to sprite rotation
+                          rotationxy(self.rect.center, self.hitboxpos[1], self.radians_angle),
+                          rotationxy(self.rect.center, self.hitboxpos[2], self.radians_angle),
+                          rotationxy(self.rect.center, self.hitboxpos[3], self.radians_angle)]
         battaliontopleft = pygame.Vector2(self.basepos[0] - self.basewidthbox / 2, # get the top left corner of sprite to generate squad position
                                          self.basepos[1] - self.baseheightbox / 2)
         for squad in self.squadsprite: # generate position of each squad
             squad.truepos = (battaliontopleft[0] + (squad.armypos[0] / 10), battaliontopleft[1] + (squad.armypos[1] / 10))
-            squad.truepos = pygame.Vector2(rotationxy(self.basepos, squad.truepos, self.testangle)) # rotate according to sprite current rotation
+            squad.truepos = pygame.Vector2(rotationxy(self.basepos, squad.truepos, self.radians_angle)) # rotate according to sprite current rotation
             squad.terrain, squad.feature = self.getfeature(squad.truepos, self.gamemap) # get new terrain and feature at each squad position
             squad.height = self.gamemapheight.getheight(squad.truepos) # get new height
 
@@ -513,6 +513,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.leadersocial = self.leader[0].social
         for leader in self.leader:
             if leader.gameid != 1:
+                print(self.gameid,leader.squadpos, leader.name)
                 self.squadsprite[leader.squadpos].leader = leader  ## put in leader to squad with the set pos
         if self.commander:
             # v assign team commander to every battalion in team if this is commander battalion
@@ -553,7 +554,7 @@ class Unitarmy(pygame.sprite.Sprite):
         #v redraw if troop num or stamina change
         if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.ammo != self.oldammo or self.viewmode != (11 - viewmode):
             if self.viewmode != (11 - viewmode): # camera zoom is changed
-                self.zoomviewchange = True
+                self.zoomchange = True
                 self.viewmode = (11 - viewmode) # save scale
                 self.viewmodechange() # update battalion sprite according to new scale
 
@@ -604,11 +605,11 @@ class Unitarmy(pygame.sprite.Sprite):
                 #^ End ammunition bar
 
             else: # closest camera zoom
-                if self.squadimgchange != [] or self.zoomviewchange == True: # update squad image inside battalion sprite
+                if self.squadimgchange != [] or self.zoomchange == True: # update squad image inside battalion sprite
                     self.squadtoarmy() # update squad image individually
                     self.rotate() # rotate after update
                     self.squadimgchange = [] # reset squad image to update list
-                    self.zoomviewchange = False # reset camera zoom change
+                    self.zoomchange = False # reset camera zoom change
         #^ End redraw
 
         if self.state != 100:
@@ -816,9 +817,9 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.rotatecal = abs(round(self.newangle) - self.angle) # amount of angle left to rotate
                 self.rotatecheck = 360 - self.rotatecal # rotate distance used for preventing angle calculation bug (pygame rotate related)
                 self.moverotate = True
-                self.testangle = math.radians(360 - self.angle) # for allside rotate
+                self.radians_angle = math.radians(360 - self.angle) # for allside rotate
                 if self.angle < 0: # negative angle (rotate to left side)
-                    self.testangle = math.radians(-self.angle)
+                    self.radians_angle = math.radians(-self.angle)
                 ## Rotate logic to continuously rotate based on angle and shortest length
                 if self.state in (1, 3, 5):
                     self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size / 2)) # rotate speed is based on move speed and battalion block size (not squad total number)

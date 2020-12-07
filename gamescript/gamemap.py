@@ -200,20 +200,23 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.image.blit(img, rect)
         #^ PIL module code till here
 
-        for rowpos in range(0, 991):  ## Put in terrain texture
+        #v Put in terrain feature texture
+        for rowpos in range(0, 991):
             for colpos in range(0, 991):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
                     randompos = (rowpos + random.randint(0, 19), colpos + random.randint(0, 19))
                     terrain, thisfeature = featuremap.getfeature((randompos), basemap)
                     feature = self.textureimages[self.loadtexturelist.index(self.newcolourlist[thisfeature][0].replace(" ", "").lower())]
                     choose = random.randint(0, len(feature) - 1)
-                    if thisfeature - (terrain * 12) in (0, 1, 4, 5, 7) and random.randint(0,
-                                                                                          100) < 60:  ## reduce speical texture in empty terrain like glassland
+                    if thisfeature - (terrain * 12) in (0, 1, 4, 5, 7) and \
+                            random.randint(0,100) < 60:  ## reduce speical texture in empty terrain like glassland
                         thistexture = self.emptyimage  ## empty texture
                     else:
                         thistexture = feature[choose]
                     rect = thistexture.get_rect(center=(randompos))
                     self.image.blit(thistexture, rect)
+        #^ End terrain feature
+
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
         self.image.blit(self.placename, rect)  ## Add placename layer to map

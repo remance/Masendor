@@ -84,6 +84,7 @@ class Unitstat():
                 self.unitlore[row[0]] = row[1:]
             unitfile.close()
         #^ End lore
+
         #v Unit status effect dict
         self.statuslist = {}
         with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
@@ -115,6 +116,7 @@ class Unitstat():
                 run += 1
         unitfile.close()
         #^ End status effect
+
         #v Race dict
         self.racelist = {}
         with open(main_dir + "\data\war" + '\\unit_race.csv', 'r') as unitfile:
@@ -135,6 +137,7 @@ class Unitstat():
                     self.racelist[row[0]] = row[1:]
         unitfile.close()
         #^ End race
+
         #v Unit grade dict
         self.gradelist = {}
         with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
@@ -150,6 +153,7 @@ class Unitstat():
                 self.gradelist[row[0]] = row[1:]
         unitfile.close()
         #^ End unit grade
+
         #v Unit skill dict
         self.abilitylist = {}
         with open(main_dir + "\data\war" + '\\unit_ability.csv', 'r') as unitfile:
@@ -185,6 +189,7 @@ class Unitstat():
                     self.abilitylist[row[0]] = row[1:]
         unitfile.close()
         #^ End unit skill
+
         #v Unit property dict
         self.traitlist = {}
         with open(main_dir + "\data\war" + '\\unit_property.csv', 'r') as unitfile:
@@ -216,6 +221,7 @@ class Unitstat():
                     run += 1
         unitfile.close()
         #^ End unit property
+
         #v Unit role dict
         self.role = {}
         with open(main_dir + "\data\war" + '\\unit_type.csv', 'r') as unitfile:
@@ -226,6 +232,7 @@ class Unitstat():
                 self.role[row[0]] = row[1:]
         unitfile.close()
         #^ End unit role
+
         #v Unit mount dict
         self.mountlist = {}
         with open(main_dir + "\data\war" + '\\unit_mount.csv', 'r') as unitfile:
@@ -263,6 +270,7 @@ class Leaderstat():
                     # else: row[n] = [int(i)]
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
+
         #v Add common leader to the leader list with gameid + 10000
         with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -275,6 +283,7 @@ class Leaderstat():
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
         #^ End common leader
+
         #v Leader class dict
         self.leaderclass = {}
         with open(main_dir + "\data\leader" + "\\leader_class.csv", "r") as unitfile:

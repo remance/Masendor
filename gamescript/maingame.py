@@ -932,8 +932,9 @@ class Battle():
                             for squad in whoinput.squadsprite:
                                 squad.basemorale = 0
                         elif event.key == pygame.K_k and self.lastselected is not None:
-                            for squad in self.lastselected.squadsprite:
-                                squad.unithealth -= squad.unithealth
+                            for index, squad in enumerate(self.lastselected.squadsprite):
+                                if index != 11:
+                                    squad.unithealth -= squad.unithealth
                         elif event.key == pygame.K_m and self.lastselected is not None:
                             self.lastselected.leader[0].health -= 1000
                         #^ End For development test
