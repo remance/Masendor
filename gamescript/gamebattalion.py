@@ -76,8 +76,8 @@ class Hitbox(pygame.sprite.Sprite):
         if self.viewmode != abs(viewmode - 11) or self.clickcheck:
             self.viewmode = abs(viewmode - 11) # change zoomview number for scaling image
             self.image_original = self.image_original2.copy()
-            scalewidth = self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode
-            scaleheight = self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode
+            scalewidth = round(self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode,0)
+            scaleheight = round(self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode,0)
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
             self.mask = pygame.mask.from_surface(self.image) # make new mask for collision
@@ -493,9 +493,9 @@ class Unitarmy(pygame.sprite.Sprite):
                               (self.leader[2].authority / 4) + (self.leader[3].authority / 10))
         bigarmysize = self.armysquad > 0
         bigarmysize = bigarmysize.sum()
-        if bigarmysize > 20:
-            self.authority = int(
-                (self.leader[0].authority * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+        if bigarmysize > 20: # army size larger than 20 will reduce main leader authority
+            self.authority = int(self.teamcommander.authority +
+                (self.leader[0].authority / 2 * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
                 self.leader[3].authority / 4)
 
     def startset(self, squadgroup):
@@ -513,7 +513,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.leadersocial = self.leader[0].social
         for leader in self.leader:
             if leader.gameid != 1:
-                print(self.gameid,leader.squadpos, leader.name)
                 self.squadsprite[leader.squadpos].leader = leader  ## put in leader to squad with the set pos
         if self.commander:
             # v assign team commander to every battalion in team if this is commander battalion

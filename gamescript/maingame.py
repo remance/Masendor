@@ -377,7 +377,6 @@ class Battle():
         self.gameui.append(
             gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + self.armyselector.image.get_height(),
                           image=topimage[1], icon=iconimage, uitype="commandbar"))
-        iconimage = load_images(['ui', 'battle_ui', 'unitcard_icon'])
         self.gameui.append(
             gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1], image=topimage[2],
                           icon="", uitype="unitcard"))

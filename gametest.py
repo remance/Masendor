@@ -76,39 +76,43 @@ import numpy as np
 # #0.000859586999999995
 # #0.0010708489999999848
 
-a = 4.9
-print(a.is_integer())
+a = {0:[1,5],2:[5,10]}
+k = a[0].copy()
+b = k
+c = k
+k[0] = k[0] + 1
+print(b)
 
-import pygame,time
-#created in 22 dec 2020 by cenk
-pen=pygame.display.set_mode((200,200))
-frms=[pygame.Surface((20,20)),pygame.Surface((20,20)),pygame.Surface((20,20))]
-frms[0].fill((255,0,0))#red frame
-frms[1].fill((0,255,0))#green frame
-frms[2].fill((0,0,255))#blue frame
-#this is actual class
-class animation:
-	def __init__(self,frms,spd_ms):
-		self.frames=frms
-		self.speed_ms=spd_ms/1000
-		self.start_frame=0
-		self.end_frame=len(self.frames)-1
-		self.first_time=time.time()
-		self.show_frame=0
-	def blit(self,pen,crd):
-		if time.time()-self.first_time>=self.speed_ms:
-			self.show_frame=self.show_frame+1
-			self.first_time=time.time()
-		if self.show_frame>self.end_frame:
-			self.show_frame=self.start_frame
-		#pen mean to window and is abbreivation of "pencere"
-		pen.blit(self.frames[self.show_frame],crd)
-anim=animation(frms,500)
-run=True
-while run:
-	for i in pygame.event.get():
-		if i.type==pygame.QUIT:
-			run=False
-	pen.fill((0,0,0))
-	anim.blit(pen,(50,50))
-	pygame.display.flip()
+# import pygame,time
+# #created in 22 dec 2020 by cenk
+# pen=pygame.display.set_mode((200,200))
+# frms=[pygame.Surface((20,20)),pygame.Surface((20,20)),pygame.Surface((20,20))]
+# frms[0].fill((255,0,0))#red frame
+# frms[1].fill((0,255,0))#green frame
+# frms[2].fill((0,0,255))#blue frame
+# #this is actual class
+# class animation:
+# 	def __init__(self,frms,spd_ms):
+# 		self.frames=frms
+# 		self.speed_ms=spd_ms/1000
+# 		self.start_frame=0
+# 		self.end_frame=len(self.frames)-1
+# 		self.first_time=time.time()
+# 		self.show_frame=0
+# 	def blit(self,pen,crd):
+# 		if time.time()-self.first_time>=self.speed_ms:
+# 			self.show_frame=self.show_frame+1
+# 			self.first_time=time.time()
+# 		if self.show_frame>self.end_frame:
+# 			self.show_frame=self.start_frame
+# 		#pen mean to window and is abbreivation of "pencere"
+# 		pen.blit(self.frames[self.show_frame],crd)
+# anim=animation(frms,500)
+# run=True
+# while run:
+# 	for i in pygame.event.get():
+# 		if i.type==pygame.QUIT:
+# 			run=False
+# 	pen.fill((0,0,0))
+# 	anim.blit(pen,(50,50))
+# 	pygame.display.flip()

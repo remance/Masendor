@@ -1,11 +1,11 @@
 "ID","Name","Health","Authority","Melee Command","Range Command","Cavalry Command","Combat","Social Class","Trait","Ability","Mana","Race","Description"
 1,"None",0,0,0,0,0,0,0,,0,0,1,
 2,"Remance of House Malabel",120,91,5,2,9,7,5,"8, 13, 18",1,0,1,"Cavalry general of House Malabel. Joined military at age 17 and become general at age 26. He is expert in heavy cavalry tactic and won various battles against enemies of Mocnan Kingdom throughout his military career. As he grows older, he wishes that his name will be remembered alongside other greatest heroes."
-3,"Amunsa",140,31,6,1,1,8,2,,2,0,1,
+3,"Amunsa",140,31,6,1,1,8,2,,2,0,1,"It is often said that creation represents the personality of the creator. The weapons that Amunsa created were all in the hand of the greatest warriors and rulers in written history. The perfection of quality comes not only from pure talent but also thousand hours of hard-working practice. His arts were even praised by the dwarf craftsmen, something that no human ever have the grace to ever receive it. "
 4,"Jonas Elbadai",100,86,4,8,3,4,8,14,3,,1,"The world is not only made of black and white. It existed in many shades of colour, maybe even the colours we can never see. So does a person and his or her characteristics. But must so-called characteristic be constant? What would happen if a person can change his personality in the matter of friction of a second? Not simply faking it but completely alters it at the very core to become a completely new identity. Can such a thing even be called person anymore or it becomes something incomprehensible entirely? "
 5,"Vars Karsunlaamt",999999,77,8,1,2,10,8,"1, 6, 8",4,0,1,"Peerless warrior who always seek a new challenge. His growth and lust in fighting know no bounds. His single-mindedness is very troublesome for many people involved in his life. Now a king of Masendor, the hero of Meskemdar, the first of house Karsunlaamt. His rule will certainly bring change to the history of the whole world."
 6,"Vasla",100,6,1,5,0,5,1,,5,0,1,
-7,"Orsanoas",200,41,7,0,1,10,4,"8,9",6,0,1,
+7,"Orsanoas",200,41,7,0,1,10,4,"8,9",6,0,1,"A mighty warrior in the companion of mighty fellows. Orsanoas is brutish as much as honest, quick to anger and even quicker to decide. He does not take kindly to deception and will swiftly cut down anyone whom he thinks has wronged him. Despite being a warrior, Orsanoas does not flavour wearing any armour of sort. His favourite weapon seems to be a giant swordstaff named ""Aetel""."
 8,"Fenryu",100,68,4,8,2,4,4,,7,,1,
 9,"Saltun Gadid",70,80,3,4,3,1,8,21,8,,1,
 10,"Raasohd",100,84,7,7,7,5,5,,9,0,1,

@@ -188,27 +188,22 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
         if thiswho > 1:
             position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
             fronttarget = receiver.frontline[receiverside][position]
-            """check if squad not already fighting if true skip picking new enemy"""
             attackersquad = squadlist[np.where(squadindexlist == thiswho)[0][0]]
-            if any(battle > 1 for battle in attackersquad.battlesideid) == False:
-                """get front of another battalion frontline to assign front combat if it 0 squad will find another unit on the left or right"""
-                if fronttarget > 1:
-                    receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
-                    """only attack if the side is already free else just wait until it free"""
-                    if receiversquad.battlesideid[squadside] == 0:
+            if any(battle > 1 for battle in attackersquad.battlesideid) == False: # check if squad not already fighting if true skip picking new enemy
+                if fronttarget > 1: # found front target
+                    receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]] # get front of another battalion frontline to assign front combat
+                    if receiversquad.battlesideid[squadside] == 0: # only attack if the side is already free else just wait until it free
                         attackersquad.battleside[attackerside] = receiversquad
                         attackersquad.battlesideid[attackerside] = fronttarget
                         receiversquad.battleside[squadside] = attackersquad
                         receiversquad.battlesideid[squadside] = thiswho
-                else:
-                    """pick flank attack if no enemy already fighting and not already fighting"""
-                    chance = random.randint(0, 1)
-                    secondpick = 0
+                else:  # pick flank attack instead if no front target to fight
+                    chance = random.randint(0, 1) # attack left array side of the squad if get random 0, right if 1
+                    secondpick = 0 # if the first side search result in no target to fight pick another one
                     if chance == 0: secondpick = 1
-                    """attack left array side of the squad if get random 0, right if 1"""
-                    truetargetside = changecombatside(chance, receiverside)
+                    truetargetside = changecombatside(chance, receiverside) # find combatside according to the battalion combat side
                     fronttarget = squadselectside(receiver.frontline[receiverside], chance, position)
-                    if fronttarget > 1: # attack if the found defender at that side is free if not check other side
+                    if fronttarget > 1: # attack if the found defender at that side if not check another side
                         receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
                         if receiversquad.battlesideid[truetargetside] == 0:
                             attackersquad.battleside[attackerside] = receiversquad
@@ -225,7 +220,7 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                                 attackersquad.battlesideid[attackerside] = fronttarget
                                 receiversquad.battleside[truetargetside] = attackersquad
                                 receiversquad.battlesideid[truetargetside] = thiswho
-                        else:
+                        else: # simply no enemy to fight
                             attackersquad.battleside[attackerside] = None
                             attackersquad.battlesideid[attackerside] = 0
 
@@ -246,8 +241,13 @@ def squadselectside(targetside, side, position):
     return fronttarget
 
 def changecombatside(side, position):
-    """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right"""
-    """side is side of attack for rotating to find the correct side the defender got attack accordingly (e.g. left attack on right side is front)"""
+    """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right
+    side is side of attack for rotating to find the correct side the defender got attack accordingly (e.g. left attack on right side is front)
+        0               0                               front
+    1       2  to   1       3   for side index      left     right
+        3               2                                rear
+    this will make rotation with number easier, - is rotate clockwise and + is rotate anticlockwise
+    """
     subposition = position
     if subposition == 2:
         subposition = 3
@@ -256,11 +256,11 @@ def changecombatside(side, position):
     changepos = 1
     if subposition == 2:
         changepos = -1
-    finalposition = subposition + changepos  # right
-    if side == 0: finalposition = subposition - changepos  # left
-    if finalposition == -1:
+    finalposition = subposition + changepos  # rotate clockwise (right)
+    if side == 0: finalposition = subposition - changepos  # rotate anticlockwise (left)
+    if finalposition == -1: # - clockwise from front to right (0 to 3)
         finalposition = 3
-    elif finalposition == 4:
+    elif finalposition == 4: # + anticlockwise from right to front (3 to 0)
         finalposition = 0
     return finalposition
 
@@ -318,14 +318,18 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     return unitdmg, moraledmg, leaderdmg
 
 
-def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside):
+def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside, receiverside):
+    """apply aoe status effect to enemy squads"""
     for status in inflictstatus.items():
-        if status[1] == 1 and attackerside == 0:
+        if status[1] == 1 and attackerside == 0: # only front enemy
             receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
-        elif status[1] in (2, 3):
+        elif status[1] in (2, 3): # aoe effect to side only (2), to also corner enemy (3)
             receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
-            if status[1] == 3:
-                for squad in receiver.nearbysquadlist[0:2]:
+            if status[1] == 3: # apply to corner enemy squad (left and right of self front enemy squad)
+                cornerenemyapply = receiver.nearbysquadlist[0:2]
+                if receiverside in (1,2): # attack on left/right side means corner enemy would be from front and rear side of the enemy
+                    cornerenemyapply = [receiver.nearbysquadlist[2],receiver.nearbysquadlist[5]]
+                for squad in cornerenemyapply:
                     if squad != 0:
                         squad.statuseffect[status[0]] = statuslist[status[0]].copy()
         elif status[1] == 4:
@@ -393,9 +397,9 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     #^ End attack corner
     #v inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion
     if who.inflictstatus != {}:
-        applystatustoenemy(statuslist, who.inflictstatus, target, whoside)
+        applystatustoenemy(statuslist, who.inflictstatus, target, whoside, targetside)
     if target.inflictstatus != {}:
-        applystatustoenemy(statuslist, target.inflictstatus, who, targetside)
+        applystatustoenemy(statuslist, target.inflictstatus, who, targetside, whoside)
     #^ End inflict status
 
 

@@ -1,0 +1,1 @@
+This folder keep texture image related to popup ui.

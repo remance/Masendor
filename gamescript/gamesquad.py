@@ -507,9 +507,9 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.tempcount -= (100 - self.coldres) / 100 * self.timer # reduce squad temperature, rate depends on cold resistance
             else: # tempreach is 0, squad temp revert back to 0
                 if self.tempcount > 0:
-                    self.tempcount -= (100 - self.heatres) / 100 * self.timer # revert faster with higher resist
+                    self.tempcount -= (1 + self.heatres) / 100 * self.timer # revert faster with higher resist
                 else:
-                    self.tempcount += (100 - self.coldres) / 100 * self.timer # revert faster with higher resist
+                    self.tempcount += (1 + self.coldres) / 100 * self.timer
         #^ End temperature
 
         #v Apply effect from skill
