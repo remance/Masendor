@@ -101,9 +101,6 @@ class Gameui(pygame.sprite.Sprite):
             self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"} # leader state name
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
                                 "Deep water"] # terrain climate name
-        #     self.iconimagerect = self.icon[0].get_rect(
-        #         center=(
-        #             self.image.get_rect()[0] + self.image.get_size()[0] - 20, self.image.get_rect()[1] + 40))
         self.image_original = self.image.copy()
 
     def longtext(self, surface, text, pos, font, color=pygame.Color('black')):
@@ -262,8 +259,8 @@ class Gameui(pygame.sprite.Sprite):
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
-                    if 1 not in who.mount: # if mount is not the None mount id 1
-                        textvalue.insert(3, "Mount:" + str(who.mount[0]))
+                    if "None" not in who.mount: # if mount is not the None mount id 1
+                        textvalue.insert(3, "Mount:" + who.mountgrade[0] + " " + str(who.mount[0]))
                     #^ End equipment text
 
                     for text in textvalue:

@@ -65,6 +65,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100)) # Health of each troop
         self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100) * (startstamina / 100)) # starting stamina with grade
         self.mana = stat[20] # Resource for magic skill
+
+        #v Weapon stat
         self.meleeweapon = stat[21] # melee weapon equipment
         self.rangeweapon = stat[22] # range weapon equipment
         self.dmg = weaponlist.weaponlist[self.meleeweapon[0]][1] * weaponlist.quality[self.meleeweapon[1]] # damage for melee
@@ -77,29 +79,39 @@ class Unitsquad(pygame.sprite.Sprite):
         self.trait = self.trait + weaponlist.weaponlist[self.rangeweapon[0]][4]  # apply trait from melee weapon
         if self.rangepenetrate > 1: self.rangepenetrate = 1 # range penetrate cannot be higher than 1
         elif self.rangepenetrate < 0: self.rangepenetrate = 0 # range penetrate cannot be lower than 0
+        #^ End weapon stat
+
         self.basemorale = int(stat[23] + int(statlist.gradelist[self.grade][9])) # morale with grade bonus
         self.basediscipline = int(stat[24] + int(statlist.gradelist[self.grade][10])) # discilpline with grade bonus
         self.troopnumber = int(stat[27] * starthp / 100) # number of starting troop
         self.basespeed = 50 # All infantry has base speed at 50
         self.unittype = stat[28] - 1 # 0 is melee infantry and 1 is range for command buff
         self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
-        self.mount = statlist.mountlist[stat[29]] # mount this squad use
-        if stat[29] != 1: # have mount
+
+        #v Mount stat
+        self.mount = statlist.mountlist[stat[29][0]] # mount this squad use
+        self.mountgrade = statlist.mountgradelist[stat[29][1]]
+        if stat[29][0] != 1: # have mount, add mount stat with its grade to unit stat
             self.basechargedef = 5 # charge defence only 5 for cav
-            self.basespeed = self.mount[1] # use mount base speed instead
-            self.troophealth += self.mount[2] # Add mount health to the troop health
-            self.basecharge += self.mount[3] # Add charge power of mount to troop
-            self.trait = self.trait + self.mount[5]  # Apply mount trait to unit
+            self.basespeed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
+            self.troophealth += (self.mount[2] * self.mountgrade[3]) # Add mount health to the troop health
+            self.basecharge += (self.mount[3] + self.mountgrade[2]) # Add charge power of mount to troop
+            self.stamina += self.mount[4]
+            self.trait = self.trait + self.mount[6]  # Apply mount trait to unit
             self.unittype = 2 # If unit has mount, count as cav for command buff
             self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
+        #^ End mount stat
+
         self.weight = weaponlist.weaponlist[stat[21][0]][3] + weaponlist.weaponlist[stat[22][0]][3] + \
                       armourlist.armourlist[stat[11][0]][2] # Weight from both melee and range weapon and armour
         self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]  # Apply armour trait to unit
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0) # finalise base speed with weight and grade bonus
         self.description = stat[-1] # squad description for inspect ui
         # if self.hidden
-        self.baseelemmelee = 0 # start with physical
-        self.baseelemrange = 0 # start with physical
+
+        #v Elemental stat
+        self.baseelemmelee = 0 # start with physical element for melee weapon
+        self.baseelemrange = 0 # start with physical for range weapon
         self.elemcount = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
         self.tempcount = 0 # Temperature threshold count
         fireres = 0 # resistance to fire, will be combine into list
@@ -110,7 +122,9 @@ class Unitsquad(pygame.sprite.Sprite):
         self.heatres = 0 # Resistance to heat temperature
         self.coldres = 0 # Resistance to cold temperature
         poisonres = 0 # resistance to poison, will be combine into list
-        self.criteffect = 1
+        #^ End elemental
+
+        self.criteffect = 1 # critical extra modifier
         self.frontdmgeffect = 1 # Some skill affect only frontal combat damage
         self.sidedmgeffect = 1 # Some skill affect damage for side combat as well (AOE)
         self.corneratk = False # Check if squad can attack corner enemy or not

@@ -25,6 +25,7 @@ class Lorebook(pygame.sprite.Sprite):
     unitgradestat = None
     unitclasslist = None
     leaderclasslist = None
+    mountgradestat = None
     racelist = None
     SCREENRECT = None
     main_dir = None
@@ -215,11 +216,12 @@ class Lorebook(pygame.sprite.Sprite):
                                     if basearmour >= 50 and stat[9] >= 50: role.append(rolelist[2]) # armour and melee defense
                                     if stat[8] >= 50: role.append(rolelist[1]) # melee attack
                                     speed = 50 ## Not counting weight yet
-                                    if stat[29] != 1 : speed = self.mountstat[stat[29]][2] ## speed from mount
+                                    mountstat = self.mountstat[stat[29][0]]
+                                    if stat[29][0] != 1: speed = mountstat[2] ## speed from mount
                                     weight = self.armourstat[stat[11][0]][2] + self.weaponstat[stat[21][0]][3] + self.weaponstat[stat[22][0]][3]
                                     speed = round((speed * ((100 - weight) / 100)))
                                     if speed > 50 and basearmour < 30: role.append(rolelist[3])
-                                    if stat[16] + self.mountstat[stat[29]][3] >= 60: role.append(rolelist[4]) # charge
+                                    if stat[16] + mountstat[3] >= 60: role.append(rolelist[4]) # charge
                                     createtext = "Specilaised Role: "
                                     if len(role) == 0: createtext += "None, "
                                     for thisrole in role:
@@ -267,8 +269,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 elif statheader[index] == "Race":
                                     createtext = statheader[index] + ": " + self.racelist[text][0]
                                 elif statheader[index] == "Mount":
-                                    createtext = statheader[index] + ": " + self.mountstat[text][0]
-                                    if self.mountstat[text][0] == "None":
+                                    createtext = statheader[index] + ": " + self.mountgradestat[text[1]][0] + " " + self.mountstat[text[0]][0]
+                                    if self.mountstat[text[0]][0] == "None":
                                         createtext = ""
                                         pass
                                 elif statheader[index] == "Abilities" or statheader[index] == "Charge Skill":

@@ -65,7 +65,7 @@ class Unitstat():
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)  # No need to make it float
-                    if n in (5, 6, 12, 22, 23):
+                    if n in (5, 6, 12, 22, 23, 30): # property,ability,armour,melee weapon,range weapon,mount coloumns
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():
@@ -235,16 +235,16 @@ class Unitstat():
 
         #v Unit mount dict
         self.mountlist = {}
-        with open(main_dir + "\data\war" + '\\unit_mount.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + '\\mount_preset.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if "," in row[-2]:  # make str with , into list
+                if "," in row[-2]:  # ruleset list, make str with "," into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
-                        if n == 6:
+                        if n == 7: # properties list column
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -254,6 +254,22 @@ class Unitstat():
                     self.mountlist[row[0]] = row[1:]
         unitfile.close()
         #^ End unit mount dict
+
+        #v Mount grade dict
+        self.mountgradelist = {}
+        with open(main_dir + "\data\war" + '\\mount_grade.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit(): row[n] = int(i)  # No need to be float
+                    if n == 8: # Properties list
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                self.mountgradelist[row[0]] = row[1:]
+        unitfile.close()
+        #^ End mount grade
 
 class Leaderstat():
     def __init__(self, main_dir, img, imgorder, option):

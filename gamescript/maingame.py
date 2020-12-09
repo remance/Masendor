@@ -471,6 +471,7 @@ class Battle():
         gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
         gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
         gamelorebook.Lorebook.leaderclasslist = self.allleader.leaderclass
+        gamelorebook.Lorebook.mountgradestat = self.gameunitstat.mountgradelist
         gamelorebook.Lorebook.racelist = self.gameunitstat.racelist
         gamelorebook.Lorebook.SCREENRECT = SCREENRECT
         gamelorebook.Lorebook.main_dir = main_dir
@@ -549,9 +550,9 @@ class Battle():
         startcolumn = 25
         column = startcolumn
         list = self.team1army
-        if self.enactment == True:
+        if self.enactment == True: # include another team army icon as well in enactment mode
             list = self.allunitlist
-        currentindex = int(self.armyselector.currentrow * self.armyselector.maxcolumnshow)
+        currentindex = int(self.armyselector.currentrow * self.armyselector.maxcolumnshow) # the first index of current row
         self.armyselector.logsize = len(list) / self.armyselector.maxcolumnshow
         if self.armyselector.logsize.is_integer() == False:
             self.armyselector.logsize = int(self.armyselector.logsize) + 1
@@ -563,13 +564,13 @@ class Battle():
             for icon in self.armyicon:
                 icon.kill()
                 del icon
-        for index, army in enumerate(list[currentindex:]):
+        for index, army in enumerate(list[currentindex:]): # add army icon for drawing according to appopriate current row
             self.armyicon.add(gameui.Armyicon((column, row), army))
             column += 40
             if column > 250:
                 row += 50
                 column = startcolumn
-            if row > 100: break
+            if row > 100: break # do not draw for the third row
         self.selectscroll.changeimage(logsize=self.armyselector.logsize)
 
     def checksplit(self, whoinput):
@@ -621,6 +622,7 @@ class Battle():
                 position[0] = startrow
 
     def countdownskillicon(self):
+        """count down timer on skill icon for activate and cooldown time"""
         for skill in self.skillicon:
             if skill.type == 1: # only do skill icon not trait
                 cd = 0
@@ -637,6 +639,7 @@ class Battle():
         #     effect.iconchange(cd, 0)
 
     def popoutlorebook(self, section, gameid):
+        """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
         self.gamestate = 0
         self.battlemenu.mode = 2
         self.allui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui)
@@ -650,17 +653,17 @@ class Battle():
         """mouse over ui that is not unit card and armybox (topbar and commandbar)"""
         for ui in self.gameui:
             if ui in self.allui and ui.rect.collidepoint(self.mousepos):
-                if ui.uitype not in ("unitcard", 'armybox'):
-                    self.clickany = True
-                    self.uiclick = True  # for avoiding clicking unit under ui
-                    break
+                self.clickany = True
+                self.uiclick = True
+                break
         return self.clickany
 
     def armyiconmouseover(self, mouseup, mouseright):
+        """process user mouse input on army icon, left click = select, right click = go to battalion position on map"""
+        self.clickany = True
+        self.uiclick = True
         for icon in self.armyicon:
             if icon.rect.collidepoint(self.mousepos):
-                self.clickany = True
-                self.uiclick = True
                 if mouseup:
                     self.lastselected = icon.army
                     for hitbox in self.lastselected.hitbox:
@@ -675,14 +678,16 @@ class Battle():
         return self.clickany
 
     def buttonmouseover(self, mouseright):
+        """process user mouse input on various ui buttons"""
         for button in self.buttonui:
             if button in self.allui and button.rect.collidepoint(self.mousepos):
                 self.clickany = True
-                self.uiclick = True  # for avoiding clicking unit under ui
+                self.uiclick = True  # for avoiding selecting unit under ui
                 break
         return self.clickany
 
     def leadermouseover(self, mouseright):
+        """process user mouse input on leader portrait in command ui"""
         leadermouseover = False
         for leader in self.leadernow:
             if leader.rect.collidepoint(self.mousepos):
@@ -690,7 +695,7 @@ class Battle():
                     armyposition = self.leaderposname[leader.armyposition]
                 else:
                     armyposition = self.leaderposname[leader.armyposition+4]
-                self.leaderpopup.pop(self.mousepos, armyposition + ": " + leader.name)
+                self.leaderpopup.pop(self.mousepos, armyposition + ": " + leader.name) # popup leader name when mouse over
                 self.allui.add(self.leaderpopup)
                 leadermouseover = True
                 if mouseright:
@@ -988,6 +993,7 @@ class Battle():
                             self.basecamerapos = posmask * 5
                             self.camerapos = self.basecamerapos * self.camerascale
                             self.clickany = True
+                            self.uiclick = True
                         elif mouse_right:
                             if self.lastselected is not None:
                                 self.uiclick = True
@@ -1168,6 +1174,8 @@ class Battle():
                         if self.inspectbutton.rect.collidepoint(self.mousepos):
                             self.buttonnamepopup.pop(self.mousepos, "Inspect Squad")
                             self.allui.add(self.buttonnamepopup)
+                            if mouse_right:
+                                self.uiclick = True # for some reason the loop mouse check above does not work for inspect button, so it here instead
                         if mouse_up:
                             if self.inspectui == False:  # Add army inspect ui when left click at ui button or when change unit with inspect open
                                 self.inspectui = True

@@ -87,7 +87,7 @@
 86,"Earth Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,50,0,0,0,0,,,,0,,2,
 87,"Fatigue Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Fatigue is the natural consequence of any physical activity. It just come much later for some than the others."
 88,"Magic Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,50,0,0,0,,,,0,,2,
-89,"Swamp Dweller",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,20,30,,,,0,,2,"Bonus combat and movement for these troops in swamp terrain and also use less supply as well."
+89,"Swamp Crosser",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,20,30,,,,0,,2,"Bonus combat and movement for these troops in swamp terrain and also use less supply as well."
 90,"Sylvan",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Bonus combat and movement for these troops in forest terrain and also use less supply as well."
 91,"Blight Habitat",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,70,,,,0,,2,"Bonus combat and movement for these troops in blight terrain and also use less supply as well."
 92,"Aquatic",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,70,0,0,0,0,50,0,,,,0,,2,"Bonus combat and movement for these troops in water terrain and also use less supply as well."
