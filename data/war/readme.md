@@ -51,23 +51,6 @@ unit_grade: list of all sub-units' grades, which represent the training level or
 unit_item: Not yet implemented 
 
 
-unit_mount: list of all sub-units' mounts. The data structure of mount is as follows;
-
-- Speed replacement to the sub-unit original speed
-
-- Health bonus to the sub-unit
-
-- Charge bonus to the sub-unit's charge power
-
-- Purchase Cost
-
-- Properties list that will be applied to the sub-unit with this mount
-
-- List of "Ruleset" id that armour is available
-
-unit_mountarmour: Not yet implemented
-
-
 unit_property: list of all sub-units' properties. The data structure of property is as follows;
 
 
@@ -93,3 +76,21 @@ unit_weapon: list of all sub-units' weapons including artillery weapons. The dat
 - ImageID, the id of weapon image that will be used for sub-unit icon
 
 - List of Ruleset id that armour is available
+
+mount_preset: list of all sub-units' mounts. The data structure of mount is as follows;
+
+- Speed replacement to the sub-unit original speed
+
+- Health bonus to the sub-unit
+
+- Charge bonus to the sub-unit's charge power
+
+- Purchase Cost
+
+- Properties list that will be applied to the sub-unit with this mount
+
+- List of "Ruleset" id that mount is available
+
+mount_grade: list of mount grade with modifier to mount stat similar to unit_grade
+
+mount_armour: list of mount armour with modifier to mount stat similar to unit_armour. The data structure is slightly different than unit armour, mount armour provide additional health instead of armour stat.

@@ -260,7 +260,10 @@ class Gameui(pygame.sprite.Sprite):
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
                     if "None" not in who.mount: # if mount is not the None mount id 1
-                        textvalue.insert(3, "Mount:" + who.mountgrade[0] + " " + str(who.mount[0]))
+                        armourtext = "//" + who.mountarmour[0]
+                        if "None" in who.mountarmour[0]:
+                            armourtext = ""
+                        textvalue.insert(3, "Mount:" + who.mountgrade[0] + " " + who.mount[0] + armourtext)
                     #^ End equipment text
 
                     for text in textvalue:

@@ -460,6 +460,7 @@ class Battle():
         gamelorebook.Lorebook.armourstat = self.allarmour.armourlist
         gamelorebook.Lorebook.weaponstat = self.allweapon.weaponlist
         gamelorebook.Lorebook.mountstat = self.gameunitstat.mountlist
+        gamelorebook.Lorebook.mountarmourstat = self.gameunitstat.mountarmourlist
         gamelorebook.Lorebook.statusstat = self.gameunitstat.statuslist
         gamelorebook.Lorebook.skillstat = self.gameunitstat.abilitylist
         gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
@@ -1139,12 +1140,12 @@ class Battle():
                         self.switchbuttonui[4].event = whoinput.shoothow
                         self.switchbuttonui[5].event = whoinput.runtoggle
                         self.leadernow = whoinput.leader
-                        self.allui.add(*self.leadernow)
-                        self.checksplit(whoinput)
+                        self.allui.add(*self.leadernow) # add leader portrait to draw
+                        self.checksplit(whoinput) # check if selected battalion can split, if yes draw button
                         self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
-                    elif self.beforeselected != self.lastselected:  # change ui when click other battalion
-                        if self.inspectui == True:
+                    elif self.beforeselected != self.lastselected:  # change unit information on ui when select other battalion
+                        if self.inspectui == True: # change inspect ui
                             self.newarmyclick = True
                             self.allui.remove(*self.showingsquad)
                             self.showingsquad = whoinput.squadsprite

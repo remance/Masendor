@@ -91,10 +91,11 @@ class Unitsquad(pygame.sprite.Sprite):
         #v Mount stat
         self.mount = statlist.mountlist[stat[29][0]] # mount this squad use
         self.mountgrade = statlist.mountgradelist[stat[29][1]]
+        self.mountarmour = statlist.mountarmourlist[stat[29][2]]
         if stat[29][0] != 1: # have mount, add mount stat with its grade to unit stat
             self.basechargedef = 5 # charge defence only 5 for cav
             self.basespeed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
-            self.troophealth += (self.mount[2] * self.mountgrade[3]) # Add mount health to the troop health
+            self.troophealth += (self.mount[2] * self.mountgrade[3]) + self.mountarmour[1] # Add mount health to the troop health
             self.basecharge += (self.mount[3] + self.mountgrade[2]) # Add charge power of mount to troop
             self.stamina += self.mount[4]
             self.trait = self.trait + self.mount[6]  # Apply mount trait to unit
@@ -103,7 +104,7 @@ class Unitsquad(pygame.sprite.Sprite):
         #^ End mount stat
 
         self.weight = weaponlist.weaponlist[stat[21][0]][3] + weaponlist.weaponlist[stat[22][0]][3] + \
-                      armourlist.armourlist[stat[11][0]][2] # Weight from both melee and range weapon and armour
+                      armourlist.armourlist[stat[11][0]][2] + self.mountarmour[2] # Weight from both melee and range weapon and armour
         self.trait = self.trait + armourlist.armourlist[stat[11][0]][4]  # Apply armour trait to unit
         self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(statlist.gradelist[self.grade][3]), 0) # finalise base speed with weight and grade bonus
         self.description = stat[-1] # squad description for inspect ui

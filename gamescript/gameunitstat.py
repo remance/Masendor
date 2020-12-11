@@ -271,6 +271,22 @@ class Unitstat():
         unitfile.close()
         #^ End mount grade
 
+        #v Mount armour dict
+        self.mountarmourlist = {}
+        with open(main_dir + "\data\war" + '\\mount_armour.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                if "," in row[-2]:  # ruleset list, make str with "," into list
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                else:
+                    thisruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):
+                    for n, i in enumerate(row):
+                        if i.isdigit(): row[n] = int(i)  # No need to be float
+                    self.mountarmourlist[row[0]] = row[1:]
+        unitfile.close()
+        #^ End mount armour
+
 class Leaderstat():
     def __init__(self, main_dir, img, imgorder, option):
         self.imgs = img

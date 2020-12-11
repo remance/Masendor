@@ -91,6 +91,7 @@ def convertweathertime(weatherevent):
 ## Battle Start related gamescript
 
 def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina):
+    """Create batalion object into the battle, also add hitbox and leader of the battalion"""
     from gamescript import gamebattalion, gameleader
     squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
     squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
@@ -107,22 +108,19 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
 
 
 def unitsetup(maingame,playerteam):
+    """read battalion from unit_pos file and create object with addarmy function"""
     from gamescript import gamesquad
-    """squadindexlist is list of every squad index in the game for indexing the squad group"""
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-    letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")
-    numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")
+    letterboard = ("a", "b", "c", "d", "e", "f", "g", "h") # letter according to squad position in inspect ui similar to chess board
+    numberboard = ("8", "7", "6", "5", "4", "3", "2", "1") # same as above
     boardpos = []
     for dd in numberboard:
         for ll in letterboard:
             boardpos.append(ll + dd)
-    squadindexlist = []
+    squadindexlist = [] # squadindexlist is list of every squad index in the game for indexing the squad group
     unitlist = []
-    """army num is list index for battalion in either team group"""
     team1start, team2start = 0, 0
-    """squadindex is list index for all squad group"""
-    squadindex = 0
-    """firstsquad check if it the first ever in group"""
+    squadindex = 0 #  squadindex is list index for all squad group
     squadgameid = 10000
     with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos.csv", 'r') as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -136,13 +134,13 @@ def unitsetup(maingame,playerteam):
             if row[0] < 2000: # team1 id less than 2000
                 if playerteam == 1 or maingame.enactment: # player can control only his team or both in enactment mode
                     control = True
-                colour = (144, 167, 255)  # team1 colour
+                colour = (144, 167, 255)  # blue colour
                 team1start += 1
                 whicharmy = maingame.team1army
             elif row[0] >= 2000: # team2 id 2000+
                 if playerteam == 2 or maingame.enactment: # player can control only his team or both in enactment mode
                     control = True
-                colour = (255, 114, 114)
+                colour = (255, 114, 114) # red colour
                 team2start += 1
                 whicharmy = maingame.team2army
             command = False # Not commander battalion by default
@@ -153,6 +151,7 @@ def unitsetup(maingame,playerteam):
                            maingame.coa[row[12]], command, row[13], row[14], row[15])
             whicharmy.append(army)
             armysquadindex = 0 # armysquadindex is list index for squad list in a specific army
+
             #v Setup squad in army to squad group
             for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
@@ -168,6 +167,7 @@ def unitsetup(maingame,playerteam):
                     squadindex += 1
                 armysquadindex += 1
             #^ End squad setup
+
     unitfile.close()
     return squadindexlist
 
@@ -184,6 +184,7 @@ def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
         combatpositioncal(squadlist, squadindexlist, sortmidfront, who, target, whoside, targetside, squadtargetside)
 
 def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
+    """Find enemy squad to fight starting at the front of attacker, then either right or left side on the frontline array"""
     for thiswho in sortmidfront:
         if thiswho > 1:
             position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
@@ -303,13 +304,13 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     elif type == 1:  # Range Damage
         dmg = who.rangedmg * ((100 - (target.armour * who.rangepenetrate)) / 100) * combatscore
     leaderdmg = dmg
-    unitdmg = (dmg * who.troopnumber) + leaderdmgbonus
+    unitdmg = (dmg * who.troopnumber) + leaderdmgbonus # damage on unit is dmg multiply by troop number with addition from leader combat
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         unitdmg = unitdmg * 1.25
-    if type == 0:
+    if type == 0: # melee do less damage per hit because the combat happen more frequently than range
         unitdmg = unitdmg / 10
     moraledmg = dmg / 20
-    if unitdmg < 0: # Damage cannot be negative (it would heal instead)
+    if unitdmg < 0: # Damage cannot be negative (it would heal instead), same for morale and leader damage
         unitdmg = 0
     if leaderdmg < 0:
         leaderdmg = 0
@@ -332,7 +333,7 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside, receiv
                 for squad in cornerenemyapply:
                     if squad != 0:
                         squad.statuseffect[status[0]] = statuslist[status[0]].copy()
-        elif status[1] == 4:
+        elif status[1] == 4: # whole battalion aoe
             for squad in receiver.battalion.spritearray.flat:
                 if squad.state != 100:
                     squad.statuseffect[status[0]] = statuslist[status[0]].copy()
