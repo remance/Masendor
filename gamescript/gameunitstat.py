@@ -83,7 +83,7 @@ class Unitstat():
                         row[n] = int(i)
                 self.unitlore[row[0]] = row[1:]
             unitfile.close()
-        #^ End lore
+        #^ End unit lore
 
         #v Unit status effect dict
         self.statuslist = {}
@@ -292,7 +292,7 @@ class Leaderstat():
         self.imgs = img
         self.imgorder = imgorder
         self.leaderlist = {}
-        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\leader.csv", "r") as unitfile:
+        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\leader.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -304,7 +304,7 @@ class Leaderstat():
         unitfile.close()
 
         #v Add common leader to the leader list with gameid + 10000
-        with open(main_dir + "\data" + "\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", "r") as unitfile:
+        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -315,6 +315,18 @@ class Leaderstat():
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
         #^ End common leader
+
+        #v Lore of the leader dict
+        self.leaderlore = {}
+        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + '\\leader_lore.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                self.leaderlore[row[0]] = row[1:]
+            unitfile.close()
+        #^ End leader lore
 
         #v Leader class dict
         self.leaderclass = {}
@@ -329,4 +341,6 @@ class Leaderstat():
                     # else: row[n] = [int(i)]
                 self.leaderclass[row[0]] = row[1:]
         unitfile.close()
+        #^ End leader class
+
 

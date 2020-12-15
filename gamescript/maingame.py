@@ -465,7 +465,7 @@ class Battle():
         gamelorebook.Lorebook.skillstat = self.gameunitstat.abilitylist
         gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
         gamelorebook.Lorebook.leader = self.allleader
-        gamelorebook.Lorebook.leaderlore = None
+        gamelorebook.Lorebook.leaderlore = self.allleader.leaderlore
         gamelorebook.Lorebook.terrainstat = self.battlemapfeature.featuremod
         gamelorebook.Lorebook.weatherstat = self.allweather
         gamelorebook.Lorebook.landmarkstat = None
@@ -482,33 +482,34 @@ class Battle():
         imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
         self.lorebuttonui = [
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[0], 0, 13),
+                            imgs[0], 0, 13), # concept section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[1], 1, 13),
+                            imgs[1], 1, 13), # history section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 3, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[2], 2, 13),
+                            imgs[2], 2, 13), # faction section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 4, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[3], 3, 13),
+                            imgs[3], 3, 13), # troop section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 5, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[4], 4, 13),
+                            imgs[4], 4, 13), # troop equipment section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 6, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[5], 5, 13),
+                            imgs[5], 5, 13), # troop status section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 7, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[6], 6, 13),
+                            imgs[6], 6, 13), # troop ability section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 8, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[7], 7, 13),
+                            imgs[7], 7, 13), # troop property section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 9, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[8], 8, 13),
+                            imgs[8], 8, 13), # leader section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13),
+                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13), # terrain section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13),
+                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13), # weather section button
             gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),
+                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13), # close button
             gameui.Uibutton(self.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), self.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
-                            imgs[13], 20, 13),
+                            imgs[13], 20, 13), # previous page button
             gameui.Uibutton(self.lorebook.rect.bottomright[0] - (imgs[14].get_width()), self.lorebook.rect.bottomright[1] - imgs[14].get_height(),
-                            imgs[14], 21, 13)]
+                            imgs[14], 21, 13)] # next page button
+        self.pagebutton = (self.lorebuttonui[12], self.lorebuttonui[13])
         #^ End encyclopedia objects
 
         #v Esc menu related objects
@@ -646,8 +647,8 @@ class Battle():
         self.allui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui)
         self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
                                             self.lorebook.maxsubsectionshow, layer=14)
-        self.lorebook.changesection(section, self.lorenamelist, self.subsectionname, self.lorescroll)
-        self.lorebook.changesubsection(gameid)
+        self.lorebook.changesection(section, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.allui)
+        self.lorebook.changesubsection(gameid, self.pagebutton, self.allui)
         self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
 
     def uimouseover(self):
@@ -1459,7 +1460,7 @@ class Battle():
                                     self.allui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui) # add sprite related to encyclopedia
                                     self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
                                                                         self.lorebook.maxsubsectionshow, layer=14) # add subsection list scroller
-                                    self.lorebook.changesection(0, self.lorenamelist, self.subsectionname, self.lorescroll)
+                                    self.lorebook.changesection(0, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.allui)
                                     # self.lorebook.setupsubsectionlist(self.lorenamelist, listgroup)
                                 elif button.text == "Option": # open option menu
                                     self.battlemenu.changemode(1) # change to option menu mode
@@ -1511,9 +1512,9 @@ class Battle():
                     if mouse_up or mouse_down: # mouse down (hold click) only for subsection listscroller
                         if mouse_up:
                             for button in self.lorebuttonui:
-                                if button.rect.collidepoint(self.mousepos): # click button
+                                if button in self.allui and button.rect.collidepoint(self.mousepos): # click button
                                     if button.event in range(0, 11): # section button
-                                        self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll) # change to section of that button
+                                        self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.allui) # change to section of that button
                                     elif button.event == 19:  # Close button
                                         self.allui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist) # remove enclycopedia related sprites
                                         for name in self.subsectionname: # remove subsection name
@@ -1523,19 +1524,13 @@ class Battle():
                                         if self.battlemenu not in self.allui: # in case open encyclopedia via right click on icon or other way
                                             self.gamestate = 1 # resume gameplay
                                     elif button.event == 20:  # Previous page button
-                                        if self.lorebook.page == 0: # cannot go pass the first page
-                                            pass
-                                        else:
-                                            self.lorebook.changepage(self.lorebook.page - 1) # go back 1 page
+                                        self.lorebook.changepage(self.lorebook.page - 1, self.pagebutton, self.allui) # go back 1 page
                                     elif button.event == 21:  # Next page button
-                                        if self.lorebook.page == self.lorebook.maxpage: # cannot go pass max page
-                                            pass
-                                        else:
-                                            self.lorebook.changepage(self.lorebook.page + 1) # go forward 1 page
+                                        self.lorebook.changepage(self.lorebook.page + 1, self.pagebutton, self.allui) # go forward 1 page
                                     break # found clicked button, break loop
                             for name in self.subsectionname: # too lazy to include break for button found to avoid subsection loop since not much optimisation is needed here
                                 if name.rect.collidepoint(self.mousepos): # click on subsection name
-                                    self.lorebook.changesubsection(name.subsection) # change subsection
+                                    self.lorebook.changesubsection(name.subsection, self.pagebutton, self.allui) # change subsection
                                     break # found clicked subsection, break loop
                         if self.lorescroll.rect.collidepoint(self.mousepos): # click on subsection list scroller
                             self.lorebook.currentsubsectionrow = self.lorescroll.update(self.mousepos) # update the scroller and get new current subsection

@@ -78,13 +78,21 @@ class Lorebook(pygame.sprite.Sprite):
                              69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
         self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
 
-    def changepage(self, page, portrait=None):
+    def changepage(self, page, pagebutton, allui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
         self.page = page
         self.image = self.image_original.copy() # reset encyclopedia image
         self.pagedesign() # draw new pages
+        if self.page == self.maxpage or self.loredata is None: # remove next page button when reach last page
+            allui.remove(pagebutton[1])
+        else:
+            allui.add(pagebutton[1])
+        if self.page != 0: # add previous page button when not at first page
+            allui.add(pagebutton[0])
+        else:
+            allui.remove(pagebutton[0])
 
-    def changesection(self, section, listsurface, listgroup, lorescroll):
+    def changesection(self, section, listsurface, listgroup, lorescroll, pagebutton, allui):
         """Change to new section either by open encyclopedia or click section button"""
         self.portrait = None
         self.section = section # get new section
@@ -96,18 +104,23 @@ class Lorebook(pygame.sprite.Sprite):
         thislist = self.statdata.values() # get list of subsection
         self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]] # remove the header from subsection list
         self.logsize = len(self.subsectionlist) # get size of subsection list
-        self.changesubsection(self.subsection)
+        self.changesubsection(self.subsection, pagebutton, allui)
         self.setupsubsectionlist(listsurface, listgroup)
         lorescroll.changeimage(logsize=self.logsize)
         lorescroll.changeimage(newrow=self.currentsubsectionrow)
 
-    def changesubsection(self, subsection):
+    def changesubsection(self, subsection, pagebutton, allui):
         self.subsection = subsection
         self.page = 0 # reset page to the first one
         self.image = self.image_original.copy()
         self.portrait = None # reset portrait, possible for subsection to not have portrait
+        allui.remove(pagebutton[0])
         if self.loredata is not None: # some subsection may not have lore data
-            self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
+            try:
+                self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
+                allui.add(pagebutton[1])
+            except:
+                self.maxpage = 0 # some subsection may not have lore data in file (maxpage would be just 0)
         if self.section != 8:
             self.pagedesign() # draw new pages
         else: ## leader section exclusive for now (will merge wtih other section when add portrait for others)
@@ -278,7 +291,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     if statheader[index] == "Charge Skill":
                                         if text in self.skillstat:  # only include skill if exist in ruleset in case user put in trait not existed in ruleset
                                             abilitylist += self.skillstat[text][0]
-                                        createtext = statheader[index] + ": " + abilitylist + ", Base Speed: " + str(speed)
+                                        createtext = statheader[index] + ": " + abilitylist + ", Base Speed: " + str(speed) # charge skill, add unit speed after the skill name
                                     elif text != [0]:
                                         for thistext in text:
                                             if thistext in self.skillstat:  # only include skill in ruleset
@@ -309,7 +322,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     newstatheader = statheader[thisindex]
                                     break
                             createtext = newstatheader[index] + ": " + str(text)
-                            if newstatheader[index] == "ImageID":
+                            if newstatheader[index] == "ImageID": # not used in enclycopedia
                                 createtext = ""
                                 pass
                             elif newstatheader[index] == "Properties":
@@ -323,7 +336,7 @@ class Lorebook(pygame.sprite.Sprite):
                                 else:
                                     createtext = ""
                                     pass
-                        if createtext != "":
+                        if createtext != "": # text not empty, draw it. Else do nothing
                             textsurface = self.font.render(createtext, 1, (0, 0, 0))
                             textrect = textsurface.get_rect(topleft=(col, row))
                             self.image.blit(textsurface, textrect)
@@ -332,7 +345,7 @@ class Lorebook(pygame.sprite.Sprite):
                                 col = 520
                                 row = 50
         else: # Lore page, the paragraph can be in text or image (IMAGE:)
-            if self.loredata is not None:
+            if self.loredata is not None and self.maxpage != 0:
                 lore = self.loredata[self.subsection][(self.page - 1) * 4:]
                 row = 400
                 col = 60
