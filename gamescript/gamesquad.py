@@ -513,7 +513,7 @@ class Unitsquad(pygame.sprite.Sprite):
             tempreach = tempreach * (100 - self.coldres) / 100 # lowest temperature the squad will change based on cold resist
         else: # hot temperature
             tempreach = tempreach * (100 - self.heatres) / 100 # highest temperature the squad will change based on heat resist
-        if self.tempcount != tempreach:
+        if self.tempcount != tempreach: # move tempcount toward tempreach
             if tempreach > 0:
                 if self.tempcount < tempreach:
                     self.tempcount += (100 - self.heatres) / 100 * self.timer # increase squad temperature, rate depends on heat resistance (negative make rate faster)
@@ -603,7 +603,7 @@ class Unitsquad(pygame.sprite.Sprite):
 
         #v Apply effect and modifer from status effect
         # """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no attack, 5 no skill, 6 no spell, 7 no exp gain,
-        # 7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal"""
+        # 7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal""" Not implemented yet
         if len(self.statuseffect) > 0:
             for status in self.statuseffect:
                 calstatus = self.statuslist[status]
@@ -628,7 +628,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.tempfulldef = True
         #^ End status effect
 
-        #v Rounding up, add discipline to stat and forbid negative int
+        #v Rounding up, add discipline to stat and forbid negative int stat
         self.discipline = round(self.discipline, 0)
         disciplinecal = self.discipline / 10
         self.attack = round((self.attack + disciplinecal), 0)
@@ -742,20 +742,22 @@ class Unitsquad(pygame.sprite.Sprite):
                 if self.timer > 1: # Update status and skill use around every 1 second
                     self.statusupdate(weather)
                     self.availableskill = []
-                    if self.useskillcond != 3:
+                    if self.useskillcond != 3: # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.checkskillcondition()
                     if self.state == 4 and self.battalion.charging and self.chargeskill not in self.skillcooldown: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
-                    skillchance = random.randint(0, 10)
-                    if skillchance >= 6 and len(self.availableskill) > 0:
+                    skillchance = random.randint(0, 10) # random chance to use random available skill
+                    if len(self.availableskill) > 0 and skillchance >= 6:
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
                     self.timer -= 1
                 if self.nocombat > 0:  # For avoiding squad go into idle state while battalion auto move in melee combat
                     self.nocombat += dt
                     if battalionstate != 10:
                         self.nocombat = 0
-                if battalionstate == 10 and self.state not in (97,98,99):
-                    if any(battle > 0 for battle in self.battlesideid):
+
+                #v Battalion in melee combat, set squad state to be in idle, melee combat or range attack state
+                if battalionstate == 10 and self.state not in (97,98,99): # collapse and broken state squad cannot be in combat state
+                    if any(battle > 0 for battle in self.battlesideid): # have enemy in melee
                         self.state = 10
                     elif self.ammo > 0 and (self.arcshot or self.nearbysquadlist[2] == 0):  # Help range attack when battalion in melee combat if has arcshot or frontline
                         self.state = 11
@@ -765,6 +767,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         if self.nocombat > 1: # Countdown reach 1 second and still not fight anyone
                             self.state = 0 # Go to idle state
                             self.nocombat = 0
+                #^End battalion in melee combat
 
                 #v Range attack function
                 elif battalionstate == 11 and self.state not in (97,98,99): # Unit in range attack state and self is not collapse or broken
@@ -924,6 +927,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                                + "'s battalion is destroyed"], [3]) # add log to say this squad is destroyed in unit tab
 
     def rotate(self):
+        """rotate squad image may use when squad can change direction independently from battalion"""
         self.image = pygame.transform.rotate(self.image_original, self.angle)
         self.rect = self.image.get_rect(center=self.pos)
 

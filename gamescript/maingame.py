@@ -254,7 +254,7 @@ class Battle():
         gamebattalion.Unitarmy.containers = self.team1army, self.team2army, self.battalionupdater, self.squad, self.allcamera
         gamesquad.Unitsquad.containers = self.team1army, self.team2army, self.squadupdater, self.squad
         gamebattalion.Deadarmy.containers = self.deadunit, self.battalionupdater, self.allcamera
-        gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater, self.allcamera
+        gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater #, self.allcamera
         gameleader.Leader.containers = self.armyleader, self.leaderupdater
         rangeattack.Rangearrow.containers = self.arrows, self.effectupdater, self.allcamera
         gamebattalion.Directionarrow.containers = self.directionarrows, self.effectupdater, self.allcamera
@@ -305,6 +305,7 @@ class Battle():
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
         gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
         gamebattalion.Unitarmy.maingame = self
+        gamebattalion.Hitbox.gamecamera = self.allcamera
         rangeattack.Rangearrow.gamemapheight = self.battlemapheight
         gamesquad.Unitsquad.maingame = self
         gameleader.Leader.maingame = self
@@ -989,14 +990,14 @@ class Battle():
                     if mouse_up:
                         self.clickany = False
                         self.newarmyclick = False
-                    if self.minimap.rect.collidepoint(self.mousepos):
-                        if mouse_up:
+                    if self.minimap.rect.collidepoint(self.mousepos): # mouse position on mini map
+                        if mouse_up: # move game camera to position clicked on mini map
                             posmask = pygame.Vector2(int(self.mousepos[0] - self.minimap.rect.x), int(self.mousepos[1] - self.minimap.rect.y))
                             self.basecamerapos = posmask * 5
                             self.camerapos = self.basecamerapos * self.camerascale
                             self.clickany = True
                             self.uiclick = True
-                        elif mouse_right:
+                        elif mouse_right: # nothing happen with mouse right
                             if self.lastselected is not None:
                                 self.uiclick = True
                     elif self.logscroll.rect.collidepoint(self.mousepos):  # Must check mouse collide for scroller before event log ui
@@ -1172,7 +1173,7 @@ class Battle():
                             self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                             self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
                     if self.inspectbutton.rect.collidepoint(self.mousepos) or (
-                            mouse_up and self.inspectui and self.newarmyclick):
+                            mouse_up and self.inspectui and self.newarmyclick): # mouse on inspect ui open/close button
                         if self.inspectbutton.rect.collidepoint(self.mousepos):
                             self.buttonnamepopup.pop(self.mousepos, "Inspect Squad")
                             self.allui.add(self.buttonnamepopup)
@@ -1197,7 +1198,7 @@ class Battle():
                                 for button in self.unitcardbutton: button.kill()
                                 self.inspectui = False
                                 self.newarmyclick = False
-                    elif self.gameui[1] in self.allui and self.gameui[1].rect.collidepoint(self.mousepos):
+                    elif self.gameui[1] in self.allui and self.gameui[1].rect.collidepoint(self.mousepos): # mouse position on command ui
                         if self.switchbuttonui[0].rect.collidepoint(self.mousepos) or keypress == pygame.K_g:
                             if mouse_up or keypress == pygame.K_g:  # rotate skill condition when clicked
                                 whoinput.useskillcond += 1
@@ -1321,7 +1322,7 @@ class Battle():
                                         elif mouse_right:
                                             self.popoutlorebook(3, squad.unitid)
                                         break
-                            elif self.gameui[2].rect.collidepoint(self.mousepos):
+                            elif self.gameui[2].rect.collidepoint(self.mousepos): # mouse position in unit card
                                 self.clickany = True
                                 self.uiclick = True  # for avoiding clicking unit under ui
                                 for button in self.unitcardbutton:  # Change unit card option based on button clicking
@@ -1341,13 +1342,13 @@ class Battle():
                                                 for icon in self.effecticon.sprites(): icon.kill()
                                         break
                         if (self.uitimer >= 1.1 and self.gameui[2].option != 0) or \
-                                self.beforeselected != self.lastselected:  # Update value of the clicked squad
+                                self.beforeselected != self.lastselected:  # Update value of the clicked squad every 1.1 second
                             self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                     splithappen=self.splithappen)
-                            if self.gameui[2].option == 2:
+                            if self.gameui[2].option == 2: # skill and status effect card
                                 self.countdownskillicon()
                                 self.effecticonblit()
-                                if self.beforeselected != self.lastselected:
+                                if self.beforeselected != self.lastselected: # change unit, reset trait icon as well
                                     self.traitskillblit()
                                     self.countdownskillicon()
                             else:
@@ -1445,7 +1446,7 @@ class Battle():
                 self.timenumber.timerupdate(self.dt*5) # update ingame time with 5x speed
                 #^ End update game time
 
-            else: # Complete game pause either menu or enclycopedia
+            else: # Complete game pause when open either esc menu or enclycopedia
                 if self.battlemenu.mode == 0: # main esc menu
                     for button in self.battlemenubutton:
                         if button.rect.collidepoint(self.mousepos):
@@ -1535,7 +1536,7 @@ class Battle():
                         if self.lorescroll.rect.collidepoint(self.mousepos): # click on subsection list scroller
                             self.lorebook.currentsubsectionrow = self.lorescroll.update(self.mousepos) # update the scroller and get new current subsection
                             self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname) # update subsection name list
-            self.screen.blit(self.camera.image, (0, 0))  # Draw the game in camera
+            self.screen.blit(self.camera.image, (0, 0))  # Draw the game camera and everything that appear in it
             self.allui.draw(self.screen)  # Draw the UI
             # dirty = self.allui.draw(self.screen)
             pygame.display.update() # update game display, draw everything

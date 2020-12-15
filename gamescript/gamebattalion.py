@@ -50,6 +50,7 @@ class Directionarrow(pygame.sprite.Sprite): #TODO make it work so it can be impl
 
 class Hitbox(pygame.sprite.Sprite):
     maxviewmode = 10
+    gamecamera = None
 
     def __init__(self, who, side, width, height):
         self._layer = 3
@@ -60,9 +61,6 @@ class Hitbox(pygame.sprite.Sprite):
         self.collide = 0
         self.image = pygame.Surface((width, height), pygame.SRCALPHA) # Default image
         self.image.fill((0, 0, 0, 128)) # Hitbox when unit not selected (black)
-        self.clickimage = self.image.copy() # Image used when click
-        self.clickimage.fill((255, 0, 0, 128)) # Hitbox when unit selected (red)
-        self.notclickimage = self.image.copy() # save not click image
         self.image_original, self.image_original2 = self.image.copy(), self.image.copy() # original 2 is true original at cloest zoom
         self.image = pygame.transform.rotate(self.image_original, self.who.angle) # Rotate
         self.oldpos = self.who.hitboxpos[self.side] # For checking if hitbox pos change
@@ -91,19 +89,19 @@ class Hitbox(pygame.sprite.Sprite):
 
     def clicked(self):
         """change variable of hitbox when battalion get clicked"""
-        self.image_original2 = self.clickimage.copy()
         self.clickcheck = True
         self.update(abs(11 - self.viewmode))
         self.clickcheck = False
         self.stillclick = True
+        self.gamecamera.add(self)
 
     def release(self):
         """change variable of hitbox when battalion no longer clicked"""
-        self.image_original2 = self.notclickimage.copy()
         self.clickcheck = True
         self.update(abs(11 - self.viewmode))
         self.clickcheck = False
         self.stillclick = False
+        self.gamecamera.remove(self)
 
 
 class Unitarmy(pygame.sprite.Sprite):
@@ -208,9 +206,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.authpenalty = 0 # authority penalty
         self.tacticeffect = {}
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 128)) # draw black colour for black corner
-        pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2) # draw black corner
-        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2)) # draw block colour
+        self.image.fill((0, 0, 0, 128)) # draw black colour for black corner
+        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 4, self.heightbox - 4)) # draw block colour
         self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center) # battalion ring
         self.image.blit(self.images[-1], self.imagerect) # draw battalion ring into battalion image
         self.healthimagerect = self.images[0].get_rect(center=self.image.get_rect().center) # hp bar

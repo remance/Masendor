@@ -25,12 +25,12 @@ class Leader(pygame.sprite.Sprite):
         # self.trait = stat
         # self.skill = stat
         self.state = 0  ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
-        if self.name == "none":
+        if self.name == "none": # None leader is considered dead by default, function the same way as dead one
             self.health = 0
             self.state = 100  ## no leader is same as dead so no need to update
         self.battalion = battalion
         # self.mana = stat
-        self.gamestart = 0
+        self.gamestart = False
         self.armyposition = armyposition # position in the battalion (e.g. general or sub-general)
         self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)] # leader image position in command ui
         self.imgposition = self.baseimgposition[self.armyposition] # image position based on armyposition
@@ -121,11 +121,11 @@ class Leader(pygame.sprite.Sprite):
         self.battalion.leaderchange = True # initiate leader change stat recalculation for battalion
 
     def update(self):
-        if self.gamestart == 0:
+        if self.gamestart == False:
             self.squad = self.battalion.squadsprite[self.squadpos] # setup squad that leader belong
-            self.gamestart = 1
+            self.gamestart = True
         if self.state not in (96, 97, 98, 99, 100):
-            if self.health <= 0: # die
+            if self.health <= 0: # health reach 0, die. may implement wound state chance later
                 self.health = 0
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0

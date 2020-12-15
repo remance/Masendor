@@ -93,14 +93,14 @@ def convertweathertime(weatherevent):
 def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina):
     """Create batalion object into the battle, also add hitbox and leader of the battalion"""
     from gamescript import gamebattalion, gameleader
-    squadlist = squadlist[~np.all(squadlist == 0, axis=1)]
-    squadlist = squadlist[:, ~np.all(squadlist == 0, axis=0)]
+    oldsquadlist = squadlist[~np.all(squadlist == 0, axis=1)] # remove whole empty column in squad list
+    squadlist = oldsquadlist[:, ~np.all(oldsquadlist == 0, axis=0)] # remove whole empty row in squad list
     army = gamebattalion.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina)
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20), # add hitbox for all four sides
                    gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 20)]
-    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
+    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat), # add leader
                    gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
                    gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
                    gameleader.Leader(leader[3], leader[7], 3, army, leaderstat)]
@@ -110,7 +110,8 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
 def unitsetup(maingame,playerteam):
     """read battalion from unit_pos file and create object with addarmy function"""
     from gamescript import gamesquad
-    # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+    ## defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
+                             # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
     letterboard = ("a", "b", "c", "d", "e", "f", "g", "h") # letter according to squad position in inspect ui similar to chess board
     numberboard = ("8", "7", "6", "5", "4", "3", "2", "1") # same as above
     boardpos = []
@@ -211,7 +212,7 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                             attackersquad.battlesideid[attackerside] = fronttarget
                             receiversquad.battleside[truetargetside] = attackersquad
                             receiversquad.battlesideid[truetargetside] = thiswho
-                    else: # Switch to another side if above not found
+                    else: # Switch to another side if the first chosen side not found enemy to fight
                         truetargetside = changecombatside(secondpick, receiverside)
                         fronttarget = squadselectside(receiver.frontline[receiverside], secondpick, position)
                         if fronttarget > 1:
