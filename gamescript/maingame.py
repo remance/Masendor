@@ -1,6 +1,7 @@
 """
 ## Known problem
-Hitbox still behave weirdly in melee combat (sometimes combatprepare is call for side before front)
+weird rare bug where unit range attack can shoot enemy extremely far away after commander die in combat after a while, likely problem from pos list
+another rare bug where squad easily get killed for some reason, can't see to repricate it
 autoplacement of 2 units somehow allow the other unit that stop from retreat to auto place to the enemy side already occupied
 Optimise list
 melee combat need to be optimised more
@@ -336,21 +337,21 @@ class Battle():
         self.clickany = False  # For checking if mouse click on anything, if not close ui related to battalion
         self.newarmyclick = False  #  For checking if another unit is clicked when inspect ui open
         self.inspectui = False # For checking if inspect ui is currently open or not
-        self.lastselected = None # Which army is currently selected
+        self.lastselected = None # Which army is selected last update loop
         self.mapviewmode = 0 # default, another one show height map
         self.mapshown = self.showmap
-        self.squadlastselected = None
+        self.squadlastselected = None # which squad in inspect ui is selected in last update loop
         self.beforeselected = None # Which army is selected before
         self.splithappen = False # Check if battalion get split in that loop
         self.currentweather = None
-        self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height
+        self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height # for weather sprite spawn position
         self.splitunit = gamelongscript.splitunit
         self.losscal = gamelongscript.losscal
-        self.leadernow = []
+        self.leadernow = [] # list of showing leader in command ui
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
-        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]
-        self.battlemousepos = [0, 0]
+        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2] # center position of the screen
+        self.battlemousepos = [0, 0] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
         #^ End start value
 
         #v Load weather schedule
@@ -375,17 +376,14 @@ class Battle():
             gameui.Gameui(X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
                           icon=iconimage, uitype="topbar")]
         iconimage = load_images(['ui', 'battle_ui', 'commandbar_icon'])
-        self.gameui.append(
-            gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + self.armyselector.image.get_height(),
+        self.gameui.append(gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + self.armyselector.image.get_height(),
                           image=topimage[1], icon=iconimage, uitype="commandbar"))
-        self.gameui.append(
-            gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1], image=topimage[2],
-                          icon="", uitype="unitcard"))
+        self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2,
+                                         Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1], image=topimage[2], icon="", uitype="unitcard"))
         self.gameui[2].featurelist = featurelist
-        self.gameui.append(
-            gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1]*4,
+        self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1]*4,
                           image=topimage[5], icon="", uitype="armybox"))
-        self.popgameui = self.gameui
+        self.popgameui = self.gameui # saving list of gameui that will pop out when battalion is selected
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
         self.timenumber = gameui.Timer(self.timeui.rect.topleft, self.weatherschedule)  # time number on time ui
         self.speednumber = gameui.Speednumber((self.timeui.rect.center[0] + 40, self.timeui.rect.center[1]),
@@ -395,8 +393,8 @@ class Battle():
                          gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y - 30, topimage[7], 2),  # unit card skill button
                          gameui.Uibutton(self.gameui[2].X - 152, self.gameui[2].Y + 50, topimage[22], 3),  # unit card equipment button
                          gameui.Uibutton(self.gameui[0].X - 206, self.gameui[0].Y - 1, topimage[6], 1),  # army inspect open/close button
-                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 26, topimage[8], 0),  # split by coloumn button
-                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 56, topimage[9], 1),  # split by row button
+                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 26, topimage[8], 0),  # split by middle coloumn button
+                         gameui.Uibutton(self.gameui[1].X - 115, self.gameui[1].Y + 56, topimage[9], 1),  # split by middle row button
                          gameui.Uibutton(self.gameui[1].X + 100, self.gameui[1].Y + 56, topimage[14], 1)]  # decimation button
         self.switchbuttonui = [gameui.Switchuibutton(self.gameui[1].X - 30, self.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
                                gameui.Switchuibutton(self.gameui[1].X - 70, self.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
@@ -540,11 +538,11 @@ class Battle():
                              self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
         self.squadindexlist = gamelongscript.unitsetup(self, self.playerteam)
         self.allunitlist = self.team1army.copy()
-        self.allunitlist = self.allunitlist + self.team2army
-        self.allunitindex = [army.gameid for army in self.allunitlist]
-        self.team1poslist = {}
-        self.team2poslist = {}
-        self.showingsquad = []
+        self.allunitlist = self.allunitlist + self.team2army # list of every battalion in game alive
+        self.allunitindex = [army.gameid for army in self.allunitlist] # list of every battalion index alive
+        self.team1poslist = {} # team 1 battalion position
+        self.team2poslist = {} # same for team 2
+        self.showingsquad = [] # list of squads in selected battalion showing on inspect ui
         #^ End start unit sprite
 
     def setuparmyicon(self):
@@ -578,11 +576,15 @@ class Battle():
 
     def checksplit(self, whoinput):
         """Check if army can be splitted, if not remove splitting button"""
+        #v split by middle collumn
         if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
                 whoinput.leader[1].name != "None": # can only split if both battalion size will be larger than 10 and second leader exist
             self.allui.add(self.colsplitbutton)
         elif self.colsplitbutton in self.allui:
             self.colsplitbutton.kill()
+        #^ End col
+
+        #v split by middle row
         if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[
             1].name != "None":
             self.allui.add(self.rowsplitbutton)

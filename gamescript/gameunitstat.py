@@ -142,15 +142,20 @@ class Unitstat():
         self.gradelist = {}
         with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            run = 0
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = int(i)  # No need to be float
-                    if n == 12:
-                        if "," in i: # Properties to unit in list
-                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                        elif i.isdigit():
-                            row[n] = [int(i)]
+                    if run != 0:
+                        if n == 12:
+                            if "," in i: # Properties to unit in list
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                            elif i.isdigit():
+                                row[n] = [int(i)]
+                        elif n in (8,9): # health and stamina modifier effect
+                            row[n] = float(i) / 100
                 self.gradelist[row[0]] = row[1:]
+                run += 1
         unitfile.close()
         #^ End unit grade
 
@@ -185,8 +190,8 @@ class Unitstat():
                                     row[n] = float(i)
                                 else:
                                     row[n] = int(i)
-                    run += 1
                     self.abilitylist[row[0]] = row[1:]
+                    run += 1
         unitfile.close()
         #^ End unit skill
 
@@ -259,15 +264,20 @@ class Unitstat():
         self.mountgradelist = {}
         with open(main_dir + "\data\war" + '\\mount_grade.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            run = 0 # for avoiding header
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = int(i)  # No need to be float
-                    if n == 8: # Properties list
-                        if "," in i:
-                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                        elif i.isdigit():
-                            row[n] = [int(i)]
+                    if run != 0:
+                        if n == 8: # Properties list
+                            if "," in i:
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                            elif i.isdigit():
+                                row[n] = [int(i)]
+                        elif n in (4,5): # health and stamina modifier effect
+                            row[n] = float(i) / 100
                 self.mountgradelist[row[0]] = row[1:]
+                run += 1
         unitfile.close()
         #^ End mount grade
 

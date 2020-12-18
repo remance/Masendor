@@ -56,10 +56,20 @@ class Basemap(pygame.sprite.Sprite):
 
     def getterrain(self, pos):
         """get the base terrain at that exact position"""
-        try:
+        if (pos[0] >= 0 and pos[0] <= 999) and (pos[1] >= 0 and pos[1] <= 999):
             terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
             terrainindex = self.terraincolour.index(terrain)
-        except: # for handle terrain checking that clipping off map
+        else: # for handle terrain checking that clipping off map
+            newpos = pos
+            if newpos[0] < 0:
+                newpos[0] = 0
+            elif newpos[0] > 999:
+                newpos[0] = 999
+            if newpos[1] < 0:
+                newpos[1] = 0
+            elif newpos[1] > 999:
+                newpos[1] = 999
+            terrain = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))
             terrainindex = 0
         return terrainindex
 
@@ -110,14 +120,27 @@ class Mapfeature(pygame.sprite.Sprite):
     def getfeature(self, pos, gamemap):
         """get the terrain feature at that exact position"""
         terrainindex = gamemap.getterrain(pos)
-        try:
+        if (pos[0] >= 0 and pos[0] <= 999) and (pos[1] >= 0 and pos[1] <= 999):
             feature = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
             featureindex = None
             if feature in self.featurecolour:
                 featureindex = self.featurecolour.index(feature)
                 featureindex = featureindex + (terrainindex * 12)
-        except:
-            featureindex = 0
+        else:
+            newpos = pos
+            if newpos[0] < 0:
+                newpos[0] = 0
+            elif newpos[0] > 999:
+                newpos[0] = 999
+            if newpos[1] < 0:
+                newpos[1] = 0
+            elif newpos[1] > 999:
+                newpos[1] = 999
+            feature = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))  ##get colour at pos to obtain the terrain type
+            featureindex = None
+            if feature in self.featurecolour:
+                featureindex = self.featurecolour.index(feature)
+                featureindex = featureindex + (terrainindex * 12)
         return terrainindex, featureindex
 
 

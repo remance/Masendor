@@ -62,8 +62,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.charging = False # For checking if battalion in charging state or not for using charge skill
         skill = [self.chargeskill] + skill # Add charge skill as first item in the list
         self.skill = {x: statlist.abilitylist[x].copy() for x in skill if x != 0 and x in statlist.abilitylist} # grab skill stat into dict
-        self.troophealth = round(stat[18] * (int(statlist.gradelist[self.grade][7]) / 100)) # Health of each troop
-        self.stamina = int(stat[19] * (int(statlist.gradelist[self.grade][8]) / 100) * (startstamina / 100)) # starting stamina with grade
+        self.troophealth = round(stat[18] * statlist.gradelist[self.grade][7]) # Health of each troop
+        self.stamina = int(stat[19] * statlist.gradelist[self.grade][8] * (startstamina / 100)) # starting stamina with grade
         self.mana = stat[20] # Resource for magic skill
 
         #v Weapon stat
