@@ -83,7 +83,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = page
         self.image = self.image_original.copy() # reset encyclopedia image
         self.pagedesign() # draw new pages
-        if self.page == self.maxpage or self.loredata is None: # remove next page button when reach last page
+        if self.page == self.maxpage or (self.loredata is None and self.loredata[self.subsection][0] == ""): # remove next page button when reach last page
             allui.remove(pagebutton[1])
         else:
             allui.add(pagebutton[1])
@@ -115,12 +115,15 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         self.portrait = None # reset portrait, possible for subsection to not have portrait
         allui.remove(pagebutton[0])
+        allui.remove(pagebutton[1])
+        self.maxpage = 0 # some subsection may not have lore data in file (maxpage would be just 0)
         if self.loredata is not None: # some subsection may not have lore data
             try:
-                self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
-                allui.add(pagebutton[1])
+                if self.loredata[self.subsection][0] != "":
+                    self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
+                    allui.add(pagebutton[1])
             except:
-                self.maxpage = 0 # some subsection may not have lore data in file (maxpage would be just 0)
+                pass
         if self.section != 8:
             self.pagedesign() # draw new pages
         else: ## leader section exclusive for now (will merge wtih other section when add portrait for others)

@@ -33,7 +33,6 @@ load_images = gamelongscript.load_images
 csv_read = gamelongscript.csv_read
 load_sound = gamelongscript.load_sound
 
-
 class Battle():
     def __init__(self, winstyle, ruleset, rulesetfolder):
         pygame.init()  # Initialize pygame
@@ -181,7 +180,7 @@ class Battle():
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
             # musiclist = os.path.join(main_dir, 'data/sound/')
-            self.musiclist = glob.glob(main_dir + '/data/sound/*.mp3')
+            self.musiclist = glob.glob(main_dir + '/data/sound/music/*.mp3')
             self.pickmusic = random.randint(1, 1)
             pygame.mixer.music.set_endevent(self.SONG_END)
             pygame.mixer.music.load(self.musiclist[self.pickmusic])

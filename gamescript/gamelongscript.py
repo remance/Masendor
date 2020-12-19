@@ -7,19 +7,16 @@ import numpy as np
 import pygame
 import pygame.freetype
 import os
-import main
 
 """This file contains fuctions of various purposes"""
 
-config = main.config
-SoundVolume = main.Soundvolume
-SCREENRECT = main.SCREENRECT
-main_dir = main.main_dir
 
 ## Data Loading gamescript
 
 def load_image(file, subfolder=""):
     """loads an image, prepares it for play"""
+    import main
+    main_dir = main.main_dir
     thisfile = os.path.join(main_dir, 'data', subfolder, file)
     try:
         surface = pygame.image.load(thisfile).convert_alpha()
@@ -29,6 +26,8 @@ def load_image(file, subfolder=""):
 
 def load_images(subfolder=[], loadorder=True, returnorder=False):
     """loads all images(files) in folder using loadorder list file use only png file"""
+    import main
+    main_dir = main.main_dir
     imgs = []
     dirpath = os.path.join(main_dir, 'data')
     if subfolder != []:
@@ -53,6 +52,8 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
 
 def csv_read(file, subfolder=[], outputtype=0):
     """output type 0 = dict, 1 = list"""
+    import main
+    main_dir = main.main_dir
     returnoutput = {}
     if outputtype == 1: returnoutput = []
     folderlist = ""
@@ -78,6 +79,10 @@ def load_sound(file):
     sound = pygame.mixer.Sound(file)
     return sound
 
+def editconfig(section, option, value, filename, config):
+    config.set(section, option, value)
+    with open(filename, 'w') as configfile:
+        config.write(configfile)
 
 ## Other battle gamescript
 
@@ -109,6 +114,8 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
 
 def unitsetup(maingame,playerteam):
     """read battalion from unit_pos file and create object with addarmy function"""
+    import main
+    main_dir = main.main_dir
     from gamescript import gamesquad
     ## defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
                              # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])

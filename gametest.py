@@ -65,23 +65,18 @@ import timeit
 import re
 import numpy as np
 
-# starttime = timeit.default_timer()
-# print("The start time is :", starttime)
-# for i in range(0,10000):
-#     if i in [1,2,3,4,5,6,7,8,9,10]:
-#         print(i)
-#     # if o < 0:
-#     #     o = 0
-# print("The time difference is :", timeit.default_timer() - starttime)
-# #0.000859586999999995
+test = (1,2,3,4,5,6,7,8,9,10)
+starttime = timeit.default_timer()
+print("The start time is :", starttime)
+for i in range(0,10000):
+    if i in test:
+        print(i)
+    # if o < 0:
+    #     o = 0
+print("The time difference is :", timeit.default_timer() - starttime)
+# 0.0022708410000000234  0.002101061999999987  0.0025684880000000077  0.002295644999999985
 # #0.0010708489999999848
 
-a = {0:[1,5],2:[5,10]}
-k = a[0].copy()
-b = k
-c = k
-k[0] = k[0] + 1
-print(b)
 
 # import pygame,time
 # #created in 22 dec 2020 by cenk
