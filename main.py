@@ -9,7 +9,7 @@ try: # for printing error log when error exception happen
     import pygame.freetype
     from pygame.locals import *
 
-    from gamescript import maingame, gamelorebook, gamelongscript
+    from gamescript import maingame, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, gameunitstat, gameui
 
     config = configparser.ConfigParser()
     try:
@@ -58,7 +58,6 @@ try: # for printing error log when error exception happen
     def text_objects(text, font):
         textSurface = font.render(text, True, (200, 200, 200))
         return textSurface, textSurface.get_rect()
-
 
     def game_intro(screen, clock, introoption):
         intro = introoption
@@ -196,23 +195,35 @@ try: # for printing error log when error exception happen
             self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
             self.image.blit(self.textsurface, self.textrect)
 
-    # def encyclopedia(screen):
-    #     gamearmy.leader
-    #     gamearmy.weaponstat
-    #     gamearmy.unitstat
-
     class Mainmenu():
         def __init__(self):
             pygame.init() # Initialize pygame
-            self.allui = pygame.sprite.RenderUpdates()
+
+            self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data', 'ruleset']) # get ruleset list
+            self.ruleset = 1 # for now default historical ruleset only
+            self.rulesetfolder = "/" + str(self.rulesetlist[self.ruleset][1])
+
+            self.allui = pygame.sprite.LayeredUpdates()
             self.menubutton = pygame.sprite.Group() # group of menu buttons that are currently get shown and update
             self.menuicon = pygame.sprite.Group()
             self.menuslider = pygame.sprite.Group()
             self.valuebox = pygame.sprite.Group() # value box of slider bar
+            self.lorebook = pygame.sprite.Group()  # encyclopedia object
+            self.lorenamelist = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
+            self.lorescroll = pygame.sprite.Group()  # scroller for subsection name list in encyclopedia
+            self.lorebuttonui = pygame.sprite.Group()
+            self.subsectionname = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
+
+
             Menubutton.containers = self.menubutton
             Menuicon.containers = self.menuicon
             Slidermenu.containers = self.menuslider
             Valuebox.containers = self.valuebox
+            gamelorebook.Lorebook.containers = self.lorebook
+            gamelorebook.Subsectionlist.containers = self.lorenamelist
+            gamelorebook.Subsectionname.containers = self.subsectionname, self.allui
+            gameui.Uibutton.containers = self.lorebuttonui
+            gameui.Uiscroller.containers = self.lorescroll, self.allui
 
             #v Set the display mode
             self.winstyle = 0  # FULLSCREEN
@@ -231,6 +242,8 @@ try: # for printing error log when error exception happen
             self.background = pygame.Surface(SCREENRECT.size)
             self.background.blit(bgdtile,(0,0))
             #^ End background
+
+            gamelongscript.creategamelorestat(self) # obtain game stat and create lore book object
 
             #v Create main menu button
             imagelist = load_base_button()
@@ -292,9 +305,6 @@ try: # for printing error log when error exception happen
             self.menubutton.add(*self.mainmenubutton) # add only main menu button back
             self.allui.add(*self.menubutton)
             self.menustate = "mainmenu"
-            self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data', 'ruleset'])
-            self.ruleset = 1
-            self.rulesetfolder = "/" + str(self.rulesetlist[self.ruleset][1])
 
         def run(self, maingamefunc):
             while True:
@@ -303,17 +313,42 @@ try: # for printing error log when error exception happen
                 mouse_down = False
                 for event in pygame.event.get():
                     if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE) or self.quitbutton.event == True:
-                        return
-                    if pygame.mouse.get_pressed()[0]: # Hold left click
+                        if self.menustate != "encyclopedia":
+                            return
+                        else:
+                            self.allui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist)
+                            for name in self.subsectionname:
+                                name.kill()
+                                del name
+                            self.menustate = "mainmenu"
+                    if pygame.mouse.get_pressed()[0]:  # Hold left click
                         mouse_down = True
-                    elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # left click
-                        mouse_up = True
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        if event.button == 1:  # left click
+                            mouse_up = True
+                        elif event.button == 4 and self.menustate == "encyclopedia":  # Mouse scroll down, Scrolling at lore book subsection list
+                            if self.lorenamelist.rect.collidepoint(self.mousepos):
+                                self.lorebook.currentsubsectionrow -= 1
+                                if self.lorebook.currentsubsectionrow < 0:
+                                    self.lorebook.currentsubsectionrow = 0
+                                else:
+                                    self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname)
+                                    self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
+                        elif event.button == 5 and self.menustate == "encyclopedia":  # Mouse scroll up, Scrolling at lore book subsection list
+                            if self.lorenamelist.rect.collidepoint(self.mousepos):
+                                self.lorebook.currentsubsectionrow += 1
+                                if self.lorebook.currentsubsectionrow + self.lorebook.maxsubsectionshow - 1 < self.lorebook.logsize:
+                                    self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname)
+                                    self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
+                                else:
+                                    self.lorebook.currentsubsectionrow -= 1
+
                 keystate = pygame.key.get_pressed()
-                mouse_pos = pygame.mouse.get_pos()
-                #^ End user
+                self.mousepos = pygame.mouse.get_pos()
+                #^ End user input
 
                 self.screen.blit(self.background, (0, 0))  # blit blackground over instead of clear() to reset screen
-                self.menubutton.update(mouse_pos, mouse_up, mouse_down)
+                self.menubutton.update(self.mousepos, mouse_up, mouse_down)
 
                 if self.menustate == "mainmenu":
                     if self.startbutton.event: # start game button
@@ -329,7 +364,16 @@ try: # for printing error log when error exception happen
                         self.allui.add(*self.menubutton,self.optionmenuslider,self.valuebox)
                         self.allui.add(*self.optioniconlist)
                     elif self.lorebutton.event:
-                        # self.menustate = "encyclopedia"
+                        self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
+                                                            self.lorebook.maxsubsectionshow, layer=14)  # add subsection list scroller
+
+                        #v Seem like encyclopedia in battle cause container to change allui in main to maingame one, change back with this
+                        gamelorebook.Subsectionname.containers = self.subsectionname, self.allui
+                        #^ End container change
+
+                        self.menustate = "encyclopedia"
+                        self.allui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui, self.lorescroll)  # add sprite related to encyclopedia
+                        self.lorebook.changesection(0, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.allui)
                         self.lorebutton.event = False
                 elif self.menustate == "option":
                     for bar in self.resolutionbar:
@@ -354,21 +398,44 @@ try: # for printing error log when error exception happen
                             self.menubutton.add(*self.mainmenubutton)
                             self.allui.remove(*self.optioniconlist,self.optionmenuslider,self.valuebox)
                             self.allui.add(*self.menubutton)
-                        elif self.resolutionscroll.rect.collidepoint(mouse_pos): # resolution bar
+                        elif self.resolutionscroll.rect.collidepoint(self.mousepos): # resolution bar
                             if self.resolutionbar in self.allui:
                                 self.allui.remove(self.resolutionbar)
                                 self.menubutton.remove(self.resolutionbar)
                             else:
                                 self.allui.add(self.resolutionbar)
                                 self.menubutton.add(self.resolutionbar)
-                        elif self.volumeslider.rect.collidepoint(mouse_pos) and (mouse_down or mouse_up):  # mouse click on slider bar
-                            self.volumeslider.update(mouse_pos, self.valuebox[0])  # update slider button based on mouse value
+                        elif self.volumeslider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):  # mouse click on slider bar
+                            self.volumeslider.update(self.mousepos, self.valuebox[0])  # update slider button based on mouse value
                             self.mixervolume = float(self.volumeslider.value / 100)  # for now only music volume slider exist
                             pygame.mixer.music.set_volume(self.mixervolume)
                             editconfig('DEFAULT', 'SoundVolume', str(self.volumeslider.value), 'configuration.ini', config)
 
-                elif self.menustate == "enclycopedia":
-                    pass
+                elif self.menustate == "encyclopedia":
+                    if mouse_up or mouse_down: # mouse down (hold click) only for subsection listscroller
+                        if mouse_up:
+                            for button in self.lorebuttonui:
+                                if button in self.allui and button.rect.collidepoint(self.mousepos): # click button
+                                    if button.event in range(0, 11): # section button
+                                        self.lorebook.changesection(button.event, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.allui) # change to section of that button
+                                    elif button.event == 19:  # Close button
+                                        self.allui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist) # remove enclycopedia related sprites
+                                        for name in self.subsectionname: # remove subsection name
+                                            name.kill()
+                                            del name
+                                        self.menustate = "mainmenu" # change menu back to default 0
+                                    elif button.event == 20:  # Previous page button
+                                        self.lorebook.changepage(self.lorebook.page - 1, self.pagebutton, self.allui) # go back 1 page
+                                    elif button.event == 21:  # Next page button
+                                        self.lorebook.changepage(self.lorebook.page + 1, self.pagebutton, self.allui) # go forward 1 page
+                                    break # found clicked button, break loop
+                            for name in self.subsectionname: # too lazy to include break for button found to avoid subsection loop since not much optimisation is needed here
+                                if name.rect.collidepoint(self.mousepos): # click on subsection name
+                                    self.lorebook.changesubsection(name.subsection, self.pagebutton, self.allui) # change subsection
+                                    break # found clicked subsection, break loop
+                        if self.lorescroll.rect.collidepoint(self.mousepos): # click on subsection list scroller
+                            self.lorebook.currentsubsectionrow = self.lorescroll.update(self.mousepos) # update the scroller and get new current subsection
+                            self.lorebook.setupsubsectionlist(self.lorenamelist, self.subsectionname) # update subsection name list
 
                 self.allui.draw(self.screen)
                 pygame.display.update()

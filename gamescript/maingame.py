@@ -76,15 +76,9 @@ class Battle():
         gamemap.Beautifulmap.emptyimage = emptyimage
         #^ End game map
 
-        #v Faction class
-        gamefaction.Factiondata.main_dir = main_dir
-        self.allfaction = gamefaction.Factiondata(option=self.rulesetfolder)
-        imgsold = load_images(['ruleset', self.rulesetfolder.strip("/"), 'faction', 'coa'])  # coa imagelist
-        imgs = []
-        for img in imgsold:
-            imgs.append(img)
-        self.coa = imgs
-        #^ End faction
+        imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
+        gamemenu.Menubox.images = imgs  # Create ESC Menu box
+        gamemenu.Menubox.SCREENRECT = SCREENRECT
 
         #v create unit related class
         imgs = load_images(['war', 'unit_ui'])
@@ -95,35 +89,7 @@ class Battle():
         for img in imgsold:
             imgs.append(img)
         gamebattalion.Unitarmy.images = imgs
-        imgsold = load_images(['war', 'unit_ui', 'weapon'])
-        imgs = []
-        for img in imgsold:
-            x, y = img.get_width(), img.get_height()
-            img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7))) # scale 1.7 seem to be most fitting as a placeholder
-            imgs.append(img)
-        self.allweapon = gameunitstat.Weaponstat(main_dir, imgs, self.ruleset)  # Create weapon class
-        imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
-        gamemenu.Menubox.images = imgs  # Create ESC Menu box
-        gamemenu.Menubox.SCREENRECT = SCREENRECT
-        imgs = load_images(['war', 'unit_ui', 'armour'])
-        self.allarmour = gameunitstat.Armourstat(main_dir, imgs, self.ruleset)  # Create armour class
-        self.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
-        self.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
-        self.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
-        self.skillimgs = load_images(['ui', 'skill_icon'], loadorder=False)
-        cooldown = pygame.Surface((self.skillimgs[0].get_width(), self.skillimgs[0].get_height()), pygame.SRCALPHA)
-        cooldown.fill((230, 70, 80, 200)) # red colour filter for skill cooldown timer
-        activeskill = pygame.Surface((self.skillimgs[0].get_width(), self.skillimgs[0].get_height()), pygame.SRCALPHA)
-        activeskill.fill((170, 220, 77, 200)) # green colour filter for skill active timer
-        gameui.Skillcardicon.activeskill = activeskill
-        gameui.Skillcardicon.cooldown = cooldown
-        self.gameunitstat = gameunitstat.Unitstat(main_dir, self.ruleset, self.rulesetfolder)
         #^ End unit class
-
-        #v create leader list
-        imgs, order = load_images(['ruleset', self.rulesetfolder.strip("/"), 'leader', 'portrait'], loadorder=False, returnorder=True)
-        self.allleader = gameunitstat.Leaderstat(main_dir, imgs, order, option=self.rulesetfolder)
-        #^ End leader
 
         #v Create weather related class
         self.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
@@ -288,7 +254,10 @@ class Battle():
         gameweather.Specialeffect.containers = self.weathereffect, self.allui, self.weatherupdater
         #^ End assign
 
+        gamelongscript.creategamelorestat(self)
+
         #v Create the battle map
+        gamemap.Mapfeature.featuremod = self.featuremod
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1  # Camera zoom
@@ -446,69 +415,6 @@ class Battle():
         self.textdrama = gamedrama.Textdrama()
         self.fpscount = gameui.FPScount()
         self.battlemenu = gamemenu.Menubox()
-
-        #v Encyclopedia related objects
-        gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
-        gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
-        gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
-        gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'lore'])
-        gamelorebook.Lorebook.factionlore = self.allfaction.factionlist
-        gamelorebook.Lorebook.unitstat = self.gameunitstat.unitlist
-        gamelorebook.Lorebook.unitlore = self.gameunitstat.unitlore
-        gamelorebook.Lorebook.armourstat = self.allarmour.armourlist
-        gamelorebook.Lorebook.weaponstat = self.allweapon.weaponlist
-        gamelorebook.Lorebook.mountstat = self.gameunitstat.mountlist
-        gamelorebook.Lorebook.mountarmourstat = self.gameunitstat.mountarmourlist
-        gamelorebook.Lorebook.statusstat = self.gameunitstat.statuslist
-        gamelorebook.Lorebook.skillstat = self.gameunitstat.abilitylist
-        gamelorebook.Lorebook.traitstat = self.gameunitstat.traitlist
-        gamelorebook.Lorebook.leader = self.allleader
-        gamelorebook.Lorebook.leaderlore = self.allleader.leaderlore
-        gamelorebook.Lorebook.terrainstat = self.battlemapfeature.featuremod
-        gamelorebook.Lorebook.weatherstat = self.allweather
-        gamelorebook.Lorebook.landmarkstat = None
-        gamelorebook.Lorebook.unitgradestat = self.gameunitstat.gradelist
-        gamelorebook.Lorebook.unitclasslist = self.gameunitstat.role
-        gamelorebook.Lorebook.leaderclasslist = self.allleader.leaderclass
-        gamelorebook.Lorebook.mountgradestat = self.gameunitstat.mountgradelist
-        gamelorebook.Lorebook.racelist = self.gameunitstat.racelist
-        gamelorebook.Lorebook.SCREENRECT = SCREENRECT
-        gamelorebook.Lorebook.main_dir = main_dir
-        imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
-        self.lorebook = gamelorebook.Lorebook(imgs[0])
-        self.lorenamelist = gamelorebook.Subsectionlist(self.lorebook.rect.topleft, imgs[1])
-        imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
-        self.lorebuttonui = [
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[0], 0, 13), # concept section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[1], 1, 13), # history section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 3, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[2], 2, 13), # faction section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 4, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[3], 3, 13), # troop section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 5, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[4], 4, 13), # troop equipment section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 6, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[5], 5, 13), # troop status section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 7, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[6], 6, 13), # troop ability section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 8, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[7], 7, 13), # troop property section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 9, self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                            imgs[8], 8, 13), # leader section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13), # terrain section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13), # weather section button
-            gameui.Uibutton(self.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
-                            self.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13), # close button
-            gameui.Uibutton(self.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), self.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
-                            imgs[13], 20, 13), # previous page button
-            gameui.Uibutton(self.lorebook.rect.bottomright[0] - (imgs[14].get_width()), self.lorebook.rect.bottomright[1] - imgs[14].get_height(),
-                            imgs[14], 21, 13)] # next page button
-        self.pagebutton = (self.lorebuttonui[12], self.lorebuttonui[13])
-        #^ End encyclopedia objects
 
         #v Esc menu related objects
         buttonimage = load_images(['ui', 'battlemenu_ui', 'button'], loadorder=False)

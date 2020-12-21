@@ -49,6 +49,165 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
         return imgs, loadorderfile
 
+def creategamelorestat(game):
+    import main
+    main_dir = main.main_dir
+    SCREENRECT = main.SCREENRECT
+    from gamescript import gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, gameunitstat, gameui, gamefaction
+
+    #v Craete feature terrain modifier
+    game.featuremod = {}
+    with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        run = 0  # for skipping the first row
+        for row in rd:
+            for n, i in enumerate(row):
+                if run != 0:
+                    if n == 12:  # effect list is at column 12
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                    elif n in (2, 3, 4, 5, 6, 7):  # other modifer column
+                        if i != "":
+                            row[n] = float(i) / 100
+                        else:  # empty row assign 1.0 default
+                            i = 1.0
+                    elif i.isdigit() or "-" in i:  # modifer bonus (including negative) in other column
+                        row[n] = int(i)
+            run += 1
+            game.featuremod[row[0]] = row[1:]
+    unitfile.close()
+    #^ End feature terrain mod
+
+    # v Create weather related class
+    game.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
+    game.weathermatterimgs = []
+    for weather in ('0', '1', '2', '3'):  # Load weather matter sprite image
+        imgs = load_images(['map', 'weather', weather], loadorder=False)
+        game.weathermatterimgs.append(imgs)
+    game.weathereffectimgs = []
+    for weather in ('0', '1', '2', '3'):  # Load weather effect sprite image
+        imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
+        imgs = []
+        for img in imgsold:
+            img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
+            imgs.append(img)
+        game.weathereffectimgs.append(imgs)
+    imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  # Load weather icon
+    gameweather.Weather.images = imgs
+    # ^ End weather
+
+    #v Faction class
+    gamefaction.Factiondata.main_dir = main_dir
+    game.allfaction = gamefaction.Factiondata(option=game.rulesetfolder)
+    imgsold = load_images(['ruleset', game.rulesetfolder.strip("/"), 'faction', 'coa'])  # coa imagelist
+    imgs = []
+    for img in imgsold:
+        imgs.append(img)
+    game.coa = imgs
+    # ^ End faction
+
+    # v create unit related class
+    imgsold = load_images(['war', 'unit_ui', 'weapon'])
+    imgs = []
+    for img in imgsold:
+        x, y = img.get_width(), img.get_height()
+        img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
+        imgs.append(img)
+    game.allweapon = gameunitstat.Weaponstat(main_dir, imgs, game.ruleset)  # Create weapon class
+    imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
+    imgs = load_images(['war', 'unit_ui', 'armour'])
+    game.allarmour = gameunitstat.Armourstat(main_dir, imgs, game.ruleset)  # Create armour class
+    game.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
+    game.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
+    game.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
+    game.skillimgs = load_images(['ui', 'skill_icon'], loadorder=False)
+    cooldown = pygame.Surface((game.skillimgs[0].get_width(), game.skillimgs[0].get_height()), pygame.SRCALPHA)
+    cooldown.fill((230, 70, 80, 200))  # red colour filter for skill cooldown timer
+    activeskill = pygame.Surface((game.skillimgs[0].get_width(), game.skillimgs[0].get_height()), pygame.SRCALPHA)
+    activeskill.fill((170, 220, 77, 200))  # green colour filter for skill active timer
+    gameui.Skillcardicon.activeskill = activeskill
+    gameui.Skillcardicon.cooldown = cooldown
+    game.gameunitstat = gameunitstat.Unitstat(main_dir, game.ruleset, game.rulesetfolder)
+    #^ End unit class
+
+    #v create leader list
+    imgs, order = load_images(['ruleset', game.rulesetfolder.strip("/"), 'leader', 'portrait'], loadorder=False, returnorder=True)
+    game.allleader = gameunitstat.Leaderstat(main_dir, imgs, order, option=game.rulesetfolder)
+    #^ End leader
+
+    #v Encyclopedia related objects
+    gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.factionlore = game.allfaction.factionlist
+    gamelorebook.Lorebook.unitstat = game.gameunitstat.unitlist
+    gamelorebook.Lorebook.unitlore = game.gameunitstat.unitlore
+    gamelorebook.Lorebook.armourstat = game.allarmour.armourlist
+    gamelorebook.Lorebook.weaponstat = game.allweapon.weaponlist
+    gamelorebook.Lorebook.mountstat = game.gameunitstat.mountlist
+    gamelorebook.Lorebook.mountarmourstat = game.gameunitstat.mountarmourlist
+    gamelorebook.Lorebook.statusstat = game.gameunitstat.statuslist
+    gamelorebook.Lorebook.skillstat = game.gameunitstat.abilitylist
+    gamelorebook.Lorebook.traitstat = game.gameunitstat.traitlist
+    gamelorebook.Lorebook.leader = game.allleader
+    gamelorebook.Lorebook.leaderlore = game.allleader.leaderlore
+    gamelorebook.Lorebook.terrainstat = game.featuremod
+    gamelorebook.Lorebook.weatherstat = game.allweather
+    gamelorebook.Lorebook.landmarkstat = None
+    gamelorebook.Lorebook.unitgradestat = game.gameunitstat.gradelist
+    gamelorebook.Lorebook.unitclasslist = game.gameunitstat.role
+    gamelorebook.Lorebook.leaderclasslist = game.allleader.leaderclass
+    gamelorebook.Lorebook.mountgradestat = game.gameunitstat.mountgradelist
+    gamelorebook.Lorebook.racelist = game.gameunitstat.racelist
+    gamelorebook.Lorebook.SCREENRECT = SCREENRECT
+    gamelorebook.Lorebook.main_dir = main_dir
+    imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
+    game.lorebook = gamelorebook.Lorebook(imgs[0])
+    game.lorenamelist = gamelorebook.Subsectionlist(game.lorebook.rect.topleft, imgs[1])
+    imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
+    game.lorebuttonui = [
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[0], 0, 13),  # concept section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[1], 1, 13),  # history section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 3,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[2], 2, 13),  # faction section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 4,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[3], 3, 13),  # troop section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 5,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[4], 4, 13),  # troop equipment section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 6,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[5], 5, 13),  # troop status section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 7,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[6], 6, 13),  # troop ability section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 8,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[7], 7, 13),  # troop property section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 9,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                        imgs[8], 8, 13),  # leader section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13),  # terrain section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13),  # weather section button
+        gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
+                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),  # close button
+        gameui.Uibutton(game.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), game.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
+                        imgs[13], 20, 13),  # previous page button
+        gameui.Uibutton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
+                        imgs[14], 21, 13)]  # next page button
+    game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
+    #^ End encyclopedia objects
+
 
 def csv_read(file, subfolder=[], outputtype=0):
     """output type 0 = dict, 1 = list"""
@@ -75,6 +234,8 @@ def csv_read(file, subfolder=[], outputtype=0):
 
 
 def load_sound(file):
+    import main
+    main_dir = main.main_dir
     file = os.path.join(main_dir, "data/sound/", file)
     sound = pygame.mixer.Sound(file)
     return sound

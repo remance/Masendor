@@ -80,6 +80,7 @@ class Mapfeature(pygame.sprite.Sprite):
     images = []
     maxviewmode = 10
     main_dir = None
+    featuremod = None
 
     def __init__(self, scale):
         self._layer = 0
@@ -94,28 +95,7 @@ class Mapfeature(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0, 0))
         self.featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Wall, Mana, Rot, Wetground)
-        self.featuremod = {}
-        with open(self.main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-            run = 0 # for skipping the first row
-            for row in rd:
-                for n, i in enumerate(row):
-                    if run != 0:
-                        if n == 12: # effect list is at column 12
-                            if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                            elif i.isdigit():
-                                row[n] = [int(i)]
-                        elif n in (2, 3, 4, 5, 6, 7): # other modifer column
-                            if i != "":
-                                row[n] = float(i) / 100
-                            else: # empty row assign 1.0 default
-                                i = 1.0
-                        elif i.isdigit() or "-" in i: # modifer bonus (including negative) in other column
-                            row[n] = int(i)
-                run += 1
-                self.featuremod[row[0]] = row[1:]
-        unitfile.close()
+
 
     def getfeature(self, pos, gamemap):
         """get the terrain feature at that exact position"""
