@@ -30,6 +30,7 @@ class Lorebook(pygame.sprite.Sprite):
     racelist = None
     SCREENRECT = None
     main_dir = None
+    statetext = None
 
     def __init__(self, image, textsize=18):
         self._layer = 13
@@ -72,10 +73,6 @@ class Lorebook(pygame.sprite.Sprite):
         self.maxpage = 0
         self.rect = self.image.get_rect(center=(self.SCREENRECT.width / 1.9, self.SCREENRECT.height / 1.9))
         self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # text for item quality
-        self.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
-                             7: "Forced Walk", 8: "Forced Run",
-                             10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
-                             69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
         self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
 
     def changepage(self, page, pagebutton, allui, portrait=None):
@@ -83,7 +80,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = page
         self.image = self.image_original.copy() # reset encyclopedia image
         self.pagedesign() # draw new pages
-        if self.page == self.maxpage or (self.loredata is None and self.loredata[self.subsection][0] == ""): # remove next page button when reach last page
+        if self.loredata is None or self.page == self.maxpage or self.loredata[self.subsection][self.page*4] == "": # remove next page button when reach last page
             allui.remove(pagebutton[1])
         else:
             allui.add(pagebutton[1])
@@ -120,7 +117,7 @@ class Lorebook(pygame.sprite.Sprite):
         if self.loredata is not None: # some subsection may not have lore data
             try:
                 if self.loredata[self.subsection][0] != "":
-                    self.maxpage = 1 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
+                    self.maxpage = 0 + int(len(self.loredata[subsection]) / 4) # Number of maximum page of lore for that subsection (4 para per page)
                     allui.add(pagebutton[1])
             except:
                 pass

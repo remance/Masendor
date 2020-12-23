@@ -50,10 +50,16 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         return imgs, loadorderfile
 
 def creategamelorestat(game):
+    """Load various game data and encyclopedia object"""
     import main
     main_dir = main.main_dir
     SCREENRECT = main.SCREENRECT
     from gamescript import gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, gameunitstat, gameui, gamefaction
+
+    game.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
+                      7: "Forced Walk", 8: "Forced Run",
+                      10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
+                      69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
 
     #v Craete feature terrain modifier
     game.featuremod = {}
@@ -164,6 +170,7 @@ def creategamelorestat(game):
     gamelorebook.Lorebook.racelist = game.gameunitstat.racelist
     gamelorebook.Lorebook.SCREENRECT = SCREENRECT
     gamelorebook.Lorebook.main_dir = main_dir
+    gamelorebook.Lorebook.statetext = game.statetext
     imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
     game.lorebook = gamelorebook.Lorebook(imgs[0])
     game.lorenamelist = gamelorebook.Subsectionlist(game.lorebook.rect.topleft, imgs[1])

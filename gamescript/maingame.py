@@ -342,15 +342,17 @@ class Battle():
         self.selectscroll = gameui.Uiscroller(self.armyselector.rect.topright, topimage[30].get_height(), self.armyselector.maxrowshow) # scroller for army select ui
         self.gameui = [
             gameui.Gameui(X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
-                          icon=iconimage, uitype="topbar")]
+                          icon=iconimage, uitype="topbar")] # right top bar ui that show rough information of selected battalions
+        self.gameui[0].options1 = self.statetext
         iconimage = load_images(['ui', 'battle_ui', 'commandbar_icon'])
         self.gameui.append(gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + self.armyselector.image.get_height(),
-                          image=topimage[1], icon=iconimage, uitype="commandbar"))
-        self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2,
-                                         Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1], image=topimage[2], icon="", uitype="unitcard"))
-        self.gameui[2].featurelist = featurelist
+                          image=topimage[1], icon=iconimage, uitype="commandbar")) # left top ui with leader and battalion behavious button
+        self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1],
+                                         image=topimage[2], icon="", uitype="unitcard")) # squad information card
+        self.gameui[2].featurelist = featurelist # add terrain feature list name to unit card
         self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1]*4,
-                          image=topimage[5], icon="", uitype="armybox"))
+                          image=topimage[5], icon="", uitype="armybox")) # inspect ui that show squad in selected battalion
+
         self.popgameui = self.gameui # saving list of gameui that will pop out when battalion is selected
         self.timeui = gameui.Timeui(self.armyselector.rect.topright, topimage[31])
         self.timenumber = gameui.Timer(self.timeui.rect.topleft, self.weatherschedule)  # time number on time ui

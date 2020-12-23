@@ -74,10 +74,6 @@ class Gameui(pygame.sprite.Sprite):
                     topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
                 self.image.blit(ic, self.iconimagerect)
                 position += 90
-            self.options1 = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
-                             7: "Forced Walk", 8: "Forced Run",
-                             10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
-                             69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"} # battalion state name
             self.options2 = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
                              14: "Inspired", 15: "Fervent"} # battalion morale state name

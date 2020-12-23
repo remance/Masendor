@@ -355,7 +355,7 @@ try: # for printing error log when error exception happen
                         self.battlegame = maingamefunc.Battle(self.winstyle, self.ruleset, self.rulesetfolder)
                         self.battlegame.rungame()
                         self.startbutton.event = False
-                    elif self.optionbutton.event:
+                    elif self.optionbutton.event: # change main menu to option menu
                         self.menustate = "option"
                         self.optionbutton.event = False
                         self.allui.remove(*self.menubutton)
@@ -363,7 +363,7 @@ try: # for printing error log when error exception happen
                         self.menubutton.add(*self.optionmenubutton)
                         self.allui.add(*self.menubutton,self.optionmenuslider,self.valuebox)
                         self.allui.add(*self.optioniconlist)
-                    elif self.lorebutton.event:
+                    elif self.lorebutton.event: # open encyclopedia
                         self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
                                                             self.lorebook.maxsubsectionshow, layer=14)  # add subsection list scroller
 
@@ -376,9 +376,9 @@ try: # for printing error log when error exception happen
                         self.lorebook.changesection(0, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.allui)
                         self.lorebutton.event = False
                 elif self.menustate == "option":
-                    for bar in self.resolutionbar:
+                    for bar in self.resolutionbar: # loop to find which resolution bar is selected, this happen outside of clicking check below
                         if bar.event:
-                            self.resolutionscroll.changestate(bar.text)  # change button value based on selected
+                            self.resolutionscroll.changestate(bar.text)  # change button value based on new selected value
                             resolutionchange = bar.text.split()
                             self.newScreenWidth = resolutionchange[0]
                             self.newScreenHeight = resolutionchange[2]
@@ -398,11 +398,11 @@ try: # for printing error log when error exception happen
                             self.menubutton.add(*self.mainmenubutton)
                             self.allui.remove(*self.optioniconlist,self.optionmenuslider,self.valuebox)
                             self.allui.add(*self.menubutton)
-                        elif self.resolutionscroll.rect.collidepoint(self.mousepos): # resolution bar
-                            if self.resolutionbar in self.allui:
+                        elif self.resolutionscroll.rect.collidepoint(self.mousepos): # click on resolution bar
+                            if self.resolutionbar in self.allui: # remove the bar list if click again
                                 self.allui.remove(self.resolutionbar)
                                 self.menubutton.remove(self.resolutionbar)
-                            else:
+                            else: # add bar list
                                 self.allui.add(self.resolutionbar)
                                 self.menubutton.add(self.resolutionbar)
                         elif self.volumeslider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):  # mouse click on slider bar
@@ -410,7 +410,6 @@ try: # for printing error log when error exception happen
                             self.mixervolume = float(self.volumeslider.value / 100)  # for now only music volume slider exist
                             pygame.mixer.music.set_volume(self.mixervolume)
                             editconfig('DEFAULT', 'SoundVolume', str(self.volumeslider.value), 'configuration.ini', config)
-
                 elif self.menustate == "encyclopedia":
                     if mouse_up or mouse_down: # mouse down (hold click) only for subsection listscroller
                         if mouse_up:

@@ -333,11 +333,10 @@ class Unitsquad(pygame.sprite.Sprite):
             self.availableskill = []
         elif self.useskillcond == 2 and self.staminastate < 25: # reserve 25% stamina, don't use any skill
             self.availableskill = []
-        else:
-            self.availableskill = [skill for skill in self.skill if
-                               skill not in self.skillcooldown.keys() and self.state in self.skill[skill][
-                                   6] and self.discipline >= self.skill[skill][8] and self.stamina > self.skill[skill][
-                                   9] and skill != self.chargeskill]
+        else: # check all skill
+            self.availableskill = [skill for skill in self.skill if skill not in self.skillcooldown.keys()
+                                   and self.state in self.skill[skill][6] and self.discipline >= self.skill[skill][8]
+                                   and self.stamina > self.skill[skill][9] and skill != self.chargeskill]
 
     def findnearbysquad(self):
         """Find nearby friendly squads in the same battalion for applying buff"""

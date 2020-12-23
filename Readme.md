@@ -19,13 +19,9 @@ Meaning: It's playable but it is still a bloody mess. More work to do.
 
 Plan
 
-Ver 0.5 Preparation for Chaos: Optimise for larger battle (Also proper code documentation + structure) as the saying goes, just because it works does not mean it is optimised
-
-5.5.6+ focus on documentation, Finish Battle of Hastings
-
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
-0.6: improve main.py (mainmenu) with update on code and comment, add encyclopedia to main menu, add intro screen
+0.6: improve main.py (mainmenu) with update on code and comment, add intro screen
 
 0.6.1: start working on Battle of Megiddo
 
