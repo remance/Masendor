@@ -343,7 +343,6 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.ammo += squad.ammo
                 if squad.shootrange > 0:
                     allshootrange.append(squad.shootrange)
-                squad.combatpos = self.basepos
                 squad.useskillcond = self.useskillcond
                 squad.attacktarget = self.attacktarget
                 squad.attackpos = self.baseattackpos
@@ -357,7 +356,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.stamina = int(self.stamina/howmany) # Average stamina of all squad
             self.morale = int(self.morale/howmany) # Average moorale of all squad
             self.speed = min(allspeed) # use slowest squad
-            self.walkspeed, self.runspeed = self.speed / 20, self.speed / 15
+            self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
             if len(allshootrange) > 0:
                 self.maxrange = max(allshootrange) # Max shoot range of all squad
                 self.minrange = min(allshootrange) # Min shoot range of all squad
@@ -642,7 +641,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.neartarget = {}  # Near target is enemy that is nearest
                     for n, thisside in thisposlist.items():
                         self.neartarget[n] = pygame.Vector2(thisside).distance_to(self.basepos)
-                    self.neartarget = {k: v for k, v in sorted(self.neartarget.items(), key=lambda item: item[1])}
+                    self.neartarget = {k: v for k, v in sorted(self.neartarget.items(), key=lambda item: item[1])} # sort to the closest one
                     for n in thisposlist:
                         self.neartarget[n] = thisposlist[n]  ## change back near target list value to vector with sorted order
                     ## ^ End find near target

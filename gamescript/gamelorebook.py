@@ -202,8 +202,13 @@ class Lorebook(pygame.sprite.Sprite):
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.blit_text(textsurface, text, (5, 5), self.font)
                     else:  # blit image instead of text
-                        textsurface = gamelongscript.load_image(self.main_dir+text[6:])
-                        textrect = descriptionsurface.get_rect(topleft=(col, row))
+                        if "FULLIMAGE:" in text:
+                            textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
+                            textsurface = gamelongscript.load_image(self.main_dir + text[10:])
+                            textrect = descriptionsurface.get_rect(topleft=(0, 0))
+                        else:
+                            textsurface = gamelongscript.load_image(self.main_dir + text[6:])
+                            textrect = descriptionsurface.get_rect(topleft=(col, row))
                     self.image.blit(textsurface, textrect)
                     row += 200
                     if row >= 600: # continue drawing on the right page after reaching the end of left page
@@ -354,9 +359,15 @@ class Lorebook(pygame.sprite.Sprite):
                         if "IMAGE:" not in text: # blit paragraph of text
                             textsurface = pygame.Surface((400, 300), pygame.SRCALPHA)
                             self.blit_text(textsurface, text, (5, 5), self.font)
+                            textrect = descriptionsurface.get_rect(topleft=(col, row))
                         else: # blit image
-                            textsurface = gamelongscript.load_image(self.main_dir+text[6:])
-                        textrect = descriptionsurface.get_rect(topleft=(col, row))
+                            if "FULLIMAGE:" in text:
+                                textsurface = gamelongscript.load_image(self.main_dir + text[10:])
+                                textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
+                                textrect = descriptionsurface.get_rect(topleft=(0, 0))
+                            else:
+                                textsurface = gamelongscript.load_image(self.main_dir + text[6:])
+                                textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.image.blit(textsurface, textrect)
                         row += 200
                         if row >= 600:

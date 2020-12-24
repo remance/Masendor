@@ -10,6 +10,9 @@ import os
 
 """This file contains fuctions of various purposes"""
 
+## Default game mechanic value
+
+battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier,
 
 ## Data Loading gamescript
 
@@ -464,7 +467,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
         dmg = who.dmg
         if who.charging: # Include charge in dmg if charging
             if who.ignorechargedef == False: # Ignore charge defense if have ignore trait
-                sidecal = who.battlesidecal[defside]
+                sidecal = battlesidecal[defside]
                 if target.fulldef or target.tempfulldef: # Defense all side
                     sidecal = 1
                 dmg = dmg + (who.charge / 10) - (target.chargedef * sidecal / 10)
@@ -476,7 +479,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
             if chargedefcal < 0:
                 chargedefcal = 0
             dmg = dmg + (chargedefcal) # if charge def is higher than enemy charge then deal back addtional dmg
-        if target.state == 10: dmg = dmg / 5 # More dmg against enemy not fighting
+        if target.state == 10: dmg = dmg / 4 # More dmg against enemy not fighting
     elif type == 1:  # Range Damage
         dmg = who.rangedmg * ((100 - (target.armour * who.rangepenetrate)) / 100) * combatscore
     leaderdmg = dmg
@@ -536,23 +539,25 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
     wholuck = random.randint(-50, 50) # attacker luck
     targetluck = random.randint(-50, 50) # defender luck
-    whopercent = who.battlesidecal[whoside] # attacker attack side modifier
+    whopercent = battlesidecal[whoside] # attacker attack side modifier
     """34 battlemaster no flanked penalty"""
     if who.fulldef or 91 in who.statuseffect: whopercent = 1
-    targetpercent = who.battlesidecal[targetside] # defender defend side modifier
+    targetpercent = battlesidecal[targetside] # defender defend side modifier
     if target.fulldef or 91 in target.statuseffect: targetpercent = 1
     dmgeffect = who.frontdmgeffect
     targetdmgeffect = target.frontdmgeffect
     if whoside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
-        whopercent = who.battlesidecal[whoside] + (who.discipline / 300)
+        whopercent = battlesidecal[whoside] + (who.discipline / 300)
         dmgeffect = who.sidedmgeffect # use side dmg effect as some skill boost only front dmg
         if whopercent > 1: whopercent = 1
     if targetside != 0 and targetpercent != 1: # same for the target defender
-        targetpercent = who.battlesidecal[targetside] + (target.discipline / 300)
+        targetpercent = battlesidecal[targetside] + (target.discipline / 300)
         targetdmgeffect = target.sidedmgeffect
         if targetpercent > 1: targetpercent = 1
-    whohit, whodefense = float(who.attack * whopercent) + wholuck, float(who.meleedef * whopercent) + wholuck
-    targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(target.meleedef * targetpercent) + targetluck
+    whohit = float(who.attack * whopercent) + wholuck
+    whodefense =  float(who.meleedef * whopercent) + wholuck
+    targethit = float(who.attack * targetpercent) + targetluck
+    targetdefense = float(target.meleedef * targetpercent) + targetluck
     """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
     if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
             target.flanker and whoside in (1, 3)): # Apply only for attacker

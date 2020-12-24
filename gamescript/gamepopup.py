@@ -52,7 +52,6 @@ class Terrainpopup(pygame.sprite.Sprite):
                         break # found arrow image to blit end loop
 
         #v range def modifier for both infantry and cavalry
-        print(feature[7:10])
         if feature[7] == 0: # no bonus, draw circle
             self.imagerect = self.images[7].get_rect(center=self.imgpos[6])
             self.image.blit(self.images[7], self.imagerect)
@@ -71,7 +70,6 @@ class Terrainpopup(pygame.sprite.Sprite):
         else:
             for modindex, mod in enumerate(self.bonuslist):
                 if feature[9] >= mod:
-                    print(mod)
                     self.imagerect = self.images[modindex + 1].get_rect(center = self.imgpos[7])
                     self.image.blit(self.images[modindex + 1], self.imagerect)
                     break

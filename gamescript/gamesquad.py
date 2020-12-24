@@ -9,7 +9,6 @@ class Unitsquad(pygame.sprite.Sprite):
     images = []
     maingame = None
     dmgcal = gamelongscript.dmgcal
-    battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier,
     # use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right
 
     def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos, starthp, startstamina):
@@ -135,7 +134,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.bonusstaminadmg = 0 # extra stamina damage
         self.authpenalty = 0.1 # authority penalty for certain activities/order
         self.basehpregen = 0 # hp regeneration modifier, will not resurrect dead troop by default
-        self.basestaminaregen = 1 # stamina regeneration modifier
+        self.basestaminaregen = 2 # stamina regeneration modifier
         self.moraleregen = 2 # morale regeneration modifier
         self.statuslist = self.battalion.statuslist
         self.statuseffect = {} # list of current status effect
@@ -674,6 +673,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.viewmode = viewmode
         if self.state != 100: # no point update these for dead squad
             dt = newdt
+            self.combatpos = self.battalion.basepos
             self.walk = self.battalion.walk # check if battalion walking for stamina use
             self.run = self.battalion.run # check if battalion running for stamina use
 
@@ -776,8 +776,8 @@ class Unitsquad(pygame.sprite.Sprite):
                         self.state = 11 # range combat state
                 elif self.ammo > 0 and self.battalion.fireatwill == 0 and (self.state == 0 or (battalionstate in (1, 2, 3, 4, 5, 6)
                                                                              and self.shootmove)):  # Fire at will, auto pick closest enemy
-                    if self.battalion.neartarget != {}:  # get nearby enemy target list
-                        if self.attacktarget == 0:
+                    if self.battalion.neartarget != {}:
+                        if self.attacktarget == 0: # get nearby enemy target from list if not targeting anything yet
                             self.attackpos = list(self.battalion.neartarget.values())[0] # replace attacktarget with enemy pos
                             self.attacktarget = list(self.battalion.neartarget.keys())[0] # replace attacktarget with enemy id
                         if self.shootrange >= self.attackpos.distance_to(self.combatpos):

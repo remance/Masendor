@@ -37,7 +37,7 @@ Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(wit
 
 0.6.8 and 0.6.9: multiple unit selection/move, also add border to selected unit on army selector ui
 
-Ver 0.7 Future Visionary: Fog of War(maybe), unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight, Battle of Walaja, Battle of Dorylaeum
+Ver 0.7 Future Visionary: Fog of War(maybe), queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight, Battle of Walaja, Battle of Dorylaeum
 
 Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image), Battle of Isandlwana, Battle of Hwangsanbeol
 

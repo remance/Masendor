@@ -2,6 +2,7 @@
 ## Known problem
 weird rare bug where unit range attack can shoot enemy extremely far away after commander die in combat after a while, likely problem from pos list
 another rare bug where squad easily get killed for some reason, can't see to repricate it
+Make it so that unit no longer move pass map unless in retreat state
 autoplacement of 2 units somehow allow the other unit that stop from retreat to auto place to the enemy side already occupied
 Optimise list
 melee combat need to be optimised more
@@ -1352,7 +1353,7 @@ class Battle():
                 self.uidt = self.dt # get ui timer before apply game speed
                 self.dt = self.dt * self.gamespeed # apply dt with gamespeed for ingame calculation
                 self.combattimer += self.dt # update combat timer
-                self.timenumber.timerupdate(self.dt*5) # update ingame time with 5x speed
+                self.timenumber.timerupdate(self.dt*10) # update ingame time with 5x speed
                 #^ End update game time
 
             else: # Complete game pause when open either esc menu or enclycopedia
