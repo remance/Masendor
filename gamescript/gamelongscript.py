@@ -272,11 +272,15 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     oldsquadlist = squadlist[~np.all(squadlist == 0, axis=1)] # remove whole empty column in squad list
     squadlist = oldsquadlist[:, ~np.all(oldsquadlist == 0, axis=0)] # remove whole empty row in squad list
     army = gamebattalion.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina)
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20), # add hitbox for all four sides
+
+    # add hitbox for all four sides
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
                    gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 20)]
-    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat), # add leader
+
+    # add leader
+    army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
                    gameleader.Leader(leader[1], leader[5], 1, army, leaderstat),
                    gameleader.Leader(leader[2], leader[6], 2, army, leaderstat),
                    gameleader.Leader(leader[3], leader[7], 3, army, leaderstat)]
@@ -297,7 +301,6 @@ def unitsetup(maingame,playerteam):
         for ll in letterboard:
             boardpos.append(ll + dd)
     squadindexlist = [] # squadindexlist is list of every squad index in the game for indexing the squad group
-    unitlist = []
     team1start, team2start = 0, 0
     squadindex = 0 #  squadindex is list index for all squad group
     squadgameid = 10000
@@ -310,6 +313,7 @@ def unitsetup(maingame,playerteam):
                 if n in range(1, 12):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
             control = False
+
             if row[0] < 2000: # team1 id less than 2000
                 if playerteam == 1 or maingame.enactment: # player can control only his team or both in enactment mode
                     control = True
@@ -322,6 +326,7 @@ def unitsetup(maingame,playerteam):
                 colour = (255, 114, 114) # red colour
                 team2start += 1
                 whicharmy = maingame.team2army
+
             command = False # Not commander battalion by default
             if row[0] in (1,2000): # First battalion is commander
                 command = True
@@ -540,33 +545,45 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
     wholuck = random.randint(-50, 50) # attacker luck
     targetluck = random.randint(-50, 50) # defender luck
     whopercent = battlesidecal[whoside] # attacker attack side modifier
-    """34 battlemaster no flanked penalty"""
-    if who.fulldef or 91 in who.statuseffect: whopercent = 1
-    targetpercent = battlesidecal[targetside] # defender defend side modifier
-    if target.fulldef or 91 in target.statuseffect: targetpercent = 1
+
+    """34 battlemaster fulldef or 91 allrounddef status = no flanked penalty"""
+    if who.fulldef or 91 in who.statuseffect:
+        whopercent = 1
+    targetpercent = battlesidecal[targetside] # defender defend side
+
+    if target.fulldef or 91 in target.statuseffect:
+        targetpercent = 1
+
     dmgeffect = who.frontdmgeffect
     targetdmgeffect = target.frontdmgeffect
+
     if whoside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
         whopercent = battlesidecal[whoside] + (who.discipline / 300)
         dmgeffect = who.sidedmgeffect # use side dmg effect as some skill boost only front dmg
         if whopercent > 1: whopercent = 1
+
     if targetside != 0 and targetpercent != 1: # same for the target defender
         targetpercent = battlesidecal[targetside] + (target.discipline / 300)
         targetdmgeffect = target.sidedmgeffect
         if targetpercent > 1: targetpercent = 1
+
     whohit = float(who.attack * whopercent) + wholuck
     whodefense =  float(who.meleedef * whopercent) + wholuck
     targethit = float(who.attack * targetpercent) + targetluck
     targetdefense = float(target.meleedef * targetpercent) + targetluck
-    """33 backstabber ignore def when atk rear, 55 Oblivious To Unexpected can't def from rear"""
+
+    """33 backstabber ignore def when attack rear side, 55 Oblivious To Unexpected can't defend from rear at all"""
     if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
             target.flanker and whoside in (1, 3)): # Apply only for attacker
         targetdefense = 0
+
     whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0, targetside) # get dmg by attacker
     targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0, whoside) # get dmg by defender
+
     timermod = combattimer / 0.5 # Since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
     complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod) # Inflict dmg to defender
     complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod) # Inflict dmg to attacker
+
     #v Attack corner (side) of self with aoe attack
     if who.corneratk:
         listloop = [target.nearbysquadlist[2], target.nearbysquadlist[5]] # Side attack get (2) front and (5) rear nearby squad
@@ -577,6 +594,7 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
                 whodmg, whomoraledmg = losscal(who, squad, whohit, targetdefense, 0)
                 complexdmg(who, squad, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
     #^ End attack corner
+
     #v inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy unit, 4 entire battalion
     if who.inflictstatus != {}:
         applystatustoenemy(statuslist, who.inflictstatus, target, whoside, targetside)
@@ -591,56 +609,94 @@ def die(who, battle, group, enemygroup):
         battle.team1poslist.pop(who.gameid)
     else:
         battle.team2poslist.pop(who.gameid)
+
     if who.commander:  # more morale penalty if the battalion is a command battalion
         for army in group:
             for squad in army.squadsprite:
                 squad.basemorale -= 30
+
     for hitbox in who.hitbox: # delete hitbox
         battle.allcamera.remove(hitbox)
         battle.hitboxes.remove(hitbox)
         hitbox.kill()
+
     battle.allunitlist.remove(who)
     battle.allunitindex.remove(who.gameid)
     group.remove(who)
     battle.deadunit.add(who)
     battle.allcamera.change_layer(sprite=who, new_layer=1)
     who.gotkilled = True
+
     for thisarmy in enemygroup:  # get bonus authority to the another army
         thisarmy.authority += 5
+
     for thisarmy in group:  # morale dmg to every squad in army when allied battalion destroyed
         for squad in thisarmy.squadsprite:
             squad.basemorale -= 20
 
+def moveleadersquad(leader, oldarmysquad, newarmysquad, alreadypick=[]):
+    """oldarmysquad is armysquad list that the squad currently in and need to be move out to the new one (newarmysquad), alreadypick is list of position need to be skipped"""
+    replace = [np.where(oldarmysquad == leader.squad.gameid)[0][0],
+                     np.where(oldarmysquad == leader.squad.gameid)[1][0]] # grab old array position of squad
+    replaceflat = np.where(oldarmysquad.flat == leader.squad.gameid)[0] # grab old flat array pos
+    newrow = int(len(newarmysquad) / 2) # set up new row squad will be place in at the middle at the start
+    newplace = int(len(newarmysquad[newrow]) / 2) # setup new column position
+    placedone = False # finish finding slot to place yet
+    newarmysquadlen = len(newarmysquad[newrow]) # get size of row in new armysquad
+
+    while placedone == False:
+        if leader.squad.battalion.armysquad.flat[(newrow * newarmysquadlen) + newplace] != 0:
+            for squad in leader.squad.battalion.squadsprite:
+                if squad.gameid == leader.squad.battalion.armysquad.flat[(newrow * newarmysquadlen) + newplace]:
+                    if squad.leader is not None or (newrow,newplace) in alreadypick:
+                        newplace += 1
+                        if newplace > len(newarmysquad[newrow])-1: # find new column
+                            newplace = 0
+                        elif newplace == int(len(newarmysquad[newrow]) / 2): # find in new row when loop back to the first one
+                            newrow += 1
+                        placedone = False
+                    else: # found slot to replace
+                        placedone = True
+                        break
+        else:  # fill in the squad if the slot is empty
+            placedone = True
+
+    oldarmysquad[replace[0]][replace[1]] = newarmysquad[newrow][newplace]
+    newarmysquad[newrow][newplace] = leader.squad.gameid
+    return replace, replaceflat, newplace, newrow
+
 def splitunit(battle, who, how):
     """split battalion either by row or column into two seperate battalion"""
     from gamescript import gamebattalion, gameleader
+
     if how == 0:  # split by row
         newarmysquad = np.array_split(who.armysquad, 2)[1]
         who.armysquad = np.array_split(who.armysquad, 2)[0]
         who.squadalive = np.array_split(who.squadalive, 2)[0]
         newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.basepos) / 2) # position of new battalion when split
         who.basepos = who.allsidepos[0] - ((who.allsidepos[0] - who.basepos) / 2) # position of original battalion
+
     else:  # split by column
         newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
         who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
         who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
         newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.basepos) / 2)
         who.basepos = who.allsidepos[1] - ((who.allsidepos[1] - who.basepos) / 2)
+
     if who.leader[1].squad.gameid not in newarmysquad:  # move leader if squad not in new one
-        if who.leader[1].squad.unittype in (1, 3, 5, 6, 7, 10, 11):  # if squad type melee move to front
-            leaderreplace = [np.where(who.armysquad == who.leader[1].squad.gameid)[0][0],
-                             np.where(who.armysquad == who.leader[1].squad.gameid)[1][0]]
-            leaderreplaceflat = np.where(who.armysquad.flat == who.leader[1].squad.gameid)[0]
-            who.armysquad[leaderreplace[0]][leaderreplace[1]] = newarmysquad[0][int(len(newarmysquad[0]) / 2)]
-            newarmysquad[0][int(len(newarmysquad[0]) / 2)] = who.leader[1].squad.gameid
-        else:  # if not move to center of battalion
-            leaderreplace = [np.where(who.armysquad == who.leader[1].squad.gameid)[0][0],
-                             np.where(who.armysquad == who.leader[1].squad.gameid)[1][0]]
-            leaderreplaceflat = np.where(who.armysquad.flat == who.leader[1].squad.gameid)[0]
-            who.armysquad[leaderreplace[0]][leaderreplace[1]] = newarmysquad[int(len(newarmysquad) / 2)][int(len(newarmysquad[0]) / 2)]
-            newarmysquad[int(len(newarmysquad) / 2)][int(len(newarmysquad[0]) / 2)] = who.leader[1].squad.gameid
-        who.squadalive[leaderreplace[0]][leaderreplace[1]] = \
-            [0 if who.armysquad[leaderreplace[0]][leaderreplace[1]] == 0 else 1 if who.squadsprite[leaderreplaceflat[0]].state == 100 else 2][0]
+        replace, replaceflat, newplace, newrow = moveleadersquad(who.leader[1], who.armysquad, newarmysquad)
+        who.squadalive[replace[0]][replace[1]] = \
+            [0 if who.armysquad[replace[0]][replace[1]] == 0 else 1 if who.squadsprite[replaceflat[0]].state == 100 else 2][0]
+
+    alreadypick = []
+    for leader in (who.leader[0], who.leader[2], who.leader[3]):
+        if leader.squad.gameid not in who.armysquad:
+            replace, replaceflat, newplace, newrow = moveleadersquad(leader, newarmysquad, who.armysquad, alreadypick)
+            alreadypick.append((newrow,newplace))
+            who.squadalive[replace[0]][replace[1]] = \
+                [0 if who.armysquad[replace[0]][replace[1]] == 0 else 1 if who.squadsprite[replaceflat[0]].state == 100 else 2][0]
+            leader.squadpos = newplace + (newrow * 8)
+
     squadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]  # list of sprite not sorted yet
     newsquadsprite = []
 
@@ -679,6 +735,7 @@ def splitunit(battle, who, how):
         leader.armyposition = index  # Change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]
         leader.rect = leader.image.get_rect(center=leader.imgposition)
+
     coa = who.coa
     who.recreatesprite()
     who.makeallsidepos()
@@ -686,11 +743,13 @@ def splitunit(battle, who, how):
     who.viewmode = battle.camerascale
     who.viewmodechange()
     who.height = who.gamemapheight.getheight(who.basepos)
-    for thishitbox in who.hitbox: thishitbox.kill()
+
+    for thishitbox in who.hitbox: thishitbox.kill() # remove previous hitbox before create new one
     who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - int(who.rect.width * 0.1), 20),
                   gamebattalion.Hitbox(who, 1, 20, who.rect.height - int(who.rect.height * 0.1)),
                   gamebattalion.Hitbox(who, 2, 20, who.rect.height - int(who.rect.height * 0.1)),
                   gamebattalion.Hitbox(who, 3, who.rect.width - int(who.rect.width * 0.1), 20)]
+
     who.rotate()
     who.newangle = who.angle
     #^ End change original
@@ -724,17 +783,23 @@ def splitunit(battle, who, how):
         whosearmy= battle.team2army
         colour = (255, 114, 114)
     newgameid = whosearmy[-1].gameid + 1
+
     army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                   squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
                                   colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
+
     whosearmy.append(army)
     army.leader = newleader
     army.squadsprite = newsquadsprite
+
     for squad in army.squadsprite:
         squad.battalion = army
+
     for index, leader in enumerate(army.leader):  # Change army position of all leader in new battalion
         if how == 0:
-            leader.squadpos -= newarmysquad.size  # Just minus the row gone to find new position
+            if leader.name != "None":
+                leader.squadpos -= newarmysquad.size  # Just minus the row gone to find new position
+            else: leader.squadpos = 0
         else:
             if leader.name != "None":
                 for spriteindex, squad in enumerate(army.squadsprite):  # Loop to find new squad pos based on new squadsprite list
@@ -747,6 +812,7 @@ def splitunit(battle, who, how):
         leader.imgposition = leader.baseimgposition[leader.armyposition]  # Change image pos
         leader.rect = leader.image.get_rect(center=leader.imgposition)
         leader.poschangestat(leader)  # Change stat based on new army position
+
     army.teamcommander = who.teamcommander
     army.commandbuff = [(army.leader[0].meleecommand - 5) * 0.1, (army.leader[0].rangecommand - 5) * 0.1, (army.leader[0].cavcommand - 5) * 0.1]
     army.leadersocial = army.leader[0].social
@@ -760,9 +826,10 @@ def splitunit(battle, who, how):
     army.angle = army.angle
     army.rotate()
     army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
+
     army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                         army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20), # add hitbox for all four sides
                    gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 20)]

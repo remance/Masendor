@@ -214,7 +214,7 @@ try: # for printing error log when error exception happen
             self.lorebuttonui = pygame.sprite.Group()
             self.subsectionname = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
 
-
+            #v Add group to containers
             Menubutton.containers = self.menubutton
             Menuicon.containers = self.menuicon
             Slidermenu.containers = self.menuslider
@@ -224,6 +224,7 @@ try: # for printing error log when error exception happen
             gamelorebook.Subsectionname.containers = self.subsectionname, self.allui
             gameui.Uibutton.containers = self.lorebuttonui
             gameui.Uiscroller.containers = self.lorescroll, self.allui
+            #^ End containers
 
             #v Set the display mode
             self.winstyle = 0  # FULLSCREEN
@@ -243,7 +244,7 @@ try: # for printing error log when error exception happen
             self.background.blit(bgdtile,(0,0))
             #^ End background
 
-            gamelongscript.creategamelorestat(self) # obtain game stat and create lore book object
+            gamelongscript.creategamelorestat(self) # obtain game stat data and create lore book object
 
             #v Create main menu button
             imagelist = load_base_button()

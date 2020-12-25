@@ -21,7 +21,7 @@ Plan
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
-0.6: improve main.py (mainmenu) with update on code and comment, add intro screen
+0.6: improve main.py (mainmenu) with update on code and comment
 
 0.6.1: start working on Battle of Megiddo
 
@@ -39,7 +39,7 @@ Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(wit
 
 Ver 0.7 Future Visionary: Fog of War(maybe), queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, daynight, Battle of Walaja, Battle of Dorylaeum
 
-Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image), Battle of Isandlwana, Battle of Hwangsanbeol
+Ver 0.8 Authentic Attraction: In game art, better looking UI (All hand (and mouse) drawn except for historical image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
 Ver 0.9 Gaze of New Life: AI and pathfinding (The most challenging step unless cut corner to the point of braindead AI), final code optimisation before full 1.0
 

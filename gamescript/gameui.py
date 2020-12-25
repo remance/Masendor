@@ -79,6 +79,7 @@ class Gameui(pygame.sprite.Sprite):
                              14: "Inspired", 15: "Fervent"} # battalion morale state name
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                              7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"} # battalion stamina state name
+
         elif self.uitype == "commandbar": # setup variable for command bar ui
             self.iconimagerect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
@@ -86,6 +87,7 @@ class Gameui(pygame.sprite.Sprite):
             self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]] # team 1 white chess head
             self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]] # team 2 black chess head
             self.lastauth = 0
+
         elif self.uitype == "unitcard": # setup variable for unit card ui
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(1)
@@ -126,14 +128,17 @@ class Gameui(pygame.sprite.Sprite):
             if self.value[3] in self.options1: # Check unit state and blit name
                 self.value[3] = self.options1[self.value[3]]
             # if type(self.value[2]) != str:
+
             self.value[2] = round(self.value[2] / 10)
             if self.value[2] in self.options2: # Check if morale state in the list and blit the name
                 self.value[2] = self.options2[self.value[2]]
             elif self.value[2] > 15: # if morale somehow too high use the highest morale state one
                 self.value[2] = self.options2[15]
+
             self.value[1] = round(self.value[1] / 10)
             if self.value[1] in self.options3: # Check if stamina state and blit the name
                 self.value[1] = self.options3[self.value[1]]
+
             if self.value != self.lastvalue or splithappen: # only blit new text when value change or unit split
                 self.image = self.image_original.copy()
                 for value in self.value: # blit value text
@@ -156,24 +161,29 @@ class Gameui(pygame.sprite.Sprite):
                     usecolour = self.black
                 self.image = self.image_original.copy()
                 self.image.blit(who.coa,who.coa.get_rect(topleft=self.image.get_rect().topleft)) # blit coa
+
                 if who.commander: # commander battalion use king and queen icon
                     ## main general
                     self.iconimagerect = usecolour[0].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[0], self.iconimagerect)
+
                     ## sub commander/strategist role
                     self.iconimagerect = usecolour[1].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[1], self.iconimagerect)
+
                 else: # the rest use rook and bishop
                     ## general
                     self.iconimagerect = usecolour[2].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[2], self.iconimagerect)
+
                     ## Special role
                     self.iconimagerect = usecolour[5].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
                     self.image.blit(usecolour[5], self.iconimagerect)
+
                 self.iconimagerect = usecolour[3].get_rect(center=(      # left sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
@@ -182,6 +192,7 @@ class Gameui(pygame.sprite.Sprite):
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
                 self.image.blit(usecolour[4], self.iconimagerect)
+
                 self.image_original2 = self.image.copy()
             if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  ## authority number change only when not same as last
                 self.image = self.image_original2.copy()
@@ -250,11 +261,13 @@ class Gameui(pygame.sprite.Sprite):
                                      armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
                                  "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.height),
                                  "Temperature:" + str(int(who.tempcount))]
+
                     if who.rangeweapon[0] != 1: # only add range weapon if it is not none
                         textvalue.insert(1,
                                          self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
                                              weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
+
                     if "None" not in who.mount: # if mount is not the None mount id 1
                         armourtext = "//" + who.mountarmour[0]
                         if "None" in who.mountarmour[0]:
@@ -308,6 +321,7 @@ class Skillcardicon(pygame.sprite.Sprite):
                 self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
+
         elif cooldown != self.cooldowncheck and self.activecheck == 0: # Cooldown only get blit when skill is not active
             self.cooldowncheck = cooldown
             self.image = self.image_original.copy()
@@ -498,6 +512,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                 if howmanyloop.is_integer() == False: # always round up if there is decimal number
                     howmanyloop = int(howmanyloop) + 1
                 startingindex = 0
+
                 for run in range(1, int(howmanyloop) + 1):
                     textcutnumber = [number for number in cutspace if number <= run * 45]
                     cutnumber = textcutnumber[-1]
@@ -509,6 +524,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
                     else:
                         thislog.append([-1, finaltextoutput])
                     startingindex = cutnumber + 1
+
             if len(thislog) > 1000: # log cannot be more than 1000 length
                 logtodel = len(thislog) - 1000
                 del thislog[0:logtodel] # remove the first few so only 1000 left

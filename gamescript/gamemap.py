@@ -65,10 +65,12 @@ class Basemap(pygame.sprite.Sprite):
                 newpos[0] = 0
             elif newpos[0] > 999:
                 newpos[0] = 999
+
             if newpos[1] < 0:
                 newpos[1] = 0
             elif newpos[1] > 999:
                 newpos[1] = 999
+
             terrain = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))
             terrainindex = 0
         return terrainindex
@@ -112,10 +114,12 @@ class Mapfeature(pygame.sprite.Sprite):
                 newpos[0] = 0
             elif newpos[0] > 999:
                 newpos[0] = 999
+
             if newpos[1] < 0:
                 newpos[1] = 0
             elif newpos[1] > 999:
                 newpos[1] = 999
+
             feature = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))  ##get colour at pos to obtain the terrain type
             featureindex = None
             if feature in self.featurecolour:

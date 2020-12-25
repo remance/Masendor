@@ -15,26 +15,31 @@ class Unitsquad(pygame.sprite.Sprite):
         """Although squad in code, this is referred as sub-unit ingame"""
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.gamestart = False # Game start yet? for stuff only need to be done at the start
         self.wholastselect = 0
         self.mouse_over = False
-        self.gameid = gameid # ID of this squad
-        self.unitid = int(unitid) # ID of preset used for this squad
-        self.angle, self.newangle = 0, 0
-        self.battleside = [None, None, None, None] # index of battleside: 0 = front 1 = left 2 =rear 3 =right (different than battalion for combat rotation)
-        self.battlesideid = [0, 0, 0, 0] # battlesideid keep index of enemy battalion 0 is no current enemy (idle in combat)
-        self.haveredcorner = False
-        self.state = 0 # Current squad state, similar to battalion state
-        self.gamestart = False # Game start yet? for stuff only need to be done at the start
-        self.nocombat = 0 # time when not fighting before going into idle (1 second)
-        self.timer = 0 # may need to use random.random()
-        self.battalion = battalion # reference to the parent battlion of this squad
-        stat = statlist.unitlist[self.unitid].copy()
         self.leader = None # Leader in the sub-unit if there is one
         self.boardpos = None  # Used for event log position of squad (Assigned in maingame unit setup)
         self.terrain = None # Current terrain climate
         self.feature = None # Current terrain feature
         self.height = None # Current terrain height
+
+        self.battalion = battalion # reference to the parent battlion of this squad
         self.gamemapfeature = self.battalion.gamemapfeature
+
+        self.gameid = gameid # ID of this squad
+        self.unitid = int(unitid) # ID of preset used for this squad
+        self.angle = 0
+        self.newangle = 0
+        self.battleside = [None, None, None, None] # index of battleside: 0 = front 1 = left 2 =rear 3 =right (different than battalion for combat rotation)
+        self.battlesideid = [0, 0, 0, 0] # battlesideid keep index of enemy battalion 0 is no current enemy (idle in combat)
+        self.haveredcorner = False
+        self.state = 0 # Current squad state, similar to battalion state
+        self.nocombat = 0 # time when not fighting before going into idle (1 second)
+        self.timer = 0 # may need to use random.random()
+
+        ## Setup troop stat
+        stat = statlist.unitlist[self.unitid].copy()
         self.name = stat[0] # name according to the preset
         self.unitclass = stat[1] # used to determine whether to use melee or range weapon as icon
         self.grade = stat[2] # training level/class grade
@@ -196,6 +201,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         self.baseinflictstatus[effect] = trait[1]
                 # self.baseelemmelee =
                 # self.baseelemrange =
+
             if 3 in self.trait:  # Varied training
                 self.baseattack *= (random.randint(80, 120) / 100)
                 self.basemeleedef *= (random.randint(80, 120) / 100)
@@ -209,6 +215,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.basechargedef *= (random.randint(80, 120) / 100)
                 self.basemorale += random.randint(-10, 10)
                 self.basediscipline += random.randint(-10, 10)
+
             if 149 in self.trait:  # Impetuous
                 self.baseauthpenalty += 0.5
 
@@ -224,6 +231,7 @@ class Unitsquad(pygame.sprite.Sprite):
             if 55 in self.trait: self.oblivious = True # more penalty on flank/rear defend
             if 73 in self.trait: self.norangepenal = True # no range penalty
             if 74 in self.trait: self.longrangeacc = True # less range penalty
+
             if 111 in self.trait:
                 self.unbreakable = True # always unbreakable
                 self.tempunbraekable = True
@@ -235,7 +243,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
             self.stamina * 0.5), round(self.stamina * 0.25)
         self.unithealth = self.troophealth * self.troopnumber # Total health of unit from all troop
-        self.lasthealthstate, self.laststaminastate = 4, 4
+        self.lasthealthstate = 4 # state start at full
+        self.laststaminastate = 4
 
         #v Stat variable after receive modifier effect from various sources, used for activity calculation
         self.maxmorale = self.basemorale
@@ -301,8 +310,8 @@ class Unitsquad(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         #^ End weapon icon
 
-
-        self.armypos = position # position in battalion (0 to 63)
+        #v position related
+        self.armypos = position # position in battalion array (0 to 63)
         self.inspposition = (self.armypos[0] + inspectuipos[0], self.armypos[1] + inspectuipos[1]) # position in inspect ui
         self.rect = self.image.get_rect(topleft=self.inspposition)
         self.pos = pygame.Vector2(self.rect.centerx, self.rect.centery) # self.pos is drawing pos for army inspect ui
@@ -311,6 +320,7 @@ class Unitsquad(pygame.sprite.Sprite):
                            self.battalion.basepos[1] - self.battalion.baseheightbox / 2) # get topleft corner position of battalion to calculate true pos
         self.truepos = pygame.Vector2(battaliontopleft[0] + (self.armypos[0]/10), battaliontopleft[1] + (self.armypos[1]/10)) # true position of squad in map
         self.attackpos = self.battalion.baseattackpos
+        #^ End position related
 
     def useskill(self, whichskill):
         if whichskill == 0:  # charge skill need to seperate since charge power will be used only for charge skill
@@ -896,7 +906,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 #^ End update
 
                 #v Leader change squad or gone
-                if self.leader != None and self.leader.name != "None" and self.leader.state != 100: # Find new squad for leader if there is one in this squad
+                if self.leader is not None and self.leader.name != "None" and self.leader.state != 100: # Find new squad for leader if there is one in this squad
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:
                             squad.leader = self.leader
@@ -906,7 +916,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                     squad.leader.squadpos = index
                             self.leader = None
                             break
-                    if self.leader != None:  # if can't find new near squad to move leader then find from first squad to last place in battalion
+                    if self.leader is not None:  # if can't find new near squad to move leader then find from first squad to last place in battalion
                         for index, squad in enumerate(self.battalion.squadsprite):
                             if squad.state != 100 and squad.leader == None:
                                 squad.leader = self.leader
@@ -914,7 +924,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                 squad.leader.squadpos = index
                                 self.leader = None
                                 break
-                    if self.leader != None: # Can't find new squad so leader disappear with chance of different result
+                    if self.leader is not None: # Can't find new squad so leader disappear with chance of different result
                         self.leader.state = random.randint(97,100) # captured, retreated, wounded, dead
                         self.leader.health = 0
                         self.leader.gone()
