@@ -18,13 +18,11 @@ Map data
 
 - unitpos: List of unit the csv data structure is as follows: 
 
-unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction | start angle | start health state | start stamina state
+unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction (not team) | start angle | start health state | start stamina state | team
 
 int	| 		int,int,int,int,int,int,int,int			    	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	| int (0-100) 	     | int (0-100) |
 
-0+ = player  | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader | 
-
-2000+ = enemy |
+no nagative | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader | 
 
 - weather: the list of all weather event that will occur during the battle. The structure is as follows;
 

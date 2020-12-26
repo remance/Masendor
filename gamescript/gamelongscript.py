@@ -266,12 +266,12 @@ def convertweathertime(weatherevent):
 
 ## Battle Start related gamescript
 
-def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina):
+def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina,team):
     """Create batalion object into the battle, also add hitbox and leader of the battalion"""
     from gamescript import gamebattalion, gameleader
     oldsquadlist = squadlist[~np.all(squadlist == 0, axis=1)] # remove whole empty column in squad list
     squadlist = oldsquadlist[:, ~np.all(oldsquadlist == 0, axis=0)] # remove whole empty row in squad list
-    army = gamebattalion.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina)
+    army = gamebattalion.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina,team)
 
     # add hitbox for all four sides
     army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
@@ -301,9 +301,12 @@ def unitsetup(maingame,playerteam):
         for ll in letterboard:
             boardpos.append(ll + dd)
     squadindexlist = [] # squadindexlist is list of every squad index in the game for indexing the squad group
-    team1start, team2start = 0, 0
     squadindex = 0 #  squadindex is list index for all squad group
     squadgameid = 10000
+    teamstart = [0, 0, 0]
+    teamcolour = ((0, 0, 0), (144, 167, 255), (255, 114, 114))
+    teamarmy = (maingame.team0army, maingame.team1army, maingame.team2army)
+
     with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos.csv", 'r') as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
@@ -314,25 +317,18 @@ def unitsetup(maingame,playerteam):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
             control = False
 
-            if row[0] < 2000: # team1 id less than 2000
-                if playerteam == 1 or maingame.enactment: # player can control only his team or both in enactment mode
-                    control = True
-                colour = (144, 167, 255)  # blue colour
-                team1start += 1
-                whicharmy = maingame.team1army
-            elif row[0] >= 2000: # team2 id 2000+
-                if playerteam == 2 or maingame.enactment: # player can control only his team or both in enactment mode
-                    control = True
-                colour = (255, 114, 114) # red colour
-                team2start += 1
-                whicharmy = maingame.team2army
+            if playerteam == row[16] or maingame.enactment: # player can control only his team or both in enactment mode
+                control = True
+            colour =  teamcolour[row[16]]
+            teamstart[row[16]] += 1
+            whicharmy = teamarmy[row[16]]
 
             command = False # Not commander battalion by default
-            if row[0] in (1,2000): # First battalion is commander
+            if len(whicharmy) == 0: # First battalion is commander
                 command = True
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                            colour,(maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
-                           maingame.coa[row[12]], command, row[13], row[14], row[15])
+                           maingame.coa[row[12]], command, row[13], row[14], row[15], row[16])
             whicharmy.append(army)
             armysquadindex = 0 # armysquadindex is list index for squad list in a specific army
 
@@ -380,8 +376,10 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                     if receiversquad.battlesideid[squadside] == 0: # only attack if the side is already free else just wait until it free
                         attackersquad.battleside[attackerside] = receiversquad
                         attackersquad.battlesideid[attackerside] = fronttarget
+
                         receiversquad.battleside[squadside] = attackersquad
                         receiversquad.battlesideid[squadside] = thiswho
+
                 else:  # pick flank attack instead if no front target to fight
                     chance = random.randint(0, 1) # attack left array side of the squad if get random 0, right if 1
                     secondpick = 0 # if the first side search result in no target to fight pick another one
@@ -393,8 +391,10 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                         if receiversquad.battlesideid[truetargetside] == 0:
                             attackersquad.battleside[attackerside] = receiversquad
                             attackersquad.battlesideid[attackerside] = fronttarget
+
                             receiversquad.battleside[truetargetside] = attackersquad
                             receiversquad.battlesideid[truetargetside] = thiswho
+
                     else: # Switch to another side if the first chosen side not found enemy to fight
                         truetargetside = changecombatside(secondpick, receiverside)
                         fronttarget = squadselectside(receiver.frontline[receiverside], secondpick, position)
@@ -403,6 +403,7 @@ def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receive
                             if receiversquad.battlesideid[truetargetside] == 0:
                                 attackersquad.battleside[attackerside] = receiversquad
                                 attackersquad.battlesideid[attackerside] = fronttarget
+
                                 receiversquad.battleside[truetargetside] = attackersquad
                                 receiversquad.battlesideid[truetargetside] = thiswho
                         else: # simply no enemy to fight
@@ -453,21 +454,29 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     """Calculate damage"""
     who = attacker
     target = defender
+
     heightadventage = who.battalion.height - target.battalion.height
     if type == 1: heightadventage = int(heightadventage / 2) # Range attack use less height advantage
     hit += heightadventage
-    if defense < 0 or who.ignoredef: defense = 0  # Ignore def trait
+
+    if defense < 0 or who.ignoredef: # Ignore def trait
+        defense = 0
+
     hitchance = hit - defense
     if hitchance < 0: hitchance = 0
     elif hitchance > 80: # Critical hit
         hitchance *= who.criteffect # modify with crit effect further
         if hitchance > 200:
             hitchance = 200
+
     combatscore = round(hitchance / 50, 1)
     if combatscore == 0 and random.randint(0, 10) > 9:  # Final chence to not miss
         combatscore = 0.1
+
     leaderdmgbonus = 0
-    if who.leader is not None: leaderdmgbonus = who.leader.combat # Get extra damage from leader combat ability
+    if who.leader is not None:
+        leaderdmgbonus = who.leader.combat # Get extra damage from leader combat ability
+
     if type == 0:  # Melee damage
         dmg = who.dmg
         if who.charging: # Include charge in dmg if charging
@@ -478,28 +487,35 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
                 dmg = dmg + (who.charge / 10) - (target.chargedef * sidecal / 10)
             else:
                 dmg = dmg + (who.charge / 10)
-        dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
+
         if target.charging and target.ignorechargedef == False: # Also include chargedef in dmg if enemy charging
             chargedefcal = who.chargedef - target.charge
             if chargedefcal < 0:
                 chargedefcal = 0
             dmg = dmg + (chargedefcal) # if charge def is higher than enemy charge then deal back addtional dmg
+
+        dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
+
         if target.state == 10: dmg = dmg / 4 # More dmg against enemy not fighting
     elif type == 1:  # Range Damage
         dmg = who.rangedmg * ((100 - (target.armour * who.rangepenetrate)) / 100) * combatscore
+
     leaderdmg = dmg
     unitdmg = (dmg * who.troopnumber) + leaderdmgbonus # damage on unit is dmg multiply by troop number with addition from leader combat
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         unitdmg = unitdmg * 1.25
     if type == 0: # melee do less damage per hit because the combat happen more frequently than range
         unitdmg = unitdmg / 10
+
     moraledmg = dmg / 20
+
     if unitdmg < 0: # Damage cannot be negative (it would heal instead), same for morale and leader damage
         unitdmg = 0
     if leaderdmg < 0:
         leaderdmg = 0
     if moraledmg < 0:
         moraledmg = 0
+
     return unitdmg, moraledmg, leaderdmg
 
 
@@ -527,12 +543,16 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
     finalmoraledmg = round(moraledmg * dmgeffect * timermod)
     if finaldmg > receiver.unithealth: # damage cannot be higher than remaining health
         finaldmg = receiver.unithealth
+
     receiver.unithealth -= finaldmg
     receiver.basemorale -= (finalmoraledmg + attacker.bonusmoraledmg)
     receiver.stamina -= attacker.bonusstaminadmg
+
     if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
         receiver.elemcount[attacker.elemmelee - 1] += round(finaldmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
+
     attacker.basemorale += round((finalmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
+
     if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 9:  # dmg on squad leader, only 10% chance
         finalleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
         if finalleaderdmg > receiver.leader.health:
@@ -786,7 +806,7 @@ def splitunit(battle, who, how):
 
     army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                   squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
-                                  colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle)
+                                  colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle, team=who.team)
 
     whosearmy.append(army)
     army.leader = newleader

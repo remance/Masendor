@@ -462,13 +462,15 @@ class Battle():
         #^ End esc menu objects
 
         #v initialise starting unit sprites
-        self.team1army, self.team2army, self.squad = [], [], []
+        self.team0army, self.team1army, self.team2army = [], [], []
+        self.squad = []
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
                              self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
         self.squadindexlist = gamelongscript.unitsetup(self, self.playerteam)
         self.allunitlist = self.team1army.copy()
         self.allunitlist = self.allunitlist + self.team2army # list of every battalion in game alive
         self.allunitindex = [army.gameid for army in self.allunitlist] # list of every battalion index alive
+        self.team0poslist = {} # team 0 battalion position
         self.team1poslist = {} # team 1 battalion position
         self.team2poslist = {} # same for team 2
         self.showingsquad = [] # list of squads in selected battalion showing on inspect ui

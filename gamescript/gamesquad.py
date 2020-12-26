@@ -357,10 +357,12 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) - 1]) # index 0
                 else: # not exist
                     self.nearbysquadlist.append(0) # add number 0 instead
+
                 if rowlist.index(self.gameid) + 1 != len(rowlist):  #get squad from right if not at last column
                     self.nearbysquadlist.append(self.battalion.spritearray[rowindex][rowlist.index(self.gameid) + 1]) # index 1
                 else: # not exist
                     self.nearbysquadlist.append(0) # add number 0 instead
+
                 if rowindex != 0:  #get top squad
                     self.nearbysquadlist.append(self.battalion.spritearray[rowindex - 1][rowlist.index(self.gameid)]) # index 2
                     if rowlist.index(self.gameid) - 1 != -1:  # get top left squad
@@ -373,6 +375,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         cornersquad.append(0) # add number 0 instead
                 else: # not exist
                     self.nearbysquadlist.append(0) # add number 0 instead
+
                 if rowindex != len(self.battalion.spritearray) - 1:  # get bottom squad
                     self.nearbysquadlist.append(self.battalion.spritearray[rowindex + 1][rowlist.index(self.gameid)]) # index 5
                     if rowlist.index(self.gameid) - 1 != -1:  # get bottom left squad
@@ -499,6 +502,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.rangedef += mapfeaturemod[7] # range defense bonus from terrain bonus
         self.accuracy -= (mapfeaturemod[7]/2) # range def bonus block unit sight as well so less accuracy
         self.discipline += mapfeaturemod[9]  # discipline defense bonus from terrain bonus
+
         if mapfeaturemod[11] != [0]: # Some terrain feature can also cause status effect such as swimming in water
             if 1 in mapfeaturemod[11]: # Water type terrain
                 self.statuseffect[93] = self.statuslist[93].copy() # drench
@@ -521,6 +525,7 @@ class Unitsquad(pygame.sprite.Sprite):
             tempreach = tempreach * (100 - self.coldres) / 100 # lowest temperature the squad will change based on cold resist
         else: # hot temperature
             tempreach = tempreach * (100 - self.heatres) / 100 # highest temperature the squad will change based on heat resist
+
         if self.tempcount != tempreach: # move tempcount toward tempreach
             if tempreach > 0:
                 if self.tempcount < tempreach:
@@ -648,6 +653,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.reload = round(self.reload, 0)
         self.chargedef = round((self.chargedef + disciplinecal), 0)
         self.charge = round((self.charge + disciplinecal), 0)
+
         if self.ammo == 0:
             self.shootrange = 0
         if self.attack < 0: self.attack = 0
@@ -759,6 +765,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     if len(self.availableskill) > 0 and skillchance >= 6:
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
                     self.timer -= 1
+
                 if self.nocombat > 0:  # For avoiding squad go into idle state while battalion auto move in melee combat
                     self.nocombat += dt
                     if battalionstate != 10:

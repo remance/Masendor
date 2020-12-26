@@ -10,6 +10,7 @@ class Weather:
         self.level = level  ## Weather level 0 = Light, 1 = Normal, 2 = Strong
         if self.level > 2:  ## In case adding higher level number by mistake
             self.level = 2
+
         self.meleeatk_buff = stat[1] * (self.level + 1)
         self.meleedef_buff = stat[2] * (self.level + 1)
         self.rangedef_buff = stat[3] * (self.level + 1)
@@ -32,6 +33,7 @@ class Weather:
         self.spawnangle = stat[20]
         self.speed = stat[21] * (self.level + 1)
         self.specialeffect = stat[22]
+
         image = self.images[(self.type * 3) + self.level]
         rect = image.get_rect(topright=(timeui.image.get_width() - 5, 0))
         timeui.image.blit(image, rect)

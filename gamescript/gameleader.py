@@ -48,7 +48,8 @@ class Leader(pygame.sprite.Sprite):
         self.badmorale = (20, 30)  ## other position morale lost
         self.commander = False # army commander
         self.originalcommander = False # the first army commander at the start of battle
-        if self.armyposition == 0:
+
+        if self.armyposition == 0: # battalion leader
             squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10) # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
             self.badmorale = (30, 50)  ## main general morale lost when die
@@ -126,6 +127,7 @@ class Leader(pygame.sprite.Sprite):
         self.cavcommand = 0
         self.combat = 0
         self.social = 0
+
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5) # draw dead cross on leader image
         self.maingame.setuparmyicon()
         self.battalion.leaderchange = True # initiate leader change stat recalculation for battalion

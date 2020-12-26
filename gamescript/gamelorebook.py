@@ -80,14 +80,18 @@ class Lorebook(pygame.sprite.Sprite):
         self.page = page
         self.image = self.image_original.copy() # reset encyclopedia image
         self.pagedesign() # draw new pages
+
+        #v Next/previous page button
         if self.loredata is None or self.page == self.maxpage or self.loredata[self.subsection][self.page*4] == "": # remove next page button when reach last page
             allui.remove(pagebutton[1])
         else:
             allui.add(pagebutton[1])
+
         if self.page != 0: # add previous page button when not at first page
             allui.add(pagebutton[0])
         else:
             allui.remove(pagebutton[0])
+        #^ End page button
 
     def changesection(self, section, listsurface, listgroup, lorescroll, pagebutton, allui):
         """Change to new section either by open encyclopedia or click section button"""
@@ -101,8 +105,10 @@ class Lorebook(pygame.sprite.Sprite):
         thislist = self.statdata.values() # get list of subsection
         self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]] # remove the header from subsection list
         self.logsize = len(self.subsectionlist) # get size of subsection list
+
         self.changesubsection(self.subsection, pagebutton, allui)
         self.setupsubsectionlist(listsurface, listgroup)
+
         lorescroll.changeimage(logsize=self.logsize)
         lorescroll.changeimage(newrow=self.currentsubsectionrow)
 
@@ -179,18 +185,22 @@ class Lorebook(pygame.sprite.Sprite):
             for index in self.equipmentstat:
                 if type(index) != int and "ID" in index:
                     statheader.append(self.equipmentstat[index][1:-2])
+
         name = stat[0]
         textsurface = self.fontheader.render(str(name), 1, (0, 0, 0))
         textrect = textsurface.get_rect(topleft=(28, 10))
         self.image.blit(textsurface, textrect)  ## Add name of item to the top of page
+
         if self.portrait != None:
             portraitrect = self.portrait.get_rect(topleft=(20, 60))
             self.image.blit(self.portrait, portraitrect)
+
         description = stat[-1]
         descriptionsurface = pygame.Surface((300, 300), pygame.SRCALPHA)
         descriptionrect = descriptionsurface.get_rect(topleft=(180, 60))
         self.blit_text(descriptionsurface, description, (5, 5), self.font)
         self.image.blit(descriptionsurface, descriptionrect)
+
         if self.page == 0:
             row = 350
             col = 60

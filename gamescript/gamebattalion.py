@@ -117,7 +117,7 @@ class Unitarmy(pygame.sprite.Sprite):
     brokenlimit = 50  # morale require for battalion to stop broken state, will increase everytime broken state stop
     formchangetimer = 10
 
-    def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander, startangle, starthp=100, startstamina=100):
+    def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander, startangle, starthp=100, startstamina=100, team=0):
         """Although battalion in code, this is referred as unit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -214,9 +214,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.authpenalty = 0 # authority penalty
         self.tacticeffect = {}
         self.coa = coa # coat of arm image
-        self.team = 1 # team1
-        if self.gameid >= 2000: # team2
-            self.team = 2
+        self.team = team # team
 
         #v draw unit sprite
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
@@ -1236,8 +1234,9 @@ class Unitarmy(pygame.sprite.Sprite):
         """Change army group and gameid when change side"""
         self.colour = (144, 167, 255) # team1 colour
         self.control = True #TODO need to change later when player can choose team
-        self.team = 1 # change to team 1
-        if self.gameid < 2000: # originally team 1, new team would be 2
+        if self.team == 2:
+            self.team = 1 # change to team 1
+        else: # originally team 1, new team would be 2
             self.team = 2 # change to team 2
             self.colour = (255, 114, 114) # team2 colour
             if enactment == False:
