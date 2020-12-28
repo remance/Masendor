@@ -439,14 +439,18 @@ class Unitsquad(pygame.sprite.Sprite):
         self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
         self.speed = self.basespeed * self.staminastatecal # use stamina
         self.charge = (self.basecharge * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
+
         self.shootrange = self.baserange
+
         self.criteffect = 1 # default critical effect
         self.frontdmgeffect = 1 # default frontal damage
         self.sidedmgeffect = 1 # default side damage
-        self.authpenalty = self.baseauthpenalty
+
         self.corneratk = False # cannot attack corner enemy by default
         self.tempunbraekable = False
         self.tempfulldef = False
+
+        self.authpenalty = self.baseauthpenalty
         self.hpregen = self.basehpregen
         self.staminaregen = self.basestaminaregen
         self.inflictstatus = self.baseinflictstatus
@@ -492,13 +496,16 @@ class Unitsquad(pygame.sprite.Sprite):
             speedmod = mapfeaturemod[self.featuremod] # get the speed mod appropiate to unit type
             self.speed *= speedmod
             self.charge *= speedmod
+
         if mapfeaturemod[self.featuremod + 1] != 1: # melee attack
             # combatmod = self.battalion.gamemapfeature.featuremod[self.battalion.feature][self.featuremod + 1]
             self.attack *= mapfeaturemod[self.featuremod + 1] # get the attack mod appropiate to unit type
+
         if mapfeaturemod[self.featuremod + 2] != 1: # melee/charge defense
             combatmod = mapfeaturemod[self.featuremod + 2] # get the defence mod appropiate to unit type
             self.meleedef *= combatmod
             self.chargedef *= combatmod
+
         self.rangedef += mapfeaturemod[7] # range defense bonus from terrain bonus
         self.accuracy -= (mapfeaturemod[7]/2) # range def bonus block unit sight as well so less accuracy
         self.discipline += mapfeaturemod[9]  # discipline defense bonus from terrain bonus
@@ -508,12 +515,16 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.statuseffect[93] = self.statuslist[93].copy() # drench
                 if self.weight > 60 or self.stamina <= 0: # weight too much or tired will cause drowning
                     self.statuseffect[102] = self.statuslist[102].copy() # Drowning
+
                 elif self.weight > 30:  # Medium weight squad has trouble travel through water and will sink and progressively lose troops
                     self.statuseffect[101] = self.statuslist[101].copy() # Sinking
+
                 elif self.weight < 30:  # Light weight squad has no trouble travel through water
                     self.statuseffect[104] = self.statuslist[104].copy() # Swiming
+
             if 2 in mapfeaturemod[11]:  # Rot type terrain
                 self.statuseffect[54] = self.statuslist[54].copy()
+
             if 3 in mapfeaturemod[11]:  # Poison type terrain
                 self.elemcount[4] += ((100 - self.elemresist[5]) / 100)
         # self.hidden += self.battalion.gamemapfeature[self.battalion.feature][6]

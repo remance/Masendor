@@ -36,19 +36,21 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
     if subfolder != []:
         for folder in subfolder:
             dirpath = os.path.join(dirpath, folder)
-    if loadorder:
+
+    if loadorder: # load in the order of load_order file
         loadorderfile = open(dirpath + "/load_order.txt", "r")
         loadorderfile = ast.literal_eval(loadorderfile.read())
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
-    else:
+    else: # load every file
         loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
         loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
+
     if returnorder == False:
         return imgs
-    else:
+    else: # return order of the file as list
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
         return imgs, loadorderfile
 
@@ -77,13 +79,16 @@ def creategamelorestat(game):
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():
                             row[n] = [int(i)]
+
                     elif n in (2, 3, 4, 5, 6, 7):  # other modifer column
                         if i != "":
                             row[n] = float(i) / 100
                         else:  # empty row assign 1.0 default
                             i = 1.0
+
                     elif i.isdigit() or "-" in i:  # modifer bonus (including negative) in other column
                         row[n] = int(i)
+
             run += 1
             game.featuremod[row[0]] = row[1:]
     unitfile.close()
@@ -92,9 +97,11 @@ def creategamelorestat(game):
     # v Create weather related class
     game.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
     game.weathermatterimgs = []
+
     for weather in ('0', '1', '2', '3'):  # Load weather matter sprite image
         imgs = load_images(['map', 'weather', weather], loadorder=False)
         game.weathermatterimgs.append(imgs)
+
     game.weathereffectimgs = []
     for weather in ('0', '1', '2', '3'):  # Load weather effect sprite image
         imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
@@ -103,6 +110,7 @@ def creategamelorestat(game):
             img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
             imgs.append(img)
         game.weathereffectimgs.append(imgs)
+
     imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  # Load weather icon
     gameweather.Weather.images = imgs
     # ^ End weather
@@ -125,19 +133,23 @@ def creategamelorestat(game):
         img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
         imgs.append(img)
     game.allweapon = gameunitstat.Weaponstat(main_dir, imgs, game.ruleset)  # Create weapon class
-    imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
+
     imgs = load_images(['war', 'unit_ui', 'armour'])
     game.allarmour = gameunitstat.Armourstat(main_dir, imgs, game.ruleset)  # Create armour class
+
     game.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
     game.roleimgs = load_images(['ui', 'role_icon'], loadorder=False)
     game.traitimgs = load_images(['ui', 'trait_icon'], loadorder=False)
     game.skillimgs = load_images(['ui', 'skill_icon'], loadorder=False)
+
     cooldown = pygame.Surface((game.skillimgs[0].get_width(), game.skillimgs[0].get_height()), pygame.SRCALPHA)
     cooldown.fill((230, 70, 80, 200))  # red colour filter for skill cooldown timer
+    gameui.Skillcardicon.cooldown = cooldown
+
     activeskill = pygame.Surface((game.skillimgs[0].get_width(), game.skillimgs[0].get_height()), pygame.SRCALPHA)
     activeskill.fill((170, 220, 77, 200))  # green colour filter for skill active timer
     gameui.Skillcardicon.activeskill = activeskill
-    gameui.Skillcardicon.cooldown = cooldown
+
     game.gameunitstat = gameunitstat.Unitstat(main_dir, game.ruleset, game.rulesetfolder)
     #^ End unit class
 
@@ -151,6 +163,7 @@ def creategamelorestat(game):
     gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
     gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
     gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+
     gamelorebook.Lorebook.factionlore = game.allfaction.factionlist
     gamelorebook.Lorebook.unitstat = game.gameunitstat.unitlist
     gamelorebook.Lorebook.unitlore = game.gameunitstat.unitlore
@@ -174,9 +187,11 @@ def creategamelorestat(game):
     gamelorebook.Lorebook.SCREENRECT = SCREENRECT
     gamelorebook.Lorebook.main_dir = main_dir
     gamelorebook.Lorebook.statetext = game.statetext
+
     imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
     game.lorebook = gamelorebook.Lorebook(imgs[0])
     game.lorenamelist = gamelorebook.Subsectionlist(game.lorebook.rect.topleft, imgs[1])
+
     imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
     game.lorebuttonui = [
         gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
@@ -225,6 +240,7 @@ def csv_read(file, subfolder=[], outputtype=0):
     main_dir = main.main_dir
     returnoutput = {}
     if outputtype == 1: returnoutput = []
+
     folderlist = ""
     for folder in subfolder:
         folderlist += "/" + folder
@@ -778,13 +794,16 @@ def splitunit(battle, who, how):
     maxhealth = []
     maxstamina = []
     maxmorale = []
+
     for squad in who.squadsprite:
         maxhealth.append(squad.maxtroop)
         maxstamina.append(squad.maxstamina)
         maxmorale.append(squad.maxmorale)
+
     maxhealth = sum(maxhealth)
     maxstamina = sum(maxstamina) / len(maxstamina)
     maxmorale = sum(maxmorale) / len(maxmorale)
+
     who.maxhealth, who.health75, who.health50, who.health25, = maxhealth, round(maxhealth * 0.75), round(
         maxhealth * 0.50), round(maxhealth * 0.25)
     who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 0.75), round(
@@ -840,11 +859,15 @@ def splitunit(battle, who, how):
     battle.allunitlist.append(army)
     battle.allunitindex.append(army.gameid)
     army.viewmode = battle.camerascale
+
+    #v Remake sprite to match the current varible (angle, zoom level, position)
     army.recreatesprite()
     army.makeallsidepos()
     army.viewmodechange()
     army.angle = army.angle
     army.rotate()
+    #^ End remake sprite
+
     army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
 
     army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),

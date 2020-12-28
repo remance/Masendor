@@ -309,6 +309,7 @@ class Battle():
         self.lastmouseover = 0 # Which unit last mouse over
         self.gamespeed = 1 # Current game speed
         self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
+        self.leadernow = [] # list of showing leader in command ui
         self.uiclick = False # for checking if mouse click is on ui
         self.clickany = False  # For checking if mouse click on anything, if not close ui related to battalion
         self.newarmyclick = False  #  For checking if another unit is clicked when inspect ui open
@@ -323,7 +324,6 @@ class Battle():
         self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height # for weather sprite spawn position
         self.splitunit = gamelongscript.splitunit
         self.losscal = gamelongscript.losscal
-        self.leadernow = [] # list of showing leader in command ui
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
         self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2] # center position of the screen

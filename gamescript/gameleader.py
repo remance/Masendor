@@ -26,9 +26,11 @@ class Leader(pygame.sprite.Sprite):
         # self.trait = stat
         # self.skill = stat
         self.state = 0  ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
+
         if self.name == "None": # None leader is considered dead by default, function the same way as dead one
             self.health = 0
             self.state = 100  ## no leader is same as dead so no need to update
+
         self.battalion = battalion
         # self.mana = stat
         self.gamestart = False
@@ -64,6 +66,7 @@ class Leader(pygame.sprite.Sprite):
             squadpenal = int((leader.squadpos / len(leader.battalion.armysquad[0])) * 10) # recalculate authority penalty based on squad position
             leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2) # recalculate total authority
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
+
             if leader.battalion.commander: ## become army commander
                 whicharmy = leader.maingame.team1army # team1
                 if leader.battalion.team == 2:  # team2
@@ -80,6 +83,7 @@ class Leader(pygame.sprite.Sprite):
             self.battalion.leader[0], self.battalion.leader[3] = self.battalion.leader[3], self.battalion.leader[0]
         elif self.armyposition + 1 != 4 and self.battalion.leader[self.armyposition+1].state not in (96, 97, 98, 99, 100) and self.battalion.leader[self.armyposition+1].name != "None":
             self.battalion.leader.append(self.battalion.leader.pop(self.armyposition))  ## move leader to last of list when dead
+
         thisbadmorale = self.badmorale[0]
 
         if self.state == 99: # wonnd inflict less morale penalty
