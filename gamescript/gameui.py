@@ -129,13 +129,13 @@ class Gameui(pygame.sprite.Sprite):
                 self.value[3] = self.options1[self.value[3]]
             # if type(self.value[2]) != str:
 
-            self.value[2] = round(self.value[2] / 10)
+            self.value[2] = round(self.value[2] / 10) # morale state
             if self.value[2] in self.options2: # Check if morale state in the list and blit the name
                 self.value[2] = self.options2[self.value[2]]
             elif self.value[2] > 15: # if morale somehow too high use the highest morale state one
                 self.value[2] = self.options2[15]
 
-            self.value[1] = round(self.value[1] / 10)
+            self.value[1] = round(self.value[1] / 10) # stamina state
             if self.value[1] in self.options3: # Check if stamina state and blit the name
                 self.value[1] = self.options3[self.value[1]]
 

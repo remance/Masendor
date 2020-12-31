@@ -28,12 +28,14 @@ class Menubutton(pygame.sprite.Sprite):
         self.images = [image.copy() for image in images]
         self.text = text
         self.font = pygame.font.SysFont("timesnewroman", size)
+
         if text != "": # blit menu text into button image
             self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
             self.textrect = self.textsurface.get_rect(center=self.images[0].get_rect().center)
             self.images[0].blit(self.textsurface, self.textrect) # button idle image
             self.images[1].blit(self.textsurface, self.textrect) # button mouse over image
             self.images[2].blit(self.textsurface, self.textrect) # button click image
+
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
         self.event = False
@@ -64,7 +66,7 @@ class Slidermenu(pygame.sprite.Sprite):
             self.mouse_value = mouse_pos[0]
             if self.mouse_value > self.maxvalue:
                 self.mouse_value = self.maxvalue
-            if self.mouse_value < self.minvalue:
+            elif self.mouse_value < self.minvalue:
                 self.mouse_value = self.minvalue
             self.value = (self.mouse_value - self.minvalue) / 2
             self.mouse_value = (self.slidersize * self.value / 100) + 10.5

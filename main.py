@@ -88,13 +88,15 @@ try: # for printing error log when error exception happen
             self.images = [image.copy() for image in images]
             self.text = text
             self.font = pygame.font.SysFont("timesnewroman", size)
-            if text != "":
+
+            if text != "": # draw text into the button images
                 # self.imagescopy = self.images
                 self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(center=self.images[0].get_rect().center)
                 self.images[0].blit(self.textsurface, self.textrect)
                 self.images[1].blit(self.textsurface, self.textrect)
                 self.images[2].blit(self.textsurface, self.textrect)
+
             self.image = self.images[0]
             self.rect = self.images[0].get_rect(center=self.pos)
             self.event = False
@@ -163,7 +165,7 @@ try: # for printing error log when error exception happen
                 self.mouse_value = mouse_pos[0]
                 if self.mouse_value > self.maxvalue:
                     self.mouse_value = self.maxvalue
-                if self.mouse_value < self.minvalue:
+                elif self.mouse_value < self.minvalue:
                     self.mouse_value = self.minvalue
                 self.value = (self.mouse_value - self.minvalue) / 2
                 self.mouse_value = (self.slidersize * self.value / 100) + 10.5
@@ -249,6 +251,10 @@ try: # for printing error log when error exception happen
             #v Create main menu button
             imagelist = load_base_button()
             self.startbutton = Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 5.5)), text="START")
+            # self.presetmapbutton = Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 5.5)),
+            #                               text="PRESET BATTLE")
+            # self.custommapbutton = Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 5.5)),
+            #                               text="CUSTOM BATTLE")
             self.lorebutton = Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 4)), text="Encyclopedia")
             self.optionbutton = Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 2.5)), text="OPTION")
             self.quitbutton = Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height())), text="QUIT")
@@ -389,11 +395,14 @@ try: # for printing error log when error exception happen
                             resolutionchange = bar.text.split()
                             self.newScreenWidth = resolutionchange[0]
                             self.newScreenHeight = resolutionchange[2]
+
                             editconfig('DEFAULT', 'ScreenWidth', self.newScreenWidth, 'configuration.ini', config)
                             editconfig('DEFAULT', 'ScreenHeight', self.newScreenHeight, 'configuration.ini', config)
                             self.screen = pygame.display.set_mode(SCREENRECT.size, self.winstyle | pygame.RESIZABLE, self.bestdepth)
+
                             bar.event = False
                             self.menubutton.remove(self.resolutionbar)
+
                             break
 
                     if mouse_up or mouse_down:
@@ -402,8 +411,10 @@ try: # for printing error log when error exception happen
                             self.menustate = "mainmenu"
                             self.backbutton.event = False
                             self.allui.remove(*self.menubutton)
+
                             self.menubutton.remove(*self.menubutton)
                             self.menubutton.add(*self.mainmenubutton)
+
                             self.allui.remove(*self.optioniconlist,self.optionmenuslider,self.valuebox)
                             self.allui.add(*self.menubutton)
 
@@ -418,8 +429,8 @@ try: # for printing error log when error exception happen
                         elif self.volumeslider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):  # mouse click on slider bar
                             self.volumeslider.update(self.mousepos, self.valuebox[0])  # update slider button based on mouse value
                             self.mixervolume = float(self.volumeslider.value / 100)  # for now only music volume slider exist
-                            pygame.mixer.music.set_volume(self.mixervolume)
                             editconfig('DEFAULT', 'SoundVolume', str(self.volumeslider.value), 'configuration.ini', config)
+                            pygame.mixer.music.set_volume(self.mixervolume)
 
                 elif self.menustate == "encyclopedia":
                     if mouse_up or mouse_down: # mouse down (hold click) only for subsection listscroller

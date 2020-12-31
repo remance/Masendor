@@ -777,6 +777,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.retreatway = None
                 self.set_target(self.basepos)
                 self.brokenlimit += random.randint(5,15)
+
             if self.retreattimer > 0: # update retreat timer
                 self.retreattimer += dt
             if self.retreatstart:
@@ -820,6 +821,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 if list(self.neartarget.values())[0].distance_to(self.basepos) <= minrange: # if there is any enemy in minimum range
                     self.state = 96 # retreating
                     basetarget = self.basepos - (list(self.neartarget.values())[0] - self.basepos) # generate target to run away, opposite direction at same distance
+
                     if basetarget[0] < 1: # can't run away when reach corner of map same for below if elif
                         basetarget[0] = 1
                     elif basetarget[0] > 998:
@@ -828,6 +830,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         basetarget[1] = 1
                     elif basetarget[1] > 998:
                         basetarget[1] = 998
+
                     self.set_target(basetarget) # set target position to run away
             #^ End skirmishing
 
@@ -864,6 +867,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.radians_angle = math.radians(360 - self.angle) # for allside rotate
                 if self.angle < 0: # negative angle (rotate to left side)
                     self.radians_angle = math.radians(-self.angle)
+
                 ## Rotate logic to continuously rotate based on angle and shortest length
                 if self.state in (1, 3, 5):
                     self.rotatespeed = round(self.walkspeed * 50 / (self.armysquad.size / 2)) # rotate speed is based on move speed and battalion block size (not squad total number)
@@ -871,9 +875,11 @@ class Unitarmy(pygame.sprite.Sprite):
                 else:
                     self.rotatespeed = round(self.runspeed * 50 / (self.armysquad.size / 2))
                     self.run = True
+
                 if self.rotatespeed > 20 or self.state == 10: self.rotatespeed = 20 # state 10 melee combat rotate is auto placement
                 if self.rotatespeed < 1: # no less than speed 1, it will be too slow or can't rotate with speed 0
                     self.rotatespeed = 1
+
                 rotatetiny = self.rotatespeed * dt # rotate little by little according to time
                 if round(self.newangle) > self.angle: # rotate to angle more than the current one
                     if self.rotatecal > 180: # rotate with the smallest angle direction
@@ -902,6 +908,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 shootrange = self.maxrange
                 if self.useminrange == 0: # use minimum range to shoot
                     shootrange = self.minrange
+
                 if self.state in (5, 6) and ((self.attacktarget != 0 and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange)
                                              or self.basepos.distance_to(self.baseattackpos) <= shootrange): # in shoot range
                     self.set_target(self.frontpos) # stop moving
@@ -927,11 +934,14 @@ class Unitarmy(pygame.sprite.Sprite):
                         if (side != 0 and side != self.attacktarget.gameid) or (side == self.attacktarget.gameid and (self.combatpreparestate or self.gotcombatprepare)):
                             cantchase = True # hitbox got collided can no longer chase target
                             break
+
                     if cantchase == False and self.forcedmelee:
                         self.state = self.commandstate # resume attack command
+
                         side, side2 = self.attacktarget.allsidepos.copy(), {}
                         for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(self.frontpos)
                         side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])} # find which side of enemy is closest to this unit front side
+
                         self.set_target(self.attacktarget.allsidepos[list(side2.keys())[0]]) # set target to cloest enemy's side
                         self.baseattackpos = self.basetarget
                         self.setrotate(self.basetarget) # keep rotating while chasing
@@ -958,10 +968,12 @@ class Unitarmy(pygame.sprite.Sprite):
                         move_length = move.length() # convert length
 
                         if move_length > 0: # movement length longer than 0.1, not reach target yet
+                            move.normalize_ip()
+
                             heightdiff = (self.height / self.sideheight[0]) ** 2 # walking down hill increase speed while walking up hill reduce speed
                             if self.state in (96, 98, 99) or self.revert: # retreat or revert use the side closest to target for checking height
                                 heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
-                            move.normalize_ip()
+
                             if self.state in (1, 3, 5): # walking
                                 move = move * self.walkspeed * heightdiff * dt # use walk speed
                                 self.walk = True
@@ -1133,15 +1145,19 @@ class Unitarmy(pygame.sprite.Sprite):
         else: # Command move or rotate
             myradians = math.atan2(settarget[1] - self.basepreviousposition[1], settarget[0] - self.basepreviousposition[0])
         self.newangle = math.degrees(myradians)
+
         # """upper left -"""
         if self.newangle >= -180 and self.newangle <= -90:
             self.newangle = -self.newangle - 90
+
         # """upper right +"""
         elif self.newangle > -90 and self.newangle < 0:
             self.newangle = (-self.newangle) - 90
+
         # """lower right -"""
         elif self.newangle >= 0 and self.newangle <= 90:
             self.newangle = -(self.newangle + 90)
+
         # """lower left +"""
         elif self.newangle > 90 and self.newangle <= 180:
             self.newangle = 270 - self.newangle
@@ -1154,6 +1170,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.revert = False
         self.attacktarget = 0
         self.baseattackpos = 0
+
         if keystate[pygame.K_LALT] or (whomouseover != 0 and (self.team != whomouseover.team)): # attack
             if self.ammo <= 0 or keystate[pygame.K_LCTRL]: # no ammo to shoot or forced attack command
                 self.forcedmelee = True
@@ -1167,20 +1184,27 @@ class Unitarmy(pygame.sprite.Sprite):
             else:
                 self.attacktarget = whomouseover
                 self.baseattackpos = whomouseover.basepos
+
         if double_mouse_right or self.runtoggle == 1:
             self.state += 1 # run state
+
         self.commandstate = self.state
         self.rangecombatcheck = False
-        if keystate[pygame.K_LSHIFT]: self.rotateonly = True
+
+        if keystate[pygame.K_LSHIFT]:
+            self.rotateonly = True
+
         self.set_target(mouse_pos[1])
         self.commandtarget = self.basetarget
         self.setrotate()
+
         if keystate[pygame.K_z] == True: ## Revert unit without rotate, cannot run in this state
             self.newangle = self.angle
             self.moverotate = False
             self.revert = True
             # if double_mouse_right or self.runtoggle:
             #     self.state -= 1
+
         if self.charging: # change order when charging will cause authority penalty
             self.leader[0].authority -= self.authpenalty
             self.authrecal()
@@ -1211,18 +1235,23 @@ class Unitarmy(pygame.sprite.Sprite):
                     try:  # if click within rect
                         if self.mask.get_at(posmask) == 0: # not in mask
                             self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
+
                     except:  # if click outside of rect and mask
                         self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
+
                 elif self.state == 10:  # Enter retreat state if in combat and move command issue
                     try: # if click within rect
                         if self.mask.get_at(posmask) == 0: # not in mask
                             self.processretreat(mouse_pos, whomouseover) # retreat
+
                     except: # if click outside of rect and mask
                         self.processretreat(mouse_pos, whomouseover) # retreat
+
             elif othercommand == 1 and self.state not in (10, 97, 98, 99, 100):  # Pause all action except combat or broken
                 if self.charging: # TODO change pause option to come into effect much slower when charging
                     self.leader[0].authority -= self.authpenalty # decrease authority of the first leader for stop charge
                     self.authrecal() # recal authority
+
                 self.state = 0 # go into idle state
                 self.commandstate = self.state # reset command state
                 self.set_target(self.frontpos) # set target at self
@@ -1234,6 +1263,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """Change army group and gameid when change side"""
         self.colour = (144, 167, 255) # team1 colour
         self.control = True #TODO need to change later when player can choose team
+
         if self.team == 2:
             self.team = 1 # change to team 1
         else: # originally team 1, new team would be 2
@@ -1241,6 +1271,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.colour = (255, 114, 114) # team2 colour
             if enactment == False:
                 self.control = False
+
         newgameid = newgroup[-1].gameid + 1
         oldgroup.remove(self) # remove from old team group
         newgroup.append(self) # add to new team group

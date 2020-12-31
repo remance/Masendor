@@ -746,16 +746,18 @@ def splitunit(battle, who, how):
     #^ End sort
 
     #v Reset position in inspectui for both battalion
-    for thissprite in (who.squadsprite, newsquadsprite):
+    for sprite in (who.squadsprite, newsquadsprite):
         width, height = 0, 0
         squadnum = 0
-        for squad in thissprite:
+        for squad in sprite:
             width += battle.imagewidth
+
             if squadnum >= len(who.armysquad[0]):
                 width = 0
                 width += battle.imagewidth
                 height += battle.imageheight
                 squadnum = 0
+
             squad.inspposition = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
             squad.rect = squad.image.get_rect(topleft=squad.inspposition)
             squad.pos = pygame.Vector2(squad.rect.centerx, squad.rect.centery)
@@ -810,7 +812,7 @@ def splitunit(battle, who, how):
         maxstamina * 0.50), round(maxstamina * 0.25)
     who.maxmorale = maxmorale
     who.ammo75, who.ammo50, who.ammo25 = round(who.ammo * 0.75), round(who.ammo * 0.50), round(who.ammo * 0.25)
-    #^ end recal
+    #^ end recal max stat
 
     #v start making new battalion
     if who.team == 1:

@@ -177,12 +177,14 @@ class Unitstat():
                                     row[n] = 1.0
                                 else:
                                     row[n] = float(i) / 100  # Need to be float for percentage cal
+
                             elif n in (6, 7, 28, 31):
                                 """Convert all condition and status to list"""
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
+
                             elif n in (0, 2, 3, 4, 5, 8, 9, 10, 19, 20, 21, 22, 23, 26, 27, 29, 30):
                                 if i == "":
                                     pass
@@ -205,6 +207,7 @@ class Unitstat():
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
                 else:
                     thisruleset = [row[-2]]
+
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         if run != 0:
@@ -213,6 +216,7 @@ class Unitstat():
                                     row[n] = 1.0
                                 else:
                                     row[n] = float(i) / 100  # Need to be float
+
                             elif n in (19, 32, 33):
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
@@ -222,6 +226,7 @@ class Unitstat():
                                     row[n] = []
                             elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 34, 35):
                                 row[n] = float(i)
+
                     self.traitlist[row[0]] = row[1:]
                     run += 1
         unitfile.close()

@@ -162,10 +162,12 @@ class Lorebook(pygame.sprite.Sprite):
         pos = listsurface.rect.topleft
         if self.currentsubsectionrow > self.logsize - self.maxsubsectionshow:
             self.currentsubsectionrow = self.logsize - self.maxsubsectionshow
+
         if len(listgroup) > 0: # remove previous subsection in the group before generate new one
             for stuff in listgroup:
                 stuff.kill()
                 del stuff
+
         listloop = [item for item in list(self.statdata.keys()) if type(item) != str]
         for index, item in enumerate(self.subsectionlist):
             if index >= self.currentsubsectionrow:

@@ -718,6 +718,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.image = self.image_original.copy()
                                 self.battalion.squadimgchange.append(self.gameid)
                             break
+
                     self.troopnumber = self.unithealth / self.troophealth # Calculate how many troop left based on current hp
                     if self.troopnumber.is_integer() == False: # always round up if there is decimal
                         self.troopnumber = int(self.troopnumber + 1)
@@ -743,6 +744,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                         self.image = self.image_original.copy()
                                         self.battalion.squadimgchange.append(self.gameid)
                             break
+
                     self.oldlaststamina = self.stamina
                 #^ End stamina bar
 
@@ -754,7 +756,8 @@ class Unitsquad(pygame.sprite.Sprite):
                             self.image.blit(self.images[14 + index], self.imagerect)
                             self.battalion.squadimgchange.append(self.gameid)
                             self.haveredcorner = True
-                elif self.haveredcorner == True:
+
+                elif self.haveredcorner == True: # not in fight but have red corner, reset image
                     self.image = self.image_original.copy()
                     self.haveredcorner = False
                 #^ End red corner
@@ -768,10 +771,13 @@ class Unitsquad(pygame.sprite.Sprite):
                 if self.timer > 1: # Update status and skill use around every 1 second
                     self.statusupdate(weather)
                     self.availableskill = []
+
                     if self.useskillcond != 3: # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.checkskillcondition()
+
                     if self.state == 4 and self.battalion.charging and self.chargeskill not in self.skillcooldown: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
+
                     skillchance = random.randint(0, 10) # random chance to use random available skill
                     if len(self.availableskill) > 0 and skillchance >= 6:
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
@@ -837,12 +843,14 @@ class Unitsquad(pygame.sprite.Sprite):
                             else: # enemy dead
                                 self.attackpos = 0 # reset attackpos to 0
                                 self.attacktarget = 0 # reset attacktarget to 0
+
                                 for target in list(self.battalion.neartarget.values()): # find other nearby target to shoot
                                     if target in allunitindex: # check if target alive
                                         self.attackpos = target[1]
                                         self.attacktarget = target[1]
                                         self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
                                         break # found new target break loop
+
                         if self.reloadtime >= self.reload and ((self.attacktarget != 0 and self.attacktarget.state != 100) or
                                             (self.attacktarget == 0 and self.attackpos != 0)) \
                                             and (self.arcshot or (self.arcshot == False and self.battalion.shoothow != 1)):
@@ -854,6 +862,7 @@ class Unitsquad(pygame.sprite.Sprite):
                         elif self.attacktarget != 0 and self.attacktarget.state == 100: # if target die when it about to shoot
                             self.battalion.rangecombatcheck, self.battalion.attacktarget = False, 0 # reset range combat check and target
                 #^ End combat related
+
                 self.stamina = self.stamina - (dt * 0.5) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina  # consume stamina depending on activity/state
 
@@ -868,15 +877,19 @@ class Unitsquad(pygame.sprite.Sprite):
                         for squad in self.battalion.squadsprite:
                             squad.basemorale -= 15 # reduce morale of other squad, creating panic when seeing friend panic and may cause mass panic
                     self.morale = 0 # morale cannot be lower than 0
+
                 if self.basemorale < 0:
                     self.basemorale = 0
+
                 if self.battalion.leader[0].state not in (96, 97, 98, 99, 100): # If not missing main leader can replenish morale
                     self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
+
                 if self.state == 99:
                     if self.battalion.state != 99:
                         self.unithealth -= dt*100 # Unit begin to desert if broken but battalion keep fighting
                     if self.moralestatecal > 0.2:
                         self.state = 0  # Reset state to 0 when exit broken state
+
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt # gradually reduce morale that exceed the starting max amount
             #^ End morale check
@@ -891,6 +904,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.state = 0 # Reset to idle
             elif self.stamina > self.maxstamina: # stamina cannot exceed the max stamina
                 self.stamina = self.maxstamina
+
             if self.hpregen > 0 and self.unithealth % self.troophealth != 0:  ## hp regen cannot ressurect troop only heal to max hp
                 alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive unit
                 self.unithealth += self.hpregen * dt # regen hp back based on time and regen stat
@@ -902,6 +916,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.troopnumber = round(self.troopnumber + 1)
                 else:
                     self.troopnumber = round(self.troopnumber)
+
             if self.unithealth < 0: self.unithealth = 0 # can't have negative hp
             elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth # hp can't exceed max hp (would increase number of troop)
             if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0 # awake from collaspe when stamina reach 25%
@@ -923,7 +938,7 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.battalion.deadchange = True
                 #^ End update
 
-                #v Leader change squad or gone
+                #v Leader change squad or gone/die
                 if self.leader is not None and self.leader.name != "None" and self.leader.state != 100: # Find new squad for leader if there is one in this squad
                     for squad in self.nearbysquadlist:
                         if squad != 0 and squad.state != 100 and squad.leader == None:
@@ -934,6 +949,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                     squad.leader.squadpos = index
                             self.leader = None
                             break
+
                     if self.leader is not None:  # if can't find new near squad to move leader then find from first squad to last place in battalion
                         for index, squad in enumerate(self.battalion.squadsprite):
                             if squad.state != 100 and squad.leader == None:
@@ -942,13 +958,15 @@ class Unitsquad(pygame.sprite.Sprite):
                                 squad.leader.squadpos = index
                                 self.leader = None
                                 break
-                    if self.leader is not None: # Can't find new squad so leader disappear with chance of different result
-                        self.leader.state = random.randint(97,100) # captured, retreated, wounded, dead
-                        self.leader.health = 0
-                        self.leader.gone()
+
+                        if self.leader is not None: # Still can't find new squad so leader disappear with chance of different result
+                            self.leader.state = random.randint(97,100) # captured, retreated, wounded, dead
+                            self.leader.health = 0
+                            self.leader.gone()
                 #^ End leader change
 
                 self.state = 100 # enter dead state
+
                 self.maingame.eventlog.addlog([0, str(self.boardpos) + " " + str(self.name)
                                                + " in " + self.battalion.leader[0].name
                                                + "'s battalion is destroyed"], [3]) # add log to say this squad is destroyed in unit tab
