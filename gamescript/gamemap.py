@@ -6,7 +6,7 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter
 
-## Terrain base colour
+## Terrain base colour, change these when add new terrain
 Temperate = (166, 255, 107, 255)
 Tropical = (255, 199, 13, 255)
 Volcanic = (255, 127, 39, 255)
@@ -18,8 +18,9 @@ Demonic = (237, 28, 36, 255)
 Death = (127, 127, 127, 255)
 ShallowWater = (153, 217, 235, 255)
 DeepWater = (100, 110, 214, 255)
+terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
 
-## Terrain Feature colour
+## Terrain Feature colour, change these when add new feature
 
 Plain = (181, 230, 29, 255)
 Barren = (255, 127, 39, 255)
@@ -29,11 +30,11 @@ InlandWater = (133, 254, 239, 255)
 Road = (130, 82, 55, 255)
 UrbanBuilding = (147, 140, 136, 255)
 Farm = (255, 242, 0, 255)
-Wall = (102, 92, 118, 255)
+Pandemonium = (102, 92, 118, 255)
 Mana = (101, 109, 214, 255)
 Rot = (200, 191, 231, 255)
 Wetground = (186, 184, 109, 255)
-
+featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Pandemonium, Mana, Rot, Wetground)
 
 class Basemap(pygame.sprite.Sprite):
     images = []
@@ -52,7 +53,7 @@ class Basemap(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0, 0))
-        self.terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
+        self.terraincolour = terraincolour
 
     def getterrain(self, pos):
         """get the base terrain at that exact position"""
@@ -96,8 +97,7 @@ class Mapfeature(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.rect = self.image.get_rect(topleft=(0, 0))
-        self.featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Wall, Mana, Rot, Wetground)
-
+        self.featurecolour = featurecolour
 
     def getfeature(self, pos, gamemap):
         """get the terrain feature at that exact position"""
@@ -188,6 +188,7 @@ class Beautifulmap(pygame.sprite.Sprite):
                     elif "," in i:
                         row[n] = ast.literal_eval(i)
                 self.newcolourlist[row[0]] = row[1:]
+
         for rowpos in range(0, 1000):  ## Recolour the map
             for colpos in range(0, 1000):
                 terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)

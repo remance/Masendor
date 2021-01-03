@@ -65,15 +65,15 @@ import timeit
 import re
 import numpy as np
 
-test = (1,2,3,4,5,6,7,8,9,10)
-starttime = timeit.default_timer()
-print("The start time is :", starttime)
-for i in range(0,10000):
-    if i in test:
-        print(i)
-    # if o < 0:
-    #     o = 0
-print("The time difference is :", timeit.default_timer() - starttime)
+# test = (1,2,3,4,5,6,7,8,9,10)
+# starttime = timeit.default_timer()
+# print("The start time is :", starttime)
+# for i in range(0,10000):
+#     if i in test:
+#         print(i)
+#     # if o < 0:
+#     #     o = 0
+# print("The time difference is :", timeit.default_timer() - starttime)
 # 0.0022708410000000234  0.002101061999999987  0.0025684880000000077  0.002295644999999985
 # #0.0010708489999999848
 
@@ -111,3 +111,8 @@ print("The time difference is :", timeit.default_timer() - starttime)
 # 	pen.fill((0,0,0))
 # 	anim.blit(pen,(50,50))
 # 	pygame.display.flip()
+
+from pathlib import Path
+p=Path(main_dir+'/data/ruleset/historical/map')
+subdirectories = [x for x in p.iterdir() if x.is_dir()]
+print(subdirectories)

@@ -54,12 +54,56 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
         return imgs, loadorderfile
 
-def creategamelorestat(game):
+def creategamelorestat(game, maplistload = False):
     """Load various game data and encyclopedia object"""
     import main
+    import csv
+    from pathlib import Path
+
     main_dir = main.main_dir
     SCREENRECT = main.SCREENRECT
     from gamescript import gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, gameunitstat, gameui, gamefaction
+
+    if maplistload:
+        #v Load map list
+        mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map')
+        subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
+
+        for index, map in enumerate(subdirectories):
+            if "custom" in str(map): # remove custom from this folder list to load
+                subdirectories.pop(index)
+                break
+
+        game.maplist = [] # map name list for map selection list
+        game.mapfoldername = [] # folder for reading later
+
+        for map in subdirectories:
+            print(str(map).split("\\"))
+            game.mapfoldername.append(str(map).split("/")[-1])
+            with open(str(map) + '/info.csv', 'r') as unitfile:
+                rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+                for row in rd:
+                    if row[0] != "name":
+                        game.maplist.append(row[0])
+            unitfile.close()
+        #^ End load map list
+
+        #v Load custom map list
+        mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map/custom/')
+        subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
+
+        game.mapcustomlist = []
+        game.mapcustomfoldername = []
+
+        for map in subdirectories:
+            game.mapcustomfoldername.append(str(map).split("\\")[-1])
+            with open(str(map) + '/info.csv', 'r') as unitfile:
+                rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+                for row in rd:
+                    if row[0] != "name":
+                        game.mapcustomlist.append(row[0])
+            unitfile.close()
+        #^ End load custom map list
 
     game.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
                       7: "Forced Walk", 8: "Forced Run",
