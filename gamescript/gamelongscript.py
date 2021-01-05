@@ -54,7 +54,7 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
         return imgs, loadorderfile
 
-def creategamelorestat(game, maplistload = False):
+def loadgamedata(game):
     """Load various game data and encyclopedia object"""
     import main
     import csv
@@ -62,47 +62,98 @@ def creategamelorestat(game, maplistload = False):
 
     main_dir = main.main_dir
     SCREENRECT = main.SCREENRECT
-    from gamescript import gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, gameunitstat, gameui, gamefaction
+    from gamescript import gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, \
+        gameunitstat, gameui, gamefaction, gamebattalion, gamesquad, rangeattack, gamemenu, gamepopup, gamedrama
 
-    if maplistload:
-        #v Load map list
-        mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map')
-        subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
+    # v Game Effect related class
+    imgs = load_images(['effect'])
+    # imgs = []
+    # for img in imgsold:
+    # x, y = img.get_width(), img.get_height()
+    # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
+    # imgs.append(img)
+    rangeattack.Rangearrow.images = [imgs[0]]
+    # ^ End game effect
 
-        for index, map in enumerate(subdirectories):
-            if "custom" in str(map): # remove custom from this folder list to load
-                subdirectories.pop(index)
-                break
+    imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
+    gamemenu.Menubox.images = imgs  # Create ESC Menu box
+    gamemenu.Menubox.SCREENRECT = SCREENRECT
 
-        game.maplist = [] # map name list for map selection list
-        game.mapfoldername = [] # folder for reading later
+    # v Popup Ui
+    imgs = load_images(['ui', 'popup_ui', 'terraincheck'], loadorder=False)
+    gamepopup.Terrainpopup.images = imgs
+    gamepopup.Terrainpopup.SCREENRECT = SCREENRECT
+    imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
+    gamedrama.Textdrama.images = imgs
+    # ^ End popup ui
 
-        for map in subdirectories:
-            game.mapfoldername.append(str(map).split("/")[-1])
-            with open(str(map) + '/info.csv', 'r') as unitfile:
-                rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-                for row in rd:
-                    if row[0] != "name":
-                        game.maplist.append(row[0])
-            unitfile.close()
-        #^ End load map list
+    # v create game map texture and their default variables
+    game.featurelist = []
+    with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        for row in rd:
+            game.featurelist.append(row[1])  # get terrain feature combination name for folder
+    unitfile.close()
+    game.featurelist = game.featurelist[1:]
 
-        #v Load custom map list
-        mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map/custom/')
-        subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
+    gamemap.Mapfeature.main_dir = main_dir
+    gamemap.Beautifulmap.main_dir = main_dir
 
-        game.mapcustomlist = []
-        game.mapcustomfoldername = []
+    img = load_image('effect.png', 'map')  # map special effect image
+    gamemap.Beautifulmap.effectimage = img
+    emptyimage = load_image('empty.png', 'map/texture')  # empty texture image
+    maptexture = []
+    loadtexturefolder = []
+    for feature in game.featurelist:
+        loadtexturefolder.append(feature.replace(" ", "").lower())  # convert terrain feature list to lower case with no space
+    loadtexturefolder = list(set(loadtexturefolder))  # list of terrian folder to load
+    loadtexturefolder = [item for item in loadtexturefolder if item != ""]  # For now remove terrain with no planned name/folder yet
+    for index, texturefolder in enumerate(loadtexturefolder):
+        imgs = load_images(['map', 'texture', texturefolder], loadorder=False)
+        maptexture.append(imgs)
+    gamemap.Beautifulmap.textureimages = maptexture
+    gamemap.Beautifulmap.loadtexturelist = loadtexturefolder
+    gamemap.Beautifulmap.emptyimage = emptyimage
+    # ^ End game map
 
-        for map in subdirectories:
-            game.mapcustomfoldername.append(str(map).split("\\")[-1])
-            with open(str(map) + '/info.csv', 'r') as unitfile:
-                rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-                for row in rd:
-                    if row[0] != "name":
-                        game.mapcustomlist.append(row[0])
-            unitfile.close()
-        #^ End load custom map list
+    #v Load map list
+    mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map')
+    subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
+
+    for index, map in enumerate(subdirectories):
+        if "custom" in str(map): # remove custom from this folder list to load
+            subdirectories.pop(index)
+            break
+
+    game.maplist = [] # map name list for map selection list
+    game.mapfoldername = [] # folder for reading later
+
+    for map in subdirectories:
+        game.mapfoldername.append(str(map).split("\\")[-1])
+        with open(str(map) + '/info.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                if row[0] != "name":
+                    game.maplist.append(row[0])
+        unitfile.close()
+    #^ End load map list
+
+    #v Load custom map list
+    mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map/custom/')
+    subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
+
+    game.mapcustomlist = []
+    game.mapcustomfoldername = []
+
+    for map in subdirectories:
+        game.mapcustomfoldername.append(str(map).split("\\")[-1])
+        with open(str(map) + '/info.csv', 'r') as unitfile:
+            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            for row in rd:
+                if row[0] != "name":
+                    game.mapcustomlist.append(row[0])
+        unitfile.close()
+    #^ End load custom map list
 
     game.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk(Melee)", 4: "Run(Melee)", 5: "Walk(Range)", 6: "Run(Range)",
                       7: "Forced Walk", 8: "Forced Run",
@@ -169,6 +220,16 @@ def creategamelorestat(game, maplistload = False):
     # ^ End faction
 
     # v create unit related class
+    imgs = load_images(['war', 'unit_ui'])
+    gamesquad.Unitsquad.images = imgs
+    game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()
+
+    imgs = []
+    imgsold = load_images(['war', 'unit_ui', 'battalion'])
+    for img in imgsold:
+        imgs.append(img)
+    gamebattalion.Unitarmy.images = imgs
+
     imgsold = load_images(['war', 'unit_ui', 'weapon'])
     imgs = []
     for img in imgsold:
@@ -348,8 +409,8 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     return army
 
 
-def unitsetup(maingame,playerteam):
-    """read battalion from unit_pos file and create object with addarmy function"""
+def unitsetup(maingame):
+    """read battalion from unit_pos(source) file and create object with addarmy function"""
     import main
     main_dir = main.main_dir
     from gamescript import gamesquad
@@ -368,7 +429,7 @@ def unitsetup(maingame,playerteam):
     teamcolour = ((0, 0, 0), (144, 167, 255), (255, 114, 114))
     teamarmy = (maingame.team0army, maingame.team1army, maingame.team2army)
 
-    with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos.csv", 'r') as unitfile:
+    with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos" + maingame.source + ".csv", 'r') as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             for n, i in enumerate(row):
@@ -378,7 +439,7 @@ def unitsetup(maingame,playerteam):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
             control = False
 
-            if playerteam == row[16] or maingame.enactment: # player can control only his team or both in enactment mode
+            if maingame.playerteam == row[16] or maingame.enactment: # player can control only his team or both in enactment mode
                 control = True
             colour =  teamcolour[row[16]]
             teamstart[row[16]] += 1
@@ -390,7 +451,7 @@ def unitsetup(maingame,playerteam):
             coa = pygame.transform.scale(maingame.coa[row[12]], (60, 60)) # get coa image and scale smaller to fit ui
 
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour,(maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
+                           colour, (maingame.squadwidth, maingame.squadheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
                            coa, command, row[13], row[14], row[15], row[16])
             whicharmy.append(army)
             armysquadindex = 0 # armysquadindex is list index for squad list in a specific army
@@ -797,12 +858,12 @@ def splitunit(battle, who, how):
         width, height = 0, 0
         squadnum = 0
         for squad in sprite:
-            width += battle.imagewidth
+            width += battle.squadwidth
 
             if squadnum >= len(who.armysquad[0]):
                 width = 0
-                width += battle.imagewidth
-                height += battle.imageheight
+                width += battle.squadwidth
+                height += battle.squadheight
                 squadnum = 0
 
             squad.inspposition = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
@@ -873,7 +934,7 @@ def splitunit(battle, who, how):
     newgameid = whosearmy[-1].gameid + 1
 
     army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
-                                  squadlist=newarmysquad, imgsize=(battle.imagewidth, battle.imageheight),
+                                  squadlist=newarmysquad, imgsize=(battle.squadwidth, battle.squadheight),
                                   colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle, team=who.team)
 
     whosearmy.append(army)

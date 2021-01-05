@@ -37,14 +37,13 @@ Wetground = (186, 184, 109, 255)
 featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Pandemonium, Mana, Rot, Wetground)
 
 class Basemap(pygame.sprite.Sprite):
-    images = []
     maxviewmode = 10
 
-    def __init__(self, scale):
+    def __init__(self, image, scale):
         """image file of map should be at size 1000x1000 then it will be scaled in game"""
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
+        self.image = image
         self.trueimage = self.image.copy()
         self.scale = scale
         scalewidth = self.image.get_width() * self.scale
@@ -80,15 +79,14 @@ class Basemap(pygame.sprite.Sprite):
 
 
 class Mapfeature(pygame.sprite.Sprite):
-    images = []
     maxviewmode = 10
     main_dir = None
     featuremod = None
 
-    def __init__(self, scale):
+    def __init__(self, image, scale):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
+        self.image = image
         self.trueimage = self.image.copy()
         self.scale = scale
         scalewidth = self.image.get_width() * self.scale
@@ -129,13 +127,12 @@ class Mapfeature(pygame.sprite.Sprite):
 
 
 class Mapheight(pygame.sprite.Sprite):
-    images = []
     maxviewmode = 10
 
-    def __init__(self, scale):
+    def __init__(self, image, scale):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
+        self.image = image
         self.trueimage = self.image.copy()
         self.scale = scale
         scalewidth = self.image.get_width() * self.scale
@@ -168,11 +165,10 @@ class Beautifulmap(pygame.sprite.Sprite):
     textureimages = []
     emptyimage = None
     effectimage = None
-    placename = None
     loadtexturelist = None
     main_dir = None
 
-    def __init__(self, scale, basemap, featuremap, gamemapheight):
+    def __init__(self, scale, basemap, featuremap, gamemapheight, placename):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = featuremap.image.copy()
@@ -227,7 +223,7 @@ class Beautifulmap(pygame.sprite.Sprite):
 
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
-        self.image.blit(self.placename, rect)  ## Add placename layer to map
+        self.image.blit(placename, rect)  ## Add placename layer to map
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)

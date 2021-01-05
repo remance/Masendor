@@ -35,106 +35,18 @@ csv_read = gamelongscript.csv_read
 load_sound = gamelongscript.load_sound
 
 class Battle():
-    def __init__(self, winstyle, ruleset, rulesetfolder, teamselected, enacment, mapselected="hastings"):
+    def __init__(self, main, winstyle, ruleset, rulesetfolder, teamselected, enacment, mapselected, source):
         pygame.init()  # Initialize pygame
+
         if pygame.mixer and not pygame.mixer.get_init():
             pygame.mixer = None
         self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32) # Set the display mode
         self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth) # set up game screen
         self.ruleset = ruleset # current ruleset used
         self.rulesetfolder = rulesetfolder # the folder of rulseset used
-
-        #v create game map objects and their default variables
-        featurelist = []
-        with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                featurelist.append(row[1]) # get terrain feature combination name for folder
-        unitfile.close()
-        featurelist = featurelist[1:]
-
         self.mapselected = mapselected # map folder name
-
-        imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], loadorder=False)
-        gamemap.Basemap.images = [imgs[0]]
-        gamemap.Mapfeature.images = [imgs[1]]
-        gamemap.Mapfeature.main_dir = main_dir
-        gamemap.Mapheight.images = [imgs[2]]
-        gamemap.Beautifulmap.placename = imgs[3]
-        gamemap.Beautifulmap.main_dir = main_dir
-
-        img = load_image('effect.png', 'map') # map special effect image
-        gamemap.Beautifulmap.effectimage = img
-        emptyimage = load_image('empty.png', 'map/texture') # empty texture image
-        maptexture = []
-        loadtexturefolder = []
-        for feature in featurelist:
-            loadtexturefolder.append(feature.replace(" ", "").lower()) # convert terrain feature list to lower case with no space
-        loadtexturefolder = list(set(loadtexturefolder)) # list of terrian folder to load
-        loadtexturefolder = [item for item in loadtexturefolder if item != ""]  # For now remove terrain with no planned name/folder yet
-        for index, texturefolder in enumerate(loadtexturefolder):
-            imgs = load_images(['map', 'texture', texturefolder], loadorder=False)
-            maptexture.append(imgs)
-        gamemap.Beautifulmap.textureimages = maptexture
-        gamemap.Beautifulmap.loadtexturelist = loadtexturefolder
-        gamemap.Beautifulmap.emptyimage = emptyimage
-        #^ End game map
-
-        imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
-        gamemenu.Menubox.images = imgs  # Create ESC Menu box
-        gamemenu.Menubox.SCREENRECT = SCREENRECT
-
-        #v create unit related class
-        imgs = load_images(['war', 'unit_ui'])
-        gamesquad.Unitsquad.images = imgs
-        self.imagewidth, self.imageheight = imgs[0].get_width(), imgs[0].get_height()
-
-        imgs = []
-        imgsold = load_images(['war', 'unit_ui', 'battalion'])
-        for img in imgsold:
-            imgs.append(img)
-        gamebattalion.Unitarmy.images = imgs
-        #^ End unit class
-
-        #v Create weather related class
-        self.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
-
-        self.weathermatterimgs = []
-        for weather in ('0', '1', '2', '3'):  # Load weather matter sprite image
-            imgs = load_images(['map', 'weather', weather], loadorder=False)
-            self.weathermatterimgs.append(imgs)
-
-        self.weathereffectimgs = []
-        for weather in ('0', '1', '2', '3'):  # Load weather effect sprite image
-            imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
-            imgs = []
-            for img in imgsold:
-                img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
-                imgs.append(img)
-            self.weathereffectimgs.append(imgs)
-
-        imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  # Load weather icon
-        gameweather.Weather.images = imgs
-        #^ End weather
-
-        #v Game Effect related class
-        imgs = load_images(['effect'])
-        # imgs = []
-        # for img in imgsold:
-        # x, y = img.get_width(), img.get_height()
-        # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
-        # imgs.append(img)
-        self.gameeffect = imgs
-        rangeattack.Rangearrow.images = [self.gameeffect[0]]
-        #^ End game effect
-
-        #v Popup Ui
-        imgs = load_images(['ui', 'popup_ui', 'terraincheck'], loadorder=False)
-        gamepopup.Terrainpopup.images = imgs
-        gamepopup.Terrainpopup.SCREENRECT = SCREENRECT
-        imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
-        gamedrama.Textdrama.images = imgs
-        #^ End popup ui
+        self.source = str(source)
+        self.playerteam = teamselected # player selected team
 
         #v Decorate the game window
         # icon = load_image('sword.jpg')
@@ -173,7 +85,7 @@ class Battle():
         self.uiupdater = pygame.sprite.Group() # updater for ui objects
         self.weatherupdater = pygame.sprite.Group() # updater for weather objects
         self.effectupdater = pygame.sprite.Group() # updater for in-game effect objects (e.g. range attack sprite)
-        self.battlemap = pygame.sprite.Group() # base terrain map object
+        self.battlemapbase = pygame.sprite.Group() # base terrain map object
         self.battlemapfeature = pygame.sprite.Group() # terrain feature map object
         self.battlemapheight = pygame.sprite.Group() # height map object
         self.showmap = pygame.sprite.Group() # beautiful map object that is shown in gameplay
@@ -221,7 +133,7 @@ class Battle():
         #^ End initialise
 
         #v Assign default groups
-        gamemap.Basemap.containers = self.battlemap
+        gamemap.Basemap.containers = self.battlemapbase
         gamemap.Mapfeature.containers = self.battlemapfeature
         gamemap.Mapheight.containers = self.battlemapheight
         gamemap.Beautifulmap.containers = self.showmap, self.allcamera
@@ -262,22 +174,45 @@ class Battle():
         gameweather.Specialeffect.containers = self.weathereffect, self.allui, self.weatherupdater
         #^ End assign
 
-        gamelongscript.creategamelorestat(self)
+        #v Load stuff from main common data
+        self.featuremod = main.featuremod
+        self.allweather = main.allweather
+        self.weathermatterimgs = main.weathermatterimgs
+        self.weathereffectimgs = main.weathereffectimgs
+        self.allfaction = main.allfaction
+        self.coa = main.coa
+        self.allweapon = main.allweapon
+        self.allarmour = main.allarmour
+        self.statusimgs = main.statusimgs
+        self.roleimgs = main.roleimgs
+        self.traitimgs = main.traitimgs
+        self.skillimgs = main.skillimgs
+        self.gameunitstat = main.gameunitstat
+        self.allleader = main.allleader
+        self.lorebook = main.lorebook
+        self.lorenamelist = main.lorenamelist
+        self.lorebuttonui = main.lorebuttonui
+        self.pagebutton = main.pagebutton
+        self.statetext = main.statetext
+        self.squadwidth = main.squadwidth
+        self.squadheight = main.squadheight
+        #^ End load from main
 
         #v Create the battle map
         gamemap.Mapfeature.featuremod = self.featuremod
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1  # Camera zoom
-        self.battlemap = gamemap.Basemap(self.camerascale) # create base terrain map
-        self.battlemapfeature = gamemap.Mapfeature(self.camerascale) # create terrain feature map
-        self.battlemapheight = gamemap.Mapheight(self.camerascale) # create height map
-        self.showmap = gamemap.Beautifulmap(self.camerascale, self.battlemap, self.battlemapfeature, self.battlemapheight)
-        del gamemap.Beautifulmap.textureimages  # remove texture image list to clear memory
+
+        imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], loadorder=False)
+        self.battlemapbase = gamemap.Basemap(imgs[0], self.camerascale) # create base terrain map
+        self.battlemapfeature = gamemap.Mapfeature(imgs[1], self.camerascale) # create terrain feature map
+        self.battlemapheight = gamemap.Mapheight(imgs[2], self.camerascale) # create height map
+        self.showmap = gamemap.Beautifulmap(self.camerascale, self.battlemapbase, self.battlemapfeature, self.battlemapheight, imgs[3])
         #^ End create battle map
 
         #v Assign default variable to some class
-        gamebattalion.Unitarmy.gamemap = self.battlemap  # add battle map to all battalion class
+        gamebattalion.Unitarmy.gamemap = self.battlemapbase  # add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapfeature = self.battlemapfeature  # add battle map to all battalion class
         gamebattalion.Unitarmy.gamemapheight = self.battlemapheight
         gamebattalion.Unitarmy.statuslist = self.gameunitstat.statuslist
@@ -296,7 +231,6 @@ class Battle():
         #v Create Starting Values
         self.mixervolume = SoundVolume
         self.leaderposname = ("Commander","Sub-General","Sub-General","Sub-Commander","General","Sub-General","Sub-General","Advisor") # Name of leader position in battalion, the first 4 is for commander battalion
-        self.playerteam = 1 # player selected team
         self.enactment = enacment # enactment mod, control both team
         self.gamestate = 1
         self.mousetimer = 0 # This is timer for checking double mouse click, use realtime
@@ -360,7 +294,7 @@ class Battle():
 
         self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1]*2.5) + topimage[5].get_size()[1],
                                          image=topimage[2], icon="", uitype="unitcard")) # squad information card
-        self.gameui[2].featurelist = featurelist # add terrain feature list name to unit card
+        self.gameui[2].featurelist = main.featurelist # add terrain feature list name to unit card
 
         self.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1]*4,
                           image=topimage[5], icon="", uitype="armybox")) # inspect ui that show squad in selected battalion
@@ -464,9 +398,9 @@ class Battle():
         #v initialise starting unit sprites
         self.team0army, self.team1army, self.team2army = [], [], []
         self.squad = []
-        self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.imagewidth / 1.25,
-                             self.gameui[0].rect.bottomleft[1] - self.imageheight / 3]
-        self.squadindexlist = gamelongscript.unitsetup(self, self.playerteam)
+        self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.squadwidth / 1.25,
+                             self.gameui[0].rect.bottomleft[1] - self.squadheight / 3]
+        self.squadindexlist = gamelongscript.unitsetup(self)
         self.allunitlist = self.team1army.copy()
         self.allunitlist = self.allunitlist + self.team2army # list of every battalion in game alive
         self.allunitindex = [army.gameid for army in self.allunitlist] # list of every battalion index alive
@@ -1009,7 +943,7 @@ class Battle():
                     elif mouse_right and self.lastselected is None and self.uiclick == False: # draw terrain popup ui when right click at map with no selected battalion
                         if self.battlemousepos[1][0] >= 0 and self.battlemousepos[1][0] <= 999 and self.battlemousepos[1][1] >= 0 and \
                                 self.battlemousepos[1][1] <= 999: # not draw if pos is off the map
-                            terrainpop, featurepop = self.battlemapfeature.getfeature(self.battlemousepos[1], self.battlemap)
+                            terrainpop, featurepop = self.battlemapfeature.getfeature(self.battlemousepos[1], self.battlemapbase)
                             featurepop = self.battlemapfeature.featuremod[featurepop]
                             heightpop = self.battlemapheight.getheight(self.battlemousepos[1])
                             self.terraincheck.pop(self.mousepos, featurepop, heightpop)
@@ -1487,6 +1421,14 @@ class Battle():
                                 elif button.text == "Main Menu": # back to main menu
                                     self.allui.clear(self.screen, self.background) # remove all sprite
                                     self.allcamera.clear(self.screen, self.background) # remove all sprite
+                                    for group in (self.squad, self.armyleader, self.hitboxes, self.deadunit,
+                                                  self.team0army, self.team1army, self.team2army):
+                                        for stuff in group:
+                                            stuff.kill()
+                                            del stuff
+                                    for mapsprite in (self.battlemapbase, self.battlemapfeature, self.battlemapheight, self.showmap):
+                                        mapsprite.kill()
+                                        del mapsprite
                                     return # end battle game loop
 
                                 elif button.text == "Desktop": # quit game

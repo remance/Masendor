@@ -8,9 +8,36 @@ from gamescript import gamemap
 terraincolour = gamemap.terraincolour
 featurecolour = gamemap.featurecolour
 
+class Maptitle(pygame.sprite.Sprite):
+    def __init__(self, name, pos):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.font = pygame.font.SysFont("oldenglishtext", 70)
+        self.textsurface = self.font.render(str(name), 1, (0, 0, 0))
+
+        self.image = pygame.Surface((self.textsurface.get_width()+20, self.textsurface.get_height()+20))
+        self.image.fill((0,0,0))
+        whitebody = pygame.Surface((self.textsurface.get_width(), self.textsurface.get_height()))
+        whitebody.fill((255,255,255))
+        whiterect = whitebody.get_rect(center = (self.image.get_width()/2, self.image.get_height()/2))
+        self.image.blit(whitebody, whiterect)
+
+        self.textrect = self.textsurface.get_rect(center = (self.image.get_width()/2, self.image.get_height()/2))
+        self.image.blit(self.textsurface, self.textrect)
+        self.rect = self.image.get_rect(midtop=pos)
+
+class Mapdescription(pygame.sprite.Sprite):
+    image = None
+
+    def __init__(self, pos, text):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.font = pygame.font.SysFont("helvetica", 16)
+        self.rect = self.image.get_rect(center=pos)
+
+
 class Teamcoa(pygame.sprite.Sprite):
     def __init__(self, pos, image, team, name):
-
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.selectedimage = pygame.Surface((200, 200))
@@ -49,6 +76,73 @@ class Teamcoa(pygame.sprite.Sprite):
             self.image = self.selectedimage
         else:
             self.image = self.notselectedimage
+
+
+class Maplistbox(pygame.sprite.Sprite):
+    def __init__(self, pos, image):
+        self._layer = 13
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = image
+        self.rect = self.image.get_rect(topleft=pos)
+        self.maxshowlist = 20 # max number of map on list can be shown at once
+
+class Mapname(pygame.sprite.Sprite):
+    def __init__(self, pos, name, textsize=16):
+        self._layer = 14
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", textsize)
+        self.image = pygame.Surface((180, 25))  # black corner
+        self.image.fill((0, 0, 0))
+
+        # v White body square
+        smallimage = pygame.Surface((178, 23))
+        smallimage.fill((255, 255, 255))
+        smallrect = smallimage.get_rect(topleft=(1, 1))
+        self.image.blit(smallimage, smallrect)
+        # ^ End white body
+
+        # v Map name text
+        textsurface = self.font.render(str(name), 1, (0, 0, 0))
+        textrect = textsurface.get_rect(midleft=(3, self.image.get_height() / 2))
+        self.image.blit(textsurface, textrect)
+        # ^ End map name
+
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+class Sourcelistbox(pygame.sprite.Sprite):
+    def __init__(self, pos, image):
+        self._layer = 13
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = image
+        self.rect = self.image.get_rect(topleft=pos)
+        self.maxshowlist = 5  # max number of map on list can be shown at once
+
+class Source(pygame.sprite.Sprite):
+    def __init__(self, pos, name, textsize=16):
+        self._layer = 14
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", textsize)
+        self.image = pygame.Surface((180, 25))  # black corner
+        self.image.fill((0, 0, 0))
+
+        # v White body square
+        smallimage = pygame.Surface((178, 23))
+        smallimage.fill((255, 255, 255))
+        smallrect = smallimage.get_rect(topleft=(1, 1))
+        self.image.blit(smallimage, smallrect)
+        # ^ End white body
+
+        # v Subsection name text
+        textsurface = self.font.render(str(name), 1, (0, 0, 0))
+        textrect = textsurface.get_rect(midleft=(3, self.image.get_height() / 2))
+        self.image.blit(textsurface, textrect)
+        # ^ End subsection name
+
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+
 
 class Mapshow(pygame.sprite.Sprite):
     def __init__(self, pos, basemap, featuremap):
