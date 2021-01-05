@@ -237,6 +237,9 @@ try: # for printing error log when error exception happen
             self.rulesetlist = maingame.csv_read("ruleset_list.csv", ['data', 'ruleset']) # get ruleset list
             self.ruleset = 1 # for now default historical ruleset only
             self.rulesetfolder = "/" + str(self.rulesetlist[self.ruleset][1])
+            self.enactment = True
+            self.mapsource = 0 # current selected map source
+            self.teamselected = 1
 
             self.allui = pygame.sprite.LayeredUpdates()
             self.menubutton = pygame.sprite.Group() # group of menu buttons that are currently get shown and update
@@ -251,6 +254,7 @@ try: # for printing error log when error exception happen
             self.maplistbox = pygame.sprite.Group()
             self.mapname = pygame.sprite.Group()
             self.mapshow = pygame.sprite.Group()
+            self.teamcoa = pygame.sprite.Group()
 
             #v Add group to containers
             Menubutton.containers = self.menubutton
@@ -265,6 +269,7 @@ try: # for printing error log when error exception happen
             gameui.Uibutton.containers = self.lorebuttonui
             gameui.Uiscroller.containers = self.lorescroll, self.allui
             gameprepare.Mapshow.containers = self.mapshow
+            gameprepare.Teamcoa.containers = self.teamcoa
             #^ End containers
 
             #v Set the display mode
@@ -311,9 +316,11 @@ try: # for printing error log when error exception happen
             self.battlesetupbutton = (self.startbutton, self.mapbackbutton)
 
             imgs = load_images(['ui', 'mapselect_ui'], loadorder=False)
-            self.maplistbox = Maplistbox((SCREENRECT.width/20, SCREENRECT.height/20), imgs[0])
+            self.maplistbox = Maplistbox((SCREENRECT.width/25, SCREENRECT.height/20), imgs[0])
+
             self.currentmaprow = 0
             self.currentmapselect = 0
+            self.maxmaplist = 20 # max number of map on list can be shown at once
 
             #^ End battle map menu button
 
@@ -368,7 +375,6 @@ try: # for printing error log when error exception happen
             self.menubutton.add(*self.mainmenubutton) # add only main menu button back
             self.allui.add(*self.menubutton)
             self.menustate = "mainmenu"
-            self.maxmaplist = 20
 
         def setupmaplist(self, maplist):
             """generate list of subsection of the left side of encyclopedia"""
@@ -389,11 +395,37 @@ try: # for printing error log when error exception happen
                     row += 30  # next row
                     if len(self.mapname) > self.maxmaplist: break  # will not generate more than space allowed
 
+        def maketeamcoa(self, maplist):
+            for team in self.teamcoa:
+                team.kill()
+                del team
+
+            if self.menustate == "presetselect":
+                data = csv_read('info.csv',['data', 'ruleset', self.rulesetfolder.strip("/"), 'map', maplist[self.currentmapselect].split("\\")[-1]])
+            else:
+                data = csv_read('info.csv', ['data', 'ruleset', self.rulesetfolder.strip("/"), 'map/custom',  maplist[self.currentmapselect].split("\\")[-1]])
+
+            # position = self.mapshow[0].get_rect()
+            team1index = list(data.values())[1][2]
+            team2index = list(data.values())[1][3]
+            self.teamcoa.add(gameprepare.Teamcoa((SCREENRECT.width/2 - 300,SCREENRECT.height/3), self.coa[team1index],
+                                                 1, self.allfaction.factionlist[team1index][0])) # team 1
+
+            self.teamcoa.add(gameprepare.Teamcoa((SCREENRECT.width/2 + 300,SCREENRECT.height/3), self.coa[team2index],
+                                                 2, self.allfaction.factionlist[team2index][0])) # team 2
+            self.allui.add(self.teamcoa)
+
         def makemap(self, maplist):
-            self.allui.remove(self.mapshow)
-            # self.mapshow.kill()
-            imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', maplist[self.currentmapselect]], loadorder=False)
-            self.mapshow = gameprepare.Mapshow((SCREENRECT.width/2, SCREENRECT.height/3), imgs[0], imgs[1])
+            # self.allui.remove(self.mapshow)
+            for thismap in self.mapshow:
+                thismap.kill()
+                del thismap
+            if self.menustate == "presetselect":
+                imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', maplist[self.currentmapselect]], loadorder=False)
+            else:
+                imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map/custom', maplist[self.currentmapselect]], loadorder=False)
+            self.mapshow.add(gameprepare.Mapshow((SCREENRECT.width/2, SCREENRECT.height/3), imgs[0], imgs[1]))
+            self.allui.add(self.mapshow)
 
         def run(self, maingamefunc):
             while True:
@@ -446,27 +478,31 @@ try: # for printing error log when error exception happen
 
                     if self.presetmapbutton.event: # preset map list menu
                         self.menustate = "presetselect"
+                        self.lastselect = self.menustate
                         self.presetmapbutton.event = False
                         self.allui.remove(*self.menubutton)
                         self.menubutton.remove(*self.menubutton)
 
                         self.setupmaplist(self.maplist)
                         self.makemap(self.mapfoldername)
+                        self.maketeamcoa(self.mapfoldername)
 
                         self.menubutton.add(*self.mapselectbutton)
-                        self.allui.add(*self.mapselectbutton, self.maplistbox, self.mapshow)
+                        self.allui.add(*self.mapselectbutton, self.maplistbox)
 
                     elif self.custommapbutton.event: # custom map list menu
                         self.menustate = "customselect"
+                        self.lastselect = self.menustate
                         self.custommapbutton.event = False
                         self.allui.remove(*self.menubutton)
                         self.menubutton.remove(*self.menubutton)
 
                         self.setupmaplist(self.mapcustomlist)
                         self.makemap(self.mapcustomfoldername)
+                        self.maketeamcoa(self.mapcustomfoldername)
 
                         self.menubutton.add(*self.mapselectbutton)
-                        self.allui.add(*self.mapselectbutton, self.maplistbox, self.mapshow)
+                        self.allui.add(*self.mapselectbutton, self.maplistbox)
 
                     elif self.optionbutton.event: # change main menu to option menu
                         self.menustate = "option"
@@ -492,10 +528,18 @@ try: # for printing error log when error exception happen
                         self.lorebutton.event = False
 
                 elif self.menustate == "presetselect" or self.menustate == "customselect":
-                    for index, name in enumerate(self.mapname):  # too lazy to include break for button found to avoid subsection loop since not much optimisation is needed here
-                        if name.rect.collidepoint(self.mousepos):  # click on subsection name
-                            self.currentmapselect = index  # change subsection
-                            break  # found clicked subsection, break loop
+                    if mouse_up:
+                        for index, name in enumerate(self.mapname):  # too lazy to include break for button found to avoid subsection loop since not much optimisation is needed here
+                            if name.rect.collidepoint(self.mousepos):  # click on subsection name
+                                self.currentmapselect = index  # change selected map index
+                                if self.menustate == "presetselect": # make new map image
+                                    self.makemap(self.mapfoldername)
+                                    self.maketeamcoa(self.mapfoldername)
+                                else:
+                                    self.makemap(self.mapcustomfoldername)
+                                    self.maketeamcoa(self.mapcustomfoldername)
+                                break  # found clicked subsection, break loop
+
 
                     if self.mapbackbutton.event:
                         self.menustate = "mainmenu"
@@ -503,16 +547,18 @@ try: # for printing error log when error exception happen
                         self.currentmaprow = 0
                         self.currentmapselect = 0
 
-                        self.allui.remove(*self.menubutton, self.maplistbox, self.mapshow)
+                        self.allui.remove(*self.menubutton, self.maplistbox, self.mapshow, self.teamcoa)
                         self.menubutton.remove(*self.menubutton)
-                        for name in self.mapname:  # remove map name list
-                            name.kill()
-                            del name
+
+                        for group in (self.mapshow, self.mapname, self.teamcoa): # remove map image
+                            for stuff in group:
+                                stuff.kill()
+                                del stuff
 
                         self.menubutton.add(*self.mainmenubutton)
                         self.allui.add(*self.menubutton)
 
-                    elif self.selectbutton.event:
+                    elif self.selectbutton.event: # select this map, go to prepare setup
                         self.menustate = "battlemapset"
                         self.selectbutton.event = False
 
@@ -522,25 +568,53 @@ try: # for printing error log when error exception happen
                             name.kill()
                             del name
 
+                        for team in self.teamcoa:
+                            if self.teamselected == team.team:
+                                team.selected = True
+                                team.changeselect()
+
                         self.menubutton.add(*self.battlesetupbutton)
                         self.allui.add(*self.battlesetupbutton)
 
                 elif self.menustate == "battlemapset":
+                    if mouse_up:
+                        for team in self.teamcoa:
+                            if team.rect.collidepoint(self.mousepos):
+                                self.teamselected = team.team
+                                team.selected = True
+                                team.changeselect()
+                                break
+
+                    for team in self.teamcoa:
+                        if self.teamselected != team.team and team.selected:
+                            team.selected = False
+                            team.changeselect()
+
                     if self.mapbackbutton.event:
-                        self.menustate = "mapselect"
+                        self.menustate = self.lastselect
                         self.mapbackbutton.event = False
                         self.allui.remove(*self.menubutton, self.maplistbox)
                         self.menubutton.remove(*self.menubutton)
+
+                        #v Reset selected team
+                        for team in self.teamcoa:
+                            team.selected = False
+                            team.changeselect()
+                        self.teamselected = 1
+                        #^ End reset selected team
+
+                        if self.menustate == "presetselect": # regenerate map name list
+                            self.setupmaplist(self.maplist)
+                        else:
+                            self.setupmaplist(self.mapcustomlist)
 
                         self.menubutton.add(*self.mapselectbutton)
                         self.allui.add(*self.mapselectbutton, self.maplistbox)
 
                     elif self.startbutton.event: # start game button
-                        self.battlegame = maingamefunc.Battle(self.winstyle, self.ruleset, self.rulesetfolder)
+                        self.battlegame = maingamefunc.Battle(self.winstyle, self.ruleset, self.rulesetfolder, self.teamselected, self.enactment)
                         self.battlegame.rungame()
                         self.startbutton.event = False
-
-
 
                 elif self.menustate == "option":
                     for bar in self.resolutionbar: # loop to find which resolution bar is selected, this happen outside of clicking check below

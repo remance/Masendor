@@ -14,7 +14,7 @@ Read data\map\Mapguide.doc for more detailed information on colour combination o
 
 Map data
 
-- info: Information of the map that will be shown in battle select menu
+- info: Information of the map that will be shown in battle select menu, also used to find faction involve in battle as team
 
 - unitpos: List of unit the csv data structure is as follows: 
 

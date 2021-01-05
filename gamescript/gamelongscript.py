@@ -78,7 +78,6 @@ def creategamelorestat(game, maplistload = False):
         game.mapfoldername = [] # folder for reading later
 
         for map in subdirectories:
-            print(str(map).split("\\"))
             game.mapfoldername.append(str(map).split("/")[-1])
             with open(str(map) + '/info.csv', 'r') as unitfile:
                 rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -162,7 +161,7 @@ def creategamelorestat(game, maplistload = False):
     #v Faction class
     gamefaction.Factiondata.main_dir = main_dir
     game.allfaction = gamefaction.Factiondata(option=game.rulesetfolder)
-    imgsold = load_images(['ruleset', game.rulesetfolder.strip("/"), 'faction', 'coa'])  # coa imagelist
+    imgsold = load_images(['ruleset', game.rulesetfolder.strip("/"), 'faction', 'coa'], loadorder=False)  # coa imagelist
     imgs = []
     for img in imgsold:
         imgs.append(img)
@@ -278,10 +277,12 @@ def creategamelorestat(game, maplistload = False):
     #^ End encyclopedia objects
 
 
-def csv_read(file, subfolder=[], outputtype=0):
+def csv_read(file, subfolder=[], outputtype=0, defaultmaindir=True):
     """output type 0 = dict, 1 = list"""
     import main
-    main_dir = main.main_dir
+    main_dir = ""
+    if defaultmaindir:
+        main_dir = main.main_dir
     returnoutput = {}
     if outputtype == 1: returnoutput = []
 
@@ -386,9 +387,11 @@ def unitsetup(maingame,playerteam):
             command = False # Not commander battalion by default
             if len(whicharmy) == 0: # First battalion is commander
                 command = True
+            coa = pygame.transform.scale(maingame.coa[row[12]], (60, 60)) # get coa image and scale smaller to fit ui
+
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                            colour,(maingame.imagewidth, maingame.imageheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
-                           maingame.coa[row[12]], command, row[13], row[14], row[15], row[16])
+                           coa, command, row[13], row[14], row[15], row[16])
             whicharmy.append(army)
             armysquadindex = 0 # armysquadindex is list index for squad list in a specific army
 

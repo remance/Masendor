@@ -8,6 +8,48 @@ from gamescript import gamemap
 terraincolour = gamemap.terraincolour
 featurecolour = gamemap.featurecolour
 
+class Teamcoa(pygame.sprite.Sprite):
+    def __init__(self, pos, image, team, name):
+
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.selectedimage = pygame.Surface((200, 200))
+        self.notselectedimage = pygame.Surface((200, 200))
+        self.notselectedimage.fill((0, 0, 0)) # black border when not selected
+        self.selectedimage.fill((230, 200, 15))  # gold border when selected
+
+        whitebody = pygame.Surface((196, 196))
+        whitebody.fill((255,255,255))
+        whiterect = whitebody.get_rect(topleft = (2, 2))
+        self.notselectedimage.blit(whitebody, whiterect)
+        self.selectedimage.blit(whitebody, whiterect)
+
+        #v Coat of arm image to image
+        coaimage = pygame.transform.scale(image, (100, 100))
+        coarect = coaimage.get_rect(center = (100, 70))
+        self.notselectedimage.blit(coaimage, coarect)
+        self.selectedimage.blit(coaimage, coarect)
+        #^ End Coat of arm
+
+        #v Faction name to image
+        self.font = pygame.font.SysFont("oldenglishtext", 32)
+        self.textsurface = self.font.render(str(name), 1, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(center = (100, 150))
+        self.notselectedimage.blit(self.textsurface, self.textrect)
+        self.selectedimage.blit(self.textsurface, self.textrect)
+        #^ End faction name
+
+        self.image = self.notselectedimage
+        self.rect = self.image.get_rect(center=pos)
+        self.team = team
+        self.selected = False
+
+    def changeselect(self):
+        if self.selected:
+            self.image = self.selectedimage
+        else:
+            self.image = self.notselectedimage
+
 class Mapshow(pygame.sprite.Sprite):
     def __init__(self, pos, basemap, featuremap):
         import main

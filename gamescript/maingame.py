@@ -35,7 +35,7 @@ csv_read = gamelongscript.csv_read
 load_sound = gamelongscript.load_sound
 
 class Battle():
-    def __init__(self, winstyle, ruleset, rulesetfolder,mapselected="hastings"):
+    def __init__(self, winstyle, ruleset, rulesetfolder, teamselected, enacment, mapselected="hastings"):
         pygame.init()  # Initialize pygame
         if pygame.mixer and not pygame.mixer.get_init():
             pygame.mixer = None
@@ -297,7 +297,7 @@ class Battle():
         self.mixervolume = SoundVolume
         self.leaderposname = ("Commander","Sub-General","Sub-General","Sub-Commander","General","Sub-General","Sub-General","Advisor") # Name of leader position in battalion, the first 4 is for commander battalion
         self.playerteam = 1 # player selected team
-        self.enactment = True # enactment mod, control both team
+        self.enactment = enacment # enactment mod, control both team
         self.gamestate = 1
         self.mousetimer = 0 # This is timer for checking double mouse click, use realtime
         self.uitimer = 0 # This is timer for ui update function, use realtime

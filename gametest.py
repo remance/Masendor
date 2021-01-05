@@ -112,7 +112,5 @@ import numpy as np
 # 	anim.blit(pen,(50,50))
 # 	pygame.display.flip()
 
-from pathlib import Path
-p=Path(main_dir+'/data/ruleset/historical/map')
-subdirectories = [x for x in p.iterdir() if x.is_dir()]
-print(subdirectories)
+k = "C:\\Users\\masendor\\Documents\\PycharmProjects\\Masendor\\RTS\\data\\ruleset\\historical\\map\\hastings"
+print(k.split("\\"))

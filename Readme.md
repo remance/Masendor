@@ -3,7 +3,6 @@
 ![alt text](https://github.com/remance/Masendor/blob/master/preview.png?raw=true)
 
 Historical wargame simulation made with Pygame. There is no main name for the game but rather the name will be based on major update. 
-The current code structure and documentation follows no standard guideline whatsoever, so read and confuse at your own risk (until end of ver 0.5).
 
 To start testing the game run main.py or main.exe if you use the release version.
 
@@ -21,17 +20,13 @@ Plan
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
-0.6: improve main.py (mainmenu) with update on code and comment
+0.6.1: battle selection screen, with team selection and battle estimation source setting, start working on Battle of Megiddo
 
-0.6.1: start working on Battle of Megiddo
+0.6.2: preparation and battle result screen, add battle situation (colour bar to compare 2 team strength) in ui somewhere
 
-0.6.2: battle selection screen, with team selection and battle estimation source setting
+0.6.3: custom battle
 
-0.6.3: preparation and battle result screen, add battle situation (colour bar to compare 2 team strength) in ui somewhere
-
-0.6.4: custom battle start working on Battle of Mohács
-
-0.6.5: in game custom unit editor
+0.6.4 and 0.6.5: in game custom unit editor, start working on Battle of Mohács
 
 0.6.6 and 0.6.7: random map generator
 
