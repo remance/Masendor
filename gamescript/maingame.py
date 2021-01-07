@@ -34,10 +34,8 @@ load_sound = gamelongscript.load_sound
 
 class Battle():
     def __init__(self, main, winstyle, ruleset, rulesetfolder, teamselected, enactment, mapselected, source):
-        pygame.init()  # Initialize pygame
+        # pygame.init()  # Initialize pygame
 
-        if pygame.mixer and not pygame.mixer.get_init():
-            pygame.mixer = None
         self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32) # Set the display mode
         self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth) # set up game screen
         self.ruleset = ruleset # current ruleset used
@@ -46,21 +44,14 @@ class Battle():
         self.source = str(source)
         self.playerteam = teamselected # player selected team
 
-        #v Decorate the game window
-        # icon = load_image('sword.jpg')
-        # icon = pygame.transform.scale(icon, (32, 32))
-        # pygame.display.set_icon(icon)
-        #^ End decorate
-
-        pygame.display.set_caption('Masendor RTS')
-        pygame.mouse.set_visible(True)
-
         #v load the sound effects
         # boom_sound = load_sound('boom.wav')
         # shoot_sound = load_sound('car_door.wav')
         #^ End load sound effect
 
         #v Random music played from list
+        if pygame.mixer and not pygame.mixer.get_init():
+            pygame.mixer = None
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
             # musiclist = os.path.join(main_dir, 'data/sound/')
@@ -1331,6 +1322,8 @@ class Battle():
                                         for stuff in group:
                                             stuff.kill()
                                             del stuff
+                                        self.showingsquad = []
+                                        self.squadlastselected = None
                                     return # end battle game loop
 
                                 elif button.text == "Desktop": # quit game

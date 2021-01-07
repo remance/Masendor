@@ -198,6 +198,52 @@ class Mapdescription(pygame.sprite.Sprite):
         else:
             self.image = self.image_original.copy()
 
+class Sourcedescription(pygame.sprite.Sprite):
+    image = None
+
+    def __init__(self, pos, text):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
+        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * self.widthadjust),
+                                                         int(self.image.get_height() * self.heightadjust)))
+
+        self.image_original = self.image.copy()
+        self.image = self.image_original.copy() # reset self.image to new one from the loaded image
+
+        self.longtext(self.image, text, (int(20 * self.widthadjust), int(20 * self.heightadjust)), self.font)
+
+        self.rect = self.image.get_rect(center=pos)
+
+    def longtext(self, surface, textlist, pos, font, color=pygame.Color('black')):
+        """Blit long text into seperate row of text"""
+        x, y = pos
+        if textlist[0] != '': # in case no map description in info.csv
+            for text in textlist:
+                words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
+                space = font.size(' ')[0]  # the width of a space
+                maxwidth, maxheight = surface.get_size()
+                for line in words:
+                    for word in line:
+                        word_surface = font.render(word, 0, color)
+                        wordwidth, wordheight = word_surface.get_size()
+                        if x + wordwidth >= maxwidth:
+                            x = pos[0]  # reset x
+                            y += wordheight  # start on new row.
+                        surface.blit(word_surface, (x, y))
+                        x += wordwidth + space
+                    x = pos[0]  # reset x
+                    y += wordheight  # start on new row
+                x = pos[0]
+                y += wordheight
+        else:
+            self.image = self.image_original.copy()
+
 
 class Teamcoa(pygame.sprite.Sprite):
     def __init__(self, pos, image, team, name):
@@ -245,6 +291,21 @@ class Teamcoa(pygame.sprite.Sprite):
         else:
             self.image = self.notselectedimage
 
+class Armystat(pygame.sprite.Sprite):
+    image = None
+    def __init__(self, pos):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.image_original = self.image.copy()
+        self.image = self.image_original.copy()
+
+        self.rect = self.image.get_rect(center=pos)
+
 
 class Maplistbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
@@ -288,6 +349,19 @@ class Mapname(pygame.sprite.Sprite):
 
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
+
+class Mapoptionbox(pygame.sprite.Sprite):
+    def __init__(self, pos, image):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        self._layer = 13
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
+                                                    int(image.get_height() * self.heightadjust)))
+        self.rect = self.image.get_rect(topright=pos)
 
 class Sourcelistbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
