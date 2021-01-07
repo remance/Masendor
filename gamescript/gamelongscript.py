@@ -62,30 +62,228 @@ def loadgamedata(game):
 
     main_dir = main.main_dir
     SCREENRECT = main.SCREENRECT
+    Soundvolume = main.Soundvolume
     from gamescript import gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamefaction, \
-        gameunitstat, gameui, gamefaction, gamebattalion, gamesquad, rangeattack, gamemenu, gamepopup, gamedrama
+        gameunitstat, gameui, gamefaction, gamebattalion, gamesquad, rangeattack, gamemenu, gamepopup, gamedrama, gameprepare
 
-    # v Game Effect related class
-    imgs = load_images(['effect'])
-    # imgs = []
-    # for img in imgsold:
-    # x, y = img.get_width(), img.get_height()
-    # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
-    # imgs.append(img)
-    rangeattack.Rangearrow.images = [imgs[0]]
-    # ^ End game effect
+    # v Initialise Game Groups
 
-    imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
-    gamemenu.Menubox.images = imgs  # Create ESC Menu box
-    gamemenu.Menubox.SCREENRECT = SCREENRECT
+    # main menu object group
+    game.mainui = pygame.sprite.LayeredUpdates()
+    game.menubutton = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
+    game.menuicon = pygame.sprite.Group()
+    game.menuslider = pygame.sprite.Group()
+    game.maplistbox = pygame.sprite.Group()
+    game.mapscroll = pygame.sprite.Group()
+    game.mapnamegroup = pygame.sprite.Group()
+    game.mapshow = pygame.sprite.Group()
+    game.teamcoa = pygame.sprite.Group()
+    game.maptitle = pygame.sprite.Group()
+    game.mapdescription = pygame.sprite.Group()
 
-    # v Popup Ui
-    imgs = load_images(['ui', 'popup_ui', 'terraincheck'], loadorder=False)
-    gamepopup.Terrainpopup.images = imgs
-    gamepopup.Terrainpopup.SCREENRECT = SCREENRECT
-    imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
-    gamedrama.Textdrama.images = imgs
-    # ^ End popup ui
+    game.sourcescroll = pygame.sprite.Group()
+    game.sourcelistbox = pygame.sprite.Group()
+    game.sourcenamegroup = pygame.sprite.Group()
+
+    game.lorebuttonui = pygame.sprite.Group()  # buttons for enclycopedia group
+    game.lorebook = pygame.sprite.Group()  # encyclopedia object
+    game.slidermenu = pygame.sprite.Group()
+    game.valuebox = pygame.sprite.Group()  # value number and box in esc menu option
+    game.lorenamelist = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
+    game.lorescroll = pygame.sprite.Group()  # scroller for subsection name list in encyclopedia
+    game.subsectionname = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
+
+    # battle object group
+
+    game.battlecamera = pygame.sprite.LayeredUpdates()  # this is layer drawer game camera, all image pos should be based on the map not screen
+    ## the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow,
+    ## 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = squad inspect, 12 pop up
+    game.battleui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
+
+    game.battalionupdater = pygame.sprite.Group()  # updater for battalion objects
+    game.hitboxupdater = pygame.sprite.Group()  # updater for hitbox objects
+    game.squadupdater = pygame.sprite.Group()  # updater for squad objects
+    game.leaderupdater = pygame.sprite.Group()  # updater for leader objects
+    game.uiupdater = pygame.sprite.Group()  # updater for ui objects
+    game.weatherupdater = pygame.sprite.Group()  # updater for weather objects
+    game.effectupdater = pygame.sprite.Group()  # updater for in-game effect objects (e.g. range attack sprite)
+
+    game.battlemapbase = pygame.sprite.Group()  # base terrain map object
+    game.battlemapfeature = pygame.sprite.Group()  # terrain feature map object
+    game.battlemapheight = pygame.sprite.Group()  # height map object
+    game.showmap = pygame.sprite.Group()  # beautiful map object that is shown in gameplay
+
+    game.team1army = pygame.sprite.Group()  # taem 1 battalions group
+    game.team2army = pygame.sprite.Group()  # team 2 battalions group
+
+    game.squad = pygame.sprite.Group()  # all squads group
+
+    game.armyleader = pygame.sprite.Group()  # all leaders group
+
+    game.hitboxes = pygame.sprite.Group()  # all hitboxes group
+    game.arrows = pygame.sprite.Group()  # all arrows group and maybe other range effect stuff later
+    game.directionarrows = pygame.sprite.Group()
+
+    game.deadunit = pygame.sprite.Group()  # dead unit group
+
+    game.gameui = pygame.sprite.Group()  # various game ui group
+    game.minimap = pygame.sprite.Group()  # minimap ui
+    game.eventlog = pygame.sprite.Group()  # event log ui
+    game.logscroll = pygame.sprite.Group()  # scroller fro event log ui
+    game.buttonui = pygame.sprite.Group()  # buttons for various ui group
+    game.squadselectedborder = pygame.sprite.Group()  # squad selected border in inspect ui army box
+    game.fpscount = pygame.sprite.Group()  # fps number counter
+    game.switchbuttonui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. battalion behaviour setting)
+
+    game.terraincheck = pygame.sprite.Group()  # terrain information pop up ui
+    game.buttonnamepopup = pygame.sprite.Group()  # button name pop up ui when mouse over button
+    game.leaderpopup = pygame.sprite.Group()  # leader name pop up ui when mouse over leader image in command ui
+    game.effectpopup = pygame.sprite.Group()  # effect name pop up ui when mouse over status effect icon
+    game.textdrama = pygame.sprite.Group()  # dramatic text effect (announcement) object
+
+    game.skillicon = pygame.sprite.Group()  # skill and trait icon objects
+    game.effecticon = pygame.sprite.Group()  # status effect icon objects
+
+    game.battlemenu = pygame.sprite.Group()  # esc menu object
+    game.battlemenubutton = pygame.sprite.Group()  # buttons for esc menu object group
+    game.optionmenubutton = pygame.sprite.Group()  # buttons for esc menu option object group
+    game.slidermenu = pygame.sprite.Group()
+
+    game.armyselector = pygame.sprite.Group()  # army selector ui
+    game.armyicon = pygame.sprite.Group()  # army icon object group in army selector ui
+    game.selectscroll = pygame.sprite.Group()  # scoller object in army selector ui
+
+    game.timeui = pygame.sprite.Group()  # time bar ui
+    game.timenumber = pygame.sprite.Group()  # number text of in-game time
+    game.speednumber = pygame.sprite.Group()  # number text of current game speed
+
+    game.weathermatter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
+    game.weathereffect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
+    # ^ End initialise
+
+    # v Assign default groups
+    #main menu containers
+    gameprepare.Menubutton.containers = game.menubutton
+    gameprepare.Menuicon.containers = game.menuicon
+    gameprepare.Slidermenu.containers = game.menuslider
+    gameprepare.Valuebox.containers = game.valuebox
+
+    gameprepare.Maplistbox.containers = game.maplistbox
+    gameprepare.Mapname.containers = game.mapnamegroup, game.mainui
+    gameprepare.Sourcelistbox.containers = game.sourcelistbox
+    gameprepare.Sourcename.containers = game.sourcenamegroup, game.mainui
+    gameprepare.Mapshow.containers = game.mapshow
+    gameprepare.Teamcoa.containers = game.teamcoa
+    gameprepare.Maptitle.containers = game.maptitle
+    gameprepare.Mapdescription.containers = game.mapdescription
+
+    gamelorebook.Lorebook.containers = game.lorebook
+    gamelorebook.Subsectionlist.containers = game.lorenamelist
+    gamelorebook.Subsectionname.containers = game.subsectionname, game.mainui
+
+    gameui.Uibutton.containers = game.lorebuttonui
+    gameui.Uiscroller.containers = game.mapscroll, game.sourcescroll, game.lorescroll, game.logscroll, game.selectscroll
+
+    #battle containers
+    gamemap.Basemap.containers = game.battlemapbase
+    gamemap.Mapfeature.containers = game.battlemapfeature
+    gamemap.Mapheight.containers = game.battlemapheight
+    gamemap.Beautifulmap.containers = game.showmap, game.battlecamera
+    gamebattalion.Unitarmy.containers = game.team1army, game.team2army, game.battalionupdater, game.squad, game.battlecamera
+    gamesquad.Unitsquad.containers = game.team1army, game.team2army, game.squadupdater, game.squad
+    gamebattalion.Deadarmy.containers = game.deadunit, game.battalionupdater, game.battlecamera
+    gamebattalion.Hitbox.containers = game.hitboxes, game.hitboxupdater
+    gameleader.Leader.containers = game.armyleader, game.leaderupdater
+    rangeattack.Rangearrow.containers = game.arrows, game.effectupdater, game.battlecamera
+    gamebattalion.Directionarrow.containers = game.directionarrows, game.effectupdater, game.battlecamera
+    gameui.Gameui.containers = game.gameui, game.uiupdater
+    gameui.Minimap.containers = game.minimap, game.battleui
+    gameui.FPScount.containers = game.battleui
+    gameui.Uibutton.containers = game.buttonui, game.lorebuttonui
+    gameui.Switchuibutton.containers = game.switchbuttonui, game.uiupdater
+    gameui.Selectedsquad.containers = game.squadselectedborder
+    gameui.Skillcardicon.containers = game.skillicon, game.battleui
+    gameui.Effectcardicon.containers = game.effecticon, game.battleui
+    gameui.Eventlog.containers = game.eventlog, game.battleui
+    gameui.Armyselect.containers = game.armyselector, game.battleui
+    gameui.Armyicon.containers = game.armyicon, game.battleui
+    gameui.Timeui.containers = game.timeui, game.battleui
+    gameui.Timer.containers = game.timenumber, game.battleui
+    gameui.Speednumber.containers = game.speednumber, game.battleui
+    gamepopup.Terrainpopup.containers = game.terraincheck
+    gamepopup.Onelinepopup.containers = game.buttonnamepopup, game.leaderpopup
+    gamepopup.Effecticonpopup.containers = game.effectpopup
+    gamedrama.Textdrama.containers = game.textdrama
+    gamemenu.Escbox.containers = game.battlemenu
+    gamemenu.Escbutton.containers = game.battlemenubutton, game.optionmenubutton
+    gamemenu.Escslidermenu.containers = game.slidermenu
+    gamemenu.Escvaluebox.containers = game.valuebox
+    gamelorebook.Lorebook.containers = game.lorebook
+    gamelorebook.Subsectionlist.containers = game.lorenamelist
+    gamelorebook.Subsectionname.containers = game.subsectionname, game.battleui
+    gameweather.Mattersprite.containers = game.weathermatter, game.battleui, game.weatherupdater
+    gameweather.Specialeffect.containers = game.weathereffect, game.battleui, game.weatherupdater
+    # ^ End assign
+
+
+    #v Craete feature terrain modifier
+    game.featuremod = {}
+    with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
+        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        run = 0  # for skipping the first row
+        for row in rd:
+            for n, i in enumerate(row):
+                if run != 0:
+                    if n == 12:  # effect list is at column 12
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+
+                    elif n in (2, 3, 4, 5, 6, 7):  # other modifer column
+                        if i != "":
+                            row[n] = float(i) / 100
+                        else:  # empty row assign 1.0 default
+                            i = 1.0
+
+                    elif i.isdigit() or "-" in i:  # modifer bonus (including negative) in other column
+                        row[n] = int(i)
+
+            run += 1
+            game.featuremod[row[0]] = row[1:]
+    unitfile.close()
+    #^ End feature terrain mod
+
+    # v Create weather related class
+    game.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
+    game.weathermatterimgs = []
+
+    for weather in ('0', '1', '2', '3'):  # Load weather matter sprite image
+        imgs = load_images(['map', 'weather', weather], loadorder=False)
+        game.weathermatterimgs.append(imgs)
+
+    game.weathereffectimgs = []
+    for weather in ('0', '1', '2', '3'):  # Load weather effect sprite image
+        imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
+        imgs = []
+        for img in imgsold:
+            img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
+            imgs.append(img)
+        game.weathereffectimgs.append(imgs)
+
+    imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  # Load weather icon
+    gameweather.Weather.images = imgs
+    # ^ End weather
+
+    #v Faction class
+    gamefaction.Factiondata.main_dir = main_dir
+    game.allfaction = gamefaction.Factiondata(option=game.rulesetfolder)
+    imgsold = load_images(['ruleset', game.rulesetfolder.strip("/"), 'faction', 'coa'], loadorder=False)  # coa imagelist
+    imgs = []
+    for img in imgsold:
+        imgs.append(img)
+    game.coa = imgs
+    # ^ End faction
 
     # v create game map texture and their default variables
     game.featurelist = []
@@ -97,7 +295,13 @@ def loadgamedata(game):
     game.featurelist = game.featurelist[1:]
 
     gamemap.Mapfeature.main_dir = main_dir
+    gamemap.Mapfeature.featuremod = game.featuremod
     gamemap.Beautifulmap.main_dir = main_dir
+
+    game.battlemapbase = gamemap.Basemap(1)  # create base terrain map
+    game.battlemapfeature = gamemap.Mapfeature(1)  # create terrain feature map
+    game.battlemapheight = gamemap.Mapheight(1)  # create height map
+    game.showmap = gamemap.Beautifulmap(1)
 
     img = load_image('effect.png', 'map')  # map special effect image
     gamemap.Beautifulmap.effectimage = img
@@ -160,65 +364,6 @@ def loadgamedata(game):
                       10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
                       69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
 
-    #v Craete feature terrain modifier
-    game.featuremod = {}
-    with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-        run = 0  # for skipping the first row
-        for row in rd:
-            for n, i in enumerate(row):
-                if run != 0:
-                    if n == 12:  # effect list is at column 12
-                        if "," in i:
-                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                        elif i.isdigit():
-                            row[n] = [int(i)]
-
-                    elif n in (2, 3, 4, 5, 6, 7):  # other modifer column
-                        if i != "":
-                            row[n] = float(i) / 100
-                        else:  # empty row assign 1.0 default
-                            i = 1.0
-
-                    elif i.isdigit() or "-" in i:  # modifer bonus (including negative) in other column
-                        row[n] = int(i)
-
-            run += 1
-            game.featuremod[row[0]] = row[1:]
-    unitfile.close()
-    #^ End feature terrain mod
-
-    # v Create weather related class
-    game.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
-    game.weathermatterimgs = []
-
-    for weather in ('0', '1', '2', '3'):  # Load weather matter sprite image
-        imgs = load_images(['map', 'weather', weather], loadorder=False)
-        game.weathermatterimgs.append(imgs)
-
-    game.weathereffectimgs = []
-    for weather in ('0', '1', '2', '3'):  # Load weather effect sprite image
-        imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
-        imgs = []
-        for img in imgsold:
-            img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
-            imgs.append(img)
-        game.weathereffectimgs.append(imgs)
-
-    imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  # Load weather icon
-    gameweather.Weather.images = imgs
-    # ^ End weather
-
-    #v Faction class
-    gamefaction.Factiondata.main_dir = main_dir
-    game.allfaction = gamefaction.Factiondata(option=game.rulesetfolder)
-    imgsold = load_images(['ruleset', game.rulesetfolder.strip("/"), 'faction', 'coa'], loadorder=False)  # coa imagelist
-    imgs = []
-    for img in imgsold:
-        imgs.append(img)
-    game.coa = imgs
-    # ^ End faction
-
     # v create unit related class
     imgs = load_images(['war', 'unit_ui'])
     gamesquad.Unitsquad.images = imgs
@@ -255,12 +400,29 @@ def loadgamedata(game):
     gameui.Skillcardicon.activeskill = activeskill
 
     game.gameunitstat = gameunitstat.Unitstat(main_dir, game.ruleset, game.rulesetfolder)
+
+    gamebattalion.Unitarmy.statuslist = game.gameunitstat.statuslist
+    gamebattalion.Unitarmy.gamemap = game.battlemapbase  # add battle map to all battalion class
+    gamebattalion.Unitarmy.gamemapfeature = game.battlemapfeature  # add battle map to all battalion class
+    gamebattalion.Unitarmy.gamemapheight = game.battlemapheight
+    gamebattalion.Hitbox.gamecamera = game.battlecamera
+    rangeattack.Rangearrow.gamemapheight = game.battlemapheight
     #^ End unit class
 
     #v create leader list
     imgs, order = load_images(['ruleset', game.rulesetfolder.strip("/"), 'leader', 'portrait'], loadorder=False, returnorder=True)
     game.allleader = gameunitstat.Leaderstat(main_dir, imgs, order, option=game.rulesetfolder)
     #^ End leader
+
+    # v Game Effect related class
+    imgs = load_images(['effect'])
+    # imgs = []
+    # for img in imgsold:
+    # x, y = img.get_width(), img.get_height()
+    # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
+    # imgs.append(img)
+    rangeattack.Rangearrow.images = [imgs[0]]
+    # ^ End game effect
 
     #v Encyclopedia related objects
     gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
@@ -336,6 +498,139 @@ def loadgamedata(game):
                         imgs[14], 21, 13)]  # next page button
     game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
     #^ End encyclopedia objects
+
+    # v Create battle game ui objects
+
+    game.minimap = gameui.Minimap((SCREENRECT.width, SCREENRECT.height))
+
+    #Popup Ui
+    imgs = load_images(['ui', 'popup_ui', 'terraincheck'], loadorder=False)
+    gamepopup.Terrainpopup.images = imgs
+    gamepopup.Terrainpopup.SCREENRECT = SCREENRECT
+    imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
+    gamedrama.Textdrama.images = imgs
+
+    #Load all image of ui and icon from folder
+    topimage = load_images(['ui', 'battle_ui'])
+    iconimage = load_images(['ui', 'battle_ui', 'topbar_icon'])
+
+    #Army select list ui
+    game.armyselector = gameui.Armyselect((0, 0), topimage[30])
+    game.selectscroll = gameui.Uiscroller(game.armyselector.rect.topright, topimage[30].get_height(),
+                                          game.armyselector.maxrowshow)  # scroller for army select ui
+
+    #Right top bar ui that show rough information of selected battalions
+    game.gameui = [
+        gameui.Gameui(X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
+                      icon=iconimage, uitype="topbar")]
+    game.gameui[0].options1 = game.statetext
+
+    #Left top command ui with leader and battalion behavious button
+    iconimage = load_images(['ui', 'battle_ui', 'commandbar_icon'])
+    game.gameui.append(gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + game.armyselector.image.get_height(),
+                                     image=topimage[1], icon=iconimage,
+                                     uitype="commandbar"))
+
+    #Squad information card ui
+    game.gameui.append(
+        gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
+                      image=topimage[2], icon="", uitype="unitcard"))
+    game.gameui[2].featurelist = game.featurelist  # add terrain feature list name to unit card
+
+    game.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] * 4,
+                                     image=topimage[5], icon="", uitype="armybox"))  # inspect ui that show squad in selected battalion
+
+    #Time bar ui
+    game.timeui = gameui.Timeui(game.armyselector.rect.topright, topimage[31])
+    game.timenumber = gameui.Timer(game.timeui.rect.topleft)  # time number on time ui
+    game.speednumber = gameui.Speednumber((game.timeui.rect.center[0] + 40, game.timeui.rect.center[1]),
+                                          1)  # game speed number on the time ui
+
+    #Button related to unit card and command
+    game.buttonui = [gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y + 10, topimage[3], 0),  # unit card description button
+                     gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y - 70, topimage[4], 1),  # unit card stat button
+                     gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y - 30, topimage[7], 2),  # unit card skill button
+                     gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y + 50, topimage[22], 3),  # unit card equipment button
+                     gameui.Uibutton(game.gameui[0].X - 206, game.gameui[0].Y - 1, topimage[6], 1),  # army inspect open/close button
+                     gameui.Uibutton(game.gameui[1].X - 115, game.gameui[1].Y + 26, topimage[8], 0),  # split by middle coloumn button
+                     gameui.Uibutton(game.gameui[1].X - 115, game.gameui[1].Y + 56, topimage[9], 1),  # split by middle row button
+                     gameui.Uibutton(game.gameui[1].X + 100, game.gameui[1].Y + 56, topimage[14], 1)]  # decimation button
+
+    #Behaviour button that once click switch to other mode for unit behaviour
+    game.switchbuttonui = [gameui.Switchuibutton(game.gameui[1].X - 30, game.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
+                           gameui.Switchuibutton(game.gameui[1].X - 70, game.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
+                           gameui.Switchuibutton(game.gameui[1].X, game.gameui[1].Y + 96, topimage[17:20]),  # behaviour button
+                           gameui.Switchuibutton(game.gameui[1].X + 40, game.gameui[1].Y + 96, topimage[20:22]),  # shoot range button
+                           gameui.Switchuibutton(game.gameui[1].X - 115, game.gameui[1].Y + 96, topimage[35:38]),  # arcshot button
+                           gameui.Switchuibutton(game.gameui[1].X + 80, game.gameui[1].Y + 96, topimage[38:40])]  # toggle run button
+
+    game.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
+
+    game.logscroll = gameui.Uiscroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.maxrowshow)  # event log scroller
+    game.eventlog.logscroll = game.logscroll  # Link scroller to ui since it is easier to do here with the current order
+    gamesquad.Unitsquad.eventlog = game.eventlog  # Assign eventlog to unit class to broadcast event to the log
+
+    game.buttonui.append(gameui.Uibutton(game.eventlog.pos[0] + (topimage[24].get_width() / 2),
+                                         game.eventlog.pos[1] - game.eventlog.image.get_height() - (topimage[24].get_height() / 2), topimage[24],
+                                         0))  # war tab log button
+
+    game.buttonui += [gameui.Uibutton(game.buttonui[8].pos[0] + topimage[24].get_width(), game.buttonui[8].pos[1], topimage[25], 1),
+                      # army tab log button
+                      gameui.Uibutton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 2), game.buttonui[8].pos[1], topimage[26], 2),
+                      # leader tab log button
+                      gameui.Uibutton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 3), game.buttonui[8].pos[1], topimage[27], 3),
+                      # unit tab log button
+                      gameui.Uibutton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 5), game.buttonui[8].pos[1], topimage[28], 4),
+                      # delete current tab log button
+                      gameui.Uibutton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 6), game.buttonui[8].pos[1], topimage[29], 5),
+                      # delete all log button
+                      gameui.Uibutton(game.timeui.rect.center[0] - 30, game.timeui.rect.center[1], topimage[32], 0),  # time pause button
+                      gameui.Uibutton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
+                      gameui.Uibutton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
+
+    game.battleui.add(game.buttonui[8:17])
+    game.battleui.add(game.logscroll, game.selectscroll)
+
+    game.squadselectedborder = gameui.Selectedsquad(topimage[-1]) #yellow border on selected squad in inspect ui
+    game.terraincheck = gamepopup.Terrainpopup() #popup box that show terrain information when right click on map
+    game.buttonnamepopup = gamepopup.Onelinepopup() #popup box that show button name when mouse over
+    game.leaderpopup = gamepopup.Onelinepopup() #popup box that show leader name when mouse over
+    game.effectpopup = gamepopup.Effecticonpopup() #popup box that show skill/trait/status name when mouse over
+
+    gamedrama.Textdrama.SCREENRECT = SCREENRECT
+    game.textdrama = gamedrama.Textdrama() #messege at the top of screen that show up for important event
+
+    game.fpscount = gameui.FPScount() #FPS number counter
+    # ^ End game ui
+
+    # v Esc menu related objects
+    imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
+    gamemenu.Escbox.images = imgs  # Create ESC Menu box
+    gamemenu.Escbox.SCREENRECT = SCREENRECT
+    game.battlemenu = gamemenu.Escbox()
+
+    buttonimage = load_images(['ui', 'battlemenu_ui', 'button'], loadorder=False)
+    menurectcenter0 = game.battlemenu.rect.center[0]
+    menurectcenter1 = game.battlemenu.rect.center[1]
+
+    game.battlemenubutton = [
+        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 - 100), text="Resume", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 - 50), text="Encyclopedia", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1), text="Option", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 50), text="Main Menu", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 100), text="Desktop", size=14)]
+
+    game.optionmenubutton = [
+        gamemenu.Escbutton(buttonimage, (menurectcenter0 - 50, menurectcenter1 + 70), text="Confirm", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0 + 50, menurectcenter1 + 70), text="Apply", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0 + 150, menurectcenter1 + 70), text="Cancel", size=14)]
+
+    sliderimage = load_images(['ui', 'battlemenu_ui', 'slider'], loadorder=False)
+    game.slidermenu = [
+        gamemenu.Escslidermenu(sliderimage[0], sliderimage[1:3], (menurectcenter0 * 1.1, menurectcenter1), Soundvolume,
+                               0)]
+    game.valuebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battlemenu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
+    # ^ End esc menu objects
 
 
 def csv_read(file, subfolder=[], outputtype=0, defaultmaindir=True):
@@ -760,7 +1055,7 @@ def die(who, battle, group, enemygroup):
                 squad.basemorale -= 30
 
     for hitbox in who.hitbox: # delete hitbox
-        battle.allcamera.remove(hitbox)
+        battle.battlecamera.remove(hitbox)
         battle.hitboxes.remove(hitbox)
         hitbox.kill()
 
@@ -768,7 +1063,7 @@ def die(who, battle, group, enemygroup):
     battle.allunitindex.remove(who.gameid)
     group.remove(who)
     battle.deadunit.add(who)
-    battle.allcamera.change_layer(sprite=who, new_layer=1)
+    battle.battlecamera.change_layer(sprite=who, new_layer=1)
     who.gotkilled = True
 
     for thisarmy in enemygroup:  # get bonus authority to the another army

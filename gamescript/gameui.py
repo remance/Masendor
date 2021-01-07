@@ -382,17 +382,11 @@ class Selectedsquad(pygame.sprite.Sprite):
 
 
 class Minimap(pygame.sprite.Sprite):
-    def __init__(self, X, Y, image, camera):
+    def __init__(self, pos):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.X = X
-        self.Y = Y
-        self.image = image
-        scalewidth = self.image.get_width() / 5
-        scaleheight = self.image.get_height() / 5
-        self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
-        self.image_original = self.image.copy()
+        self.pos = pos
+
         self.team2dot = pygame.Surface((8, 8)) # dot for team2 unit
         self.team2dot.fill((0, 0, 0)) # black corner
         self.team1dot = pygame.Surface((8, 8)) # dot for team1 unit
@@ -406,10 +400,19 @@ class Minimap(pygame.sprite.Sprite):
         self.team1dot.blit(team1, rect)
         self.team1pos = []
         self.team2pos = []
+
+        self.lastscale = 10
+
+    def drawimage(self, image, camera):
+        self.image = image
+        scalewidth = self.image.get_width() / 5
+        scaleheight = self.image.get_height() / 5
+        self.dim = pygame.Vector2(scalewidth, scaleheight)
+        self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
+        self.image_original = self.image.copy()
         self.cameraborder = [camera.image.get_width(), camera.image.get_height()]
         self.camerapos = camera.pos
-        self.lastscale = 10
-        self.rect = self.image.get_rect(bottomright=(self.X, self.Y))
+        self.rect = self.image.get_rect(bottomright=self.pos)
 
     def update(self, viewmode, camerapos, team1poslist, team2poslist):
         """update battalion dot on map"""
@@ -431,7 +434,6 @@ class Minimap(pygame.sprite.Sprite):
 
 
 class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
-    mapevent = None # Extra map based messege event in eventlog.csv
 
     def __init__(self, image, pos):
         self._layer = 10
@@ -450,6 +452,9 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         self.maxrowshow = 9 # maximum 9 text rows can appear at once
         self.lencheck = 0 # total number of row in the current mode
         self.logscroll = None  # Link from maingame after creation of both object
+
+    def addeventlog(self, mapevent):
+        self.mapevent = mapevent
         if self.mapevent != {}: # Edit map based event
             self.mapevent.pop('id')
             for event in self.mapevent:
@@ -660,20 +665,22 @@ class Armyicon(pygame.sprite.Sprite):
 
 
 class Timer(pygame.sprite.Sprite):
-    def __init__(self, pos, timestart, textsize=20):
+    def __init__(self, pos, textsize=20):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
         self.pos = pos
+        self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
+        self.image_original = self.image.copy()
+        self.rect = self.image.get_rect(topleft=pos)
+
+    def startsetup(self, timestart):
         self.timer = timestart.total_seconds()
         self.oldtimer = self.timer
         self.timenum = timestart #datetime.timedelta(seconds=self.timer)
-        self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
-        self.image_original = self.image.copy()
         self.timersurface = self.font.render(str(self.timer), 1, (0, 0, 0))
         self.timerrect = self.timersurface.get_rect(topleft=(5, 5))
         self.image.blit(self.timersurface, self.timerrect)
-        self.rect = self.image.get_rect(topleft=pos)
 
     def timerupdate(self, dt):
         """Update in-game timer number"""

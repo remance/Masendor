@@ -39,20 +39,23 @@ featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuil
 class Basemap(pygame.sprite.Sprite):
     maxviewmode = 10
 
-    def __init__(self, image, scale):
+    def __init__(self, scale):
         """image file of map should be at size 1000x1000 then it will be scaled in game"""
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.scale = scale
+        self.terraincolour = terraincolour
+        # self.image = pygame.surface((0,0))
+        # self.rect = self.image.get_rect(topleft=(0, 0))
+
+    def drawimage(self, image):
         self.image = image
         self.trueimage = self.image.copy()
-        self.scale = scale
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-        self.rect = self.image.get_rect(topleft=(0, 0))
-        self.terraincolour = terraincolour
 
     def getterrain(self, pos):
         """get the base terrain at that exact position"""
@@ -83,19 +86,22 @@ class Mapfeature(pygame.sprite.Sprite):
     main_dir = None
     featuremod = None
 
-    def __init__(self, image, scale):
+    def __init__(self, scale):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
+        # self.image = pygame.surface((0,0))
+        self.scale = scale
+        self.featurecolour = featurecolour
+        # self.rect = self.image.get_rect(topleft=(0, 0))
+
+    def drawimage(self, image):
         self.image = image
         self.trueimage = self.image.copy()
-        self.scale = scale
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-        self.rect = self.image.get_rect(topleft=(0, 0))
-        self.featurecolour = featurecolour
 
     def getfeature(self, pos, gamemap):
         """get the terrain feature at that exact position"""
@@ -129,18 +135,21 @@ class Mapfeature(pygame.sprite.Sprite):
 class Mapheight(pygame.sprite.Sprite):
     maxviewmode = 10
 
-    def __init__(self, image, scale):
+    def __init__(self, scale):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
+        # self.image = pygame.surface((0,0))
+        self.scale = scale
+        # self.rect = self.image.get_rect(topleft=(0, 0))
+
+    def drawimage(self, image):
         self.image = image
         self.trueimage = self.image.copy()
-        self.scale = scale
         scalewidth = self.image.get_width() * self.scale
         scaleheight = self.image.get_height() * self.scale
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-        self.rect = self.image.get_rect(topleft=(0, 0))
 
     def changescale(self, scale):
         self.scale = scale
@@ -168,10 +177,10 @@ class Beautifulmap(pygame.sprite.Sprite):
     loadtexturelist = None
     main_dir = None
 
-    def __init__(self, scale, basemap, featuremap, gamemapheight, placename):
+    def __init__(self, scale):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = featuremap.image.copy()
+        # self.image = pygame.surface((0,0))
         self.scale = scale
         self.mode = 0
         self.newcolourlist = {}
@@ -184,6 +193,11 @@ class Beautifulmap(pygame.sprite.Sprite):
                     elif "," in i:
                         row[n] = ast.literal_eval(i)
                 self.newcolourlist[row[0]] = row[1:]
+
+    def drawimage(self, basemap, featuremap, gamemapheight, placename):
+
+        self.image = featuremap.image.copy()
+        self.rect = self.image.get_rect(topleft=(0, 0))
 
         for rowpos in range(0, 1000):  ## Recolour the map
             for colpos in range(0, 1000):
@@ -232,7 +246,6 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.imagewithheight_original = self.image.copy()
         self.imagewithheight_original.blit(gamemapheight.image, rect)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-        self.rect = self.image.get_rect(topleft=(0, 0))
 
     def changemode(self, mode):
         """Switch between normal and height map mode"""

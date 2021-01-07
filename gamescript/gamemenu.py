@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 
 
-class Menubox(pygame.sprite.Sprite):
+class Escbox(pygame.sprite.Sprite):
     images = []
     SCREENRECT = None
 
@@ -20,7 +20,7 @@ class Menubox(pygame.sprite.Sprite):
         self.image = self.images[mode]
 
 
-class Menubutton(pygame.sprite.Sprite):
+class Escbutton(pygame.sprite.Sprite):
     def __init__(self, images, pos, text="", size=16):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -41,7 +41,7 @@ class Menubutton(pygame.sprite.Sprite):
         self.event = False
 
 
-class Slidermenu(pygame.sprite.Sprite):
+class Escslidermenu(pygame.sprite.Sprite):
     def __init__(self, barimage, buttonimage, pos, value, type):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -79,7 +79,7 @@ class Slidermenu(pygame.sprite.Sprite):
         valuebox.update(self.value)
 
 
-class Valuebox(pygame.sprite.Sprite):
+class Escvaluebox(pygame.sprite.Sprite):
     def __init__(self, textimage, pos, value, textsize=16):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)

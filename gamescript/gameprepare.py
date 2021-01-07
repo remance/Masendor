@@ -8,17 +8,143 @@ from gamescript import gamemap
 terraincolour = gamemap.terraincolour
 featurecolour = gamemap.featurecolour
 
+
+class Menubutton(pygame.sprite.Sprite):
+    def __init__(self, images, pos, text="", size=16):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.images = [image.copy() for image in images]
+        self.text = text
+        self.font = pygame.font.SysFont("timesnewroman", size)
+
+        if text != "":  # draw text into the button images
+            # self.imagescopy = self.images
+            self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
+            self.textrect = self.textsurface.get_rect(center=self.images[0].get_rect().center)
+            self.images[0].blit(self.textsurface, self.textrect)
+            self.images[1].blit(self.textsurface, self.textrect)
+            self.images[2].blit(self.textsurface, self.textrect)
+
+        self.image = self.images[0]
+        self.rect = self.images[0].get_rect(center=self.pos)
+        self.event = False
+
+    def update(self, mouse_pos, mouse_up, mouse_down):
+        self.mouse_over = False
+        self.image = self.images[0]
+        if self.rect.collidepoint(mouse_pos):
+            self.mouse_over = True
+            self.image = self.images[1]
+            if mouse_up:
+                self.event = True
+                self.image = self.images[2]
+
+    def changestate(self, text):
+        if text != "":
+            img = load_image('scroll_normal.jpg', 'ui')
+            img2 = img
+            img3 = load_image('scroll_click.jpg', 'ui')
+            self.images = [img, img2, img3]
+            self.textsurface = self.font.render(text, 1, (0, 0, 0))
+            self.textrect = self.textsurface.get_rect(center=self.images[0].get_rect().center)
+            self.images[0].blit(self.textsurface, self.textrect)
+            self.images[1].blit(self.textsurface, self.textrect)
+            self.images[2].blit(self.textsurface, self.textrect)
+        self.rect = self.images[0].get_rect(center=self.pos)
+        self.event = False
+
+
+class Menuicon(pygame.sprite.Sprite):
+    def __init__(self, images, pos, text="", imageresize=0):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.images = images
+        self.image = self.images[0]
+        if imageresize != 0:
+            self.image = pygame.transform.scale(self.image, (imageresize, imageresize))
+        self.text = text
+        self.font = pygame.font.SysFont("timesnewroman", 16)
+        if text != "":
+            self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
+            self.textrect = self.textsurface.get_rect(center=self.image.get_rect().center)
+        self.rect = self.image.get_rect(center=self.pos)
+        self.event = False
+
+
+class Slidermenu(pygame.sprite.Sprite):
+    def __init__(self, barimage, buttonimage, pos, value):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.image = barimage
+        self.buttonimagelist = buttonimage
+        self.buttonimage = self.buttonimagelist[0]
+        self.slidersize = self.image.get_size()[0] - 20
+        self.minvalue = self.pos[0] - (self.image.get_width() / 2) + 10.5  # min value position of the scroll bar
+        self.maxvalue = self.pos[0] + (self.image.get_width() / 2) - 10.5  # max value position
+        self.value = value
+        self.mouse_value = (self.slidersize * value / 100) + 10.5  # mouse position on the scroll bar convert to value
+        self.image_original = self.image.copy()
+        self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
+        self.image.blit(self.buttonimage, self.buttonrect)
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def update(self, mouse_pos, valuebox, forcedvalue=False):
+        """Update slider value and position"""
+        if forcedvalue == False:
+            self.mouse_value = mouse_pos[0]
+            if self.mouse_value > self.maxvalue:
+                self.mouse_value = self.maxvalue
+            elif self.mouse_value < self.minvalue:
+                self.mouse_value = self.minvalue
+            self.value = (self.mouse_value - self.minvalue) / 2
+            self.mouse_value = (self.slidersize * self.value / 100) + 10.5
+        else:  ## For revert, cancel or esc in the option menu
+            self.value = mouse_pos
+            self.mouse_value = (self.slidersize * self.value / 100) + 10.5
+        self.image = self.image_original.copy()
+        self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
+        self.image.blit(self.buttonimage, self.buttonrect)
+        valuebox.update(self.value)
+
+
+class Valuebox(pygame.sprite.Sprite):
+    def __init__(self, textimage, pos, value, textsize=16):
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("timesnewroman", textsize)
+        self.pos = pos
+        self.image = pygame.transform.scale(textimage, (int(textimage.get_size()[0] / 2), int(textimage.get_size()[1] / 2)))
+        self.image_original = self.image.copy()
+        self.value = value
+        self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.textsurface, self.textrect)
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def update(self, value):
+        self.value = value
+        self.image = self.image_original.copy()
+        self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
+        self.image.blit(self.textsurface, self.textrect)
+
+
 class Maptitle(pygame.sprite.Sprite):
     def __init__(self, name, pos):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.font = pygame.font.SysFont("oldenglishtext", 70)
+        self.font = pygame.font.SysFont("oldenglishtext", int(70 * self.heightadjust))
         self.textsurface = self.font.render(str(name), 1, (0, 0, 0))
 
-        self.image = pygame.Surface((self.textsurface.get_width()+20, self.textsurface.get_height()+20))
+        self.image = pygame.Surface((int(self.textsurface.get_width() + (20 * self.widthadjust)),
+                                     int(self.textsurface.get_height() + (20 * self.heightadjust))))
         self.image.fill((0,0,0))
+
         whitebody = pygame.Surface((self.textsurface.get_width(), self.textsurface.get_height()))
-        whitebody.fill((255,255,255))
+        whitebody.fill((239,228,176))
         whiterect = whitebody.get_rect(center = (self.image.get_width()/2, self.image.get_height()/2))
         self.image.blit(whitebody, whiterect)
 
@@ -30,38 +156,80 @@ class Mapdescription(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, pos, text):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.font = pygame.font.SysFont("helvetica", 16)
+        self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
+        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * self.widthadjust),
+                                                         int(self.image.get_height() * self.heightadjust)))
+
+        self.image_original = self.image.copy()
+        self.image = self.image_original.copy() # reset self.image to new one from the loaded image
+
+        self.longtext(self.image, text, (int(20 * self.widthadjust), int(20 * self.heightadjust)), self.font)
+
         self.rect = self.image.get_rect(center=pos)
+
+    def longtext(self, surface, textlist, pos, font, color=pygame.Color('black')):
+        """Blit long text into seperate row of text"""
+        x, y = pos
+        if textlist[0] != '': # in case no map description in info.csv
+            for text in textlist:
+                words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
+                space = font.size(' ')[0]  # the width of a space
+                maxwidth, maxheight = surface.get_size()
+                for line in words:
+                    for word in line:
+                        word_surface = font.render(word, 0, color)
+                        wordwidth, wordheight = word_surface.get_size()
+                        if x + wordwidth >= maxwidth:
+                            x = pos[0]  # reset x
+                            y += wordheight  # start on new row.
+                        surface.blit(word_surface, (x, y))
+                        x += wordwidth + space
+                    x = pos[0]  # reset x
+                    y += wordheight  # start on new row
+                x = pos[0]
+                y += wordheight
+        else:
+            self.image = self.image_original.copy()
 
 
 class Teamcoa(pygame.sprite.Sprite):
     def __init__(self, pos, image, team, name):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.selectedimage = pygame.Surface((200, 200))
-        self.notselectedimage = pygame.Surface((200, 200))
+        self.selectedimage = pygame.Surface((int(200 * self.widthadjust), int(200 * self.heightadjust)))
+        self.notselectedimage = self.selectedimage.copy()
         self.notselectedimage.fill((0, 0, 0)) # black border when not selected
         self.selectedimage.fill((230, 200, 15))  # gold border when selected
 
-        whitebody = pygame.Surface((196, 196))
+        whitebody = pygame.Surface((int(196 * self.widthadjust), int(196 * self.heightadjust)))
         whitebody.fill((255,255,255))
-        whiterect = whitebody.get_rect(topleft = (2, 2))
+        whiterect = whitebody.get_rect(topleft = (int(2 * self.widthadjust), int(2 * self.heightadjust)))
         self.notselectedimage.blit(whitebody, whiterect)
         self.selectedimage.blit(whitebody, whiterect)
 
         #v Coat of arm image to image
-        coaimage = pygame.transform.scale(image, (100, 100))
-        coarect = coaimage.get_rect(center = (100, 70))
+        coaimage = pygame.transform.scale(image, (int(100 * self.widthadjust), int(100 * self.heightadjust)))
+        coarect = coaimage.get_rect(center = (int(100 * self.widthadjust), int(70 * self.heightadjust)))
         self.notselectedimage.blit(coaimage, coarect)
         self.selectedimage.blit(coaimage, coarect)
         #^ End Coat of arm
 
         #v Faction name to image
-        self.font = pygame.font.SysFont("oldenglishtext", 32)
+        self.font = pygame.font.SysFont("oldenglishtext", int(32 * self.heightadjust))
         self.textsurface = self.font.render(str(name), 1, (0, 0, 0))
-        self.textrect = self.textsurface.get_rect(center = (100, 150))
+        self.textrect = self.textsurface.get_rect(center = (int(100 * self.widthadjust), int(150 * self.heightadjust)))
         self.notselectedimage.blit(self.textsurface, self.textrect)
         self.selectedimage.blit(self.textsurface, self.textrect)
         #^ End faction name
@@ -80,30 +248,41 @@ class Teamcoa(pygame.sprite.Sprite):
 
 class Maplistbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
+        self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
+                                                    int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
         self.maxshowlist = 20 # max number of map on list can be shown at once
 
 class Mapname(pygame.sprite.Sprite):
-    def __init__(self, pos, name, textsize=16):
+    def __init__(self, box, pos, name, textsize=16):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", textsize)
-        self.image = pygame.Surface((180, 25))  # black corner
+        self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * textsize))
+        self.image = pygame.Surface((box.image.get_width() - int(10 * self.widthadjust), int(25 * self.heightadjust)))  # black corner
         self.image.fill((0, 0, 0))
 
         # v White body square
-        smallimage = pygame.Surface((178, 23))
+        smallimage = pygame.Surface((box.image.get_width() - int(12 * self.widthadjust), int(23 * self.heightadjust)))
         smallimage.fill((255, 255, 255))
-        smallrect = smallimage.get_rect(topleft=(1, 1))
+        smallrect = smallimage.get_rect(topleft=(int(1 * self.widthadjust), int(1 * self.heightadjust)))
         self.image.blit(smallimage, smallrect)
         # ^ End white body
 
         # v Map name text
         textsurface = self.font.render(str(name), 1, (0, 0, 0))
-        textrect = textsurface.get_rect(midleft=(3, self.image.get_height() / 2))
+        textrect = textsurface.get_rect(midleft=(int(3 * self.widthadjust), self.image.get_height() / 2))
         self.image.blit(textsurface, textrect)
         # ^ End map name
 
@@ -112,30 +291,41 @@ class Mapname(pygame.sprite.Sprite):
 
 class Sourcelistbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
+        self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
+                                                    int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
         self.maxshowlist = 5  # max number of map on list can be shown at once
 
-class Source(pygame.sprite.Sprite):
-    def __init__(self, pos, name, textsize=16):
+class Sourcename(pygame.sprite.Sprite):
+    def __init__(self, box, pos, name, textsize=16):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", textsize)
-        self.image = pygame.Surface((180, 25))  # black corner
+        self.font = pygame.font.SysFont("helvetica", int(textsize * self.heightadjust))
+        self.image = pygame.Surface((box.image.get_width(), int(25 * self.heightadjust)))  # black corner
         self.image.fill((0, 0, 0))
 
         # v White body square
-        smallimage = pygame.Surface((178, 23))
+        smallimage = pygame.Surface((box.image.get_width() - int(2 * self.widthadjust), int(23* self.heightadjust)))
         smallimage.fill((255, 255, 255))
-        smallrect = smallimage.get_rect(topleft=(1, 1))
+        smallrect = smallimage.get_rect(topleft=(int(1 * self.widthadjust), int(1 * self.heightadjust)))
         self.image.blit(smallimage, smallrect)
         # ^ End white body
 
         # v Subsection name text
         textsurface = self.font.render(str(name), 1, (0, 0, 0))
-        textrect = textsurface.get_rect(midleft=(3, self.image.get_height() / 2))
+        textrect = textsurface.get_rect(midleft=(int(3 * self.widthadjust), self.image.get_height() / 2))
         self.image.blit(textsurface, textrect)
         # ^ End subsection name
 
@@ -148,10 +338,13 @@ class Mapshow(pygame.sprite.Sprite):
     def __init__(self, pos, basemap, featuremap):
         import main
         self.main_dir = main.main_dir
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
 
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = pygame.Surface((310, 310))
-        self.image.fill((0, 0, 0)) # draw black colour for black corner
+        self.imagebefore = pygame.Surface((310, 310))
+        self.imagebefore.fill((0, 0, 0)) # draw black colour for black corner
         # pygame.draw.rect(self.image, self.colour, (2, 2, self.widthbox - 3, self.heightbox - 3)) # draw block colour
 
         self.newcolourlist = {}
@@ -166,6 +359,8 @@ class Mapshow(pygame.sprite.Sprite):
                 self.newcolourlist[row[0]] = row[1:]
 
         self.changemap(basemap,featuremap)
+        self.image = pygame.transform.scale(self.imagebefore, (int(self.imagebefore.get_width() * self.widthadjust),
+                                                               int(self.imagebefore.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(center=pos)
 
 
@@ -189,8 +384,8 @@ class Mapshow(pygame.sprite.Sprite):
                 mapimage.fill(newcolour, rect)
 
         imagerect = mapimage.get_rect(topleft=(5,5))
-        self.image.blit(mapimage,imagerect)
-        self.image_original = self.image.copy()
+        self.imagebefore.blit(mapimage,imagerect)
+        self.image_original = self.imagebefore.copy()
 
     def changepos(self, newpos):
         self.rect = self.image.get_rect(center=newpos)
