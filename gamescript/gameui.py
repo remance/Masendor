@@ -434,24 +434,26 @@ class Minimap(pygame.sprite.Sprite):
 
 
 class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
+    maxrowshow = 9 # maximum 9 text rows can appear at once
+    logscroll = None  # Link from maingame after creation of both object
 
     def __init__(self, image, pos):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", 16)
         self.pos = pos
-        self.mode = 0 # 0=war,1=army(unit),2=leader,3=unit(sub-unit)
         self.image = image
         self.image_original = self.image.copy()
+        self.rect = self.image.get_rect(bottomleft=self.pos)
+
+    def makenew(self):
+        self.mode = 0 # 0=war,1=army(unit),2=leader,3=unit(sub-unit)
         self.battlelog = [] # 0 war
         self.battalionlog = [] # 1 army
         self.leaderlog = [] # 2 leader
         self.squadlog = [] # 3 unit
-        self.rect = self.image.get_rect(bottomleft=self.pos)
         self.currentstartrow = 0
-        self.maxrowshow = 9 # maximum 9 text rows can appear at once
         self.lencheck = 0 # total number of row in the current mode
-        self.logscroll = None  # Link from maingame after creation of both object
 
     def addeventlog(self, mapevent):
         self.mapevent = mapevent
@@ -654,7 +656,6 @@ class Armyicon(pygame.sprite.Sprite):
     def changeimage(self, newimage=None, changeside=False):
         """For changing side"""
         if changeside:
-            print('test')
             self.image.fill((144, 167, 255))
             if self.army.team == 2:
                 self.image.fill((255, 114, 114))

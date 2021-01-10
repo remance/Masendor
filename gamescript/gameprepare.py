@@ -301,10 +301,31 @@ class Armystat(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self, self.containers)
 
+        self.leadfont = pygame.font.SysFont("helvetica", int(self.heightadjust * 36))
+        self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * 22))
+
         self.image_original = self.image.copy()
         self.image = self.image_original.copy()
 
+        self.typenumberpos = ((self.image.get_width()/6, self.image.get_height()/3), # infantry melee
+                              (self.image.get_width()/6, self.image.get_height()/2), # infantry range
+                              (self.image.get_width()/1.9, self.image.get_height()/3), # cav melee
+                              (self.image.get_width()/1.9, self.image.get_height()/2)) # cav range
+
         self.rect = self.image.get_rect(center=pos)
+
+    def addstat(self, troopnumber, leader):
+        """troopnumber need to be in list format as follows:[total,melee infantry, range infantry, cavalry, range cavalry]"""
+        self.image = self.image_original.copy()
+
+        textsurface = self.font.render(str(leader), 1, (0, 0, 0))
+        textrect = textsurface.get_rect(midleft=(self.image.get_width()/7, self.image.get_height()/10))
+        self.image.blit(textsurface, textrect)
+
+        for index, text in enumerate(troopnumber):
+            textsurface = self.font.render(str(text), 1, (0, 0, 0))
+            textrect = textsurface.get_rect(midleft=self.typenumberpos[index])
+            self.image.blit(textsurface, textrect)
 
 
 class Maplistbox(pygame.sprite.Sprite):
@@ -397,11 +418,11 @@ class Sourcename(pygame.sprite.Sprite):
         self.image.blit(smallimage, smallrect)
         # ^ End white body
 
-        # v Subsection name text
+        # v Source name text
         textsurface = self.font.render(str(name), 1, (0, 0, 0))
         textrect = textsurface.get_rect(midleft=(int(3 * self.widthadjust), self.image.get_height() / 2))
         self.image.blit(textsurface, textrect)
-        # ^ End subsection name
+        # ^ End source text
 
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -417,9 +438,23 @@ class Mapshow(pygame.sprite.Sprite):
         self.heightadjust = SCREENRECT.height / 768
 
         pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.pos = pos
         self.imagebefore = pygame.Surface((310, 310))
         self.imagebefore.fill((0, 0, 0)) # draw black colour for black corner
         # pygame.draw.rect(self.image, self.colour, (2, 2, self.widthbox - 3, self.heightbox - 3)) # draw block colour
+
+        self.team2dot = pygame.Surface((8, 8)) # dot for team2 unit
+        self.team2dot.fill((0, 0, 0)) # black corner
+        self.team1dot = pygame.Surface((8, 8)) # dot for team1 unit
+        self.team1dot.fill((0, 0, 0)) # black corner
+        team2 = pygame.Surface((6, 6)) # size 6x6
+        team2.fill((255, 0, 0)) # red rect
+        team1 = pygame.Surface((6, 6))
+        team1.fill((0, 0, 255)) # blue rect
+        rect = self.team2dot.get_rect(topleft=(1, 1))
+        self.team2dot.blit(team2, rect)
+        self.team1dot.blit(team1, rect)
 
         self.newcolourlist = {}
         with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
@@ -435,7 +470,7 @@ class Mapshow(pygame.sprite.Sprite):
         self.changemap(basemap,featuremap)
         self.image = pygame.transform.scale(self.imagebefore, (int(self.imagebefore.get_width() * self.widthadjust),
                                                                int(self.imagebefore.get_height() * self.heightadjust)))
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
 
     def changemap(self, basemap, featuremap):
@@ -461,5 +496,19 @@ class Mapshow(pygame.sprite.Sprite):
         self.imagebefore.blit(mapimage,imagerect)
         self.image_original = self.imagebefore.copy()
 
-    def changepos(self, newpos):
-        self.rect = self.image.get_rect(center=newpos)
+    def changemode(self, mode, team1poslist=None, team2poslist=None):
+        """map mode: 0 = map without army dot, 1 = with army dot"""
+        self.imagebefore = self.image_original.copy()
+        if mode == 1:
+            for team1 in team1poslist.values():
+                scaledpos = pygame.Vector2(team1) * 0.3
+                rect = self.team1dot.get_rect(center=scaledpos)
+                self.imagebefore.blit(self.team1dot, rect)
+            for team2 in team2poslist.values():
+                scaledpos = pygame.Vector2(team2) * 0.3
+                rect = self.team2dot.get_rect(center=scaledpos)
+                self.imagebefore.blit(self.team2dot, rect)
+
+        self.image = pygame.transform.scale(self.imagebefore, (int(self.imagebefore.get_width() * self.widthadjust),
+                                                               int(self.imagebefore.get_height() * self.heightadjust)))
+        self.rect = self.image.get_rect(center = self.pos)

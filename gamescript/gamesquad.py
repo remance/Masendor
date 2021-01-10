@@ -16,7 +16,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.gamestart = False # Game start yet? for stuff only need to be done at the start
-        self.wholastselect = 0
+        self.wholastselect = None
         self.mouse_over = False
         self.leader = None # Leader in the sub-unit if there is one
         self.boardpos = None  # Used for event log position of squad (Assigned in maingame unit setup)
@@ -913,9 +913,9 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.unithealth += self.hpregen * dt # use the same as positive regen (negative regen number * dt will reduce hp)
                 self.troopnumber = self.unithealth / self.troophealth  # Recal number of troop again in case some die from negative regen
                 if round(self.troopnumber) < self.troopnumber: # no method to always round up number so I need to do this manually
-                    self.troopnumber = round(self.troopnumber + 1)
+                    self.troopnumber = int(self.troopnumber + 1)
                 else:
-                    self.troopnumber = round(self.troopnumber)
+                    self.troopnumber = int(self.troopnumber)
 
             if self.unithealth < 0: self.unithealth = 0 # can't have negative hp
             elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth # hp can't exceed max hp (would increase number of troop)
@@ -933,8 +933,8 @@ class Unitsquad(pygame.sprite.Sprite):
                 #v Update squad alive list if squad die
                 deadindex = np.where(self.battalion.armysquad == self.gameid)
                 deadindex = [deadindex[0], deadindex[1]]
-                if self.battalion.squadalive[deadindex[0], deadindex[1]] != 1:
-                    self.battalion.squadalive[deadindex[0], deadindex[1]] = 1
+                if self.battalion.squadalive[deadindex[0], deadindex[1]] != 0:
+                    self.battalion.squadalive[deadindex[0], deadindex[1]] = 0
                     self.battalion.deadchange = True
                 #^ End update
 
@@ -985,3 +985,8 @@ class Unitsquad(pygame.sprite.Sprite):
             if mouse_up:
                 self.selected = True
                 self.wholastselect = self.gameid
+
+    def delete(self):
+        del self.battalion
+        del self.leader
+        del self.wholastselect

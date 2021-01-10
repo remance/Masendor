@@ -251,7 +251,7 @@ def loadgamedata(game):
 
     #v create leader list
     imgs, order = load_images(['ruleset', game.rulesetfolder.strip("/"), 'leader', 'portrait'], loadorder=False, returnorder=True)
-    game.allleader = gameunitstat.Leaderstat(main_dir, imgs, order, option=game.rulesetfolder)
+    game.leaderstat = gameunitstat.Leaderstat(main_dir, imgs, order, option=game.rulesetfolder)
     #^ End leader
 
     # v Game Effect related class
@@ -280,14 +280,14 @@ def loadgamedata(game):
     gamelorebook.Lorebook.statusstat = game.gameunitstat.statuslist
     gamelorebook.Lorebook.skillstat = game.gameunitstat.abilitylist
     gamelorebook.Lorebook.traitstat = game.gameunitstat.traitlist
-    gamelorebook.Lorebook.leader = game.allleader
-    gamelorebook.Lorebook.leaderlore = game.allleader.leaderlore
+    gamelorebook.Lorebook.leader = game.leaderstat
+    gamelorebook.Lorebook.leaderlore = game.leaderstat.leaderlore
     gamelorebook.Lorebook.terrainstat = game.featuremod
     gamelorebook.Lorebook.weatherstat = game.allweather
     gamelorebook.Lorebook.landmarkstat = None
     gamelorebook.Lorebook.unitgradestat = game.gameunitstat.gradelist
     gamelorebook.Lorebook.unitclasslist = game.gameunitstat.role
-    gamelorebook.Lorebook.leaderclasslist = game.allleader.leaderclass
+    gamelorebook.Lorebook.leaderclasslist = game.leaderstat.leaderclass
     gamelorebook.Lorebook.mountgradestat = game.gameunitstat.mountgradelist
     gamelorebook.Lorebook.racelist = game.gameunitstat.racelist
     gamelorebook.Lorebook.SCREENRECT = SCREENRECT
@@ -460,16 +460,16 @@ def loadgamedata(game):
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 50), text="Main Menu", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 100), text="Desktop", size=14)]
 
-    game.optionmenubutton = [
+    game.escoptionmenubutton = [
         gamemenu.Escbutton(buttonimage, (menurectcenter0 - 50, menurectcenter1 + 70), text="Confirm", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0 + 50, menurectcenter1 + 70), text="Apply", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0 + 150, menurectcenter1 + 70), text="Cancel", size=14)]
 
     sliderimage = load_images(['ui', 'battlemenu_ui', 'slider'], loadorder=False)
-    game.slidermenu = [
+    game.escslidermenu = [
         gamemenu.Escslidermenu(sliderimage[0], sliderimage[1:3], (menurectcenter0 * 1.1, menurectcenter1), Soundvolume,
                                0)]
-    game.valuebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battlemenu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
+    game.escvaluebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battlemenu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
     # ^ End esc menu objects
 
 
@@ -586,9 +586,9 @@ def unitsetup(maingame):
             coa = pygame.transform.scale(maingame.coa[row[12]], (60, 60)) # get coa image and scale smaller to fit ui
 
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour, (maingame.squadwidth, maingame.squadheight), row[10] + row[11], maingame.allleader, maingame.gameunitstat, control,
+                           colour, (maingame.squadwidth, maingame.squadheight), row[10] + row[11], maingame.leaderstat, maingame.gameunitstat, control,
                            coa, command, row[13], row[14], row[15], row[16])
-            whicharmy.append(army)
+            whicharmy.add(army)
             armysquadindex = 0 # armysquadindex is list index for squad list in a specific army
 
             #v Setup squad in army to squad group
@@ -597,7 +597,7 @@ def unitsetup(maingame):
                     addsquad = gamesquad.Unitsquad(squadnum, squadgameid, maingame.allweapon, maingame.allarmour,
                                                    maingame.gameunitstat, army, army.squadpositionlist[armysquadindex],
                                                    maingame.inspectuipos, army.starthp, army.startstamina)
-                    maingame.squad.append(addsquad)
+                    maingame.squad.add(addsquad)
                     addsquad.boardpos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
                     army.squadsprite.append(addsquad)
@@ -612,59 +612,55 @@ def unitsetup(maingame):
 
 ## Battle related gamescript
 
-def squadcombatcal(who, squadlist, squadindexlist, target, whoside, targetside):
+def squadcombatcal(who, target, whoside, targetside):
     """calculate squad engagement using information after battalionengage who is attacker, target is defender battalion"""
     squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
-    whofrontline = who.frontline[whoside]
+    whofrontline = who.frontlineobject[whoside]
     """only calculate if the attack is attack with the front side"""
     if whoside == 0:
         sortmidfront = [whofrontline[3], whofrontline[4], whofrontline[2], whofrontline[5],
                         whofrontline[1], whofrontline[6], whofrontline[0], whofrontline[7]]
-        combatpositioncal(squadlist, squadindexlist, sortmidfront, who, target, whoside, targetside, squadtargetside)
+        combatpositioncal(sortmidfront, who, target, whoside, targetside, squadtargetside)
 
-def combatpositioncal(squadlist, squadindexlist, sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
+def combatpositioncal(sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
     """Find enemy squad to fight starting at the front of attacker, then either right or left side on the frontline array"""
-    for thiswho in sortmidfront:
-        if thiswho > 1:
-            position = np.where(attacker.frontline[attackerside] == thiswho)[0][0]
-            fronttarget = receiver.frontline[receiverside][position]
-            attackersquad = squadlist[np.where(squadindexlist == thiswho)[0][0]]
-            if any(battle > 1 for battle in attackersquad.battlesideid) == False: # check if squad not already fighting if true skip picking new enemy
-                if fronttarget > 1: # found front target
-                    receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]] # get front of another battalion frontline to assign front combat
+    for position, attackersquad in enumerate(sortmidfront):
+        if attackersquad != 0:
+            receiversquad = receiver.frontlineobject[receiverside][position]
+            if any(battle > 0 for battle in attackersquad.battlesideid) == False: # check if squad not already fighting if true skip picking new enemy
+                if receiversquad != 0: # found front target
+                    receiversquad = receiver.frontlineobject[receiverside][position] # get front of another battalion frontline to assign front combat
                     if receiversquad.battlesideid[squadside] == 0: # only attack if the side is already free else just wait until it free
                         attackersquad.battleside[attackerside] = receiversquad
-                        attackersquad.battlesideid[attackerside] = fronttarget
+                        attackersquad.battlesideid[attackerside] = receiversquad.gameid
 
                         receiversquad.battleside[squadside] = attackersquad
-                        receiversquad.battlesideid[squadside] = thiswho
+                        receiversquad.battlesideid[squadside] = attackersquad.gameid
 
                 else:  # pick flank attack instead if no front target to fight
                     chance = random.randint(0, 1) # attack left array side of the squad if get random 0, right if 1
                     secondpick = 0 # if the first side search result in no target to fight pick another one
                     if chance == 0: secondpick = 1
                     truetargetside = changecombatside(chance, receiverside) # find combatside according to the battalion combat side
-                    fronttarget = squadselectside(receiver.frontline[receiverside], chance, position)
-                    if fronttarget > 1: # attack if the found defender at that side if not check another side
-                        receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
+                    receiversquad = squadselectside(receiver.frontlineobject[receiverside], chance, position)
+                    if receiversquad != 0: # attack if the found defender at that side if not check another side
                         if receiversquad.battlesideid[truetargetside] == 0:
                             attackersquad.battleside[attackerside] = receiversquad
-                            attackersquad.battlesideid[attackerside] = fronttarget
+                            attackersquad.battlesideid[attackerside] = receiversquad.gameid
 
                             receiversquad.battleside[truetargetside] = attackersquad
-                            receiversquad.battlesideid[truetargetside] = thiswho
+                            receiversquad.battlesideid[truetargetside] = attackersquad.gameid
 
                     else: # Switch to another side if the first chosen side not found enemy to fight
                         truetargetside = changecombatside(secondpick, receiverside)
-                        fronttarget = squadselectside(receiver.frontline[receiverside], secondpick, position)
-                        if fronttarget > 1:
-                            receiversquad = squadlist[np.where(squadindexlist == fronttarget)[0][0]]
+                        receiversquad = squadselectside(receiver.frontlineobject[receiverside], secondpick, position)
+                        if receiversquad != 0:
                             if receiversquad.battlesideid[truetargetside] == 0:
                                 attackersquad.battleside[attackerside] = receiversquad
-                                attackersquad.battlesideid[attackerside] = fronttarget
+                                attackersquad.battlesideid[attackerside] = receiversquad.gameid
 
                                 receiversquad.battleside[truetargetside] = attackersquad
-                                receiversquad.battlesideid[truetargetside] = thiswho
+                                receiversquad.battlesideid[truetargetside] = attackersquad.gameid
                         else: # simply no enemy to fight
                             attackersquad.battleside[attackerside] = None
                             attackersquad.battlesideid[attackerside] = 0
@@ -674,11 +670,11 @@ def squadselectside(targetside, side, position):
     thisposition = position
     if side == 0: # left side
         max = 0 # keep searching to the the left until reach the first squad
-        while targetside[thisposition] <= 1 and thisposition != max: # keep searching until found or it reach max
+        while targetside[thisposition] == 0 and thisposition != max: # keep searching until found or it reach max
             thisposition -= 1
     else: # 1 right side
         max = 7 # keep searching to the the right until reach the last squad
-        while targetside[thisposition] <= 1 and thisposition != max:
+        while targetside[thisposition] == 0 and thisposition != max:
             thisposition += 1
     fronttarget = 0
     if targetside[thisposition] != 0:
@@ -965,7 +961,7 @@ def splitunit(battle, who, how):
     if who.leader[1].squad.gameid not in newarmysquad:  # move leader if squad not in new one
         replace, replaceflat, newplace, newrow = moveleadersquad(who.leader[1], who.armysquad, newarmysquad)
         who.squadalive[replace[0]][replace[1]] = \
-            [0 if who.armysquad[replace[0]][replace[1]] == 0 else 1 if who.squadsprite[replaceflat[0]].state == 100 else 2][0]
+            [0 if who.armysquad[replace[0]][replace[1]] == 0 or who.squadsprite[replaceflat[0]].state == 100 else 1][0]
 
     alreadypick = []
     for leader in (who.leader[0], who.leader[2], who.leader[3]):
@@ -973,7 +969,7 @@ def splitunit(battle, who, how):
             replace, replaceflat, newplace, newrow = moveleadersquad(leader, newarmysquad, who.armysquad, alreadypick)
             alreadypick.append((newrow,newplace))
             who.squadalive[replace[0]][replace[1]] = \
-                [0 if who.armysquad[replace[0]][replace[1]] == 0 else 1 if who.squadsprite[replaceflat[0]].state == 100 else 2][0]
+                [0 if who.armysquad[replace[0]][replace[1]] == 0 or who.squadsprite[replaceflat[0]].state == 100 else 1][0]
             leader.squadpos = newplace + (newrow * 8)
 
     squadsprite = [squad for squad in who.squadsprite if squad.gameid in newarmysquad]  # list of sprite not sorted yet
@@ -1007,11 +1003,11 @@ def splitunit(battle, who, how):
             squadnum += 1
     #^ End reset position
 
-    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.allleader), gameleader.Leader(1, 0, 2, who, battle.allleader),
-                 gameleader.Leader(1, 0, 3, who, battle.allleader)] # create new leader list for new battalion
+    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.leaderstat), gameleader.Leader(1, 0, 2, who, battle.leaderstat),
+                 gameleader.Leader(1, 0, 3, who, battle.leaderstat)] # create new leader list for new battalion
 
     #v Change the original battalion stat and sprite
-    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.allleader)]
+    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.leaderstat)]
     for index, leader in enumerate(who.leader):  # Also change army position of all leader in that battalion
         leader.armyposition = index  # Change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]
@@ -1066,13 +1062,13 @@ def splitunit(battle, who, how):
         playercommand = battle.enactment
         whosearmy= battle.team2army
         colour = (255, 114, 114)
-    newgameid = whosearmy[-1].gameid + 1
+    newgameid = battle.allunitlist[-1].gameid + 1
 
     army = gamebattalion.Unitarmy(startposition=newpos, gameid=newgameid,
                                   squadlist=newarmysquad, imgsize=(battle.squadwidth, battle.squadheight),
                                   colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle, team=who.team)
 
-    whosearmy.append(army)
+    whosearmy.add(army)
     army.leader = newleader
     army.squadsprite = newsquadsprite
 
@@ -1103,6 +1099,9 @@ def splitunit(battle, who, how):
     army.authrecal()
     battle.allunitlist.append(army)
     battle.allunitindex.append(army.gameid)
+    battle.lastselected = who
+    for hitbox in battle.lastselected.hitbox:
+        hitbox.clicked()
     army.viewmode = battle.camerascale
 
     #v Remake sprite to match the current varible (angle, zoom level, position)

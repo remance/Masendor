@@ -160,6 +160,7 @@ try: # for printing error log when error exception happen
             self.battlemapheight = pygame.sprite.Group()  # height map object
             self.showmap = pygame.sprite.Group()  # beautiful map object that is shown in gameplay
 
+            self.team0army = pygame.sprite.Group()  # taem 0 battalions group
             self.team1army = pygame.sprite.Group()  # taem 1 battalions group
             self.team2army = pygame.sprite.Group()  # team 2 battalions group
 
@@ -193,7 +194,7 @@ try: # for printing error log when error exception happen
 
             self.battlemenu = pygame.sprite.Group()  # esc menu object
             self.battlemenubutton = pygame.sprite.Group()  # buttons for esc menu object group
-            self.optionmenubutton = pygame.sprite.Group()  # buttons for esc menu option object group
+            self.escoptionmenubutton = pygame.sprite.Group()  # buttons for esc menu option object group
             self.slidermenu = pygame.sprite.Group()
 
             self.armyselector = pygame.sprite.Group()  # army selector ui
@@ -241,8 +242,8 @@ try: # for printing error log when error exception happen
             gamemap.Mapfeature.containers = self.battlemapfeature
             gamemap.Mapheight.containers = self.battlemapheight
             gamemap.Beautifulmap.containers = self.showmap, self.battlecamera
-            gamebattalion.Unitarmy.containers = self.team1army, self.team2army, self.battalionupdater, self.squad, self.battlecamera
-            gamesquad.Unitsquad.containers = self.team1army, self.team2army, self.squadupdater, self.squad
+            gamebattalion.Unitarmy.containers = self.team1army, self.team2army, self.battalionupdater, self.battlecamera
+            gamesquad.Unitsquad.containers = self.squadupdater, self.squad
             gamebattalion.Deadarmy.containers = self.deadunit, self.battalionupdater, self.battlecamera
             gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater
             gameleader.Leader.containers = self.armyleader, self.leaderupdater
@@ -267,7 +268,7 @@ try: # for printing error log when error exception happen
             gamepopup.Effecticonpopup.containers = self.effectpopup
             gamedrama.Textdrama.containers = self.textdrama
             gamemenu.Escbox.containers = self.battlemenu
-            gamemenu.Escbutton.containers = self.battlemenubutton, self.optionmenubutton
+            gamemenu.Escbutton.containers = self.battlemenubutton, self.escoptionmenubutton
             gamemenu.Escslidermenu.containers = self.slidermenu
             gamemenu.Escvaluebox.containers = self.valuebox
             gamelorebook.Lorebook.containers = self.lorebook
@@ -379,6 +380,8 @@ try: # for printing error log when error exception happen
             self.mainui.add(*self.menubutton)
             self.menustate = "mainmenu"
 
+            self.battlegame = maingame.Battle(self, self.winstyle)
+
         def setuplist(self, itemclass, currentrow, showlist, itemgroup, box):
             """generate list of subsection of the left side of encyclopedia"""
             row = 5
@@ -454,13 +457,66 @@ try: # for printing error log when error exception happen
             self.maketeamcoa(data)
 
         def changesource(self, descriptiontext):
+            """Change source description, add new unit dot, change army stat when select new source"""
             for desc in self.sourcedescription:
                 desc.kill()
                 del desc
             self.sourcedescription.add(gameprepare.Sourcedescription((SCREENRECT.width / 2, SCREENRECT.height / 1.3), descriptiontext))
             self.mainui.add(self.sourcedescription)
 
-        def run(self, maingamefunc):
+            openfolder = self.mapfoldername
+            if self.lastselect == "customselect":
+                openfolder = self.mapcustomfoldername
+            unitmapinfo = self.readmapdata(openfolder, 'unit_pos' + str(self.mapsource) + '.csv')
+
+            team1pos = {row[8]:[int(item) for item in row[8].split(',')] for row in list(unitmapinfo.values()) if row[15] == 1}
+            team2pos = {row[8]:[int(item) for item in row[8].split(',')] for row in list(unitmapinfo.values()) if row[15] == 2}
+            for thismap in self.mapshow:
+                thismap.changemode(1, team1poslist = team1pos, team2poslist = team2pos)
+
+            team1army = []
+            team2army = []
+            team1commander = []
+            team2commander = []
+            for index, row in enumerate(list(unitmapinfo.values())):
+                if row[15] == 1:
+                    listadd = team1army
+                elif row[15] == 2:
+                    listadd = team2army
+                for smallrow in row[0:7]:
+                    for item in smallrow.split(','):
+                        listadd.append(int(item))
+
+                for item in row[9].split(','):
+                    if row[15] == 1:
+                        team1commander.append(int(item))
+                    elif row[15] == 2:
+                        team2commander.append(int(item))
+
+            teamtotal = [0,0]
+            trooptypelist = [[0,0,0,0],[0,0,0,0]]
+            leadernamelist = (team1commander, team2commander)
+
+            armylooplist = (team1army, team2army)
+            for index, team in enumerate(armylooplist):
+                for unit in team:
+                    if unit != 0:
+                        teamtotal[index] += self.gameunitstat.unitlist[unit][27]
+                        trooptype = 0
+                        if self.gameunitstat.unitlist[unit][22] != [1,0] \
+                                and self.gameunitstat.unitlist[unit][8] < self.gameunitstat.unitlist[unit][12]: # range weapon and accuracy higher than melee attack
+                            trooptype += 1
+                        if self.gameunitstat.unitlist[unit][29] != [1,0,1]: # cavalry
+                            trooptype += 2
+                        trooptypelist[index][trooptype] += self.gameunitstat.unitlist[unit][27]
+
+            armylooplist = [str(troop) + " Troops" for troop in teamtotal]
+            armylooplist = [self.leaderstat.leaderlist[leadernamelist[index][0]][0] + ": " + troop for index, troop in enumerate(armylooplist)]
+
+            for index, army in enumerate(self.armystat):
+                army.addstat(trooptypelist[index], armylooplist[index])
+
+        def run(self):
             while True:
                 #v Get user input
                 mouse_up = False
@@ -626,13 +682,14 @@ try: # for printing error log when error exception happen
                         self.sourcescroll = gameui.Uiscroller(self.sourcelistbox.rect.topright, self.sourcelistbox.image.get_height(),
                                                               self.sourcelistbox.maxshowlist, layer=14)
 
-                        self.changesource([self.sourcescale[self.mapsource] ,self.sourcetext[self.mapsource]])
-
                         for index, team in enumerate(self.teamcoa):
                             if index == 0:
                                 self.armystat.add(gameprepare.Armystat((team.rect.bottomleft[0], SCREENRECT.height/1.5))) # left army stat
                             else:
                                 self.armystat.add(gameprepare.Armystat((team.rect.bottomright[0], SCREENRECT.height / 1.5)))  # right army stat
+
+                        self.changesource([self.sourcescale[self.mapsource] ,self.sourcetext[self.mapsource]])
+
                         self.menubutton.add(*self.battlesetupbutton)
                         self.mainui.add(*self.battlesetupbutton, self.mapoptionbox, self.sourcelistbox, self.sourcescroll, self.armystat)
 
@@ -673,6 +730,11 @@ try: # for printing error log when error exception happen
                             team.changeselect()
                         self.teamselected = 1
                         #^ End reset selected team
+
+                        self.mapsource = 0
+                        for thismap in self.mapshow:
+                            thismap.changemode(0) # revert map preview back to without army dot
+
                         for group in (self.sourcenamegroup, self.armystat):
                             for stuff in group:  # remove map name item
                                 stuff.kill()
@@ -687,17 +749,12 @@ try: # for printing error log when error exception happen
                         self.mainui.add(*self.mapselectbutton, self.maplistbox, self.mapscroll, self.mapdescription)
 
                     elif self.startbutton.event: # start game button
-                        self.battlegame = maingamefunc.Battle(self, self.winstyle, self.ruleset, self.rulesetfolder,
-                                                              self.teamselected, self.enactment, self.mapfoldername[self.currentmapselect],
-                                                              self.mapsource)
+                        print(len(gc.get_objects()))
+                        self.battlegame.preparenew(self.ruleset, self.rulesetfolder, self.teamselected, self.enactment,
+                                                   self.mapfoldername[self.currentmapselect], self.mapsource)
                         self.battlegame.rungame()
+                        print(len(gc.get_objects()))
                         self.startbutton.event = False
-
-                        #v run when quit from battle to menu
-                        print(sys.getrefcount(self.battlegame))
-                        self.battlegame = None
-                        del self.battlegame
-                        #^ End run when quit
 
                 elif self.menustate == "option":
                     for bar in self.resolutionbar: # loop to find which resolution bar is selected, this happen outside of clicking check below
@@ -797,7 +854,7 @@ try: # for printing error log when error exception happen
 
     if __name__ == '__main__':
         runmenu = Mainmenu()
-        runmenu.run(maingame)
+        runmenu.run()
 
 except Exception:  # Save error output to txt file
     traceback.print_exc()
