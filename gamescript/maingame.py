@@ -97,6 +97,7 @@ class Battle():
         self.escoptionmenubutton = main.escoptionmenubutton
 
         self.armyselector = main.armyselector
+        self.armyselector.currentrow = 0
         self.armyicon = main.armyicon
         self.selectscroll = main.selectscroll
 
@@ -161,12 +162,13 @@ class Battle():
         self.background = pygame.Surface(SCREENRECT.size) # Create background image
         self.background.fill((255, 255, 255)) # fill background image with black colour
 
-    def preparenew(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source):
+    def preparenew(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale):
 
         self.ruleset = ruleset # current ruleset used
         self.rulesetfolder = rulesetfolder # the folder of rulseset used
         self.mapselected = mapselected # map folder name
         self.source = str(source)
+        self.unitscale = unitscale
         self.playerteam = teamselected # player selected team
 
         #v load the sound effects
@@ -275,12 +277,13 @@ class Battle():
         #v initialise starting unit sprites
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.squadwidth / 1.25,
                              self.gameui[0].rect.bottomleft[1] - self.squadheight / 3]
-        self.squadindexlist = gamelongscript.unitsetup(self)
+        gamelongscript.unitsetup(self)
 
         self.allunitlist = []
         for group in (self.team0army, self.team1army, self.team2army):
             for army in group:
                 self.allunitlist.append(army) # list of every battalion in game alive
+        print(len(self.allunitlist), len(self.team0army), len(self.team1army),len(self.team2army))
         self.allunitindex = [army.gameid for army in self.allunitlist] # list of every battalion index alive
 
         self.team0poslist = {} # team 0 battalion position
@@ -1313,18 +1316,18 @@ class Battle():
                                     #     if index == 0:
                                     #         print(sys.getrefcount(stuff))
                                     #         print(gc.get_referrers(stuff))
-
-                                    for group in (self.squad, self.armyleader, self.hitboxes,
-                                                  self.team0army, self.team1army, self.team2army, self.allunitlist):
+                                    for group in (self.squad, self.armyleader, self.hitboxes, self.team0army, self.team1army, self.team2army, self.armyicon):
                                         for stuff in group:
+                                            stuff.delete()
                                             stuff.kill()
                                             del stuff
-                                        group = []
                                     self.squadlastselected = None
+                                    self.allunitlist = []
                                     self.showingsquad = []
                                     self.team0poslist, self.team1poslist, self.team2poslist = {}, {}, {}
-                                    self.squadlastselected = None
-                                    print(locals())
+                                    self.beforeselected = None
+
+                                    # print(locals())
                                     return # end battle game loop
 
                                 elif button.text == "Desktop": # quit game

@@ -664,6 +664,13 @@ class Armyicon(pygame.sprite.Sprite):
             self.leaderimage = newimage
             self.image.blit(self.leaderimage, self.leaderrect)
 
+    def delete(self, local=False):
+        """delete reference when del is called"""
+        if local:
+            print(locals())
+        else:
+            del self.army
+
 
 class Timer(pygame.sprite.Sprite):
     def __init__(self, pos, textsize=20):

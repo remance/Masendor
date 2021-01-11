@@ -242,7 +242,7 @@ try: # for printing error log when error exception happen
             gamemap.Mapfeature.containers = self.battlemapfeature
             gamemap.Mapheight.containers = self.battlemapheight
             gamemap.Beautifulmap.containers = self.showmap, self.battlecamera
-            gamebattalion.Unitarmy.containers = self.team1army, self.team2army, self.battalionupdater, self.battlecamera
+            gamebattalion.Unitarmy.containers = self.battalionupdater, self.battlecamera
             gamesquad.Unitsquad.containers = self.squadupdater, self.squad
             gamebattalion.Deadarmy.containers = self.deadunit, self.battalionupdater, self.battlecamera
             gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater
@@ -456,7 +456,7 @@ try: # for printing error log when error exception happen
 
             self.maketeamcoa(data)
 
-        def changesource(self, descriptiontext):
+        def changesource(self, descriptiontext, scalevalue):
             """Change source description, add new unit dot, change army stat when select new source"""
             for desc in self.sourcedescription:
                 desc.kill()
@@ -501,14 +501,14 @@ try: # for printing error log when error exception happen
             for index, team in enumerate(armylooplist):
                 for unit in team:
                     if unit != 0:
-                        teamtotal[index] += self.gameunitstat.unitlist[unit][27]
+                        teamtotal[index] += int(self.gameunitstat.unitlist[unit][27] * scalevalue[index])
                         trooptype = 0
                         if self.gameunitstat.unitlist[unit][22] != [1,0] \
                                 and self.gameunitstat.unitlist[unit][8] < self.gameunitstat.unitlist[unit][12]: # range weapon and accuracy higher than melee attack
                             trooptype += 1
                         if self.gameunitstat.unitlist[unit][29] != [1,0,1]: # cavalry
                             trooptype += 2
-                        trooptypelist[index][trooptype] += self.gameunitstat.unitlist[unit][27]
+                        trooptypelist[index][trooptype] += int(self.gameunitstat.unitlist[unit][27] * scalevalue[index])
 
             armylooplist = [str(troop) + " Troops" for troop in teamtotal]
             armylooplist = [self.leaderstat.leaderlist[leadernamelist[index][0]][0] + ": " + troop for index, troop in enumerate(armylooplist)]
@@ -669,13 +669,17 @@ try: # for printing error log when error exception happen
                             openfolder = self.mapcustomfoldername
                         try:
                             self.sourcelist = self.readmapdata(openfolder, 'source.csv')
-                            self.sourcenamelist = [value[0] for value in list(self.sourcelist.values())][1:]
-                            self.sourcescale = [value[1] for value in list(self.sourcelist.values())][1:]
-                            self.sourcetext = [value[-1] for value in list(self.sourcelist.values())][1:]
+                            self.sourcenamelist = [value[0] for value in list(self.sourcelist.values())[1:]]
+                            self.sourcescaletext = [value[1] for value in list(self.sourcelist.values())[1:]]
+                            self.sourcescale = [(float(value[2]), float(value[3]), float(value[4]), float(value[5])) for value in
+                                                list(self.sourcelist.values())[1:]]
+                            self.sourcetext = [value[-1] for value in list(self.sourcelist.values())[1:]]
                         except: # no source.csv make empty list
                             self.sourcenamelist = ['']
+                            self.sourcescaletext = ['']
                             self.sourcescale = ['']
                             self.sourcetext = ['']
+
 
                         self.setuplist(gameprepare.Sourcename, self.currentsourcerow, self.sourcenamelist, self.sourcenamegroup, self.sourcelistbox)
 
@@ -688,7 +692,7 @@ try: # for printing error log when error exception happen
                             else:
                                 self.armystat.add(gameprepare.Armystat((team.rect.bottomright[0], SCREENRECT.height / 1.5)))  # right army stat
 
-                        self.changesource([self.sourcescale[self.mapsource] ,self.sourcetext[self.mapsource]])
+                        self.changesource([self.sourcescaletext[self.mapsource] , self.sourcetext[self.mapsource]], self.sourcescale[self.mapsource])
 
                         self.menubutton.add(*self.battlesetupbutton)
                         self.mainui.add(*self.battlesetupbutton, self.mapoptionbox, self.sourcelistbox, self.sourcescroll, self.armystat)
@@ -713,7 +717,7 @@ try: # for printing error log when error exception happen
                         for index, name in enumerate(self.sourcenamegroup):  # user select source
                             if name.rect.collidepoint(self.mousepos):  # click on source name
                                 self.mapsource = index
-                                self.changesource([self.sourcescale[self.mapsource] ,self.sourcetext[self.mapsource]])
+                                self.changesource([self.sourcescaletext[self.mapsource] , self.sourcetext[self.mapsource]], self.sourcescale[self.mapsource])
                                 break
 
                     #^ End user input
@@ -749,11 +753,10 @@ try: # for printing error log when error exception happen
                         self.mainui.add(*self.mapselectbutton, self.maplistbox, self.mapscroll, self.mapdescription)
 
                     elif self.startbutton.event: # start game button
-                        print(len(gc.get_objects()))
                         self.battlegame.preparenew(self.ruleset, self.rulesetfolder, self.teamselected, self.enactment,
-                                                   self.mapfoldername[self.currentmapselect], self.mapsource)
+                                                   self.mapfoldername[self.currentmapselect], self.mapsource, self.sourcescale[self.mapsource])
                         self.battlegame.rungame()
-                        print(len(gc.get_objects()))
+                        gc.collect() # collect no longer used object in previous battle from memory
                         self.startbutton.event = False
 
                 elif self.menustate == "option":

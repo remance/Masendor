@@ -596,7 +596,7 @@ def unitsetup(maingame):
                 if squadnum != 0:
                     addsquad = gamesquad.Unitsquad(squadnum, squadgameid, maingame.allweapon, maingame.allarmour,
                                                    maingame.gameunitstat, army, army.squadpositionlist[armysquadindex],
-                                                   maingame.inspectuipos, army.starthp, army.startstamina)
+                                                   maingame.inspectuipos, army.starthp, army.startstamina, maingame.unitscale)
                     maingame.squad.add(addsquad)
                     addsquad.boardpos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
@@ -608,11 +608,10 @@ def unitsetup(maingame):
             #^ End squad setup
 
     unitfile.close()
-    return squadindexlist
 
 ## Battle related gamescript
 
-def squadcombatcal(who, target, whoside, targetside):
+def squadcombatcal(who, target, whoside, targetside, sortindex = (3,4,2,5,1,6,0,7)):
     """calculate squad engagement using information after battalionengage who is attacker, target is defender battalion"""
     squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
     whofrontline = who.frontlineobject[whoside]
@@ -620,16 +619,19 @@ def squadcombatcal(who, target, whoside, targetside):
     if whoside == 0:
         sortmidfront = [whofrontline[3], whofrontline[4], whofrontline[2], whofrontline[5],
                         whofrontline[1], whofrontline[6], whofrontline[0], whofrontline[7]]
-        combatpositioncal(sortmidfront, who, target, whoside, targetside, squadtargetside)
 
-def combatpositioncal(sortmidfront, attacker, receiver, attackerside, receiverside, squadside):
+        combatpositioncal(sortmidfront, sortindex, target, whoside, targetside, squadtargetside)
+
+def combatpositioncal(sortmidfront, sortindex, receiver, attackerside, receiverside, squadside):
     """Find enemy squad to fight starting at the front of attacker, then either right or left side on the frontline array"""
     for position, attackersquad in enumerate(sortmidfront):
         if attackersquad != 0:
-            receiversquad = receiver.frontlineobject[receiverside][position]
+            if type(attackersquad) == int:
+                print(attackersquad, sortmidfront)
+            receiversquad = receiver.frontlineobject[receiverside][sortindex[position]]
             if any(battle > 0 for battle in attackersquad.battlesideid) == False: # check if squad not already fighting if true skip picking new enemy
                 if receiversquad != 0: # found front target
-                    receiversquad = receiver.frontlineobject[receiverside][position] # get front of another battalion frontline to assign front combat
+                    receiversquad = receiver.frontlineobject[receiverside][sortindex[position]] # get front of another battalion frontline to assign front combat
                     if receiversquad.battlesideid[squadside] == 0: # only attack if the side is already free else just wait until it free
                         attackersquad.battleside[attackerside] = receiversquad
                         attackersquad.battlesideid[attackerside] = receiversquad.gameid
@@ -642,7 +644,7 @@ def combatpositioncal(sortmidfront, attacker, receiver, attackerside, receiversi
                     secondpick = 0 # if the first side search result in no target to fight pick another one
                     if chance == 0: secondpick = 1
                     truetargetside = changecombatside(chance, receiverside) # find combatside according to the battalion combat side
-                    receiversquad = squadselectside(receiver.frontlineobject[receiverside], chance, position)
+                    receiversquad = squadselectside(receiver.frontlineobject[receiverside], chance, sortindex[position])
                     if receiversquad != 0: # attack if the found defender at that side if not check another side
                         if receiversquad.battlesideid[truetargetside] == 0:
                             attackersquad.battleside[attackerside] = receiversquad
@@ -653,7 +655,7 @@ def combatpositioncal(sortmidfront, attacker, receiver, attackerside, receiversi
 
                     else: # Switch to another side if the first chosen side not found enemy to fight
                         truetargetside = changecombatside(secondpick, receiverside)
-                        receiversquad = squadselectside(receiver.frontlineobject[receiverside], secondpick, position)
+                        receiversquad = squadselectside(receiver.frontlineobject[receiverside], secondpick, sortindex[position])
                         if receiversquad != 0:
                             if receiversquad.battlesideid[truetargetside] == 0:
                                 attackersquad.battleside[attackerside] = receiversquad
@@ -694,11 +696,15 @@ def changecombatside(side, position):
         subposition = 3
     elif subposition == 3:
         subposition = 2
+
     changepos = 1
     if subposition == 2:
         changepos = -1
+
     finalposition = subposition + changepos  # rotate clockwise (right)
-    if side == 0: finalposition = subposition - changepos  # rotate anticlockwise (left)
+    if side == 0:
+        finalposition = subposition - changepos  # rotate anticlockwise
+
     if finalposition == -1: # - clockwise from front to right (0 to 3)
         finalposition = 3
     elif finalposition == 4: # + anticlockwise from right to front (3 to 0)

@@ -147,7 +147,11 @@ class Leader(pygame.sprite.Sprite):
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
                 self.gone()
 
-    def delete(self):
-        del self.battalion
+    def delete(self, local=False):
+        """delete reference when del is called"""
+        if local:
+            print(locals())
+        else:
+            del self.battalion
 
         

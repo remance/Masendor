@@ -11,7 +11,7 @@ class Unitsquad(pygame.sprite.Sprite):
     dmgcal = gamelongscript.dmgcal
     # use same position as squad front index 0 = front, 1 = left, 2 = rear, 3 = right
 
-    def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos, starthp, startstamina):
+    def __init__(self, unitid, gameid, weaponlist, armourlist, statlist, battalion, position, inspectuipos, starthp, startstamina, unitscale):
         """Although squad in code, this is referred as sub-unit ingame"""
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -87,7 +87,7 @@ class Unitsquad(pygame.sprite.Sprite):
 
         self.basemorale = int(stat[23] + int(statlist.gradelist[self.grade][9])) # morale with grade bonus
         self.basediscipline = int(stat[24] + int(statlist.gradelist[self.grade][10])) # discilpline with grade bonus
-        self.troopnumber = int(stat[27] * starthp / 100) # number of starting troop
+        self.troopnumber = int(stat[27] * unitscale[self.battalion.team - 1] * starthp / 100) # number of starting troop, team -1 to become list index
         self.basespeed = 50 # All infantry has base speed at 50
         self.unittype = stat[28] - 1 # 0 is melee infantry and 1 is range for command buff
         self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
@@ -275,7 +275,7 @@ class Unitsquad(pygame.sprite.Sprite):
 
         #v squad block team colour
         self.image = self.images[0].copy()  # Squad block blue colour for team1
-        if self.battalion.gameid >= 2000:
+        if self.battalion.team == 2:
             self.image = self.images[19].copy()
         if self.unittype == 2: # cavalry draw line on block
             pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
@@ -986,7 +986,14 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.selected = True
                 self.wholastselect = self.gameid
 
-    def delete(self):
-        del self.battalion
-        del self.leader
-        del self.wholastselect
+    def delete(self, local=False):
+        """delete reference when del is called"""
+        if local:
+            print(locals())
+        else:
+            del self.battalion
+            del self.leader
+            del self.wholastselect
+            del self.attacktarget
+
+

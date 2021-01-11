@@ -103,8 +103,12 @@ class Hitbox(pygame.sprite.Sprite):
         self.stillclick = False
         self.gamecamera.remove(self)
 
-    def delete(self):
-        del self.who
+    def delete(self, local=False):
+        """delete reference when del is called"""
+        if local:
+            print(locals())
+        else:
+            del self.who
 
 
 class Unitarmy(pygame.sprite.Sprite):
@@ -349,8 +353,8 @@ class Unitarmy(pygame.sprite.Sprite):
         for squad in self.armysquad.flat:
             if squad != 0:
                 if self.zoomchange == True or squad in self.squadimgchange:
-                    self.squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
-                    self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), self.squadrect)
+                    squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
+                    self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), squadrect)
                 truesquadnum += 1
             width += self.imgsize[0]
             squadnum += 1
@@ -399,7 +403,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.gamestart == False: # Only do once when game start
                 self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
                     self.stamina * 0.50), round(self.stamina * 0.25)
-                self.ammo75, self.ammo50, self.ammo25 = round(self.ammo * 0.75), round(self.ammo * 0.50), round(self.ammo * 0.25)
+                self.ammolist = (round(self.ammo * 0.75), round(self.ammo * 0.50), round(self.ammo * 0.25), 0, -1)
                 self.lasthealthstate, self.laststaminastate, self.lastammostate = 4, 4, 0
                 self.maxmorale = self.morale
                 self.maxhealth, self.health75, self.health50, self.health25, = self.troopnumber, round(self.troopnumber * 0.75), round(
@@ -445,7 +449,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         else:
                             run += 1
                             if len(fullwhoarray[index]) == run:
-                                newwhofrontline[deadsquad] = 1  # Only use number 1 for dead squad (0 mean not existed in the first place)
+                                newwhofrontline[deadsquad] = 0
                                 gotanother = False
                     gotanother = True # reset for another loop
                 whocenter = self.startwhere[startwhere]
@@ -606,6 +610,7 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.gamestart == False:
             self.startset(squadgroup)
             self.gamestart = True
+
         #v redraw if troop num or stamina change
         if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.ammo != self.oldammo or self.viewmode != (11 - viewmode):
             if self.viewmode != (11 - viewmode): # camera zoom is changed
@@ -648,8 +653,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
                 #v ammunition bar, do similar to hp bar
                 if self.oldammo != self.ammo: # ammunition change since last update
-                    ammolist = (self.ammo75, self.ammo50, self.ammo25, 0, -1)
-                    for index, ammo in enumerate(ammolist):
+                    for index, ammo in enumerate(self.ammolist):
                         if self.ammo > ammo:
                             if self.lastammostate != abs(4 - index):
                                 self.image_original3.blit(self.images[index + 10], self.ammoimagerect)
@@ -1297,21 +1301,23 @@ class Unitarmy(pygame.sprite.Sprite):
         self.icon.changeimage(changeside=True) # change army icon to new team
         return allunitindex
 
-    def delete(self):
+    def delete(self, local=False):
         """delete reference when del is called"""
-        print('test')
-        del self.icon
-        del self.teamcommander
-        del self.startwhere
-        del self.hitbox
-        del self.squadsprite
-        del self.sidefeature
-        del self.sideheight
-        del self.squadimgchange
-        del self.neartarget
-        del self.leader
-        del self.frontlineobject
-
+        if local:
+            print(locals())
+        else:
+            del self.icon
+            del self.teamcommander
+            del self.startwhere
+            del self.hitbox
+            del self.squadsprite
+            del self.sidefeature
+            del self.sideheight
+            del self.squadimgchange
+            del self.neartarget
+            del self.leader
+            del self.frontlineobject
+            del self.attacktarget
 
 
 class Deadarmy(pygame.sprite.Sprite):
