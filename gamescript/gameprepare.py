@@ -244,7 +244,6 @@ class Sourcedescription(pygame.sprite.Sprite):
         else:
             self.image = self.image_original.copy()
 
-
 class Teamcoa(pygame.sprite.Sprite):
     def __init__(self, pos, image, team, name):
         import main
@@ -310,7 +309,8 @@ class Armystat(pygame.sprite.Sprite):
         self.typenumberpos = ((self.image.get_width()/6, self.image.get_height()/3), # infantry melee
                               (self.image.get_width()/6, self.image.get_height()/2), # infantry range
                               (self.image.get_width()/1.9, self.image.get_height()/3), # cav melee
-                              (self.image.get_width()/1.9, self.image.get_height()/2)) # cav range
+                              (self.image.get_width()/1.9, self.image.get_height()/2), # cav range
+                              (self.image.get_width()/6, self.image.get_height()/1.6)) # total unit
 
         self.rect = self.image.get_rect(center=pos)
 
@@ -371,18 +371,61 @@ class Mapname(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
+class Tickbox(pygame.sprite.Sprite):
+    def __init__(self, pos, image, tickimage, option):
+        """option is in str text for identifying what kind of tickbox it is"""
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        self._layer = 14
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.option = option
+
+        self.notickimage = image
+        self.tickimage = tickimage
+        self.tick = False
+
+        self.notickimage = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
+                                                    int(image.get_height() * self.heightadjust)))
+        self.tickimage = pygame.transform.scale(tickimage, (int(tickimage.get_width() * self.widthadjust),
+                                                    int(tickimage.get_height() * self.heightadjust)))
+
+        self.image = self.notickimage
+
+        self.rect = self.image.get_rect(topright=pos)
+
+    def changetick(self, tick):
+        self.tick = tick
+        if self.tick:
+            self.image = self.tickimage
+        else:
+            self.image = self.notickimage
+
 class Mapoptionbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
+        self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
 
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
+
+        #v enactment option text
+        textsurface = self.font.render("Enactment Mode", 1, (0, 0, 0))
+        textrect = textsurface.get_rect(midleft=(self.image.get_width()/ 3.5, self.image.get_height() / 4))
+        self.image.blit(textsurface, textrect)
+        #^ end enactment
+
         self.rect = self.image.get_rect(topright=pos)
+
+
 
 class Sourcelistbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):

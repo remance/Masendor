@@ -132,6 +132,7 @@ try: # for printing error log when error exception happen
             self.sourcenamegroup = pygame.sprite.Group()
 
             self.mapoptionbox = pygame.sprite.Group()
+            self.tickbox = pygame.sprite.Group()
 
             self.lorebuttonui = pygame.sprite.Group()  # buttons for enclycopedia group
             self.lorebook = pygame.sprite.Group()  # encyclopedia object
@@ -229,6 +230,7 @@ try: # for printing error log when error exception happen
             gameprepare.Sourcename.containers = self.sourcenamegroup, self.mainui
 
             gameprepare.Mapoptionbox.containers = self.mapoptionbox
+            gameprepare.Tickbox.containers = self.tickbox
 
             gamelorebook.Lorebook.containers = self.lorebook
             gamelorebook.Subsectionlist.containers = self.lorenamelist
@@ -317,6 +319,13 @@ try: # for printing error log when error exception happen
             self.maplistbox = gameprepare.Maplistbox((SCREENRECT.width/25, SCREENRECT.height/20), imgs[0])
             self.sourcelistbox = gameprepare.Sourcelistbox((0, 0), imgs[1])
             self.mapoptionbox = gameprepare.Mapoptionbox((SCREENRECT.width, 0), imgs[1])
+
+            self.tickboxenactment = gameprepare.Tickbox((self.mapoptionbox.rect.bottomright[0] / 1.2, self.mapoptionbox.rect.bottomright[1] / 4),
+                                                        imgs[5], imgs[6], "enactment")
+            self.tickbox.add(self.tickboxenactment)
+            if self.enactment:
+                self.tickboxenactment.changetick(True)
+
             gameprepare.Mapdescription.image = imgs[2]
             gameprepare.Sourcedescription.image = imgs[3]
             gameprepare.Armystat.image = imgs[4]
@@ -493,9 +502,10 @@ try: # for printing error log when error exception happen
                     elif row[15] == 2:
                         team2commander.append(int(item))
 
-            teamtotal = [0,0]
-            trooptypelist = [[0,0,0,0],[0,0,0,0]]
+            teamtotal = [0,0] # total troop number in army
+            trooptypelist = [[0,0,0,0],[0,0,0,0]] # total number of each troop type
             leadernamelist = (team1commander, team2commander)
+            armyteamlist = (team1pos,team2pos) # for finding how many unit in each team
 
             armylooplist = (team1army, team2army)
             for index, team in enumerate(armylooplist):
@@ -509,6 +519,7 @@ try: # for printing error log when error exception happen
                         if self.gameunitstat.unitlist[unit][29] != [1,0,1]: # cavalry
                             trooptype += 2
                         trooptypelist[index][trooptype] += int(self.gameunitstat.unitlist[unit][27] * scalevalue[index])
+                trooptypelist[index].append(len(armyteamlist[index]))
 
             armylooplist = [str(troop) + " Troops" for troop in teamtotal]
             armylooplist = [self.leaderstat.leaderlist[leadernamelist[index][0]][0] + ": " + troop for index, troop in enumerate(armylooplist)]
@@ -695,7 +706,7 @@ try: # for printing error log when error exception happen
                         self.changesource([self.sourcescaletext[self.mapsource] , self.sourcetext[self.mapsource]], self.sourcescale[self.mapsource])
 
                         self.menubutton.add(*self.battlesetupbutton)
-                        self.mainui.add(*self.battlesetupbutton, self.mapoptionbox, self.sourcelistbox, self.sourcescroll, self.armystat)
+                        self.mainui.add(*self.battlesetupbutton, self.mapoptionbox, self.tickboxenactment, self.sourcelistbox, self.sourcescroll, self.armystat)
 
                 elif self.menustate == "battlemapset":
                     #v User input
@@ -720,12 +731,22 @@ try: # for printing error log when error exception happen
                                 self.changesource([self.sourcescaletext[self.mapsource] , self.sourcetext[self.mapsource]], self.sourcescale[self.mapsource])
                                 break
 
+                        for box in self.tickbox:
+                            if box.rect.collidepoint(self.mousepos):
+                                if box.tick == False:
+                                    box.changetick(True)
+                                else:
+                                    box.changetick(False)
+                                if box.option == "enactment":
+                                    self.enactment = box.tick
+
                     #^ End user input
 
                     if self.mapbackbutton.event or esc_press:
                         self.menustate = self.lastselect
                         self.mapbackbutton.event = False
-                        self.mainui.remove(*self.menubutton, self.maplistbox, self.mapoptionbox, self.sourcelistbox, self.sourcescroll, self.sourcedescription)
+                        self.mainui.remove(*self.menubutton, self.maplistbox, self.mapoptionbox, self.tickboxenactment,
+                                           self.sourcelistbox, self.sourcescroll, self.sourcedescription)
                         self.menubutton.remove(*self.menubutton)
 
                         #v Reset selected team
