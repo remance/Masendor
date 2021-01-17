@@ -238,41 +238,11 @@ class Battle():
 
         self.minimap.drawimage(self.showmap.trueimage, self.camera)
 
-        #v Create Starting Values
-        self.mixervolume = SoundVolume
-        self.leaderposname = ("Commander","Sub-General","Sub-General","Sub-Commander","General","Sub-General","Sub-General","Advisor") # Name of leader position in battalion, the first 4 is for commander battalion
-        self.enactment = enactment # enactment mod, control both team
-        self.gamestate = 1
-        self.mousetimer = 0 # This is timer for checking double mouse click, use realtime
-        self.uitimer = 0 # This is timer for ui update function, use realtime
-        self.dramatimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
-        self.dt = 0  # Realtime used for in game calculation
-        self.uidt = 0  # Realtime used for ui timer
-        self.combattimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
-        self.clock = pygame.time.Clock() # Game clock to keep track of realtime pass
-        self.lastmouseover = 0 # Which unit last mouse over
-        self.gamespeed = 1 # Current game speed
-        self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
-        self.leadernow = [] # list of showing leader in command ui
-        self.uiclick = False # for checking if mouse click is on ui
-        self.clickany = False  # For checking if mouse click on anything, if not close ui related to battalion
-        self.newarmyclick = False  #  For checking if another unit is clicked when inspect ui open
-        self.inspectui = False # For checking if inspect ui is currently open or not
-        self.lastselected = None # Which army is selected last update loop
-        self.mapviewmode = 0 # default, another one show height map
+        self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
+        self.leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
+                              "Advisor")  # Name of leader position in battalion, the first 4 is for commander battalion
+        self.enactment = enactment  # enactment mod, control both team
         self.mapshown = self.showmap
-        self.squadlastselected = None # which squad in inspect ui is selected in last update loop
-        self.beforeselected = None # Which army is selected before
-        self.splithappen = False # Check if battalion get split in that loop
-        self.currentweather = None
-        self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height # for weather sprite spawn position
-        self.splitunit = gamelongscript.splitunit
-        self.losscal = gamelongscript.losscal
-        self.rightcorner = SCREENRECT.width - 5
-        self.bottomcorner = SCREENRECT.height - 5
-        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2] # center position of the screen
-        self.battlemousepos = [0, 0] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
-        #^ End start value
 
         #v initialise starting unit sprites
         self.inspectuipos = [self.gameui[0].rect.bottomleft[0] - self.squadwidth / 1.25,
@@ -283,7 +253,6 @@ class Battle():
         for group in (self.team0army, self.team1army, self.team2army):
             for army in group:
                 self.allunitlist.append(army) # list of every battalion in game alive
-        print(len(self.allunitlist), len(self.team0army), len(self.team1army),len(self.team2army))
         self.allunitindex = [army.gameid for army in self.allunitlist] # list of every battalion index alive
 
         self.team0poslist = {} # team 0 battalion position
@@ -504,6 +473,41 @@ class Battle():
 
     def rungame(self):
         self.setuparmyicon()
+
+        #v Create Starting Values
+        self.mixervolume = SoundVolume
+        self.gamestate = 1
+        self.mousetimer = 0 # This is timer for checking double mouse click, use realtime
+        self.uitimer = 0 # This is timer for ui update function, use realtime
+        self.dramatimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
+        self.dt = 0  # Realtime used for in game calculation
+        self.uidt = 0  # Realtime used for ui timer
+        self.combattimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
+        self.lastmouseover = 0 # Which unit last mouse over
+        self.gamespeed = 1 # Current game speed
+        self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
+        self.leadernow = [] # list of showing leader in command ui
+        self.uiclick = False # for checking if mouse click is on ui
+        self.clickany = False  # For checking if mouse click on anything, if not close ui related to battalion
+        self.newarmyclick = False  #  For checking if another unit is clicked when inspect ui open
+        self.inspectui = False # For checking if inspect ui is currently open or not
+        self.lastselected = None # Which army is selected last update loop
+        self.mapviewmode = 0 # default, another one show height map
+        self.squadlastselected = None # which squad in inspect ui is selected in last update loop
+        self.beforeselected = None # Which army is selected before
+        self.splithappen = False # Check if battalion get split in that loop
+        self.currentweather = None
+        self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height # for weather sprite spawn position
+        self.splitunit = gamelongscript.splitunit
+        self.losscal = gamelongscript.losscal
+        self.rightcorner = SCREENRECT.width - 5
+        self.bottomcorner = SCREENRECT.height - 5
+        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2] # center position of the screen
+        self.battlemousepos = [0, 0] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
+        self.teamtroopnumber = [1, 1, 1] # list of troop number in each team
+        self.lastteamtroopnumber = [1, 1, 1]
+        #^ End start value
+
         while True: # game running
             self.fpscount.fpsshow(self.clock)
             keypress = None
@@ -735,6 +739,7 @@ class Battle():
             self.battlelui.clear(self.screen, self.background)  # Clear sprite before update new one
             if self.gamestate == 1: # game in battle state
                 self.uiupdater.update()  # update ui
+                self.teamtroopnumber = [1, 1, 1] # reset troop count
 
                 #v Camera movement
                 if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  # Camera move down
@@ -939,17 +944,20 @@ class Battle():
                         self.gameui = self.popgameui
                         self.battlelui.add(*self.gameui[0:2])  # add leader and top ui
                         self.battlelui.add(self.inspectbutton)  # add inspection ui open/close button
-                        self.battlelui.add(self.buttonui[7])  # add decimation button
-                        self.battlelui.add(*self.switchbuttonui[0:6])  # add battalion behaviour change button
-                        self.switchbuttonui[0].event = whoinput.useskillcond
-                        self.switchbuttonui[1].event = whoinput.fireatwill
-                        self.switchbuttonui[2].event = whoinput.hold
-                        self.switchbuttonui[3].event = whoinput.useminrange
-                        self.switchbuttonui[4].event = whoinput.shoothow
-                        self.switchbuttonui[5].event = whoinput.runtoggle
+
+                        if whoinput.control:
+                            self.battlelui.add(self.buttonui[7])  # add decimation button
+                            self.battlelui.add(*self.switchbuttonui[0:6])  # add battalion behaviour change button
+                            self.switchbuttonui[0].event = whoinput.useskillcond
+                            self.switchbuttonui[1].event = whoinput.fireatwill
+                            self.switchbuttonui[2].event = whoinput.hold
+                            self.switchbuttonui[3].event = whoinput.useminrange
+                            self.switchbuttonui[4].event = whoinput.shoothow
+                            self.switchbuttonui[5].event = whoinput.runtoggle
+                            self.checksplit(whoinput)  # check if selected battalion can split, if yes draw button
+
                         self.leadernow = whoinput.leader
                         self.battlelui.add(*self.leadernow) # add leader portrait to draw
-                        self.checksplit(whoinput) # check if selected battalion can split, if yes draw button
                         self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
 
@@ -964,15 +972,27 @@ class Battle():
                             self.gameui[2].valueinput(who=self.squadlastselected, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                       splithappen=self.splithappen)
                         self.battlelui.remove(*self.leadernow)
-                        self.switchbuttonui[0].event = whoinput.useskillcond
-                        self.switchbuttonui[1].event = whoinput.fireatwill
-                        self.switchbuttonui[2].event = whoinput.hold
-                        self.switchbuttonui[3].event = whoinput.useminrange
-                        self.switchbuttonui[4].event = whoinput.shoothow
-                        self.switchbuttonui[5].event = whoinput.runtoggle
+
+                        if whoinput.control:
+                            self.battlelui.add(self.buttonui[7])  # add decimation button
+                            self.battlelui.add(*self.switchbuttonui[0:6])  # add battalion behaviour change button
+                            self.switchbuttonui[0].event = whoinput.useskillcond
+                            self.switchbuttonui[1].event = whoinput.fireatwill
+                            self.switchbuttonui[2].event = whoinput.hold
+                            self.switchbuttonui[3].event = whoinput.useminrange
+                            self.switchbuttonui[4].event = whoinput.shoothow
+                            self.switchbuttonui[5].event = whoinput.runtoggle
+                            self.checksplit(whoinput)
+                        else:
+                            if self.rowsplitbutton in self.battlelui:
+                                self.rowsplitbutton.kill()
+                            if self.colsplitbutton in self.battlelui:
+                                self.colsplitbutton.kill()
+                            self.battlelui.remove(self.buttonui[7])  # add decimation button
+                            self.battlelui.remove(*self.switchbuttonui[0:6])  # add battalion behaviour change button
+
                         self.leadernow = whoinput.leader
                         self.battlelui.add(*self.leadernow)
-                        self.checksplit(whoinput)
                         self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
                         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
 
@@ -1007,105 +1027,106 @@ class Battle():
                                 self.inspectui = False
                                 self.newarmyclick = False
 
-                    elif self.gameui[1] in self.battlelui and self.gameui[1].rect.collidepoint(self.mousepos): # mouse position on command ui
-                        if self.switchbuttonui[0].rect.collidepoint(self.mousepos) or keypress == pygame.K_g:
-                            if mouse_up or keypress == pygame.K_g:  # rotate skill condition when clicked
-                                whoinput.useskillcond += 1
-                                if whoinput.useskillcond > 3:
-                                    whoinput.useskillcond = 0
-                                self.switchbuttonui[0].event = whoinput.useskillcond
-                            if self.switchbuttonui[0].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Free Skill Use", "Conserve 50% Stamina", "Conserve 25% stamina", "Forbid Skill")
-                                self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[0].event])
+                    elif self.gameui[1] in self.battlelui and (self.gameui[1].rect.collidepoint(self.mousepos) or keypress is not None): # mouse position on command ui
+                        if whoinput.control:
+                            if self.switchbuttonui[0].rect.collidepoint(self.mousepos) or keypress == pygame.K_g:
+                                if mouse_up or keypress == pygame.K_g:  # rotate skill condition when clicked
+                                    whoinput.useskillcond += 1
+                                    if whoinput.useskillcond > 3:
+                                        whoinput.useskillcond = 0
+                                    self.switchbuttonui[0].event = whoinput.useskillcond
+                                if self.switchbuttonui[0].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Free Skill Use", "Conserve 50% Stamina", "Conserve 25% stamina", "Forbid Skill")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[0].event])
+                                    self.battlelui.add(self.buttonnamepopup)
+
+                            elif self.switchbuttonui[1].rect.collidepoint(self.mousepos) or keypress == pygame.K_f:
+                                if mouse_up or keypress == pygame.K_f:  # rotate fire at will condition when clicked
+                                    whoinput.fireatwill += 1
+                                    if whoinput.fireatwill > 1:
+                                        whoinput.fireatwill = 0
+                                    self.switchbuttonui[1].event = whoinput.fireatwill
+                                if self.switchbuttonui[1].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Fire at will", "Hold fire until order")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[1].event])
+                                    self.battlelui.add(self.buttonnamepopup)
+
+                            elif self.switchbuttonui[2].rect.collidepoint(self.mousepos) or keypress == pygame.K_h:
+                                if mouse_up or keypress == pygame.K_h:  # rotate hold condition when clicked
+                                    whoinput.hold += 1
+                                    if whoinput.hold > 2:
+                                        whoinput.hold = 0
+                                    self.switchbuttonui[2].event = whoinput.hold
+                                if self.switchbuttonui[2].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Aggressive", "Skirmish/Scout", "Hold Ground")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[2].event])
+                                    self.battlelui.add(self.buttonnamepopup)
+
+                            elif self.switchbuttonui[3].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
+                                if mouse_up or keypress == pygame.K_j:  # rotate min range condition when clicked
+                                    whoinput.useminrange += 1
+                                    if whoinput.useminrange > 1:
+                                        whoinput.useminrange = 0
+                                    self.switchbuttonui[3].event = whoinput.useminrange
+                                if self.switchbuttonui[3].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Shoot from min range", "Shoot from max range")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[3].event])
+                                    self.battlelui.add(self.buttonnamepopup)
+
+                            elif self.switchbuttonui[4].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
+                                if mouse_up or keypress == pygame.K_j:  # rotate min range condition when clicked
+                                    whoinput.shoothow += 1
+                                    if whoinput.shoothow > 2:
+                                        whoinput.shoothow = 0
+                                    self.switchbuttonui[4].event = whoinput.shoothow
+                                if self.switchbuttonui[4].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Allow both arc and direct shot", "Allow only arc shot", "Allow only direct shot")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[4].event])
+                                    self.battlelui.add(self.buttonnamepopup)
+
+                            elif self.switchbuttonui[5].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
+                                if mouse_up or keypress == pygame.K_j:  # rotate min range condition when clicked
+                                    whoinput.runtoggle += 1
+                                    if whoinput.runtoggle > 1:
+                                        whoinput.runtoggle = 0
+                                    self.switchbuttonui[5].event = whoinput.runtoggle
+                                if self.switchbuttonui[5].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Toggle walk", "Toggle run")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[5].event])
+                                    self.battlelui.add(self.buttonnamepopup)
+
+                            elif self.colsplitbutton in self.battlelui and self.colsplitbutton.rect.collidepoint(self.mousepos):
+                                self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
                                 self.battlelui.add(self.buttonnamepopup)
+                                if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
+                                    self.splitunit(self, whoinput, 1)
+                                    self.splithappen = True
+                                    self.checksplit(whoinput)
+                                    self.battlelui.remove(*self.leadernow)
+                                    self.leadernow = whoinput.leader
+                                    self.battlelui.add(*self.leadernow)
+                                    self.setuparmyicon()
 
-                        elif self.switchbuttonui[1].rect.collidepoint(self.mousepos) or keypress == pygame.K_f:
-                            if mouse_up or keypress == pygame.K_f:  # rotate fire at will condition when clicked
-                                whoinput.fireatwill += 1
-                                if whoinput.fireatwill > 1:
-                                    whoinput.fireatwill = 0
-                                self.switchbuttonui[1].event = whoinput.fireatwill
-                            if self.switchbuttonui[1].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Fire at will", "Hold fire until order")
-                                self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[1].event])
+                            elif self.rowsplitbutton in self.battlelui and self.rowsplitbutton.rect.collidepoint(self.mousepos):
+                                self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
                                 self.battlelui.add(self.buttonnamepopup)
+                                if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
+                                    self.splitunit(self, whoinput, 0)
+                                    self.splithappen = True
+                                    self.checksplit(whoinput)
+                                    self.battlelui.remove(*self.leadernow)
+                                    self.leadernow = whoinput.leader
+                                    self.battlelui.add(*self.leadernow)
+                                    self.setuparmyicon()
 
-                        elif self.switchbuttonui[2].rect.collidepoint(self.mousepos) or keypress == pygame.K_h:
-                            if mouse_up or keypress == pygame.K_h:  # rotate hold condition when clicked
-                                whoinput.hold += 1
-                                if whoinput.hold > 2:
-                                    whoinput.hold = 0
-                                self.switchbuttonui[2].event = whoinput.hold
-                            if self.switchbuttonui[2].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Aggressive", "Skirmish/Scout", "Hold Ground")
-                                self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[2].event])
+                            elif self.buttonui[7].rect.collidepoint(self.mousepos):  # decimation effect
+                                self.buttonnamepopup.pop(self.mousepos, "Decimation")
                                 self.battlelui.add(self.buttonnamepopup)
-
-                        elif self.switchbuttonui[3].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
-                            if mouse_up or keypress == pygame.K_j:  # rotate min range condition when clicked
-                                whoinput.useminrange += 1
-                                if whoinput.useminrange > 1:
-                                    whoinput.useminrange = 0
-                                self.switchbuttonui[3].event = whoinput.useminrange
-                            if self.switchbuttonui[3].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Shoot from min range", "Shoot from max range")
-                                self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[3].event])
-                                self.battlelui.add(self.buttonnamepopup)
-
-                        elif self.switchbuttonui[4].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
-                            if mouse_up or keypress == pygame.K_j:  # rotate min range condition when clicked
-                                whoinput.shoothow += 1
-                                if whoinput.shoothow > 2:
-                                    whoinput.shoothow = 0
-                                self.switchbuttonui[4].event = whoinput.shoothow
-                            if self.switchbuttonui[4].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Allow both arc and direct shot", "Allow only arc shot", "Allow only direct shot")
-                                self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[4].event])
-                                self.battlelui.add(self.buttonnamepopup)
-
-                        elif self.switchbuttonui[5].rect.collidepoint(self.mousepos) or keypress == pygame.K_j:
-                            if mouse_up or keypress == pygame.K_j:  # rotate min range condition when clicked
-                                whoinput.runtoggle += 1
-                                if whoinput.runtoggle > 1:
-                                    whoinput.runtoggle = 0
-                                self.switchbuttonui[5].event = whoinput.runtoggle
-                            if self.switchbuttonui[5].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                poptext = ("Toggle walk", "Toggle run")
-                                self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[5].event])
-                                self.battlelui.add(self.buttonnamepopup)
-
-                        elif self.colsplitbutton in self.battlelui and self.colsplitbutton.rect.collidepoint(self.mousepos):
-                            self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
-                            self.battlelui.add(self.buttonnamepopup)
-                            if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                self.splitunit(self, whoinput, 1)
-                                self.splithappen = True
-                                self.checksplit(whoinput)
-                                self.battlelui.remove(*self.leadernow)
-                                self.leadernow = whoinput.leader
-                                self.battlelui.add(*self.leadernow)
-                                self.setuparmyicon()
-
-                        elif self.rowsplitbutton in self.battlelui and self.rowsplitbutton.rect.collidepoint(self.mousepos):
-                            self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
-                            self.battlelui.add(self.buttonnamepopup)
-                            if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                self.splitunit(self, whoinput, 0)
-                                self.splithappen = True
-                                self.checksplit(whoinput)
-                                self.battlelui.remove(*self.leadernow)
-                                self.leadernow = whoinput.leader
-                                self.battlelui.add(*self.leadernow)
-                                self.setuparmyicon()
-
-                        elif self.buttonui[7].rect.collidepoint(self.mousepos):  # decimation effect
-                            self.buttonnamepopup.pop(self.mousepos, "Decimation")
-                            self.battlelui.add(self.buttonnamepopup)
-                            if mouse_up and whoinput.state == 0:
-                                for squad in whoinput.squadsprite:
-                                    squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
-                                    squad.unithealth -= round(squad.unithealth * 0.1)
-                        elif self.leadermouseover(mouse_right):
+                                if mouse_up and whoinput.state == 0:
+                                    for squad in whoinput.squadsprite:
+                                        squad.statuseffect[98] = self.gameunitstat.statuslist[98].copy()
+                                        squad.unithealth -= round(squad.unithealth * 0.1)
+                        if self.leadermouseover(mouse_right):
                             self.battlelui.remove(self.buttonnamepopup)
                             pass
                     else:
@@ -1228,6 +1249,11 @@ class Battle():
                 self.leaderupdater.update()
                 self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
 
+                if self.uitimer > 1:
+                    self.timeui.changefightscale(self.teamtroopnumber) # change fight colour scale on timeui bar
+                    self.timeui.image.blit(self.currentweather.image, self.currentweather.rect) # redraw weather icon image
+                    self.lastteamtroopnumber = self.teamtroopnumber
+
                 if self.combattimer >= 0.5: # reset combat timer every 0.5 seconds
                     self.combattimer -= 0.5 # not reset to 0 because higher speed can cause inconsistency in update timing
                     for squad in self.squad: # Reset every squad battleside after updater since doing it in updater cause bug for defender
@@ -1309,14 +1335,8 @@ class Battle():
 
                                     self.battlelui.remove(self.battlemenu, *self.battlemenubutton, *self.escslidermenu,
                                                           *self.escvaluebox)  # remove menu sprite
-                                    # for index, stuff in enumerate(self.allunitlist):
-                                    #     del stuff.squadsprite
-                                    #     del stuff.hitboxs
-                                    #     del stuff.leaders
-                                    #     if index == 0:
-                                    #         print(sys.getrefcount(stuff))
-                                    #         print(gc.get_referrers(stuff))
-                                    for group in (self.squad, self.armyleader, self.hitboxes, self.team0army, self.team1army, self.team2army, self.armyicon):
+                                    for group in (self.squad, self.armyleader, self.hitboxes, self.team0army, self.team1army, self.team2army,
+                                                  self.deadunit, self.armyicon):
                                         for stuff in group:
                                             stuff.delete()
                                             stuff.kill()
@@ -1327,7 +1347,6 @@ class Battle():
                                     self.team0poslist, self.team1poslist, self.team2poslist = {}, {}, {}
                                     self.beforeselected = None
 
-                                    # print(locals())
                                     return # end battle game loop
 
                                 elif button.text == "Desktop": # quit game

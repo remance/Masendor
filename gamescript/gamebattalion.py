@@ -214,6 +214,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.commandstate = self.state
         self.deadchange = False # for checking when squad dead and run related code
         self.timer = random.random()
+        self.statedelay = 3 # some state has delay before can change state, default at 3 seconds
         #^ End default starting value
 
         if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
@@ -700,6 +701,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.run = False
             if dt > 0: # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
+                self.maingame.teamtroopnumber[self.team] += self.troopnumber
                 if self.timer >= 1:
                     self.setuparmy()
 

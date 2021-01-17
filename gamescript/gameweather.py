@@ -34,9 +34,8 @@ class Weather:
         self.speed = stat[21] * (self.level + 1)
         self.specialeffect = stat[22]
 
-        image = self.images[(self.type * 3) + self.level]
-        rect = image.get_rect(topright=(timeui.image.get_width() - 5, 0))
-        timeui.image.blit(image, rect)
+        self.image = self.images[(self.type * 3) + self.level]
+        self.rect = self.image.get_rect(topright=(timeui.image.get_width() - 5, 0))
 
     # def weatherchange(self, level):
     #     self.level = level

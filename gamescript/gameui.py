@@ -712,7 +712,19 @@ class Timeui(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.image = image.copy()
+        self.percentscale = -100
+        self.team1colour = (144, 167, 255)
+        self.team2colour = (255, 114, 114)
+        self.imagewidth = self.image.get_width()
+        self.imageheight = self.image.get_height()
         self.rect = self.image.get_rect(topleft=pos)
+
+    def changefightscale(self, troopnumberlist):
+        newpercent = round(troopnumberlist[1] / (troopnumberlist[1] + troopnumberlist[2]),2)
+        if self.percentscale != newpercent:
+            self.percentscale = newpercent
+            self.image.fill(self.team1colour, (0,0,self.imagewidth, self.imageheight))
+            self.image.fill(self.team2colour, (self.imagewidth * self.percentscale,0,self.imagewidth, self.imageheight))
 
 
 class Speednumber(pygame.sprite.Sprite):

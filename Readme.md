@@ -20,11 +20,11 @@ Plan
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
-0.6.1: battle selection, preparation screen with team selection and battle estimation source setting, start working on Battle of Megiddo
+0.6.1: battle selection, preparation screen with team selection and battle estimation source setting, add battle situation (colour bar to compare 2 team strength) in ui somewhere, start working on Battle of Megiddo
 
-0.6.2: custom battle, battle result screen, add battle situation (colour bar to compare 2 team strength) in ui somewhere
+0.6.2 - 0.6.4: in game unit and custom sub-unit editor
 
-0.6.3 - 0.6.5: in game custom unit and sub-unit editor
+0.6.5: custom battle, battle result screen, 
 
 0.6.6 and 0.6.7: random map generator, start working on Battle of Mohács
 
