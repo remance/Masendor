@@ -531,10 +531,10 @@ def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, 
     army = gamebattalion.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina,team)
 
     # add hitbox for all four sides
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20),
-                   gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 20)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.2), 10),
+                   gamebattalion.Hitbox(army, 1, 10, army.rect.height - int(army.rect.height * 0.2)),
+                   gamebattalion.Hitbox(army, 2, 10, army.rect.height - int(army.rect.height * 0.2)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.2), 10)]
 
     # add leader
     army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
@@ -615,10 +615,12 @@ def squadcombatcal(who, target, whoside, targetside, sortindex = (3,4,2,5,1,6,0,
     """calculate squad engagement using information after battalionengage who is attacker, target is defender battalion"""
     squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
     whofrontline = who.frontlineobject[whoside]
-    """only calculate if the attack is attack with the front side"""
+    # """only calculate if the attack is attack with the front side"""
     if whoside == 0:
+        # print(whoside, targetside, target.frontline[targetside])
         sortmidfront = [whofrontline[3], whofrontline[4], whofrontline[2], whofrontline[5],
                         whofrontline[1], whofrontline[6], whofrontline[0], whofrontline[7]]
+    # else: sortmidfront = whofrontline
 
         combatpositioncal(sortmidfront, sortindex, target, whoside, targetside, squadtargetside)
 
@@ -1026,10 +1028,10 @@ def splitunit(battle, who, how):
     who.height = who.gamemapheight.getheight(who.basepos)
 
     for thishitbox in who.hitbox: thishitbox.kill() # remove previous hitbox before create new one
-    who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - int(who.rect.width * 0.1), 20),
-                  gamebattalion.Hitbox(who, 1, 20, who.rect.height - int(who.rect.height * 0.1)),
-                  gamebattalion.Hitbox(who, 2, 20, who.rect.height - int(who.rect.height * 0.1)),
-                  gamebattalion.Hitbox(who, 3, who.rect.width - int(who.rect.width * 0.1), 20)]
+    who.hitbox = [gamebattalion.Hitbox(who, 0, who.rect.width - int(who.rect.width * 0.2), 10),
+                  gamebattalion.Hitbox(who, 1, 10, who.rect.height - int(who.rect.height * 0.2)),
+                  gamebattalion.Hitbox(who, 2, 10, who.rect.height - int(who.rect.height * 0.2)),
+                  gamebattalion.Hitbox(who, 3, who.rect.width - int(who.rect.width * 0.2), 10)]
 
     who.rotate()
     who.newangle = who.angle
@@ -1120,10 +1122,10 @@ def splitunit(battle, who, how):
 
     army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
                         army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.1), 20), # add hitbox for all four sides
-                   gamebattalion.Hitbox(army, 1, 20, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 2, 20, army.rect.height - int(army.rect.height * 0.1)),
-                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.1), 20)]
+    army.hitbox = [gamebattalion.Hitbox(army, 0, army.rect.width - int(army.rect.width * 0.2), 10), # add hitbox for all four sides
+                   gamebattalion.Hitbox(army, 1, 10, army.rect.height - int(army.rect.height * 0.2)),
+                   gamebattalion.Hitbox(army, 2, 10, army.rect.height - int(army.rect.height * 0.2)),
+                   gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.2), 10)]
     army.autosquadplace = False
     #^ End making new battalion
 

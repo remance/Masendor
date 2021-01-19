@@ -97,7 +97,6 @@ class Battle():
         self.escoptionmenubutton = main.escoptionmenubutton
 
         self.armyselector = main.armyselector
-        self.armyselector.currentrow = 0
         self.armyicon = main.armyicon
         self.selectscroll = main.selectscroll
 
@@ -472,8 +471,6 @@ class Battle():
             self.basecamerapos[1] = 0
 
     def rungame(self):
-        self.setuparmyicon()
-
         #v Create Starting Values
         self.mixervolume = SoundVolume
         self.gamestate = 1
@@ -506,7 +503,11 @@ class Battle():
         self.battlemousepos = [0, 0] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
         self.teamtroopnumber = [1, 1, 1] # list of troop number in each team
         self.lastteamtroopnumber = [1, 1, 1]
+        self.armyselector.currentrow = 0
         #^ End start value
+
+        self.setuparmyicon()
+        self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
 
         while True: # game running
             self.fpscount.fpsshow(self.clock)

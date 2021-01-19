@@ -719,7 +719,7 @@ class Timeui(pygame.sprite.Sprite):
         self.imageheight = self.image.get_height()
         self.rect = self.image.get_rect(topleft=pos)
 
-    def changefightscale(self, troopnumberlist):
+    def changefightscale(self, troopnumberlist): #TODO make this into new small bar below timeui instead
         newpercent = round(troopnumberlist[1] / (troopnumberlist[1] + troopnumberlist[2]),2)
         if self.percentscale != newpercent:
             self.percentscale = newpercent

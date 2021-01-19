@@ -51,8 +51,8 @@ class Basemap(pygame.sprite.Sprite):
     def drawimage(self, image):
         self.image = image
         self.trueimage = self.image.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
+        scalewidth = self.image.get_width()
+        scaleheight = self.image.get_height()
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
@@ -97,8 +97,8 @@ class Mapfeature(pygame.sprite.Sprite):
     def drawimage(self, image):
         self.image = image
         self.trueimage = self.image.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
+        scalewidth = self.image.get_width()
+        scaleheight = self.image.get_height()
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
@@ -145,8 +145,8 @@ class Mapheight(pygame.sprite.Sprite):
     def drawimage(self, image):
         self.image = image
         self.trueimage = self.image.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
+        scalewidth = self.image.get_width()
+        scaleheight = self.image.get_height()
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
@@ -238,8 +238,8 @@ class Beautifulmap(pygame.sprite.Sprite):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
         self.image.blit(placename, rect)  ## Add placename layer to map
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
+        scalewidth = self.image.get_width()
+        scaleheight = self.image.get_height()
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.trueimage = self.image.copy()
         self.image_original = self.image.copy()
