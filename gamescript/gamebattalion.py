@@ -1127,13 +1127,12 @@ class Unitarmy(pygame.sprite.Sprite):
             #v remove when go pass the map border for any reason
             if self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
                 1] > 999:  # Remove unit when it go out of battlemap
-                self.maingame.allunitindex.remove(self.gameid)
-                self.leader[0].state = 98 # leader gone missing
-                self.leader[0].health = 0
-                self.leader[0].gone()
+                if self.team == 1:
+                    self.die(self.maingame, self.maingame.team1army, self.maingame.team2army)
+                else:
+                    self.die(self.maingame, self.maingame.team2army, self.maingame.team1army)
                 self.kill()
-                for hitbox in self.hitbox:
-                    hitbox.kill()
+                self.maingame.setuparmyicon()
             #^ End pass map border remove
 
         else: # dead battalion

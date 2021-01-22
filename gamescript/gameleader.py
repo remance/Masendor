@@ -75,9 +75,8 @@ class Leader(pygame.sprite.Sprite):
                     army.teamcommander = leader
                     army.authrecal()
 
-    def gone(self):
+    def gone(self,eventtext = {96:"retreat",97:"captured",98:"missing",99:"wounded",100:"dead"}):
         """leader no longer in command due to death or other events"""
-        eventtext = {96:"retreat",97:"captured",98:"missing",99:"wounded",100:"dead"}
         if self.commander and self.battalion.leader[3].state not in (96, 97, 98, 99, 100) and self.battalion.leader[3].name != "None":
             ## If commander die will use strategist as next commander first
             self.battalion.leader[0], self.battalion.leader[3] = self.battalion.leader[3], self.battalion.leader[0]
@@ -86,7 +85,7 @@ class Leader(pygame.sprite.Sprite):
 
         thisbadmorale = self.badmorale[0]
 
-        if self.state == 99: # wonnd inflict less morale penalty
+        if self.state == 99: # wounded inflict less morale penalty
             thisbadmorale = self.badmorale[1]
 
         for squad in self.battalion.squadsprite:

@@ -728,7 +728,7 @@ class Scaleui(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
     def changefightscale(self, troopnumberlist):
-        newpercent = round(troopnumberlist[1] / (troopnumberlist[1] + troopnumberlist[2]),2)
+        newpercent = round(troopnumberlist[1] / (troopnumberlist[1] + troopnumberlist[2]),4)
         if self.percentscale != newpercent:
             self.percentscale = newpercent
             self.image.fill(self.team1colour, (0,0,self.imagewidth, self.imageheight))

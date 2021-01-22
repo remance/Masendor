@@ -899,6 +899,11 @@ def die(who, battle, group, enemygroup):
             for squad in army.squadsprite:
                 squad.basemorale -= 30
 
+    for leader in who.leader:
+        if leader.state not in (96,97,98,99,100):
+            leader.state = 96
+            leader.gone()
+
     for hitbox in who.hitbox: # delete hitbox
         battle.battlecamera.remove(hitbox)
         battle.hitboxes.remove(hitbox)
