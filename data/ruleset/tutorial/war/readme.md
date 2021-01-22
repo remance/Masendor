@@ -32,7 +32,7 @@ The unit_preset data structure is as follows;
 
 - Unit type is the type of this sub-unit, not really used for any calculation yet.
 
-- Mount that this unit is equiped with and its grade (mountid,grade). 1,0 mean the sub-unit does not have any mount. Note that equipped with mount will make the sub-unit be considered as calvary.
+- Mount that this unit is equiped with and its grade (mountid,grade,mountarmour). 1,0,1 mean the sub-unit does not have any mount. Note that equipped with mount will make the sub-unit be considered as calvary.
 
 - Spell, not yet implemented
 

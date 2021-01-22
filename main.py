@@ -206,6 +206,8 @@ try: # for printing error log when error exception happen
             self.timenumber = pygame.sprite.Group()  # number text of in-game time
             self.speednumber = pygame.sprite.Group()  # number text of current game speed
 
+            self.scaleui = pygame.sprite.Group()
+
             self.weathermatter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
             self.weathereffect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
             # ^ End initialise
@@ -264,6 +266,7 @@ try: # for printing error log when error exception happen
             gameui.Armyicon.containers = self.armyicon, self.battleui
             gameui.Timeui.containers = self.timeui, self.battleui
             gameui.Timer.containers = self.timenumber, self.battleui
+            gameui.Scaleui.containers = self.scaleui, self.battleui
             gameui.Speednumber.containers = self.speednumber, self.battleui
             gamepopup.Terrainpopup.containers = self.terraincheck
             gamepopup.Onelinepopup.containers = self.buttonnamepopup, self.leaderpopup
@@ -521,7 +524,7 @@ try: # for printing error log when error exception happen
                         trooptypelist[index][trooptype] += int(self.gameunitstat.unitlist[unit][27] * scalevalue[index])
                 trooptypelist[index].append(len(armyteamlist[index]))
 
-            armylooplist = [str(troop) + " Troops" for troop in teamtotal]
+            armylooplist = ["{:,}".format(troop) + " Troops" for troop in teamtotal]
             armylooplist = [self.leaderstat.leaderlist[leadernamelist[index][0]][0] + ": " + troop for index, troop in enumerate(armylooplist)]
 
             for index, army in enumerate(self.armystat):

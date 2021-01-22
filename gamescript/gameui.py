@@ -124,7 +124,7 @@ class Gameui(pygame.sprite.Sprite):
             thisbutton.draw(self.image)
         position = 65
         if self.uitype == "topbar":
-            self.value = [str(who.troopnumber) + " (" + str(who.maxhealth) + ")", who.staminastate, who.moralestate, who.state]
+            self.value = ["{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxhealth) + ")", who.staminastate, who.moralestate, who.state]
             if self.value[3] in self.options1: # Check unit state and blit name
                 self.value[3] = self.options1[self.value[3]]
             # if type(self.value[2]) != str:
@@ -205,7 +205,7 @@ class Gameui(pygame.sprite.Sprite):
         elif self.uitype == "unitcard":
             position = 15 # starting row
             positionx = 45 # starting point of text
-            self.value = [who.name, str(who.troopnumber) + " (" + str(who.maxtroop) + ")", int(who.stamina), int(who.morale),
+            self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", int(who.stamina), int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
                           int(who.accuracy),
                           int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef,
@@ -254,19 +254,18 @@ class Gameui(pygame.sprite.Sprite):
                     #^ End terrain text
 
                     #v Equipment text
-                    textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": " + str(
-                        weaponlist.weaponlist[who.meleeweapon[0]][1]) + ", " + str(weaponlist.weaponlist[who.meleeweapon[0]][2]) + ", " + str(
-                        weaponlist.weaponlist[who.meleeweapon[0]][3]),
-                                 self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": " + str(
-                                     armourlist.armourlist[who.armourgear[0]][1]) + ", " + str(armourlist.armourlist[who.armourgear[0]][2]),
+                    textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": D " + str(who.dmg)
+                                 + ", P " + str(int((1 - who.penetrate) * 100))+ "%, W " + str(weaponlist.weaponlist[who.meleeweapon[0]][3]),
+                                 self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": A "
+                                 + str(int(who.armour)) + ", W " + str(armourlist.armourlist[who.armourgear[0]][2]),
                                  "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.height),
                                  "Temperature:" + str(int(who.tempcount))]
 
                     if who.rangeweapon[0] != 1: # only add range weapon if it is not none
                         textvalue.insert(1,
-                                         self.qualitytext[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0]) + ": " + str(
-                                             weaponlist.weaponlist[who.rangeweapon[0]][1]) + ", " + str(
-                                             weaponlist.weaponlist[who.rangeweapon[0]][2]) + ", " + str(weaponlist.weaponlist[who.rangeweapon[0]][3]))
+                                         self.qualitytext[who.rangeweapon[1]] + " "  + str(weaponlist.weaponlist[who.rangeweapon[0]][0] + ": D "
+                                        + str(who.rangedmg) + ", P " + str(int((1 - who.rangepenetrate) * 100)) + "%, W "
+                                        + str(weaponlist.weaponlist[who.rangeweapon[0]][3])))
 
                     if "None" not in who.mount: # if mount is not the None mount id 1
                         armourtext = "//" + who.mountarmour[0]
@@ -712,19 +711,35 @@ class Timeui(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.image = image.copy()
+        self.rect = self.image.get_rect(topleft=pos)
+
+class Scaleui(pygame.sprite.Sprite):
+    def __init__(self, pos, image):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
         self.percentscale = -100
         self.team1colour = (144, 167, 255)
         self.team2colour = (255, 114, 114)
+        self.font = pygame.font.SysFont("helvetica", 12)
+        self.pos = pos
+        self.image = image
         self.imagewidth = self.image.get_width()
         self.imageheight = self.image.get_height()
         self.rect = self.image.get_rect(topleft=pos)
 
-    def changefightscale(self, troopnumberlist): #TODO make this into new small bar below timeui instead
+    def changefightscale(self, troopnumberlist):
         newpercent = round(troopnumberlist[1] / (troopnumberlist[1] + troopnumberlist[2]),2)
         if self.percentscale != newpercent:
             self.percentscale = newpercent
             self.image.fill(self.team1colour, (0,0,self.imagewidth, self.imageheight))
             self.image.fill(self.team2colour, (self.imagewidth * self.percentscale,0,self.imagewidth, self.imageheight))
+
+            team1text = self.font.render("{:,}".format(troopnumberlist[1]-1), 1, (0, 0, 0)) # add troop number text
+            team1textrect = team1text.get_rect(topleft=(0, 0))
+            self.image.blit(team1text, team1textrect)
+            team2text = self.font.render("{:,}".format(troopnumberlist[2]-1), 1, (0, 0, 0))
+            team2textrect = team2text.get_rect(topright=(self.imagewidth, 0))
+            self.image.blit(team2text, team2textrect)
 
 
 class Speednumber(pygame.sprite.Sprite):

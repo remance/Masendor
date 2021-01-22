@@ -30,7 +30,7 @@ weatherid (see data/map/weather) | time the weather activiate and end of previou
 
 - eventlog: the list of all event that will appear on eventlog during the battle. Will add more detailed implementation later, still in process of development. modelist is the eventlog tabs that the event will appear (0=war,1=army(unit),2=leader,3=unit(sub-unit))
 
-Currently only 2 types of event: t+number (e.g.t10) for event that appear at time input in time column, ld+number (ld0 for player, ld1 for enemy) for the first commander death event. 
+Currently only 23 types of event: t+number (e.g.t10) for event that appear at time input in time column, ld+number (ld0 for player, ld1 for enemy) for the first commander death event. wt+teamnumber (e.g.wt1 for team 1 win) for victory event.
 
 Both activate time in both weather and eventlog can be done for multiple days battle. If the even is sparse simply add pointless event at 23:59:59 to indicate the end of the day. For examples;
 

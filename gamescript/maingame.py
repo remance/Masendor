@@ -103,6 +103,8 @@ class Battle():
         self.timeui = main.timeui
         self.timenumber = main.timenumber
 
+        self.scaleui = main.scaleui
+
         self.speednumber = main.speednumber
 
         self.weathermatter = main.weathermatter
@@ -501,7 +503,7 @@ class Battle():
         self.bottomcorner = SCREENRECT.height - 5
         self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2] # center position of the screen
         self.battlemousepos = [0, 0] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
-        self.teamtroopnumber = [1, 1, 1] # list of troop number in each team
+        self.teamtroopnumber = [1, 1, 1] # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.lastteamtroopnumber = [1, 1, 1]
         self.armyselector.currentrow = 0
         #^ End start value
@@ -1251,8 +1253,7 @@ class Battle():
                 self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
 
                 if self.uitimer > 1:
-                    self.timeui.changefightscale(self.teamtroopnumber) # change fight colour scale on timeui bar
-                    self.timeui.image.blit(self.currentweather.image, self.currentweather.rect) # redraw weather icon image
+                    self.scaleui.changefightscale(self.teamtroopnumber) # change fight colour scale on timeui bar
                     self.lastteamtroopnumber = self.teamtroopnumber
 
                 if self.combattimer >= 0.5: # reset combat timer every 0.5 seconds

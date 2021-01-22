@@ -386,6 +386,9 @@ def loadgamedata(game):
     game.speednumber = gameui.Speednumber((game.timeui.rect.center[0] + 40, game.timeui.rect.center[1]),
                                           1)  # game speed number on the time ui
 
+    image = pygame.Surface((topimage[31].get_width(), 15))
+    game.scaleui = gameui.Scaleui(game.timeui.rect.bottomleft, image)
+
     #Button related to unit card and command
     game.buttonui = [gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y + 10, topimage[3], 0),  # unit card description button
                      gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y - 70, topimage[4], 1),  # unit card stat button

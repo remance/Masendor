@@ -323,7 +323,7 @@ class Armystat(pygame.sprite.Sprite):
         self.image.blit(textsurface, textrect)
 
         for index, text in enumerate(troopnumber):
-            textsurface = self.font.render(str(text), 1, (0, 0, 0))
+            textsurface = self.font.render("{:,}".format(text), 1, (0, 0, 0))
             textrect = textsurface.get_rect(midleft=self.typenumberpos[index])
             self.image.blit(textsurface, textrect)
 
