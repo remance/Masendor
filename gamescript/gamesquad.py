@@ -685,7 +685,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.skillcooldown = {key: val for key, val in self.skillcooldown.items() if val > 0} # remove cooldown if time reach 0
         for a, b in self.skilleffect.items(): # Can't use dict comprehension here since value include all other skill stat
             b[3] -= self.timer
-        self.skilleffect = {key: val for key, val in self.skilleffect.items() if val[3] > 0 and self.state in val[5]} # remove effect if time reach 0 and restriction is not met
+        self.skilleffect = {key: val for key, val in self.skilleffect.items() if val[3] > 0 and self.state in val[5]} # remove effect if time reach 0 or restriction state is not met
         for a, b in self.statuseffect.items():
             b[3] -= self.timer
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
@@ -792,7 +792,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 if battalionstate == 10 and self.state not in (97,98,99): # collapse and broken state squad cannot be in combat state
                     if any(battle > 0 for battle in self.battlesideid): # have enemy in melee
                         self.state = 10
-                    elif self.ammo > 0 and (self.arcshot or self.nearbysquadlist[2] == 0):  # Help range attack when battalion in melee combat if has arcshot or frontline
+                    elif self.state != 10 and self.ammo > 0 and (self.arcshot or self.nearbysquadlist[2] == 0):  # Help range attack when battalion in melee combat if has arcshot or frontline
                         self.state = 11
                     elif any(battle > 0 for battle in self.battlesideid) == False: # if suddenly not fighting anyone while in melee combat state
                         if self.nocombat == 0: # Start countdown

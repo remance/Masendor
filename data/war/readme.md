@@ -6,7 +6,7 @@ Implement_record: This file is not used in game but for record keeping which eff
 
 Unit_ability: list of all sub-units' abilities. The data structure of ability is as follows;
 
-- Skill Type (0=melee, 1=range) this will affect which damage and elemental effect the skill will boost| Area of Effect (1=self and frontal enemy damage,2=Direct Nearby only, 3=Nearby including corner, 4=whole unit) this also affect the enemy status infliction| Duration of skill in second 
+- Skill Type (0=melee, 1=range, 2=charge) this will affect which damage and elemental effect the skill will boost| Area of Effect (1=self and frontal enemy damage,2=Direct Nearby only, 3=Nearby including corner, 4=whole unit) this also affect the enemy status infliction| Duration of skill in second 
 
 - Cooldown of skill in second 
 

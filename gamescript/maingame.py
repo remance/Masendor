@@ -1343,6 +1343,9 @@ class Battle():
                                             stuff.delete()
                                             stuff.kill()
                                             del stuff
+                                    for arrow in self.arrows: # remove all range attack
+                                        arrow.kill()
+                                        del arrow
                                     self.squadlastselected = None
                                     self.allunitlist = []
                                     self.showingsquad = []

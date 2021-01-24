@@ -36,6 +36,7 @@ class Weather:
 
         self.image = self.images[(self.type * 3) + self.level]
         self.rect = self.image.get_rect(topright=(timeui.image.get_width() - 5, 0))
+        timeui.image.blit(self.image, self.rect)
 
     # def weatherchange(self, level):
     #     self.level = level
