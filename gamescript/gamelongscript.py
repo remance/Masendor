@@ -207,7 +207,7 @@ def loadgamedata(game):
     # v create unit related class
     imgs = load_images(['war', 'unit_ui'])
     gamesquad.Unitsquad.images = imgs
-    game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()
+    game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height() # size of squad image at closest zoom
 
     imgs = []
     imgsold = load_images(['war', 'unit_ui', 'battalion'])
@@ -299,6 +299,9 @@ def loadgamedata(game):
     game.lorenamelist = gamelorebook.Subsectionlist(game.lorebook.rect.topleft, imgs[1])
 
     imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
+    for index, img in enumerate(imgs):
+        imgs[index] = pygame.transform.scale(img, (int(img.get_width() * game.widthadjust),
+                                                    int(img.get_height() * game.heightadjust)))
     game.lorebuttonui = [
         gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[0], 0, 13),  # concept section button

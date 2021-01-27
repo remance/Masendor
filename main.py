@@ -12,7 +12,7 @@ try: # for printing error log when error exception happen
     from pygame.locals import *
 
     from gamescript import maingame, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
-        gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gamebattalion, gamesquad,rangeattack, gamepopup
+        gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gamebattalion, gamesquad,rangeattack, gamepopup, gameunitedit
 
     if not os.path.exists('profile'): # make profile folder if not existed
         os.makedirs('profile')
@@ -111,6 +111,8 @@ try: # for printing error log when error exception happen
                 self.winstyle = pygame.FULLSCREEN
             self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, self.winstyle, 32)
             self.screen = pygame.display.set_mode(SCREENRECT.size, self.winstyle | pygame.RESIZABLE, self.bestdepth)
+            self.widthadjust = SCREENRECT.width / 1366
+            self.heightadjust = SCREENRECT.height / 768
             #^ End set display
 
             # v Decorate the game window
@@ -121,40 +123,45 @@ try: # for printing error log when error exception happen
 
             # v Initialise Game Groups
             # main menu object group
-            self.mainui = pygame.sprite.LayeredUpdates()
+            self.mainui = pygame.sprite.LayeredUpdates() # sprite drawer group
             self.menubutton = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
-            self.menuicon = pygame.sprite.Group()
+            self.menuicon = pygame.sprite.Group() # mostly for option icon like volumne or scren resolution
 
-            self.inputui = pygame.sprite.Group()
-            self.inputbox = pygame.sprite.Group()
+            self.inputui = pygame.sprite.Group() # user text input ui box popup
+            self.inputbox = pygame.sprite.Group() # user text input box
 
-            self.profilebox = pygame.sprite.Group()
+            self.profilebox = pygame.sprite.Group() # profile name box at top right of screen at main menu screen
 
             self.menuslider = pygame.sprite.Group()
-            self.maplistbox = pygame.sprite.Group()
-            self.mapscroll = pygame.sprite.Group()
-            self.mapnamegroup = pygame.sprite.Group()
-            self.mapshow = pygame.sprite.Group()
-            self.teamcoa = pygame.sprite.Group()
-            self.maptitle = pygame.sprite.Group()
-            self.mapdescription = pygame.sprite.Group()
-            self.sourcedescription = pygame.sprite.Group()
-            self.armystat = pygame.sprite.Group()
+            self.maplistbox = pygame.sprite.Group() # ui box for map list
+            self.mapscroll = pygame.sprite.Group() # scroller bar for map list
+            self.mapnamegroup = pygame.sprite.Group() # map name list group
+            self.mapshow = pygame.sprite.Group() # preview image of selected map
+            self.teamcoa = pygame.sprite.Group() # team coat of arm that also act as team selection icon
+            self.maptitle = pygame.sprite.Group() # map title box
+            self.mapdescription = pygame.sprite.Group() # map description box in map select screen
+            self.sourcedescription = pygame.sprite.Group() # map source description box in preset battle preparation screen
+            self.armystat = pygame.sprite.Group() # ui box that show army stat in preset battle preparation screen
 
-            self.sourcescroll = pygame.sprite.Group()
-            self.sourcelistbox = pygame.sprite.Group()
-            self.sourcenamegroup = pygame.sprite.Group()
+            self.sourcescroll = pygame.sprite.Group() # scroller bar for source list
+            self.sourcelistbox = pygame.sprite.Group() # source list ui box
+            self.sourcenamegroup = pygame.sprite.Group() # source name list group
 
-            self.mapoptionbox = pygame.sprite.Group()
-            self.tickbox = pygame.sprite.Group()
+            self.mapoptionbox = pygame.sprite.Group() # ui box for battle option during preparation screen
+            self.tickbox = pygame.sprite.Group() # option tick box
 
             self.lorebuttonui = pygame.sprite.Group()  # buttons for enclycopedia group
             self.lorebook = pygame.sprite.Group()  # encyclopedia object
-            self.slidermenu = pygame.sprite.Group()
             self.valuebox = pygame.sprite.Group()  # value number and box in esc menu option
             self.lorenamelist = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
             self.lorescroll = pygame.sprite.Group()  # scroller for subsection name list in encyclopedia
             self.subsectionname = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
+
+            self.battlepreview = pygame.sprite.Group() # preview of unit battle in army editor
+            self.trooplist = pygame.sprite.Group() # ui box for troop name list
+            self.troopnamegroup = pygame.sprite.Group() # troop name list group
+            self.filterbox = pygame.sprite.Group() # troop name list filtering box
+
 
             # battle object group
             self.battlecamera = pygame.sprite.LayeredUpdates()  # this is layer drawer game camera, all image pos should be based on the map not screen
@@ -210,7 +217,7 @@ try: # for printing error log when error exception happen
             self.battlemenu = pygame.sprite.Group()  # esc menu object
             self.battlemenubutton = pygame.sprite.Group()  # buttons for esc menu object group
             self.escoptionmenubutton = pygame.sprite.Group()  # buttons for esc menu option object group
-            self.slidermenu = pygame.sprite.Group()
+            self.slidermenu = pygame.sprite.Group() # volume slider in esc option menu
 
             self.armyselector = pygame.sprite.Group()  # army selector ui
             self.armyicon = pygame.sprite.Group()  # army icon object group in army selector ui
@@ -220,7 +227,7 @@ try: # for printing error log when error exception happen
             self.timenumber = pygame.sprite.Group()  # number text of in-game time
             self.speednumber = pygame.sprite.Group()  # number text of current game speed
 
-            self.scaleui = pygame.sprite.Group()
+            self.scaleui = pygame.sprite.Group() # battle scale bar
 
             self.weathermatter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
             self.weathereffect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
@@ -259,6 +266,14 @@ try: # for printing error log when error exception happen
 
             gameui.Uibutton.containers = self.lorebuttonui
             gameui.Uiscroller.containers = self.mapscroll, self.sourcescroll, self.lorescroll, self.logscroll, self.selectscroll
+
+            gameunitedit.Previewbox.main_dir = main_dir
+            img = load_image('effect.png', 'map')  # map special effect image
+            gameunitedit.Previewbox.effectimage = img
+            gameunitedit.Previewbox.containers = self.battlepreview
+            gameunitedit.Filterbox.containers = self.filterbox
+            gameunitedit.Listbox.containers = self.trooplist
+            gameunitedit.Namelist.containers = self.troopnamegroup
 
             # battle containers
             gamemap.Basemap.containers = self.battlemapbase
@@ -376,6 +391,21 @@ try: # for printing error log when error exception happen
             self.editorbackbutton = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height - imagelist[0].get_height()),
                                          text="Back")
             self.editorbutton = (self.armyeditbutton, self.troopcreatetbutton, self.editorbackbutton)
+            # ^ End unit editor
+
+            #v Army editor
+            self.armybackbutton = gameprepare.Menubutton(images=imagelist,
+                                                        pos=(SCREENRECT.width - (SCREENRECT.width - imagelist[0].get_width()), bottomheight),
+                                                        text="Back")
+            self.armybsavebutton = gameprepare.Menubutton(images=imagelist,
+                                                         pos=((SCREENRECT.width - imagelist[0].get_width()), bottomheight),
+                                                         text="Save")
+            self.battlepreview = gameunitedit.Previewbox((SCREENRECT.width/2, SCREENRECT.height/2))
+            self.armyeditorbutton = (self.armybackbutton, self.armybsavebutton)
+            # self.filterbox = gameunitedit.Filterbox()
+            # self.trooplist = gameunitedit.Trooplist()
+            #^ End army editor
+
 
             # v Input box popup
             inputuiimg = load_image('inputui.png', 'ui')
@@ -393,8 +423,6 @@ try: # for printing error log when error exception happen
 
             self.inputuipop = (self.inputui, self.inputbox, self.inputokbutton, self.inputcancelbutton)
             # ^ End input box popup
-
-            #^ End unit editor
 
             #v profile box
             self.profilename = Profilename
@@ -467,10 +495,15 @@ try: # for printing error log when error exception happen
 
             self.mainui.add(*self.menubutton, self.profilebox)
 
-        def setuplist(self, itemclass, currentrow, showlist, itemgroup, box):
+        def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, screenscale=False):
             """generate list of subsection of the left side of encyclopedia"""
-            row = 5
-            column = 5
+            widthadjust = 1
+            heightadjust = 1
+            if screenscale:
+                widthadjust = self.widthadjust
+                heightadjust = self.heightadjust
+            row = 5 * heightadjust
+            column = 5 * widthadjust
             pos = box.rect.topleft
             if currentrow > len(showlist) - box.maxshowlist:
                 currentrow = len(showlist) - box.maxshowlist
@@ -483,7 +516,7 @@ try: # for printing error log when error exception happen
             for index, item in enumerate(showlist):
                 if index >= currentrow:
                     itemgroup.add(itemclass(box, (pos[0] + column, pos[1] + row), item))  # add new subsection sprite to group
-                    row += 30  # next row
+                    row += (30*heightadjust)  # next row
                     if len(itemgroup) > box.maxshowlist: break  # will not generate more than space allowed
 
         def readmapdata(self, maplist, file):
@@ -890,21 +923,47 @@ try: # for printing error log when error exception happen
                             self.mainui.add(*self.mapselectbutton, self.maplistbox, self.mapscroll, self.mapdescription)
 
                         elif self.startbutton.event: # start game button
+                            self.startbutton.event = False
                             self.battlegame.preparenew(self.ruleset, self.rulesetfolder, self.teamselected, self.enactment,
                                                        self.mapfoldername[self.currentmapselect], self.mapsource, self.sourcescale[self.mapsource])
                             self.battlegame.rungame()
                             gc.collect() # collect no longer used object in previous battle from memory
-                            self.startbutton.event = False
+
 
                     elif self.menustate == "uniteditor":
                         if self.editorbackbutton.event or esc_press:
                             self.editorbackbutton.event = False
-
                             self.backtomainmenu()
+
+                        elif self.armyeditbutton.event:
+                            self.armyeditbutton.event = False
+                            self.menustate = "armyeditor"
+
+                            self.mainui.remove(*self.menubutton)
+
+                            self.menubutton.remove(*self.menubutton)
+                            self.menubutton.add(*self.armyeditorbutton)
+
+                            self.mainui.add(*self.menubutton, self.battlepreview)
+
+                    elif self.menustate == "armyeditor":
+                        if self.armybackbutton.event or esc_press:
+                            self.armybackbutton.event = False
+                            self.menustate = "uniteditor"
+
+                            self.mainui.remove(*self.menubutton, self.battlepreview)
+
+                            self.menubutton.remove(*self.menubutton)
+                            self.menubutton.add(*self.editorbutton)
+
+                            self.mainui.add(*self.editorbutton)
+
 
                     elif self.menustate == "option":
                         for bar in self.resolutionbar: # loop to find which resolution bar is selected, this happen outside of clicking check below
                             if bar.event:
+                                bar.event = False
+
                                 self.resolutionscroll.changestate(bar.text)  # change button value based on new selected value
                                 resolutionchange = bar.text.split()
                                 self.newScreenWidth = resolutionchange[0]
@@ -914,7 +973,6 @@ try: # for printing error log when error exception happen
                                 editconfig('DEFAULT', 'ScreenHeight', self.newScreenHeight, 'configuration.ini', config)
                                 self.screen = pygame.display.set_mode(SCREENRECT.size, self.winstyle | pygame.RESIZABLE, self.bestdepth)
 
-                                bar.event = False
                                 self.menubutton.remove(self.resolutionbar)
 
                                 break
