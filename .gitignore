@@ -28,3 +28,6 @@ ehthumbs.db
 Thumbs.db
 
 __pycache__/
+/build/main/
+/test.py
+/main.spec

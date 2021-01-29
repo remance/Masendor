@@ -633,7 +633,7 @@ def squadcombatcal(who, target, whoside, targetside, sortindex = (3,4,2,5,1,6,0,
 def combatpositioncal(sortmidfront, sortindex, receiver, attackerside, receiverside, squadside):
     """Find enemy squad to fight starting at the front of attacker, then either right or left side on the frontline array"""
     for position, attackersquad in enumerate(sortmidfront):
-        if attackersquad != 0:
+        if attackersquad != 0 and (attackersquad.battleside[squadside] is None or attackersquad.battleside[squadside].state == 100): # only pick new target if not fighting or target already dead
             receiversquad = receiver.frontlineobject[receiverside][sortindex[position]]
             if any(battle > 0 for battle in attackersquad.battlesideid) == False: # check if squad not already fighting if true skip picking new enemy
                 if receiversquad != 0: # found front target

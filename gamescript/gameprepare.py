@@ -443,7 +443,7 @@ class Armystat(pygame.sprite.Sprite):
             self.image.blit(textsurface, textrect)
 
 
-class Maplistbox(pygame.sprite.Sprite):
+class Listbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         import main
         SCREENRECT = main.SCREENRECT
@@ -455,9 +455,9 @@ class Maplistbox(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
-        self.maxshowlist = 20 # max number of map on list can be shown at once
+        self.maxshowlist = 18 # max number of map on list can be shown at once
 
-class Mapname(pygame.sprite.Sprite):
+class Namelist(pygame.sprite.Sprite):
     def __init__(self, box, pos, name, textsize=16):
         import main
         SCREENRECT = main.SCREENRECT
@@ -467,11 +467,11 @@ class Mapname(pygame.sprite.Sprite):
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * textsize))
-        self.image = pygame.Surface((box.image.get_width() - int(10 * self.widthadjust), int(25 * self.heightadjust)))  # black corner
+        self.image = pygame.Surface((box.image.get_width() - int(15 * self.widthadjust), int(25 * self.heightadjust)))  # black corner
         self.image.fill((0, 0, 0))
 
         # v White body square
-        smallimage = pygame.Surface((box.image.get_width() - int(12 * self.widthadjust), int(23 * self.heightadjust)))
+        smallimage = pygame.Surface((box.image.get_width() - int(17 * self.widthadjust), int(23 * self.heightadjust)))
         smallimage.fill((255, 255, 255))
         smallrect = smallimage.get_rect(topleft=(int(1 * self.widthadjust), int(1 * self.heightadjust)))
         self.image.blit(smallimage, smallrect)

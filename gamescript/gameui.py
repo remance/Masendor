@@ -593,7 +593,7 @@ class Uiscroller(pygame.sprite.Sprite):
         if logsize is not None and self.logsize != logsize:
             self.logsize = logsize
             self.newimagecreate()
-        elif newrow is not None and self.currentrow != newrow:  ## Accept from both wheeling scroll and drag scroll bar
+        if newrow is not None and self.currentrow != newrow:  ## Accept from both wheeling scroll and drag scroll bar
             self.currentrow = newrow
             self.newimagecreate()
 

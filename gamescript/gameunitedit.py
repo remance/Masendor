@@ -72,42 +72,11 @@ class Filterbox(pygame.sprite.Sprite):
 
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
-        self.rect = self.image.get_rect(topleft=pos)
-
-class Listbox(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
-        self._layer = 13
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
+        self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
+                                                    int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
 
 
-class Namelist(pygame.sprite.Sprite):
-    def __init__(self, pos, name, subsection, textsize=16):
-        self._layer = 14
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", textsize)
-        self.image = pygame.Surface((180, 25))  # black corner
-        self.image.fill((0, 0, 0))
-
-        #v White body square
-        smallimage = pygame.Surface((178, 23))
-        smallimage.fill((255, 255, 255))
-        smallrect = smallimage.get_rect(topleft=(1, 1))
-        self.image.blit(smallimage, smallrect)
-        #^ End white body
-
-        #v Troop name text
-        textsurface = self.font.render(str(name), 1, (0, 0, 0))
-        textrect = textsurface.get_rect(midleft=(3, self.image.get_height() / 2))
-        self.image.blit(textsurface, textrect)
-        #^ End troop name
-
-        self.subsection = subsection
-        self.pos = pos
-        self.rect = self.image.get_rect(topleft=self.pos)
-#
 class Unitpreview(pygame.sprite.Sprite):
     def __init__(self, maingame, position, gameid, squadlist, colour, leader, leaderpos, coa, startangle, team):
         self = gamelongscript.addarmy(squadlist, position, gameid,
