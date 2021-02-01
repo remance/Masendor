@@ -511,8 +511,11 @@ class Unitsquad(pygame.sprite.Sprite):
         self.discipline += mapfeaturemod[9]  # discipline defense bonus from terrain bonus
 
         if mapfeaturemod[11] != [0]: # Some terrain feature can also cause status effect such as swimming in water
-            if 1 in mapfeaturemod[11]: # Water type terrain
-                self.statuseffect[93] = self.statuslist[93].copy() # drench
+            if 1 in mapfeaturemod[11]: # Shallow water type terrain
+                self.statuseffect[31] = self.statuslist[31].copy()  # wet
+            if 5 in mapfeaturemod[11]: # Deep water type terrain
+                self.statuseffect[93] = self.statuslist[93].copy()  # drench
+
                 if self.weight > 60 or self.stamina <= 0: # weight too much or tired will cause drowning
                     self.statuseffect[102] = self.statuslist[102].copy() # Drowning
 
@@ -532,6 +535,8 @@ class Unitsquad(pygame.sprite.Sprite):
 
         #v Temperature mod function from terrain and weather
         tempreach = mapfeaturemod[10] + weather.temperature # temperature the squad will change to based on current terrain feature and weather
+        for status in self.statuseffect.values():
+            tempreach += status[19] # add more from status effect
         if tempreach < 0: # cold temperature
             tempreach = tempreach * (100 - self.coldres) / 100 # lowest temperature the squad will change based on cold resist
         else: # hot temperature

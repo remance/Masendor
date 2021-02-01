@@ -15,9 +15,16 @@ class Previewbox(pygame.sprite.Sprite):
     effectimage = None
 
     def __init__(self, pos):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
         self._layer = 1
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = pygame.Surface((500,500))
+        self.maxwidth = int(500 * self.widthadjust)
+        self.maxheight = int(500 * self.heightadjust)
+        self.image = pygame.Surface((self.maxwidth, self.maxheight))
 
         self.newcolourlist = {}
         with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
@@ -39,8 +46,8 @@ class Previewbox(pygame.sprite.Sprite):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
 
-class Terrainbox(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
+class Previewchangebutton(pygame.sprite.Sprite):
+    def __init__(self, pos, image, text):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
@@ -48,20 +55,26 @@ class Terrainbox(pygame.sprite.Sprite):
 
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
-        self.rect = self.image.get_rect(topleft=pos)
+        self.font = pygame.font.SysFont("timesnewroman", int(30 * self.heightadjust))
 
-class Weatherbox(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
-        import main
-        SCREENRECT = main.SCREENRECT
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
+        self.image = image.copy()
+        self.image_original = self.image.copy()
 
-        self._layer = 13
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
-        self.rect = self.image.get_rect(topleft=pos)
+        self.text = text
+        self.textsurface = self.font.render(text, True, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(self.textsurface, self.textrect)
+
+        self.rect = self.image.get_rect(midbottom=pos)
+
+    def changetext(self, text):
+        self.image = self.image_original.copy()
+        self.text = text
+        self.textsurface = self.font.render(text, True, (0, 0, 0))
+        self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(self.textsurface, self.textrect)
+
+
 
 class Filterbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):

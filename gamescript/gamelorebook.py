@@ -222,7 +222,7 @@ class Lorebook(pygame.sprite.Sprite):
                     if "IMAGE:" not in text:
                         textsurface = pygame.Surface((int(400*self.heightadjust), int(300*self.widthadjust)), pygame.SRCALPHA)
                         textrect = descriptionsurface.get_rect(topleft=(col, row))
-                        self.blit_text(textsurface, text, (int(5*self.heightadjust), int(5*self.widthadjust)), self.font)
+                        self.blit_text(textsurface, str(text), (int(5*self.heightadjust), int(5*self.widthadjust)), self.font)
 
                     # blit image instead of text
                     else:

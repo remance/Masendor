@@ -110,7 +110,7 @@ class Unitstat():
                                     row[n] = [int(i)]
                                 else:
                                     row[n] = []
-                            elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 20): # negative number
+                            elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n != 1: # negative number for bonus
                                 row[n] = float(i)
                     self.statuslist[row[0]] = row[1:]
                 run += 1

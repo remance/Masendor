@@ -19,7 +19,7 @@ Death = (127, 127, 127, 255)
 ShallowWater = (153, 217, 235, 255)
 DeepWater = (100, 110, 214, 255)
 terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
-
+terrainlist = ("Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "ShallowWater", "DeepWater")
 ## Terrain Feature colour, change these when add new feature
 
 Plain = (181, 230, 29, 255)
@@ -35,6 +35,7 @@ Mana = (101, 109, 214, 255)
 Rot = (200, 191, 231, 255)
 Wetground = (186, 184, 109, 255)
 featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Pandemonium, Mana, Rot, Wetground)
+feaurelist = ("Plain", "Barren", "PlantField", "Forest", "InlandWater", "Road", "UrbanBuilding", "Farm", "Pandemonium", "Mana", "Rot", "Wetground")
 
 class Basemap(pygame.sprite.Sprite):
     maxviewmode = 10
@@ -45,6 +46,7 @@ class Basemap(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.scale = scale
         self.terraincolour = terraincolour
+        self.terrainlist = terrainlist
         # self.image = pygame.surface((0,0))
         # self.rect = self.image.get_rect(topleft=(0, 0))
 
@@ -92,6 +94,7 @@ class Mapfeature(pygame.sprite.Sprite):
         # self.image = pygame.surface((0,0))
         self.scale = scale
         self.featurecolour = featurecolour
+        self.featurelist = feaurelist
         # self.rect = self.image.get_rect(topleft=(0, 0))
 
     def drawimage(self, image):

@@ -16,11 +16,11 @@ class Factiondata():
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
-                    # if n in (5, 6, 11, 22, 23):
-                    #     if "," in i:
-                    #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
-                    #     elif i.isdigit():
-                    #         row[n] = [int(i)]
+                    if n == 2:
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
                 self.factionlist[row[0]] = row[1:]
             unitfile.close()
 

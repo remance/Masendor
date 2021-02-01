@@ -96,6 +96,13 @@ def loadgamedata(game):
 
     # v Create weather related class
     game.allweather = csv_read('weather.csv', ['data', 'map', 'weather'])
+    weatherlist = [item[0] for item in game.allweather.values()][2:]
+    strengthlist = ['Light ', 'Normal ', 'Strong ']
+    game.weatherlist = []
+    for item in weatherlist:
+        for strength in strengthlist:
+            game.weatherlist.append(strength+item)
+    game.weatherlist
     game.weathermatterimgs = []
 
     for weather in ('0', '1', '2', '3'):  # Load weather matter sprite image
@@ -123,6 +130,7 @@ def loadgamedata(game):
     for img in imgsold:
         imgs.append(img)
     game.coa = imgs
+    game.factionlist = [item[0] for item in game.allfaction.factionlist.values()][1:]
     # ^ End faction
 
     # v create game map texture and their default variables
