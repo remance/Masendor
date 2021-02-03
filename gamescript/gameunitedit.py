@@ -26,6 +26,8 @@ class Previewbox(pygame.sprite.Sprite):
         self.maxheight = int(500 * self.heightadjust)
         self.image = pygame.Surface((self.maxwidth, self.maxheight))
 
+        self.font = pygame.font.SysFont("timesnewroman", int(40 * self.heightadjust))
+
         self.newcolourlist = {}
         with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -43,8 +45,13 @@ class Previewbox(pygame.sprite.Sprite):
 
     def changeterrain(self, newterrain):
         self.image.fill(newterrain[1])
+
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
+
+        textsurface = self.font.render(newterrain[0], True, (0, 0, 0))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(textsurface, textrect)
 
 class Previewchangebutton(pygame.sprite.Sprite):
     def __init__(self, pos, image, text):

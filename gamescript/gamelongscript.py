@@ -442,6 +442,7 @@ def loadgamedata(game):
                       gameui.Uibutton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
                       gameui.Uibutton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
+    game.timebutton = game.buttonui[14:17]
     game.battleui.add(game.buttonui[8:17])
     game.battleui.add(game.logscroll, game.selectscroll)
 

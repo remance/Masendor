@@ -1025,8 +1025,8 @@ try: # for printing error log when error exception happen
 
                             self.troopscroll.changeimage(newrow=self.currenttrooprow, logsize=len(self.trooplist)) # change troop scroll image
                             self.mainui.add(*self.menubutton, self.battlepreview, self.trooplistbox, self.troopscroll, self.armylistbox,
-                                            self.timeui, self.timenumber, self.gameui[1], self.gameui[2], self.filterbox, *self.buttonui[0:4],
-                                            self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton)
+                                            self.timeui, *self.timebutton, self.timenumber, self.gameui[1], self.gameui[2], self.filterbox, *self.buttonui[0:4],
+                                            self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton, self.timenumber, self.speednumber)
 
                     elif self.menustate == "armyeditor": # custom battalion preset creator and test
                         if self.armybackbutton.event or esc_press:
@@ -1041,8 +1041,9 @@ try: # for printing error log when error exception happen
                             self.buttonui[3].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y + 50))
 
                             self.mainui.remove(*self.menubutton, self.battlepreview, self.trooplistbox, self.troopscroll, self.teamcoa, self.armylistbox,
-                                               self.timeui, self.timenumber, self.gameui[1], self.gameui[2], self.filterbox, *self.buttonui[0:4],
-                                               self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton)
+                                               *self.timebutton, self.timeui, self.timenumber, self.gameui[1], self.gameui[2], self.filterbox,
+                                               *self.buttonui[0:4], self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton,
+                                               self.timenumber, self.speednumber)
 
                             for name in self.troopnamegroup:  # remove troop name list
                                 name.kill()
@@ -1110,8 +1111,12 @@ try: # for printing error log when error exception happen
                                             if name.rect.collidepoint(self.mousepos):
                                                 if self.mapoptionlistbox.type == "terrain":
                                                     self.terrainchangebutton.changetext(self.battlemapbase.terrainlist[index])
+                                                    self.baseterrain = index
+                                                    self.battlepreview.changeterrain(self.battlepreview.newcolourlist[(self.baseterrain * len(self.battlemapfeature.featurelist))+self.featureterrain])
                                                 elif self.mapoptionlistbox.type == "feature":
                                                     self.featurechangebutton.changetext(self.battlemapfeature.featurelist[index])
+                                                    self.featureterrain = index
+                                                    self.battlepreview.changeterrain(self.battlepreview.newcolourlist[(self.baseterrain * len(self.battlemapfeature.featurelist))+self.featureterrain])
                                                 elif self.mapoptionlistbox.type == "weather":
                                                     self.weatherchangebutton.changetext()
 

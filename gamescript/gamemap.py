@@ -114,7 +114,7 @@ class Mapfeature(pygame.sprite.Sprite):
             featureindex = None
             if feature in self.featurecolour:
                 featureindex = self.featurecolour.index(feature)
-                featureindex = featureindex + (terrainindex * 12)
+                featureindex = (terrainindex * len(self.featurelist)) + featureindex
         else:
             newpos = pos
             if newpos[0] < 0:
@@ -131,7 +131,7 @@ class Mapfeature(pygame.sprite.Sprite):
             featureindex = None
             if feature in self.featurecolour:
                 featureindex = self.featurecolour.index(feature)
-                featureindex = featureindex + (terrainindex * 12)
+                featureindex = (terrainindex * len(self.featurelist)) + featureindex
         return terrainindex, featureindex
 
 
