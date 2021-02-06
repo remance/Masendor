@@ -6,7 +6,7 @@ Historical wargame simulation made with Pygame. There is no main name for the ga
 
 To start testing the game run main.py or main.exe if you use the release version.
 
-Check the requirements.txt file for dependency requirement. Also the game is now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9.
+Check the requirements.txt file for dependency requirement if running with source code. Also the game is now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9. (I may have to use cython later for a huge size battle)
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
@@ -14,7 +14,7 @@ If anyone is interested in similar game like this, there is also another interes
 
 The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
-Meaning: It's playable but it is still a bloody mess. More work to do.
+Meaning: It is playable but still a bloody mess. More work to do.
 
 Plan
 

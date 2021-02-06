@@ -9,7 +9,7 @@ from pygame.transform import scale
 from gamescript import gamelongscript
 
 
-class Rangearrow(pygame.sprite.Sprite):
+class Rangearrow(pygame.sprite.Sprite): #TODO fix close range target and make range attack dmg drop the longer it travel
     images = []
     gamemapheight = None
 

@@ -36,7 +36,7 @@ class Battle():
     def __init__(self, main, winstyle):
         # pygame.init()  # Initialize pygame
 
-        # v Get game object from main
+        # v Get game object/variable from main
 
         self.eventlog = main.eventlog
         self.battlecamera = main.battlecamera
@@ -124,6 +124,7 @@ class Battle():
 
         self.allfaction = main.allfaction
         self.coa = main.coa
+        self.teamcolour = main.teamcolour
 
         self.allweapon = main.allweapon
         self.allarmour = main.allarmour

@@ -26,7 +26,7 @@ class Previewbox(pygame.sprite.Sprite):
         self.maxheight = int(500 * self.heightadjust)
         self.image = pygame.Surface((self.maxwidth, self.maxheight))
 
-        self.font = pygame.font.SysFont("timesnewroman", int(40 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(24 * self.heightadjust))
 
         self.newcolourlist = {}
         with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
@@ -50,8 +50,107 @@ class Previewbox(pygame.sprite.Sprite):
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
 
         textsurface = self.font.render(newterrain[0], True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() - (textsurface.get_height()/2)))
         self.image.blit(textsurface, textrect)
+
+class Armybuildslot(pygame.sprite.Sprite):
+    squadwidth = 0 # squad sprite width size get add from main
+    squadheight = 0 # squad sprite height size get add from main
+    images = [] # image related to squad sprite, get add from loadgamedata in gamelongscript
+    weaponlist = None
+    armourlist = None
+    statlist = None
+    createtroopstat = gamelongscript.createtroopstat
+
+    def __init__(self, gameid, team, colour, position, startpos):
+        self._layer = 2
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.selected = False
+        self.gameid = gameid
+        self.team = team
+        self.name = "None"
+        self.leader = None
+
+        self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
+        self.image.fill((0, 0, 0))
+        whiteimage = pygame.Surface((self.squadwidth-2, self.squadheight-2))
+        whiteimage.fill(colour)
+        whiterect = whiteimage.get_rect(center=(self.image.get_width()/2, self.image.get_height()/2))
+        self.image.blit(whiteimage, whiterect)
+        self.image_original = self.image.copy()
+
+        self.armypos = position  # position in battalion array (0 to 63)
+        self.inspposition = (self.armypos[0] + startpos[0], self.armypos[1] + startpos[1])  # position in inspect ui
+        self.rect = self.image.get_rect(topleft=self.inspposition)
+
+    def changetroop(self, troopindex):
+        self.image = self.image_original.copy()
+
+        self.createtroopstat(self.team, self.statlist.unitlist[troopindex].copy(), [1,1], 100, 100)
+        # v squad block team colour
+        if self.unittype == 2: # cavalry draw line on block
+            pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
+        # ^ End squad block team colour
+
+        # v armour circle colour (grey = light, gold = heavy)
+        image1 = self.images[1]
+        if self.basearmour <= 50: image1 = self.images[2]
+        image1rect = image1.get_rect(center=self.image.get_rect().center)
+        self.image.blit(image1, image1rect)
+        # ^ End armour colour
+
+        # v health circle image setup
+        healthimage = self.images[3]
+        healthimagerect = healthimage.get_rect(center=self.image.get_rect().center)
+        self.image.blit(healthimage, healthimagerect)
+        # ^ End health circle
+
+        # v stamina circle image setup
+        staminaimage = self.images[8]
+        staminaimagerect = staminaimage.get_rect(center=self.image.get_rect().center)
+        self.image.blit(staminaimage, staminaimagerect)
+        # ^ End stamina circle
+
+        # v weapon class icon in middle circle
+        if self.unitclass == 0:
+            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][5]]
+        else:
+            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][5]]
+        image1rect = image1.get_rect(center=self.image.get_rect().center)
+        self.image.blit(image1, image1rect)
+        # ^ End weapon icon
+
+class Warningmsg(pygame.sprite.Sprite):
+    factionwarn = "Multiple factions unit can not be used with No Multiple Faction option enable"
+    tenrequire = "Require at least 10 sub-units to be usable"
+    emptyrowcol = "Empty row or column will be removed when employed"
+    duplicateleader = "Duplicated leader will be removed with No Duplicated leaer option enable"
+
+    def __init__(self, pos, image):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        self._layer = 13
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("timesnewroman", int(20 * self.heightadjust))
+    #
+    # def addwarning(self):
+    #     self.image = self.image_original.copy()
+    #     self.text = text
+    #     self.textsurface = self.font.render(text, True, (0, 0, 0))
+    #     self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+    #     self.image.blit(self.textsurface, self.textrect)
+    #
+    #
+    # def removewarning(self):
+    #
+    #     self.image = self.image_original.copy()
+    #     self.text = text
+    #     self.textsurface = self.font.render(text, True, (0, 0, 0))
+    #     self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+    #     self.image.blit(self.textsurface, self.textrect)
 
 class Previewchangebutton(pygame.sprite.Sprite):
     def __init__(self, pos, image, text):

@@ -1250,7 +1250,7 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.control and self.state != 100:
             posmask = mouse_pos[0][0] - self.rect.x, mouse_pos[0][1] - self.rect.y # for checking if right click in mask or not. if not, move unit
             if mouse_right and mouse_pos[1][0] >= 1 and mouse_pos[1][0] < 998 and mouse_pos[1][1] >= 1 and mouse_pos[1][1] < 998:
-                if self.state not in (10, 97, 98, 99, 100): # can move normally
+                if self.state not in (10, 96, 97, 98, 99, 100): # can move normally
                     try:  # if click within rect
                         if self.mask.get_at(posmask) == 0: # not in mask
                             self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
@@ -1258,7 +1258,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     except:  # if click outside of rect and mask
                         self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
 
-                elif self.state == 10:  # Enter retreat state if in combat and move command issue
+                elif self.state in (10,96):  # Enter retreat state if in combat and move command issue or already in controlled retreat
                     try: # if click within rect
                         if self.mask.get_at(posmask) == 0: # not in mask
                             self.processretreat(mouse_pos, whomouseover) # retreat

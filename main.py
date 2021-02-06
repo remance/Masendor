@@ -5,6 +5,7 @@ try: # for printing error log when error exception happen
     import sys
     import traceback
     import gc
+    import numpy as np
 
     # import basic pygame modules
     import pygame
@@ -95,6 +96,7 @@ try: # for printing error log when error exception happen
             if timer == 1000: intro = False
 
     class Mainmenu():
+        teamcolour = ((255, 255, 255), (144, 167, 255), (255, 114, 114)) # team colour
         def __init__(self):
             pygame.init() # Initialize pygame
 
@@ -168,7 +170,7 @@ try: # for printing error log when error exception happen
             self.terrainchangebutton = pygame.sprite.Group() # button to change preview map base terrain
             self.featurechangebutton = pygame.sprite.Group() # button to change preview map terrain feature
             self.weatherchangebutton = pygame.sprite.Group() # button to change preview map weather
-
+            self.armybuildslot = pygame.sprite.Group() # slot for putting troop into army preset during preparation mode
 
             # battle object group
             self.battlecamera = pygame.sprite.LayeredUpdates()  # this is layer drawer game camera, all image pos should be based on the map not screen
@@ -281,6 +283,7 @@ try: # for printing error log when error exception happen
             gameunitedit.Previewbox.containers = self.battlepreview
             gameunitedit.Filterbox.containers = self.filterbox
             gameunitedit.Previewchangebutton.containers = self.terrainchangebutton, self.weatherchangebutton, self.featurechangebutton
+            gameunitedit.Armybuildslot.containers = self.armybuildslot
 
             # battle containers
             gamemap.Basemap.containers = self.battlemapbase
@@ -424,6 +427,31 @@ try: # for printing error log when error exception happen
             self.weatherchangebutton = gameunitedit.Previewchangebutton((SCREENRECT.width/1.5, SCREENRECT.height), boximg, "Light Sunny") # start with light sunny
 
 
+            gameunitedit.Armybuildslot.squadwidth = self.squadwidth
+            gameunitedit.Armybuildslot.squadheight = self.squadheight
+            startpos = [(SCREENRECT.width / 2) - (self.squadwidth * 5),
+                            (SCREENRECT.height / 2) - (self.squadheight * 4)]
+            gameid = 0
+            gameid = self.makearmyslot(gameid, 1, self.teamcolour[1], range(0, 64), startpos) # make player army slot
+
+            #v Make front and rear enemy slot row
+            enemystartpos = ((startpos[0], startpos[1] - (self.squadheight + 10)), (startpos[0], startpos[1] + (self.squadheight*8) + 10))
+            for pos in enemystartpos:
+                gameid = self.makearmyslot(gameid, 2, self.teamcolour[2], range(0, 8), pos)
+            #^ End front and rear enemy
+
+            #v Make left and right enemy slot row
+            enemystartpos = ((startpos[0] - 10, startpos[1] - self.squadheight), (startpos[0] + (self.squadwidth * 9) + 10, startpos[1] - self.squadheight))
+            for pos in enemystartpos:
+                gameid = self.makearmyslot(gameid, 2, self.teamcolour[2], range(0, 8), pos, columnonly = True)
+            #^ End left and right enemy
+
+            self.team1previewarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
+                                              [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]) # player teat army squad list
+            self.team2testfrontarmy = np.array([0,0,0,0,0,0,0,0]) # front enemy line squad list
+            self.team2testleftarmy = np.array([0,0,0,0,0,0,0,0]) # left enemy line squad list
+            self.team2testrightarmy = np.array([0,0,0,0,0,0,0,0]) # right enemy line squad list
+            self.team2testreararmy = np.array([0,0,0,0,0,0,0,0]) # rear enemy line squad list
 
             boximg = load_image('filterbox.png', 'ui').convert()
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)
@@ -681,6 +709,25 @@ try: # for printing error log when error exception happen
                         currentrow -= 1
             return currentrow
 
+        def makearmyslot(self, gameid, team, teamcolour, rangetorun, startpos, columnonly = False):
+            width, height = 0, 0
+            squadnum = 0  # Number of squad based on the position in row and column
+            for squad in rangetorun: # generate player army slot for filling troop into preview army
+                if columnonly == False:
+                    width += self.squadwidth
+                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, teamcolour, (width, height), startpos))
+                    squadnum += 1
+                    if squadnum == 8:  # Pass the last squad in the row, go to the next one
+                        width = 0
+                        height += self.squadheight
+                        squadnum = 0
+                else:
+                    height += self.squadheight
+                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, teamcolour, (width, height), startpos))
+                    squadnum += 1
+                gameid += 1
+            return gameid
+
         def run(self):
             while True:
                 #v Get user input
@@ -688,6 +735,7 @@ try: # for printing error log when error exception happen
                 mouse_down = False
                 mouse_scrolldown = False
                 mouse_scrollup = False
+                keypress = None
                 esc_press = False
                 for event in pygame.event.get():
                     if self.textinputpopup is not None: # event update to input box
@@ -705,8 +753,11 @@ try: # for printing error log when error exception happen
                         elif event.button == 5:  # Mouse scroll up
                             mouse_scrolldown = True
 
-                    elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                        esc_press = True
+                    elif event.type == KEYDOWN:
+                        if event.key == K_ESCAPE:
+                            esc_press = True
+                        else:  # holding other keys
+                            keypress = event.key
 
                     if event.type == QUIT or self.quitbutton.event == True or (esc_press and self.menustate == "mainmenu"):
                         return
@@ -996,7 +1047,8 @@ try: # for printing error log when error exception happen
                             self.menubutton.remove(*self.menubutton)
                             self.menubutton.add(*self.armyeditorbutton)
 
-                            self.trooplist = ['None'] + [item[0] for item in self.gameunitstat.unitlist.values()][1:] #generate troop name list
+                            self.trooplist = [item[0] for item in self.gameunitstat.unitlist.values()][1:] #generate troop name list
+                            self.troopindexlist = list(range(0, len(self.trooplist) + 1))
                             self.setuplist(gameprepare.Namelist, self.currenttrooprow, self.trooplist,
                                            self.troopnamegroup, self.trooplistbox)
                             self.currentlistshow = "troop"
@@ -1009,24 +1061,33 @@ try: # for printing error log when error exception happen
                             self.gameui[1].rect = self.gameui[1].image.get_rect(center=(self.gameui[1].X,
                                                                                         self.gameui[1].image.get_height()/2)) # leader ui
 
-                            self.gameui[2].rect = self.gameui[1].image.get_rect(topright=(self.trooplistbox.rect.bottomright[0],
-                                                                                        self.trooplistbox.rect.bottomright[1])) # troop info card ui
-                            self.buttonui[0].rect = self.buttonui[0].image.get_rect(topright=(self.gameui[2].rect.topleft[0], # description button
+                            self.gameui[2].rect = self.gameui[2].image.get_rect(bottomright=(SCREENRECT.width,
+                                                                                        SCREENRECT.height)) # troop info card ui
+                            self.buttonui[0].rect = self.buttonui[0].image.get_rect(topleft=(self.gameui[2].rect.topleft[0], # description button
                                                                                           self.gameui[2].rect.topleft[1]+120))
-                            self.buttonui[1].rect = self.buttonui[1].image.get_rect(topright=(self.gameui[2].rect.topleft[0], # stat button
+                            self.buttonui[1].rect = self.buttonui[1].image.get_rect(topleft=(self.gameui[2].rect.topleft[0], # stat button
                                                                                           self.gameui[2].rect.topleft[1]))
-                            self.buttonui[2].rect = self.buttonui[2].image.get_rect(topright=(self.gameui[2].rect.topleft[0], # skill button
+                            self.buttonui[2].rect = self.buttonui[2].image.get_rect(topleft=(self.gameui[2].rect.topleft[0], # skill button
                                                                                           self.gameui[2].rect.topleft[1] + 40))
-                            self.buttonui[3].rect = self.buttonui[3].image.get_rect(topright=(self.gameui[2].rect.topleft[0], # equipment button
+                            self.buttonui[3].rect = self.buttonui[3].image.get_rect(topleft=(self.gameui[2].rect.topleft[0], # equipment button
                                                                                           self.gameui[2].rect.topleft[1] + 80))
 
                             self.maketeamcoa([0], oneteam=True,team1setpos=(self.trooplistbox.rect.midleft[0] - int((200 * self.widthadjust)/2),
                                                                             self.trooplistbox.rect.midleft[1])) # default faction select as all faction
 
                             self.troopscroll.changeimage(newrow=self.currenttrooprow, logsize=len(self.trooplist)) # change troop scroll image
+
+                            for index, slot in enumerate(self.armybuildslot):  # start with the first player squad slot selected when enter
+                                if index == 0:
+                                    slot.selected = True
+                                    self.squadselectedborder.pop(slot.inspposition)
+                                else: # reset all other slot
+                                    slot.selected = False
+
                             self.mainui.add(*self.menubutton, self.battlepreview, self.trooplistbox, self.troopscroll, self.armylistbox,
                                             self.timeui, *self.timebutton, self.timenumber, self.gameui[1], self.gameui[2], self.filterbox, *self.buttonui[0:4],
-                                            self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton, self.timenumber, self.speednumber)
+                                            self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton, self.timenumber, self.speednumber,
+                                            *self.armybuildslot, self.squadselectedborder)
 
                     elif self.menustate == "armyeditor": # custom battalion preset creator and test
                         if self.armybackbutton.event or esc_press:
@@ -1034,22 +1095,23 @@ try: # for printing error log when error exception happen
                             self.menustate = "uniteditor"
 
                             self.gameui[1].rect = self.gameui[1].image.get_rect(center=(self.gameui[1].X, self.gameui[1].Y)) # change leader ui position back
-                            self.gameui[2].rect = self.gameui[1].image.get_rect(center=(self.gameui[2].X, self.gameui[2].Y)) # change unit card position back
-                            self.buttonui[0].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y + 10))
-                            self.buttonui[1].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y - 70))
-                            self.buttonui[2].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y - 30))
-                            self.buttonui[3].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y + 50))
+                            self.gameui[2].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X, self.gameui[2].Y)) # change unit card position back
+                            self.buttonui[0].rect = self.buttonui[0].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y + 10))
+                            self.buttonui[1].rect = self.buttonui[1].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y - 70))
+                            self.buttonui[2].rect = self.buttonui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y - 30))
+                            self.buttonui[3].rect = self.buttonui[3].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y + 50))
 
                             self.mainui.remove(*self.menubutton, self.battlepreview, self.trooplistbox, self.troopscroll, self.teamcoa, self.armylistbox,
                                                *self.timebutton, self.timeui, self.timenumber, self.gameui[1], self.gameui[2], self.filterbox,
                                                *self.buttonui[0:4], self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton,
-                                               self.timenumber, self.speednumber)
+                                               self.timenumber, self.speednumber, *self.armybuildslot, self.squadselectedborder)
 
                             for name in self.troopnamegroup:  # remove troop name list
                                 name.kill()
                                 del name
 
-                            self.trooplist = ['None'] + [item[0] for item in self.gameunitstat.unitlist.values()][1:] # reset troop filter back to all faction
+                            self.trooplist = [item[0] for item in self.gameunitstat.unitlist.values()][1:] # reset troop filter back to all faction
+                            self.troopindexlist = list(range(0, len(self.trooplist) + 1))
 
                             self.menubutton.remove(*self.menubutton)
                             self.menubutton.add(*self.editorbutton)
@@ -1059,9 +1121,20 @@ try: # for printing error log when error exception happen
 
                         if mouse_up or mouse_down:
                             if mouse_up:
-                                if self.terrainchangebutton.rect.collidepoint(self.mousepos):
+                                if self.battlepreview.rect.collidepoint(self.mousepos):
+                                    for slot in self.armybuildslot: # click on any slot
+                                        if slot.rect.collidepoint(self.mousepos):
+                                            slot.selected = True
+                                            self.squadselectedborder.pop(slot.inspposition)
+                                            if slot.name != "None":
+                                                self.gameui[2].valueinput(who=slot, weaponlist=self.allweapon,
+                                                                          armourlist=self.allarmour) # update unit card on selected squad
+                                        elif slot.selected:
+                                            slot.selected = False
+
+                                elif self.terrainchangebutton.rect.collidepoint(self.mousepos): # change map terrain button
                                     self.mapoptionlistbox.rect = self.mapoptionlistbox.image.get_rect(midbottom=(self.terrainchangebutton.rect.midtop))
-                                    self.mainui.add(self.mapoptionlistbox)
+                                    self.mainui.add(self.mapoptionlistbox) # add the option list to screen
                                     self.setuplist(gameprepare.Namelist, 0, self.battlemapbase.terrainlist, self.mapoptionnamegroup,
                                                    self.mapoptionlistbox)
                                     self.mainui.add(*self.mapoptionnamegroup)
@@ -1069,14 +1142,16 @@ try: # for printing error log when error exception happen
                                     #                                    self.maplistbox.maxshowlist, layer=14)
 
                                     self.mapoptionlistbox.type = "terrain"
-                                elif self.featurechangebutton.rect.collidepoint(self.mousepos):
+
+                                elif self.featurechangebutton.rect.collidepoint(self.mousepos): # change map feature button
                                     self.mapoptionlistbox.rect = self.mapoptionlistbox.image.get_rect(midbottom=(self.featurechangebutton.rect.midtop))
                                     self.mainui.add(self.mapoptionlistbox)
                                     self.setuplist(gameprepare.Namelist, 0, self.battlemapfeature.featurelist, self.mapoptionnamegroup,
                                                    self.mapoptionlistbox)
                                     self.mainui.add(*self.mapoptionnamegroup)
                                     self.mapoptionlistbox.type = "feature"
-                                elif self.weatherchangebutton.rect.collidepoint(self.mousepos):
+
+                                elif self.weatherchangebutton.rect.collidepoint(self.mousepos): # change map weather button
                                     self.mapoptionlistbox.rect = self.mapoptionlistbox.image.get_rect(midbottom=(self.weatherchangebutton.rect.midtop))
                                     self.mainui.add(self.mapoptionlistbox)
                                     self.setuplist(gameprepare.Namelist, 0, self.weatherlist, self.mapoptionnamegroup,
@@ -1090,9 +1165,16 @@ try: # for printing error log when error exception happen
                                         if name.rect.collidepoint(self.mousepos):
                                             if self.currentlistshow == "faction":
                                                 self.currenttrooprow = 0
-                                                self.trooplist = ['None'] + [item[1][0] for item in self.gameunitstat.unitlist.items()
-                                                                             if (index == 0 and item[1][0] != "Name") or
+
+                                                if index != 0:
+                                                    self.trooplist = [item[1][0] for item in self.gameunitstat.unitlist.items()
+                                                                             if item[1][0] == "None" or
                                                                              item[0] in self.allfaction.factionlist[index][1]]
+                                                    self.troopindexlist = [0] + self.allfaction.factionlist[index][1]
+                                                else: # all faction
+                                                    self.trooplist = [item[0] for item in self.gameunitstat.unitlist.values()][1:]
+                                                    self.troopindexlist = list(range(0,len(self.trooplist)+1))
+
                                                 self.setuplist(gameprepare.Namelist, self.currenttrooprow, self.trooplist, self.troopnamegroup,
                                                                self.trooplistbox)
                                                 self.troopscroll.changeimage(newrow=self.currenttrooprow,
@@ -1103,6 +1185,16 @@ try: # for printing error log when error exception happen
                                                                               self.trooplistbox.rect.midleft[1]))  # change team coa
 
                                                 self.currentlistshow = "troop"
+                                            elif self.currentlistshow == "troop":
+                                                for slot in self.armybuildslot:
+                                                    if slot.selected:
+                                                        slot.changetroop(self.troopindexlist[index+self.currenttrooprow])
+                                                        if slot.name != "None":
+                                                            self.gameui[2].valueinput(who=slot, weaponlist=self.allweapon,
+                                                                                      armourlist=self.allarmour)  # update unit card on selected squad
+                                                        else:
+                                                            slot.image = slot.image_original.copy() # reset slot to empty one
+                                                        break
                                             break
 
                                 elif self.mapoptionlistbox in self.mainui:
@@ -1118,7 +1210,9 @@ try: # for printing error log when error exception happen
                                                     self.featureterrain = index
                                                     self.battlepreview.changeterrain(self.battlepreview.newcolourlist[(self.baseterrain * len(self.battlemapfeature.featurelist))+self.featureterrain])
                                                 elif self.mapoptionlistbox.type == "weather":
-                                                    self.weatherchangebutton.changetext()
+                                                    self.weathertype = int(index / 3)
+                                                    self.weatherstrength = index - (self.weathertype * 3)
+                                                    self.weatherchangebutton.changetext(self.weatherlist[index])
 
                                                 for name in self.mapoptionnamegroup:  # remove troop name list
                                                     name.kill()
