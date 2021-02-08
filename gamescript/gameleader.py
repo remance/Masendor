@@ -7,7 +7,7 @@ class Leader(pygame.sprite.Sprite):
     maingame = None
 
     def __init__(self, leaderid, squadposition, armyposition, battalion, leaderstat):
-        self._layer = 10
+        self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leaderstat.leaderlist[leaderid]
@@ -50,14 +50,6 @@ class Leader(pygame.sprite.Sprite):
         self.badmorale = (20, 30)  ## other position morale lost
         self.commander = False # army commander
         self.originalcommander = False # the first army commander at the start of battle
-
-        if self.armyposition == 0: # battalion leader
-            squadpenal = int((self.squadpos / len(self.battalion.armysquad[0])) * 10) # Authority get reduced the further leader stay in the back line
-            self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
-            self.badmorale = (30, 50)  ## main general morale lost when die
-            if self.battalion.commander:
-                self.commander = True
-                self.originalcommander = True
 
     def poschangestat(self, leader):
         """Change stat that related to army position such as in leader dead event"""
@@ -139,6 +131,16 @@ class Leader(pygame.sprite.Sprite):
         if self.gamestart == False:
             self.squad = self.battalion.squadsprite[self.squadpos] # setup squad that leader belong
             self.gamestart = True
+
+            if self.armyposition == 0:  # battalion leader
+                squadpenal = int(
+                    (self.squadpos / len(self.battalion.armysquad[0])) * 10)  # Authority get reduced the further leader stay in the back line
+                self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
+                self.badmorale = (30, 50)  ## main general morale lost when die
+                if self.battalion.commander:
+                    self.commander = True
+                    self.originalcommander = True
+
         if self.state not in (96, 97, 98, 99, 100):
             if self.health <= 0: # health reach 0, die. may implement wound state chance later
                 self.health = 0

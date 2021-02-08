@@ -66,7 +66,7 @@ class Gameui(pygame.sprite.Sprite):
         self.lastvalue = 0
         self.option = 0
         self.rect = self.image.get_rect(center=(self.X, self.Y))
-        self.lastwho = 0 # battalion last showed
+        self.lastwho = -1 # battalion last showed, start with -1 which mean any new clicked will show up at start
         if self.uitype == "topbar": # setup variable for topbar ui
             position = 10
             for ic in self.icon: # Blit icon into topbar ui
@@ -208,8 +208,8 @@ class Gameui(pygame.sprite.Sprite):
             self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", int(who.stamina), int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
                           int(who.accuracy),
-                          int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(who.reload) + ")", who.charge, who.chargedef,
-                          who.tempcount]
+                          int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(int(who.reload)) + ")", int(who.charge), int(who.chargedef),
+                          int(who.tempcount)]
             self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
             self.description = who.description
             if type(self.description) == list: self.description = self.description[0]
@@ -370,10 +370,11 @@ class FPScount(pygame.sprite.Sprite):
 
 
 class Selectedsquad(pygame.sprite.Sprite):
-    def __init__(self, image):
-        self._layer = 12
+    image = None
+    def __init__(self, pos, layer = 12):
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = image
+        self.rect = self.image.get_rect(topleft=pos)
 
     def pop(self, pos):
         """pop out at the selected squad in inspect uo"""
@@ -711,6 +712,7 @@ class Timeui(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.image = image.copy()
+        self.image_original = self.image.copy()
         self.rect = self.image.get_rect(topleft=pos)
 
 class Scaleui(pygame.sprite.Sprite):

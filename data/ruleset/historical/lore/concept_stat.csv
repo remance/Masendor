@@ -1,12 +1,12 @@
 "ID","Name","stat1","stat2","stat3","Description"
 1,"Welcome",,,,"Welcome to the Lore Book. Here you will find all information about the game concept including the historical/reality context of every concept in the game. The other aspects of the game are shown in more detailed in other sections shown as the bookmarks above."
-2,"Main Menu",,,,
+2,"Main Menu",,,,"Main menu is the starting page of the game. Here user can choose what he want to do from select map to play, edit custom unit, see tutorial manual, checkout encyclopedia, set game option and of course quit the game."
 3,"Historical Battle",,,,
-4,"Game Option",,,,
-5,"Custom Battle",,,,
+4,"Custom Battle",,,,
+5,"Game Option",,,,
 6,,,,,
-7,"Historical Importance",,,,
-8,,,,,
+7,,,,,
+8,"Historical Importance",,,,
 9,,,,,
 10,,,,,
 11,"Game Control",,,,
@@ -18,8 +18,8 @@
 17,,,,,
 18,,,,,
 19,"Units","The unit in this game can be in any larger number from Battalion to Division or even as low as Squadron. Because such standardisation of a military unit does not concretely exist in the Medieval period and the record of army organisation and deployment in the historical battles are often ambiguous, the unit deployment can only be accurate as the detail of the record and gameplay limitation.",,,"Unit is a group of sub-unit that can be directly controlled by the user. Each unit requires a minimum number of 10 sub-units at the start of the battle and can have up to 64 sub-unit maximum."
-20,"Sub-Unit",,,,"Sub-unit represent a group of soldiers of the same type. Sub-unit cannot be employed by itself into battle alone and require to be employed as a unit. "
-21,"Unit Statistic",,,,
+20,"Sub-Unit","Historically, sub-unit can be in various number from squad to depending on the army organisation that the country utilise.",,,"Sub-unit represent a group of soldiers of the same type. Sub-unit cannot be employed by itself into battle alone and require to be employed as a unit. "
+21,"Troop Statistic",,,,"Sub-unit has troop statistic that represent its capability in battle. Each statistic is used differently but sometimes also interact interchangeably with each other. "
 22,"Troop Number",,,,"Troop number represents how many soldiers exist in the unit and sub-unit at the time. The number is presented as ""Current Number (Maximum Number)"". Troop number can also represent the health state of the unit. The more troop number gets reduced, the less damage the unit can deal in combat. If the troop number reaches 0, the squad or battalion will be considered as destroyed."
 23,"Stamina",,,,"Stamina represents the troops’ current capacity to perform physical activities. Each activity requires a specific amount of stamina to performed and drain stamina at different rate whether it be simply walking or using a special ability. Units’ stamina can be replenished by simply staying still or with some abilities. Noted that if troops’ stamina reaches 0, it will enter collapse state and become unable to perform any task for a while until their stamina reach a certain recovering point."
 24,"Grade","Each sub-unit grade also interact with the battalion main leader's social class differently. For more detail on this aspect, see Subsection Leader Social Class","There are 11 classification of unit grade as shown in the table below with the modification to the unit statistic;","IMAGE:\data\ruleset\historical\lore\image\gradetable.png","Grade represents the training level of the troops. While some grades typically are the consecutive improvement of one another, there are some that are a special class of its own, which are Noble, Mercenary, and Religious Warrior."
@@ -27,7 +27,7 @@
 26,"Morale",,,,"Morale represents the unit’s current state of eagerness to fight in battle. The more morale the unit have, the better they can perform in battle. "
 27,"Combat Statistic",,,,
 28,"Skill",,,,"Each sub-unit usually possess a specific set of skill it can perform. Each skill has a specific condition, cooldown, duration and effect. While the player cannot activate the units’ skill directly, it is possible to set a specific behaviour for each battalion between reserving the uses of skills or using them as often as possible. For example, one of the most common skill is “Charge” where a squad uses during running to attack its enemy. Charge skill allows the units to temporally boost their melee combat efficiency and also use special stat “charge power”, which increase the damage for a short duration. Charge skill cannot be activated if the units are already in melee combat."
-29,"Trait",,,,
+29,"Trait",,,,"Trait or property represent a unique characteristic that the troops possess. The characteristic can influence the troop statistic and bahaviour either negatively or positively. Some equipments, mounts and other aspects such as troop grade also have their own trait that will be add to the troop's trait as well."
 30,"Status Effect",,,,
 31,"Equipment",,,,
 32,"Leader",,,,

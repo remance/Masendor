@@ -225,7 +225,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.coa = coa # coat of arm image
         self.team = team # team
 
-        #v draw unit sprite
+        #v draw unit sprite # TODO maybe add troop number at center of circle
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
         self.image.fill((0, 0, 0, 128)) # draw black colour for black corner
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 4, self.heightbox - 4)) # draw block colour

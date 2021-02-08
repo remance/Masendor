@@ -42,6 +42,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.state = 0 # Current squad state, similar to battalion state
         self.nocombat = 0 # time when not fighting before going into idle (1 second)
         self.timer = 0 # may need to use random.random()
+        self.magazinenow = 0
 
         ## Setup troop stat
         self.createtroopstat(self.battalion.team, self.statlist.unitlist[self.unitid].copy(), unitscale, starthp, startstamina)
@@ -75,9 +76,9 @@ class Unitsquad(pygame.sprite.Sprite):
 
         #v weapon class icon in middle circle
         if self.unitclass == 0:
-            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][5]]
+            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][-3]]
         else:
-            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][5]]
+            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][-3]]
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
@@ -598,8 +599,12 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.state = 12
                             elif battalionstate in (2, 4, 6):  # Run and shoot
                                 self.state = 13
-                if self.state in (11, 12, 13) and self.reloadtime < self.reload: # reloading ammo
+                if self.state in (11, 12, 13) and self.magazinenow == 0: # reloading ammo
                     self.reloadtime += dt
+                    if self.reloadtime >= self.reload:
+                        self.magazinenow = self.magazinesize
+                        self.ammo -= 1
+                        self.reloadtime = 0
                     self.stamina = self.stamina - (dt * 2) # use stamina while reloading
                 #^ End range attack function
 
@@ -629,14 +634,13 @@ class Unitsquad(pygame.sprite.Sprite):
                                         self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
                                         break # found new target break loop
 
-                        if self.reloadtime >= self.reload and ((self.attacktarget != 0 and self.attacktarget.state != 100) or
+                        if self.magazinenow > 0 and ((self.attacktarget != 0 and self.attacktarget.state != 100) or
                                             (self.attacktarget == 0 and self.attackpos != 0)) \
                                             and (self.arcshot or (self.arcshot == False and self.battalion.shoothow != 1)):
                             # can shoot if reload finish and target existed and not dead. Non arcshot cannot shoot if forbidded
                             rangeattack.Rangearrow(self, self.combatpos.distance_to(self.attackpos), self.shootrange,
                                                    self.viewmode) # Shoot at enemy
-                            self.ammo -= 1 # use 1 ammo
-                            self.reloadtime = 0 # reset reload time
+                            self.magazinenow -= 1 # use 1 ammo in magazine
                         elif self.attacktarget != 0 and self.attacktarget.state == 100: # if target die when it about to shoot
                             self.battalion.rangecombatcheck, self.battalion.attacktarget = False, 0 # reset range combat check and target
                 #^ End combat related

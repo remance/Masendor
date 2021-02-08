@@ -9,7 +9,7 @@ from pygame.transform import scale
 from gamescript import gamelongscript
 
 
-class Rangearrow(pygame.sprite.Sprite): #TODO fix close range target and make range attack dmg drop the longer it travel
+class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the longer it travel
     images = []
     gamemapheight = None
 
@@ -28,6 +28,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO fix close range target and make ra
         self.passwho = 0 # check which battalion arrow passing through
         self.side = None # hitbox side that arrow collided last
         randomposition1 = random.randint(0, 1)  ## randpos1 is for left or right random
+        randomposition2 = random.randint(0, 1)  ## randpos1 is for up or down random
 
         #v Calculate hitchance and final target where arrow will land
         hitchance = self.accuracy * (
@@ -37,6 +38,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO fix close range target and make ra
             hitchance = self.accuracy
         elif self.shooter.longrangeacc: #  74 long rance accuracy
             hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  ## range penalty half
+
         howlong = shootrange / self.speed # shooting distance divide arrow speed to find travel time
         targetnow = self.shooter.battalion.baseattackpos
         if self.shooter.attacktarget != 0:
@@ -66,12 +68,17 @@ class Rangearrow(pygame.sprite.Sprite): #TODO fix close range target and make ra
         hitchance = random.randint(int(hitchance), 100) # random hit chance
         if random.randint(0, 100) > hitchance: # miss, not land exactly at target
             if randomposition1 == 0: # hitchance convert to percentage from target
-                hitchance = 100 + (hitchance / 20)
+                hitchance1 = 100 + (hitchance / 50)
             else:
-                hitchance = 100 - (hitchance / 20)
-            self.basetarget = pygame.Vector2(targetnow[0] * hitchance / 100, targetnow[1] * hitchance / 100)
+                hitchance1 = 100 - (hitchance / 50)
+            if randomposition2 == 0:
+                hitchance2 = 100 + (hitchance / 50)
+            else:
+                hitchance2 = 100 + (hitchance / 50)
+            self.basetarget = pygame.Vector2(targetnow[0] * hitchance1 / 100, targetnow[1] * hitchance2 / 100)
         else: # perfect hit, slightly (randomly) land near target
-            self.basetarget = targetnow * random.uniform(0.99, 1.01)
+            self.basetarget = targetnow * random.uniform(0.999, 1.001)
+
         self.targetheight = self.gamemapheight.getheight(self.basetarget) # get the height at target
         #^ End calculate hitchance and target
 

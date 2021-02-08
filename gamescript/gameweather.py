@@ -34,9 +34,15 @@ class Weather:
         self.speed = stat[21] * (self.level + 1)
         self.specialeffect = stat[22]
 
-        self.image = self.images[(self.type * 3) + self.level]
-        self.rect = self.image.get_rect(topright=(timeui.image.get_width() - 5, 0))
-        timeui.image.blit(self.image, self.rect)
+        image = self.images[(self.type * 3) + self.level]
+        cropped = pygame.Surface((image.get_width(), image.get_height()))
+        cropped.blit(timeui.image_original, (0, 0), (0, 0, 80, 80))
+        croprect = cropped.get_rect(topleft=(0,0))
+        cropped.blit(image,croprect)
+        image = cropped
+
+        rect = image.get_rect(topright=(timeui.image.get_width() - 5, 0))
+        timeui.image.blit(image, rect)
 
     # def weatherchange(self, level):
     #     self.level = level

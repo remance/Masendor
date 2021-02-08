@@ -38,7 +38,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 13
+        self._layer = 23
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("arial", int(textsize*self.heightadjust))
         self.fontheader = pygame.font.SysFont("oldenglishtext", int(40*self.heightadjust))
@@ -441,7 +441,7 @@ class Subsectionlist(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 13
+        self._layer = 23
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
@@ -455,7 +455,7 @@ class Subsectionname(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 14
+        self._layer = 24
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(textsize*self.heightadjust))
         self.image = pygame.Surface((int(180*self.widthadjust), int(25*self.heightadjust)))  # black corner

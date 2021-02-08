@@ -53,6 +53,47 @@ class Previewbox(pygame.sprite.Sprite):
         textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() - (textsurface.get_height()/2)))
         self.image.blit(textsurface, textrect)
 
+class Previewleader(pygame.sprite.Sprite):
+    baseimgposition = [(134, 65), (80, 115), (190, 115), (134, 163)]  # leader image position in command ui
+
+    def __init__(self, leaderid, squadposition, armyposition, leaderstat):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.state = 0
+        self.squad = None
+
+        self.squadpos = squadposition  # Squad position is the index of squad in squad sprite loop
+
+        self.armyposition = armyposition # position in the battalion (e.g. general or sub-general)
+
+        self.imgposition = self.baseimgposition[self.armyposition] # image position based on armyposition
+
+        self.changeleader(leaderid, leaderstat)
+
+    def changeleader(self, leaderid, leaderstat):
+        self.gameid = leaderid  # Different than unit game id, leadergameid is only used as reference to the id data
+
+        stat = leaderstat.leaderlist[leaderid]
+
+        self.name = stat[0]
+        self.authority = stat[2]
+        self.social = leaderstat.leaderclass[stat[7]]
+        self.description = stat[-1]
+
+        try:  # Put leader image into leader slot
+            self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
+        except:  # Use Unknown leader image if there is none in list
+            self.fullimage = leaderstat.imgs[-1].copy()
+
+        self.image = pygame.transform.scale(self.fullimage, (50, 50))
+        self.rect = self.image.get_rect(center=self.imgposition)
+        self.image_original = self.image.copy()
+
+        self.commander = False # army commander
+        self.originalcommander = False # the first army commander at the start of battle
+
+
 class Armybuildslot(pygame.sprite.Sprite):
     squadwidth = 0 # squad sprite width size get add from main
     squadheight = 0 # squad sprite height size get add from main
@@ -62,14 +103,21 @@ class Armybuildslot(pygame.sprite.Sprite):
     statlist = None
     createtroopstat = gamelongscript.createtroopstat
 
-    def __init__(self, gameid, team, colour, position, startpos):
+    def __init__(self, gameid, team, armyid, colour, position, startpos):
         self._layer = 2
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.selected = False
         self.gameid = gameid
         self.team = team
+        self.armyid = armyid
+        self.troopindex = 0
         self.name = "None"
         self.leader = None
+        self.height = 100
+        self.commander = False
+        self.authority = 0
+
+        self.coa = pygame.Surface((0,0)) # empty coa to prevent leader ui error
 
         self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
@@ -83,42 +131,48 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.inspposition = (self.armypos[0] + startpos[0], self.armypos[1] + startpos[1])  # position in inspect ui
         self.rect = self.image.get_rect(topleft=self.inspposition)
 
-    def changetroop(self, troopindex):
+    def changetroop(self, troopindex, terrain, feature, weather):
         self.image = self.image_original.copy()
+        if self.troopindex != troopindex:
+            self.troopindex = troopindex
+            self.createtroopstat(self.team, self.statlist.unitlist[troopindex].copy(), [1,1], 100, 100)
 
-        self.createtroopstat(self.team, self.statlist.unitlist[troopindex].copy(), [1,1], 100, 100)
-        # v squad block team colour
-        if self.unittype == 2: # cavalry draw line on block
-            pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
-        # ^ End squad block team colour
+        self.terrain = terrain
+        self.feature = feature
+        self.weather = weather
+        if self.name != "None":
+            # v squad block team colour
+            if self.unittype == 2: # cavalry draw line on block
+                pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
+            # ^ End squad block team colour
 
-        # v armour circle colour (grey = light, gold = heavy)
-        image1 = self.images[1]
-        if self.basearmour <= 50: image1 = self.images[2]
-        image1rect = image1.get_rect(center=self.image.get_rect().center)
-        self.image.blit(image1, image1rect)
-        # ^ End armour colour
+            # v armour circle colour (grey = light, gold = heavy)
+            image1 = self.images[1]
+            if self.basearmour <= 50: image1 = self.images[2]
+            image1rect = image1.get_rect(center=self.image.get_rect().center)
+            self.image.blit(image1, image1rect)
+            # ^ End armour colour
 
-        # v health circle image setup
-        healthimage = self.images[3]
-        healthimagerect = healthimage.get_rect(center=self.image.get_rect().center)
-        self.image.blit(healthimage, healthimagerect)
-        # ^ End health circle
+            # v health circle image setup
+            healthimage = self.images[3]
+            healthimagerect = healthimage.get_rect(center=self.image.get_rect().center)
+            self.image.blit(healthimage, healthimagerect)
+            # ^ End health circle
 
-        # v stamina circle image setup
-        staminaimage = self.images[8]
-        staminaimagerect = staminaimage.get_rect(center=self.image.get_rect().center)
-        self.image.blit(staminaimage, staminaimagerect)
-        # ^ End stamina circle
+            # v stamina circle image setup
+            staminaimage = self.images[8]
+            staminaimagerect = staminaimage.get_rect(center=self.image.get_rect().center)
+            self.image.blit(staminaimage, staminaimagerect)
+            # ^ End stamina circle
 
-        # v weapon class icon in middle circle
-        if self.unitclass == 0:
-            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][5]]
-        else:
-            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][5]]
-        image1rect = image1.get_rect(center=self.image.get_rect().center)
-        self.image.blit(image1, image1rect)
-        # ^ End weapon icon
+            # v weapon class icon in middle circle
+            if self.unitclass == 0:
+                image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][-3]]
+            else:
+                image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][-3]]
+            image1rect = image1.get_rect(center=self.image.get_rect().center)
+            self.image.blit(image1, image1rect)
+            # ^ End weapon icon
 
 class Warningmsg(pygame.sprite.Sprite):
     factionwarn = "Multiple factions unit can not be used with No Multiple Faction option enable"

@@ -1,45 +1,45 @@
-"ID","Name","Damage","Armour Penetration","Weight","Properties","ImageID","Ruleset","Description"
-1,"Unarmed",4,10,0,0,10,0,"To go into a battle unarmed is either bravely or lunacy. As it is extremely difficult to block other weapons with one body without receiving damage, unarmed usually has extremely low defense unless masterly trained. Nevertheless unarmed class has sufficiently higher speed and melee attack than other melee class. Their attack also consume less stamina."
-2,"Sword",10,15,10,0,0,0,"Sword is the most balanced weapon one can have. Simple to use but still difficult to master. It is also good for both offense and defense. The only weakness is that it has somewhat lower armour penetration capability than mace and hammer. It is worth mentioning that historically sword is somewhat expensive and rare weapon that mostly used by the rich or professional army. But it is still possible for lowly commoner to possess low quality or salvaged sword."
-3,"Greatsword",19,35,20,23,0,0,
-4,"Shortsword",8,10,5,0,0,0,
-5,"Dagger",6,50,2,0,0,0,"Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon."
-6,"Spear",9,10,8,23,1,0,"Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long range, this make spear a good counter against cavalry class but usually have somewhat lower melee defense than other melee class."
-7,"Club",7,30,13,0,3,0,"A shabby club "
-8,"Mace",8,50,16,0,3,0,"Mace is a bludgeon type weapon that become popular due to the advancement of heavy armour that make bladed weaponry less effective. Some type of mace also have piercing or bladed compartments attached such as morning star or winged mace."
-9,"Great Mace",15,65,30,0,3,0,
-10,"Flail",7,50,15,0,4,0,"Flail is a mace with its head part attaching to chain. Although more difficult to use than mace, flail attack can be somewhat hard to predict and defend against. Its flexible swing means that the flail's head can land impact behind enemy's shield as well. "
-11,"Hammer",6,65,18,0,5,0,"Hammer is a tool of blacksmith to shape up metal. Similar to mace, hammer is also good against armoured target where its impactful strikes can leave the unfortunate receiver with broken bones or concussion if aims for the head."
-12,"War Hammer",12,75,35,0,5,0,
-13,"Handaxe",11,30,15,0,2,0,"A tree cutting tool converted into weapon of war. Axe is simple enough to use effectively after some practices. The weight distribution design allow the momentum of axe swing to be powerful enough to break wooden shield or even metal one. "
-14,"Greataxe",19,65,30,21,2,0,
-15,"Halberd",23,60,35,23,6,0,"Halberd is a combination of pole arm and axe. "
-16,"Pike",15,35,25,"22,23",7,0,"Pike is the most simple answer to the domination of cavalry. Why go attack them when you can let them come die at your weapon tip with their own speed. Due to its extremely long rang, pike user become vulnerable against melee attack and also range attack due to the lack of shield and closed stationary formation."
-17,"Glaive",21,40,30,23,8,0,
-18,"Whip",7,5,5,0,9,0,
-19,"Quarterstaff",9,45,10,0,20,0,
-20,"Sling",23,35,5,16,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
-21,"Blowgun",18,10,3,0,12,0,
-22,"Javelin",55,45,15,16,13,0,
-23,"Throwing Axe",50,50,20,21,14,0,
-24,"Longbow",55,40,15,16,15,0,"Longbow "
-25,"Shortbow",38,15,10,16,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
-26,"Greatbow",70,60,20,16,17,0,
-27,"Light Crossbow",40,30,10,0,18,0,"The pinnacle of warfare. Easier to use than bow that any peasant can use after few days of training to kill a knight that train for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
-28,"Heavy Crossbow",60,50,15,0,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
-29,"Repeater Crossbow",20,20,15,0,18,0,
-30,"Arbalest",80,70,25,0,19,0,
-31,"Stone",14,20,5,16,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
-32,"Trebuchet",10000,100,95,"16,222",,0,
-33,"Catapult",5000,100,70,"16,222",,0,
-34,"Ballista",1000,100,60,"16,222",,0,
-35,"Scorpion",100,100,,"222",,0,
-36,"Onager",,100,,"16,222",,0,
-37,"Mangonel",,100,,"16,222",,0,
-38,"Hwacha",,80,,"16,222",,0,
-39,"Mounted Crossbow",,90,,"16,222",,0,
-40,"Light Cannon",,100,50,"16,222",,0,
-41,"Heavy Cannon",,100,65,"16,222",,0,
-42,"Giant Cannon",100000,100,95,"16,222",,0,
-43,"Mortar",,100,65,"16,222",,0,
-44,,,,,,,,
+"ID","Name","Damage","Armour Penetration","Weight","Properties","Reload Time","Magazine","Cost","ImageID","Ruleset","Description"
+1,"Unarmed",4,10,0,0,0,0,0,10,0,"To go into a battle unarmed is either bravely or lunacy. As it is extremely difficult to block other weapons with one body without receiving damage, unarmed usually has extremely low defense unless masterly trained. Nevertheless unarmed class has sufficiently higher speed and melee attack than other melee class. Their attack also consume less stamina."
+2,"Sword",10,15,10,0,0,0,,0,0,"Sword is the most balanced weapon one can have. Simple to use but still difficult to master. It is also good for both offense and defense. The only weakness is that it has somewhat lower armour penetration capability than mace and hammer. It is worth mentioning that historically sword is somewhat expensive and rare weapon that mostly used by the rich or professional army. But it is still possible for lowly commoner to possess low quality or salvaged sword."
+3,"Greatsword",19,35,20,23,0,0,,0,0,
+4,"Shortsword",8,10,5,0,0,0,,0,0,
+5,"Dagger",6,50,2,0,0,0,,0,0,"Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon."
+6,"Spear",9,10,8,23,0,0,,1,0,"Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long range, this make spear a good counter against cavalry class but usually have somewhat lower melee defense than other melee class."
+7,"Club",7,30,13,0,0,0,,3,0,"A shabby club "
+8,"Mace",8,50,16,0,0,0,,3,0,"Mace is a bludgeon type weapon that become popular due to the advancement of heavy armour that make bladed weaponry less effective. Some type of mace also have piercing or bladed compartments attached such as morning star or winged mace."
+9,"Great Mace",15,65,30,0,0,0,,3,0,
+10,"Flail",7,50,15,0,0,0,,4,0,"Flail is a mace with its head part attaching to chain. Although more difficult to use than mace, flail attack can be somewhat hard to predict and defend against. Its flexible swing means that the flail's head can land impact behind enemy's shield as well. "
+11,"Hammer",6,65,18,0,0,0,,5,0,"Hammer is a tool of blacksmith to shape up metal. Similar to mace, hammer is also good against armoured target where its impactful strikes can leave the unfortunate receiver with broken bones or concussion if aims for the head."
+12,"War Hammer",12,75,35,0,0,0,,5,0,
+13,"Handaxe",11,30,15,0,0,0,,2,0,"A tree cutting tool converted into weapon of war. Axe is simple enough to use effectively after some practices. The weight distribution design allow the momentum of axe swing to be powerful enough to break wooden shield or even metal one. "
+14,"Greataxe",19,65,30,21,0,0,,2,0,
+15,"Halberd",23,60,35,23,0,0,,6,0,"Halberd is a combination of pole arm and axe. "
+16,"Pike",15,35,25,"22,23",0,0,,7,0,"Pike is the most simple answer to the domination of cavalry. Why go attack them when you can let them come die at your weapon tip with their own speed. Due to its extremely long rang, pike user become vulnerable against melee attack and also range attack due to the lack of shield and closed stationary formation."
+17,"Glaive",21,40,30,23,0,0,,8,0,
+18,"Whip",7,5,5,0,0,0,,9,0,
+19,"Quarterstaff",9,45,10,0,0,0,,20,0,
+20,"Sling",23,35,5,16,6,1,,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
+21,"Blowgun",18,10,3,0,5,1,,12,0,
+22,"Javelin",55,45,15,16,7,1,,13,0,
+23,"Throwing Axe",50,50,20,21,7,1,,14,0,
+24,"Longbow",70,40,15,16,20,1,,15,0,"Longbow "
+25,"Shortbow",50,15,10,16,15,1,,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
+26,"Greatbow",90,60,20,16,25,1,,17,0,
+27,"Light Crossbow",40,30,10,0,20,1,,18,0,"The pinnacle of warfare. Easier to use than bow that any peasant can use after few days of training to kill a knight that train for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
+28,"Heavy Crossbow",80,50,15,0,25,1,,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
+29,"Repeater Crossbow",40,10,15,0,25,5,,18,0,
+30,"Arbalest",100,70,25,0,30,1,,19,0,
+31,"Stone",14,20,5,16,5,1,,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
+32,"Composite Bow",60,30,15,16,15,1,,16,0,
+33,"Trebuchet",10000,100,95,"16,222",,"1",,,0,
+34,"Catapult",5000,100,70,"16,222",,"1",,,0,
+35,"Ballista",1000,100,60,"16,222",,"1",,,0,
+36,"Scorpion",100,100,,"222",,"1",,,0,
+37,"Onager",,100,,"16,222",,"1",,,0,
+38,"Mangonel",,100,,"16,222",,"1",,,0,
+39,"Hwacha",,80,,"16,222",,"10",,,0,
+40,"Mounted Crossbow",,90,,"16,222",,"1",,,0,
+41,"Light Cannon",,100,50,"16,222",,"1",,,0,
+42,"Heavy Cannon",,100,65,"16,222",,"1",,,0,
+43,"Giant Cannon",100000,100,95,"16,222",,"1",,,0,
+44,"Mortar",,100,65,"16,222",,"1",,,0,

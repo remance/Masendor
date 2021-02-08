@@ -449,11 +449,19 @@ def loadgamedata(game):
                       gameui.Uibutton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
                       gameui.Uibutton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
+    game.screenbuttonlist = game.buttonui[8:17]
+    game.unitcardbutton = game.buttonui[0:4]
+    game.inspectbutton = game.buttonui[4]
+    game.colsplitbutton = game.buttonui[5]  # battalion split by column button
+    game.rowsplitbutton = game.buttonui[6]  # battalion split by row button
+
     game.timebutton = game.buttonui[14:17]
     game.battleui.add(game.buttonui[8:17])
     game.battleui.add(game.logscroll, game.selectscroll)
 
-    game.squadselectedborder = gameui.Selectedsquad(topimage[-1]) #yellow border on selected squad in inspect ui
+    gameui.Selectedsquad.image = topimage[-1]
+    game.squadselectedborder = gameui.Selectedsquad((15000,15000)) #yellow border on selected squad in inspect ui
+    game.mainui.remove(game.squadselectedborder) #remove squad border sprite from main menu drawer
     game.terraincheck = gamepopup.Terrainpopup() #popup box that show terrain information when right click on map
     game.buttonnamepopup = gamepopup.Onelinepopup() #popup box that show button name when mouse over
     game.leaderpopup = gamepopup.Onelinepopup() #popup box that show leader name when mouse over
@@ -538,6 +546,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
         self.penetrate = 0  # melee penetrate cannot be lower than 0
     self.rangedmg = self.weaponlist.weaponlist[self.rangeweapon[0]][1] * self.weaponlist.quality[self.rangeweapon[1]]  # damage for range
     self.rangepenetrate = 1 - (self.weaponlist.weaponlist[self.rangeweapon[0]][2] * self.weaponlist.quality[self.rangeweapon[1]] / 100)
+    self.magazinesize = self.weaponlist.weaponlist[self.rangeweapon[0]][6] # can shoot how many time before have to reload
     self.trait = self.trait + self.weaponlist.weaponlist[self.meleeweapon[0]][4]  # apply trait from range weapon
     self.trait = self.trait + self.weaponlist.weaponlist[self.rangeweapon[0]][4]  # apply trait from melee weapon
     if self.rangepenetrate > 1:
@@ -707,6 +716,9 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.lasthealthstate = 4  # state start at full
     self.laststaminastate = 4
 
+    self.basereload = self.weaponlist.weaponlist[self.rangeweapon[0]][5] + \
+                      ((self.basereload - 50) * self.weaponlist.weaponlist[self.rangeweapon[0]][5] / 100) # final reload speed from weapon and skill
+
     # v Stat variable after receive modifier effect from various sources, used for activity calculation
     self.maxmorale = self.basemorale
     self.attack = self.baseattack
@@ -782,6 +794,69 @@ def convertweathertime(weatherevent):
         newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
         weatherevent[index] = [item[0], newtime, item[2]]
 
+def traitskillblit(self):
+    from gamescript import gameui
+    import main
+    SCREENRECT = main.SCREENRECT
+
+    """For blitting skill and trait icon into squad info ui"""
+    position = self.gameui[2].rect.topleft
+    position = [position[0] + 70, position[1] + 60] # start position
+    startrow = position[0]
+
+    for icon in self.skillicon.sprites():
+        icon.kill()
+
+    for trait in self.gameui[2].value2[0]:
+        self.skillicon.add(gameui.Skillcardicon(self.traitimgs[0], (position[0], position[1]), 0, id=trait))  # For now use placeholder image 0
+        position[0] += 40
+        if position[0] >= SCREENRECT.width:
+            position[1] += 30
+            position[0] = startrow
+
+    position = self.gameui[2].rect.topleft
+    position = [position[0] + 70, position[1] + 100]
+    startrow = position[0]
+
+    for skill in self.gameui[2].value2[1]:
+        self.skillicon.add(gameui.Skillcardicon(self.skillimgs[0], (position[0], position[1]), 1, id=skill))  # For now use placeholder image 0
+        position[0] += 40
+        if position[0] >= SCREENRECT.width:
+            position[1] += 30
+            position[0] = startrow
+
+def effecticonblit(self):
+    """For blitting all status effect icon"""
+    position = self.gameui[2].rect.topleft
+    position = [position[0] + 70, position[1] + 140]
+    startrow = position[0]
+
+    for icon in self.effecticon.sprites():
+        icon.kill()
+
+    for status in self.gameui[2].value2[4]:
+        self.effecticon.add(gameui.Skillcardicon(self.statusimgs[0], (position[0], position[1]), 4, id=status))
+        position[0] += 40
+        if position[0] >= SCREENRECT.width:
+            position[1] += 30
+            position[0] = startrow
+
+def countdownskillicon(self):
+    """count down timer on skill icon for activate and cooldown time"""
+    for skill in self.skillicon:
+        if skill.type == 1: # only do skill icon not trait
+            cd = 0
+            activetime = 0
+            if skill.gameid in self.gameui[2].value2[2]:
+                cd = int(self.gameui[2].value2[2][skill.gameid])
+            if skill.gameid in self.gameui[2].value2[3]:
+                activetime = int(self.gameui[2].value2[3][skill.gameid][3])
+            skill.iconchange(cd, activetime)
+    # for effect in self.effecticon:
+    #     cd = 0
+    #     if effect.id in self.gameui[2].value2[4]:
+    #         cd = int(self.gameui[2].value2[4][effect.id][3])
+    #     effect.iconchange(cd, 0)
 
 ## Battle Start related gamescript
 
