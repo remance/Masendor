@@ -444,13 +444,13 @@ class Armystat(pygame.sprite.Sprite):
 
 
 class Listbox(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
+    def __init__(self, pos, image, layer = 14):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 14
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
@@ -458,13 +458,13 @@ class Listbox(pygame.sprite.Sprite):
         self.maxshowlist = 18 # max number of map on list can be shown at once
 
 class Namelist(pygame.sprite.Sprite):
-    def __init__(self, box, pos, name, textsize=16):
+    def __init__(self, box, pos, name, textsize=16, layer = 15):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 15
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * textsize))
         self.image = pygame.Surface((box.image.get_width() - int(15 * self.widthadjust), int(25 * self.heightadjust)))  # black corner

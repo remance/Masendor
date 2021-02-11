@@ -73,6 +73,12 @@ unit_weapon: list of all sub-units' weapons including artillery weapons. The dat
 
 - Properties list that will be applied to the sub-unit with this grade
 
+- Reload time for range weapon, how long it take to reload in second at speed 1x
+
+- Magazine for range weapon, how many time the unit can shoot before having to reload. 1 magazine is equal to 1 ammo.
+
+- Range only for range weapon, for now this is convert directly to ingame range  
+
 - ImageID, the id of weapon image that will be used for sub-unit icon
 
 - List of Ruleset id that armour is available

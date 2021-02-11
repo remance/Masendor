@@ -16,7 +16,7 @@ class Factiondata():
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
-                    if n == 2:
+                    if n in (2,3):
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():

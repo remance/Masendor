@@ -355,6 +355,8 @@ def loadgamedata(game):
         gameui.Uibutton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
                         imgs[14], 21, 13)]  # next page button
     game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
+    game.lorescroll = gameui.Uiscroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
+                      game.lorebook.maxsubsectionshow, layer=25)  # add subsection list scroller
     #^ End encyclopedia objects
 
     # v Create battle game ui objects
@@ -509,7 +511,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.grade = stat[2]  # training level/class grade
     self.race = stat[3]  # creature race
     self.trait = stat[4]  # trait list from preset
-    self.trait = self.trait + self.statlist.gradelist[self.grade][11]  # add trait from grade
+    self.trait = self.trait + self.statlist.gradelist[self.grade][-1]  # add trait from grade
     skill = stat[5]  # skill list according to the preset
     self.skillcooldown = {}
     self.cost = stat[6]
@@ -520,10 +522,10 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.basearmour = self.armourlist.armourlist[self.armourgear[0]][1] \
                       * self.armourlist.quality[self.armourgear[1]]  # Armour stat is cal from based armour * quality
     self.baseaccuracy = stat[12] + int(self.statlist.gradelist[self.grade][4])
-    self.baserange = stat[13]  # base shoot range
+    self.basesight = stat[13]  # base sight range
     self.ammo = stat[14]  # amount of ammunition
-    self.basereload = stat[15] - int(self.statlist.gradelist[self.grade][5])
-    self.reloadtime = 0  # Unit can only shoot when reloadtime is equal or more than reload stat
+    self.basereload = stat[15] + int(self.statlist.gradelist[self.grade][5])
+    self.reloadtime = 0  # Unit can only refill magazine when reloadtime is equal or more than reload stat
     self.basecharge = stat[16]
     self.basechargedef = 10  # All infantry unit has default 10 charge defence
     self.chargeskill = stat[17]  # For easier reference to check what charge skill this unit has
@@ -547,6 +549,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.rangedmg = self.weaponlist.weaponlist[self.rangeweapon[0]][1] * self.weaponlist.quality[self.rangeweapon[1]]  # damage for range
     self.rangepenetrate = 1 - (self.weaponlist.weaponlist[self.rangeweapon[0]][2] * self.weaponlist.quality[self.rangeweapon[1]] / 100)
     self.magazinesize = self.weaponlist.weaponlist[self.rangeweapon[0]][6] # can shoot how many time before have to reload
+    self.baserange = int(self.weaponlist.weaponlist[self.rangeweapon[0]][7] * self.weaponlist.quality[self.rangeweapon[1]]) # base weapon range depend on weapon range stat and quality
     self.trait = self.trait + self.weaponlist.weaponlist[self.meleeweapon[0]][4]  # apply trait from range weapon
     self.trait = self.trait + self.weaponlist.weaponlist[self.rangeweapon[0]][4]  # apply trait from melee weapon
     if self.rangepenetrate > 1:
@@ -557,6 +560,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
 
     self.basemorale = int(stat[23] + int(self.statlist.gradelist[self.grade][9]))  # morale with grade bonus
     self.basediscipline = int(stat[24] + int(self.statlist.gradelist[self.grade][10]))  # discilpline with grade bonus
+    self.mental = stat[25] + int(self.statlist.gradelist[self.grade][11]) # mental resistance from morale damage and mental status effect
     self.troopnumber = int(stat[27] * unitscale[team - 1] * starthp / 100)  # number of starting troop, team -1 to become list index
     self.basespeed = 50  # All infantry has base speed at 50
     self.unittype = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
@@ -666,6 +670,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
             self.heatres += (trait[26] / 100)
             self.coldres += (trait[27] / 100)
             poisonres += (trait[28] / 100)
+            self.mental += trait[31]
             if trait[32] != [0]:
                 for effect in trait[32]:
                     self.baseinflictstatus[effect] = trait[1]
@@ -685,6 +690,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
             self.basechargedef *= (random.randint(80, 120) / 100)
             self.basemorale += random.randint(-10, 10)
             self.basediscipline += random.randint(-10, 10)
+            self.mental += random.randint(-10, 10)
 
         if 149 in self.trait:  # Impetuous
             self.baseauthpenalty += 0.5
@@ -719,7 +725,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.basereload = self.weaponlist.weaponlist[self.rangeweapon[0]][5] + \
                       ((self.basereload - 50) * self.weaponlist.weaponlist[self.rangeweapon[0]][5] / 100) # final reload speed from weapon and skill
 
-    # v Stat variable after receive modifier effect from various sources, used for activity calculation
+    # v Stat variable after receive modifier effect from various sources, used for activity and effect calculation
     self.maxmorale = self.basemorale
     self.attack = self.baseattack
     self.meleedef = self.basemeleedef
@@ -734,6 +740,13 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.charge = self.basecharge
     self.chargedef = self.basechargedef
     # ^ End stat for status effect
+
+    if self.mental < 0: # cannot be negative
+        self.mental = 0
+    elif self.mental > 200: # cannot exceed 100
+        self.mental = 200
+    self.mentaltext = int(self.mental - 100)
+    self.mental = (200 - self.mental) / 100 # convert to percentage
 
     self.elemmelee = self.baseelemmelee
     self.elemrange = self.baseelemrange
@@ -785,6 +798,9 @@ def editconfig(section, option, value, filename, config):
     config.set(section, option, value)
     with open(filename, 'w') as configfile:
         config.write(configfile)
+
+## mainmenu related script
+
 
 ## Other battle gamescript
 
@@ -1142,7 +1158,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
         finaldmg = receiver.unithealth
 
     receiver.unithealth -= finaldmg
-    receiver.basemorale -= (finalmoraledmg + attacker.bonusmoraledmg)
+    receiver.basemorale -= (finalmoraledmg + attacker.bonusmoraledmg) * receiver.mental
     receiver.stamina -= attacker.bonusstaminadmg
 
     if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic

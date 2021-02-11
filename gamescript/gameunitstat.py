@@ -63,13 +63,13 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit():
-                        row[n] = int(i)  # No need to make it float
                     if n in (5, 6, 12, 22, 23, 30): # property,ability,armour,melee weapon,range weapon,mount coloumns
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                         elif i.isdigit():
                             row[n] = [int(i)]
+                    elif i.isdigit():
+                        row[n] = int(i)  # No need to make it float
                 self.unitlist[row[0]] = row[1:]
             unitfile.close()
         #^ End unit stat list
@@ -147,7 +147,7 @@ class Unitstat():
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = int(i)  # No need to be float
                     if run != 0:
-                        if n == 12:
+                        if n == 13:
                             if "," in i: # Properties to unit in list
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
@@ -211,13 +211,13 @@ class Unitstat():
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         if run != 0:
-                            if n in (3, 4, 5, 6, 8, 9, 10, 11, 12):
+                            if n in (3, 4, 5, 6, 8, 9, 10, 11, 12): #modifier effect
                                 if i == "":
                                     row[n] = 1.0
                                 else:
                                     row[n] = float(i) / 100  # Need to be float
 
-                            elif n in (19, 32, 33):
+                            elif n in (19, 33): # status and status to enemy
                                 if "," in i:
                                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                                 elif i.isdigit():

@@ -161,6 +161,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.baseattackpos = 0  # position of attack target
         self.pos = self.basepos * (11 - self.viewmode)  # Pos is for showing on screen
         self.angle = startangle  # start at this angle
+        if self.angle == 360: # 360 is 0 angle at the start, not doing this cause angle glitch when game start
+            self.angle = 0
         self.newangle = self.angle
 
         #v Setup default beheviour check
@@ -723,7 +725,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.deadchange == True:
                 self.setupfrontline()
                 for squad in self.squadsprite:
-                    squad.basemorale -= 30
+                    squad.basemorale -= (30 * squad.mental)
                 self.deadchange = False
             # ^End setup frontline when squad die
 

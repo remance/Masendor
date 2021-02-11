@@ -1,676 +1,676 @@
-"ID","Name","Buff Range","Buff Modifier","Melee Attack Effect","Melee Defense Effect","Range Defense Effect","Armour Bonus","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Charge Defense Bonus","HP Regeneration buff","Stamina Regeneration Buff","Morale Bonus","Discipline Bonus","Critical Bonus","Status","Siege Effect","Hidden Bonus","Fire Resistance","Water Resistance","Air Resistance","Earth Resistance","Magic Resistance","Heat Resistance","Cold Resistance","Poison Resistance","Supply Effect","Upkeep Effect","Special Effect","Enemy Status","Cost","Ruleset","description"
-1,"Bonus Morale",1,,,,,0,,,,,,0,0,0,10,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"More morale is always preferable. These troops are less likely to flee or surrender in losing fight."
-2,"Heroic",1,,,,,0,,,,,,0,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Heroes do not fear failure or death, but that does not mean they welcome it."
-3,"Varied Training",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"The lack of standardised training for this unit make the troops' fighting ability wildly diverse."
-4,"Zealous",1,,,,,0,,,,,,0,0,0,30,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Being zealous for one's belief can make soldier less susceptible to fear."
-5,"Poor Morale",1,,,,,0,,,,,,0,0,0,-20,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Either from poor training or by its nature, these soldiers have poorer morale making them unfit for prolong or serious engagement."
-6,"Black Boar's Guidance",1,,,,,0,,130,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-7,"Great Wings' Protection",1,,,115,115,10,,,,,,10,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-8,"Tough Painting",1,,,,,10,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Orc Berserkers usually wear no armour at all and paint their naked body into battle. What littile known is that the paint materials used is so tough when harden that it can actually stop a sword or arrow."
-9,"Impregnable Shield",1,,,125,125,5,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"One of the most basic equipment to keep one alive in a chaotic battle. Having one is almost always better than having none but having one that of superb quality is the best of all."
-10,"Protective Fur",1,,,,,7,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,-40,50,0,,,,0,,2,"Some beastmen or creatures have furs thick enough to protect against some attack to a degree. Additionally, it can help against cold too."
-11,"Charge Expert",1,,,,,0,,,,,125,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Charge is one of the most powerful tactic in battles in the past that can decide the battle. Being well-versed in charging is never an disadvantage."
-12,"Charge Defense Expert",1,,,,,0,,,,,,35,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Why settle for just defending when you can turn the enemies' charge into their own demise."
-13,"Weapon Expert",1,,120,115,,0,,115,,115,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Decades of perfection the weapon make these soldiers a pinnacle of all warriors. "
-14,"Evasive",1,,,130,130,0,,,,,,30,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can dodge melee and range attack when fighting in loose formation."
-15,"Divine Connection",1,190,,,,0,,,,,,0,0,0,100,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Arc shot allows archers to shoot pass the obstacle to hit the target they aiming for. *This trait can be obtained from certain weapons."
-17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also help improve accuracy against moving target."
-18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial."
-19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"The accuracy of these troops are not affected by morale (they still cannot shoot when broken)."
-20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops’ magic casting are not affected by morale (they still cannot cast magic when broken)."
-21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0," *This trait can be obtained from certain weapons."
-22,"Anti-Flyer",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"What goes up must come down. These troops are specialised in combat against flyer enemies."
-23,"Anti-Cavalry",1,,,,,0,,,,,,20,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops are specialised in combat against enemy cavalries. Bring an end to the age of cavalry one step at a time. *This trait can be obtained from certain weapons."
-24,"Anti-Mage",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops are specialised in combat against enemy mages. Not even the wisest wizards can survive this hunt."
-25,"Anti-Machine",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops are specialised in combat against enemy machines. Neither Iron or wood can not stop their attacks."
-26,"Anti-Large",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"The bigger they are, the harder the fall. These troops are specialised in combat against large enemies."
-27,"Anti-All",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"The destroyer of world. No man, beast nor machine can withstand this true might."
-28,"Anti-Structure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Tear down the wall! No structure can withstand such strong force."
-29,"Ignore Charge Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Rush of death and ruin. The world shall tremble upon this sight. These troops’ charge ignore charge defence entirely. "
-30,"Ignore Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Deadly to those unfortunate to face them in combat. These troops’ attack ignore defense entirely."
-31,"Cannibal",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-32,"Defiant Defense",1,,110,130,130,0,,,,,,0,0,0,25,10,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Only the strongest force can take down unit. They will struggle to the end, and for every one man killed they will take down 10 enemies with them."
-33,"Backstaber",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops deal bonus damage to enemies with rear attack."
-34,"Battle Master",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can fully attack enemies in all direction and suffer no defense penalty from being flank attack."
-35,"Absolute Defense",1,,,150,150,0,,,,,,50,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"The best defense is a good offense. It may be important to kill enemy to win the battle but it is more important to survive to win a war."
-36,"Great Saint",1,,,,,10,,,,,,0,0,0,10000,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"The best of the best in the realm. These troops help nearby allies to be at maximum morale and cannot be decreased."
-37,"Battle Saint",1,,,,,20,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-38,"No Hunger",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,-100,30,,0,,2,"These troops cannot get hungry which means they do not need food supply to maintain at all."
-39,"Patriotic",1,,,,,0,,,,,,0,0,0,30,0,0,,,,0,0,0,0,0,0,0,0,,50,,0,,0,"It is the duty of every citizen to fight for the country they live in. These troops fight much better in friendly territory and require less upkeep."
-40,"Siege Expert",1,,,,,0,,,,,,0,0,0,0,0,0,0,150,,0,0,0,0,0,0,0,0,,,,0,,0,"No wall is safe from these soldiers! They can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%."
-41,"Unadvancable",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops cannot gain experience from normal means."
-42,"Hunger Instinct",1,,140,80,80,0,130,,,,,0,0,0,-10,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Hunger is one of the most important factor for the aggressivity in most animal. If these troops are in hunger stage, they will fight much harder than usual to obtain the food which in this case is the enemy in front of them."
-43,"Famed",2,,,,,0,,,,,,0,0,0,10,10,0,3,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for allies nearby while reducing for enemies."
-44,"Armistice Bringer",4,,,,,0,,,,,,0,0,0,-50,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-45,"Shield Expert",1,,,120,120,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Survive to fight another day by improving your defense is never a bad idea."
-46,"Crumble",1,,60,60,100,-70,60,60,,60,60,-100,0,0,60,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Nothing last forever, even for an inanimate material creatures. Time has render these troops much less powerful compare to its former glory."
-47,"Superb Flanker",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops fight better against enemies from flanking position."
-48,"Bandit Honour",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to."
-49,"Indomitable",1,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-50,"Endearing Performance",3,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-51,"True Hero",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Being true heroes, these troops has manifestly inspiring aura for nearby allies."
-52,"Legendary Might",1,,150,130,,20,120,,,,150,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"The might of the legends cannot be subdued. Beware the enemy for the death to come."
-53,"Innocence Grace",,,70,130,130,0,,,,70,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-54,"Magical Weapon",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops’ weapons have magic property which deals additional magic damage and can deals damage to Incorporeal enemies."
-55,"Oblivious To Unexpected",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These soldiers are so oblivious to unexpected events that they have no idea or plan to defend against them making it receive defense penalty from rear attack."
-56,"Causes Fear",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,2,,0,"Only the brave can resist the fear, and those are the ones that die young."
-57,"Causes Terror",3,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,2,,0,"Terror is in the mind until it manifest into reality in front of you. Fleeing is always an option."
-58,"Inspires Hope",1,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,,0,,0,"Instilling hope to your brother in arms is one of the greatest achievement one can perform in an army."
-59,"Inspires Bravery",3,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,,0,,0,"Bravery is a rare luxury in a place likes battlefield. To share such rarity to others is a noble deed indeed."
-60,"Heart Of Steel",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-61,"Hope And Despair",,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,,2,,2,"A bringer of hope yet also a herald of calamity. Can it be the result of insanity?"
-62,"Healing Mucus",1,,,,,0,,,,,,0,0.5,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-63,"Ancestral Bond",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-64,"True Chosen",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-65,"The War Of Love",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-66,"Final Flame",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-67,"Glorious Appearance",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops’ appearances are so dashing and inspiring that nearby allies will be in awe while leaving enemies in fear."
-68,"Holy Defense",,,,110,110,20,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching."
-69,"Vile Veil",,,,105,120,5,,,,,,40,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"There are none without sin and their sins will make them blind."
-70,"Xenophobic Bunch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops loathe to fight together with soldiers or creatures from other race than themselves. "
-71,"Eyes Of Satiens",,,,,,0,,,125,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops suffer no range penalty and can shoot even further than usual."
-72,"Farsight",1,,,,110,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Farsight reduce accuracy penalty from long range shooting and also make these troops see enemies’ projectiles earlier."
-73,"No Range Penalty",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Assured accuracy to eradicate enemy from any place."
-74,"Long Range Accuracy",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Death from afar, the end of chivalric era is near."
-75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Entertainment may look like it has no place in this hell. But it sure improve the soldiers’ morale."
-76,"Virtue Of Honour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-77,"Kings Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,
-78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-79,"Pain Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-80,"Poison Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,50,,,,0,,2,
-81,"Cold Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,50,0,,,,0,,0,"Cold resistant allows these troops to resist negative effect of cold terrain."
-82,"Heat Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,50,0,0,,,,0,,0,"Heat resistant allows these troops to resist negative effect of hot terrain."
-83,"Fire Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,50,0,0,0,0,30,0,0,,,,0,,2,
-84,"Water Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,50,0,0,0,0,30,0,,,,0,,2,
-85,"Air Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,50,0,0,0,0,0,,,,0,,2,
-86,"Earth Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,50,0,0,0,0,,,,0,,2,
-87,"Fatigue Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Fatigue is the natural consequence of any physical activity. It just come much later for some than the others."
-88,"Magic Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,50,0,0,0,,,,0,,2,
-89,"Swamp Crosser",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,20,30,,,,0,,2,"Bonus combat and movement for these troops in swamp terrain and also use less supply as well."
-90,"Sylvan",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Bonus combat and movement for these troops in forest terrain and also use less supply as well."
-91,"Blight Habitat",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,70,,,,0,,2,"Bonus combat and movement for these troops in blight terrain and also use less supply as well."
-92,"Aquatic",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,70,0,0,0,0,50,0,,,,0,,2,"Bonus combat and movement for these troops in water terrain and also use less supply as well."
-93,"Urban Guerrilla",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Bonus combat and movement for these troops in urban terrain and also use less supply as well."
-94,"Sand Scavenger",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,30,0,0,,,,0,,2,
-95,"First Blood",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops will deals bonus damage to enemies if they and the enemies both have no injury or death."
-96,"Fervent Devotion",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops fight better when being near the commander’s sub-unit."
-97,"Horror Of War",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-98,"No Morale",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops have no morale thus can not be motivated or broken."
-99,"Unholy Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-100,"Knightly Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from these knights’ presence."
-101,"Thorny Armour",,,,,,,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Unit that attack these troops in melee combat will also receive damage in return."
-102,"Unstoppable",,,,150,150,30,,,,,130,20,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-103,"Battle Preparation",,,115,115,115,0,110,,,115,115,10,0,0,20,10,0,0,15,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops receive combat bonus when the stamina is at fresh level."
-104,"Blessed",1,,,,,0,,,,,,0,0,0,0,0,0,18,,,,,,,,,,,,,,0,,2,"To the blessed heaven shall assist. The world is blight and the sky is clear."
-105,"Cursed",1,,,,,0,,,,,,0,0,0,0,0,0,19,,,,,,,,,,,,,,0,,2,"A cursed being either by means of magic or nature, these troops will always be cursed and cannot be cured by normal means."
-106,"Lucky",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,2,"With luck on their side, surely no one can deny their destiny."
-107,"Unlucky",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,2,"Born under the wrong star or maybe some witches hold grudge against them, this unit usually fail at every task more than succeed."
-108,"Inner Demon",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-109,"Fanatical Backstabbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them."
-110,"Tireless",1,,,,,0,,,,,,0,0,100,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Absolute killing machine! These troops' fatigue cannot be decreased making their combat effectiveness stay at the best condition for the whole fight."
-111,"Unbreakable",1,,,110,110,0,,,,,,0,0,0,100,20,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Fleeing or surrendering is never an option for those with true honour and bravery. Death is a better option than dishonour."
-112,"Savage Looter",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army."
-113,"Catcher Expert",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble."
-114,"Marvelous Athletic",1,,,,,0,,,,,,0,0,1,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops being athletic superior makes them much more effective in long activity such as fighting."
-115,"Iron Discipline",1,,,,,0,,,,,,0,0,0,0,20,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops receive further bonus effect from discipline."
-116,"Sticky Attack",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,24,,2,
-117,"Curse Strike",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,19,,2,
-118,"Infective Touch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Who can blame the unfortunates that want to spread misfortune to the others. The world is too bright for fake happiness. "
-119,"Stunning Blast",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,23,,2,
-120,"Mana Stealer",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Every strike from these troops will sap away the mana of any enemy mage. Manaless mages make for nothing but useless baggages."
-121,"Maiden Of Meldolea",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-122,"Perverted Agony",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-123,"Battlelust",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-124,"Justice Order",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-125,"Unbreakable Bond",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-126,"Dread Challenger",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-127,"Headtaker",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops often decapitates enemies' head in combat as tokens. This will decrease their combat effectiveness by a bit but reduce enemy morale from damage further."
-128,"Nasty Smell",2,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops have disgusting stench that make anyone that not familiar with it want to throw up. every nearby sub-units receive combat penalty."
-129,"Scourge Of The Land",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-130,"Poison Blood",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,100,,,,26,,2,"Completely immune to poison and dangerous to enemy when attacked. The ultimate evolution trait for revenge."
-131,"Mirage Trickery",1,,,135,150,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Not even the most accurate archer in the realm can shoot at mirage for the mind and reality are not the same."
-132,"Martial Perfection ",1,,150,150,150,0,110,150,,150,150,30,0,0,0,50,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"The life of devotion to martial perfection is not uncommon in the time of chaos. But rare still to see those who have perfected it."
-133,"Unparalleled Mind",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-134,"Forgetful",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Forget order sometimes."
-135,"Joyful Departure",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Stemming from their peculiar tradition, these troops gain more morale when nearby ally sub-units are destroyed."
-136,"High Jumper",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can jump quite high when attacking making them negate height penalty from critical by one level"
-137,"Unkillable",1,,,,,1000,,,,,,0,0,0,0,0,0,,,,100,100,100,100,100,0,0,100,,,,0,,2,"These troops cannot be killed by normal means."
-138,"Panic Rampage",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-139,"Life Steal",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-140,"Epic Esoteric",,,,,,0,,,,,,0,0,0,50,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-141,"Death Bound",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-142,"Lone Wolf",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Rather fighting alone in the battlefield. The less friendly allies nearby, the more effective these troops become."
-143,"Jolly Flock",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-144,"Great Eater",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-145,"Rotten Smell",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Inducing vomit odour can cause great mental effect to the unfortunate victims."
-146,"Wall Climbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can bypass wall easily. They do not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and do not receive any defense bonus from siege equipment."
-147,"Hero Killer",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops deal more damage to champion and hero grade enemies."
-148,"Command Independent",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops’ morale will not be affected by commander's death or retreat."
-149,"Impetuous",1,,,,,0,,,,,,0,0,0,0,-20,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Whether from pride or arrogance, these troops have tendency to follow order even less when the leader makes mistake or issue command they do not like."
-150,"Greslanoul's Mastery",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-151,"Hearty Competition",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Being the elite of elite, these elite troops see battle as a game who kill the most enemy. The more they kill the higher their morale including nearby allies."
-152,"Battle Juggernaut",,,130,150,150,20,,,,,,30,0,200,25,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-153,"Fury Of Abalkael",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-154,"Kelsilious's Zeal",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-155,"Epganates's Persistence",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-156,"Arcane Protection",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-157,"Heroic Spirit",10,,120,120,,40,120,120,,120,120,120,0,0,100,20,0,,,,,,,,,,,,,,,0,,2,"These troops are being led by a heroic spirit from the past. This make the troops in high spirit when follow their great hero into battle."
-158,"Deathwish",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops fight like it seeks death itself. Their morale can never be decreased."
-159,"Algolga's Disciple",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-160,"Troll Blood",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,2,"Troll blood help its body to heal any wound it receives much faster than other creatures even during combat. "
-161,"Hope Crusher",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,2,"When there is despair, there is hope. And it is the duty of these troops to crush that whatever tiny hope the enemies still have left."
-162,"Merciless",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops cannot capture running enemies as it always prefer killing them instead."
-163,"Fragile Will",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,0,"These troops will be affected by negative psychological effect even more than usual."
-164,"Overwhelming Presence",,,,,,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These creatures’ appearance are so overwhelming that leave both friendly and enemy troops in fear and worry."
-165,"Headshotter",,,,,,0,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-166,"Perfect Aims",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Never a shot wasted when the enemies are lining up to be killed."
-167,"Personal Escort",,,,,,0,,,,,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,"Trained to escort important person to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
-168,"Domination Aura",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"When enemies becomes broken near these creatures, they will join these troops' side instead of freeing."
-169,"Fire Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,100,-50,0,0,0,50,0,0,,,,0,,2,"Fire damage actually heal these creatures instead of damaging them."
-170,"Water Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,100,-50,0,0,0,50,0,,,,0,,2,"Water damage actually heal these creatures instead of damaging them."
-171,"Air Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,100,-50,0,0,0,0,,,,0,,2,"Air damage actually heal these creatures instead of damaging them."
-172,"Earth Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,-50,0,0,100,0,0,0,0,,,,0,,2,"Earth damage actually heal these creatures instead of damaging them."
-173,"Icy Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,50,0,0,0,-50,100,0,,,,0,,2,"Being made of ice, these creatures receive healing instead of damage from frozen status"
-174,"Righteous Might",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-175,"Calming Berserk",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-176,"Spectacle Showdown",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-177,"Pantheon's Favour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,
-178,"Magical Conflux",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-179,"Shadow Fog",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-180,"Penetration Shots",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops’ range attacks are so powerful that they can penetrate enemy body and damage more than sub-unit per shot. They can also shot through weak obstacle and deals minor damage to major obstacle."
-181,"Gallant Example",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,0,
-182,"Unholy Flesh",,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can not be healed and will actually receive damage from healing magic."
-183,"Field Medic",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can heal nearby allies when both are not in melee combat."
-184,"Divine Presence",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops are divine or considered to be divine by its followers. They will make every allies in the battlefield at maximum morale and cannot be broken."
-185,"Plague Carrier",,,,,,0,,,,,,0,0,0,0,0,0,20,,,,,,,,,,,,,,0,,2,
-186,"Blight Bearer",,,,,,0,,,,,,0,0,0,0,0,0,21,,,,,,,,,,,,,,0,,2,
-187,"Antarndenxor",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-188,"Dawn Hum",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-189,"Sunset Beginning",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,,0,,2,
-190,"Forestry",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,0,"No penalty in forest terrain for these troops."
-191,"Seamate",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,0,"Ahoy matey! Less movement and combat penalty on sea terrain for these troops."
-192,"Mountaineer",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,0,"Less movement and combat penalty from mountain terrain for these troops."
-193,"Cave Crawling",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,0,"Less movement and combat penalty in underground terrain for these troops."
-194,"Pathfinder",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,0,"Half Movement penalty in every terrain type and height for these troops."
-195,"Night Vision",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,,0,,2,"Hunter of the night. These troops suffer no vision loss at night at all."
-196,"Heat Aura",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,80,30,0,,,,0,,2,
-197,"Cold Aura",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,30,80,0,,,,0,,2,
-198,"Pain Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops are completely unfit for any direct battle! Any injury cause the them to fight less effectively."
-199,"Cold Exposure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,-50,0,,,,0,,0,"The lack of covering or wrong type of clothing can kill anyone just like the enemy in cold place. Warm up or be preserved forever."
-200,"Heat Exposure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,-50,0,0,,,,0,,0,"The cloth or armour this unit is wearing is not suitable for hot climate. The heat will render the body reaching mortality state eventually."
-201,"Fire Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,-50,0,0,0,0,0,0,0,,,,0,,2,
-202,"Water Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,-50,0,0,0,0,0,0,,,,0,,2,
-203,"Air Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,-50,0,0,0,0,0,,,,0,,2,
-204,"Earth Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,-50,0,0,0,0,,,,0,,2,
-205,"Fatigue Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-206,"Magic Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,-50,0,0,0,,,,0,,2,
-207,"Poison Weakness",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,-50,,,,0,,2,
-208,"Cowardice",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Craven!, Useless! These troops are comprised of cowards and their morale will decrease even more from any factors."
-209,"Treachery",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"Betrayal! These wretch troops are more likely to surrender and change side right away in dire situation. But, they will still try to flee instead if enemy force will not accept surrender."
-210,"Sadism",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops are addicted to inflicting pain and death. The more injury and death they inflict, the higher the morale."
-211,"Masochism",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops are addicted to receiving pain and death. The more injury and death they suffer, the higher the morale."
-212,"Loves Fear",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops actually love to feel fear. Being near anyone that causes or being affected by terror and fear regardless of side increase their morale."
-213,"Seductive Charm",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops’ appearance can charm enemies, making them become distracted and less effective in combat."
-214,"Disgusting Taste",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"The worst taste of meat ever exist. No one will ever want to devour these creatures even if they have no taste buds. "
-215,"Rusty And Dirty",,,,,,-15,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,26,,2,"These troops’ weapons are covered with nasty rust making its less effective overall. However, their attacks can cause infection to injured enemies making them recover slower and harder to heal."
-216,"Thrist For Blood",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops thirst for blood, literally! The longer it fight the better its morale. It also suffers increasing morale penalty the longer it stay out of combat."
-217,"Tainted Blood",,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,90,,2,"Tainted blood is very dangerous if it come into contact with any untainted creature. Hence, melee combat against enemies with tainted blood is extremely inadvisable."
-218,"Acid Blood",,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"Bad news for everyone! Acid is raining down on whoever harm these creatures. Anyone that is affected by acid blood suffers combat penalty and also injury. "
-219,"Fantastic Beard",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops have impressive beard that inspires all other dwarfs in the realm and battle."
-220,"Hard Skull",,,,,,20,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,,2,
-221,"Brittle Bone",,,,,,-20,,,,,,,,,0,0,0,,,,,,,,,,,,,,,0,,2,
-222,"Stationary Placement",1,,,,,,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,,
-223,"Mountain Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in mountain terrain."
-224,"Hill Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in hill terrain."
-225,"Forest Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in forest terrain."
-226,"Cloud Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops can hide better in sky."
-227,"Desert Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in desert terrain."
-228,"Snow Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in snow terrain."
-229,"Water Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops can hide better in water terrain."
-230,"Plain Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in plain terrain."
-231,"Swamp Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in swamp terrain."
-232,"Urban Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better in urban terrain."
-233,"Blight Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops can hide better in blight terrain."
-234,"Underground Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops can hide better in underground terrain."
-235,"Night Stalking",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,0,"These troops can hide better at night."
-236,"Ambush Expert",1,,,,,0,,,,,,0,,,0,0,0,0,,50,,,,,,,,,,,,0,,0,"These troops can hide in any terrain, nowhere is truly safe for the enemy."
-237,"Champion's Crest",1,,,,,10,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops are immortal and cannot be killed by any means, not even magic can harm them."
-238,"Battle Frenzy",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"KILL! These berserkers can go into frenzy state similar to orc wrath that is even crazier than normal berserk."
-239,"Immune To Silence",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-240,"Immune To Blind",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-241,"Immune To Fear",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-242,"Immune To Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,100,,,,,,,0,,2,
-243,"Immune To Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,100,0,0,0,0,0,,,,0,,2,
-244,"Immune To Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,100,0,0,0,0,100,0,0,,,,0,,2,
-245,"Immune To Water",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,100,0,0,0,0,100,0,,,,0,,2,
-246,"Immune To Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,100,0,0,0,0,,,,0,,2,
-247,"Immune To Mind Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,
-248,"Immune To Body Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,
-249,"Immune To Manipulation Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,
-250,"Immune To Poison",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,100,,,,0,,2,
-251,"Vulnurable To Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,-100,0,0,0,0,0,,,,0,,2,
-252,"Vulnurable To Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,-100,0,0,0,0,0,0,0,,,,0,,2,
-253,"Vulnurable To Water",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,-100,0,0,0,0,0,0,,,,0,,2,
-254,"Vulnurable To Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,-100,0,0,0,0,,,,0,,2,
-255,"Vulnurable To Mind Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,
-256,"Vulnurable To Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,-100,0,0,0,,,,0,,2,
-257,"Vulnurable To Body Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,
-258,"Vulnurable To Manipulation Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,
-259,"Vulnurable To Posion",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,-100,,,,0,,2,
-260,"Fear Ice",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-261,"Fear Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-262,"Fear Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-263,"Fear Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-264,"Fear Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-265,"Scare Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can cause mount to panic or scare, which reduce enemy cavalries’ combat effectiveness and morale."
-266,"Fearless Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops’ mount cannot be panicked or broken and immune to Scare Mount."
-267,"Human Killer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Human, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all."
-268,"Elf Murderer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Those damn arrogant gaze! Those damn annoying sneer! Darn elves think they are above every other races, let's show those sharp ears the death they deserve!"
-269,"Dwarf Exterminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Short and stink! What good does dwarf bring to the world anyway? Useless sods they all are. "
-270,"Orc Destroyer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Orc Is nothing but a blight on civilisation.Its extinction will be another cornerstone of progress."
-271,"Goblin Eradicator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Nasty little thing like this deserve to be eradicated. Kill them all and be rid of these pests for good or they will come back even more."
-272,"Halfling Annihilator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Peace and love? Those who are not ready for war will never see peace."
-273,"Animal Butcher",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Look at those valuable fang and fur! Whoever deals the killing blow get the prize!"
-274,"Lizardman Eraser",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Them scaly skins always are up to no good. We must erase them from the face of the earth so our children can live safely. "
-275,"Beastman Eliminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Higher than mere beast but lower than man. These creatures deserve no better! The hunt is on!"
-276,"Giant Terminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Big and brutish. Truly the greatest challenge for the greatest warrior. "
-277,"Dragon Slayer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Some say dragons were the sole ruler of the world in the age of origin, the true symbol of power. Not for us of course."
-278,"Demon Banisher",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"How dare those vile demons invade our world! Go back to whatever the hell you all came from!"
-279,"Undead Liberator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Nothing less than blasphemy, the existance of these undeads. It is our duty to free them of these miserable state they are in."
-280,"Fairy Crusher",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"Pure and innocence, is it? Those who say that obviously never meet the real one. It's always fun to crush annoying flies!"
-281,"Gremlin Bankrupter",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"To be the slave to money is make money your biggest weak point. Just make them lose all the money and watch them kill themselves over that."
-282,"Wizard Hunters",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"""The unnatural of magecraft is too dangerous for any person to possess. Therefore, any person who practice the art of magic is punishable by death."" The Absolute Law of Mortal Life, Fifth Act:Third Article"
-283,"Vindictive",1,,,,,0,,,,,,0,,,0,0,0,,,,0,0,0,0,0,0,0,0,,,,0,,2,"Revenge is best served cold is what they often say. Well someone also like to have it hot!"
-284,"Animal Instinct",1,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"The basic of every animal is to survive. Based on that instinct, these creatures will flee much faster in losing fight but will give it all when it cannot escape and less likely to surrender."
-285,"Phoenix Blood",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"Blood of immortal bird while not making one immunable to damage and disease, can help improve regenerative ability greatly while also allow the body to resurrect with enough energy."
-286,"Incorporeal",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"""How can we kill this thing!?"", An unknown soldier before being struck down. These troops cannot be damaged by normal weapon only from magic and magical weapon but also fight less effective."
-287,"Oath Of The Eternal",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"Bound by the Eternal Oath, these soldiers will fight on even in death."
-288,"Light Vision Intolerance",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"Blind by the light!, these troops cannot withstand the sight of sunlight making them unsuitable for daytime combat."
-289,"Night Vision Intolerance",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops cannot see well in the night at all which reducing their combat effectiveness greatly."
-290,"Nocturnal",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops fight better at night but worse at day."
-291,"Willbreaker",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"Even the strongest will can be broken. These troops can make psychological resistance properties and abilities such as Strong Will of nearby enemies less effective."
-292,"Adore Melody",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops loves music dearly and will receive better combat bonus from music. However if the music stop, these troops will then receive combat penalty."
-293,"Loathe Melody",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"These troops hate music and will receive combat penalty from music. If the music stop, these troops will receive combat bonus after."
-294,"Salted Phase",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,,0,,2,"The salted sea requires unconditional allegiance from those who wish to pass it. Only those with strongest will can survive in this unforgiving above the true abyss."
-295,"Sorrow Of Battle ",1,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"Woe for the world to see war and not peace. Our enemy too suffer the same fate as us."
-296,"Smokey Wings At The Ground",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"When these troops suffer casualty, the Smokey Wings on the dead troops will drop to the ground. The smoke rising from the ground up will affect everyone without anti-smokey mask. "
-297,"Anti-Smokey Mask",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"These troops cannot be affected by Smokey ability."
-298,"Strong Will",,,,,,0,,,,,,0,,,0,0,0,22,,,,,,,,,,,,,,0,,2,"To have strong will is much harder to achieve than having strong body. Only few are so well trained to face against the unknown after all."
-299,"Fullmoon Jubilance",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"The fateful day! These troops will fight firecely to the death to fulfill the prophecy."
-300,"Halfmoon Preparation",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"There are no glory yet in battle before full moon, these troops will fight more reservely and more likely to retreat In losing fight."
-301,"Crescentmoon Sacrifice",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"The rites must be made to hasten the arrival of the true moon! Sacrifices must be chosen!"
-302,"Darkmoon Melancholy",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"The darkest day! It is forbidden to die on this day at all cost."
-303,"Bloodmoon Coming",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,,0,,2,"The prophecy has been fulfilled! The gate of heaven is openned at last!"
-304,"Assassination",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can stay hidden while attacking if no enemy can spot it."
-305,"Sniping",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can stay hidden while shooting."
-306,"Invisible",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can stay hidden until fighting in melee."
-307,"Full Awareness",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can detect enemy from any direction at all time."
-308,"Partial Awareness",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,0,"These troops can detect enemy from any direction when not fighting."
-309,"True Sight",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can always detect any hidden enemy and trap."
-310,"Third Eye",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,
-311,"True Aims",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops will always hit enemy regardless of range and bypass obstacle defense by half.The cowardly enemy cannot hide behind their shield anymore."
-312,"Regenerating Limb",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can regenerate their lost limbs making them able to completely become combat ready again after resting."
-313,"Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can heal itself in time without needing medical assistant."
-314,"Fast Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops can heal itself even in battle as long as it is not attacked."
-315,"Limb Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,,0,,2,"These troops will not lose soldier count from injury after battle."
-316,"Swift Swimmer",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,,,,0,
-317,"Landlubber",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,,,,0,
-318,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-319,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-320,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-321,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-322,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-323,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-324,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-325,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-326,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-327,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-328,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-329,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-330,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-331,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-332,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-333,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-334,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-335,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-336,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-337,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-338,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-339,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-340,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-341,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-342,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-343,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-344,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-345,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-346,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-347,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-348,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-349,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-350,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-351,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-352,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-353,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-354,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-355,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-356,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-357,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-358,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-359,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-360,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-361,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-362,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-363,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-364,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-365,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-366,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-367,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-368,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-369,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-370,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-371,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-372,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-373,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-374,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-375,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-376,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-377,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-378,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-379,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-380,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-381,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-382,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-383,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-384,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-385,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-386,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-387,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-388,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-389,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-390,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-391,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-392,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-393,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-394,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-395,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-396,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-397,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-398,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-399,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-400,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-401,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-402,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-403,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-404,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-405,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-406,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-407,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-408,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-409,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-410,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-411,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-412,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-413,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-414,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-415,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-416,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-417,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-418,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-419,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-420,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-421,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-422,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-423,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-424,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-425,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-426,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-427,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-428,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-429,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-430,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-431,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-432,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-433,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-434,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-435,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-436,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-437,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-438,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-439,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-440,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-441,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-442,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-443,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-444,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-445,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-446,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-447,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-448,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-449,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-450,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-451,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-452,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-453,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-454,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-455,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-456,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-457,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-458,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-459,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-460,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-461,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-462,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-463,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-464,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-465,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-466,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-467,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-468,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-469,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-470,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-471,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-472,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-473,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-474,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-475,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-476,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-477,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-478,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-479,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-480,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-481,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-482,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-483,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-484,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-485,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-486,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-487,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-488,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-489,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-490,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-491,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-492,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-493,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-494,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-495,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-496,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-497,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-498,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-499,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-500,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-501,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-502,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-503,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-504,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-505,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-506,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-507,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-508,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-509,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-510,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-511,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-512,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-513,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-514,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-515,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-516,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-517,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-518,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-519,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-520,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-521,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-522,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-523,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-524,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-525,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-526,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-527,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-528,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-529,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-530,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-531,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-532,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-533,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-534,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-535,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-536,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-537,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-538,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-539,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-540,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-541,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-542,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-543,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-544,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-545,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-546,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-547,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-548,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-549,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-550,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-551,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-552,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-553,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-554,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-555,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-556,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-557,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-558,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-559,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-560,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-561,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-562,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-563,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-564,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-565,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-566,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-567,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-568,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-569,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-570,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-571,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-572,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-573,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-574,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-575,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-576,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-577,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-578,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-579,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-580,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-581,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-582,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-583,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-584,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-585,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-586,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-587,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-588,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-589,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-590,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-591,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-592,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-593,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-594,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-595,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-596,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-597,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-598,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-599,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-600,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-601,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-602,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-603,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-604,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-605,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-606,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-607,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-608,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-609,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-610,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-611,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-612,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-613,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-614,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-615,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-616,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-617,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-618,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-619,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-620,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-621,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-622,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-623,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-624,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-625,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-626,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-627,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-628,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-629,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-630,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-631,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-632,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-633,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-634,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-635,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-636,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-637,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-638,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-639,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-640,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-641,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-642,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-643,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-644,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-645,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-646,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-647,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-648,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-649,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-650,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-651,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-652,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-653,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-654,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-655,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-656,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-657,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-658,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-659,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-660,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-661,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-662,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-663,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-664,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-665,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-666,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-667,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-668,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-669,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-670,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-671,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-672,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-673,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-674,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-675,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"ID","Name","Buff Range","Buff Modifier","Melee Attack Effect","Melee Defense Effect","Range Defense Effect","Armour Bonus","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Charge Defense Bonus","HP Regeneration buff","Stamina Regeneration Buff","Morale Bonus","Discipline Bonus","Critical Bonus","Status","Siege Effect","Hidden Bonus","Fire Resistance","Water Resistance","Air Resistance","Earth Resistance","Magic Resistance","Heat Resistance","Cold Resistance","Poison Resistance","Supply Effect","Upkeep Effect","Mental Bonus","Enemy Status","Special Effect","Cost","Ruleset","description"
+1,"Bonus Morale",1,,,,,0,,,,,,0,0,0,10,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"More morale is always preferable. These troops are less likely to flee or surrender in losing fight."
+2,"Heroic",1,,,,,0,,,,,,0,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Heroes do not fear failure or death, but that does not mean they welcome it."
+3,"Varied Training",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"The lack of standardised training for this unit make the troops' fighting ability wildly diverse."
+4,"Zealous",1,,,,,0,,,,,,0,0,0,30,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Being zealous for one's belief can make soldier less susceptible to fear."
+5,"Poor Morale",1,,,,,0,,,,,,0,0,0,-20,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Either from poor training or by its nature, these soldiers have poorer morale making them unfit for prolong or serious engagement."
+6,"Black Boar's Guidance",1,,,,,0,,130,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+7,"Great Wings' Protection",1,,,115,115,10,,,,,,10,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+8,"Tough Painting",1,,,,,10,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Orc Berserkers usually wear no armour at all and paint their naked body into battle. What littile known is that the paint materials used is so tough when harden that it can actually stop a sword or arrow."
+9,"Impregnable Shield",1,,,125,125,5,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"One of the most basic equipment to keep one alive in a chaotic battle. Having one is almost always better than having none but having one that of superb quality is the best of all."
+10,"Protective Fur",1,,,,,7,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,-40,50,0,,,0,0,,,2,"Some beastmen or creatures have furs thick enough to protect against some attack to a degree. Additionally, it can help against cold too."
+11,"Charge Expert",1,,,,,0,,,,,125,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Charge is one of the most powerful tactic in battles in the past that can decide the battle. Being well-versed in charging is never an disadvantage."
+12,"Charge Defense Expert",1,,,,,0,,,,,,35,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Why settle for just defending when you can turn the enemies' charge into their own demise."
+13,"Weapon Expert",1,,120,115,,0,,115,,115,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Decades of perfection the weapon make these soldiers a pinnacle of all warriors. "
+14,"Evasive",1,,,130,130,0,,,,,,30,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can dodge melee and range attack when fighting in loose formation."
+15,"Divine Connection",1,190,,,,0,,,,,,0,0,0,100,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+16,"Arc Shot",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Arc shot allows archers to shoot pass the obstacle to hit the target they aiming for. *This trait can be obtained from certain weapons."
+17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also help improve accuracy against moving target."
+18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial."
+19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"The accuracy of these troops are not affected by morale (they still cannot shoot when broken)."
+20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ magic casting are not affected by morale (they still cannot cast magic when broken)."
+21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0," *This trait can be obtained from certain weapons."
+22,"Anti-Flyer",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"What goes up must come down. These troops are specialised in combat against flyer enemies."
+23,"Anti-Cavalry",1,,,,,0,,,,,,20,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops are specialised in combat against enemy cavalries. Bring an end to the age of cavalry one step at a time. *This trait can be obtained from certain weapons."
+24,"Anti-Mage",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are specialised in combat against enemy mages. Not even the wisest wizards can survive this hunt."
+25,"Anti-Machine",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are specialised in combat against enemy machines. Neither Iron or wood can not stop their attacks."
+26,"Anti-Large",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The bigger they are, the harder the fall. These troops are specialised in combat against large enemies."
+27,"Anti-All",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"The destroyer of world. No man, beast nor machine can withstand this true might."
+28,"Anti-Structure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Tear down the wall! No structure can withstand such strong force."
+29,"Ignore Charge Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Rush of death and ruin. The world shall tremble upon this sight. These troops’ charge ignore charge defence entirely. "
+30,"Ignore Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Deadly to those unfortunate to face them in combat. These troops’ attack ignore defense entirely."
+31,"Cannibal",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+32,"Defiant Defense",1,,110,130,130,0,,,,,,0,0,0,25,10,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Only the strongest force can take down unit. They will struggle to the end, and for every one man killed they will take down 10 enemies with them."
+33,"Backstaber",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops deal bonus damage to enemies with rear attack."
+34,"Battle Master",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can fully attack enemies in all direction and suffer no defense penalty from being flank attack."
+35,"Absolute Defense",1,,,150,150,0,,,,,,50,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"The best defense is a good offense. It may be important to kill enemy to win the battle but it is more important to survive to win a war."
+36,"Great Saint",1,,,,,10,,,,,,0,0,0,10000,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The best of the best in the realm. These troops help nearby allies to be at maximum morale and cannot be decreased."
+37,"Battle Saint",1,,,,,20,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+38,"No Hunger",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,-100,30,0,0,,,2,"These troops cannot get hungry which means they do not need food supply to maintain at all."
+39,"Patriotic",1,,,,,0,,,,,,0,0,0,30,0,0,,,,0,0,0,0,0,0,0,0,,50,0,0,,,0,"It is the duty of every citizen to fight for the country they live in. These troops fight much better in friendly territory and require less upkeep."
+40,"Siege Expert",1,,,,,0,,,,,,0,0,0,0,0,0,0,150,,0,0,0,0,0,0,0,0,,,0,0,,,0,"No wall is safe from these soldiers! They can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%."
+41,"Unadvancable",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops cannot gain experience from normal means."
+42,"Hunger Instinct",1,,140,80,80,0,130,,,,,0,0,0,-10,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Hunger is one of the most important factor for the aggressivity in most animal. If these troops are in hunger stage, they will fight much harder than usual to obtain the food which in this case is the enemy in front of them."
+43,"Famed",2,,,,,0,,,,,,0,0,0,10,10,0,3,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for allies nearby while reducing for enemies."
+44,"Armistice Bringer",4,,,,,0,,,,,,0,0,0,-50,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+45,"Shield Expert",1,,,120,120,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Survive to fight another day by improving your defense is never a bad idea."
+46,"Crumble",1,,60,60,100,-70,60,60,,60,60,-100,0,0,60,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Nothing last forever, even for an inanimate material creatures. Time has render these troops much less powerful compare to its former glory."
+47,"Superb Flanker",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops fight better against enemies from flanking position."
+48,"Bandit Honour",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The way of bandit usually is not appropriate to the code of honour. It must be extremely difficult and remarkable for one to uphold whatever honour vow they swear to."
+49,"Indomitable",1,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+50,"Endearing Performance",3,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+51,"True Hero",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,50,0,,,2,"Being true heroes, these troops has manifestly inspiring aura for nearby allies."
+52,"Legendary Might",1,,150,130,,20,120,,,,150,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The might of the legends cannot be subdued. Beware the enemy for the death to come."
+53,"Innocence Grace",,,70,130,130,0,,,,70,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+54,"Magical Weapon",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ weapons have magic property which deals additional magic damage and can deals damage to Incorporeal enemies."
+55,"Oblivious To Unexpected",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These soldiers are so oblivious to unexpected events that they have no idea or plan to defend against them making it receive defense penalty from rear attack."
+56,"Causes Fear",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Only the brave can resist the fear, and those are the ones that die young."
+57,"Causes Terror",3,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Terror is in the mind until it manifest into reality in front of you. Fleeing is always an option."
+58,"Inspires Hope",1,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,10,0,,,0,"Instilling hope to your brother in arms is one of the greatest achievement one can perform in an army."
+59,"Inspires Bravery",3,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,10,0,,,0,"Bravery is a rare luxury in a place likes battlefield. To share such rarity to others is a noble deed indeed."
+60,"Heart Of Steel",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+61,"Hope And Despair",,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,0,2,,,2,"A bringer of hope yet also a herald of calamity. Can it be the result of insanity?"
+62,"Healing Mucus",1,,,,,0,,,,,,0,0.5,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+63,"Ancestral Bond",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+64,"True Chosen",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+65,"The War Of Love",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+66,"Final Flame",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+67,"Glorious Appearance",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops’ appearances are so dashing and inspiring that nearby allies will be in awe while leaving enemies in fear."
+68,"Holy Defense",,,,110,110,20,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching."
+69,"Vile Veil",,,,105,120,5,,,,,,40,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"There are none without sin and their sins will make them blind."
+70,"Xenophobic Bunch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops loathe to fight together with soldiers or creatures from other race than themselves. "
+71,"Eyes Of Satiens",,,,,,0,,,125,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops suffer no range penalty and can shoot even further than usual."
+72,"Farsight",1,,,,110,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Farsight reduce accuracy penalty from long range shooting and also make these troops see enemies’ projectiles earlier."
+73,"No Range Penalty",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Assured accuracy to eradicate enemy from any place."
+74,"Long Range Accuracy",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Death from afar, the end of chivalric era is near."
+75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Entertainment may look like it has no place in this hell. But it sure improve the soldiers’ morale."
+76,"Virtue Of Honour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+77,"Kings Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,
+78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+79,"Pain Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+80,"Poison Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,50,,,0,0,,,2,
+81,"Cold Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,50,0,,,0,0,,,0,"Cold resistant allows these troops to resist negative effect of cold terrain."
+82,"Heat Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,50,0,0,,,0,0,,,0,"Heat resistant allows these troops to resist negative effect of hot terrain."
+83,"Fire Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,50,0,0,0,0,30,0,0,,,0,0,,,2,
+84,"Water Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,50,0,0,0,0,30,0,,,0,0,,,2,
+85,"Air Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,50,0,0,0,0,0,,,0,0,,,2,
+86,"Earth Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,50,0,0,0,0,,,0,0,,,2,
+87,"Fatigue Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Fatigue is the natural consequence of any physical activity. It just come much later for some than the others."
+88,"Magic Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,50,0,0,0,,,0,0,,,2,
+89,"Swamp Crosser",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,20,30,,,0,0,,,2,"Bonus combat and movement for these troops in swamp terrain and also use less supply as well."
+90,"Sylvan",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Bonus combat and movement for these troops in forest terrain and also use less supply as well."
+91,"Blight Habitat",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,70,,,0,0,,,2,"Bonus combat and movement for these troops in blight terrain and also use less supply as well."
+92,"Aquatic",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,70,0,0,0,0,50,0,,,0,0,,,2,"Bonus combat and movement for these troops in water terrain and also use less supply as well."
+93,"Urban Guerrilla",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Bonus combat and movement for these troops in urban terrain and also use less supply as well."
+94,"Sand Scavenger",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,30,0,0,,,0,0,,,2,
+95,"First Blood",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops will deals bonus damage to enemies if they and the enemies both have no injury or death."
+96,"Fervent Devotion",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops fight better when being near the commander’s sub-unit."
+97,"Horror Of War",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+98,"No Morale",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops have no morale thus can not be motivated or broken."
+99,"Unholy Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+100,"Knightly Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from these knights’ presence."
+101,"Thorny Armour",,,,,,,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Unit that attack these troops in melee combat will also receive damage in return."
+102,"Unstoppable",,,,150,150,30,,,,,130,20,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,20,0,,,2,
+103,"Battle Preparation",,,115,115,115,0,110,,,115,115,10,0,0,20,10,0,0,15,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops receive combat bonus when the stamina is at fresh level."
+104,"Blessed",1,,,,,0,,,,,,0,0,0,0,0,0,18,,,,,,,,,,,,,0,0,,,2,"To the blessed heaven shall assist. The world is blight and the sky is clear."
+105,"Cursed",1,,,,,0,,,,,,0,0,0,0,0,0,19,,,,,,,,,,,,,0,0,,,2,"A cursed being either by means of magic or nature, these troops will always be cursed and cannot be cured by normal means."
+106,"Lucky",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"With luck on their side, surely no one can deny their destiny."
+107,"Unlucky",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Born under the wrong star or maybe some witches hold grudge against them, this unit usually fail at every task more than succeed."
+108,"Inner Demon",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+109,"Fanatical Backstabbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,"""Of course, it's personal because it's fun!"" , Midjilipun, Big boss of Ritdukub clan in an exclusive interview with Chavu of Dina. Goblins really take joy in the art of backstabbing each other. Some can say it is a game or even a part of their nature for them."
+110,"Tireless",1,,,,,0,,,,,,0,0,100,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Absolute killing machine! These troops' fatigue cannot be decreased making their combat effectiveness stay at the best condition for the whole fight."
+111,"Unbreakable",1,,,110,110,0,,,,,,0,0,0,100,20,0,0,,,0,0,0,0,0,0,0,0,,,50,0,,,0,"Fleeing or surrendering is never an option for those with true honour and bravery. Death is a better option than dishonour."
+112,"Savage Looter",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops know well how to steal and plunder. While neither honourable or nobel, gold is essential even when running an army."
+113,"Catcher Expert",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"A good enemy is not always a dead enemy. Prisoner of war often bring good ransom money especially when it come to captive noble."
+114,"Marvelous Athletic",1,,,,,0,,,,,,0,0,1,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops being athletic superior makes them much more effective in long activity such as fighting."
+115,"Iron Discipline",1,,,,,0,,,,,,0,0,0,0,20,0,0,,,0,0,0,0,0,0,0,0,,,20,0,,,0,"These troops receive further bonus effect from discipline."
+116,"Sticky Attack",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,24,,,2,
+117,"Curse Strike",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,19,,,2,
+118,"Infective Touch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Who can blame the unfortunates that want to spread misfortune to the others. The world is too bright for fake happiness. "
+119,"Stunning Blast",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,23,,,2,
+120,"Mana Stealer",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Every strike from these troops will sap away the mana of any enemy mage. Manaless mages make for nothing but useless baggages."
+121,"Maiden Of Meldolea",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+122,"Perverted Agony",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+123,"Battlelust",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+124,"Justice Order",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+125,"Unbreakable Bond",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+126,"Dread Challenger",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+127,"Headtaker",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops often decapitates enemies' head in combat as tokens. This will decrease their combat effectiveness by a bit but reduce enemy morale from damage further."
+128,"Nasty Smell",2,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops have disgusting stench that make anyone that not familiar with it want to throw up. every nearby sub-units receive combat penalty."
+129,"Scourge Of The Land",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+130,"Poison Blood",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,100,,,0,26,,,2,"Completely immune to poison and dangerous to enemy when attacked. The ultimate evolution trait for revenge."
+131,"Mirage Trickery",1,,,135,150,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Not even the most accurate archer in the realm can shoot at mirage for the mind and reality are not the same."
+132,"Martial Perfection ",1,,150,150,150,0,110,150,,150,150,30,0,0,0,50,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The life of devotion to martial perfection is not uncommon in the time of chaos. But rare still to see those who have perfected it."
+133,"Unparalleled Mind",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+134,"Forgetful",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Forget order sometimes."
+135,"Joyful Departure",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Stemming from their peculiar tradition, these troops gain more morale when nearby ally sub-units are destroyed."
+136,"High Jumper",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can jump quite high when attacking making them negate height penalty from critical by one level"
+137,"Unkillable",1,,,,,1000,,,,,,0,0,0,0,0,0,,,,100,100,100,100,100,0,0,100,,,0,0,,,2,"These troops cannot be killed by normal means."
+138,"Panic Rampage",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+139,"Life Steal",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+140,"Epic Esoteric",,,,,,0,,,,,,0,0,0,50,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+141,"Death Bound",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+142,"Lone Wolf",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Rather fighting alone in the battlefield. The less friendly allies nearby, the more effective these troops become."
+143,"Jolly Flock",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+144,"Great Eater",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+145,"Rotten Smell",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Inducing vomit odour can cause great mental effect to the unfortunate victims."
+146,"Wall Climbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can bypass wall easily. They do not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and do not receive any defense bonus from siege equipment."
+147,"Hero Killer",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops deal more damage to champion and hero grade enemies."
+148,"Command Independent",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ morale will not be affected by commander's death or retreat."
+149,"Impetuous",1,,,,,0,,,,,,0,0,0,0,-20,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Whether from pride or arrogance, these troops have tendency to follow order even less when the leader makes mistake or issue command they do not like."
+150,"Greslanoul's Mastery",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+151,"Hearty Competition",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Being the elite of elite, these elite troops see battle as a game who kill the most enemy. The more they kill the higher their morale including nearby allies."
+152,"Battle Juggernaut",,,130,150,150,20,,,,,,30,0,200,25,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+153,"Fury Of Abalkael",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+154,"Kelsilious's Zeal",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+155,"Epganates's Persistence",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+156,"Arcane Protection",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+157,"Heroic Spirit",10,,120,120,,40,120,120,,120,120,120,0,0,100,20,0,,,,,,,,,,,,,,0,0,,,2,"These troops are being led by a heroic spirit from the past. This make the troops in high spirit when follow their great hero into battle."
+158,"Deathwish",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops fight like it seeks death itself. Their morale can never be decreased."
+159,"Algolga's Disciple",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+160,"Troll Blood",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Troll blood help its body to heal any wound it receives much faster than other creatures even during combat. "
+161,"Hope Crusher",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"When there is despair, there is hope. And it is the duty of these troops to crush that whatever tiny hope the enemies still have left."
+162,"Merciless",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops cannot capture running enemies as it always prefer killing them instead."
+163,"Fragile Will",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,0,"These troops will be affected by negative psychological effect even more than usual."
+164,"Overwhelming Presence",,,,,,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These creatures’ appearance are so overwhelming that leave both friendly and enemy troops in fear and worry."
+165,"Headshotter",,,,,,0,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+166,"Perfect Aims",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Never a shot wasted when the enemies are lining up to be killed."
+167,"Personal Escort",,,,,,0,,,,,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Trained to escort important person to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
+168,"Domination Aura",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"When enemies becomes broken near these creatures, they will join these troops' side instead of freeing."
+169,"Fire Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,100,-50,0,0,0,50,0,0,,,0,0,,,2,"Fire damage actually heal these creatures instead of damaging them."
+170,"Water Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,100,-50,0,0,0,50,0,,,0,0,,,2,"Water damage actually heal these creatures instead of damaging them."
+171,"Air Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,100,-50,0,0,0,0,,,0,0,,,2,"Air damage actually heal these creatures instead of damaging them."
+172,"Earth Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,-50,0,0,100,0,0,0,0,,,0,0,,,2,"Earth damage actually heal these creatures instead of damaging them."
+173,"Icy Being",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,50,0,0,0,-50,100,0,,,0,0,,,2,"Being made of ice, these creatures receive healing instead of damage from frozen status"
+174,"Righteous Might",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+175,"Calming Berserk",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+176,"Spectacle Showdown",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+177,"Pantheon's Favour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+178,"Magical Conflux",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+179,"Shadow Fog",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+180,"Penetration Shots",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ range attacks are so powerful that they can penetrate enemy body and damage more than sub-unit per shot. They can also shot through weak obstacle and deals minor damage to major obstacle."
+181,"Gallant Example",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,
+182,"Unholy Flesh",,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can not be healed and will actually receive damage from healing magic."
+183,"Field Medic",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can heal nearby allies when both are not in melee combat."
+184,"Divine Presence",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops are divine or considered to be divine by its followers. They will make every allies in the battlefield at maximum morale and cannot be broken."
+185,"Plague Carrier",,,,,,0,,,,,,0,0,0,0,0,0,20,,,,,,,,,,,,,0,0,,,2,
+186,"Blight Bearer",,,,,,0,,,,,,0,0,0,0,0,0,21,,,,,,,,,,,,,0,0,,,2,
+187,"Antarndenxor",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+188,"Dawn Hum",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+189,"Sunset Beginning",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+190,"Forestry",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"No penalty in forest terrain for these troops."
+191,"Seamate",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"Ahoy matey! Less movement and combat penalty on sea terrain for these troops."
+192,"Mountaineer",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"Less movement and combat penalty from mountain terrain for these troops."
+193,"Cave Crawling",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"Less movement and combat penalty in underground terrain for these troops."
+194,"Pathfinder",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"Half Movement penalty in every terrain type and height for these troops."
+195,"Night Vision",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Hunter of the night. These troops suffer no vision loss at night at all."
+196,"Heat Aura",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,80,30,0,,,0,0,,,2,
+197,"Cold Aura",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,30,80,0,,,0,0,,,2,
+198,"Pain Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are completely unfit for any direct battle! Any injury cause the them to fight less effectively."
+199,"Cold Exposure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,-50,0,,,0,0,,,0,"The lack of covering or wrong type of clothing can kill anyone just like the enemy in cold place. Warm up or be preserved forever."
+200,"Heat Exposure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,-50,0,0,,,0,0,,,0,"The cloth or armour this unit is wearing is not suitable for hot climate. The heat will render the body reaching mortality state eventually."
+201,"Fire Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,-50,0,0,0,0,0,0,0,,,0,0,,,2,
+202,"Water Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,-50,0,0,0,0,0,0,,,0,0,,,2,
+203,"Air Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,-50,0,0,0,0,0,,,0,0,,,2,
+204,"Earth Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,-50,0,0,0,0,,,0,0,,,2,
+205,"Fatigue Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+206,"Magic Weakness",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,-50,0,0,0,,,0,0,,,2,
+207,"Poison Weakness",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,-50,,,0,0,,,2,
+208,"Cowardice",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Craven!, Useless! These troops are comprised of cowards and their morale will decrease even more from any factors."
+209,"Treachery",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Betrayal! These wretch troops are more likely to surrender and change side right away in dire situation. But, they will still try to flee instead if enemy force will not accept surrender."
+210,"Sadism",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are addicted to inflicting pain and death. The more injury and death they inflict, the higher the morale."
+211,"Masochism",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are addicted to receiving pain and death. The more injury and death they suffer, the higher the morale."
+212,"Loves Fear",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops actually love to feel fear. Being near anyone that causes or being affected by terror and fear regardless of side increase their morale."
+213,"Seductive Charm",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ appearance can charm enemies, making them become distracted and less effective in combat."
+214,"Disgusting Taste",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The worst taste of meat ever exist. No one will ever want to devour these creatures even if they have no taste buds. "
+215,"Rusty And Dirty",,,,,,-15,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,26,,,2,"These troops’ weapons are covered with nasty rust making its less effective overall. However, their attacks can cause infection to injured enemies making them recover slower and harder to heal."
+216,"Thrist For Blood",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops thirst for blood, literally! The longer it fight the better its morale. It also suffers increasing morale penalty the longer it stay out of combat."
+217,"Tainted Blood",,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,90,,,2,"Tainted blood is very dangerous if it come into contact with any untainted creature. Hence, melee combat against enemies with tainted blood is extremely inadvisable."
+218,"Acid Blood",,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Bad news for everyone! Acid is raining down on whoever harm these creatures. Anyone that is affected by acid blood suffers combat penalty and also injury. "
+219,"Fantastic Beard",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops have impressive beard that inspires all other dwarfs in the realm and battle."
+220,"Hard Skull",,,,,,20,,,,,,,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+221,"Brittle Bone",,,,,,-20,,,,,,,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,
+222,"Stationary Placement",1,,,,,,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,,
+223,"Mountain Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in mountain terrain."
+224,"Hill Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in hill terrain."
+225,"Forest Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in forest terrain."
+226,"Cloud Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops can hide better in sky."
+227,"Desert Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in desert terrain."
+228,"Snow Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in snow terrain."
+229,"Water Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops can hide better in water terrain."
+230,"Plain Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in plain terrain."
+231,"Swamp Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in swamp terrain."
+232,"Urban Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better in urban terrain."
+233,"Blight Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops can hide better in blight terrain."
+234,"Underground Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops can hide better in underground terrain."
+235,"Night Stalking",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better at night."
+236,"Ambush Expert",1,,,,,0,,,,,,0,,,0,0,0,0,,50,,,,,,,,,,,0,0,,,0,"These troops can hide in any terrain, nowhere is truly safe for the enemy."
+237,"Champion's Crest",1,,,,,10,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops are immortal and cannot be killed by any means, not even magic can harm them."
+238,"Battle Frenzy",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"KILL! These berserkers can go into frenzy state similar to orc wrath that is even crazier than normal berserk."
+239,"Immune To Silence",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+240,"Immune To Blind",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+241,"Immune To Fear",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+242,"Immune To Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,100,,,,,,0,0,,,2,
+243,"Immune To Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,100,0,0,0,0,0,,,0,0,,,2,
+244,"Immune To Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,100,0,0,0,0,100,0,0,,,0,0,,,2,
+245,"Immune To Water",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,100,0,0,0,0,100,0,,,0,0,,,2,
+246,"Immune To Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,100,0,0,0,0,,,0,0,,,2,
+247,"Immune To Mind Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
+248,"Immune To Body Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
+249,"Immune To Manipulation Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
+250,"Immune To Poison",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,100,,,0,0,,,2,
+251,"Vulnurable To Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,-100,0,0,0,0,0,,,0,0,,,2,
+252,"Vulnurable To Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,-100,0,0,0,0,0,0,0,,,0,0,,,2,
+253,"Vulnurable To Water",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,-100,0,0,0,0,0,0,,,0,0,,,2,
+254,"Vulnurable To Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,-100,0,0,0,0,,,0,0,,,2,
+255,"Vulnurable To Mind Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
+256,"Vulnurable To Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,-100,0,0,0,,,0,0,,,2,
+257,"Vulnurable To Body Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
+258,"Vulnurable To Manipulation Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
+259,"Vulnurable To Posion",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,-100,,,0,0,,,2,
+260,"Fear Ice",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+261,"Fear Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+262,"Fear Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+263,"Fear Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+264,"Fear Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+265,"Scare Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can cause mount to panic or scare, which reduce enemy cavalries’ combat effectiveness and morale."
+266,"Fearless Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops’ mount cannot be panicked or broken and immune to Scare Mount."
+267,"Human Killer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Human, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all."
+268,"Elf Murderer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Those damn arrogant gaze! Those damn annoying sneer! Darn elves think they are above every other races, let's show those sharp ears the death they deserve!"
+269,"Dwarf Exterminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Short and stink! What good does dwarf bring to the world anyway? Useless sods they all are. "
+270,"Orc Destroyer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Orc Is nothing but a blight on civilisation.Its extinction will be another cornerstone of progress."
+271,"Goblin Eradicator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Nasty little thing like this deserve to be eradicated. Kill them all and be rid of these pests for good or they will come back even more."
+272,"Halfling Annihilator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Peace and love? Those who are not ready for war will never see peace."
+273,"Animal Butcher",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Look at those valuable fang and fur! Whoever deals the killing blow get the prize!"
+274,"Lizardman Eraser",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Them scaly skins always are up to no good. We must erase them from the face of the earth so our children can live safely. "
+275,"Beastman Eliminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Higher than mere beast but lower than man. These creatures deserve no better! The hunt is on!"
+276,"Giant Terminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Big and brutish. Truly the greatest challenge for the greatest warrior. "
+277,"Dragon Slayer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Some say dragons were the sole ruler of the world in the age of origin, the true symbol of power. Not for us of course."
+278,"Demon Banisher",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"How dare those vile demons invade our world! Go back to whatever the hell you all came from!"
+279,"Undead Liberator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Nothing less than blasphemy, the existance of these undeads. It is our duty to free them of these miserable state they are in."
+280,"Fairy Crusher",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Pure and innocence, is it? Those who say that obviously never meet the real one. It's always fun to crush annoying flies!"
+281,"Gremlin Bankrupter",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"To be the slave to money is make money your biggest weak point. Just make them lose all the money and watch them kill themselves over that."
+282,"Wizard Hunters",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"""The unnatural of magecraft is too dangerous for any person to possess. Therefore, any person who practice the art of magic is punishable by death."" The Absolute Law of Mortal Life, Fifth Act:Third Article"
+283,"Vindictive",1,,,,,0,,,,,,0,,,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Revenge is best served cold is what they often say. Well someone also like to have it hot!"
+284,"Animal Instinct",1,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"The basic of every animal is to survive. Based on that instinct, these creatures will flee much faster in losing fight but will give it all when it cannot escape and less likely to surrender."
+285,"Phoenix Blood",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"Blood of immortal bird while not making one immunable to damage and disease, can help improve regenerative ability greatly while also allow the body to resurrect with enough energy."
+286,"Incorporeal",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"""How can we kill this thing!?"", An unknown soldier before being struck down. These troops cannot be damaged by normal weapon only from magic and magical weapon but also fight less effective."
+287,"Oath Of The Eternal",1,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"Bound by the Eternal Oath, these soldiers will fight on even in death."
+288,"Light Vision Intolerance",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Blind by the light!, these troops cannot withstand the sight of sunlight making them unsuitable for daytime combat."
+289,"Night Vision Intolerance",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops cannot see well in the night at all which reducing their combat effectiveness greatly."
+290,"Nocturnal",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops fight better at night but worse at day."
+291,"Willbreaker",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Even the strongest will can be broken. These troops can make psychological resistance properties and abilities such as Strong Will of nearby enemies less effective."
+292,"Adore Melody",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops loves music dearly and will receive better combat bonus from music. However if the music stop, these troops will then receive combat penalty."
+293,"Loathe Melody",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops hate music and will receive combat penalty from music. If the music stop, these troops will receive combat bonus after."
+294,"Salted Phase",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"The salted sea requires unconditional allegiance from those who wish to pass it. Only those with strongest will can survive in this unforgiving above the true abyss."
+295,"Sorrow Of Battle ",1,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"Woe for the world to see war and not peace. Our enemy too suffer the same fate as us."
+296,"Smokey Wings At The Ground",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"When these troops suffer casualty, the Smokey Wings on the dead troops will drop to the ground. The smoke rising from the ground up will affect everyone without anti-smokey mask. "
+297,"Anti-Smokey Mask",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops cannot be affected by Smokey ability."
+298,"Strong Will",,,,,,0,,,,,,0,,,0,0,0,22,,,,,,,,,,,,,0,0,,,2,"To have strong will is much harder to achieve than having strong body. Only few are so well trained to face against the unknown after all."
+299,"Fullmoon Jubilance",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"The fateful day! These troops will fight firecely to the death to fulfill the prophecy."
+300,"Halfmoon Preparation",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"There are no glory yet in battle before full moon, these troops will fight more reservely and more likely to retreat In losing fight."
+301,"Crescentmoon Sacrifice",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"The rites must be made to hasten the arrival of the true moon! Sacrifices must be chosen!"
+302,"Darkmoon Melancholy",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"The darkest day! It is forbidden to die on this day at all cost."
+303,"Bloodmoon Coming",,,,,,,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"The prophecy has been fulfilled! The gate of heaven is openned at last!"
+304,"Assassination",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can stay hidden while attacking if no enemy can spot it."
+305,"Sniping",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can stay hidden while shooting."
+306,"Invisible",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can stay hidden until fighting in melee."
+307,"Full Awareness",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can detect enemy from any direction at all time."
+308,"Partial Awareness",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can detect enemy from any direction when not fighting."
+309,"True Sight",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can always detect any hidden enemy and trap."
+310,"Third Eye",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+311,"True Aims",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops will always hit enemy regardless of range and bypass obstacle defense by half.The cowardly enemy cannot hide behind their shield anymore."
+312,"Regenerating Limb",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can regenerate their lost limbs making them able to completely become combat ready again after resting."
+313,"Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can heal itself in time without needing medical assistant."
+314,"Fast Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can heal itself even in battle as long as it is not attacked."
+315,"Limb Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops will not lose soldier count from injury after battle."
+316,"Swift Swimmer",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,0,
+317,"Landlubber",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,0,
+318,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+319,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+320,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+321,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+322,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+323,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+324,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+325,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+326,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+327,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+328,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+329,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+330,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+331,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+332,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+333,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+334,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+335,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+336,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+337,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+338,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+339,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+340,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+341,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+342,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+343,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+344,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+345,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+346,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+347,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+348,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+349,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+350,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+351,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+352,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+353,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+354,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+355,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+356,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+357,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+358,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+359,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+360,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+361,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+362,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+363,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+364,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+365,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+366,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+367,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+368,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+369,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+370,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+371,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+372,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+373,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+374,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+375,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+376,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+377,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+378,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+379,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+380,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+381,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+382,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+383,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+384,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+385,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+386,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+387,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+388,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+389,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+390,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+391,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+392,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+393,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+394,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+395,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+396,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+397,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+398,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+399,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+400,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+401,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+402,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+403,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+404,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+405,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+406,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+407,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+408,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+409,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+410,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+411,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+412,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+413,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+414,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+415,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+416,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+417,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+418,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+419,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+420,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+421,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+422,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+423,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+424,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+425,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+426,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+427,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+428,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+429,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+430,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+431,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+432,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+433,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+434,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+435,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+436,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+437,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+438,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+439,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+440,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+441,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+442,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+443,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+444,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+445,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+446,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+447,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+448,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+449,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+450,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+451,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+452,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+453,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+454,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+455,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+456,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+457,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+458,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+459,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+460,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+461,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+462,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+463,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+464,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+465,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+466,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+467,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+468,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+469,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+470,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+471,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+472,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+473,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+474,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+475,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+476,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+477,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+478,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+479,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+480,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+481,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+482,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+483,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+484,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+485,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+486,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+487,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+488,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+489,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+490,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+491,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+492,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+493,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+494,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+495,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+496,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+497,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+498,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+499,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+500,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+501,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+502,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+503,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+504,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+505,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+506,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+507,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+508,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+509,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+510,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+511,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+512,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+513,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+514,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+515,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+516,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+517,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+518,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+519,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+520,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+521,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+522,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+523,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+524,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+525,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+526,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+527,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+528,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+529,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+530,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+531,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+532,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+533,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+534,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+535,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+536,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+537,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+538,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+539,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+540,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+541,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+542,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+543,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+544,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+545,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+546,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+547,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+548,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+549,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+550,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+551,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+552,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+553,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+554,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+555,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+556,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+557,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+558,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+559,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+560,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+561,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+562,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+563,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+564,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+565,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+566,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+567,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+568,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+569,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+570,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+571,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+572,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+573,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+574,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+575,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+576,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+577,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+578,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+579,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+580,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+581,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+582,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+583,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+584,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+585,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+586,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+587,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+588,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+589,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+590,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+591,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+592,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+593,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+594,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+595,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+596,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+597,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+598,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+599,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+600,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+601,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+602,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+603,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+604,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+605,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+606,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+607,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+608,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+609,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+610,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+611,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+612,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+613,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+614,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+615,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+616,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+617,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+618,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+619,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+620,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+621,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+622,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+623,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+624,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+625,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+626,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+627,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+628,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+629,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+630,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+631,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+632,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+633,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+634,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+635,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+636,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+637,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+638,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+639,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+640,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+641,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+642,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+643,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+644,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+645,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+646,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+647,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+648,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+649,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+650,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+651,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+652,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+653,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+654,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+655,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+656,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+657,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+658,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+659,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+660,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+661,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+662,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+663,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+664,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+665,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+666,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+667,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+668,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+669,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+670,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+671,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+672,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+673,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+674,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+675,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

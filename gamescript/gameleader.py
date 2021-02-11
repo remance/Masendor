@@ -81,8 +81,8 @@ class Leader(pygame.sprite.Sprite):
             thisbadmorale = self.badmorale[1]
 
         for squad in self.battalion.squadsprite:
-            squad.basemorale -= thisbadmorale  # decrease all squad morale when leader die depending on position
-            squad.moraleregen -= 0.3 # all squad morale regen slower per leader dead
+            squad.basemorale -= (thisbadmorale * squad.mental)  # decrease all squad morale when leader die depending on position
+            squad.moraleregen -= (0.3 * squad.mental) # all squad morale regen slower per leader dead
 
         if self.commander:  # reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
             self.maingame.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
@@ -98,8 +98,8 @@ class Leader(pygame.sprite.Sprite):
 
             for army in whicharmy:
                 for squad in army.squadsprite:
-                    squad.basemorale -= 100 # all squad morale -100 when commander die
-                    squad.moraleregen -= 0.5  #  all squad morale regen even slower per commander dead
+                    squad.basemorale -= (200 * squad.mental) # all squad morale -100 when commander die
+                    squad.moraleregen -= (1 * squad.mental)  #  all squad morale regen even slower per commander dead
 
         else:
             self.maingame.eventlog.addlog([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])

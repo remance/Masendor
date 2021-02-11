@@ -94,7 +94,7 @@ class Gameui(pygame.sprite.Sprite):
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
             self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense:"] # stat name
+                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense: ", "Mental: "] # stat name
             self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # item quality name
             self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"} # leader state name
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
@@ -207,9 +207,8 @@ class Gameui(pygame.sprite.Sprite):
             positionx = 45 # starting point of text
             self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", int(who.stamina), int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
-                          int(who.accuracy),
-                          int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(int(who.reload)) + ")", int(who.charge), int(who.chargedef),
-                          int(who.tempcount)]
+                          int(who.accuracy), int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(int(who.reload)) + ")",
+                          int(who.charge), int(who.chargedef), who.mentaltext, int(who.tempcount)]
             self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
             self.description = who.description
             if type(self.description) == list: self.description = self.description[0]
@@ -371,7 +370,7 @@ class FPScount(pygame.sprite.Sprite):
 
 class Selectedsquad(pygame.sprite.Sprite):
     image = None
-    def __init__(self, pos, layer = 12):
+    def __init__(self, pos, layer = 20):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.rect = self.image.get_rect(topleft=pos)
@@ -563,7 +562,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
 class Uiscroller(pygame.sprite.Sprite):
     def __init__(self, pos, uiheight, maxrowshow, layer=11):
         self._layer = layer
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.uiheight = uiheight
         self.pos = pos
         self.image = pygame.Surface((10, self.uiheight))

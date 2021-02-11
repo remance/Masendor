@@ -119,6 +119,7 @@ class Battle():
         self.lorebook = main.lorebook
         self.lorenamelist = main.lorenamelist
         self.lorebuttonui = main.lorebuttonui
+        self.lorescroll = main.lorescroll
         self.subsectionname = main.subsectionname
         self.pagebutton = main.pagebutton
 
@@ -325,10 +326,8 @@ class Battle():
         """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
         self.gamestate = 0
         self.battlemenu.mode = 2
-        self.battleui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui)
-        self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
-                                            self.lorebook.maxsubsectionshow, layer=14)
-        self.battleui.add(self.lorescroll)
+        self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll, *self.lorebuttonui)
+
         self.lorebook.changesection(section, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.battleui)
         self.lorebook.changesubsection(gameid, self.pagebutton, self.battleui)
         self.lorescroll.changeimage(newrow=self.lorebook.currentsubsectionrow)
@@ -448,7 +447,7 @@ class Battle():
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
         self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2] # center position of the screen
-        self.battlemousepos = [0, 0] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
+        self.battlemousepos = [[0,0], [0, 0]] # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
         self.teamtroopnumber = [1, 1, 1] # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.lastteamtroopnumber = [1, 1, 1]
         self.armyselector.currentrow = 0
@@ -457,7 +456,11 @@ class Battle():
         self.setuparmyicon()
         self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
 
-        self.hitboxupdater.update(self.camerascale)  # run once at the start of battle to avoid hitbox combat bug
+        self.hitboxupdater.update(self.camerascale)
+        self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale,
+                                     self.battlemousepos[0], False)   # run once at the start of battle to avoid hitbox combat bug
+        # self.leaderupdater.update()
+        # self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
 
         while True: # game running
             self.fpscount.fpsshow(self.clock)
@@ -1272,10 +1275,7 @@ class Battle():
 
                                 elif button.text == "Encyclopedia": # open encyclopedia
                                     self.battlemenu.mode = 2 # change to enclycopedia mode
-                                    self.battleui.add(self.lorebook, self.lorenamelist, *self.lorebuttonui) # add sprite related to encyclopedia
-                                    self.lorescroll = gameui.Uiscroller(self.lorenamelist.rect.topright, self.lorenamelist.image.get_height(),
-                                                                        self.lorebook.maxsubsectionshow, layer=14) # add subsection list scroller
-                                    self.battleui.add(self.lorescroll)
+                                    self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll, *self.lorebuttonui) # add sprite related to encyclopedia
                                     self.lorebook.changesection(0, self.lorenamelist, self.subsectionname, self.lorescroll, self.pagebutton, self.battleui)
                                     # self.lorebook.setupsubsectionlist(self.lorenamelist, listgroup)
 

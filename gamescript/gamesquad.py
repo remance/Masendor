@@ -258,7 +258,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.chargedef += weather.chargedef_buff
         self.hpregen += weather.hpregen_buff
         self.staminaregen += weather.staminaregen_buff
-        self.morale += weather.morale_buff
+        self.morale += (weather.morale_buff * self.mental)
         self.discipline += weather.discipline_buff
         if weather.elem[0] != 0: # Weather can cause elemental effect such as wet
             self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
@@ -349,7 +349,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.chargedef = self.chargedef + calstatus[18]
                 self.hpregen += calstatus[19]
                 self.staminaregen += calstatus[20]
-                self.morale = self.morale + calstatus[21]
+                self.morale = self.morale + (calstatus[21] * self.mental)
                 self.discipline = self.discipline + calstatus[22]
                 # self.sight += calstatus[18]
                 # self.hidden += calstatus[19]
@@ -421,7 +421,7 @@ class Unitsquad(pygame.sprite.Sprite):
                 self.chargedef += calstatus[12]
                 self.hpregen += calstatus[13]
                 self.staminaregen += calstatus[14]
-                self.morale = self.morale + calstatus[15]
+                self.morale = self.morale + (calstatus[15] * self.mental)
                 self.discipline += calstatus[16]
                 # self.sight += status[18]
                 # self.hidden += status[19]
@@ -650,14 +650,12 @@ class Unitsquad(pygame.sprite.Sprite):
 
             #v Morale check
             if self.basemorale < self.maxmorale:
-                if (self.unbreakable or self.tempunbraekable) and self.morale < 50: # unbreakable trait means morale cannot be lower than 50
-                    self.morale = 50
-                elif self.morale <= 0: # Enter broken state when morale reach 0
+                if self.morale < 1: # Enter broken state when morale reach 0
                     if self.state != 99: # This is top state above other states except dead for squad
                         self.state = 99 # broken state
                         self.moraleregen -= 0.3 # morale regen gradually slower per broken state
                         for squad in self.battalion.squadsprite:
-                            squad.basemorale -= 15 # reduce morale of other squad, creating panic when seeing friend panic and may cause mass panic
+                            squad.basemorale -= (15 * squad.mental) # reduce morale of other squad, creating panic when seeing friend panic and may cause mass panic
                     self.morale = 0 # morale cannot be lower than 0
 
                 if self.basemorale < 0:
@@ -667,8 +665,8 @@ class Unitsquad(pygame.sprite.Sprite):
                     self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
 
                 if self.state == 99:
-                    if self.battalion.state != 99:
-                        self.unithealth -= dt*100 # Unit begin to desert if broken but battalion keep fighting
+                    if self.battalion.state not in (98, 99):
+                        self.unithealth -= (dt * 100) # Unit begin to desert if broken but battalion keep fighting
                     if self.moralestatecal > 0.2:
                         self.state = 0  # Reset state to 0 when exit broken state
 

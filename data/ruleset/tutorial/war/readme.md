@@ -18,7 +18,7 @@ The unit_preset data structure is as follows;
 
 - Upkeep, not yet implemented
 
-- Stat of the sub-unit. The higher the number, the better the unit perform in that aspect. Reload is slightly different than the other, the lower the number, the shorter reload time before unit can shoot.
+- Stat of the sub-unit. The higher the number, the better the unit perform in that aspect.
 
 - Charge skill is the skill that unit use for charging. It is possible to use other skill than the "charge one" but it may has some unexpected result. Does not accept list number. Use 21 for default charge
 

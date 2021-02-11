@@ -22,7 +22,7 @@ unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | 
 
 int	| 		int,int,int,int,int,int,int,int			    	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	| int (0-100) 	     | int (0-100) |
 
-no nagative | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader | 
+no nagative | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader | leader position does not count 0 sub-unit in position row
 
 - weather: the list of all weather event that will occur during the battle. The structure is as follows;
 
