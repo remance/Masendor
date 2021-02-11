@@ -572,13 +572,13 @@ class Sourcelistbox(pygame.sprite.Sprite):
         self.maxshowlist = 5  # max number of map on list can be shown at once
 
 class Sourcename(pygame.sprite.Sprite):
-    def __init__(self, box, pos, name, textsize=16):
+    def __init__(self, box, pos, name, textsize=16, layer = 14):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 14
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(textsize * self.heightadjust))
         self.image = pygame.Surface((box.image.get_width(), int(25 * self.heightadjust)))  # black corner
