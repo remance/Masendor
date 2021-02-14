@@ -71,6 +71,7 @@ class Battle():
         self.hitboxes = main.hitboxes
         self.arrows = main.arrows
         self.directionarrows = main.directionarrows
+        self.troopnumbersprite = main.troopnumbersprite
 
         self.gameui = main.gameui
         self.popgameui = main.gameui  # saving list of gameui that will pop out when battalion is selected
@@ -265,6 +266,9 @@ class Battle():
                 self.allunitlist.append(army) # list of every battalion in game alive
         self.allunitindex = [army.gameid for army in self.allunitlist] # list of every battalion index alive
 
+        for unit in self.allunitlist: # create troop number text sprite
+            self.troopnumbersprite.add(gamebattalion.Troopnumber(unit))
+
         self.team0poslist = {} # team 0 battalion position
         self.team1poslist = {} # team 1 battalion position
         self.team2poslist = {} # same for team 2
@@ -443,6 +447,7 @@ class Battle():
         self.beforeselected = None # Which army is selected before
         self.splithappen = False # Check if battalion get split in that loop
         self.currentweather = None
+        self.showtroopnumber = True # for toggle troop number on/off
         self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height # for weather sprite spawn position
         self.rightcorner = SCREENRECT.width - 5
         self.bottomcorner = SCREENRECT.height - 5
@@ -459,6 +464,8 @@ class Battle():
         self.hitboxupdater.update(self.camerascale)
         self.battalionupdater.update(self.currentweather, self.squad, self.dt, self.camerascale,
                                      self.battlemousepos[0], False)   # run once at the start of battle to avoid hitbox combat bug
+        self.effectupdater.update(self.allunitlist, self.hitboxes, self.dt, self.camerascale)
+
         # self.leaderupdater.update()
         # self.squadupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
 
@@ -620,6 +627,16 @@ class Battle():
                                 self.mapviewmode = 0
                                 self.showmap.changemode(self.mapviewmode)
                             self.mapshown.changescale(self.camerascale)
+
+                        elif event.key == pygame.K_o:  # Speed Pause/unpause Button
+                            if self.showtroopnumber:
+                                self.showtroopnumber = False
+                                self.effectupdater.remove(*self.troopnumbersprite)
+                                self.battlecamera.remove(*self.troopnumbersprite)
+                            else: # speed currently pause
+                                self.showtroopnumber = True
+                                self.effectupdater.add(*self.troopnumbersprite)
+                                self.battlecamera.add(*self.troopnumbersprite)
 
                         elif event.key == pygame.K_p:  # Speed Pause/unpause Button
                             if self.gamespeed >= 0.5: #
@@ -1292,7 +1309,7 @@ class Battle():
                                     self.battleui.remove(self.battlemenu, *self.battlemenubutton, *self.escslidermenu,
                                                          *self.escvaluebox)  # remove menu sprite
                                     for group in (self.squad, self.armyleader, self.hitboxes, self.team0army, self.team1army, self.team2army,
-                                                  self.deadunit, self.armyicon):
+                                                  self.deadunit, self.armyicon, self.troopnumbersprite):
                                         for stuff in group:
                                             stuff.delete()
                                             stuff.kill()

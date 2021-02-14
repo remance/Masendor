@@ -497,11 +497,6 @@ class Unitsquad(pygame.sprite.Sprite):
                                 self.image = self.image_original.copy()
                                 self.battalion.squadimgchange.append(self.gameid)
                             break
-
-                    self.troopnumber = self.unithealth / self.troophealth # Calculate how many troop left based on current hp
-                    if self.troopnumber.is_integer() == False: # always round up if there is decimal
-                        self.troopnumber = int(self.troopnumber + 1)
-                    self.oldlasthealth = self.unithealth
                 #^ End hp bar
 
                 #v Stamina bar
@@ -538,6 +533,7 @@ class Unitsquad(pygame.sprite.Sprite):
 
                 elif self.haveredcorner == True: # not in fight but have red corner, reset image
                     self.image = self.image_original.copy()
+                    self.battalion.squadimgchange.append(self.gameid)
                     self.haveredcorner = False
                 #^ End red corner
             #^ End hp/stamina/melee bar
@@ -673,6 +669,12 @@ class Unitsquad(pygame.sprite.Sprite):
             elif self.basemorale > self.maxmorale:
                 self.basemorale -= dt # gradually reduce morale that exceed the starting max amount
             #^ End morale check
+
+            if self.oldlasthealth != self.unithealth:
+                self.troopnumber = self.unithealth / self.troophealth  # Calculate how many troop left based on current hp
+                if self.troopnumber.is_integer() == False:  # always round up if there is decimal
+                    self.troopnumber = int(self.troopnumber + 1)
+                self.oldlasthealth = self.unithealth
 
             #v Hp and stamina regen
             if self.stamina < self.maxstamina:

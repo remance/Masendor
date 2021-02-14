@@ -331,7 +331,7 @@ class Sourcedescription(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = self.image_original.copy() # reset self.image to new one from the loaded image
 
-        self.longtext(self.image, text, (int(20 * self.widthadjust), int(20 * self.heightadjust)), self.font)
+        self.longtext(self.image, text, (int(15 * self.widthadjust), int(20 * self.heightadjust)), self.font)
 
         self.rect = self.image.get_rect(center=pos)
 

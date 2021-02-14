@@ -47,6 +47,53 @@ class Directionarrow(pygame.sprite.Sprite): #TODO make it work so it can be impl
             self.who.directionarrow = False
             self.kill()
 
+class Troopnumber(pygame.sprite.Sprite):
+    def __init__(self, who):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        self._layer = 6
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.heightadjust))
+
+        self.who = who
+        self.pos = self.who.pos
+        self.number = self.who.troopnumber
+        self.viewmode = 1
+
+        self.image = self.font.render(str(self.number), True, (0, 0, 0))
+        self.rect = self.image.get_rect(topleft=self.who.rect.bottomleft)
+
+    def update(self, *args, **kwargs) -> None:
+        if self.viewmode != args[3]: # viewmode argument
+            self.viewmode = int(args[3])
+            viewmode = (11 - self.viewmode) / 2
+            if viewmode < 1:
+                viewmode = 1
+            newfontsize = int(60 / viewmode * self.heightadjust)
+            self.font = pygame.font.SysFont("timesnewroman", newfontsize)
+            self.image = self.font.render(str(self.number), True, (0, 0, 0))
+            self.rect = self.image.get_rect(topleft=self.who.rect.bottomleft)
+
+        if self.number != self.who.troopnumber: # new troop number
+            self.number = self.who.troopnumber
+            self.image = self.font.render(str(self.number), True, (0, 0, 0))
+            self.rect = self.image.get_rect(topleft=self.who.rect.bottomleft)
+
+        if self.pos != self.who.pos: # new position
+            self.pos = self.who.pos
+            self.rect = self.image.get_rect(topleft=self.who.rect.bottomleft)
+
+
+    def delete(self, local=False):
+        """delete reference when del is called"""
+        if local:
+            print(locals())
+        else:
+            del self.who
 
 class Hitbox(pygame.sprite.Sprite):
     maxviewmode = 10
@@ -71,16 +118,17 @@ class Hitbox(pygame.sprite.Sprite):
         self.stillclick = False # For checking if battalion is still selected, if not change back image
 
     def update(self, viewmode):
-        if self.viewmode != abs(viewmode - 11) or self.clickcheck:
-            self.viewmode = abs(viewmode - 11) # change zoomview number for scaling image
+        if self.viewmode != 11 - viewmode:
+            self.viewmode = 11 - viewmode # change zoomview number for scaling image
             self.image_original = self.image_original2.copy()
-            scalewidth = round(self.image_original.get_width() * abs(self.viewmode - 11) / self.maxviewmode,0)
-            scaleheight = round(self.image_original.get_height() * abs(self.viewmode - 11) / self.maxviewmode,0)
+            scalewidth = round(self.image_original.get_width() * (11 - self.viewmode) / self.maxviewmode,0)
+            scaleheight = round(self.image_original.get_height() * (11 - self.viewmode) / self.maxviewmode,0)
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
             self.mask = pygame.mask.from_surface(self.image) # make new mask for collision
             self.image_original = self.image.copy()
-        if self.oldpos != self.who.hitboxpos[self.side] or self.clickcheck: # battalion change pos or rotate
+
+        if self.oldpos != self.who.hitboxpos[self.side]: # battalion change pos or rotate
             self.image = pygame.transform.rotate(self.image_original, self.who.angle)
             self.rect = self.image.get_rect(center=self.who.hitboxpos[self.side])
             self.pos = self.rect.center # new pos at new center

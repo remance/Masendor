@@ -221,6 +221,7 @@ try: # for printing error log when error exception happen
             self.hitboxes = pygame.sprite.Group()  # all hitboxes group
             self.arrows = pygame.sprite.Group()  # all arrows group and maybe other range effect stuff later
             self.directionarrows = pygame.sprite.Group()
+            self.troopnumbersprite = pygame.sprite.Group() # troop text number that appear next to battalion sprite
 
             self.deadunit = pygame.sprite.Group()  # dead unit group
 
@@ -312,6 +313,7 @@ try: # for printing error log when error exception happen
             gamebattalion.Deadarmy.containers = self.deadunit, self.battalionupdater, self.battlecamera
             gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater
             gameleader.Leader.containers = self.armyleader, self.leaderupdater
+            gamebattalion.Troopnumber.containers = self.troopnumbersprite, self.effectupdater, self.battlecamera
 
             rangeattack.Rangearrow.containers = self.arrows, self.effectupdater, self.battlecamera
             gamebattalion.Directionarrow.containers = self.directionarrows, self.effectupdater, self.battlecamera
@@ -784,6 +786,27 @@ try: # for printing error log when error exception happen
                 gameid += 1
             return gameid
 
+        def previewauthority(self, leaderlist, armyid):
+            # vcalculate authority
+            authority = int(
+                leaderlist[0].authority + (leaderlist[0].authority / 2) +
+                (leaderlist[1].authority / 4) + (leaderlist[2].authority / 4) +
+                (leaderlist[3].authority / 10))
+            bigarmysize = len([slot for slot in self.armybuildslot if slot.armyid == armyid and slot.name != "None"])
+            if bigarmysize > 20:  # army size larger than 20 will reduce main leader authority
+                authority = int(leaderlist[0].authority +
+                                (leaderlist[0].authority / 2 * (100 - (bigarmysize)) / 100) +
+                                leaderlist[1].authority / 2 + leaderlist[2].authority / 2 +
+                                leaderlist[3].authority / 4)
+
+            for slot in self.armybuildslot:
+                if slot.armyid == armyid:
+                    slot.authority = authority
+
+            if self.showincard is not None:
+                self.gameui[1].valueinput(who=self.showincard)
+            # ^ End cal authority
+
         def popuplistnewopen(self, newrect, newlist, type):
             """Move popuplistbox and scroll sprite to new location and create new name list baesd on type"""
             self.currentpopuprow = 0
@@ -1255,6 +1278,7 @@ try: # for printing error log when error exception happen
                                         self.leadernow[self.selectleader].changeleader(self.currentpopuprow + self.leaderindexlist[index], self.leaderstat)
                                         self.leadernow[self.selectleader].squad = self.showincard
                                         self.showincard.leader = self.leadernow[self.selectleader]
+                                        self.previewauthority(self.leadernow, self.leadernow[self.selectleader].squad.armyid)
                                         self.gameui[2].valueinput(who=self.showincard, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                                   changeoption=1)
                                     elif mouse_right:
@@ -1299,6 +1323,9 @@ try: # for printing error log when error exception happen
                                                 else:
                                                     if slot.name != "None":
                                                         posindex+=1
+
+                                        self.previewauthority(self.team1previewleader, 0) #calculate authority
+
                                     else: # new preset
                                         for slot in self.armybuildslot:  # reset all sub-unit slot
                                             slot.changetroop(0, self.baseterrain,
@@ -1492,6 +1519,12 @@ try: # for printing error log when error exception happen
                                         self.setuplist(gameprepare.Namelist, self.currenttrooprow, self.factionlist, self.troopnamegroup,
                                                        self.trooplistbox)
 
+                                elif self.armypresetnamescroll.rect.collidepoint(self.mousepos):
+                                    self.currentarmyrow = self.armypresetnamescroll.update(
+                                        self.mousepos)  # update the scroller and get new current subsection
+                                    self.setuplist(gameprepare.Namelist, self.currentarmyrow, list(self.customarmypresetlist.keys()),
+                                                   self.armypresetnamegroup, self.armylistbox)  # setup preset army list
+
                             if mouse_up or mouse_right:
                                 if self.trooplistbox.rect.collidepoint(self.mousepos):
                                     for index, name in enumerate(self.troopnamegroup):
@@ -1553,12 +1586,12 @@ try: # for printing error log when error exception happen
                                                                      self.baseterrain * len(self.battlemapfeature.featurelist)+self.featureterrain,
                                                                      self.currentweather)
 
-                                                            if slot.name != "None":
+                                                            if slot.name != "None": #update information of unit that just got changed
                                                                 self.mainui.remove(*self.leadernow)
                                                                 self.leadernow = self.previewleaderlist[slot.armyid]
                                                                 self.mainui.add(*self.leadernow)  # add leader portrait to draw
                                                                 self.showincard = slot
-                                                                self.gameui[1].valueinput(who=self.showincard)
+                                                                self.previewauthority(self.leadernow, slot.armyid)
                                                                 self.gameui[2].valueinput(who=self.showincard, weaponlist=self.allweapon,
                                                                                           armourlist=self.allarmour)  # update unit card on selected squad
                                                                 if self.gameui[2].option == 2:
@@ -1569,6 +1602,7 @@ try: # for printing error log when error exception happen
                                                                 slot.leader.changeleader(1, self.leaderstat)
                                                                 slot.leader.squad = None # remove squad link in leader
                                                                 slot.leader = None # remove leader link in squad
+                                                                self.previewauthority(self.leadernow, slot.armyid)
 
                                                 elif mouse_right: # upen encyclopedia
                                                     self.popoutlorebook(3, self.troopindexlist[index + self.currenttrooprow])
@@ -1607,6 +1641,10 @@ try: # for printing error log when error exception happen
                             elif self.popuplistbox.type == "leader":
                                 self.currentpopuprow = self.listscroll(mouse_scrollup, mouse_scrolldown, self.popuplistscroll, self.popuplistbox,
                                                                    self.currentpopuprow, self.leaderlist, self.popupnamegroup)
+
+                        else: # mouse scroll on army preset list
+                            self.currentarmyrow = self.listscroll(mouse_scrollup, mouse_scrolldown, self.armypresetnamescroll, self.armylistbox,
+                                                                   self.currentarmyrow, list(self.customarmypresetlist.keys()), self.armypresetnamegroup)
 
                         if self.currentlistshow == "troop": # mouse scroll on troop list
                             self.currenttrooprow = self.listscroll(mouse_scrollup, mouse_scrolldown, self.troopscroll, self.trooplistbox,

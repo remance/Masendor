@@ -115,7 +115,9 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.leader = None
         self.height = 100
         self.commander = False
-        self.authority = 0
+        if self.armyid == 0:
+            self.commander = True
+        self.authority = 100
 
         self.coa = pygame.Surface((0,0)) # empty coa to prevent leader ui error
 
@@ -175,10 +177,13 @@ class Armybuildslot(pygame.sprite.Sprite):
             # ^ End weapon icon
 
 class Warningmsg(pygame.sprite.Sprite):
-    factionwarn = "Multiple factions unit can not be used with No Multiple Faction option enable"
+    factionwarn = "Multiple factions unit will not be usable with No Multiple Faction option enable"
     tenrequire = "Require at least 10 sub-units to be usable"
     emptyrowcol = "Empty row or column will be removed when employed"
     duplicateleader = "Duplicated leader will be removed with No Duplicated leaer option enable"
+    leaderwarn = "Leaders from multiple factions unit will not be usable with No Multiple Faction option enable"
+    hardwarn = (tenrequire)
+    softwarn = (factionwarn, duplicateleader, leaderwarn, emptyrowcol)
 
     def __init__(self, pos, image):
         import main
