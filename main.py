@@ -15,13 +15,21 @@ try: # for printing error log when error exception happen
 
     from gamescript import maingame, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
         gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gamebattalion, gamesquad,rangeattack, gamepopup, gameunitedit
+   
+    # for getting screen info
+    import screeninfo
+
+    screen = screeninfo.get_monitors()[0]
+
+    screenWidth = int(screen.width)
+    screenHeight = int(screen.height)
 
     config = configparser.ConfigParser()
     try:
         config.read_file(open('configuration.ini')) # read config file
     except: # Create config file if not found with the default
         config = configparser.ConfigParser()
-        config['DEFAULT'] = {'screenwidth': '1600','screenheight': '900', 'fullscreen': '0',
+        config['DEFAULT'] = {'screenwidth': screenWidth,'screenheight': screenHeight, 'fullscreen': '0',
                              'playername': 'Noname', 'soundvolume': '100.0', 'musicvolume': '0.0',
                              'voicevolume': '0.0', 'maxfps': '60'}
         with open('configuration.ini', 'w') as cf:
