@@ -2,9 +2,12 @@
 
 block_cipher = None
 
+import os
+
+spec_root = os.path.abspath(SPECPATH)
 
 a = Analysis(['main.py'],
-             pathex=['C:\\msys64\\home\\hussein\\Masendor'],
+             pathex=[specroot],
              binaries=[],
              datas=[
                 ('data', 'data'),
