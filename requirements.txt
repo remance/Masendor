@@ -18,3 +18,4 @@ pywin32-ctypes==0.2.0
 six==1.15.0
 toml==0.10.1
 zipp==3.3.0
+screeninfo==0.6.7
