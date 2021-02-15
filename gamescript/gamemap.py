@@ -238,17 +238,26 @@ class Beautifulmap(pygame.sprite.Sprite):
                     self.image.blit(thistexture, rect)
         #^ End terrain feature
 
-        rect = self.image.get_rect(topleft=(0, 0))
-        self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
-        self.image.blit(placename, rect)  ## Add placename layer to map
+        self.trueimage = self.image.copy() # image before adding effect and place name
         scalewidth = self.image.get_width()
         scaleheight = self.image.get_height()
         self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.trueimage = self.image.copy()
+
+        self.placename = placename # save place name image as variable
+
+        self.addeffect(gamemapheight)
+
+    def addeffect(self, gamemapheight):
+        rect = self.image.get_rect(topleft=(0, 0))
+        self.image = self.trueimage.copy()
+
+        self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
+        self.image.blit(self.placename, rect)  ## Add placename layer to map
         self.image_original = self.image.copy()
         self.imagewithheight_original = self.image.copy()
         self.imagewithheight_original.blit(gamemapheight.image, rect)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+
 
     def changemode(self, mode):
         """Switch between normal and height map mode"""

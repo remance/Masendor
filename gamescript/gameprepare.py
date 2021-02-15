@@ -413,19 +413,21 @@ class Armystat(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
+        self._layer = 1
+
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.leadfont = pygame.font.SysFont("helvetica", int(self.heightadjust * 36))
-        self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * 22))
+        self.leadfont = pygame.font.SysFont("helvetica", int(self.heightadjust * 30))
+        self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * 20))
 
         self.image_original = self.image.copy()
         self.image = self.image_original.copy()
 
-        self.typenumberpos = ((self.image.get_width()/6, self.image.get_height()/3), # infantry melee
-                              (self.image.get_width()/6, self.image.get_height()/2), # infantry range
-                              (self.image.get_width()/1.9, self.image.get_height()/3), # cav melee
-                              (self.image.get_width()/1.9, self.image.get_height()/2), # cav range
-                              (self.image.get_width()/6, self.image.get_height()/1.6)) # total unit
+        self.typenumberpos = ((self.image.get_width()/5, self.image.get_height()/3), # infantry melee
+                              (self.image.get_width()/5, self.image.get_height()/1.8), # infantry range
+                              (self.image.get_width()/1.6, self.image.get_height()/3), # cav melee
+                              (self.image.get_width()/1.6, self.image.get_height()/1.8), # cav range
+                              (self.image.get_width()/5, self.image.get_height()/1.4)) # total unit
 
         self.rect = self.image.get_rect(center=pos)
 
