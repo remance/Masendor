@@ -32,4 +32,3 @@ __pycache__/
 /dist
 /test.py
 /main.spec
-/compile.spec
