@@ -891,7 +891,7 @@ class Battle():
                                                                         self.currentweather.speed,
                                                                         self.weathermatterimgs[self.currentweather.type][randompic]))
 
-                if self.currentweather.specialeffect > 0: # weather has special effect to draw
+                if self.currentweather.specialeffect > 0: # weather has special effect to draw #TODO change weather effect to blit on beautiful map instead
                     if len(self.weathereffect) == 0: # spawn effect (only one)
                         truepos = (SCREENRECT.width, SCREENRECT.height / 2)
                         target = (-SCREENRECT.width, SCREENRECT.height / 2)
