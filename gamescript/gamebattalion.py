@@ -33,7 +33,7 @@ class Directionarrow(pygame.sprite.Sprite): #TODO make it work so it can be impl
         self.image = pygame.transform.rotate(self.image, self.who.angle)
         self.rect = self.image.get_rect(midbottom=self.who.allsidepos[0])
 
-    def update(self, viewmode):
+    def update(self, zoom):
         self.length = self.who.pos.distance_to(self.who.target) + self.lengthgap
         distance = self.who.allsidepos[0].distance_to(self.who.target) + self.lengthgap
         if self.length != self.previouslength and distance > 2 and self.who.state != 0:
@@ -62,18 +62,18 @@ class Troopnumber(pygame.sprite.Sprite):
         self.who = who
         self.pos = self.who.pos
         self.number = self.who.troopnumber
-        self.viewmode = 1
+        self.zoom = 1
 
         self.image = self.font.render(str(self.number), True, (0, 0, 0))
         self.rect = self.image.get_rect(topleft=self.who.rect.bottomleft)
 
     def update(self, *args, **kwargs) -> None:
-        if self.viewmode != args[3]: # viewmode argument
-            self.viewmode = int(args[3])
-            viewmode = (11 - self.viewmode) / 2
-            if viewmode < 1:
-                viewmode = 1
-            newfontsize = int(60 / viewmode * self.heightadjust)
+        if self.zoom != args[3]: # zoom argument
+            self.zoom = int(args[3])
+            zoom = (11 - self.zoom) / 2
+            if zoom < 1:
+                zoom = 1
+            newfontsize = int(60 / zoom * self.heightadjust)
             self.font = pygame.font.SysFont("timesnewroman", newfontsize)
             self.image = self.font.render(str(self.number), True, (0, 0, 0))
             self.rect = self.image.get_rect(topleft=self.who.rect.bottomleft)
@@ -96,13 +96,13 @@ class Troopnumber(pygame.sprite.Sprite):
             del self.who
 
 class Hitbox(pygame.sprite.Sprite):
-    maxviewmode = 10
+    maxzoom = 10
     gamecamera = None
 
     def __init__(self, who, side, width, height):
         self._layer = 3
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.viewmode = 1
+        self.zoom = 10
         self.who = who
         self.side = side
         self.collide = 0
@@ -117,12 +117,12 @@ class Hitbox(pygame.sprite.Sprite):
         self.clickcheck = False # For checking if battalion just get selected
         self.stillclick = False # For checking if battalion is still selected, if not change back image
 
-    def update(self, viewmode):
-        if self.viewmode != 11 - viewmode:
-            self.viewmode = 11 - viewmode # change zoomview number for scaling image
+    def update(self, zoom):
+        if self.zoom != zoom:
+            self.zoom = zoom # change zoomview number for scaling image
             self.image_original = self.image_original2.copy()
-            scalewidth = round(self.image_original.get_width() * (11 - self.viewmode) / self.maxviewmode,0)
-            scaleheight = round(self.image_original.get_height() * (11 - self.viewmode) / self.maxviewmode,0)
+            scalewidth = round(self.image_original.get_width() * self.zoom / self.maxzoom, 0)
+            scaleheight = round(self.image_original.get_height() * self.zoom / self.maxzoom, 0)
             self.dim = pygame.Vector2(scalewidth, scaleheight)
             self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
             self.mask = pygame.mask.from_surface(self.image) # make new mask for collision
@@ -138,7 +138,7 @@ class Hitbox(pygame.sprite.Sprite):
     def clicked(self):
         """change variable of hitbox when battalion get clicked"""
         self.clickcheck = True
-        self.update(abs(11 - self.viewmode))
+        self.update(self.zoom)
         self.clickcheck = False
         self.stillclick = True
         self.gamecamera.add(self)
@@ -146,7 +146,7 @@ class Hitbox(pygame.sprite.Sprite):
     def release(self):
         """change variable of hitbox when battalion no longer clicked"""
         self.clickcheck = True
-        self.update(abs(11 - self.viewmode))
+        self.update(self.zoom)
         self.clickcheck = False
         self.stillclick = False
         self.gamecamera.remove(self)
@@ -165,7 +165,7 @@ class Unitarmy(pygame.sprite.Sprite):
     gamemapfeature = None # feature map
     gamemapheight = None # height map
     statuslist = None # status effect list
-    maxviewmode = 10 # max zoom allow
+    maxzoom = 10 # max zoom allow
     maingame = None
     squadcombatcal = gamelongscript.squadcombatcal
     die = gamelongscript.die # die script
@@ -199,15 +199,16 @@ class Unitarmy(pygame.sprite.Sprite):
         self.squadalive = np.copy(self.armysquad) # Array for checking which squad still alive
         self.squadalive = np.where(self.squadalive > 0, 1, self.squadalive) # Alive state array 0 = not exist/dead, 1 = alive
 
-        self.viewmode = 10 # start with closest zoom
+        self.zoom = 10 # start with closest zoom
+        self.lastzoom = 1 # zoom level without calculate with 11 - zoom for scale
         self.imgsize = imgsize
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
         self.basewidthbox, self.baseheightbox = self.widthbox / 10, self.heightbox / 10
-        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * self.viewmode, len(self.armysquad) * self.imgsize[
-            1] * self.viewmode
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * self.zoom, len(self.armysquad) * self.imgsize[
+            1] * self.zoom
         self.basepos = pygame.Vector2(startposition)  # Basepos is for true pos that is used for ingame calculation
         self.baseattackpos = 0  # position of attack target
-        self.pos = self.basepos * (11 - self.viewmode)  # Pos is for showing on screen
+        self.pos = self.basepos * (11 - self.zoom)  # Pos is for showing on screen
         self.angle = startangle  # start at this angle
         if self.angle == 360: # 360 is 0 angle at the start, not doing this cause angle glitch when game start
             self.angle = 0
@@ -275,25 +276,25 @@ class Unitarmy(pygame.sprite.Sprite):
         self.coa = coa # coat of arm image
         self.team = team # team
 
-        #v draw unit sprite # TODO maybe add troop number at center of circle
+        #v draw unit sprite 
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
         self.image.fill((0, 0, 0, 128)) # draw black colour for black corner
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 4, self.heightbox - 4)) # draw block colour
-        self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center) # battalion ring
-        self.image.blit(self.images[-1], self.imagerect) # draw battalion ring into battalion image
+        # self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center) # battalion ring
+        # self.image.blit(self.images[-1], self.imagerect) # draw battalion ring into battalion image
 
         # draw hp bar
-        self.healthimagerect = self.images[0].get_rect(center=self.image.get_rect().center)
+        self.healthimagerect = self.images[0].get_rect(midtop=self.image.get_rect().midtop)
         self.image.blit(self.images[0], self.healthimagerect)
 
         # draw stamina bar
-        self.staminaimagerect = self.images[5].get_rect(center=self.image.get_rect().center)
+        self.staminaimagerect = self.images[5].get_rect(midright=self.image.get_rect().midright)
         self.image.blit(self.images[5], self.staminaimagerect)
 
         # draw ammo bar
-        self.ammoimagerect = self.images[14].get_rect(center=self.image.get_rect().center)
+        self.ammoimagerect = self.images[14].get_rect(midleft=self.image.get_rect().midleft)
         self.image.blit(self.images[14], self.ammoimagerect)
-        self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rorated, original2 is for zoom closest, original3 is for zooming
+        # self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rotated, original2 is for zoom closest, original3 is for zooming
         self.rect = self.image.get_rect(center=startposition)
         self.radians_angle = math.radians(360 - startangle) # radians for apply angle to position (allsidepos and squad)
         self.mask = pygame.mask.from_surface(self.image)
@@ -345,10 +346,10 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def changescale(self):
         """Change image based on current camera scale"""
-        scalewidth = self.image_original.get_width() * (11 - self.viewmode) / self.maxviewmode
-        scaleheight = self.image_original.get_height() * (11 - self.viewmode) / self.maxviewmode
-        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * (11 - self.viewmode) / self.maxviewmode, len(
-            self.armysquad) * self.imgsize[1] * (11 - self.viewmode) / self.maxviewmode
+        scalewidth = self.image_original.get_width() * (11 - self.zoom) / self.maxzoom
+        scaleheight = self.image_original.get_height() * (11 - self.zoom) / self.maxzoom
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * (11 - self.zoom) / self.maxzoom, len(
+            self.armysquad) * self.imgsize[1] * (11 - self.zoom) / self.maxzoom
         self.dim = pygame.Vector2(scalewidth, scaleheight)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         self.image_original = self.image.copy()
@@ -356,8 +357,8 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def changeposscale(self):
         """Change position variable to new camera scale"""
-        self.target = self.basetarget * (11 - self.viewmode)
-        self.pos = self.basepos * (11 - self.viewmode)
+        self.target = self.basetarget * (11 - self.zoom)
+        self.pos = self.basepos * (11 - self.zoom)
         self.rect = self.image.get_rect(center=self.pos)
         self.makeallsidepos()
         self.frontpos = self.allsidepos[0]
@@ -371,23 +372,31 @@ class Unitarmy(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
 
-        self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center)  # battalion ring
-        self.image.blit(self.images[-1], self.imagerect)
+        # self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center)  # battalion ring
+        # self.image.blit(self.images[-1], self.imagerect)
 
         # health bar
         self.healthimage = self.images[0]
-        self.healthimagerect = self.healthimage.get_rect(center=self.image.get_rect().center)
+        self.healthimagerect = self.healthimage.get_rect(midtop=self.image.get_rect().midtop)
         self.image.blit(self.healthimage, self.healthimagerect)
 
         # stamina bar
         self.staminaimage = self.images[5]
-        self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)
+        self.staminaimagerect = self.staminaimage.get_rect(midright=self.image.get_rect().midright)
         self.image.blit(self.staminaimage, self.staminaimagerect)
 
         # ammo bar
         self.ammoimage = self.images[10]
-        self.ammoimagerect = self.ammoimage.get_rect(center=self.image.get_rect().center)
+        self.ammoimagerect = self.ammoimage.get_rect(midleft=self.image.get_rect().midleft)
         self.image.blit(self.ammoimage, self.ammoimagerect)
+
+        for squad in self.squadsprite:
+            image1rect = squad.weaponicon.get_rect(topright=squad.armypos)
+            self.image.blit(squad.weaponicon, image1rect)  # add mini weapon image to battalion image
+
+            if squad.unittype == 2: # cavalry
+                image1 = squad.weaponlist.smallimgs[-1]
+                self.image.blit(image1, image1rect)  # add mini weapon image to battalion image
 
         # setup rect, mask and original copy
         self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()
@@ -403,7 +412,7 @@ class Unitarmy(pygame.sprite.Sprite):
         width, height = 0, 0
         for squad in self.armysquad.flat:
             if squad != 0:
-                if self.zoomchange == True or squad in self.squadimgchange:
+                if self.zoomchange or squad in self.squadimgchange:
                     squadrect = self.squadsprite[truesquadnum].image.copy().get_rect(topleft=(width, height))
                     self.image_original.blit(self.squadsprite[truesquadnum].image.copy(), squadrect)
                 truesquadnum += 1
@@ -613,10 +622,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.setupfrontline()
         self.setupfrontline(specialcall=True)
         self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
-        self.rotate()
-        self.makeallsidepos()
-        self.frontpos = self.allsidepos[0]
-        self.set_target(self.frontpos)
         self.commandtarget = self.basetarget
         self.spritearray = self.armysquad
         self.leadersocial = self.leader[0].social
@@ -641,15 +646,30 @@ class Unitarmy(pygame.sprite.Sprite):
                            self.gamemapheight.getheight(self.allsidepos[2]), self.gamemapheight.getheight(self.allsidepos[3])]
         for squad in squadgroup:
             self.spritearray = np.where(self.spritearray == squad.gameid, squad, self.spritearray)
+
+        for squad in self.squadsprite:
+            image1rect = squad.weaponicon.get_rect(topright=squad.armypos)
+            self.image.blit(squad.weaponicon, image1rect)  # add mini weapon image to battalion image
+
+            if squad.unittype == 2: # cavalry
+                image1 = squad.weaponlist.smallimgs[-1]
+                self.image.blit(image1, image1rect)  # add mini weapon image to battalion image
+
+            self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rotated, original2 is for zoom closest, original3 is for zooming
+
+        self.rotate()
+        self.makeallsidepos()
+        self.frontpos = self.allsidepos[0]
+        self.set_target(self.frontpos)
         self.changescale()
         self.changeposscale()
 
-    def viewmodechange(self):
+    def zoomscale(self):
         """camera zoom change and rescale the sprite and position scale"""
-        if self.viewmode != 1:  ## battalion view
+        if self.zoom != 1:  ## battalion view
             self.image_original = self.image_original3.copy() # reset image for new scale
             self.changescale()
-        elif self.viewmode == 1:  ## Squad view when zoom closest (10 in other class without need zoom image)
+        else:  ## Squad view when zoom closest (10 in other class without need zoom image)
             self.image_original = self.image_original2.copy() # reset image to the closest zoom original
             self.squadtoarmy()
             self.changescale()
@@ -657,19 +677,20 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rotate()
         self.mask = pygame.mask.from_surface(self.image) # create new mask
 
-    def update(self, weather, squadgroup, dt, viewmode, mousepos, mouseup):
+    def update(self, weather, squadgroup, dt, zoom, mousepos, mouseup):
         if self.gamestart == False:
             self.startset(squadgroup)
             self.gamestart = True
 
         #v redraw if troop num or stamina change
-        if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.ammo != self.oldammo or self.viewmode != (11 - viewmode):
-            if self.viewmode != (11 - viewmode): # camera zoom is changed
+        if self.troopnumber != self.oldarmyhealth or self.stamina != self.oldarmystamina or self.ammo != self.oldammo or self.lastzoom != zoom:
+            if self.lastzoom != zoom: # camera zoom is changed
+                self.lastzoom = zoom
                 self.zoomchange = True
-                self.viewmode = (11 - viewmode) # save scale
-                self.viewmodechange() # update battalion sprite according to new scale
+                self.zoom = (11 - zoom) # save scale
+                self.zoomscale() # update battalion sprite according to new scale
 
-            if self.viewmode != 1: # any camera scale except the closest zoom
+            if self.zoom != 1: # any camera scale except the closest zoom
                 #v hp bar
                 if self.oldarmyhealth != self.troopnumber: # troop number change since last update
                     healthlist = (self.health75, self.health50, self.health25, 0, -1)
@@ -678,7 +699,7 @@ class Unitarmy(pygame.sprite.Sprite):
                             if self.lasthealthstate != abs(4 - index): # current health bar is not yet updated to this new level
                                 self.image_original3.blit(self.images[index], self.healthimagerect) # blit new health bar image
                                 self.lasthealthstate = abs(4 - index) # change last health level
-                                self.viewmodechange() # update sprite image at this camera scale
+                                self.zoomscale() # update sprite image at this camera scale
                             break # found appropiate hp level, break loop
                     self.oldarmyhealth = self.troopnumber # save current troop number for next check
                 #^ End hp bar
@@ -692,12 +713,12 @@ class Unitarmy(pygame.sprite.Sprite):
                                 if index != 3: # not at the collapse level
                                     self.image_original3.blit(self.images[index + 5], self.staminaimagerect)
                                     self.laststaminastate = abs(4 - index)
-                                    self.viewmodechange()
+                                    self.zoomscale()
                                 else: # at the collapse stamina level (0% stamina)
                                     if self.state != 97: # no longer in collaspe state
                                         self.image_original3.blit(self.images[8], self.staminaimagerect) # blit new stamina bar image back to 25% level
                                         self.laststaminastate = 1
-                                        self.viewmodechange()
+                                        self.zoomscale()
                             break
                     self.oldarmystamina = self.stamina # save current stamina for next check
                 #^ End stamina bar
@@ -709,7 +730,7 @@ class Unitarmy(pygame.sprite.Sprite):
                             if self.lastammostate != abs(4 - index):
                                 self.image_original3.blit(self.images[index + 10], self.ammoimagerect)
                                 self.lastammostate = abs(4 - index)
-                                self.viewmodechange()
+                                self.zoomscale()
                             break
                     self.oldammo = self.ammo # save current ammunition for next check
                 #^ End ammunition bar
@@ -1056,13 +1077,13 @@ class Unitarmy(pygame.sprite.Sprite):
                                     and newpos[1] > 0 and newpos[1] < 999)): # cannot go pass map unless in retreat
                                 if move.length() <= move_length: # move normally according to move speed
                                     self.basepos = newpos
-                                    self.pos = self.basepos * (11 - self.viewmode)
+                                    self.pos = self.basepos * (11 - self.zoom)
                                     self.rect.center = list(int(v) for v in self.pos) # list rect so the sprite gradually move to position
 
                                 else:  # move length pass the target destination, set movement to stop exactly at target
                                     move = self.basetarget - self.frontpos # simply change move to whatever remaining distance
                                     self.basepos += move # adjust base position according to movement
-                                    self.pos = self.basepos * (11 - self.viewmode)
+                                    self.pos = self.basepos * (11 - self.zoom)
                                     self.rect.center = self.pos # no need to do list movement
 
                                     # Stop moving normally
@@ -1199,7 +1220,7 @@ class Unitarmy(pygame.sprite.Sprite):
     def set_target(self, pos):
         """set new target, scale target from basetarget according to zoom scale"""
         self.basetarget = pygame.Vector2(pos) # Set new base target
-        self.target = self.basetarget * (11 - self.viewmode) # Re-calculate target with current viewmode
+        self.target = self.basetarget * (11 - self.zoom) # Re-calculate target with current zoom
 
     def rotate(self):
         """rotate sprite"""

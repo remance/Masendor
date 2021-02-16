@@ -75,10 +75,12 @@ class Unitsquad(pygame.sprite.Sprite):
         #^ End stamina circle
 
         #v weapon class icon in middle circle
-        if self.unitclass == 0:
-            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][-3]]
-        else:
+        if self.unitclass == 0: # melee weapon image as main
+            image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][-3]] # image on squad sprite
+            self.weaponicon = self.weaponlist.smallimgs[self.weaponlist.weaponlist[self.meleeweapon[0]][-3]] # image on battalion sprite, small one
+        else: # range weapon image
             image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][-3]]
+            self.weaponicon = self.weaponlist.smallimgs[self.weaponlist.weaponlist[self.rangeweapon[0]][-3]]
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
         self.image_original = self.image.copy()
@@ -444,7 +446,7 @@ class Unitsquad(pygame.sprite.Sprite):
         self.chargedef = round((self.chargedef + disciplinecal), 0)
         self.charge = round((self.charge + disciplinecal), 0)
 
-        if self.ammo == 0:
+        if self.ammo == 0 and self.magazinenow == 0:
             self.shootrange = 0
         if self.attack < 0: self.attack = 0
         if self.meleedef < 0: self.meleedef = 0
@@ -470,13 +472,13 @@ class Unitsquad(pygame.sprite.Sprite):
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
         #^ End timer effect
 
-    def update(self, weather, newdt, viewmode, combattimer):
+    def update(self, weather, newdt, zoom, combattimer):
         if self.gamestart == False: # run once when game start or unit just get created
             self.rotate()
             self.findnearbysquad()
             self.statusupdate(weather)
             self.gamestart = True
-        self.viewmode = viewmode
+        self.zoom = zoom
         if self.state != 100: # no point update these for dead squad
             dt = newdt
             self.combatpos = self.battalion.basepos
@@ -484,7 +486,7 @@ class Unitsquad(pygame.sprite.Sprite):
             self.run = self.battalion.run # check if battalion running for stamina use
 
             #v Stamina and Health bar and melee combat indicator function
-            if self.battalion.hitbox[0].stillclick or self.viewmode == 10: # only update for squad in selected battalion or closest camera zoom
+            if self.battalion.hitbox[0].stillclick or self.zoom == 10: # only update for squad in selected battalion or closest camera zoom
 
                 #v Hp bar, similar to battalion see there for comment
                 if self.oldlasthealth != self.unithealth:
@@ -635,7 +637,7 @@ class Unitsquad(pygame.sprite.Sprite):
                                             and (self.arcshot or (self.arcshot == False and self.battalion.shoothow != 1)):
                             # can shoot if reload finish and target existed and not dead. Non arcshot cannot shoot if forbidded
                             rangeattack.Rangearrow(self, self.combatpos.distance_to(self.attackpos), self.shootrange,
-                                                   self.viewmode) # Shoot at enemy
+                                                   self.zoom) # Shoot at enemy
                             self.magazinenow -= 1 # use 1 ammo in magazine
                         elif self.attacktarget != 0 and self.attacktarget.state == 100: # if target die when it about to shoot
                             self.battalion.rangecombatcheck, self.battalion.attacktarget = False, 0 # reset range combat check and target

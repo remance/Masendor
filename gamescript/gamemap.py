@@ -38,7 +38,7 @@ featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuil
 feaurelist = ("Plain", "Barren", "PlantField", "Forest", "InlandWater", "Road", "UrbanBuilding", "Farm", "Pandemonium", "Mana", "Rot", "Wetground")
 
 class Basemap(pygame.sprite.Sprite):
-    maxviewmode = 10
+    maxzoom = 10
 
     def __init__(self, scale):
         """image file of map should be at size 1000x1000 then it will be scaled in game"""
@@ -84,7 +84,7 @@ class Basemap(pygame.sprite.Sprite):
 
 
 class Mapfeature(pygame.sprite.Sprite):
-    maxviewmode = 10
+    maxzoom = 10
     main_dir = None
     featuremod = None
 
@@ -136,7 +136,7 @@ class Mapfeature(pygame.sprite.Sprite):
 
 
 class Mapheight(pygame.sprite.Sprite):
-    maxviewmode = 10
+    maxzoom = 10
 
     def __init__(self, scale):
         self._layer = 0
@@ -176,7 +176,6 @@ class Mapheight(pygame.sprite.Sprite):
 class Beautifulmap(pygame.sprite.Sprite):
     textureimages = []
     emptyimage = None
-    effectimage = None
     loadtexturelist = None
     main_dir = None
 
@@ -247,11 +246,13 @@ class Beautifulmap(pygame.sprite.Sprite):
 
         self.addeffect(gamemapheight)
 
-    def addeffect(self, gamemapheight):
+    def addeffect(self, gamemapheight, effectimage = None):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image = self.trueimage.copy()
 
-        self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
+        if effectimage is not None:
+            self.image.blit(effectimage, rect)  ## Add special filter effect that make it look like old map
+
         self.image.blit(self.placename, rect)  ## Add placename layer to map
         self.image_original = self.image.copy()
         self.imagewithheight_original = self.image.copy()

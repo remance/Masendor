@@ -3,8 +3,8 @@ import pygame.freetype
 
 class Camera():
     SCREENRECT = None
-    def __init__(self, startpos, viewmode):
-        self.viewmode = viewmode # Zoom level
+    def __init__(self, startpos, zoom):
+        self.zoom = zoom # Zoom level
         self.pos = startpos # Starting camara pos
         self.image = pygame.Surface((self.SCREENRECT.width, self.SCREENRECT.height)) # Camera image
 

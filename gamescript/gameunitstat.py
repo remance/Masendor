@@ -3,9 +3,10 @@ import re
 """This file contains all class and function that read unit/leader related data and save them into dict for ingame use"""
 
 class Weaponstat():
-    def __init__(self, main_dir, img, ruleset):
+    def __init__(self, main_dir, smallimg, img, ruleset):
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
+        self.smallimgs = smallimg
         self.weaponlist = {}
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)

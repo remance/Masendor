@@ -109,12 +109,12 @@ def loadgamedata(game):
         game.weathermatterimgs.append(imgs)
 
     game.weathereffectimgs = []
-    for weather in ('0', '1', '2', '3'):  # Load weather effect sprite image
-        imgsold = load_images(['map', 'weather', 'effect', weather], loadorder=False)
-        imgs = []
-        for img in imgsold:
-            img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
-            imgs.append(img)
+    for weather in ('0', '1', '2', '3', '4', '5', '6', '7'):  # Load weather effect sprite image
+        imgs = load_images(['map', 'weather', 'effect', weather], loadorder=False)
+        # imgs = []
+        # for img in imgsold:
+        #     img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
+        #     imgs.append(img)
         game.weathereffectimgs.append(imgs)
 
     imgs = load_images(['map', 'weather', 'icon'], loadorder=False)  # Load weather icon
@@ -150,8 +150,6 @@ def loadgamedata(game):
     game.battlemapheight = gamemap.Mapheight(1)  # create height map
     game.showmap = gamemap.Beautifulmap(1)
 
-    img = load_image('effect.png', 'map')  # map special effect image
-    gamemap.Beautifulmap.effectimage = img
     emptyimage = load_image('empty.png', 'map/texture')  # empty texture image
     maptexture = []
     loadtexturefolder = []
@@ -224,7 +222,8 @@ def loadgamedata(game):
         x, y = img.get_width(), img.get_height()
         img = pygame.transform.scale(img, (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
         imgs.append(img)
-    game.allweapon = gameunitstat.Weaponstat(main_dir, imgs, game.ruleset)  # Create weapon class
+    imgsold = load_images(['war', 'unit_ui', 'miniweapon'])
+    game.allweapon = gameunitstat.Weaponstat(main_dir, imgsold, imgs, game.ruleset)  # Create weapon class
 
     imgs = load_images(['war', 'unit_ui', 'armour'])
     game.allarmour = gameunitstat.Armourstat(main_dir, imgs, game.ruleset)  # Create armour class
@@ -1380,8 +1379,8 @@ def splitunit(battle, who, how):
     who.recreatesprite()
     who.makeallsidepos()
     who.setupfrontline()
-    who.viewmode = battle.camerascale
-    who.viewmodechange()
+    who.zoom = battle.camerascale
+    who.zoomscale()
     who.height = who.gamemapheight.getheight(who.basepos)
 
     for thishitbox in who.hitbox: thishitbox.kill() # remove previous hitbox before create new one
@@ -1465,12 +1464,12 @@ def splitunit(battle, who, how):
     battle.lastselected = who
     for hitbox in battle.lastselected.hitbox:
         hitbox.clicked()
-    army.viewmode = battle.camerascale
+    army.zoom = battle.camerascale
 
     #v Remake sprite to match the current varible (angle, zoom level, position)
     army.recreatesprite()
     army.makeallsidepos()
-    army.viewmodechange()
+    army.zoomscale()
     army.angle = army.angle
     army.rotate()
     #^ End remake sprite
@@ -1484,6 +1483,8 @@ def splitunit(battle, who, how):
                    gamebattalion.Hitbox(army, 2, 10, army.rect.height - int(army.rect.height * 0.2)),
                    gamebattalion.Hitbox(army, 3, army.rect.width - int(army.rect.width * 0.2), 10)]
     army.autosquadplace = False
+
+    battle.troopnumbersprite.add(gamebattalion.Troopnumber(army))
     #^ End making new battalion
 
 ## Other scripts

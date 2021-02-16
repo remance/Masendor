@@ -676,13 +676,13 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to update video')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Changes made since the previous update')
+                            self.textdrama.queue.append('Showcase: Visual update to weather effect and unit')
                         elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('Not yet balanced for completely historical enactment')
+                            self.textdrama.queue.append('I try to add small weapon icon to unit sprite')
                         elif event.key == pygame.K_4:
-                            self.textdrama.queue.append('The larger the battalion the harder it is to controlled')
+                            self.textdrama.queue.append('Change hp, stamina and ammo bar of unit')
                         elif event.key == pygame.K_5:
-                            self.textdrama.queue.append('Weather effect affect the unit in many ways')
+                            self.textdrama.queue.append('Also add troop number toggle option')
                         elif event.key == pygame.K_6:
                             self.textdrama.queue.append('Current special effect still need rework')
                         elif event.key == pygame.K_n and self.lastselected is not None:
@@ -858,6 +858,7 @@ class Battle():
                     else: # Random weather
                         self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2), self.allweather)
                     self.weatherevent.pop(0)
+                    self.showmap.addeffect(self.battlemapheight, self.weathereffectimgs[self.currentweather.type][self.currentweather.level])
 
                     try: # Get end time of next event which is now index 0
                         self.weatherschedule = self.weatherevent[0][1]
@@ -891,13 +892,13 @@ class Battle():
                                                                         self.currentweather.speed,
                                                                         self.weathermatterimgs[self.currentweather.type][randompic]))
 
-                if self.currentweather.specialeffect > 0: # weather has special effect to draw #TODO change weather effect to blit on beautiful map instead
-                    if len(self.weathereffect) == 0: # spawn effect (only one)
-                        truepos = (SCREENRECT.width, SCREENRECT.height / 2)
-                        target = (-SCREENRECT.width, SCREENRECT.height / 2)
-                        self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
-                                                                         self.weathereffectimgs[self.currentweather.type][self.currentweather.level],
-                                                                         self.weatherschedule))
+                # if self.currentweather.specialeffect > 0: # weather has special effect to draw
+                #     if len(self.weathereffect) == 0: # spawn effect (only one)
+                #         truepos = (SCREENRECT.width, SCREENRECT.height / 2)
+                #         target = (-SCREENRECT.width, SCREENRECT.height / 2)
+                #         self.weathereffect.add(gameweather.Specialeffect(truepos, target, self.currentweather.speed,
+                #                                                          self.weathereffectimgs[self.currentweather.type][self.currentweather.level],
+                #                                                          self.weatherschedule))
                     # elif len(self.weathereffect) == 1:
                     #     for weathereffect in self.weathereffect:
                     #         if weathereffect.rect.center[0] <= SCREENRECT.width+100:
@@ -1076,7 +1077,7 @@ class Battle():
                                 self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                    self.splitunit(self, whoinput, 1)
+                                    self.splitunit(whoinput, 1)
                                     self.splithappen = True
                                     self.checksplit(whoinput)
                                     self.battleui.remove(*self.leadernow)
@@ -1088,7 +1089,7 @@ class Battle():
                                 self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                    self.splitunit(self, whoinput, 0)
+                                    self.splitunit(whoinput, 0)
                                     self.splithappen = True
                                     self.checksplit(whoinput)
                                     self.battleui.remove(*self.leadernow)

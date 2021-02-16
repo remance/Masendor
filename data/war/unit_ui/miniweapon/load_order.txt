@@ -1,0 +1,1 @@
+['sword.png', 'spear.png', 'axe.png', 'mace.png', 'flail.png','hammer.png','halberd.png','pike.png','glaive.png', 'whip.png','fist.png','sling.png', 'blowgun.png','javelin.png','throwaxe.png','longbow.png','shortbow.png','greatbow.png','lightcrossbow.png','cav.png']

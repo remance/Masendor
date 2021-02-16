@@ -8,6 +8,9 @@ try: # for printing error log when error exception happen
     import numpy as np
     import csv
 
+    # for getting screen info
+    import screeninfo
+
     # import basic pygame modules
     import pygame
     import pygame.freetype
@@ -15,9 +18,6 @@ try: # for printing error log when error exception happen
 
     from gamescript import maingame, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
         gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gamebattalion, gamesquad,rangeattack, gamepopup, gameunitedit
-   
-    # for getting screen info
-    import screeninfo
 
     screen = screeninfo.get_monitors()[0]
 
@@ -31,7 +31,7 @@ try: # for printing error log when error exception happen
         config = configparser.ConfigParser()
         config['DEFAULT'] = {'screenwidth': screenWidth,'screenheight': screenHeight, 'fullscreen': '0',
                              'playername': 'Noname', 'soundvolume': '100.0', 'musicvolume': '0.0',
-                             'voicevolume': '0.0', 'maxfps': '60'}
+                             'voicevolume': '0.0', 'maxfps': '60', 'ruleset': '1'}
         with open('configuration.ini', 'w') as cf:
             config.write(cf)
         config.read_file(open('configuration.ini'))

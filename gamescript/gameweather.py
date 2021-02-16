@@ -32,7 +32,6 @@ class Weather:
         self.spawnrate = stat[19] * (self.level + 1)
         self.spawnangle = stat[20]
         self.speed = stat[21] * (self.level + 1)
-        self.specialeffect = stat[22]
 
         image = self.images[(self.type * 3) + self.level]
         cropped = pygame.Surface((image.get_width(), image.get_height()))
