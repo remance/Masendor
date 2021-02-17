@@ -158,11 +158,6 @@ try: # for printing error log when error exception happen
             self.menubutton = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
             self.menuicon = pygame.sprite.Group() # mostly for option icon like volumne or scren resolution
 
-            self.inputui = pygame.sprite.Group() # user text input ui box popup
-            self.inputbox = pygame.sprite.Group() # user text input box
-
-            self.profilebox = pygame.sprite.Group() # profile name box at top right of screen at main menu screen
-
             self.menuslider = pygame.sprite.Group()
             self.maplistbox = pygame.sprite.Group() # ui box for map list
             self.mapnamegroup = pygame.sprite.Group() # map name list group
@@ -173,14 +168,11 @@ try: # for printing error log when error exception happen
             self.sourcedescription = pygame.sprite.Group() # map source description box in preset battle preparation screen
             self.armystat = pygame.sprite.Group() # ui box that show army stat in preset battle preparation screen
 
-            self.sourcelistbox = pygame.sprite.Group() # source list ui box
             self.sourcenamegroup = pygame.sprite.Group() # source name list group
 
-            self.mapoptionbox = pygame.sprite.Group() # ui box for battle option during preparation screen
             self.tickbox = pygame.sprite.Group() # option tick box
 
             self.lorebuttonui = pygame.sprite.Group()  # buttons for enclycopedia group
-            self.lorebook = pygame.sprite.Group()  # encyclopedia object
             self.valuebox = pygame.sprite.Group()  # value number and box in esc menu option
             self.lorenamelist = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
             self.subsectionname = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
@@ -270,11 +262,6 @@ try: # for printing error log when error exception happen
 
             # v Assign default groups
             # main menu containers
-            gameprepare.Inputbox.containers = self.inputbox
-            gameprepare.Inputui.containers = self.inputui
-
-            gameprepare.Profilebox.containers = self.profilebox
-
             gameprepare.Menubutton.containers = self.menubutton
             gameprepare.Menuicon.containers = self.menuicon
             gameprepare.Slidermenu.containers = self.menuslider
@@ -289,13 +276,10 @@ try: # for printing error log when error exception happen
             gameprepare.Sourcedescription.containers = self.sourcedescription
             gameprepare.Armystat.containers = self.armystat
 
-            gameprepare.Sourcelistbox.containers = self.sourcelistbox
             gameprepare.Sourcename.containers = self.sourcenamegroup, self.mainui
 
-            gameprepare.Mapoptionbox.containers = self.mapoptionbox
             gameprepare.Tickbox.containers = self.tickbox
 
-            gamelorebook.Lorebook.containers = self.lorebook
             gamelorebook.Subsectionlist.containers = self.lorenamelist
             gamelorebook.Subsectionname.containers = self.subsectionname, self.mainui, self.battleui
 
@@ -401,8 +385,8 @@ try: # for printing error log when error exception happen
             self.mapscroll = gameui.Uiscroller(self.maplistbox.rect.topright, self.maplistbox.image.get_height(),
                                                self.maplistbox.maxshowlist, layer=14)  # scroller bar for map list
 
-            self.sourcelistbox = gameprepare.Sourcelistbox((0, 0), imgs[1])
-            self.mapoptionbox = gameprepare.Mapoptionbox((SCREENRECT.width, 0), imgs[1], 0)
+            self.sourcelistbox = gameprepare.Sourcelistbox((0, 0), imgs[1]) # source list ui box
+            self.mapoptionbox = gameprepare.Mapoptionbox((SCREENRECT.width, 0), imgs[1], 0) # ui box for battle option during preparation screen
 
             self.tickboxenactment = gameprepare.Tickbox((self.mapoptionbox.rect.bottomright[0] / 1.2, self.mapoptionbox.rect.bottomright[1] / 4),
                                                         imgs[5], imgs[6], "enactment")
@@ -526,7 +510,7 @@ try: # for printing error log when error exception happen
 
             # v Input box popup
             inputuiimg = load_image('inputui.png', 'ui')
-            self.inputui = gameprepare.Inputui(inputuiimg, (SCREENRECT.width / 2, SCREENRECT.height / 2))
+            self.inputui = gameprepare.Inputui(inputuiimg, (SCREENRECT.width / 2, SCREENRECT.height / 2)) # user text input ui box popup
             self.inputokbutton = gameprepare.Menubutton(images=imagelist,
                                                         pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                              self.inputui.rect.midleft[1] + imagelist[0].get_height()),
@@ -536,7 +520,7 @@ try: # for printing error log when error exception happen
                                                                  self.inputui.rect.midright[1] + imagelist[0].get_height()),
                                                             text="Cancel")
             self.inputbutton = (self.inputokbutton, self.inputcancelbutton)
-            self.inputbox = gameprepare.Inputbox((self.inputui.rect.center), self.inputui.image.get_width())
+            self.inputbox = gameprepare.Inputbox((self.inputui.rect.center), self.inputui.image.get_width()) # user text input box
 
             self.inputuipop = (self.inputui, self.inputbox, self.inputokbutton, self.inputcancelbutton)
             # ^ End input box popup
@@ -544,7 +528,7 @@ try: # for printing error log when error exception happen
             #v profile box
             self.profilename = Profilename
             img = load_image('profilebox.png', 'ui')
-            self.profilebox = gameprepare.Profilebox(img, (ScreenWidth, 0), self.profilename)
+            self.profilebox = gameprepare.Profilebox(img, (ScreenWidth, 0), self.profilename) # profile name box at top right of screen at main menu screen
             #^ End profile box
 
             #v Create option menu button and icon
@@ -1169,7 +1153,6 @@ try: # for printing error log when error exception happen
                             self.troopindexlist = list(range(0, len(self.trooplist) + 1))
 
                             self.leaderlist = [item[0] for item in self.leaderstat.leaderlist.values()][1:] # generate leader name list
-                            self.leaderindexlist = list(range(1, len(self.leaderlist) + 1))
 
                             self.setuplist(gameprepare.Namelist, self.currentarmyrow, list(self.customarmypresetlist.keys()),
                                            self.armypresetnamegroup , self.armylistbox) # setup preset army list
@@ -1264,7 +1247,6 @@ try: # for printing error log when error exception happen
                             self.troopindexlist = list(range(0, len(self.trooplist) + 1))
 
                             self.leaderlist = [item[0] for item in self.leaderstat.leaderlist.values()][1:]  # generate leader name list)
-                            self.leaderindexlist = list(range(1, len(self.leaderlist) + 1))
 
                             self.leadernow = []
 
@@ -1283,7 +1265,9 @@ try: # for printing error log when error exception happen
                                             self.leadernow[self.selectleader].leader = None
                                             self.leadernow[self.selectleader].squad.leader = None
 
-                                        self.leadernow[self.selectleader].changeleader(self.currentpopuprow + self.leaderindexlist[index], self.leaderstat)
+                                        trueindex = [index for index, value in enumerate(list(self.leaderstat.leaderlist.values())) if value[0] == name.name][0]
+                                        trueindex = list(self.leaderstat.leaderlist.keys())[trueindex]
+                                        self.leadernow[self.selectleader].changeleader(trueindex, self.leaderstat)
                                         self.leadernow[self.selectleader].squad = self.showincard
                                         self.showincard.leader = self.leadernow[self.selectleader]
                                         self.previewauthority(self.leadernow, self.leadernow[self.selectleader].squad.armyid)
@@ -1550,10 +1534,6 @@ try: # for printing error log when error exception happen
                                                             self.leaderlist = [item[1][0] for thisindex, item in enumerate(self.leaderstat.leaderlist.items())
                                                                                      if thisindex > 0 and (item[1][0] == "None" or (item[0] >= 10000 and item[1][8] in (0, index)) or
                                                                                      item[0] in self.allfaction.factionlist[index][2])]
-                                                            self.leaderindexlist = [0] + self.allfaction.factionlist[index][2] + [item[1][0] for
-                                                                                    thisindex, item in enumerate(self.leaderstat.leaderlist.items())
-                                                                                    if thisindex > 0 and (item[0] >= 10000 and item[1][8] in (0, index))]
-
 
 
                                                     else: # pick all faction
@@ -1561,7 +1541,6 @@ try: # for printing error log when error exception happen
                                                         self.troopindexlist = list(range(0, len(self.trooplist) + 1))
 
                                                         self.leaderlist = self.leaderlist = [item[0] for item in self.leaderstat.leaderlist.values()][1:]
-                                                        self.leaderindexlist = list(range(1, len(self.leaderlist) + 1))
 
                                                     self.setuplist(gameprepare.Namelist, self.currenttrooprow, self.trooplist, self.troopnamegroup,
                                                                    self.trooplistbox) # setup troop name list

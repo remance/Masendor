@@ -6,7 +6,7 @@ class Textdrama(pygame.sprite.Sprite):
     SCREENRECT = None
 
     def __init__(self):
-        self._layer = 13
+        self._layer = 17
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.body = self.images[0]
         self.leftcorner = self.images[1]

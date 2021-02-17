@@ -309,7 +309,7 @@ def loadgamedata(game):
     gamelorebook.Lorebook.statetext = game.statetext
 
     imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
-    game.lorebook = gamelorebook.Lorebook(imgs[0])
+    game.lorebook = gamelorebook.Lorebook(imgs[0]) # encyclopedia sprite
     game.lorenamelist = gamelorebook.Subsectionlist(game.lorebook.rect.topleft, imgs[1])
 
     imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)

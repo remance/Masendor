@@ -15,7 +15,7 @@ class Inputui(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                          int(image.get_height() * self.heightadjust)))
@@ -41,7 +41,7 @@ class Inputbox(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self._layer = 16
         self.font = pygame.font.SysFont("timesnewroman", int(20 * self.heightadjust))
         self.image = pygame.Surface((width-10, int(26 * self.heightadjust))) # already scale from input ui
@@ -96,7 +96,7 @@ class Profilebox(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
 
         self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
@@ -469,6 +469,8 @@ class Namelist(pygame.sprite.Sprite):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(self.heightadjust * textsize))
+        self.name = str(name)
+
         self.image = pygame.Surface((box.image.get_width() - int(15 * self.widthadjust), int(25 * self.heightadjust)))  # black corner
         self.image.fill((0, 0, 0))
 
@@ -480,7 +482,7 @@ class Namelist(pygame.sprite.Sprite):
         # ^ End white body
 
         # v Map name text
-        textsurface = self.font.render(str(name), 1, (0, 0, 0))
+        textsurface = self.font.render(self.name, 1, (0, 0, 0))
         textrect = textsurface.get_rect(midleft=(int(3 * self.widthadjust), self.image.get_height() / 2))
         self.image.blit(textsurface, textrect)
         # ^ End map name
@@ -530,7 +532,7 @@ class Mapoptionbox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
 
         self._layer = 13
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
 
@@ -567,7 +569,7 @@ class Sourcelistbox(pygame.sprite.Sprite):
         self.heightadjust = SCREENRECT.height / 768
 
         self._layer = 13
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
