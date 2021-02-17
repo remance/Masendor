@@ -202,10 +202,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.zoom = 10 # start with closest zoom
         self.lastzoom = 1 # zoom level without calculate with 11 - zoom for scale
         self.imgsize = imgsize
-        self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
-        self.basewidthbox, self.baseheightbox = self.widthbox / 10, self.heightbox / 10
-        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * self.zoom, len(self.armysquad) * self.imgsize[
-            1] * self.zoom
         self.basepos = pygame.Vector2(startposition)  # Basepos is for true pos that is used for ingame calculation
         self.baseattackpos = 0  # position of attack target
         self.pos = self.basepos * (11 - self.zoom)  # Pos is for showing on screen
@@ -276,29 +272,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.coa = coa # coat of arm image
         self.team = team # team
 
-        #v draw unit sprite 
-        self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0, 128)) # draw black colour for black corner
-        pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 4, self.heightbox - 4)) # draw block colour
-        # self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center) # battalion ring
-        # self.image.blit(self.images[-1], self.imagerect) # draw battalion ring into battalion image
-
-        # draw hp bar
-        self.healthimagerect = self.images[0].get_rect(midtop=self.image.get_rect().midtop)
-        self.image.blit(self.images[0], self.healthimagerect)
-
-        # draw stamina bar
-        self.staminaimagerect = self.images[5].get_rect(midright=self.image.get_rect().midright)
-        self.image.blit(self.images[5], self.staminaimagerect)
-
-        # draw ammo bar
-        self.ammoimagerect = self.images[14].get_rect(midleft=self.image.get_rect().midleft)
-        self.image.blit(self.images[14], self.ammoimagerect)
-        # self.image_original, self.image_original2, self.image_original3 = self.image.copy(), self.image.copy(), self.image.copy()  ## original is for before image get rotated, original2 is for zoom closest, original3 is for zooming
-        self.rect = self.image.get_rect(center=startposition)
-        self.radians_angle = math.radians(360 - startangle) # radians for apply angle to position (allsidepos and squad)
-        self.mask = pygame.mask.from_surface(self.image)
-        #^ End draw unit sprite
+        self.createsprite()
 
         # Generate all four side position
         self.allsidepos = [(self.basepos[0], (self.basepos[1] - self.baseheightbox / 2)),
@@ -363,13 +337,15 @@ class Unitarmy(pygame.sprite.Sprite):
         self.makeallsidepos()
         self.frontpos = self.allsidepos[0]
 
-    def recreatesprite(self):
-        """redrawing sprite for when split happen since the size will change"""
+    def createsprite(self):
+        """drawing sprite"""
+        #v draw unit sprite
         self.widthbox, self.heightbox = len(self.armysquad[0]) * self.imgsize[0], len(self.armysquad) * self.imgsize[1]
         self.basewidthbox, self.baseheightbox = self.widthbox / 10, self.heightbox / 10
+        self.widthscale, self.heightscale = len(self.armysquad[0]) * self.imgsize[0] * self.zoom, len(self.armysquad) * self.imgsize[
+            1] * self.zoom
         self.image = pygame.Surface((self.widthbox, self.heightbox), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 128))
-        pygame.draw.rect(self.image, (0, 0, 0), (0, 0, self.widthbox, self.heightbox), 2)
+        self.image.fill((0, 0, 0, 128))  # draw black colour for black corner
         pygame.draw.rect(self.image, self.colour, (1, 1, self.widthbox - 2, self.heightbox - 2))
 
         # self.imagerect = self.images[-1].get_rect(center=self.image.get_rect().center)  # battalion ring
@@ -1368,7 +1344,7 @@ class Unitarmy(pygame.sprite.Sprite):
         oldposlist.pop(self.gameid) # remove from old pos list
         allunitindex = [newgameid if index == self.gameid else index for index in allunitindex] # replace index in allunitindex
         self.gameid = newgameid # change game id
-        self.recreatesprite()
+        self.createsprite()
         self.changescale() # reset scale to the current zoom
         self.icon.changeimage(changeside=True) # change army icon to new team
         return allunitindex

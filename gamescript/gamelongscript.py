@@ -1376,7 +1376,7 @@ def splitunit(battle, who, how):
         leader.rect = leader.image.get_rect(center=leader.imgposition)
 
     coa = who.coa
-    who.recreatesprite()
+    who.createsprite()
     who.makeallsidepos()
     who.setupfrontline()
     who.zoom = battle.camerascale
@@ -1467,7 +1467,7 @@ def splitunit(battle, who, how):
     army.zoom = battle.camerascale
 
     #v Remake sprite to match the current varible (angle, zoom level, position)
-    army.recreatesprite()
+    army.createsprite()
     army.makeallsidepos()
     army.zoomscale()
     army.angle = army.angle
