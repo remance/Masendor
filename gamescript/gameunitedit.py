@@ -8,7 +8,7 @@ import pygame
 import pygame.freetype
 from pygame.transform import scale
 
-from gamescript import gamelongscript, gamebattalion, gameleader, gamemap
+from gamescript import gamelongscript, gameunit, gameleader, gamemap
 
 class Previewbox(pygame.sprite.Sprite):
     main_dir = None
@@ -63,16 +63,16 @@ class Previewleader(pygame.sprite.Sprite):
         self.state = 0
         self.squad = None
 
-        self.squadpos = squadposition  # Squad position is the index of squad in squad sprite loop
+        self.squadpos = squadposition  # Squad position is the index of subunit in subunit sprite loop
 
-        self.armyposition = armyposition # position in the battalion (e.g. general or sub-general)
+        self.armyposition = armyposition # position in the parentunit (e.g. general or sub-general)
 
         self.imgposition = self.baseimgposition[self.armyposition] # image position based on armyposition
 
         self.changeleader(leaderid, leaderstat)
 
     def changeleader(self, leaderid, leaderstat):
-        self.gameid = leaderid  # Different than unit game id, leadergameid is only used as reference to the id data
+        self.gameid = leaderid  # Different than subunit game id, leadergameid is only used as reference to the id data
 
         stat = leaderstat.leaderlist[leaderid]
 
@@ -95,9 +95,9 @@ class Previewleader(pygame.sprite.Sprite):
 
 
 class Armybuildslot(pygame.sprite.Sprite):
-    squadwidth = 0 # squad sprite width size get add from main
-    squadheight = 0 # squad sprite height size get add from main
-    images = [] # image related to squad sprite, get add from loadgamedata in gamelongscript
+    squadwidth = 0 # subunit sprite width size get add from main
+    squadheight = 0 # subunit sprite height size get add from main
+    images = [] # image related to subunit sprite, get add from loadgamedata in gamelongscript
     weaponlist = None
     armourlist = None
     statlist = None
@@ -129,7 +129,7 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.image.blit(whiteimage, whiterect)
         self.image_original = self.image.copy()
 
-        self.armypos = position  # position in battalion array (0 to 63)
+        self.armypos = position  # position in parentunit array (0 to 63)
         self.inspposition = (self.armypos[0] + startpos[0], self.armypos[1] + startpos[1])  # position in inspect ui
         self.rect = self.image.get_rect(topleft=self.inspposition)
 
@@ -143,10 +143,10 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.feature = feature
         self.weather = weather
         if self.name != "None":
-            # v squad block team colour
+            # v subunit block team colour
             if self.unittype == 2: # cavalry draw line on block
                 pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
-            # ^ End squad block team colour
+            # ^ End subunit block team colour
 
             # v armour circle colour (grey = light, gold = heavy)
             image1 = self.images[1]
@@ -156,13 +156,13 @@ class Armybuildslot(pygame.sprite.Sprite):
             # ^ End armour colour
 
             # v health circle image setup
-            healthimage = self.images[3]
+            healthimage = self.images[1]
             healthimagerect = healthimage.get_rect(center=self.image.get_rect().center)
             self.image.blit(healthimage, healthimagerect)
             # ^ End health circle
 
             # v stamina circle image setup
-            staminaimage = self.images[8]
+            staminaimage = self.images[6]
             staminaimagerect = staminaimage.get_rect(center=self.image.get_rect().center)
             self.image.blit(staminaimage, staminaimagerect)
             # ^ End stamina circle
@@ -177,11 +177,11 @@ class Armybuildslot(pygame.sprite.Sprite):
             # ^ End weapon icon
 
 class Warningmsg(pygame.sprite.Sprite):
-    factionwarn = "Multiple factions unit will not be usable with No Multiple Faction option enable"
+    factionwarn = "Multiple factions subunit will not be usable with No Multiple Faction option enable"
     tenrequire = "Require at least 10 sub-units to be usable"
     emptyrowcol = "Empty row or column will be removed when employed"
     duplicateleader = "Duplicated leader will be removed with No Duplicated leaer option enable"
-    leaderwarn = "Leaders from multiple factions unit will not be usable with No Multiple Faction option enable"
+    leaderwarn = "Leaders from multiple factions subunit will not be usable with No Multiple Faction option enable"
     hardwarn = (tenrequire)
     softwarn = (factionwarn, duplicateleader, leaderwarn, emptyrowcol)
 

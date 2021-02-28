@@ -66,7 +66,7 @@ class Gameui(pygame.sprite.Sprite):
         self.lastvalue = 0
         self.option = 0
         self.rect = self.image.get_rect(center=(self.X, self.Y))
-        self.lastwho = -1 # battalion last showed, start with -1 which mean any new clicked will show up at start
+        self.lastwho = -1 # parentunit last showed, start with -1 which mean any new clicked will show up at start
         if self.uitype == "topbar": # setup variable for topbar ui
             position = 10
             for ic in self.icon: # Blit icon into topbar ui
@@ -76,9 +76,9 @@ class Gameui(pygame.sprite.Sprite):
                 position += 90
             self.options2 = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
-                             14: "Inspired", 15: "Fervent"} # battalion morale state name
+                             14: "Inspired", 15: "Fervent"} # parentunit morale state name
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
-                             7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"} # battalion stamina state name
+                             7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"} # parentunit stamina state name
 
         elif self.uitype == "commandbar": # setup variable for command bar ui
             self.iconimagerect = self.icon[6].get_rect(
@@ -88,7 +88,7 @@ class Gameui(pygame.sprite.Sprite):
             self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]] # team 2 black chess head
             self.lastauth = 0
 
-        elif self.uitype == "unitcard": # setup variable for unit card ui
+        elif self.uitype == "unitcard": # setup variable for subunit card ui
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
@@ -125,7 +125,7 @@ class Gameui(pygame.sprite.Sprite):
         position = 65
         if self.uitype == "topbar":
             self.value = ["{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxhealth) + ")", who.staminastate, who.moralestate, who.state]
-            if self.value[3] in self.options1: # Check unit state and blit name
+            if self.value[3] in self.options1: # Check subunit state and blit name
                 self.value[3] = self.options1[self.value[3]]
             # if type(self.value[2]) != str:
 
@@ -139,7 +139,7 @@ class Gameui(pygame.sprite.Sprite):
             if self.value[1] in self.options3: # Check if stamina state and blit the name
                 self.value[1] = self.options3[self.value[1]]
 
-            if self.value != self.lastvalue or splithappen: # only blit new text when value change or unit split
+            if self.value != self.lastvalue or splithappen: # only blit new text when value change or subunit split
                 self.image = self.image_original.copy()
                 for value in self.value: # blit value text
                     self.textsurface = self.font.render(str(value), 1, (0, 0, 0))
@@ -155,14 +155,14 @@ class Gameui(pygame.sprite.Sprite):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
 
         elif self.uitype == "commandbar":
-            if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change unit
+            if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change subunit
                 usecolour = self.white # colour of the chess icon for leader, white for team 1
                 if who.team == 2: # black for team 2
                     usecolour = self.black
                 self.image = self.image_original.copy()
                 self.image.blit(who.coa,who.coa.get_rect(topleft=self.image.get_rect().topleft)) # blit coa
 
-                if who.commander: # commander battalion use king and queen icon
+                if who.commander: # commander parentunit use king and queen icon
                     ## main general
                     self.iconimagerect = usecolour[0].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
@@ -220,7 +220,7 @@ class Gameui(pygame.sprite.Sprite):
                 if who.leader is not None:
                     leadertext = "/" + str(who.leader.name)
                     if who.leader.state in self.leaderstatetext: leadertext += " " + "(" + self.leaderstatetext[who.leader.state] + ")"
-                self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0))  ##unit and leader name at the top
+                self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0))  ##subunit and leader name at the top
                 self.textrect = self.textsurface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                 self.image.blit(self.textsurface, self.textrect)
@@ -376,7 +376,7 @@ class Selectedsquad(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
     def pop(self, pos):
-        """pop out at the selected squad in inspect uo"""
+        """pop out at the selected subunit in inspect uo"""
         self.rect = self.image.get_rect(topleft=pos)
 
 
@@ -386,9 +386,9 @@ class Minimap(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
 
-        self.team2dot = pygame.Surface((8, 8)) # dot for team2 unit
+        self.team2dot = pygame.Surface((8, 8)) # dot for team2 subunit
         self.team2dot.fill((0, 0, 0)) # black corner
-        self.team1dot = pygame.Surface((8, 8)) # dot for team1 unit
+        self.team1dot = pygame.Surface((8, 8)) # dot for team1 subunit
         self.team1dot.fill((0, 0, 0)) # black corner
         team2 = pygame.Surface((6, 6)) # size 6x6
         team2.fill((255, 0, 0)) # red rect
@@ -414,7 +414,7 @@ class Minimap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomright=self.pos)
 
     def update(self, viewmode, camerapos, team1poslist, team2poslist):
-        """update battalion dot on map"""
+        """update parentunit dot on map"""
         if self.team1pos != team1poslist.values() or self.team2pos != team2poslist.values() or self.camerapos != camerapos or self.lastscale != viewmode:
             self.team1pos = team1poslist.values()
             self.team2pos = team2poslist.values()
@@ -446,11 +446,11 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         self.rect = self.image.get_rect(bottomleft=self.pos)
 
     def makenew(self):
-        self.mode = 0 # 0=war,1=army(unit),2=leader,3=unit(sub-unit)
+        self.mode = 0 # 0=war,1=army(subunit),2=leader,3=subunit(sub-subunit)
         self.battlelog = [] # 0 war
         self.battalionlog = [] # 1 army
         self.leaderlog = [] # 2 leader
-        self.squadlog = [] # 3 unit
+        self.squadlog = [] # 3 subunit
         self.currentstartrow = 0
         self.lencheck = 0 # total number of row in the current mode
 
@@ -763,3 +763,20 @@ class Speednumber(pygame.sprite.Sprite):
         self.speed = newspeed
         self.timersurface = self.font.render(str(self.speed), 1, (0, 0, 0))
         self.image.blit(self.timersurface, self.timerrect)
+
+class Inspectsubunit(pygame.sprite.Sprite):
+    def __init__(self, pos):
+        self._layer = 11
+        pygame.sprite.Sprite.__init__(self)
+        self.pos = pos
+        self.who = None
+        self.image = pygame.Surface((1,1))
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def addsubunit(self,who):
+        self.who = who
+        self.image = self.who.imageblock
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def delete(self):
+        self.who = None

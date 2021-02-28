@@ -1,12 +1,11 @@
 import csv
 import re
-"""This file contains all class and function that read unit/leader related data and save them into dict for ingame use"""
+"""This file contains all class and function that read subunit/leader related data and save them into dict for ingame use"""
 
 class Weaponstat():
-    def __init__(self, main_dir, smallimg, img, ruleset):
+    def __init__(self, main_dir, img, ruleset):
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
-        self.smallimgs = smallimg
         self.weaponlist = {}
         with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -73,8 +72,8 @@ class Unitstat():
                         row[n] = int(i)  # No need to make it float
                 self.unitlist[row[0]] = row[1:]
             unitfile.close()
-        #^ End unit stat list
-        #v Lore of the unit dict
+        #^ End subunit stat list
+        #v Lore of the subunit dict
         self.unitlore = {}
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_lore.csv', 'r') as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
@@ -84,7 +83,7 @@ class Unitstat():
                         row[n] = int(i)
                 self.unitlore[row[0]] = row[1:]
             unitfile.close()
-        #^ End unit lore
+        #^ End subunit lore
 
         #v Unit status effect dict
         self.statuslist = {}
@@ -100,7 +99,7 @@ class Unitstat():
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
                             if n in (5, 6, 7, 8, 9, 10, 11, 12):
-                                if i == "": # empty stat become 1.0 so it mean nothing when calculate into unit
+                                if i == "": # empty stat become 1.0 so it mean nothing when calculate into subunit
                                     row[n] = 1.0
                                 else:
                                     row[n] = float(i) / 100  # Need to make it float / 100 for percentage cal 50 become 0.5
@@ -149,7 +148,7 @@ class Unitstat():
                     if i.isdigit(): row[n] = int(i)  # No need to be float
                     if run != 0:
                         if n == 13:
-                            if "," in i: # Properties to unit in list
+                            if "," in i: # Properties to subunit in list
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
                             elif i.isdigit():
                                 row[n] = [int(i)]
@@ -158,7 +157,7 @@ class Unitstat():
                 self.gradelist[row[0]] = row[1:]
                 run += 1
         unitfile.close()
-        #^ End unit grade
+        #^ End subunit grade
 
         #v Unit skill dict
         self.abilitylist = {}
@@ -196,7 +195,7 @@ class Unitstat():
                     self.abilitylist[row[0]] = row[1:]
                     run += 1
         unitfile.close()
-        #^ End unit skill
+        #^ End subunit skill
 
         #v Unit property dict
         self.traitlist = {}
@@ -231,7 +230,7 @@ class Unitstat():
                     self.traitlist[row[0]] = row[1:]
                     run += 1
         unitfile.close()
-        #^ End unit property
+        #^ End subunit property
 
         #v Unit role dict
         self.role = {}
@@ -242,7 +241,7 @@ class Unitstat():
                     if i.isdigit(): row[n] = float(i)
                 self.role[row[0]] = row[1:]
         unitfile.close()
-        #^ End unit role
+        #^ End subunit role
 
         #v Unit mount dict
         self.mountlist = {}
@@ -264,7 +263,7 @@ class Unitstat():
                             row[n] = int(i)
                     self.mountlist[row[0]] = row[1:]
         unitfile.close()
-        #^ End unit mount dict
+        #^ End subunit mount dict
 
         #v Mount grade dict
         self.mountgradelist = {}

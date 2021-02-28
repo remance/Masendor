@@ -17,7 +17,7 @@ try: # for printing error log when error exception happen
     from pygame.locals import *
 
     from gamescript import maingame, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
-        gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gamebattalion, gamesquad,rangeattack, gamepopup, gameunitedit
+        gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gameunit, gamesubunit,rangeattack, gamepopup, gameunitedit
 
     screen = screeninfo.get_monitors()[0]
 
@@ -100,7 +100,7 @@ try: # for printing error log when error exception happen
     class Mainmenu():
         teamcolour = ((255, 255, 255), (144, 167, 255), (255, 114, 114)) # team colour
         leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
-                              "Advisor")  # Name of leader position in battalion, the first 4 is for commander battalion
+                              "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
         traitskillblit = gamelongscript.traitskillblit
         effecticonblit = gamelongscript.effecticonblit
         countdownskillicon = gamelongscript.countdownskillicon
@@ -130,7 +130,7 @@ try: # for printing error log when error exception happen
 
                 self.customarmypresetlist = {}
 
-            # if not os.path.exists('\customunit'): # make custom unit folder if not existed
+            # if not os.path.exists('\customunit'): # make custom subunit folder if not existed
 
             self.enactment = True
             self.mapsource = 0 # current selected map source
@@ -177,7 +177,7 @@ try: # for printing error log when error exception happen
             self.lorenamelist = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
             self.subsectionname = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
 
-            self.battlepreview = pygame.sprite.Group() # preview of unit battle in army editor
+            self.battlepreview = pygame.sprite.Group() # preview of subunit battle in army editor
             self.trooplistbox = pygame.sprite.Group() # ui box for troop name list
             self.troopnamegroup = pygame.sprite.Group() # troop name list group
             self.filterbox = pygame.sprite.Group()
@@ -187,19 +187,18 @@ try: # for printing error log when error exception happen
             self.featurechangebutton = pygame.sprite.Group() # button to change preview map terrain feature
             self.weatherchangebutton = pygame.sprite.Group() # button to change preview map weather
             self.armybuildslot = pygame.sprite.Group() # slot for putting troop into army preset during preparation mode
-            self.squadeditborder = pygame.sprite.Group() # border that appear when selected sub-unit
+            self.uniteditborder = pygame.sprite.Group() # border that appear when selected sub-subunit
             self.team1previewleader = pygame.sprite.Group() # just to make preview leader class has containers
             self.armypresetnamegroup = pygame.sprite.Group() # preset name list
 
             # battle object group
             self.battlecamera = pygame.sprite.LayeredUpdates()  # this is layer drawer game camera, all image pos should be based on the map not screen
-            ## the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = hitbox, 4 = direction arrow,
-            ## 5 = battalion, 6 = flying battalion, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = squad inspect, 12 pop up
+            ## the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = , 4 = subunit,
+            ## 5 = sub-subunit, 6 = flying parentunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
             self.battleui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
-            self.battalionupdater = pygame.sprite.Group()  # updater for battalion objects
-            self.hitboxupdater = pygame.sprite.Group()  # updater for hitbox objects
-            self.squadupdater = pygame.sprite.Group()  # updater for squad objects
+            self.unitupdater = pygame.sprite.Group()  # updater for parentunit objects
+            self.subunitupdater = pygame.sprite.Group()  # updater for subunit objects
             self.leaderupdater = pygame.sprite.Group()  # updater for leader objects
             self.uiupdater = pygame.sprite.Group()  # updater for ui objects
             self.weatherupdater = pygame.sprite.Group()  # updater for weather objects
@@ -210,28 +209,31 @@ try: # for printing error log when error exception happen
             self.battlemapheight = pygame.sprite.Group()  # height map object
             self.showmap = pygame.sprite.Group()  # beautiful map object that is shown in gameplay
 
-            self.team0army = pygame.sprite.Group()  # taem 0 battalions group
-            self.team1army = pygame.sprite.Group()  # taem 1 battalions group
-            self.team2army = pygame.sprite.Group()  # team 2 battalions group
+            self.team0army = pygame.sprite.Group()  # taem 0 units group
+            self.team1army = pygame.sprite.Group()  # taem 1 units group
+            self.team2army = pygame.sprite.Group()  # team 2 units group
 
-            self.squad = pygame.sprite.Group()  # all squads group
+            self.team0subunit = pygame.sprite.Group()  # taem 0 units group
+            self.team1subunit = pygame.sprite.Group()  # taem 1 units group
+            self.team2subunit = pygame.sprite.Group()  # team 2 units group
+
+            self.subunit = pygame.sprite.Group()  # all subunits group
 
             self.armyleader = pygame.sprite.Group()  # all leaders group
 
-            self.hitboxes = pygame.sprite.Group()  # all hitboxes group
             self.arrows = pygame.sprite.Group()  # all arrows group and maybe other range effect stuff later
             self.directionarrows = pygame.sprite.Group()
-            self.troopnumbersprite = pygame.sprite.Group() # troop text number that appear next to battalion sprite
+            self.troopnumbersprite = pygame.sprite.Group() # troop text number that appear next to parentunit sprite
 
-            self.deadunit = pygame.sprite.Group()  # dead unit group
+            self.deadunit = pygame.sprite.Group()  # dead subunit group
 
             self.gameui = pygame.sprite.Group()  # various game ui group
             self.minimap = pygame.sprite.Group()  # minimap ui
             self.eventlog = pygame.sprite.Group()  # event log ui
             self.buttonui = pygame.sprite.Group()  # buttons for various ui group
-            self.squadselectedborder = pygame.sprite.Group()  # squad selected border in inspect ui army box
+            self.inspectselectedborder = pygame.sprite.Group()  # subunit selected border in inspect ui army box
             self.fpscount = pygame.sprite.Group()  # fps number counter
-            self.switchbuttonui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. battalion behaviour setting)
+            self.switchbuttonui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. parentunit behaviour setting)
 
             self.terraincheck = pygame.sprite.Group()  # terrain information pop up ui
             self.buttonnamepopup = pygame.sprite.Group()  # button name pop up ui when mouse over button
@@ -300,22 +302,20 @@ try: # for printing error log when error exception happen
             gamemap.Mapheight.containers = self.battlemapheight
             gamemap.Beautifulmap.containers = self.showmap, self.battlecamera
 
-            gamebattalion.Unitarmy.containers = self.battalionupdater, self.battlecamera
-            gamesquad.Unitsquad.containers = self.squadupdater, self.squad
-            gamebattalion.Deadarmy.containers = self.deadunit, self.battalionupdater, self.battlecamera
-            gamebattalion.Hitbox.containers = self.hitboxes, self.hitboxupdater
+            gameunit.Unitarmy.containers = self.unitupdater
+            gamesubunit.Subunit.containers = self.subunitupdater, self.subunit, self.battlecamera
             gameleader.Leader.containers = self.armyleader, self.leaderupdater
-            gamebattalion.Troopnumber.containers = self.troopnumbersprite, self.effectupdater, self.battlecamera
+            gameunit.Troopnumber.containers = self.troopnumbersprite, self.effectupdater, self.battlecamera
 
             rangeattack.Rangearrow.containers = self.arrows, self.effectupdater, self.battlecamera
-            gamebattalion.Directionarrow.containers = self.directionarrows, self.effectupdater, self.battlecamera
+            gameunit.Directionarrow.containers = self.directionarrows, self.effectupdater, self.battlecamera
 
             gameui.Gameui.containers = self.gameui, self.uiupdater
             gameui.Minimap.containers = self.minimap, self.battleui
             gameui.FPScount.containers = self.battleui
             gameui.Uibutton.containers = self.buttonui, self.lorebuttonui
             gameui.Switchuibutton.containers = self.switchbuttonui, self.uiupdater
-            gameui.Selectedsquad.containers = self.squadselectedborder, self.squadeditborder, self.mainui
+            gameui.Selectedsquad.containers = self.inspectselectedborder, self.uniteditborder, self.mainui
             gameui.Skillcardicon.containers = self.skillicon, self.battleui, self.mainui
             gameui.Effectcardicon.containers = self.effecticon, self.battleui, self.mainui
             gameui.Eventlog.containers = self.eventlog, self.battleui
@@ -408,7 +408,7 @@ try: # for printing error log when error exception happen
 
             #^ End battle map menu button
 
-            #v Create unit editor button and ui
+            #v Create subunit editor button and ui
 
             self.armyeditbutton = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 4)),
                                           text="Army Editor")
@@ -417,7 +417,7 @@ try: # for printing error log when error exception happen
             self.editorbackbutton = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height - imagelist[0].get_height()),
                                          text="Back")
             self.editorbutton = (self.armyeditbutton, self.troopcreatetbutton, self.editorbackbutton)
-            # ^ End unit editor
+            # ^ End subunit editor
 
             #v Army editor
             boximg = load_image('army_presetbox.png', 'ui').convert()
@@ -472,28 +472,28 @@ try: # for printing error log when error exception happen
             #^ End left and right enemy
 
             self.team1previewarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-                                              [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]) # player teat army squad list
+                                              [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]) # player teat army subunit list
             self.team1previewleader = [gameunitedit.Previewleader(1, 0, 0, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 1, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 2, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 3, self.leaderstat)]
             self.leaderupdater.remove(*self.team1previewleader)
-            self.team2testfrontarmy = np.array([0,0,0,0,0,0,0,0]) # front enemy line squad list
+            self.team2testfrontarmy = np.array([0,0,0,0,0,0,0,0]) # front enemy line subunit list
             self.team2testfrontaleader = [gameunitedit.Previewleader(1, 0, 0, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 1, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 2, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 3, self.leaderstat)]
-            self.team2testleftarmy = np.array([0,0,0,0,0,0,0,0]) # left enemy line squad list
+            self.team2testleftarmy = np.array([0,0,0,0,0,0,0,0]) # left enemy line subunit list
             self.team2testleftleader = [gameunitedit.Previewleader(1, 0, 0, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 1, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 2, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 3, self.leaderstat)]
-            self.team2testrightarmy = np.array([0,0,0,0,0,0,0,0]) # right enemy line squad list
+            self.team2testrightarmy = np.array([0,0,0,0,0,0,0,0]) # right enemy line subunit list
             self.team2testrightleader = [gameunitedit.Previewleader(1, 0, 0, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 1, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 2, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 3, self.leaderstat)]
-            self.team2testreararmy = np.array([0,0,0,0,0,0,0,0]) # rear enemy line squad list
+            self.team2testreararmy = np.array([0,0,0,0,0,0,0,0]) # rear enemy line subunit list
             self.team2testrearleader = [gameunitedit.Previewleader(1, 0, 0, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 1, self.leaderstat),
                                gameunitedit.Previewleader(1, 0, 2, self.leaderstat),
@@ -583,7 +583,7 @@ try: # for printing error log when error exception happen
             self.mainui.add(*self.menubutton, self.profilebox)
             self.menustate = "mainmenu"
             self.textinputpopup = None # popup for texting text input state
-            self.choosingfaction = True # swap list between faction and unit, always start with choose faction first as true
+            self.choosingfaction = True # swap list between faction and subunit, always start with choose faction first as true
 
             self.battlegame = maingame.Battle(self, self.winstyle)
 
@@ -678,7 +678,7 @@ try: # for printing error log when error exception happen
             self.maketeamcoa([list(data.values())[1][2], list(data.values())[1][3]])
 
         def changesource(self, descriptiontext, scalevalue):
-            """Change source description, add new unit dot, change army stat when select new source"""
+            """Change source description, add new subunit dot, change army stat when select new source"""
             for desc in self.sourcedescription:
                 desc.kill()
                 del desc
@@ -717,7 +717,7 @@ try: # for printing error log when error exception happen
             teamtotal = [0,0] # total troop number in army
             trooptypelist = [[0,0,0,0],[0,0,0,0]] # total number of each troop type
             leadernamelist = (team1commander, team2commander)
-            armyteamlist = (team1pos,team2pos) # for finding how many unit in each team
+            armyteamlist = (team1pos,team2pos) # for finding how many subunit in each team
 
             armylooplist = (team1army, team2army)
             for index, team in enumerate(armylooplist):
@@ -761,13 +761,13 @@ try: # for printing error log when error exception happen
 
         def makearmyslot(self, gameid, team, armyid, teamcolour, rangetorun, startpos, columnonly = False):
             width, height = 0, 0
-            squadnum = 0  # Number of squad based on the position in row and column
+            squadnum = 0  # Number of subunit based on the position in row and column
             for squad in rangetorun: # generate player army slot for filling troop into preview army
                 if columnonly == False:
                     width += self.squadwidth
                     self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, teamcolour, (width, height), startpos))
                     squadnum += 1
-                    if squadnum == 8:  # Pass the last squad in the row, go to the next one
+                    if squadnum == 8:  # Pass the last subunit in the row, go to the next one
                         width = 0
                         height += self.squadheight
                         squadnum = 0
@@ -930,7 +930,7 @@ try: # for printing error log when error exception happen
                             self.menubutton.add(*self.mapselectbutton)
                             self.mainui.add(*self.mapselectbutton, self.maplistbox, self.maptitle, self.mapscroll)
 
-                        elif self.uniteditbutton.event: # custom unit/sub-unit editor menu
+                        elif self.uniteditbutton.event: # custom subunit/sub-subunit editor menu
                             self.menustate = "uniteditor"
                             self.uniteditbutton.event = False
                             self.mainui.remove(*self.menubutton, self.profilebox)
@@ -1167,7 +1167,7 @@ try: # for printing error log when error exception happen
                             self.weathertype = 4
                             self.weatherstrength = 0
                             self.currentweather = gameweather.Weather(self.timeui, self.weathertype, self.weatherstrength, self.allweather)
-                            self.showincard = None # current sub-unit showing in unit card
+                            self.showincard = None # current sub-subunit showing in subunit card
                             self.leadernow = []  # list of showing leader in command ui
 
                             self.gameui[1].rect = self.gameui[1].image.get_rect(center=(self.gameui[1].X,
@@ -1189,13 +1189,13 @@ try: # for printing error log when error exception happen
 
                             self.troopscroll.changeimage(newrow=self.currenttrooprow, logsize=len(self.trooplist)) # change troop scroll image
 
-                            for index, slot in enumerate(self.armybuildslot):  # start with the first player squad slot selected when enter
+                            for index, slot in enumerate(self.armybuildslot):  # start with the first player subunit slot selected when enter
                                 if index == 0:
                                     slot.selected = True
-                                    for border in self.squadeditborder:
+                                    for border in self.uniteditborder:
                                         border.kill()
                                         del border
-                                    self.squadeditborder.add(gameui.Selectedsquad(slot.inspposition))
+                                    self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition))
                                 else: # reset all other slot
                                     slot.selected = False
 
@@ -1204,7 +1204,7 @@ try: # for printing error log when error exception happen
                                             self.terrainchangebutton, self.featurechangebutton, self.weatherchangebutton, self.timenumber, self.speednumber,
                                             *self.armybuildslot)
 
-                    elif self.menustate == "armyeditor": # custom battalion preset creator and test
+                    elif self.menustate == "armyeditor": # custom parentunit preset creator and test
 
                         if self.armybackbutton.event or esc_press: # or self.armysavebutton.event
                             self.armybackbutton.event = False
@@ -1212,7 +1212,7 @@ try: # for printing error log when error exception happen
                             self.menustate = "uniteditor"
 
                             self.gameui[1].rect = self.gameui[1].image.get_rect(center=(self.gameui[1].X, self.gameui[1].Y)) # change leader ui position back
-                            self.gameui[2].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X, self.gameui[2].Y)) # change unit card position back
+                            self.gameui[2].rect = self.gameui[2].image.get_rect(center=(self.gameui[2].X, self.gameui[2].Y)) # change subunit card position back
                             self.buttonui[0].rect = self.buttonui[0].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y + 10))
                             self.buttonui[1].rect = self.buttonui[1].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y - 70))
                             self.buttonui[2].rect = self.buttonui[2].image.get_rect(center=(self.gameui[2].X - 152, self.gameui[2].Y - 30))
@@ -1223,13 +1223,13 @@ try: # for printing error log when error exception happen
                                                self.gameui[2], self.filterbox, *self.unitcardbutton, self.terrainchangebutton, self.featurechangebutton,
                                                self.weatherchangebutton, self.timenumber, self.speednumber, *self.armybuildslot, *self.leadernow)
 
-                            for group in self.troopnamegroup, self.squadeditborder, self.armypresetnamegroup:
+                            for group in self.troopnamegroup, self.uniteditborder, self.armypresetnamegroup:
                                 for item in group:  # remove name list
                                     item.kill()
                                     del item
 
 
-                            for slot in self.armybuildslot: # reset all sub-unit slot
+                            for slot in self.armybuildslot: # reset all sub-subunit slot
                                 slot.changetroop(0, self.baseterrain,
                                                  self.baseterrain * len(self.battlemapfeature.featurelist) + self.featureterrain,
                                                  self.currentweather)
@@ -1237,7 +1237,7 @@ try: # for printing error log when error exception happen
 
                             for leaderlist in self.previewleaderlist:
                                 for leader in leaderlist:
-                                    leader.squad = None  # remove squad link in leader
+                                    leader.subunit = None  # remove subunit link in leader
                                     leader.changeleader(1, self.leaderstat)
 
 
@@ -1301,15 +1301,15 @@ try: # for printing error log when error exception happen
 
                                         for index, item in enumerate(leaderwholist):
                                             self.team1previewleader[index].leader = None
-                                            if self.team1previewleader[index].squad is not None:
-                                                self.team1previewleader[index].squad.leader = None
+                                            if self.team1previewleader[index].subunit is not None:
+                                                self.team1previewleader[index].subunit.leader = None
 
                                             self.team1previewleader[index].changeleader(item, self.leaderstat)
 
                                             posindex = 0
-                                            for slot in self.armybuildslot: # can't use gameid here as none squad not count in position check
+                                            for slot in self.armybuildslot: # can't use gameid here as none subunit not count in position check
                                                 if posindex == leaderposlist[index]:
-                                                    self.team1previewleader[index].squad = slot
+                                                    self.team1previewleader[index].subunit = slot
                                                     slot.leader = self.team1previewleader[index]
                                                     break
                                                 else:
@@ -1319,7 +1319,7 @@ try: # for printing error log when error exception happen
                                         self.previewauthority(self.team1previewleader, 0) #calculate authority
 
                                     else: # new preset
-                                        for slot in self.armybuildslot:  # reset all sub-unit slot
+                                        for slot in self.armybuildslot:  # reset all sub-subunit slot
                                             slot.changetroop(0, self.baseterrain,
                                                              self.baseterrain * len(self.battlemapfeature.featurelist) + self.featureterrain,
                                                              self.currentweather)
@@ -1327,7 +1327,7 @@ try: # for printing error log when error exception happen
 
                                         for leaderlist in self.previewleaderlist:
                                             for leader in leaderlist:
-                                                leader.squad = None  # remove squad link in leader
+                                                leader.subunit = None  # remove subunit link in leader
                                                 leader.changeleader(1, self.leaderstat)
 
 
@@ -1420,7 +1420,7 @@ try: # for printing error log when error exception happen
                                                                      self.baseterrain * len(
                                                                      self.battlemapfeature.featurelist) + self.featureterrain,
                                                                      self.currentweather)
-                                                    if slot.selected and slot.name != "None": # reset unit card as well
+                                                    if slot.selected and slot.name != "None": # reset subunit card as well
                                                         self.gameui[1].valueinput(who=self.showincard)
                                                         self.gameui[2].valueinput(who=self.showincard, weaponlist=self.allweapon,
                                                                                   armourlist=self.allarmour,
@@ -1457,33 +1457,33 @@ try: # for printing error log when error exception happen
                                         self.mainui.remove(self.popuplistbox, self.popuplistscroll, *self.popupnamegroup)
 
                                 elif self.battlepreview.rect.collidepoint(self.mousepos):
-                                    for slot in self.armybuildslot: # left click on any sub-unit slot
+                                    for slot in self.armybuildslot: # left click on any sub-subunit slot
                                         if slot.rect.collidepoint(self.mousepos):
 
-                                            if keystate[pygame.K_LSHIFT]: # add all sub-unit from the first selected
+                                            if keystate[pygame.K_LSHIFT]: # add all sub-subunit from the first selected
                                                 firstone = None
                                                 for newslot in self.armybuildslot:
                                                     if newslot.armyid == slot.armyid and newslot.gameid <= slot.gameid:
-                                                        if firstone is None and newslot.selected: # found the previous selected sub-unit
+                                                        if firstone is None and newslot.selected: # found the previous selected sub-subunit
                                                             firstone = newslot.gameid
                                                             if slot.gameid <= firstone: # cannot go backward, stop loop
                                                                 break
                                                             else: # forward select, acceptable
                                                                 slot.selected = True
-                                                                self.squadeditborder.add(gameui.Selectedsquad(slot.inspposition,5))
+                                                                self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
                                                         elif firstone is not None and newslot.gameid > firstone and newslot.selected == False: # select from first select to clicked
                                                             newslot.selected = True
-                                                            self.squadeditborder.add(gameui.Selectedsquad(newslot.inspposition,5))
+                                                            self.uniteditborder.add(gameui.Selectedsquad(newslot.inspposition, 5))
 
-                                            elif keystate[pygame.K_LCTRL]: # add another selected sub-unit with left ctrl + left mouse button
+                                            elif keystate[pygame.K_LCTRL]: # add another selected sub-subunit with left ctrl + left mouse button
                                                 slot.selected = True
-                                                self.squadeditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
-                                            else: # select one sub-unit by normal left click
-                                                for border in self.squadeditborder: # remove all other border
+                                                self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
+                                            else: # select one sub-subunit by normal left click
+                                                for border in self.uniteditborder: # remove all other border
                                                     border.kill()
                                                     del border
                                                 slot.selected = True
-                                                self.squadeditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
+                                                self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
 
                                             if slot.name != "None":
                                                 self.mainui.remove(*self.leadernow)
@@ -1492,7 +1492,7 @@ try: # for printing error log when error exception happen
                                                 self.showincard = slot
                                                 self.gameui[1].valueinput(who=self.showincard)
                                                 self.gameui[2].valueinput(who=self.showincard, weaponlist=self.allweapon,
-                                                                          armourlist=self.allarmour) # update unit card on selected squad
+                                                                          armourlist=self.allarmour) # update subunit card on selected subunit
                                                 if self.gameui[2].option == 2:
                                                     self.traitskillblit()
                                                     self.effecticonblit()
@@ -1560,7 +1560,7 @@ try: # for printing error log when error exception happen
                                                 if mouse_up:
                                                     for slot in self.armybuildslot:
                                                         if slot.selected:
-                                                            if keystate[pygame.K_LSHIFT]: # change all sub-unit in army
+                                                            if keystate[pygame.K_LSHIFT]: # change all sub-subunit in army
                                                                 for newslot in self.armybuildslot:
                                                                     if newslot.armyid == slot.armyid:
                                                                         newslot.changetroop(self.troopindexlist[index + self.currenttrooprow],
@@ -1573,22 +1573,22 @@ try: # for printing error log when error exception happen
                                                                      self.baseterrain * len(self.battlemapfeature.featurelist)+self.featureterrain,
                                                                      self.currentweather)
 
-                                                            if slot.name != "None": #update information of unit that just got changed
+                                                            if slot.name != "None": #update information of subunit that just got changed
                                                                 self.mainui.remove(*self.leadernow)
                                                                 self.leadernow = self.previewleaderlist[slot.armyid]
                                                                 self.mainui.add(*self.leadernow)  # add leader portrait to draw
                                                                 self.showincard = slot
                                                                 self.previewauthority(self.leadernow, slot.armyid)
                                                                 self.gameui[2].valueinput(who=self.showincard, weaponlist=self.allweapon,
-                                                                                          armourlist=self.allarmour)  # update unit card on selected squad
+                                                                                          armourlist=self.allarmour)  # update subunit card on selected subunit
                                                                 if self.gameui[2].option == 2:
                                                                     self.traitskillblit()
                                                                     self.effecticonblit()
                                                                     self.countdownskillicon()
-                                                            elif slot.name == "None" and slot.leader is not None: #remove leader from none squad if any
+                                                            elif slot.name == "None" and slot.leader is not None: #remove leader from none subunit if any
                                                                 slot.leader.changeleader(1, self.leaderstat)
-                                                                slot.leader.squad = None # remove squad link in leader
-                                                                slot.leader = None # remove leader link in squad
+                                                                slot.leader.subunit = None # remove subunit link in leader
+                                                                slot.leader = None # remove leader link in subunit
                                                                 self.previewauthority(self.leadernow, slot.armyid)
 
                                                 elif mouse_right: # upen encyclopedia

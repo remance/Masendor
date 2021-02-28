@@ -46,8 +46,8 @@ class Lorebook(pygame.sprite.Sprite):
                                                     int(image.get_height() * self.heightadjust)))
         self.image_original = self.image.copy()
         self.leaderstat = self.leader.leaderlist
-        self.section = 0  ## 0 = welcome/concept, 1 world history, 2 = faction, 3 = unit, 4 = equipment, 5 = unit status, 6 = unit skill, 7 = unit trait, 8 = leader, 9 terrain, 10 = landmark
-        self.subsection = 1  ## subsection of that section e.g. swordmen unit in unit section Start with 1 instead of 0
+        self.section = 0  ## 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill, 7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark
+        self.subsection = 1  ## subsection of that section e.g. swordmen subunit in subunit section Start with 1 instead of 0
         self.statdata = None  ## for getting the section stat data
         self.loredata = None  ## for getting the section lore data
         self.showsubsection = None  ## Subsection stat currently viewing
@@ -252,8 +252,8 @@ class Lorebook(pygame.sprite.Sprite):
                         if self.section != 4: # equipment section need to be processed differently
                             createtext = statheader[index] + ": " + str(text)
                             if statheader[index] == "ImageID":
-                                if self.section == 3: # Replace imageid to unit role in troop section
-                                    """Role is not type, it represent unit classification from base stat to tell what it excel and has no influence on stat"""
+                                if self.section == 3: # Replace imageid to subunit role in troop section
+                                    """Role is not type, it represent subunit classification from base stat to tell what it excel and has no influence on stat"""
                                     rolelist = {1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock", 5: "Support", 6: "Magic", 7: "Ambusher",
                                                 8: "Sniper", 9: "Recon"}
                                     role = []
@@ -339,7 +339,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     if statheader[index] == "Charge Skill":
                                         if text in self.skillstat:  # only include skill if exist in ruleset in case user put in trait not existed in ruleset
                                             abilitylist += self.skillstat[text][0]
-                                        createtext = statheader[index] + ": " + abilitylist + ", Base Speed: " + str(speed) # charge skill, add unit speed after the skill name
+                                        createtext = statheader[index] + ": " + abilitylist + ", Base Speed: " + str(speed) # charge skill, add subunit speed after the skill name
                                     elif text != [0]:
                                         for thistext in text:
                                             if thistext in self.skillstat:  # only include skill in ruleset

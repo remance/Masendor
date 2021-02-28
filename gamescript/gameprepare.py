@@ -427,7 +427,7 @@ class Armystat(pygame.sprite.Sprite):
                               (self.image.get_width()/5, self.image.get_height()/1.8), # infantry range
                               (self.image.get_width()/1.6, self.image.get_height()/3), # cav melee
                               (self.image.get_width()/1.6, self.image.get_height()/1.8), # cav range
-                              (self.image.get_width()/5, self.image.get_height()/1.4)) # total unit
+                              (self.image.get_width()/5, self.image.get_height()/1.4)) # total subunit
 
         self.rect = self.image.get_rect(center=pos)
 
@@ -621,9 +621,9 @@ class Mapshow(pygame.sprite.Sprite):
         self.imagebefore.fill((0, 0, 0)) # draw black colour for black corner
         # pygame.draw.rect(self.image, self.colour, (2, 2, self.widthbox - 3, self.heightbox - 3)) # draw block colour
 
-        self.team2dot = pygame.Surface((8, 8)) # dot for team2 unit
+        self.team2dot = pygame.Surface((8, 8)) # dot for team2 subunit
         self.team2dot.fill((0, 0, 0)) # black corner
-        self.team1dot = pygame.Surface((8, 8)) # dot for team1 unit
+        self.team1dot = pygame.Surface((8, 8)) # dot for team1 subunit
         self.team1dot.fill((0, 0, 0)) # black corner
         team2 = pygame.Surface((6, 6)) # size 6x6
         team2.fill((255, 0, 0)) # red rect
