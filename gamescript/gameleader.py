@@ -128,7 +128,7 @@ class Leader(pygame.sprite.Sprite):
         self.parentunit.leaderchange = True # initiate leader change stat recalculation for parentunit
 
     def update(self):
-        if self.gamestart == False:
+        if self.gamestart is False:
             row = int(self.subunitpos/8)
             column = self.subunitpos - (row*8)
             self.subunit = self.parentunit.subunitsprite[self.subunitpos] # setup subunit that leader belong

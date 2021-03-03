@@ -49,7 +49,7 @@ def load_images(subfolder=[], loadorder=True, returnorder=False):
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
 
-    if returnorder == False:
+    if returnorder is False:
         return imgs
     else: # return order of the file as list
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
@@ -211,12 +211,6 @@ def loadgamedata(game):
                       69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
 
     # v create subunit related class
-    imgs = []
-    imgsold = load_images(['war', 'unit_ui', 'parentunit'])
-    for img in imgsold:
-        imgs.append(img)
-    gameunit.Unitarmy.images = imgs
-
     imgsold = load_images(['war', 'unit_ui', 'weapon'])
     imgs = []
     for img in imgsold:
@@ -982,6 +976,32 @@ def unitsetup(maingame):
 
 ## Battle related gamescript
 
+def setrotate(self, settarget=None):
+    """set basetarget and new angle for sprite rotation"""
+    if settarget is None: # For auto chase rotate
+        myradians = math.atan2(self.basetarget[1] - self.basepos[1], self.basetarget[0] - self.basepos[0])
+    else: # Command move or rotate
+        myradians = math.atan2(settarget[1] - self.basepos[1], settarget[0] - self.basepos[0])
+    newangle = math.degrees(myradians)
+
+    # """upper left -"""
+    if newangle >= -180 and newangle <= -90:
+        newangle = -newangle - 90
+
+    # """upper right +"""
+    elif newangle > -90 and newangle < 0:
+        newangle = (-newangle) - 90
+
+    # """lower right -"""
+    elif newangle >= 0 and newangle <= 90:
+        newangle = -(newangle + 90)
+
+    # """lower left +"""
+    elif newangle > 90 and newangle <= 180:
+        newangle = 270 - newangle
+
+    return round(newangle)
+
 def rotationxy(self, origin, point, angle):
     ox, oy = origin
     px, py = point
@@ -990,12 +1010,12 @@ def rotationxy(self, origin, point, angle):
     return pygame.Vector2(x, y)
 
 def squadcombatcal(who, target, whoside, targetside, sortindex = (3,4,2,5,1,6,0,7)):
-    """calculate subunit engagement using information after battalionengage who is attacker, target is defender parentunit"""
+    """calculate subunit engagement using information after battalionengage who is attacker, basetarget is defender parentunit"""
     squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
     whofrontline = who.frontlineobject[whoside]
     # """only calculate if the attack is attack with the front side"""
     if whoside == 0:
-        # print(whoside, targetside, target.frontline[targetside])
+        # print(whoside, targetside, basetarget.frontline[targetside])
         sortmidfront = [whofrontline[3], whofrontline[4], whofrontline[2], whofrontline[5],
                         whofrontline[1], whofrontline[6], whofrontline[0], whofrontline[7]]
     # else: sortmidfront = whofrontline
@@ -1005,10 +1025,10 @@ def squadcombatcal(who, target, whoside, targetside, sortindex = (3,4,2,5,1,6,0,
 def combatpositioncal(sortmidfront, sortindex, receiver, attackerside, receiverside, squadside):
     """Find enemy subunit to fight starting at the front of attacker, then either right or left side on the frontline array"""
     for position, attackersquad in enumerate(sortmidfront):
-        if attackersquad != 0 and (attackersquad.battleside[squadside] is None or attackersquad.battleside[squadside].state == 100): # only pick new target if not fighting or target already dead
+        if attackersquad != 0 and (attackersquad.battleside[squadside] is None or attackersquad.battleside[squadside].state == 100): # only pick new basetarget if not fighting or basetarget already dead
             receiversquad = receiver.frontlineobject[receiverside][sortindex[position]]
-            if any(battle > 0 for battle in attackersquad.battlesideid) == False: # check if subunit not already fighting if true skip picking new enemy
-                if receiversquad != 0: # found front target
+            if any(battle > 0 for battle in attackersquad.battlesideid) is False: # check if subunit not already fighting if true skip picking new enemy
+                if receiversquad != 0: # found front basetarget
                     receiversquad = receiver.frontlineobject[receiverside][sortindex[position]] # get front of another parentunit frontline to assign front combat
                     if receiversquad.battlesideid[squadside] == 0: # only attack if the side is already free else just wait until it free
                         attackersquad.battleside[attackerside] = receiversquad
@@ -1017,9 +1037,9 @@ def combatpositioncal(sortmidfront, sortindex, receiver, attackerside, receivers
                         receiversquad.battleside[squadside] = attackersquad
                         receiversquad.battlesideid[squadside] = attackersquad.gameid
 
-                else:  # pick flank attack instead if no front target to fight
+                else:  # pick flank attack instead if no front basetarget to fight
                     chance = random.randint(0, 1) # attack left array side of the subunit if get random 0, right if 1
-                    secondpick = 0 # if the first side search result in no target to fight pick another one
+                    secondpick = 0 # if the first side search result in no basetarget to fight pick another one
                     if chance == 0: secondpick = 1
                     truetargetside = changecombatside(chance, receiverside) # find combatside according to the parentunit combat side
                     receiversquad = squadselectside(receiver.frontlineobject[receiverside], chance, sortindex[position])
@@ -1118,16 +1138,16 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
     if type == 0:  # Melee damage
         dmg = who.dmg
-        if who.charging: # Include charge in dmg if charging
-            if who.ignorechargedef == False: # Ignore charge defense if have ignore trait
+        if who.chargeskill in who.skilleffect: # Include charge in dmg if charging
+            if who.ignorechargedef is False: # Ignore charge defense if have ignore trait
                 sidecal = battlesidecal[defside]
                 if target.fulldef or target.tempfulldef: # Defense all side
                     sidecal = 1
-                dmg = dmg + (who.charge / 10) - (target.chargedef * sidecal / 10)
+                dmg = dmg + (who.charge) - (target.chargedef * sidecal)
             else:
-                dmg = dmg + (who.charge / 10)
+                dmg = dmg + (who.charge)
 
-        if target.charging and target.ignorechargedef == False: # Also include chargedef in dmg if enemy charging
+        if target.charging and target.ignorechargedef is False: # Also include chargedef in dmg if enemy charging
             chargedefcal = who.chargedef - target.charge
             if chargedefcal < 0:
                 chargedefcal = 0
@@ -1188,7 +1208,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
     receiver.stamina -= attacker.bonusstaminadmg
 
     # v Add red corner to indicate combat
-    if receiver.haveredcorner == False:
+    if receiver.haveredcorner is False:
         receiver.imageblock.blit(receiver.images[11], receiver.cornerimagerect)
         receiver.haveredcorner = True
     # ^ End red corner
@@ -1206,7 +1226,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
 
 
 def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
-    """target position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
+    """basetarget position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
     wholuck = random.randint(-50, 50) # attacker luck
     targetluck = random.randint(-50, 50) # defender luck
     whopercent = battlesidecal[whoside] # attacker attack side modifier
@@ -1227,7 +1247,7 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
         dmgeffect = who.sidedmgeffect # use side dmg effect as some skill boost only front dmg
         if whopercent > 1: whopercent = 1
 
-    if targetside != 0 and targetpercent != 1: # same for the target defender
+    if targetside != 0 and targetpercent != 1: # same for the basetarget defender
         targetpercent = battlesidecal[targetside] + (target.discipline / 300)
         targetdmgeffect = target.sidedmgeffect
         if targetpercent > 1: targetpercent = 1
@@ -1302,7 +1322,7 @@ def moveleadersquad(leader, oldarmysquad, newarmysquad, alreadypick=[]):
     placedone = False # finish finding slot to place yet
     newarmysquadlen = len(newarmysquad[newrow]) # get size of row in new armysquad
 
-    while placedone == False:
+    while placedone is False:
         if leader.subunit.parentunit.armysquad.flat[(newrow * newarmysquadlen) + newplace] != 0:
             for squad in leader.subunit.parentunit.subunitsprite:
                 if squad.gameid == leader.subunit.parentunit.armysquad.flat[(newrow * newarmysquadlen) + newplace]:

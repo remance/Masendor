@@ -639,7 +639,7 @@ try: # for printing error log when error exception happen
             self.teamcoa.add(gameprepare.Teamcoa(team1setpos, self.coa[data[0]],
                                                  1, self.allfaction.factionlist[data[0]][0])) # team 1
 
-            if oneteam == False:
+            if oneteam is False:
                 self.teamcoa.add(gameprepare.Teamcoa((SCREENRECT.width/2 + (300 * widthadjust),SCREENRECT.height/3), self.coa[data[1]],
                                                  2, self.allfaction.factionlist[data[1]][0])) # team 2
             self.mainui.add(self.teamcoa)
@@ -763,7 +763,7 @@ try: # for printing error log when error exception happen
             width, height = 0, 0
             squadnum = 0  # Number of subunit based on the position in row and column
             for squad in rangetorun: # generate player army slot for filling troop into preview army
-                if columnonly == False:
+                if columnonly is False:
                     width += self.squadwidth
                     self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, teamcolour, (width, height), startpos))
                     squadnum += 1
@@ -1076,7 +1076,7 @@ try: # for printing error log when error exception happen
 
                                 for box in self.tickbox:
                                     if box.rect.collidepoint(self.mousepos):
-                                        if box.tick == False:
+                                        if box.tick is False:
                                             box.changetick(True)
                                         else:
                                             box.changetick(False)
@@ -1471,7 +1471,7 @@ try: # for printing error log when error exception happen
                                                             else: # forward select, acceptable
                                                                 slot.selected = True
                                                                 self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
-                                                        elif firstone is not None and newslot.gameid > firstone and newslot.selected == False: # select from first select to clicked
+                                                        elif firstone is not None and newslot.gameid > firstone and newslot.selected is False: # select from first select to clicked
                                                             newslot.selected = True
                                                             self.uniteditborder.add(gameui.Selectedsquad(newslot.inspposition, 5))
 

@@ -18,6 +18,7 @@ class Subunit(pygame.sprite.Sprite):
     statlist = None
     createtroopstat = gamelongscript.createtroopstat
     rotationxy = gamelongscript.rotationxy
+    setrotate = gamelongscript.setrotate
     maxzoom = 10 # max zoom allow
     # use same position as subunit front index 0 = front, 1 = left, 2 = rear, 3 = right
 
@@ -32,7 +33,9 @@ class Subunit(pygame.sprite.Sprite):
         self.boardpos = None  # Used for event log position of subunit (Assigned in maingame subunit setup)
         self.walk = False # currently walking
         self.run = False # currently running
-        self.moverotate = False  # for checking if the movement require rotation first or not
+        self.frontline = False # on front line of unit or not
+        self.attacktarget = None
+        self.meleetarget = None
         self.parentunit = parentunit # reference to the parent battlion of this subunit
 
         self.frontcollide = [] # list of front collide sprite
@@ -56,7 +59,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.haveredcorner = False
         self.state = 0 # Current subunit state, similar to parentunit state
-        self.nocombat = 0 # time when not fighting before going into idle (1 second)
         self.timer = 0 # may need to use random.random()
         self.magazinenow = 0
         self.zoom = 1
@@ -88,7 +90,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.selectedimage = pygame.Surface((image.get_width(), image.get_height()), pygame.SRCALPHA)
         pygame.draw.circle(self.selectedimage, (255, 255, 255, 150), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2)
-        pygame.draw.circle(self.selectedimage, (0, 0, 0, 255), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2, 2)
+        pygame.draw.circle(self.selectedimage, (0, 0, 0, 255), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2, 1)
         self.selectedimage_original, self.selectedimage_original2 = self.selectedimage.copy(), self.selectedimage.copy()
         self.selectedimagerect = self.selectedimage.get_rect(topleft=(0,0))
         #^ End subunit block team colour
@@ -130,7 +132,8 @@ class Subunit(pygame.sprite.Sprite):
                                           self.parentunit.basepos[1] - self.parentunit.baseheightbox / 2) # get topleft corner position of parentunit to calculate true pos
         self.basepos = pygame.Vector2(battaliontopleft[0] + self.armypos[0], battaliontopleft[1] + self.armypos[1]) # true position of subunit in map
         self.lastpos = self.basepos
-        self.target = self.basepos
+        self.basetarget = self.basepos # basetarget to move
+        self.commandtarget = self.basepos # actual basetarget outside of combat
         self.pos = self.basepos * self.zoom  # pos is for showing on screen
 
         #v Generate front side position
@@ -268,7 +271,6 @@ class Subunit(pygame.sprite.Sprite):
 
         if self.haveredcorner == True:  # have red corner reset image
             self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
-            # self.imageblock = self.imageblock_original.copy()
             self.haveredcorner = False
 
         #v reset stat to default and apply morale, stamina, command buff to stat
@@ -311,7 +313,7 @@ class Subunit(pygame.sprite.Sprite):
         self.elemrange = self.baseelemrange
         #^ End default stat
 
-        if self.height > 100: #  apply height to range for height that is higher than 100 #TODO redo height range cal to use enemy target height as well
+        if self.height > 100: #  apply height to range for height that is higher than 100 #TODO redo height range cal to use enemy basetarget height as well
             self.shootrange = self.shootrange + (self.height / 10)
 
         #v Apply status effect from trait
@@ -454,9 +456,7 @@ class Subunit(pygame.sprite.Sprite):
                 if calstatus[30] != [0]: # Apply inflict status effect to enemy from skill to inflict list
                     for effect in calstatus[30]:
                         if effect != [0]: self.inflictstatus[effect] = calstatus[2]
-            self.charging = False
             if self.chargeskill in self.skilleffect:
-                self.charging = True
                 self.authpenalty += 0.5 # higher authority penalty when charging (retreat while charging)
         #^ End skill effect
 
@@ -539,7 +539,7 @@ class Subunit(pygame.sprite.Sprite):
         #^ End rounding up
 
         self.rotatespeed = 20 # rotate speed for subunit only use for self rotate not subunit rotate related
-        # if self.rotatespeed < 1: self.rotatespeed = 1
+        # if self.parentunit.state in (10,96,97,98,99): self.rotatespeed = 10
 
         #v cooldown, active and effect timer function
         self.skillcooldown = {key: val - self.timer for key, val in self.skillcooldown.items()} # cooldown decrease overtime
@@ -559,7 +559,7 @@ class Subunit(pygame.sprite.Sprite):
         self.frontsidepos = self.rotationxy(self.basepos, self.frontsidepos, self.radians_angle)
 
     def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
-        if self.gamestart == False: # run once when game start or subunit just get created
+        if self.gamestart is False: # run once when game start or subunit just get created
             self.zoom = zoom
             self.zoomscale()
             self.findnearbysquad()
@@ -577,33 +577,31 @@ class Subunit(pygame.sprite.Sprite):
             dt = newdt
             self.walk = False  # reset walk
             self.run = False  # reset run
+            self.attacktarget = self.parentunit.attacktarget
+            self.attackpos = self.parentunit.baseattackpos
+            if self.attacktarget is not None:
+                self.attackpos = self.attacktarget.basepos
 
             # v Mouse collision detection
             if self.rect.collidepoint(mousepos):
-                # posmask = int(mousepos[0] - self.rect.x), int(mousepos[1] - self.rect.y)  # for checking whether mouse position is inside mask or not
-                # try:
-                #     if self.mask.get_at(posmask) == 1:  # mouse inside mask
                 self.maingame.lastmouseover = self.parentunit  # last mouse over on this parentunit
-                if mouseup and self.maingame.uiclick == False:
+                if mouseup and self.maingame.uiclick is False:
                     self.maingame.lastselected = self.parentunit  # become last selected parentunit
-                    if self.parentunit.selected == False:
+                    if self.parentunit.selected is False:
                         self.parentunit.justselected = True
                         self.parentunit.selected = True
                     self.wholastselect = self.gameid
                     self.maingame.clickany = True
-                # except:
-                #     pass  # not inside, skip
             # ^ End mouse detect
 
             #v Stamina and Health bar and melee combat indicator function
-            #v Hp bar, similar to parentunit see there for comment
             if self.oldlasthealth != self.unithealth:
                 healthlist = (self.health75, self.health50, self.health25, 0)
                 for index, health in enumerate(healthlist):
                     if self.unithealth > health:
                         if self.lasthealthstate != abs(4-index):
                             self.image_original3.blit(self.images[index+1], self.healthimagerect)
-                            self.imageblock.blit(self.images[index+1], self.healthimagerect)
+                            self.imageblock_original.blit(self.images[index+1], self.healthimagerect)
                             self.lasthealthstate = abs(4-index)
                             self.zoomscale()
                         break
@@ -618,11 +616,11 @@ class Subunit(pygame.sprite.Sprite):
                                 if index != 3:
                                     self.image_original3.blit(self.images[index + 6], self.staminaimagerect)
                                     self.zoomscale()
-                                    self.imageblock.blit(self.images[index + 6], self.staminaimagerect)
+                                    self.imageblock_original.blit(self.images[index + 6], self.staminaimagerect)
                                     self.laststaminastate = abs(4 - index)
                                 else: # the last level is for collaspe state, condition is slightly different
                                     if self.state != 97: # not in collaspe state
-                                        self.image_original3.blit(self.images[12], self.staminaimagerect)
+                                        self.image_original3.blit(self.images[10], self.staminaimagerect)
                                         self.zoomscale()
                                         self.laststaminastate = 0
                                         self.oldlaststamina = self.stamina
@@ -645,7 +643,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.useskillcond != 3: # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.checkskillcondition()
 
-                    if self.state == 4 and self.parentunit.charging and self.chargeskill not in self.skillcooldown: # charge skill only when running to melee
+                    if self.state == 4 and self.charging and self.chargeskill not in self.skillcooldown: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
 
                     skillchance = random.randint(0, 10) # random chance to use random available skill
@@ -653,169 +651,199 @@ class Subunit(pygame.sprite.Sprite):
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
                     self.timer -= 1
 
-                if self.nocombat > 0:  # For avoiding subunit go into idle state while parentunit auto move in melee combat
-                    self.nocombat += dt
-                    if parentstate != 10:
-                        self.nocombat = 0
-
-                #v Unit in melee combat, set subunit state to be in idle, melee combat or range attack state
-                if parentstate == 10 and self.state not in (97,98,99): # collapse and broken state subunit cannot be in combat state
-                    if any(battle > 0 for battle in self.battlesideid): # have enemy in melee
-                        self.state = 10
-                    elif self.state != 10 and self.ammo > 0 and (self.arcshot or self.nearbysquadlist[2] == 0) and self.parentunit.fireatwill == 0:  # Help range attack when parentunit in melee combat if has arcshot or frontline
-                        self.state = 11
-                    elif any(battle > 0 for battle in self.battlesideid) == False: # if suddenly not fighting anyone while in melee combat state
-                        if self.nocombat == 0: # Start countdown
-                            self.nocombat = 0.1
-                        if self.nocombat > 1: # Countdown reach 1 second and still not fight anyone
-                            self.state = 0 # Go to idle state
-                            self.nocombat = 0
-                #^End parentunit in melee combat
-
-                #v Range attack function
-                elif parentstate == 11 and self.state not in (97,98,99): # Unit in range attack state and self is not collapse or broken
-                    self.state = 0 # Default state at idle
-                    if self.ammo > 0 and self.attackpos != 0 \
-                            and self.shootrange >= self.attackpos.distance_to(self.basepos): # can shoot if have ammo and in shoot range
-                        self.state = 11 # range combat state
-                elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
-                                                                                                and self.shootmove)):  # Fire at will, auto pick closest enemy
-                    if self.parentunit.neartarget != {}:
-                        if self.attacktarget == 0: # get nearby enemy target from list if not targeting anything yet
-                            self.attackpos = list(self.parentunit.neartarget.values())[0] # replace attacktarget with enemy pos
-                            self.attacktarget = list(self.parentunit.neartarget.keys())[0] # replace attacktarget with enemy id
-                        if self.shootrange >= self.attackpos.distance_to(self.basepos):
-                            self.state = 11
-                            if parentstate in (1, 3, 5):  # Walk and shoot
-                                self.state = 12
-                            elif parentstate in (2, 4, 6):  # Run and shoot
-                                self.state = 13
-                if self.state in (11, 12, 13) and self.magazinenow == 0: # reloading ammo
-                    self.reloadtime += dt
-                    if self.reloadtime >= self.reload:
-                        self.magazinenow = self.magazinesize
-                        self.ammo -= 1
-                        self.reloadtime = 0
-                    self.stamina = self.stamina - (dt * 2) # use stamina while reloading
-                #^ End range attack function
-
-                #v Combat action related
-                if self.frontcollide != [] or self.sidecollide != []:
-                    collidelist = self.frontcollide + self.sidecollide
-                    for subunit in collidelist:
-                        if subunit.team != self.team:
-                            self.state = 10
-                            if self.parentunit.state not in (96,97,98,99):
-                                self.parentunit.state = 10
-                            break
-                if combattimer >= 0.5: # combat is calculated every 0.5 second in game time
-                    if self.state == 10: # if melee combat (engaging anyone on any side)
-                        collidelist = [subunit for subunit in self.frontcollide if subunit.team != self.team]
+                if self.state not in (96,97,98,99):
+                    #v Check if in combat or not with collision
+                    if self.frontcollide != [] or self.sidecollide != []:
+                        collidelist = self.frontcollide + self.sidecollide
                         for subunit in collidelist:
-                            anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
-                            if anglecheck >= 135:  # front
-                                hitside = 0
-                            elif anglecheck >= 45:  # side
-                                hitside = 1
-                            else: # rear
-                                hitside = 2
-                            self.dmgcal(subunit, 0, hitside, self.maingame.gameunitstat.statuslist, combattimer)
-                            self.stamina = self.stamina - (combattimer * 2)
+                            if subunit.team != self.team:
+                                self.state = 10
+                                self.meleetarget = subunit
+                                if parentstate not in (96,97,98,99):
+                                    parentstate = 10
+                                    self.parentunit.state = 10
 
-                    elif self.state in (11, 12, 13): # range combat
-                        if type(self.attacktarget) == int and self.attacktarget != 0: # For fire at will, which attacktarge is int
-                            allunitindex = self.maingame.allunitindex
-                            if self.attacktarget in allunitindex: # if the attack target still alive (if dead it would not be in index list)
-                                self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)] # change attacktarget index into sprite
-                            else: # enemy dead
-                                self.attackpos = 0 # reset attackpos to 0
-                                self.attacktarget = 0 # reset attacktarget to 0
+                                if self.frontcollide == []: # no enemy in front try rotate to enemy at side
+                                    self.basetarget = self.meleetarget.basepos
+                                    self.newangle = self.setrotate()
 
-                                for target in list(self.parentunit.neartarget.values()): # find other nearby target to shoot
-                                    if target in allunitindex: # check if target alive
-                                        self.attackpos = target[1]
-                                        self.attacktarget = target[1]
-                                        self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
-                                        break # found new target break loop
+                                break
+                    elif self.state == 10 or self.frontline: # state 10 but not in fight anymore, rotate and move back to original position
+                        if self.charging and self.frontline:  # attack to nearest target instead
+                            closetarget = None
+                            if self.meleetarget is None:
+                                self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
+                            if self.meleetarget.parentunit.state != 100:
+                                for subunit in self.meleetarget.parentunit.subunitsprite:
+                                    if closetarget is None or closetarget.basepos.distance_to(self.basepos) > subunit.basepos.distance_to(self.basepos):
+                                        closetarget = subunit
+                                self.basetarget = self.meleetarget.basepos
+                                self.newangle = self.setrotate()
+                            else:
+                                self.meleetarget = None
+                                self.attacktarget = None
+                                self.basetarget = self.commandtarget
+                                self.newangle = self.setrotate()
+                                self.state = 0
 
-                        if self.magazinenow > 0 and ((self.attacktarget != 0 and self.attacktarget.state != 100) or
-                                            (self.attacktarget == 0 and self.attackpos != 0)) \
-                                            and (self.arcshot or (self.arcshot == False and self.parentunit.shoothow != 1)):
-                            # can shoot if reload finish and target existed and not dead. Non arcshot cannot shoot if forbidded
-                            rangeattack.Rangearrow(self, self.basepos.distance_to(self.attackpos), self.shootrange,
-                                                   self.zoom) # Shoot at enemy
-                            self.magazinenow -= 1 # use 1 ammo in magazine
-                        elif self.attacktarget != 0 and self.attacktarget.state == 100: # if target die when it about to shoot
-                            self.parentunit.rangecombatcheck, self.parentunit.attacktarget = False, 0 # reset range combat check and target
+                        elif self.frontline is False:
+                            self.meleetarget = None
+                            self.attacktarget = None
+                            self.basetarget = self.commandtarget
+                            self.newangle = self.setrotate()
+                            self.state = 0
 
-                #^ End combat related
+                    # elif self.state == 10: # state 10 but not in fight anymore, rotate and move back to original position
+                    #     self.attacktarget = None
+                    #     self.basetarget = self.commandtarget
+                    #     self.newangle = self.setrotate()
+                    #     self.state = 0
+                    #^ End melee check
+
+
+                    #v Unit in melee combat, set subunit state to be in idle, melee combat or range attack state
+                    if parentstate == 10:
+                        if self.state != 10 and self.ammo > 0 and (self.arcshot or self.nearbysquadlist[2] == 0) and self.parentunit.fireatwill == 0:  # Help range attack when parentunit in melee combat if has arcshot or frontline
+                            self.state = 11
+                    #^End parentunit in melee combat
+
+                    #v Range attack function
+                    elif parentstate == 11: # Unit in range attack state and self is not collapse or broken
+                        self.state = 0 # Default state at idle
+                        if self.ammo > 0 and self.attackpos is not None \
+                                and self.shootrange >= self.attackpos.distance_to(self.basepos): # can shoot if have ammo and in shoot range
+                            self.state = 11 # range combat state
+
+                    elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
+                                                                                                    and self.shootmove)):  # Fire at will, auto pick closest enemy
+                        if self.parentunit.neartarget != {}:
+                            if self.attacktarget is None: # get nearby enemy basetarget from list if not targeting anything yet
+                                self.attackpos = list(self.parentunit.neartarget.values())[0] # replace attacktarget with enemy pos
+                                self.attacktarget = list(self.parentunit.neartarget.keys())[0] # replace attacktarget with enemy id
+                            if self.shootrange >= self.attackpos.distance_to(self.basepos):
+                                self.state = 11
+                                if parentstate in (1, 3, 5):  # Walk and shoot
+                                    self.state = 12
+                                elif parentstate in (2, 4, 6):  # Run and shoot
+                                    self.state = 13
+
+                    if self.state in (11, 12, 13) and self.magazinenow == 0: # reloading ammo
+                        self.reloadtime += dt
+                        if self.reloadtime >= self.reload:
+                            self.magazinenow = self.magazinesize
+                            self.ammo -= 1
+                            self.reloadtime = 0
+                        self.stamina = self.stamina - (dt * 2) # use stamina while reloading
+                    #^ End range attack function
+
+                    #v Combat action related
+                    if combattimer >= 0.5: # combat is calculated every 0.5 second in game time
+                        if self.state == 10: # if melee combat (engaging anyone on any side)
+                            collidelist = [subunit for subunit in self.frontcollide if subunit.team != self.team]
+                            for subunit in collidelist:
+                                anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
+                                if anglecheck >= 135:  # front
+                                    hitside = 0
+                                elif anglecheck >= 45:  # side
+                                    hitside = 1
+                                else: # rear
+                                    hitside = 2
+                                self.dmgcal(subunit, 0, hitside, self.maingame.gameunitstat.statuslist, combattimer)
+                                self.stamina = self.stamina - (combattimer * 2)
+
+                        elif self.state in (11, 12, 13): # range combat
+                            if type(self.attacktarget) == int: # For fire at will, which attacktarge is int
+                                allunitindex = self.maingame.allunitindex
+                                if self.attacktarget in allunitindex: # if the attack basetarget still alive (if dead it would not be in index list)
+                                    self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)] # change attacktarget index into sprite
+                                else: # enemy dead
+                                    self.attackpos = 0 # reset attackpos to 0
+                                    self.attacktarget = None # reset attacktarget to 0
+
+                                    for target in list(self.parentunit.neartarget.values()): # find other nearby basetarget to shoot
+                                        if target in allunitindex: # check if basetarget alive
+                                            self.attackpos = target[1]
+                                            self.attacktarget = target[1]
+                                            self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
+                                            break # found new basetarget break loop
+
+                            if self.magazinenow > 0 and self.shootrange > 0 and ((self.attacktarget is not None and self.attacktarget.state != 100) or
+                                                (self.attacktarget is None and self.attackpos != 0)) \
+                                                and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
+                                # can shoot if reload finish and basetarget existed and not dead. Non arcshot cannot shoot if forbidded
+                                rangeattack.Rangearrow(self, self.basepos.distance_to(self.attackpos), self.shootrange,
+                                                       self.zoom) # Shoot at enemy
+                                self.magazinenow -= 1 # use 1 ammo in magazine
+                            elif self.attacktarget is not None and self.attacktarget.state == 100: # if basetarget die when it about to shoot
+                                self.parentunit.rangecombatcheck, self.parentunit.attacktarget = False, 0 # reset range combat check and basetarget
+
+                    #^ End combat related
+
+                if parentstate != 10: # reset basetarget every update to command basetarget outside of combat
+                    self.basetarget = self.commandtarget
+                # elif self.state != 10 and self.frontline: # set basetarget to enemy basepos
+                #     if self.attacktarget is not None:
+                #         pass
+                    # self.basetarget = self.attacktarget.basepos
+                    # self.newangle = self.setrotate()
 
                 # v Rotate Function
-                # if self.combatpreparestate and self.stopcombatmove == False:  # Rotate army side to the enemyside during auto placement
-                #     self.baseattackpos = self.attacktarget.allsidepos[self.enemyprepareside]  # set attack position to enemy side
-                #     self.setrotate(self.attacktarget.basepos)  # rotate to enemy center position
-                if self.angle != round(self.newangle):
-                    self.rotatecal = abs(round(self.newangle) - self.angle)  # amount of angle left to rotate
+                if self.angle != self.newangle:
+                    self.rotatecal = abs(self.newangle - self.angle)  # amount of angle left to rotate
                     self.rotatecheck = 360 - self.rotatecal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
                     self.radians_angle = math.radians(360 - self.angle)  # for allside rotate
                     if self.angle < 0:  # negative angle (rotate to left side)
                         self.radians_angle = math.radians(-self.angle)
 
                     rotatetiny = self.rotatespeed * dt  # rotate little by little according to time
-                    if round(self.newangle) > self.angle:  # rotate to angle more than the current one
+                    if self.newangle > self.angle:  # rotate to angle more than the current one
                         if self.rotatecal > 180:  # rotate with the smallest angle direction
                             self.angle -= rotatetiny
                             self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0: self.angle = round(
-                                self.newangle)  # if rotate pass target angle, rotate to target angle
+                            if self.rotatecheck <= 0: self.angle = self.newangle  # if rotate pass basetarget angle, rotate to basetarget angle
                         else:
                             self.angle += rotatetiny
-                            if self.angle > self.newangle: self.angle = round(
-                                self.newangle)  # if rotate pass target angle, rotate to target angle
-                    elif round(self.newangle) < self.angle:  # rotate to angle less than the current one
+                            if self.angle > self.newangle: self.angle = self.newangle  # if rotate pass basetarget angle, rotate to basetarget angle
+                    elif self.newangle < self.angle:  # rotate to angle less than the current one
                         if self.rotatecal > 180:  # rotate with the smallest angle direction
                             self.angle += rotatetiny
                             self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0: self.angle = round(
-                                self.newangle)  # if rotate pass target angle, rotate to target angle
+                            if self.rotatecheck <= 0: self.angle = self.newangle  # if rotate pass basetarget angle, rotate to basetarget angle
                         else:
                             self.angle -= rotatetiny
-                            if self.angle < self.newangle: self.angle = round(
-                                self.newangle)  # if rotate pass target angle, rotate to target angle
+                            if self.angle < self.newangle: self.angle = self.newangle  # if rotate pass basetarget angle, rotate to basetarget angle
                     self.rotate()  # rotate sprite to new angle
                     self.makefrontsidepos()  # generate new pos related to side
                     self.mask = pygame.mask.from_surface(self.image) # make new mask
                 # ^ End rotate
 
-                #v Move function to given target position
-                if ((self.angle != round(self.newangle) and self.parentunit.revert == False) or (self.angle == round(self.newangle) \
-                    and self.basepos != self.target)) and self.parentunit.collide == False: #and self.rangecombatcheck == False #or self.state == 10
+                revertmove = False
+                if self.state != 10 and self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
+                    revertmove = True # revert move check for in case subunit still need to rotate more before moving
 
-                #     self.charging = False
-                #
+                #v Move function to given basetarget position
+                if ((self.angle != self.newangle and revertmove is False) or (self.angle == self.newangle \
+                    and self.basepos != self.basetarget)): #and self.rangecombatcheck == False #or self.state == 10
+                    if parentstate in (3, 4):
+                        if self.attackpos.distance_to(self.basepos) < 50:
+                            self.charging = True
+                    elif self.charging and parentstate not in (3, 4, 10): # cancel charge when no longer move to melee or in combat
+                        self.charging = False
 
-                #
-                #     if self.state in (3, 4) and type(self.baseattackpos) != int and self.moverotate == False:
-                #         if self.baseattackpos.distance_to(self.frontsidepos) < 15:
-                #             self.charging = True
-                    if self.stamina > 0 and len(self.frontcollide) == 0: # self.state not in (0, 97) and and (self.retreattimer == 0 or self.retreattimer >= self.retreatmax) #self.state in (3, 4) and self.baseattackpos.distance_to(self.basepos) < 8  # and  self.hitbox[list(side2.keys())[0]].collide == 0 or
-                    # Create dict for checking if any hitbox collided
-                    # side, side2 = self.allsidepos.copy(), {}  # check for self hitbox collide according to which ever closest to the target position
-                    # for n, thisside in enumerate(side): side2[n] = pygame.Vector2(thisside).distance_to(
-                    #     self.basetarget)  # generate side 2 dict with side as key and distance as item
-                    # side2 = {k: v for k, v in sorted(side2.items(), key=lambda item: item[1])}  # sort side that is closest to target
+                    #v Can move if front not collided
+                    if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.charging) or self.parentunit.retreatstart) \
+                            and len(self.frontcollide) == 0:
 
-                    # v Can move if hitbox closest to target is not collided, only melee auto placement can bypass collide check
-                        move = self.target - self.basepos  # distance between target and front side
+                        move = self.basetarget - self.basepos  # distance between basetarget and front side
                         move_length = move.length()  # convert length
 
-                        if move_length > 0:  # movement length longer than 0.1, not reach target yet
+                        if move_length > 0:  # movement length longer than 0.1, not reach basetarget yet
                             move.normalize_ip()
 
                             # heightdiff = (self.height / self.sideheight[
                             #     0]) ** 2  # walking down hill increase speed while walking up hill reduce speed
                             # if self.state in (
-                            # 96, 98, 99) or self.revert:  # retreat or revert use the side closest to target for checking height
+                            # 96, 98, 99) or self.revert:  # retreat or revert use the side closest to basetarget for checking height
                             #     heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
                             heightdiff = 1
 
@@ -834,27 +862,34 @@ class Subunit(pygame.sprite.Sprite):
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
 
-                                else:  # move length pass the target destination, set movement to stop exactly at target
-                                    move = self.target - self.basepos  # simply change move to whatever remaining distance
+                                else:  # move length pass the basetarget destination, set movement to stop exactly at basetarget
+                                    move = self.basetarget - self.basepos  # simply change move to whatever remaining distance
                                     self.basepos += move  # adjust base position according to movement
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = self.pos  # no need to do list movement
 
-                                if self.state != 10 and self.parentunit.moving == False and self.parentunit.moverotate == False:
+                                if parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     self.parentunit.basepos += move
+                                    frontpos = (self.parentunit.basepos[0], (self.parentunit.basepos[1] - self.parentunit.baseheightbox))  # find front position
+                                    self.parentunit.frontpos = self.rotationxy(self.parentunit.basepos, frontpos, self.parentunit.radians_angle)
+
+                                    numberpos = (self.parentunit.basepos[0] - self.parentunit.basewidthbox, (self.parentunit.basepos[1] + self.parentunit.baseheightbox))
+                                    self.parentunit.numberpos = self.rotationxy(self.parentunit.basepos, numberpos, self.parentunit.radians_angle)
+                                    self.parentunit.truenumberpos = self.parentunit.numberpos * (11 - self.parentunit.zoom) # find new position for troop number text
+
                                     self.parentunit.moving = True
 
                                     # Stop moving normally
-                                    # if self.combatpreparestate == False:
+                                    # if self.combatpreparestate is False:
                                     #     self.retreattimer = 0  # reset retreat
                                     #     self.retreatstart = False
                                     #     if self.battlesideid == [0, 0, 0, 0]:  # not getting hit by anything
-                                    #         if self.attacktarget == 0 and self.rangecombatcheck == False:  # no enemy target, this will be ignored and chasing code above will be used
+                                    #         if self.attacktarget == 0 and self.rangecombatcheck is False:  # no enemy basetarget, this will be ignored and chasing code above will be used
                                     #             self.frontsidepos = self.commandtarget
                                     #             self.state = 0  # go idle
                                     #             self.revert = False  # reset revert order
                                     #             self.commandstate = self.state  # reset command state
-                                    #             self.commandtarget = self.target  # reset command target
+                                    #             self.commandtarget = self.basetarget  # reset command basetarget
                                     #     else:  # enter fight state since it get hit
                                     #         self.state = 10
 
@@ -865,36 +900,22 @@ class Subunit(pygame.sprite.Sprite):
                                     #     self.angle = self.newangle  # no need to gradually rotate, do it only once
                                     #     self.rotate()  # final rotate
 
-                            # v move to shoot, stop moving if reach shoot range instead of target
+                            # v move to shoot, stop moving if reach shoot range instead of basetarget
                             elif self.state in (5, 6):
                                 shootrange = self.maxrange
                                 if self.useminrange == 0:  # user set to use min shoot range
                                     shootrange = self.minrange
-                                if (self.attacktarget != 0 and self.basepos .distance_to(self.attacktarget.basepos) <= shootrange) or \
+                                if (self.attacktarget is not None and self.basepos .distance_to(self.attacktarget.basepos) <= shootrange) or \
                                         self.basepos.distance_to(self.baseattackpos) <= shootrange:
                                     self.set_target(self.basepos)  # stop moving when reach shoot range
                                     self.parentunit.moving = False
                                     self.rangecombatcheck = True  # start range combat
                             # ^ End move to shoot
 
-                        #v Stopping subunit when reach target
-                        else:  # either reach target or move distance left is too small
-                            # if self.combatpreparestate == False:  # not in melee auto placement
-                            self.retreattimer = 0  # reset all retreat
-                            self.retreatstart = False
-                            # if self.battlesideid == [0, 0, 0, 0]:  # not in melee combat
-                            #     if self.attacktarget == 0 and self.rangecombatcheck == False:  # reset all target
-                            self.frontsidepos = self.target
+                        #v Stopping subunit when reach basetarget
+                        else:  # either reach basetarget or move distance left is too small
+                            self.frontsidepos = self.basetarget
                             self.state = 0  # idle
-                                    # if self.commandtarget == self.target:
-                                    #     self.commandstate = self.state  # command done
-                            # else:  # Rotate army to the enemy sharply to stop in melee auto placement
-                            #     self.stopcombatmove = True
-                            #     self.setrotate(self.attacktarget.basepos)
-                            #     self.angle = self.newangle
-                            #     self.rotate()
-
-                        # self.mask = pygame.mask.from_surface(self.image) # make new mask
 
                         # if self.lastpos != self.basepos:
                         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)  # get new terrain and feature at each subunit position
@@ -908,7 +929,7 @@ class Subunit(pygame.sprite.Sprite):
                         dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina  # consume stamina depending on activity/state
 
             #v Morale check
-            if self.basemorale < self.maxmorale:
+            if self.basemorale < self.maxmorale: #TODO change to chance between broken or shattered where broken can regain control, also commander dead chance to completely lose control
                 if self.morale < 1: # Enter broken state when morale reach 0
                     if self.state != 99: # This is top state above other states except dead for subunit
                         self.state = 99 # broken state
@@ -924,7 +945,7 @@ class Subunit(pygame.sprite.Sprite):
                     self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
 
                 if self.state == 99:
-                    if self.parentunit.state not in (98, 99):
+                    if parentstate not in (98, 99):
                         self.unithealth -= (dt * 100) # Unit begin to desert if broken but parentunit keep fighting
                     if self.moralestatecal > 0.2:
                         self.state = 0  # Reset state to 0 when exit broken state
@@ -935,7 +956,7 @@ class Subunit(pygame.sprite.Sprite):
 
             if self.oldlasthealth != self.unithealth:
                 self.troopnumber = self.unithealth / self.troophealth  # Calculate how many troop left based on current hp
-                if self.troopnumber.is_integer() == False:  # always round up if there is decimal
+                if self.troopnumber.is_integer() is False:  # always round up if there is decimal
                     self.troopnumber = int(self.troopnumber + 1)
                 self.oldlasthealth = self.unithealth
 
@@ -970,11 +991,14 @@ class Subunit(pygame.sprite.Sprite):
             if self.troopnumber <= 0:  # enter dead state
                 self.state = 100 # enter dead state
                 self.image_original3.blit(self.images[5], self.healthimagerect) # blit white hp bar
-                self.imageblock.blit(self.images[5], self.healthimagerect)
+                self.imageblock_original.blit(self.images[5], self.healthimagerect)
                 self.zoomscale()
                 self.lasthealthstate = 0
                 self.skillcooldown = {} # remove all cooldown
                 self.skilleffect = {} # remove all skill effects
+
+                self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+                self.haveredcorner = False
 
                 self.parentunit.deadchange = True
 
@@ -1035,32 +1059,6 @@ class Subunit(pygame.sprite.Sprite):
             self.selectedimage = pygame.transform.rotate(self.selectedimage_original, self.angle)
             self.image.blit(self.selectedimage, self.selectedimagerect)
         self.rect = self.image.get_rect(center=self.pos)
-
-
-    def setrotate(self, settarget=0):
-        """set target and new angle for sprite rotation"""
-        self.basepreviousposition = self.basepos
-        if settarget == 0: # For auto chase rotate
-            myradians = math.atan2(self.target[1] - self.basepreviousposition[1], self.target[0] - self.basepreviousposition[0])
-        else: # Command move or rotate
-            myradians = math.atan2(settarget[1] - self.basepreviousposition[1], settarget[0] - self.basepreviousposition[0])
-        self.newangle = math.degrees(myradians)
-
-        # """upper left -"""
-        if self.newangle >= -180 and self.newangle <= -90:
-            self.newangle = -self.newangle - 90
-
-        # """upper right +"""
-        elif self.newangle > -90 and self.newangle < 0:
-            self.newangle = (-self.newangle) - 90
-
-        # """lower right -"""
-        elif self.newangle >= 0 and self.newangle <= 90:
-            self.newangle = -(self.newangle + 90)
-
-        # """lower left +"""
-        elif self.newangle > 90 and self.newangle <= 180:
-            self.newangle = 270 - self.newangle
 
     # def command(self, mouse_pos, mouse_up, mouse_right, squadlastselect):
     #     """For inspect ui clicking"""

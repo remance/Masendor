@@ -515,7 +515,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
             else:  # Cut the text log into multiple row if more than 45 char
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
                 howmanyloop = len(textoutput) / 45 # number of row
-                if howmanyloop.is_integer() == False: # always round up if there is decimal number
+                if howmanyloop.is_integer() is False: # always round up if there is decimal number
                     howmanyloop = int(howmanyloop) + 1
                 startingindex = 0
 

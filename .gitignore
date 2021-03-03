@@ -32,3 +32,5 @@ __pycache__/
 /dist
 /test.py
 !/configuration.ini
+/error_report.txt
+/configuration.ini

@@ -205,7 +205,7 @@ class Slidermenu(pygame.sprite.Sprite):
 
     def update(self, mouse_pos, valuebox, forcedvalue=False):
         """Update slider value and position"""
-        if forcedvalue == False:
+        if forcedvalue is False:
             self.mouse_value = mouse_pos[0]
             if self.mouse_value > self.maxvalue:
                 self.mouse_value = self.maxvalue

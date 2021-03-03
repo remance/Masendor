@@ -21,18 +21,18 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
         self.image_original = self.image.copy()
         self.shooter = shooter # subunit that shoot arrow
         self.arcshot = False # direct shot will no go pass collided parentunit
-        if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2: self.arcshot = True # arc shot will go pass parentunit to land at final target
+        if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2: self.arcshot = True # arc shot will go pass parentunit to land at final basetarget
         self.startheight = self.shooter.height
         self.accuracy = self.shooter.accuracy
-        if self.shooter.state in (12, 13) and self.shooter.agileaim == False: self.accuracy -= 10 # accuracy penalty for shoot while moving
+        if self.shooter.state in (12, 13) and self.shooter.agileaim is False: self.accuracy -= 10 # accuracy penalty for shoot while moving
         self.passwho = None # check which parentunit arrow passing through
         self.side = None # hitbox side that arrow collided last
         randomposition1 = random.randint(0, 1)  ## randpos1 is for left or right random
         randomposition2 = random.randint(0, 1)  ## randpos1 is for up or down random
 
-        #v Calculate hitchance and final target where arrow will land
+        #v Calculate hitchance and final basetarget where arrow will land
         hitchance = self.accuracy * (
-                    100 - ((shootrange * 100 / maxrange) / 2)) / 100  # the further hitchance from 0 the further arrow will land from target
+                    100 - ((shootrange * 100 / maxrange) / 2)) / 100  # the further hitchance from 0 the further arrow will land from basetarget
         if hitchance == 0: hitchance = 1
         if self.shooter.norangepenal: # 73 no range penalty
             hitchance = self.accuracy
@@ -41,35 +41,36 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
 
         howlong = shootrange / self.speed # shooting distance divide arrow speed to find travel time
         targetnow = self.shooter.parentunit.baseattackpos
-        if self.shooter.attacktarget != 0:
+        if self.shooter.attacktarget is not None:
             listtohit = self.shooter.attacktarget.subunitsprite
-            targethit = listtohit[random.randint(0,len(listtohit)-1)]
-            targetnow = targethit.basepos # target is at the enemy position
+            if len(listtohit) > 0:
+                targethit = listtohit[random.randint(0,len(listtohit)-1)]
+                targetnow = targethit.basepos # basetarget is at the enemy position
 
-            #v target moving, predictively find position the enemy will be at based on movement speed and arrow travel time
-            if targethit.state in (1, 3, 5, 7) and howlong > 0.5: # target walking
-                targetmove = targethit.target - self.shooter.attacktarget.basepos # calculate target movement distance
-                if targetmove.length() > 1:
-                    targetmove.normalize_ip()
-                    targetnow = targethit.basepos + ((targetmove * (targethit.parentunit.walkspeed * howlong)) / 11)
-                    if self.shooter.agileaim == False: hitchance -= 10
-                else: # movement too short, simiply hit the current position
-                    targetnow = targethit.basepos
+                #v basetarget moving, predictively find position the enemy will be at based on movement speed and arrow travel time
+                if targethit.state in (1, 3, 5, 7) and howlong > 0.5: # basetarget walking
+                    targetmove = targethit.basetarget - self.shooter.attacktarget.basepos # calculate basetarget movement distance
+                    if targetmove.length() > 1:
+                        targetmove.normalize_ip()
+                        targetnow = targethit.basepos + ((targetmove * (targethit.parentunit.walkspeed * howlong)) / 11)
+                        if self.shooter.agileaim is False: hitchance -= 10
+                    else: # movement too short, simiply hit the current position
+                        targetnow = targethit.basepos
 
-            # target running, use run speed to calculate
-            elif targethit.state in (2, 4, 6, 8, 96, 98, 99) and howlong > 0.5: # target running
-                targetmove = targethit.target - targethit.basepos
-                if targetmove.length() > 1:
-                    targetmove.normalize_ip()
-                    targetnow = targethit.basepos + ((targetmove * (targethit.parentunit.runspeed * howlong)) / 11)
-                    if self.shooter.agileaim == False: hitchance -= 20
-                else:
-                    targetnow = targethit.basepos
-            #^ End target moving
+                # basetarget running, use run speed to calculate
+                elif targethit.state in (2, 4, 6, 8, 96, 98, 99) and howlong > 0.5: # basetarget running
+                    targetmove = targethit.basetarget - targethit.basepos
+                    if targetmove.length() > 1:
+                        targetmove.normalize_ip()
+                        targetnow = targethit.basepos + ((targetmove * (targethit.parentunit.runspeed * howlong)) / 11)
+                        if self.shooter.agileaim is False: hitchance -= 20
+                    else:
+                        targetnow = targethit.basepos
+                #^ End basetarget moving
 
         hitchance = random.randint(int(hitchance), 100) # random hit chance
-        if random.randint(0, 100) > hitchance: # miss, not land exactly at target
-            if randomposition1 == 0: # hitchance convert to percentage from target
+        if random.randint(0, 100) > hitchance: # miss, not land exactly at basetarget
+            if randomposition1 == 0: # hitchance convert to percentage from basetarget
                 hitchance1 = 100 + (hitchance / 50)
             else:
                 hitchance1 = 100 - (hitchance / 50)
@@ -78,11 +79,11 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
             else:
                 hitchance2 = 100 + (hitchance / 50)
             self.basetarget = pygame.Vector2(targetnow[0] * hitchance1 / 100, targetnow[1] * hitchance2 / 100)
-        else: # perfect hit, slightly (randomly) land near target
+        else: # perfect hit, slightly (randomly) land near basetarget
             self.basetarget = targetnow * random.uniform(0.999, 1.001)
 
-        self.targetheight = self.gamemapheight.getheight(self.basetarget) # get the height at target
-        #^ End calculate hitchance and target
+        self.targetheight = self.gamemapheight.getheight(self.basetarget) # get the height at basetarget
+        #^ End calculate hitchance and basetarget
 
 
         #v Rotate arrow sprite
@@ -127,7 +128,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
         target.basemorale -= whomoraledmg
 
         # v Add red corner to indicate damage
-        if target.haveredcorner == False:
+        if target.haveredcorner is False:
             target.imageblock.blit(target.images[11], target.cornerimagerect)
             target.haveredcorner = True
         # ^ End red corner
@@ -139,7 +140,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
             target.leader.health -= wholeaderdmg
 
     def registerhit(self, subunit=None):
-        """Calculatte damage when arrow reach target"""
+        """Calculatte damage when arrow reach basetarget"""
         if subunit is not None:
             anglecheck = abs(self.angle - subunit.angle) # calculate which side arrow hit the subunit
             if anglecheck >= 135: # front
@@ -161,7 +162,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
             move = move * self.speed * dt
             if move.length() <= move_length:
                 self.basepos += move
-                if self.arcshot == False: ## direct shot will not be able to shoot pass higher height terrain midway
+                if self.arcshot is False: ## direct shot will not be able to shoot pass higher height terrain midway
                     if self.gamemapheight.getheight(self.basepos) > self.targetheight + 20:
                         self.kill()
                 self.pos = self.basepos * viewmode
@@ -175,7 +176,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
                 posmask = int(self.pos[0] - subunit.rect.x), int(self.pos[1] - subunit.rect.y)
                 try:
                     if subunit.mask.get_at(posmask) == 1:
-                        if self.arcshot == False and subunit != self.shooter:  # direct shot
+                        if self.arcshot is False and subunit != self.shooter:  # direct shot
                             self.registerhit(subunit)
                             self.kill()
                         else:
@@ -185,6 +186,6 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
                     if self.passwho is not None and self.passwho != subunit:
                         self.passwho = None
 
-        else: # reach target
+        else: # reach basetarget
             self.registerhit(self.passwho) # register hit whatever subunit the sprite land at
             self.kill() # remove sprite

@@ -152,7 +152,8 @@ class Battle():
 
         self.squadwidth = main.squadwidth
         self.squadheight = main.squadheight
-        self.collidedistance = self.squadheight / 5 # distance to check collision
+        self.collidedistance = self.squadheight / 10 # distance to check collision
+        self.frontdistance = self.squadheight / 20
 
         self.escslidermenu = main.escslidermenu
         self.escvaluebox = main.escvaluebox
@@ -292,7 +293,7 @@ class Battle():
         currentindex = int(self.armyselector.currentrow * self.armyselector.maxcolumnshow) # the first index of current row
         self.armyselector.logsize = len(armylist) / self.armyselector.maxcolumnshow
 
-        if self.armyselector.logsize.is_integer() == False:
+        if self.armyselector.logsize.is_integer() is False:
             self.armyselector.logsize = int(self.armyselector.logsize) + 1
 
         if self.armyselector.currentrow > self.armyselector.logsize - 1:
@@ -436,7 +437,7 @@ class Battle():
         self.dt = 0  # Realtime used for in game calculation
         self.uidt = 0  # Realtime used for ui timer
         self.combattimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
-        self.lastmouseover = 0 # Which subunit last mouse over
+        self.lastmouseover = None # Which subunit last mouse over
         self.gamespeed = 1 # Current game speed
         self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
         self.leadernow = [] # list of showing leader in command ui
@@ -739,7 +740,7 @@ class Battle():
                 #^ End camera movement
 
                 self.battlemousepos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
-                                                        self.mousepos[1] - self.centerscreen[1] + self.camerapos[1]) # mouse pos on the map based on camare position
+                                                        self.mousepos[1] - self.centerscreen[1] + self.camerapos[1]) # mouse pos on the map based on camera position
                 self.battlemousepos[1] = self.battlemousepos[0] / self.camerascale # mouse pos on the map at current camera zoom scale
 
                 if self.mousetimer != 0: # player click mouse once before
@@ -802,7 +803,7 @@ class Battle():
                     elif self.buttonmouseover(mouse_right): # check mouse collide for button
                         pass
 
-                    elif mouse_right and self.lastselected is None and self.uiclick == False: # draw terrain popup ui when right click at map with no selected parentunit
+                    elif mouse_right and self.lastselected is None and self.uiclick is False: # draw terrain popup ui when right click at map with no selected parentunit
                         if self.battlemousepos[1][0] >= 0 and self.battlemousepos[1][0] <= 999 and self.battlemousepos[1][1] >= 0 and \
                                 self.battlemousepos[1][1] <= 999: # not draw if pos is off the map
                             terrainpop, featurepop = self.battlemapfeature.getfeature(self.battlemousepos[1], self.battlemapbase)
@@ -871,7 +872,7 @@ class Battle():
                     spawnnum = range(0, int(self.currentweather.spawnrate * self.dt * random.randint(0, 10))) # number of sprite to spawn at this time
                     for spawn in spawnnum: # spawn each weather sprite
                         truepos = (random.randint(10, SCREENRECT.width), 0) # starting pos
-                        target = (truepos[0], SCREENRECT.height) # final target pos
+                        target = (truepos[0], SCREENRECT.height) # final basetarget pos
 
                         if self.currentweather.spawnangle == 225: # top right to bottom left movement
                             startpos = random.randint(10, SCREENRECT.width * 2) # starting x pos that can be higher than screen width
@@ -970,7 +971,7 @@ class Battle():
                             if mouse_right:
                                 self.uiclick = True # for some reason the loop mouse check above does not work for inspect button, so it here instead
                         if mouse_up:
-                            if self.inspectui == False:  # Add army inspect ui when left click at ui button or when change subunit with inspect open
+                            if self.inspectui is False:  # Add army inspect ui when left click at ui button or when change subunit with inspect open
                                 self.inspectui = True
                                 self.battleui.add(*self.gameui[2:4])
                                 self.battleui.add(*self.unitcardbutton)
@@ -1185,7 +1186,7 @@ class Battle():
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()
 
-                    if (mouse_up or mouse_right) and self.uiclick == False: # Unit command
+                    if (mouse_up or mouse_right) and self.uiclick is False: # Unit command
                         whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
                                          self.lastmouseover, keystate)
 
@@ -1195,7 +1196,6 @@ class Battle():
                         self.uitimer -= 1.1
                 #^ End subunit selected code
 
-                self.lastmouseover = 0  # reset last parentunit mouse over
                 # fight_sound.play()
 
                 #v Drama text function
@@ -1212,22 +1212,29 @@ class Battle():
                 #^ End drama
 
                 #v Updater
+                self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
+                                        self.battlemousepos[0], mouse_up)
+
+                self.lastmouseover = None  # reset last parentunit mouse over
+
                 tree = KDTree([sprite.basepos for sprite in self.allsubunitlist]) # collision loop check
                 collisions = tree.query_pairs(self.collidedistance)
                 for one, two in collisions:
-                    if self.allsubunitlist[one].frontsidepos.distance_to(self.allsubunitlist[two].basepos) < 2: # first subunit collision
-                        self.allsubunitlist[one].frontcollide.append(self.allsubunitlist[two])
-                        self.allsubunitlist[one].parentunit.collide = True
-                    else:
-                        self.allsubunitlist[one].sidecollide.append(self.allsubunitlist[two])
-                    if self.allsubunitlist[two].frontsidepos.distance_to(self.allsubunitlist[one].basepos) < 2: # second subunit
-                        self.allsubunitlist[two].frontcollide.append(self.allsubunitlist[one])
-                        self.allsubunitlist[two].parentunit.collide = True
-                    else:
-                        self.allsubunitlist[two].sidecollide.append(self.allsubunitlist[one])
+                    spriteone = self.allsubunitlist[one]
+                    spritetwo = self.allsubunitlist[two]
+                    if spriteone.parentunit != spritetwo.parentunit or spriteone.parentunit.state == 10:
+                        if spriteone.frontsidepos.distance_to(spritetwo.basepos) < self.frontdistance: # first subunit collision
+                            spriteone.frontcollide.append(spritetwo)
+                            spriteone.parentunit.collide = True
+                        else:
+                            spriteone.sidecollide.append(spritetwo)
+                        if spritetwo.frontsidepos.distance_to(spriteone.basepos) < self.frontdistance: # second subunit
+                            spritetwo.frontcollide.append(spriteone)
+                            if spriteone.parentunit != spritetwo.parentunit:
+                                spritetwo.parentunit.collide = True
+                        else:
+                            spritetwo.sidecollide.append(spriteone)
 
-                self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
-                                        self.battlemousepos[0], mouse_up)
                 self.leaderupdater.update()
                 self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer,
                                          self.battlemousepos[0], mouse_up)
@@ -1249,7 +1256,7 @@ class Battle():
                 #^ End updater
 
                 #v Remove the subunit ui when click at no group
-                if self.clickany == False: # not click at any parentunit
+                if self.clickany is False: # not click at any parentunit
                     if self.lastselected is not None: # any parentunit is selected
                         self.lastselected = None # reset lastselected
 
