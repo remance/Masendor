@@ -26,20 +26,21 @@ class Subunit(pygame.sprite.Sprite):
         """Although subunit in code, this is referred as sub-subunit ingame"""
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.gamestart = False # Game start yet? for stuff only need to be done at the start
         self.wholastselect = None
         self.mouse_over = False
-        self.leader = None # Leader in the sub-subunit if there is one
+        self.leader = None # Leader in the sub-subunit if there is one, got add in leader gamestart
         self.boardpos = None  # Used for event log position of subunit (Assigned in maingame subunit setup)
         self.walk = False # currently walking
         self.run = False # currently running
         self.frontline = False # on front line of unit or not
+        self.unitleader = False # contain the general or not, making it leader subunit
         self.attacktarget = None
         self.meleetarget = None
         self.parentunit = parentunit # reference to the parent battlion of this subunit
 
-        self.frontcollide = [] # list of front collide sprite
-        self.sidecollide = [] # list of side collide sprite
+        self.enemyfront = [] # list of front collide sprite
+        self.enemyside = [] # list of side collide sprite
+        self.friendfront = [] # list of friendly front collide sprite
         self.team = self.parentunit.team
         if self.team == 1: # add sprite to team subunit group for collision
             groupcollide = self.maingame.team1subunit
@@ -457,7 +458,7 @@ class Subunit(pygame.sprite.Sprite):
                     for effect in calstatus[30]:
                         if effect != [0]: self.inflictstatus[effect] = calstatus[2]
             if self.chargeskill in self.skilleffect:
-                self.authpenalty += 0.5 # higher authority penalty when charging (retreat while charging)
+                self.authpenalty += 0.5 # higher authority penalty when attacking (retreat while attacking)
         #^ End skill effect
 
         #v Elemental effect
@@ -558,14 +559,53 @@ class Subunit(pygame.sprite.Sprite):
         # v rotate the new front side according to sprite rotation
         self.frontsidepos = self.rotationxy(self.basepos, self.frontsidepos, self.radians_angle)
 
-    def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
-        if self.gamestart is False: # run once when game start or subunit just get created
-            self.zoom = zoom
-            self.zoomscale()
-            self.findnearbysquad()
-            self.statusupdate(weather)
-            self.gamestart = True
+    def gamestart(self, zoom):
+        # run once when game start or subunit just get created
+        self.zoom = zoom
+        self.zoomscale()
+        self.findnearbysquad()
 
+        #v reset stat to default and apply morale, stamina, command buff to stat
+        if self.maxstamina > 100: # Max stamina gradually decrease over time - (self.timer * 0.05)
+            self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.maxstamina-(self.timer*0.05), round(self.maxstamina * 0.75), round(
+                self.maxstamina * 0.5), round(self.maxstamina * 0.25)
+        self.morale = self.basemorale
+        self.authority = self.parentunit.authority # parentunit total authoirty
+        self.commandbuff = self.parentunit.commandbuff[self.unittype] * 100 # command buff from main leader according to this subunit subunit type
+        self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0) # authority less than 100 will create negative effect
+        self.moralestatecal = self.moralestate / 100  # for using as modifer to stat
+        self.staminastate = round((self.stamina * 100) / self.maxstamina)
+        self.staminastatecal = self.staminastate / 100 # for using as modifer to stat
+        self.discipline = (self.basediscipline * self.moralestatecal * self.staminastatecal) + self.parentunit.leadersocial[
+            self.grade + 1] + (self.authority / 10) # use morale, stamina, leader social vs grade and authority
+        self.attack = (self.baseattack * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
+        self.meleedef = (self.basemeleedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
+        self.rangedef = (self.baserangedef * (self.moralestatecal + 0.1)) * self.staminastatecal + (self.commandbuff/2) # use morale, stamina and half command buff
+        self.accuracy = self.baseaccuracy * self.staminastatecal + self.commandbuff # use stamina and command buff
+        self.reload = self.basereload * (2 - self.staminastatecal) # the less stamina, the higher reload time
+        self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
+        self.speed = self.basespeed * self.staminastatecal # use stamina
+        self.charge = (self.basecharge * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
+
+        self.shootrange = self.baserange
+
+        self.criteffect = 1 # default critical effect
+        self.frontdmgeffect = 1 # default frontal damage
+        self.sidedmgeffect = 1 # default side damage
+
+        self.corneratk = False # cannot attack corner enemy by default
+        self.tempunbraekable = False
+        self.tempfulldef = False
+
+        self.authpenalty = self.baseauthpenalty
+        self.hpregen = self.basehpregen
+        self.staminaregen = self.basestaminaregen
+        self.inflictstatus = self.baseinflictstatus
+        self.elemmelee = self.baseelemmelee
+        self.elemrange = self.baseelemrange
+        #^ End default stat
+
+    def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
         if self.lastzoom != zoom: # camera zoom is changed
             self.lastzoom = zoom
             self.zoomchange = True
@@ -643,7 +683,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.useskillcond != 3: # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.checkskillcondition()
 
-                    if self.state == 4 and self.charging and self.chargeskill not in self.skillcooldown: # charge skill only when running to melee
+                    if self.state == 4 and self.attacking and self.chargeskill not in self.skillcooldown: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
 
                     skillchance = random.randint(0, 10) # random chance to use random available skill
@@ -653,8 +693,8 @@ class Subunit(pygame.sprite.Sprite):
 
                 if self.state not in (96,97,98,99):
                     #v Check if in combat or not with collision
-                    if self.frontcollide != [] or self.sidecollide != []:
-                        collidelist = self.frontcollide + self.sidecollide
+                    if self.enemyfront != [] or self.enemyside != []:
+                        collidelist = self.enemyfront + self.enemyside
                         for subunit in collidelist:
                             if subunit.team != self.team:
                                 self.state = 10
@@ -663,13 +703,13 @@ class Subunit(pygame.sprite.Sprite):
                                     parentstate = 10
                                     self.parentunit.state = 10
 
-                                if self.frontcollide == []: # no enemy in front try rotate to enemy at side
+                                if self.enemyfront == []: # no enemy in front try rotate to enemy at side
                                     self.basetarget = self.meleetarget.basepos
                                     self.newangle = self.setrotate()
 
                                 break
-                    elif self.state == 10 or self.frontline: # state 10 but not in fight anymore, rotate and move back to original position
-                        if self.charging and self.frontline:  # attack to nearest target instead
+                    elif self.state == 10: # state 10 but not in fight anymore, rotate and move back to original position
+                        if self.attacking and self.frontline:  # attack to nearest target instead
                             closetarget = None
                             if self.meleetarget is None:
                                 self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
@@ -683,14 +723,14 @@ class Subunit(pygame.sprite.Sprite):
                                 self.meleetarget = None
                                 self.attacktarget = None
                                 self.basetarget = self.commandtarget
-                                self.newangle = self.setrotate()
+                                self.newangle = self.parentunit.angle
                                 self.state = 0
 
-                        elif self.frontline is False:
+                        elif self.attacking is False:
                             self.meleetarget = None
                             self.attacktarget = None
                             self.basetarget = self.commandtarget
-                            self.newangle = self.setrotate()
+                            self.newangle = self.parentunit.angle
                             self.state = 0
 
                     # elif self.state == 10: # state 10 but not in fight anymore, rotate and move back to original position
@@ -739,7 +779,7 @@ class Subunit(pygame.sprite.Sprite):
                     #v Combat action related
                     if combattimer >= 0.5: # combat is calculated every 0.5 second in game time
                         if self.state == 10: # if melee combat (engaging anyone on any side)
-                            collidelist = [subunit for subunit in self.frontcollide if subunit.team != self.team]
+                            collidelist = [subunit for subunit in self.enemyfront if subunit.team != self.team]
                             for subunit in collidelist:
                                 anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
                                 if anglecheck >= 135:  # front
@@ -825,14 +865,14 @@ class Subunit(pygame.sprite.Sprite):
                 if ((self.angle != self.newangle and revertmove is False) or (self.angle == self.newangle \
                     and self.basepos != self.basetarget)): #and self.rangecombatcheck == False #or self.state == 10
                     if parentstate in (3, 4):
-                        if self.attackpos.distance_to(self.basepos) < 50:
-                            self.charging = True
-                    elif self.charging and parentstate not in (3, 4, 10): # cancel charge when no longer move to melee or in combat
-                        self.charging = False
+                        # if self.attackpos.distance_to(self.basepos) < 50:
+                        self.attacking = True
+                    elif self.attacking and parentstate not in (3, 4, 10): # cancel charge when no longer move to melee or in combat
+                        self.attacking = False
 
                     #v Can move if front not collided
-                    if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.charging) or self.parentunit.retreatstart) \
-                            and len(self.frontcollide) == 0:
+                    if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.attacking) or self.parentunit.retreatstart) \
+                            and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and self.state == 10) or self.state != 10):
 
                         move = self.basetarget - self.basepos  # distance between basetarget and front side
                         move_length = move.length()  # convert length
@@ -868,7 +908,7 @@ class Subunit(pygame.sprite.Sprite):
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = self.pos  # no need to do list movement
 
-                                if parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
+                                if self.unitleader and parentstate != 10 and self.parentunit.moverotate is False: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     self.parentunit.basepos += move
                                     frontpos = (self.parentunit.basepos[0], (self.parentunit.basepos[1] - self.parentunit.baseheightbox))  # find front position
                                     self.parentunit.frontpos = self.rotationxy(self.parentunit.basepos, frontpos, self.parentunit.radians_angle)
@@ -1027,8 +1067,14 @@ class Subunit(pygame.sprite.Sprite):
                             for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
                                 if subunit.gameid == self.leader.subunit.gameid:
                                     subunit.leader.subunitpos = index
+                                    if self.unitleader: # set leader subunit to new one
+                                        self.parentunit.leadersubunit = subunit
+                                        subunit.unitleader = True
                             self.leader = None
                             break
+
+                    if self.unitleader:
+                        self.unitleader = False
 
                     if self.leader is not None:  # if can't find new near subunit to move leader then find from first subunit to last place in parentunit
                         for index, subunit in enumerate(self.parentunit.subunitsprite):
@@ -1049,8 +1095,9 @@ class Subunit(pygame.sprite.Sprite):
                                                + " in " + self.parentunit.leader[0].name
                                                + "'s parentunit is destroyed"], [3]) # add log to say this subunit is destroyed in subunit tab
 
-            self.frontcollide = [] # reset collide
-            self.sidecollide = [] # reset collide
+            self.enemyfront = [] # reset collide
+            self.enemyside = [] # reset collide
+            self.friendfront = []
 
     def rotate(self):
         """rotate subunit image may use when subunit can change direction independently from parentunit"""

@@ -154,13 +154,13 @@ class Unitarmy(pygame.sprite.Sprite):
         """Although parentunit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.gamestart = False # for running code that only require at the start of game or when parentunit spawn
         self.icon = None  ## for linking with army selection ui, got linked when icon created in gameui.Armyicon
         self.teamcommander = None # commander leader
         self.startwhere = []
         self.subunitspritearray = np.empty((8, 8), dtype=object) # array of subunit object(not index)
         self.subunitsprite = []
         self.leader = []
+        self.leadersubunit = None # subunit that general is in, get added in leader first update
         self.neartarget = {} # list dict of nearby enemy parentunit, sorted by distance
         self.gameid = gameid # id of parentunit for reference in many function
         self.control = control # player control or not
@@ -178,7 +178,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.basewidthbox, self.baseheightbox = self.basewidthbox / 20, self.baseheightbox / 20 # c
 
         self.basepos = pygame.Vector2(startposition)  # Basepos is for true pos that is used for ingame calculation
-        self.lastbasepos = self.basepos # TODO maybe use leader subunit as basepos and remove it
+        self.lastbasepos = self.basepos
         self.baseattackpos = 0  # position of attack basetarget
         self.pos = self.basepos * (11 - self.zoom)  # Pos is for showing on screen
         self.angle = startangle  # start at this angle
@@ -188,6 +188,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.radians_angle = math.radians(360 - startangle) # radians for apply angle to position (allsidepos and subunit)
         frontpos = (self.basepos[0], (self.basepos[1] - self.baseheightbox))  # find front position of unit
         self.frontpos = self.rotationxy(self.basepos, frontpos, self.radians_angle)
+        self.bastarget = self.frontpos
+        self.commandtarget = self.frontpos
         numberpos = (self.basepos[0] - self.basewidthbox,
                      (self.basepos[1] + self.baseheightbox))  # find position for number text
         self.numberpos = self.rotationxy(self.basepos, numberpos, self.radians_angle)
@@ -278,7 +280,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.pos = self.basepos * (11 - self.zoom)
         self.truenumberpos = self.numberpos * (11 - self.zoom)
 
-    def setuparmy(self):
+    def setuparmy(self, gamestart=True):
         """Grab stat from all subunit in the parentunit"""
         self.troopnumber = 0
         self.stamina = 0
@@ -311,7 +313,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if len(allshootrange) > 0:
                 self.maxrange = max(allshootrange) # Max shoot range of all subunit
                 self.minrange = min(allshootrange) # Min shoot range of all subunit
-            if self.gamestart is False: # Only do once when game start
+            if gamestart is False: # Only do once when game start
                 self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
                     self.stamina * 0.50), round(self.stamina * 0.25)
                 self.ammolist = (round(self.ammo * 0.75), round(self.ammo * 0.50), round(self.ammo * 0.25), 0, -1)
@@ -425,7 +427,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def startset(self, squadgroup):
         """Setup stuff at the start of game or when parentunit spawn"""
-        self.setuparmy()
+        self.setuparmy(False)
         self.setupfrontline()
         self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
         self.commandtarget = self.basetarget
@@ -464,22 +466,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
         self.changeposscale()
 
-    def zoomscale(self):
-        """camera zoom change and rescale the sprite and position scale"""
-        # if self.zoom != 1:  ## parentunit view
-        #     self.image_original = self.image_original3.copy() # reset image for new scale
-        #     self.changescale()
-        # else:  ## Squad view when zoom closest (10 in other class without need zoom image)
-        #     self.image_original = self.image_original2.copy() # reset image to the closest zoom original
-        #     self.squadtoarmy()
-        #     self.changescale()
-        self.changeposscale()
-        # self.mask = pygame.mask.from_surface(self.image) # create new mask
-
     def update(self, weather, squadgroup, dt, zoom, mousepos, mouseup):
-        if self.gamestart is False:
-            self.startset(squadgroup)
-            self.gamestart = True
 
         self.moving = False
 
@@ -489,7 +476,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.lastzoom = zoom
                 self.zoomchange = True
                 self.zoom = (11 - zoom) # save scale
-                self.zoomscale() # update parentunit sprite according to new scale
+                self.changeposscale() # update parentunit sprite according to new scale
 
         if self.state != 100:
             if self.team == 1:
@@ -578,10 +565,10 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.brokenlimit += random.randint(5,15)
 
             if self.retreatstart:
-                retreatside = ([any(subunit.frontcollide != [] and subunit.sidecollide != [] for subunit in self.frontlineobject[0] if subunit != 0)][0],
-                               [any(subunit.frontcollide != [] and subunit.sidecollide != [] for subunit in self.frontlineobject[1] if subunit != 0)][0],
-                               [any(subunit.frontcollide != [] and subunit.sidecollide != [] for subunit in self.frontlineobject[2] if subunit != 0)][0],
-                               [any(subunit.frontcollide != [] and subunit.sidecollide != [] for subunit in self.frontlineobject[3] if subunit != 0)][0])
+                retreatside = ([any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[0] if subunit != 0)][0],
+                               [any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[1] if subunit != 0)][0],
+                               [any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[2] if subunit != 0)][0],
+                               [any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[3] if subunit != 0)][0])
                 if any(side is False for side in retreatside): # has no collided side to flee
                     if self.state in (98, 99): # retreat/broken state
                         if self.retreatway is None or retreatside[self.retreatway[1]] == True: # not yet start retreat or previous retreat way got blocked
@@ -691,13 +678,14 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.commandstate = self.state
                     self.rotateonly = False  # reset rotate only condition
             #^ End rotate function
-            # if self.state == 10:
-                # print(self.commandtarget, self.frontpos)
+            if self.state == 10:
+                print(self.frontpos, self.commandtarget)
             if self.state != 0 and self.frontpos.distance_to(self.commandtarget) < 1: # reach destination and not in combat
+                print(self.team)
                 nothalt = False # check if any subunit in combat
-                # print(self.team)
                 for subunit in self.subunitsprite:
                     if subunit.state == 10:
+                        print(subunit.enemyfront, subunit.enemyside)
                         nothalt = True
                         break
                 if nothalt is False:
@@ -706,6 +694,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.commandstate = 0 # go idle
                     self.state = 0
                     self.commandtarget = self.basetarget  # reset command basetarget
+                    self.set_target(self.commandtarget)
 
             #v Perform range attack, can only enter range attack state after finishing rotate
             shootrange = self.maxrange
@@ -824,7 +813,7 @@ class Unitarmy(pygame.sprite.Sprite):
             # if double_mouse_right or self.runtoggle:
             #     self.state -= 1
 
-        if self.charging: # change order when charging will cause authority penalty
+        if self.charging: # change order when attacking will cause authority penalty
             self.leader[0].authority -= self.authpenalty
             self.authrecal()
 
@@ -855,7 +844,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
 
             elif othercommand == 1 and self.state not in (10, 97, 98, 99, 100):  # Pause all action except combat or broken
-                # if self.charging: # TODO change pause option to come into effect much slower when charging
+                # if self.attacking: # TODO change pause option to come into effect much slower when attacking
                 #     self.leader[0].authority -= self.authpenalty # decrease authority of the first leader for stop charge
                 #     self.authrecal() # recal authority
 

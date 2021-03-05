@@ -464,9 +464,19 @@ class Battle():
 
         self.setuparmyicon()
         self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
-        self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
-                                self.battlemousepos[0], False)   # run once at the start of battle to avoid combat bug
+        # self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
+        #                         self.battlemousepos[0], False)   # run once at the start of battle to avoid combat bug
+        #v Run starting function
+        for army in self.allunitlist:
+            army.startset(self.subunit)
+        for subunit in self.subunit:
+            subunit.gamestart(self.camerascale)
+        for leader in self.leaderupdater:
+            leader.gamestart()
+        #^ End starting
+
         self.effectupdater.update(self.allunitlist, self.dt, self.camerascale)
+
 
         # self.leaderupdater.update()
         # self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
@@ -1222,18 +1232,23 @@ class Battle():
                 for one, two in collisions:
                     spriteone = self.allsubunitlist[one]
                     spritetwo = self.allsubunitlist[two]
-                    if spriteone.parentunit != spritetwo.parentunit or spriteone.parentunit.state == 10:
+                    if spriteone.parentunit != spritetwo.parentunit: # collide with subunit in other unit
                         if spriteone.frontsidepos.distance_to(spritetwo.basepos) < self.frontdistance: # first subunit collision
-                            spriteone.frontcollide.append(spritetwo)
+                            spriteone.enemyfront.append(spritetwo)
                             spriteone.parentunit.collide = True
                         else:
-                            spriteone.sidecollide.append(spritetwo)
+                            spriteone.enemyside.append(spritetwo)
                         if spritetwo.frontsidepos.distance_to(spriteone.basepos) < self.frontdistance: # second subunit
-                            spritetwo.frontcollide.append(spriteone)
-                            if spriteone.parentunit != spritetwo.parentunit:
-                                spritetwo.parentunit.collide = True
+                            spritetwo.enemyfront.append(spriteone)
+                            spritetwo.parentunit.collide = True
                         else:
-                            spritetwo.sidecollide.append(spriteone)
+                            spritetwo.enemyside.append(spriteone)
+                    else: # collide with subunit in same unit
+                        if spriteone.frontsidepos.distance_to(spritetwo.basepos) < self.frontdistance: # first subunit collision
+                            spriteone.friendfront.append(spritetwo)
+                        if spritetwo.frontsidepos.distance_to(spriteone.basepos) < self.frontdistance: # second subunit
+                            spritetwo.friendfront.append(spriteone)
+
 
                 self.leaderupdater.update()
                 self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer,

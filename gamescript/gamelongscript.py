@@ -538,7 +538,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.basecharge = stat[16]
     self.basechargedef = 10  # All infantry subunit has default 10 charge defence
     self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
-    self.charging = False  # For checking if parentunit in charging state or not for using charge skill
+    self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
     skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
     self.skill = {x: self.statlist.abilitylist[x].copy() for x in skill if x != 0 and x in self.statlist.abilitylist}  # grab skill stat into dict
     self.troophealth = round(stat[18] * self.statlist.gradelist[self.grade][7])  # Health of each troop
@@ -1138,7 +1138,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
     if type == 0:  # Melee damage
         dmg = who.dmg
-        if who.chargeskill in who.skilleffect: # Include charge in dmg if charging
+        if who.chargeskill in who.skilleffect: # Include charge in dmg if attacking
             if who.ignorechargedef is False: # Ignore charge defense if have ignore trait
                 sidecal = battlesidecal[defside]
                 if target.fulldef or target.tempfulldef: # Defense all side
@@ -1147,7 +1147,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
             else:
                 dmg = dmg + (who.charge)
 
-        if target.charging and target.ignorechargedef is False: # Also include chargedef in dmg if enemy charging
+        if target.attacking and target.ignorechargedef is False: # Also include chargedef in dmg if enemy attacking
             chargedefcal = who.chargedef - target.charge
             if chargedefcal < 0:
                 chargedefcal = 0

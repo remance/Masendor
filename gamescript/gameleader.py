@@ -6,7 +6,7 @@ import pygame.freetype
 class Leader(pygame.sprite.Sprite):
     maingame = None
 
-    def __init__(self, leaderid, position, armyposition, battalion, leaderstat):
+    def __init__(self, leaderid, position, armyposition, unit, leaderstat):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
@@ -31,10 +31,9 @@ class Leader(pygame.sprite.Sprite):
             self.health = 0
             self.state = 100  ## no leader is same as dead so no need to update
 
-        self.parentunit = battalion
+        self.parentunit = unit
         # self.mana = stat
-        self.gamestart = False
-        self.armyposition = armyposition # position in the parentunit (e.g. general or sub-general)
+        self.armyposition = armyposition # position in the parentunit (i.e. general (0) or sub-general (1, 2) or advisor (3))
         self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)] # leader image position in command ui
         self.imgposition = self.baseimgposition[self.armyposition] # image position based on armyposition
 
@@ -107,8 +106,14 @@ class Leader(pygame.sprite.Sprite):
         #v change army position of all leader in that parentunit
         for index, leader in enumerate(self.parentunit.leader):
             leader.armyposition = index  ## change army position to new one
-            if self.parentunit.commander and leader.armyposition == 0:
-                self.commander = True
+            if leader.armyposition == 0: # new main general
+                if self.parentunit.commander:
+                    leader.commander = True
+
+                self.parentunit.leadersubunit = leader.subunit
+                # self.parentunit.leadersubunit - self.parentunit.basepos
+                leader.subunit.unitleader = True
+
             leader.imgposition = leader.baseimgposition[leader.armyposition]
             leader.rect = leader.image.get_rect(center=leader.imgposition)
             self.poschangestat(leader)
@@ -127,22 +132,24 @@ class Leader(pygame.sprite.Sprite):
         self.maingame.setuparmyicon()
         self.parentunit.leaderchange = True # initiate leader change stat recalculation for parentunit
 
+    def gamestart(self):
+        row = int(self.subunitpos/8)
+        column = self.subunitpos - (row*8)
+        self.subunit = self.parentunit.subunitsprite[self.subunitpos] # setup subunit that leader belong
+        if self.armyposition == 0:  # parentunit leader
+            self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or main leader move ot other subunit
+            # self.parentunit.leadersubunit - self.parentunit.basepos
+            self.subunit.unitleader = True
+
+            squadpenal = int(
+                (self.subunitpos / len(self.parentunit.armysquad[0])) * 10)  # Authority get reduced the further leader stay in the back line
+            self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
+            self.badmorale = (30, 50)  ## main general morale lost when die
+            if self.parentunit.commander:
+                self.commander = True
+                self.originalcommander = True
+
     def update(self):
-        if self.gamestart is False:
-            row = int(self.subunitpos/8)
-            column = self.subunitpos - (row*8)
-            self.subunit = self.parentunit.subunitsprite[self.subunitpos] # setup subunit that leader belong
-            self.gamestart = True
-
-            if self.armyposition == 0:  # parentunit leader
-                squadpenal = int(
-                    (self.subunitpos / len(self.parentunit.armysquad[0])) * 10)  # Authority get reduced the further leader stay in the back line
-                self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
-                self.badmorale = (30, 50)  ## main general morale lost when die
-                if self.parentunit.commander:
-                    self.commander = True
-                    self.originalcommander = True
-
         if self.state not in (96, 97, 98, 99, 100):
             if self.health <= 0: # health reach 0, die. may implement wound state chance later
                 self.health = 0
