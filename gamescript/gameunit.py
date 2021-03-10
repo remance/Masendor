@@ -335,46 +335,43 @@ class Unitarmy(pygame.sprite.Sprite):
                     if index == 0: # front side
                         self.armysquad = np.delete(self.armysquad, index, 0)
                         for subunit in self.subunitsprite:
-                            subunit.armypos = (subunit.armypos[0], subunit.armypos[1] - (self.imgsize[1] / 10))
+                            subunit.armypos = (subunit.armypos[0], subunit.armypos[1] - (self.imgsize[1] / 8))
                     elif index == 1: # left side
                         self.armysquad = np.delete(self.armysquad, 0, 1)
                         for subunit in self.subunitsprite:
-                            subunit.armypos = (subunit.armypos[0] - (self.imgsize[0] / 10), subunit.armypos[1])
+                            subunit.armypos = (subunit.armypos[0] - (self.imgsize[0] / 8), subunit.armypos[1])
                     elif index == 2: # right side
                         self.armysquad = np.delete(self.armysquad, -1, 1)
                     elif index == 3: # rear side
                         self.armysquad = np.delete(self.armysquad, -1, 0)
 
-                    oldwidthbox, oldheightbox = self.basewidthbox, self.baseheightbox
-                    self.basewidthbox, self.baseheightbox = len(self.armysquad[0]) * (self.imgsize[0] + 10) / 20, \
-                                                            len(self.armysquad) * (self.imgsize[1] + 2) / 20
+                    if len(self.armysquad) > 0:
+                        oldwidthbox, oldheightbox = self.basewidthbox, self.baseheightbox
+                        self.basewidthbox, self.baseheightbox = len(self.armysquad[0]) * (self.imgsize[0] + 10) / 20, \
+                                                                len(self.armysquad) * (self.imgsize[1] + 2) / 20
 
-                    numberpos = (self.basepos[0] - self.basewidthbox,
-                                 (self.basepos[1] + self.baseheightbox))  # find position for number text
-                    self.numberpos = self.rotationxy(self.basepos, numberpos, self.radians_angle)
-                    self.changeposscale()
-                    print(self.numberpos,numberpos, self.basepos, self.basewidthbox)
+                        numberpos = (self.basepos[0] - self.basewidthbox,
+                                     (self.basepos[1] + self.baseheightbox))  # find position for number text
+                        self.numberpos = self.rotationxy(self.basepos, numberpos, self.radians_angle)
+                        self.changeposscale()
 
-                    oldwidthbox = oldwidthbox - self.basewidthbox
-                    oldheightbox = oldheightbox - self.baseheightbox
-                    if index == 0:
-                        newpos = (self.basepos[0], self.basepos[1] + oldheightbox)
-                    elif index == 1:
-                        newpos = (self.basepos[0] + oldwidthbox, self.basepos[1])
-                    elif index == 2:
-                        newpos = (self.basepos[0] - oldwidthbox, self.basepos[1])
+                        oldwidthbox = oldwidthbox - self.basewidthbox
+                        oldheightbox = oldheightbox - self.baseheightbox
+                        if index == 0: # front
+                            newpos = (self.basepos[0], self.basepos[1] + oldheightbox)
+                        elif index == 1: # left
+                            newpos = (self.basepos[0] + oldwidthbox, self.basepos[1])
+                        elif index == 2: # right
+                            newpos = (self.basepos[0] - oldwidthbox, self.basepos[1])
+                        else: # rear
+                            newpos = (self.basepos[0], self.basepos[1] - oldheightbox)
+                        self.basepos = self.rotationxy(self.basepos, newpos, self.radians_angle)
+                        self.lastbasepos = self.basepos
+
+                        frontpos = (self.basepos[0], (self.basepos[1] - self.baseheightbox))  # find front position of unit
+                        self.frontpos = self.rotationxy(self.basepos, frontpos, self.radians_angle)
                     else:
-                        newpos = (self.basepos[0], self.basepos[1] - oldheightbox)
-                    # newpos = (self.basepos[0] - oldwidthbox, self.basepos[1] - oldheightbox)
-                    self.basepos = self.rotationxy(self.basepos, newpos, self.radians_angle)
-                    # print(self.basepos, self.numberpos, self.basewidthbox, self.baseheightbox, self.frontpos)
-
-                    self.lastbasepos = self.basepos
-
-                    frontpos = (self.basepos[0], (self.basepos[1] - self.baseheightbox))  # find front position of unit
-                    self.frontpos = self.rotationxy(self.basepos, frontpos, self.radians_angle)
-
-                    self.setsubunittarget()
+                        stoploop = True
                     break
             else:
                 stoploop = True

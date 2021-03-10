@@ -23,7 +23,6 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
         self.arcshot = False # direct shot will no go pass collided parentunit
         if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2: self.arcshot = True # arc shot will go pass parentunit to land at final basetarget
         self.startheight = self.shooter.height
-        self.targetheight = self.gamemapheight.getheight(self.basetarget) # get the height at basetarget
         self.accuracy = self.shooter.accuracy
         if self.shooter.state in (12, 13) and self.shooter.agileaim is False: self.accuracy -= 10 # accuracy penalty for shoot while moving
         self.passwho = None # check which parentunit arrow passing through
@@ -82,6 +81,8 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
             self.basetarget = pygame.Vector2(targetnow[0] * hitchance1 / 100, targetnow[1] * hitchance2 / 100)
         else: # perfect hit, slightly (randomly) land near basetarget
             self.basetarget = targetnow * random.uniform(0.999, 1.001)
+
+        self.targetheight = self.gamemapheight.getheight(self.basetarget) # get the height at basetarget
 
         #^ End calculate hitchance and basetarget
 
