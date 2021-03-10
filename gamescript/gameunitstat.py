@@ -7,18 +7,18 @@ class Weaponstat():
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weaponlist = {}
-        with open(main_dir + "\data\war" + '\\unit_weapon.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_weapon.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         if n == 5: # Properties must be in list
                             if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                             elif i.isdigit():
                                 row[n] = [int(i)]
                         elif i.isdigit():
@@ -33,18 +33,18 @@ class Armourstat():
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.armourlist = {}
-        with open(main_dir + "\data\war" + '\\unit_armour.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_armour.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         if n == 5: # Properties must be in list
                             if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                             elif i.isdigit():
                                 row[n] = [int(i)]
                         elif i.isdigit():
@@ -59,13 +59,13 @@ class Unitstat():
         """Unit stat data read"""
         #v Unit stat dict
         self.unitlist = {}
-        with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_preset.csv', 'r') as unitfile:
+        with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + "\\unit_preset.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if n in (5, 6, 12, 22, 23, 30): # property,ability,armour,melee weapon,range weapon,mount coloumns
                         if "," in i:
-                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                         elif i.isdigit():
                             row[n] = [int(i)]
                     elif i.isdigit():
@@ -75,7 +75,7 @@ class Unitstat():
         #^ End subunit stat list
         #v Lore of the subunit dict
         self.unitlore = {}
-        with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + '\\unit_lore.csv', 'r') as unitfile:
+        with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + "\\unit_lore.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -87,12 +87,12 @@ class Unitstat():
 
         #v Unit status effect dict
         self.statuslist = {}
-        with open(main_dir + "\data\war" + '\\unit_status.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_status.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
                 if "," in row[-2]: # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset): # only grab effect that existed in the ruleset and frist row
@@ -105,12 +105,12 @@ class Unitstat():
                                     row[n] = float(i) / 100  # Need to make it float / 100 for percentage cal 50 become 0.5
                             elif n in (2, 3): # special effect and status conflict list
                                 if "," in i:
-                                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
                                 else:
                                     row[n] = []
-                            elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n != 1: # negative number for bonus
+                            elif (i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None)) and n != 1: # negative number for bonus
                                 row[n] = float(i)
                     self.statuslist[row[0]] = row[1:]
                 run += 1
@@ -119,11 +119,11 @@ class Unitstat():
 
         #v Race dict
         self.racelist = {}
-        with open(main_dir + "\data\war" + '\\unit_race.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_race.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
@@ -131,7 +131,7 @@ class Unitstat():
                         if i.isdigit(): row[n] = int(i)  # No need to be float
                         # if n == 12:
                         #     if "," in i:
-                        #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                        #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                         #     elif i.isdigit():
                         #         row[n] = [int(i)]
                     self.racelist[row[0]] = row[1:]
@@ -140,7 +140,7 @@ class Unitstat():
 
         #v Unit grade dict
         self.gradelist = {}
-        with open(main_dir + "\data\war" + '\\unit_grade.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_grade.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
@@ -149,7 +149,7 @@ class Unitstat():
                     if run != 0:
                         if n == 13:
                             if "," in i: # Properties to subunit in list
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                             elif i.isdigit():
                                 row[n] = [int(i)]
                         elif n in (8,9): # health and stamina modifier effect
@@ -161,12 +161,12 @@ class Unitstat():
 
         #v Unit skill dict
         self.abilitylist = {}
-        with open(main_dir + "\data\war" + '\\unit_ability.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_ability.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
@@ -181,14 +181,14 @@ class Unitstat():
                             elif n in (6, 7, 28, 31):
                                 """Convert all condition and status to list"""
                                 if "," in i:
-                                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
 
                             elif n in (0, 2, 3, 4, 5, 8, 9, 10, 19, 20, 21, 22, 23, 26, 27, 29, 30):
                                 if i == "":
                                     pass
-                                elif "." in i and re.search('[a-zA-Z]', i) is None:
+                                elif "." in i and re.search("[a-zA-Z]", i) is None:
                                     row[n] = float(i)
                                 else:
                                     row[n] = int(i)
@@ -199,12 +199,12 @@ class Unitstat():
 
         #v Unit property dict
         self.traitlist = {}
-        with open(main_dir + "\data\war" + '\\unit_property.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_property.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
 
@@ -219,12 +219,12 @@ class Unitstat():
 
                             elif n in (19, 33): # status and status to enemy
                                 if "," in i:
-                                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                                 elif i.isdigit():
                                     row[n] = [int(i)]
                                 else:
                                     row[n] = []
-                            elif (i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None)) and n not in (1, 34, 35):
+                            elif (i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None)) and n not in (1, 34, 35):
                                 row[n] = float(i)
 
                     self.traitlist[row[0]] = row[1:]
@@ -234,7 +234,7 @@ class Unitstat():
 
         #v Unit role dict
         self.role = {}
-        with open(main_dir + "\data\war" + '\\unit_type.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\unit_type.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -245,18 +245,18 @@ class Unitstat():
 
         #v Unit mount dict
         self.mountlist = {}
-        with open(main_dir + "\data\war" + '\\mount_preset.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\mount_preset.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # ruleset list, make str with "," into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         if n == 7: # properties list column
                             if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                             elif i.isdigit():
                                 row[n] = [int(i)]
                         elif i.isdigit():
@@ -267,7 +267,7 @@ class Unitstat():
 
         #v Mount grade dict
         self.mountgradelist = {}
-        with open(main_dir + "\data\war" + '\\mount_grade.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\mount_grade.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0 # for avoiding header
             for row in rd:
@@ -276,7 +276,7 @@ class Unitstat():
                     if run != 0:
                         if n == 8: # Properties list
                             if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                             elif i.isdigit():
                                 row[n] = [int(i)]
                         elif n in (4,5): # health and stamina modifier effect
@@ -288,11 +288,11 @@ class Unitstat():
 
         #v Mount armour dict
         self.mountarmourlist = {}
-        with open(main_dir + "\data\war" + '\\mount_armour.csv', 'r') as unitfile:
+        with open(main_dir + "\data\war" + "\\mount_armour.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # ruleset list, make str with "," into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(',')]
+                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):
@@ -307,25 +307,25 @@ class Leaderstat():
         self.imgs = img
         self.imgorder = imgorder
         self.leaderlist = {}
-        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\leader.csv", "r") as unitfile:
+        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\leader.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = int(i)
                     # if and n in []:
-                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
 
         #v Add common leader to the leader list with gameid + 10000
-        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", "r") as unitfile:
+        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit(): row[n] = int(i)
                     # if and n in []:
-                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
                 self.leaderlist[row[0]] = row[1:]
         unitfile.close()
@@ -333,7 +333,7 @@ class Leaderstat():
 
         #v Lore of the leader dict
         self.leaderlore = {}
-        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + '\\leader_lore.csv', 'r') as unitfile:
+        with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\leader_lore.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -345,14 +345,14 @@ class Leaderstat():
 
         #v Leader class dict
         self.leaderclass = {}
-        with open(main_dir + "\data\leader" + "\\leader_class.csv", "r") as unitfile:
+        with open(main_dir + "\data\leader" + "\\leader_class.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None):
+                    if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
                         row[n] = int(i)
                     # if and n in []:
-                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(',')]
+                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
                 self.leaderclass[row[0]] = row[1:]
         unitfile.close()

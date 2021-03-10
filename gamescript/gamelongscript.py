@@ -69,7 +69,7 @@ def loadgamedata(game):
 
     #v Craete feature terrain modifier
     game.featuremod = {}
-    with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
+    with open(main_dir + "/data/map" + "/unit_terrainbonus.csv", encoding="utf-8", mode = "r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         run = 0  # for skipping the first row
         for row in rd:
@@ -135,7 +135,7 @@ def loadgamedata(game):
 
     # v create game map texture and their default variables
     game.featurelist = []
-    with open(main_dir + "/data/map" + '/unit_terrainbonus.csv', 'r') as unitfile:
+    with open(main_dir + "/data/map" + "/unit_terrainbonus.csv", encoding="utf-8", mode = "r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             game.featurelist.append(row[1])  # get terrain feature combination name for folder
@@ -180,7 +180,7 @@ def loadgamedata(game):
 
     for map in subdirectories:
         game.mapfoldername.append(str(map).split("\\")[-1])
-        with open(str(map) + '/info.csv', 'r') as unitfile:
+        with open(str(map) + "/info.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "name":
@@ -189,7 +189,7 @@ def loadgamedata(game):
     #^ End load map list
 
     #v Load custom map list
-    mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map/custom/')
+    mapfolder = Path(main_dir + "/data/ruleset/" + game.rulesetfolder + "/map/custom/")
     subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
 
     game.mapcustomlist = []
@@ -197,7 +197,7 @@ def loadgamedata(game):
 
     for map in subdirectories:
         game.mapcustomfoldername.append(str(map).split("\\")[-1])
-        with open(str(map) + '/info.csv', 'r') as unitfile:
+        with open(str(map) + "/info.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "name":
@@ -782,11 +782,11 @@ def csv_read(file, subfolder=[], outputtype=0, defaultmaindir=True):
     for folder in subfolder:
         folderlist += "/" + folder
     folderlist += "/" + file
-    with open(main_dir + folderlist, 'r') as unitfile:
+    with open(main_dir + folderlist, encoding="utf-8", mode = "r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             for n, i in enumerate(row):
-                if i.isdigit() or ("-" in i and re.search('[a-zA-Z]', i) is None):
+                if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
                     row[n] = int(i)
             if outputtype == 0:
                 returnoutput[row[0]] = row[1:]
@@ -815,7 +815,7 @@ def editconfig(section, option, value, filename, config):
 
 def convertweathertime(weatherevent):
     for index, item in enumerate(weatherevent):
-        newtime = datetime.datetime.strptime(item[1], '%H:%M:%S').time()
+        newtime = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
         newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
         weatherevent[index] = [item[0], newtime, item[2]]
 
@@ -920,7 +920,7 @@ def unitsetup(maingame):
     teamcolour = maingame.teamcolour
     teamarmy = (maingame.team0army, maingame.team1army, maingame.team2army)
 
-    with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos" + maingame.source + ".csv", 'r') as unitfile:
+    with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos" + maingame.source + ".csv", encoding="utf-8", mode = "r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             for n, i in enumerate(row):

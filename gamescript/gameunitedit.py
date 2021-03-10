@@ -29,7 +29,7 @@ class Previewbox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", int(24 * self.heightadjust))
 
         self.newcolourlist = {}
-        with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
+        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):

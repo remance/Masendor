@@ -186,7 +186,7 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.scale = scale
         self.mode = 0
         self.newcolourlist = {}
-        with open(self.main_dir + "/data/map" + '/colourchange.csv', 'r') as unitfile:
+        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -209,11 +209,11 @@ class Beautifulmap(pygame.sprite.Sprite):
                 self.image.fill(newcolour, rect)
 
         #v Comment out this part and import PIL above if not want to use blur filtering
-        data = pygame.image.tostring(self.image, 'RGB')  ## Convert image to string data for filtering effect
-        img = Image.frombytes('RGB', (1000, 1000), data)  ## Use PIL to get image data
+        data = pygame.image.tostring(self.image, "RGB")  ## Convert image to string data for filtering effect
+        img = Image.frombytes("RGB", (1000, 1000), data)  ## Use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  ## Blue Image (or apply other filter in future)
         img = img.tobytes()
-        img = pygame.image.fromstring(img, (1000, 1000), 'RGB')  ## Convert image back to a pygame surface
+        img = pygame.image.fromstring(img, (1000, 1000), "RGB")  ## Convert image back to a pygame surface
         self.image = pygame.Surface(
             (1000, 1000))  ## For unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))

@@ -18,7 +18,7 @@
 17,"Agile Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also help improve accuracy against moving target."
 18,"Can Shoot While Moving",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can shoot while moving but with some accuracy penalty. Requires a lot of archery training but the result is undoubtedly beneficial."
 19,"Concentrated Aims",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"The accuracy of these troops are not affected by morale (they still cannot shoot when broken)."
-20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ magic casting are not affected by morale (they still cannot cast magic when broken)."
+20,"Concentrated Chant",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troopsâ€™ magic casting are not affected by morale (they still cannot cast magic when broken)."
 21,"Anti-Infantry",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0," *This trait can be obtained from certain weapons."
 22,"Anti-Flyer",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"What goes up must come down. These troops are specialised in combat against flyer enemies."
 23,"Anti-Cavalry",1,,,,,0,,,,,,20,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops are specialised in combat against enemy cavalries. Bring an end to the age of cavalry one step at a time. *This trait can be obtained from certain weapons."
@@ -27,8 +27,8 @@
 26,"Anti-Large",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The bigger they are, the harder the fall. These troops are specialised in combat against large enemies."
 27,"Anti-All",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"The destroyer of world. No man, beast nor machine can withstand this true might."
 28,"Anti-Structure",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Tear down the wall! No structure can withstand such strong force."
-29,"Ignore Charge Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Rush of death and ruin. The world shall tremble upon this sight. These troops’ charge ignore charge defence entirely. "
-30,"Ignore Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Deadly to those unfortunate to face them in combat. These troops’ attack ignore defense entirely."
+29,"Ignore Charge Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Rush of death and ruin. The world shall tremble upon this sight. These troopsâ€™ charge ignore charge defence entirely. "
+30,"Ignore Defense",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Deadly to those unfortunate to face them in combat. These troopsâ€™ attack ignore defense entirely."
 31,"Cannibal",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 32,"Defiant Defense",1,,110,130,130,0,,,,,,0,0,0,25,10,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Only the strongest force can take down unit. They will struggle to the end, and for every one man killed they will take down 10 enemies with them."
 33,"Backstaber",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops deal bonus damage to enemies with rear attack."
@@ -52,7 +52,7 @@
 51,"True Hero",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,50,0,,,2,"Being true heroes, these troops has manifestly inspiring aura for nearby allies."
 52,"Legendary Might",1,,150,130,,20,120,,,,150,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The might of the legends cannot be subdued. Beware the enemy for the death to come."
 53,"Innocence Grace",,,70,130,130,0,,,,70,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
-54,"Magical Weapon",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ weapons have magic property which deals additional magic damage and can deals damage to Incorporeal enemies."
+54,"Magical Weapon",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troopsâ€™ weapons have magic property which deals additional magic damage and can deals damage to Incorporeal enemies."
 55,"Oblivious To Unexpected",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These soldiers are so oblivious to unexpected events that they have no idea or plan to defend against them making it receive defense penalty from rear attack."
 56,"Causes Fear",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Only the brave can resist the fear, and those are the ones that die young."
 57,"Causes Terror",3,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Terror is in the mind until it manifest into reality in front of you. Fleeing is always an option."
@@ -65,15 +65,15 @@
 64,"True Chosen",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 65,"The War Of Love",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 66,"Final Flame",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
-67,"Glorious Appearance",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops’ appearances are so dashing and inspiring that nearby allies will be in awe while leaving enemies in fear."
+67,"Glorious Appearance",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troopsâ€™ appearances are so dashing and inspiring that nearby allies will be in awe while leaving enemies in fear."
 68,"Holy Defense",,,,110,110,20,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The blood and sins of the devil can veil one's mind. The lost sheep will then follow the true teaching."
 69,"Vile Veil",,,,105,120,5,,,,,,40,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"There are none without sin and their sins will make them blind."
 70,"Xenophobic Bunch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops loathe to fight together with soldiers or creatures from other race than themselves. "
 71,"Eyes Of Satiens",,,,,,0,,,125,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops suffer no range penalty and can shoot even further than usual."
-72,"Farsight",1,,,,110,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Farsight reduce accuracy penalty from long range shooting and also make these troops see enemies’ projectiles earlier."
+72,"Farsight",1,,,,110,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Farsight reduce accuracy penalty from long range shooting and also make these troops see enemiesâ€™ projectiles earlier."
 73,"No Range Penalty",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Assured accuracy to eradicate enemy from any place."
 74,"Long Range Accuracy",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Death from afar, the end of chivalric era is near."
-75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Entertainment may look like it has no place in this hell. But it sure improve the soldiers’ morale."
+75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Entertainment may look like it has no place in this hell. But it sure improve the soldiersâ€™ morale."
 76,"Virtue Of Honour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 77,"Kings Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,
 78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
@@ -94,11 +94,11 @@
 93,"Urban Guerrilla",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Bonus combat and movement for these troops in urban terrain and also use less supply as well."
 94,"Sand Scavenger",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,30,0,0,,,0,0,,,2,
 95,"First Blood",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops will deals bonus damage to enemies if they and the enemies both have no injury or death."
-96,"Fervent Devotion",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops fight better when being near the commander’s sub-unit."
+96,"Fervent Devotion",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops fight better when being near the commanderâ€™s sub-unit."
 97,"Horror Of War",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 98,"No Morale",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops have no morale thus can not be motivated or broken."
 99,"Unholy Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
-100,"Knightly Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from these knights’ presence."
+100,"Knightly Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from these knightsâ€™ presence."
 101,"Thorny Armour",,,,,,,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Unit that attack these troops in melee combat will also receive damage in return."
 102,"Unstoppable",,,,150,150,30,,,,,130,20,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,20,0,,,2,
 103,"Battle Preparation",,,115,115,115,0,110,,,115,115,10,0,0,20,10,0,0,15,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops receive combat bonus when the stamina is at fresh level."
@@ -146,7 +146,7 @@
 145,"Rotten Smell",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Inducing vomit odour can cause great mental effect to the unfortunate victims."
 146,"Wall Climbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can bypass wall easily. They do not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and do not receive any defense bonus from siege equipment."
 147,"Hero Killer",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops deal more damage to champion and hero grade enemies."
-148,"Command Independent",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ morale will not be affected by commander's death or retreat."
+148,"Command Independent",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troopsâ€™ morale will not be affected by commander's death or retreat."
 149,"Impetuous",1,,,,,0,,,,,,0,0,0,0,-20,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Whether from pride or arrogance, these troops have tendency to follow order even less when the leader makes mistake or issue command they do not like."
 150,"Greslanoul's Mastery",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 151,"Hearty Competition",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Being the elite of elite, these elite troops see battle as a game who kill the most enemy. The more they kill the higher their morale including nearby allies."
@@ -162,7 +162,7 @@
 161,"Hope Crusher",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"When there is despair, there is hope. And it is the duty of these troops to crush that whatever tiny hope the enemies still have left."
 162,"Merciless",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops cannot capture running enemies as it always prefer killing them instead."
 163,"Fragile Will",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,0,"These troops will be affected by negative psychological effect even more than usual."
-164,"Overwhelming Presence",,,,,,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These creatures’ appearance are so overwhelming that leave both friendly and enemy troops in fear and worry."
+164,"Overwhelming Presence",,,,,,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These creaturesâ€™ appearance are so overwhelming that leave both friendly and enemy troops in fear and worry."
 165,"Headshotter",,,,,,0,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 166,"Perfect Aims",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Never a shot wasted when the enemies are lining up to be killed."
 167,"Personal Escort",,,,,,0,,,,,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Trained to escort important person to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
@@ -178,7 +178,7 @@
 177,"Pantheon's Favour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 178,"Magical Conflux",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
 179,"Shadow Fog",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
-180,"Penetration Shots",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ range attacks are so powerful that they can penetrate enemy body and damage more than sub-unit per shot. They can also shot through weak obstacle and deals minor damage to major obstacle."
+180,"Penetration Shots",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troopsâ€™ range attacks are so powerful that they can penetrate enemy body and damage more than sub-unit per shot. They can also shot through weak obstacle and deals minor damage to major obstacle."
 181,"Gallant Example",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,
 182,"Unholy Flesh",,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops can not be healed and will actually receive damage from healing magic."
 183,"Field Medic",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can heal nearby allies when both are not in melee combat."
@@ -211,9 +211,9 @@
 210,"Sadism",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are addicted to inflicting pain and death. The more injury and death they inflict, the higher the morale."
 211,"Masochism",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops are addicted to receiving pain and death. The more injury and death they suffer, the higher the morale."
 212,"Loves Fear",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops actually love to feel fear. Being near anyone that causes or being affected by terror and fear regardless of side increase their morale."
-213,"Seductive Charm",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ appearance can charm enemies, making them become distracted and less effective in combat."
+213,"Seductive Charm",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troopsâ€™ appearance can charm enemies, making them become distracted and less effective in combat."
 214,"Disgusting Taste",,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"The worst taste of meat ever exist. No one will ever want to devour these creatures even if they have no taste buds. "
-215,"Rusty And Dirty",,,,,,-15,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,26,,,2,"These troops’ weapons are covered with nasty rust making its less effective overall. However, their attacks can cause infection to injured enemies making them recover slower and harder to heal."
+215,"Rusty And Dirty",,,,,,-15,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,26,,,2,"These troopsâ€™ weapons are covered with nasty rust making its less effective overall. However, their attacks can cause infection to injured enemies making them recover slower and harder to heal."
 216,"Thrist For Blood",,,,,,0,,,,,,0,,,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops thirst for blood, literally! The longer it fight the better its morale. It also suffers increasing morale penalty the longer it stay out of combat."
 217,"Tainted Blood",,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,90,,,2,"Tainted blood is very dangerous if it come into contact with any untainted creature. Hence, melee combat against enemies with tainted blood is extremely inadvisable."
 218,"Acid Blood",,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Bad news for everyone! Acid is raining down on whoever harm these creatures. Anyone that is affected by acid blood suffers combat penalty and also injury. "
@@ -263,8 +263,8 @@
 262,"Fear Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 263,"Fear Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 264,"Fear Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
-265,"Scare Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can cause mount to panic or scare, which reduce enemy cavalries’ combat effectiveness and morale."
-266,"Fearless Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops’ mount cannot be panicked or broken and immune to Scare Mount."
+265,"Scare Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops can cause mount to panic or scare, which reduce enemy cavalriesâ€™ combat effectiveness and morale."
+266,"Fearless Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troopsâ€™ mount cannot be panicked or broken and immune to Scare Mount."
 267,"Human Killer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Human, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all."
 268,"Elf Murderer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Those damn arrogant gaze! Those damn annoying sneer! Darn elves think they are above every other races, let's show those sharp ears the death they deserve!"
 269,"Dwarf Exterminator",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Short and stink! What good does dwarf bring to the world anyway? Useless sods they all are. "

@@ -98,7 +98,7 @@
 97,"Provoke",0,2,30,30,10,10,,50,10,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,89,0,0,"""Hey over here! Come and get me."" *all kind of rude gesture*"
 98,"Double Slash",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,200,,0,0,0,0,0,0,2,"Twice the slash, double the damage!"
 99,"Triple Slash",0,1,1,60,10,10,,60,70,,,,,,,,,0,0,0,0,0,,300,,0,0,0,0,0,0,2,"Thrice the damage, triple the prize!"
-100,"Great Sweep",0,3,1,60,10,10,,60,95,,,,,,,,,0,0,0,0,0,,115,,0,0,0,0,0,0,2,"ìOne great circle and the bodies will fall. No life shall be forgiven under the dying muttering.î Gasiernse Poem of Blade."
+100,"Great Sweep",0,3,1,60,10,10,,60,95,,,,,,,,,0,0,0,0,0,,115,,0,0,0,0,0,0,2,"‚ÄúOne great circle and the bodies will fall. No life shall be forgiven under the dying muttering.‚Äù Gasiernse Poem of Blade."
 101,"Pinpoint Shot",1,1,30,60,11,11,,70,45,,,,,200,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,0,
 102,"Flying",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,70,30,,,,,,,,,0,0,-1,0,0,,,,0,39,0,0,0,0,2,"Flying troop does not suffer terrain and height penalty while also can only be damaged by melee attack when the troop itself attacking."
 103,"Floating",0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,,,,,,,,,,,0,0,-1,0,0,,,,0,40,0,0,0,0,2,"Floating troop does not suffer terrain penalty but still receive height penalty. Moreover, the troop also receive melee defense bonus against enemy with no Anti-Cavalry and Anti-Flying."
@@ -106,7 +106,7 @@
 105,"Clear Mind",0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,0,0,0,0,2,
 106,"The Great Banner",0,4,1200,1200,,,,40,15,105,105,105,105,105,,105,105,5,0,0,110,5,,,,0,0,0,0,,0,2,
 107,"Hammer Of Faith",0,1,1,60,10,10,,60,40,,,,,,,,,0,0,0,0,0,,200,,0,3,0,6,,0,2,
-108,"Blade Dance",0,2,10,60,10,10,,75,88,,,,,,,,,0,0,,0,0,,40,,0,0,0,0,,0,2,"The dance of death never end. A man and his sword never part until the stage turn red from the audiencesí gore."
+108,"Blade Dance",0,2,10,60,10,10,,75,88,,,,,,,,,0,0,,0,0,,40,,0,0,0,0,,0,2,"The dance of death never end. A man and his sword never part until the stage turn red from the audiences‚Äô gore."
 109,"Desperate Struggle",0,1,,,10,10,,20,0,130,130,130,130,130,,130,130,30,0,-1,-30,-10,,,,0,0,0,0,,0,2,
 110,"Payday Imminent",0,1,90,300,,,,50,15,125,,,150,,,,,0,0,,15,0,,,,0,0,0,0,,0,2,
 111,"Finest Hour",0,1,60,6000,,3,,70,30,150,150,150,150,150,,150,150,50,0,,150,100,,,,0,0,0,0,,0,2,
