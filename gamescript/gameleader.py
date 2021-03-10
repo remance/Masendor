@@ -74,6 +74,8 @@ class Leader(pygame.sprite.Sprite):
         elif self.armyposition + 1 != 4 and self.parentunit.leader[self.armyposition + 1].state not in (96, 97, 98, 99, 100) and self.parentunit.leader[self.armyposition + 1].name != "None":
             self.parentunit.leader.append(self.parentunit.leader.pop(self.armyposition))  ## move leader to last of list when dead
 
+        self.subunit.unitleader = False
+
         thisbadmorale = self.badmorale[0]
 
         if self.state == 99: # wounded inflict less morale penalty
@@ -111,7 +113,6 @@ class Leader(pygame.sprite.Sprite):
                     leader.commander = True
 
                 self.parentunit.leadersubunit = leader.subunit
-                # self.parentunit.leadersubunit - self.parentunit.basepos
                 leader.subunit.unitleader = True
 
             leader.imgposition = leader.baseimgposition[leader.armyposition]

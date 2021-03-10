@@ -77,7 +77,7 @@ try: # for printing error log when error exception happen
 
     def game_intro(screen, clock, introoption):
         intro = introoption
-        if introoption == True:
+        if introoption:
             intro = True
         timer = 0
         # quote = ["Those who fail to learn from the mistakes of their predecessors are destined to repeat them. George Santayana", "It is more important to outhink your enemy, than to outfight him, Sun Tzu"]
@@ -867,7 +867,7 @@ try: # for printing error log when error exception happen
                         else:  # holding other keys
                             keypress = event.key
 
-                    if event.type == QUIT or self.quitbutton.event == True or (esc_press and self.menustate == "mainmenu"):
+                    if event.type == QUIT or self.quitbutton.event or (esc_press and self.menustate == "mainmenu"):
                         return
 
                 self.mousepos = pygame.mouse.get_pos()

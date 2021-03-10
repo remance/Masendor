@@ -952,13 +952,13 @@ def unitsetup(maingame):
             maxcolumn = len(army.armysquad[0])
             for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
-                    addsquad = gamesubunit.Subunit(squadnum, squadgameid, army, army.squadpositionlist[armysquadindex],
+                    addsubunit = gamesubunit.Subunit(squadnum, squadgameid, army, army.squadpositionlist[armysquadindex],
                                                    army.starthp, army.startstamina, maingame.unitscale)
-                    maingame.subunit.add(addsquad)
-                    addsquad.boardpos = boardpos[armysquadindex]
+                    maingame.subunit.add(addsubunit)
+                    addsubunit.boardpos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
-                    army.subunitspritearray[row][column] = addsquad
-                    army.subunitsprite.append(addsquad)
+                    army.subunitspritearray[row][column] = addsubunit
+                    army.subunitsprite.append(addsubunit)
                     squadindexlist.append(squadgameid)
                     squadgameid += 1
                     squadindex += 1

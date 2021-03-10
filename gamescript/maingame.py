@@ -288,7 +288,7 @@ class Battle():
         startcolumn = 25
         column = startcolumn
         armylist = self.team1army
-        if self.enactment == True: # include another team army icon as well in enactment mode
+        if self.enactment: # include another team army icon as well in enactment mode
             armylist = self.allunitlist
         currentindex = int(self.armyselector.currentrow * self.armyselector.maxcolumnshow) # the first index of current row
         self.armyselector.logsize = len(armylist) / self.armyselector.maxcolumnshow
@@ -930,7 +930,7 @@ class Battle():
                         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
 
                     elif self.beforeselected != self.lastselected:  # change subunit information on ui when select other parentunit
-                        if self.inspectui == True: # change inspect ui
+                        if self.inspectui: # change inspect ui
                             self.newarmyclick = True
                             self.battleui.remove(*self.inspectsubunit)
 

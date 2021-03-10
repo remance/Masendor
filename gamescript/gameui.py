@@ -94,7 +94,9 @@ class Gameui(pygame.sprite.Sprite):
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
             self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
-                              "Range: ", "Ammunition: ", "Reload Speed: ", "Charge Power: ", "Charge Defense: ", "Mental: "] # stat name
+                              "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "] # stat name
+            self.subunitstate = {0:"Idle",1:"Walk",2:"Run",3:"Walk M",4:"Run M",5:"Walk R",6:"Run R",10:"Melee",11:"Shoot",12:"Walk S", 13:"Run S",
+                                 96:"Flee",97:"Rest",98:"Flee",99:"Flee",100:"Dead"}
             self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # item quality name
             self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"} # leader state name
             self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
@@ -205,9 +207,9 @@ class Gameui(pygame.sprite.Sprite):
         elif self.uitype == "unitcard":
             position = 15 # starting row
             positionx = 45 # starting point of text
-            self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", int(who.stamina), int(who.morale),
+            self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", str(int(who.stamina))+", " +self.subunitstate[who.state], int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
-                          int(who.accuracy), int(who.shootrange), who.ammo, str(int(who.reloadtime)) + " (" + str(int(who.reload)) + ")",
+                          int(who.accuracy), int(who.shootrange), who.ammo, str(int(who.reloadtime)) + "/" + str(int(who.reload)) + ": " + str(who.magazinenow),
                           int(who.charge), int(who.chargedef), who.mentaltext, int(who.tempcount)]
             self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
             self.description = who.description

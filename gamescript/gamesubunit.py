@@ -61,6 +61,7 @@ class Subunit(pygame.sprite.Sprite):
         self.haveredcorner = False
         self.state = 0 # Current subunit state, similar to parentunit state
         self.timer = 0 # may need to use random.random()
+        self.movetimer = 0 # timer for moving to front position before attacking nearest unit
         self.magazinenow = 0
         self.zoom = 1
         self.lastzoom = 10
@@ -147,6 +148,7 @@ class Subunit(pygame.sprite.Sprite):
         self.attackpos = self.parentunit.baseattackpos
         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)  # get new terrain and feature at each subunit position
         self.height = self.gamemapheight.getheight(self.basepos)  # Current terrain height
+        self.frontheight = self.gamemapheight.getheight(self.frontsidepos) # terrain height at front position
         #^ End position related
 
         self.rect = self.image.get_rect(center=self.pos)
@@ -270,7 +272,7 @@ class Subunit(pygame.sprite.Sprite):
     def statusupdate(self, thisweather):
         """calculate stat from stamina, morale state, skill, status, terrain"""
 
-        if self.haveredcorner == True:  # have red corner reset image
+        if self.haveredcorner:  # have red corner reset image
             self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
             self.haveredcorner = False
 
@@ -293,7 +295,8 @@ class Subunit(pygame.sprite.Sprite):
         self.accuracy = self.baseaccuracy * self.staminastatecal + self.commandbuff # use stamina and command buff
         self.reload = self.basereload * (2 - self.staminastatecal) # the less stamina, the higher reload time
         self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        self.speed = self.basespeed * self.staminastatecal # use stamina
+        heightdiff = (self.height / self.frontheight) ** 2  # walking down hill increase speed while walking up hill reduce speed
+        self.speed = self.basespeed * self.staminastatecal * heightdiff # use stamina
         self.charge = (self.basecharge * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
 
         self.shootrange = self.baserange
@@ -553,6 +556,17 @@ class Subunit(pygame.sprite.Sprite):
         self.statuseffect = {key: val for key, val in self.statuseffect.items() if val[3] > 0}
         #^ End timer effect
 
+    def findshootingtarget(self, parentstate):
+        # get nearby enemy basetarget from list if not targeting anything yet
+        self.attackpos = list(self.parentunit.neartarget.values())[0]  # replace attacktarget with enemy pos
+        self.attacktarget = list(self.parentunit.neartarget.keys())[0]  # replace attacktarget with enemy id
+        if self.shootrange >= self.attackpos.distance_to(self.basepos):
+            self.state = 11
+            if parentstate in (1, 3, 5):  # Walk and shoot
+                self.state = 12
+            elif parentstate in (2, 4, 6):  # Run and shoot
+                self.state = 13
+
     def makefrontsidepos(self):
         self.frontsidepos = (self.basepos[0], (self.basepos[1] - self.imageheight / 2))
 
@@ -702,49 +716,55 @@ class Subunit(pygame.sprite.Sprite):
                                 if parentstate not in (96,97,98,99):
                                     parentstate = 10
                                     self.parentunit.state = 10
+                                    self.parentunit.attacktarget = self.meleetarget.parentunit
 
                                 if self.enemyfront == []: # no enemy in front try rotate to enemy at side
                                     self.basetarget = self.meleetarget.basepos
                                     self.newangle = self.setrotate()
 
                                 break
-                    elif self.state == 10: # state 10 but not in fight anymore, rotate and move back to original position
-                        if self.attacking and self.frontline:  # attack to nearest target instead
+                    elif parentstate == 10 and self.frontline:
+                        if self.attacking:  # attack to nearest target instead
                             closetarget = None
                             if self.meleetarget is None:
                                 self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
-                            if self.meleetarget.parentunit.state != 100:
+                            if self.meleetarget.parentunit.state != 100: # TODO add function to find next closest if first has front friendly collide
                                 for subunit in self.meleetarget.parentunit.subunitsprite:
                                     if closetarget is None or closetarget.basepos.distance_to(self.basepos) > subunit.basepos.distance_to(self.basepos):
                                         closetarget = subunit
-                                self.basetarget = self.meleetarget.basepos
-                                self.newangle = self.setrotate()
-                            else:
+                                if self.movetimer == 0:
+                                    if len(self.friendfront) != 0:
+                                        self.movetimer = 0.1
+                                        self.basetarget = self.commandtarget
+                                    else:
+                                        self.basetarget = closetarget.basepos
+                                    self.newangle = self.setrotate()
+                                else:
+                                    self.movetimer += dt
+                                    if self.movetimer >= 5:
+                                        self.movetimer = 0
+                            else: # enemy dead
                                 self.meleetarget = None
                                 self.attacktarget = None
                                 self.basetarget = self.commandtarget
                                 self.newangle = self.parentunit.angle
                                 self.state = 0
 
-                        elif self.attacking is False:
+                        elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
                             self.meleetarget = None
                             self.attacktarget = None
                             self.basetarget = self.commandtarget
                             self.newangle = self.parentunit.angle
                             self.state = 0
 
-                    # elif self.state == 10: # state 10 but not in fight anymore, rotate and move back to original position
-                    #     self.attacktarget = None
-                    #     self.basetarget = self.commandtarget
-                    #     self.newangle = self.setrotate()
-                    #     self.state = 0
                     #^ End melee check
-
 
                     #v Unit in melee combat, set subunit state to be in idle, melee combat or range attack state
                     if parentstate == 10:
-                        if self.state != 10 and self.ammo > 0 and (self.arcshot or self.nearbysquadlist[2] == 0) and self.parentunit.fireatwill == 0:  # Help range attack when parentunit in melee combat if has arcshot or frontline
+                        if self.state != 10 and self.ammo > 0 and (self.arcshot or self.frontline) and self.parentunit.fireatwill == 0:  # Help range attack when parentunit in melee combat if has arcshot or frontline
                             self.state = 11
+                            if self.parentunit.neartarget != {} and self.attacktarget is None:
+                                self.findshootingtarget(parentstate)
                     #^End parentunit in melee combat
 
                     #v Range attack function
@@ -756,16 +776,8 @@ class Subunit(pygame.sprite.Sprite):
 
                     elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
                                                                                                     and self.shootmove)):  # Fire at will, auto pick closest enemy
-                        if self.parentunit.neartarget != {}:
-                            if self.attacktarget is None: # get nearby enemy basetarget from list if not targeting anything yet
-                                self.attackpos = list(self.parentunit.neartarget.values())[0] # replace attacktarget with enemy pos
-                                self.attacktarget = list(self.parentunit.neartarget.keys())[0] # replace attacktarget with enemy id
-                            if self.shootrange >= self.attackpos.distance_to(self.basepos):
-                                self.state = 11
-                                if parentstate in (1, 3, 5):  # Walk and shoot
-                                    self.state = 12
-                                elif parentstate in (2, 4, 6):  # Run and shoot
-                                    self.state = 13
+                        if self.parentunit.neartarget != {} and self.attacktarget is None:
+                            self.findshootingtarget(parentstate)
 
                     if self.state in (11, 12, 13) and self.magazinenow == 0: # reloading ammo
                         self.reloadtime += dt
@@ -858,12 +870,13 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 revertmove = False
-                if self.state != 10 and self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
+                if self.state != 10 and self.parentunit.revert or \
+                        (self.angle != self.parentunit.angle and self.parentunit.moverotate is False) or parentstate == 10:
                     revertmove = True # revert move check for in case subunit still need to rotate more before moving
 
                 #v Move function to given basetarget position
                 if ((self.angle != self.newangle and revertmove is False) or (self.angle == self.newangle \
-                    and self.basepos != self.basetarget)): #and self.rangecombatcheck == False #or self.state == 10
+                    and self.basepos != self.basetarget)): # cannot move if still need to rotate
                     if parentstate in (3, 4):
                         # if self.attackpos.distance_to(self.basepos) < 50:
                         self.attacking = True
@@ -871,8 +884,8 @@ class Subunit(pygame.sprite.Sprite):
                         self.attacking = False
 
                     #v Can move if front not collided
-                    if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.attacking) or self.parentunit.retreatstart) \
-                            and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and self.state == 10) or self.state != 10):
+                    if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.attacking)) \
+                            and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
 
                         move = self.basetarget - self.basepos  # distance between basetarget and front side
                         move_length = move.length()  # convert length
@@ -880,18 +893,11 @@ class Subunit(pygame.sprite.Sprite):
                         if move_length > 0:  # movement length longer than 0.1, not reach basetarget yet
                             move.normalize_ip()
 
-                            # heightdiff = (self.height / self.sideheight[
-                            #     0]) ** 2  # walking down hill increase speed while walking up hill reduce speed
-                            # if self.state in (
-                            # 96, 98, 99) or self.revert:  # retreat or revert use the side closest to basetarget for checking height
-                            #     heightdiff = (self.height / self.sideheight[list(side2.keys())[0]]) ** 2
-                            heightdiff = 1
-
                             if self.state in (1, 3, 5):  # walking
-                                move = move * self.parentunit.walkspeed * heightdiff * dt  # use walk speed
+                                move = move * self.parentunit.walkspeed * dt  # use walk speed
                                 self.walk = True
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                                move = move * self.parentunit.runspeed * heightdiff * dt  # use run speed
+                                move = move * self.parentunit.runspeed * dt  # use run speed
                                 self.run = True
                             newpos = self.basepos + move
 
@@ -908,16 +914,15 @@ class Subunit(pygame.sprite.Sprite):
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = self.pos  # no need to do list movement
 
-                                if self.unitleader and parentstate != 10 and self.parentunit.moverotate is False: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
-                                    self.parentunit.basepos += move
+                                if self.unitleader and parentstate != 10: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
+                                    if self.parentunit.moverotate is False:
+                                        self.parentunit.basepos += move
                                     frontpos = (self.parentunit.basepos[0], (self.parentunit.basepos[1] - self.parentunit.baseheightbox))  # find front position
                                     self.parentunit.frontpos = self.rotationxy(self.parentunit.basepos, frontpos, self.parentunit.radians_angle)
 
                                     numberpos = (self.parentunit.basepos[0] - self.parentunit.basewidthbox, (self.parentunit.basepos[1] + self.parentunit.baseheightbox))
                                     self.parentunit.numberpos = self.rotationxy(self.parentunit.basepos, numberpos, self.parentunit.radians_angle)
                                     self.parentunit.truenumberpos = self.parentunit.numberpos * (11 - self.parentunit.zoom) # find new position for troop number text
-
-                                    self.parentunit.moving = True
 
                                     # Stop moving normally
                                     # if self.combatpreparestate is False:
@@ -960,6 +965,7 @@ class Subunit(pygame.sprite.Sprite):
                         # if self.lastpos != self.basepos:
                         self.terrain, self.feature = self.getfeature(self.basepos, self.gamemap)  # get new terrain and feature at each subunit position
                         self.height = self.gamemapheight.getheight(self.basepos)  # get new height
+                        self.frontheight = self.gamemapheight.getheight(self.frontsidepos)
                         self.mask = pygame.mask.from_surface(self.image) # make new mask
                         self.makefrontsidepos()
                         self.lastpos = self.basepos
@@ -1038,7 +1044,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.skilleffect = {} # remove all skill effects
 
                 self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
-                self.haveredcorner = False
 
                 self.parentunit.deadchange = True
 
@@ -1059,7 +1064,7 @@ class Subunit(pygame.sprite.Sprite):
                         break
 
                 #v Leader change subunit or gone/die
-                if self.leader is not None and self.leader.name != "None" and self.leader.state != 100: # Find new subunit for leader if there is one in this subunit
+                if self.leader is not None and self.leader.state != 100: # Find new subunit for leader if there is one in this subunit
                     for subunit in self.nearbysquadlist:
                         if subunit != 0 and subunit.state != 100 and subunit.leader == None:
                             subunit.leader = self.leader
@@ -1067,28 +1072,33 @@ class Subunit(pygame.sprite.Sprite):
                             for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
                                 if subunit.gameid == self.leader.subunit.gameid:
                                     subunit.leader.subunitpos = index
-                                    if self.unitleader: # set leader subunit to new one
+                                    if self.unitleader:  # set leader subunit to new one
                                         self.parentunit.leadersubunit = subunit
                                         subunit.unitleader = True
+
                             self.leader = None
                             break
 
-                    if self.unitleader:
-                        self.unitleader = False
-
-                    if self.leader is not None:  # if can't find new near subunit to move leader then find from first subunit to last place in parentunit
+                    if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in parentunit
                         for index, subunit in enumerate(self.parentunit.subunitsprite):
                             if subunit.state != 100 and subunit.leader == None:
                                 subunit.leader = self.leader
                                 self.leader.subunit = subunit
                                 subunit.leader.subunitpos = index
                                 self.leader = None
+                                if self.unitleader:  # set leader subunit to new one
+                                    self.parentunit.leadersubunit = subunit
+                                    subunit.unitleader = True
+
                                 break
 
                         if self.leader is not None: # Still can't find new subunit so leader disappear with chance of different result
                             self.leader.state = random.randint(97,100) # captured, retreated, wounded, dead
                             self.leader.health = 0
                             self.leader.gone()
+
+
+                    self.unitleader = False
                 #^ End leader change
 
                 self.maingame.eventlog.addlog([0, str(self.boardpos) + " " + str(self.name)
