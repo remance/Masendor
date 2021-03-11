@@ -304,7 +304,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.stamina = int(self.stamina/howmany) # Average stamina of all subunit
             self.morale = int(self.morale/howmany) # Average moorale of all subunit
             self.speed = min(allspeed) # use slowest subunit
-            self.walkspeed, self.runspeed = self.speed / 15, self.speed / 10
+            self.walkspeed, self.runspeed = self.speed / 20, self.speed / 15
             if len(allshootrange) > 0:
                 self.maxrange = max(allshootrange) # Max shoot range of all subunit
                 self.minrange = min(allshootrange) # Min shoot range of all subunit
@@ -672,9 +672,11 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.baseattackpos = self.basetarget
                         self.newangle = self.setrotate()  # keep rotating while chasing
                 else: # enemy dead stop chasing
+                    print('test')
                     self.set_target(self.frontpos)
                     self.attacktarget = None
                     self.baseattackpos = 0
+                    self.state = 0
             # ^ End chase
 
             #v Rotate Function

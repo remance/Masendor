@@ -536,7 +536,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.basereload = stat[15] + int(self.statlist.gradelist[self.grade][5])
     self.reloadtime = 0  # Unit can only refill magazine when reloadtime is equal or more than reload stat
     self.basecharge = stat[16]
-    self.basechargedef = 10  # All infantry subunit has default 10 charge defence
+    self.basechargedef = 100  # All infantry subunit has default 100 charge defence
     self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
     self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
     skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
@@ -580,7 +580,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.mountgrade = self.statlist.mountgradelist[stat[29][1]]
     self.mountarmour = self.statlist.mountarmourlist[stat[29][2]]
     if stat[29][0] != 1:  # have mount, add mount stat with its grade to subunit stat
-        self.basechargedef = 5  # charge defence only 5 for cav
+        self.basechargedef = 50  # charge defence only 50 for cav
         self.basespeed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
         self.troophealth += (self.mount[2] * self.mountgrade[3]) + self.mountarmour[1]  # Add mount health to the troop health
         self.basecharge += (self.mount[3] + self.mountgrade[2])  # Add charge power of mount to troop
@@ -592,6 +592,9 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
 
     self.weight = self.weaponlist.weaponlist[stat[21][0]][3] + self.weaponlist.weaponlist[stat[22][0]][3] + \
                   self.armourlist.armourlist[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
+    if self.unittype == 2: # cavalry has half weight penalty
+        self.weight = self.weight/2
+
     self.trait = self.trait + self.armourlist.armourlist[stat[11][0]][4]  # Apply armour trait to subunit
     self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(self.statlist.gradelist[self.grade][3]),
                            0)  # finalise base speed with weight and grade bonus
@@ -1143,15 +1146,15 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
                 sidecal = battlesidecal[defside]
                 if target.fulldef or target.tempfulldef: # Defense all side
                     sidecal = 1
-                dmg = dmg + (who.charge) - (target.chargedef * sidecal)
+                dmg = dmg + (((who.charge) - (target.chargedef * sidecal)) * 2)
             else:
-                dmg = dmg + (who.charge)
+                dmg = dmg + (who.charge * 2)
 
         if target.attacking and target.ignorechargedef is False: # Also include chargedef in dmg if enemy attacking
             chargedefcal = who.chargedef - target.charge
             if chargedefcal < 0:
                 chargedefcal = 0
-            dmg = dmg + (chargedefcal) # if charge def is higher than enemy charge then deal back addtional dmg
+            dmg = dmg + (chargedefcal * 2) # if charge def is higher than enemy charge then deal back addtional dmg
 
         dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
 

@@ -40,7 +40,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
             hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  ## range penalty half
 
         howlong = shootrange / self.speed # shooting distance divide arrow speed to find travel time
-        targetnow = self.shooter.parentunit.baseattackpos
+        targetnow = self.shooter.attackpos
         if self.shooter.attacktarget is not None:
             listtohit = self.shooter.attacktarget.subunitsprite
             if len(listtohit) > 0:

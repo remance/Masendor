@@ -22,7 +22,7 @@ Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(wit
 
 0.6.2 - 0.6.5: custom battle, battle result screen, in game unit and custom sub-unit editor
  
-0.6.6 and 0.6.7: random map generator, start working on Battle of Mohács
+0.6.6 and 0.6.7: random map generator, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 
 0.6.8 and 0.6.9: multiple unit selection/move, also add border to selected unit on army selector ui
 
@@ -38,9 +38,9 @@ Ver 1 - 1.5: More art, sound effect and ingame music (May need to use royalty fr
 
 Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather
 
-Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item)
+Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item), Minor battle: Wolf of Paris
 
-Ver 1.3: Deception, False information, scout, espionage warfare, information
+Ver 1.3: Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
 
 Ver 1.6: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not main priority in the early battle sample yet), transfer leader, Battle of Gaixia
 

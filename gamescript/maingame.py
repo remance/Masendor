@@ -431,6 +431,7 @@ class Battle():
         #v Create Starting Values
         self.mixervolume = SoundVolume
         self.gamestate = 1
+        self.mapscaledelay = 0 # delay for map zoom input
         self.mousetimer = 0 # This is timer for checking double mouse click, use realtime
         self.uitimer = 0 # This is timer for ui update function, use realtime
         self.dramatimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
@@ -591,7 +592,7 @@ class Battle():
                                     self.setuparmyicon()
                                     self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
 
-                            else:  # Scrolling in game map to zoom
+                            elif self.mapscaledelay == 0:  # Scrolling in game map to zoom
                                 self.camerascale += 1
                                 if self.camerascale > 10:
                                     self.camerascale = 10
@@ -599,6 +600,7 @@ class Battle():
                                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                                     self.mapshown.changescale(self.camerascale)
+                                    self.mapscaledelay = 0.001
 
                         elif event.button == 5: # Mouse scroll down
                             if self.eventlog.rect.collidepoint(self.mousepos):  # Scrolling when mouse at event log
@@ -619,7 +621,7 @@ class Battle():
                                     if self.armyselector.currentrow < 0:
                                         self.armyselector.currentrow = 0
 
-                            else:  # Scrolling in game map to zoom
+                            elif self.mapscaledelay == 0:  # Scrolling in game map to zoom
                                 self.camerascale -= 1
                                 if self.camerascale < 1:
                                     self.camerascale = 1
@@ -627,6 +629,7 @@ class Battle():
                                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                                     self.mapshown.changescale(self.camerascale)
+                                    self.mapscaledelay = 0.001
                     #^ End mouse input
 
                     #v keyboard input
@@ -757,6 +760,11 @@ class Battle():
                     self.mousetimer += self.uidt # increase timer for mouse click using real time
                     if self.mousetimer >= 0.3: # time pass 0.3 second no longer count as double click
                         self.mousetimer = 0
+
+                if self.mapscaledelay > 0: # player change map scale once before
+                    self.mapscaledelay += self.uidt
+                    if self.mapscaledelay >= 0.1: # delay for 1 second until user can change scale again
+                        self.mapscaledelay = 0
 
                 if self.terraincheck in self.battleui and (
                         self.terraincheck.pos != self.mousepos or keystate[K_s] or keystate[K_w] or keystate[K_a] or keystate[K_d]):
@@ -934,12 +942,14 @@ class Battle():
                             self.newarmyclick = True
                             self.battleui.remove(*self.inspectsubunit)
 
+                            self.subunitselected = None
                             for index, subunit in enumerate(whoinput.subunitspritearray.flat):
                                 if subunit is not None:
                                     self.inspectsubunit[index].addsubunit(subunit)
                                     self.battleui.add(self.inspectsubunit[index])
+                                    if self.subunitselected is None:
+                                        self.subunitselected = self.inspectsubunit[index]
 
-                            self.subunitselected = self.inspectsubunit[0]
                             self.subunitselectedborder.pop(self.subunitselected.pos)
                             self.battleui.add(self.subunitselectedborder)
                             self.gameui[2].valueinput(who=self.subunitselected.who, weaponlist=self.allweapon, armourlist=self.allarmour,
@@ -985,11 +995,15 @@ class Battle():
                                 self.inspectui = True
                                 self.battleui.add(*self.gameui[2:4])
                                 self.battleui.add(*self.unitcardbutton)
+                                self.subunitselected = None
+
                                 for index, subunit in enumerate(whoinput.subunitspritearray.flat):
                                     if subunit is not None:
                                         self.inspectsubunit[index].addsubunit(subunit)
                                         self.battleui.add(self.inspectsubunit[index])
-                                self.subunitselected = self.inspectsubunit[0]
+                                        if self.subunitselected is None:
+                                            self.subunitselected = self.inspectsubunit[index]
+
                                 self.subunitselectedborder.pop(self.subunitselected.pos)
                                 self.battleui.add(self.subunitselectedborder)
                                 self.gameui[2].valueinput(who=self.subunitselected.who, weaponlist=self.allweapon, armourlist=self.allarmour,
@@ -1245,8 +1259,10 @@ class Battle():
                             spritetwo.enemyside.append(spriteone)
                     else: # collide with subunit in same unit
                         if spriteone.frontsidepos.distance_to(spritetwo.basepos) < self.frontdistance: # first subunit collision
+                            # if spritetwo.frontline:
                             spriteone.friendfront.append(spritetwo)
                         if spritetwo.frontsidepos.distance_to(spriteone.basepos) < self.frontdistance: # second subunit
+                            # if spriteone.frontline:
                             spritetwo.friendfront.append(spriteone)
 
 

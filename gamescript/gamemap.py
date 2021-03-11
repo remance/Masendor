@@ -154,14 +154,6 @@ class Mapheight(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
 
-    def changescale(self, scale):
-        self.scale = scale
-        self.image = self.image_original.copy()
-        scalewidth = self.image.get_width() * self.scale
-        scaleheight = self.image.get_height() * self.scale
-        self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-
     def getheight(self, pos):
         """get the terrain height at that exact position"""
         try:
