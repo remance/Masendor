@@ -186,7 +186,8 @@ class Unitarmy(pygame.sprite.Sprite):
         frontpos = (self.basepos[0], (self.basepos[1] - self.baseheightbox))  # find front position of unit
         self.frontpos = self.rotationxy(self.basepos, frontpos, self.radians_angle)
         self.set_target(self.frontpos)
-        self.bastarget = self.frontpos
+        self.movementqueue = []
+        self.basetarget = self.frontpos
         self.commandtarget = self.frontpos
         numberpos = (self.basepos[0] - self.basewidthbox,
                      (self.basepos[1] + self.baseheightbox))  # find position for number text
@@ -668,11 +669,10 @@ class Unitarmy(pygame.sprite.Sprite):
                 if self.attacktarget.state != 100:
                     if self.collide is False:
                         self.state = self.commandstate  # resume attack command
-                        self.set_target(self.attacktarget.basepos)  # set basetarget to cloest enemy's side
+                        self.set_target(self.attacktarget.leadersubunit.basepos)  # set basetarget to cloest enemy's side
                         self.baseattackpos = self.basetarget
                         self.newangle = self.setrotate()  # keep rotating while chasing
                 else: # enemy dead stop chasing
-                    print('test')
                     self.set_target(self.frontpos)
                     self.attacktarget = None
                     self.baseattackpos = 0
@@ -746,15 +746,15 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.useminrange == 0: # use minimum range to shoot
                 shootrange = self.minrange
 
-            if self.state in (5, 6) and self.moverotate is False and ((self.attacktarget is not None and self.basepos.distance_to(self.attacktarget.basepos) <= shootrange)
+            if self.state in (5, 6) and self.moverotate is False and ((self.attacktarget is not None and self.basepos.distance_to(self.attacktarget.leadersubunit.basepos) <= shootrange)
                                          or self.basepos.distance_to(self.baseattackpos) <= shootrange): # in shoot range
                 self.set_target(self.frontpos)
                 self.rangecombatcheck = True # set range combat check to start shooting
-            elif self.state == 11 and self.attacktarget is not None and self.basepos.distance_to(self.attacktarget.basepos) > shootrange \
+            elif self.state == 11 and self.attacktarget is not None and self.basepos.distance_to(self.attacktarget.leadersubunit.basepos) > shootrange \
                     and self.hold == 0 and self.collide is False:  # chase basetarget if it go out of range and hold condition not hold
                 self.state = self.commandstate # set state to attack command state
                 self.rangecombatcheck = False # stop range combat check
-                self.set_target(self.attacktarget.basepos) # move to basetarget
+                self.set_target(self.attacktarget.leadersubunit.basepos) # move to basetarget
                 self.newangle = self.setrotate() # also keep rotate to basetarget
             #^ End range attack state
 
@@ -936,3 +936,4 @@ class Unitarmy(pygame.sprite.Sprite):
             del self.leader
             del self.frontlineobject
             del self.attacktarget
+            del self.leadersubunit

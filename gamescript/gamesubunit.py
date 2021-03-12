@@ -136,6 +136,8 @@ class Subunit(pygame.sprite.Sprite):
                                           self.parentunit.basepos[1] - self.parentunit.baseheightbox / 2) # get topleft corner position of parentunit to calculate true pos
         self.basepos = pygame.Vector2(battaliontopleft[0] + self.armypos[0], battaliontopleft[1] + self.armypos[1]) # true position of subunit in map
         self.lastpos = self.basepos
+
+        self.movementqueue = []
         self.basetarget = self.basepos # basetarget to move
         self.commandtarget = self.basepos # actual basetarget outside of combat
         self.pos = self.basepos * self.zoom  # pos is for showing on screen
@@ -645,7 +647,7 @@ class Subunit(pygame.sprite.Sprite):
             self.attacktarget = self.parentunit.attacktarget
             self.attackpos = self.parentunit.baseattackpos
             if self.attacktarget is not None:
-                self.attackpos = self.attacktarget.basepos
+                self.attackpos = self.attacktarget.leadersubunit.basepos
 
             # v Mouse collision detection
             if self.rect.collidepoint(mousepos):
@@ -709,7 +711,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.checkskillcondition()
 
                     if self.state == 4 and self.attacking and self.chargeskill not in self.skillcooldown \
-                            and self.basepos.distance_to(self.basetarget) < self.parentunit.runspeed * 10: # charge skill only when running to melee
+                            and self.basepos.distance_to(self.basetarget) < 100: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
                         self.chargemomentum = self.parentunit.runspeed
 
@@ -913,7 +915,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.attacking) or self.chargemomentum != 0) \
                             and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
                         move = self.basetarget - self.basepos  # distance between basetarget and front side
-                        move_length = move.length() + self.chargemomentum  # convert length
+                        move_length = move.length()  # convert length
 
                         if move_length > 0:  # movement length longer than 0.1, not reach basetarget yet
                             move.normalize_ip()
@@ -977,7 +979,7 @@ class Subunit(pygame.sprite.Sprite):
                                 shootrange = self.maxrange
                                 if self.useminrange == 0:  # user set to use min shoot range
                                     shootrange = self.minrange
-                                if (self.attacktarget is not None and self.basepos .distance_to(self.attacktarget.basepos) <= shootrange) or \
+                                if (self.attacktarget is not None and self.basepos .distance_to(self.attacktarget.leadersubunit.basepos) <= shootrange) or \
                                         self.basepos.distance_to(self.baseattackpos) <= shootrange:
                                     self.set_target(self.basepos)  # stop moving when reach shoot range
                                     self.parentunit.moving = False
@@ -1164,5 +1166,7 @@ class Subunit(pygame.sprite.Sprite):
             del self.leader
             del self.wholastselect
             del self.attacktarget
+            del self.meleetarget
+            del self.closetarget
 
 

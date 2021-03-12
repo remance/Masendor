@@ -477,6 +477,9 @@ class Battle():
         #^ End starting
 
         self.effectupdater.update(self.allunitlist, self.dt, self.camerascale)
+        x = [1, -1]
+        self.my_matrix = [[x[random.randint(0,1)] if i!=j else 0 for i in range(1000)] for j in range(1000)]
+        self.my_matrix2 = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
 
 
         # self.leaderupdater.update()
@@ -691,7 +694,7 @@ class Battle():
                         elif event.key == pygame.K_1:
                             self.textdrama.queue.append('Hello and Welcome to update video')
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: Complete overhaul of battle mechanic')
+                            self.textdrama.queue.append('Showcase: New melee combat test')
                         elif event.key == pygame.K_3:
                             self.textdrama.queue.append('Now each sub-unit is a sprite instead of a whole unit')
                         elif event.key == pygame.K_4:
@@ -1282,7 +1285,7 @@ class Battle():
 
                 self.effectupdater.update(self.subunit, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
-                self.camera.update(self.camerapos, self.battlecamera)
+                self.camera.update(self.camerapos, self.battlecamera, self.camerascale)
                 self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner], self.team1poslist, self.team2poslist)
                 #^ End updater
 

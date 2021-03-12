@@ -8,8 +8,9 @@ class Camera():
         self.pos = startpos # Starting camara pos
         self.image = pygame.Surface((self.SCREENRECT.width, self.SCREENRECT.height)) # Camera image
 
-    def update(self, pos, surfaces):
+    def update(self, pos, surfaces, zoom):
         """Update game camera with sprite blit to camera image"""
+        self.zoom = zoom
         self.image.fill((0, 0, 0))
         self.pos = pos
         camera_w, camera_h = self.image.get_rect().size # get size of camera
