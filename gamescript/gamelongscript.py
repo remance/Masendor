@@ -399,7 +399,7 @@ def loadgamedata(game):
     subunitnum = 0  # Number of subnit based on the position in row and column
     imgsize = (game.squadwidth, game.squadheight)
     game.inspectsubunit = []
-    for subnit in list(range(0,63)):
+    for subnit in list(range(0,64)):
         width += imgsize[0]
         game.inspectsubunit.append(gameui.Inspectsubunit((width, height)))
         subunitnum += 1

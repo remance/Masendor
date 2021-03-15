@@ -367,7 +367,8 @@ class Lorebook(pygame.sprite.Sprite):
                                     createtext = statheader[index] + ": " + self.leadertext[text]
 
                                 elif statheader[index] == "Social Class":
-                                    createtext = statheader[index] + ": " + self.leaderclasslist[text]
+                                    print(self.leaderclasslist[text])
+                                    createtext = statheader[index] + ": " + self.leaderclasslist[text][0]
 
                         else:  # Equipment section, header depends on equipment type
                             for thisindex, lastindex in enumerate(self.equipmentlastindex):

@@ -36,7 +36,7 @@ Ver 1 Pax Paradisum: historical battle simulation game, Battle of Waterloo, Batt
 
 Ver 1 - 1.5: More art, sound effect and ingame music (May need to use royalty free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battles
 
-Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather
+Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather, unit mode
 
 Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item), Minor battle: Wolf of Paris
 

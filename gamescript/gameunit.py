@@ -215,6 +215,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.changefaction = False # For initiating change faction function
         self.runtoggle = 0 # 0 = double right click to run, 1 = only one right click will make parentunit run
         self.shoothow = 0 # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
+        self.attackmode = 0 # 0 = formation attack, 1 = free for all attack
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fireatwill = 0  # 0 = fire at will, 1 = no fire
         self.retreatstart = False

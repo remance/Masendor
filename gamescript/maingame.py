@@ -17,7 +17,9 @@ import sys
 import pygame.freetype
 from pygame.locals import *
 from scipy.spatial import KDTree
-from math import hypot
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
 
 import main
 from gamescript import gamesubunit, gameunit, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
@@ -250,7 +252,7 @@ class Battle():
         self.battlemapbase.drawimage(imgs[0])
         self.battlemapfeature.drawimage(imgs[1])
         self.battlemapheight.drawimage(imgs[2])
-        self.showmap.drawimage(self.battlemapbase, self.battlemapfeature, self.battlemapheight, imgs[3])
+        self.showmap.drawimage(self.battlemapbase, self.battlemapfeature, self.battlemapheight, imgs[3], self)
         #^ End create battle map
 
         self.minimap.drawimage(self.showmap.trueimage, self.camera)
@@ -477,9 +479,9 @@ class Battle():
         #^ End starting
 
         self.effectupdater.update(self.allunitlist, self.dt, self.camerascale)
-        x = [1, -1]
-        self.my_matrix = [[x[random.randint(0,1)] if i!=j else 0 for i in range(1000)] for j in range(1000)]
-        self.my_matrix2 = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
+
+        # self.mapdefarray = []
+        # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
 
 
         # self.leaderupdater.update()
@@ -729,7 +731,8 @@ class Battle():
             self.battleui.clear(self.screen, self.background)  # Clear sprite before update new one
             if self.gamestate == 1: # game in battle state
                 self.uiupdater.update()  # update ui
-                self.teamtroopnumber = [1, 1, 1] # reset troop count
+                if self.dt > 0:
+                    self.teamtroopnumber = [1, 1, 1] # reset troop count
 
                 #v Camera movement
                 if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  # Camera move down
@@ -1268,7 +1271,11 @@ class Battle():
                             # if spriteone.frontline:
                             spritetwo.friendfront.append(spriteone)
 
-
+                self.subunitposarray = self.mapmovearray.copy()
+                for subunit in self.allsubunitlist:
+                    for row in subunit.posrange[0]:
+                        for col in subunit.posrange[1]:
+                            self.subunitposarray[row][col] = 0
                 self.leaderupdater.update()
                 self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer,
                                          self.battlemousepos[0], mouse_up)
@@ -1279,9 +1286,6 @@ class Battle():
 
                 if self.combattimer >= 0.5: # reset combat timer every 0.5 seconds
                     self.combattimer -= 0.5 # not reset to 0 because higher speed can cause inconsistency in update timing
-                    for subunit in self.subunit: # Reset every subunit battleside after updater since doing it in updater cause bug for defender
-                        subunit.battleside = [None, None, None, None]  # Reset battleside to defualt
-                        subunit.battlesideid = [0, 0, 0, 0]
 
                 self.effectupdater.update(self.subunit, self.dt, self.camerascale)
                 self.weatherupdater.update(self.dt, self.timenumber.timenum)
