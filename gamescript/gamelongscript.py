@@ -429,12 +429,13 @@ def loadgamedata(game):
                      gameui.Uibutton(game.gameui[1].X + 100, game.gameui[1].Y + 56, topimage[14], 1)]  # decimation button
 
     #Behaviour button that once click switch to other mode for subunit behaviour
-    game.switchbuttonui = [gameui.Switchuibutton(game.gameui[1].X - 30, game.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
-                           gameui.Switchuibutton(game.gameui[1].X - 70, game.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
+    game.switchbuttonui = [gameui.Switchuibutton(game.gameui[1].X - 40, game.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
+                           gameui.Switchuibutton(game.gameui[1].X - 80, game.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
                            gameui.Switchuibutton(game.gameui[1].X, game.gameui[1].Y + 96, topimage[17:20]),  # behaviour button
                            gameui.Switchuibutton(game.gameui[1].X + 40, game.gameui[1].Y + 96, topimage[20:22]),  # shoot range button
-                           gameui.Switchuibutton(game.gameui[1].X - 115, game.gameui[1].Y + 96, topimage[35:38]),  # arcshot button
-                           gameui.Switchuibutton(game.gameui[1].X + 80, game.gameui[1].Y + 96, topimage[38:40])]  # toggle run button
+                           gameui.Switchuibutton(game.gameui[1].X - 125, game.gameui[1].Y + 96, topimage[35:38]),  # arcshot button
+                           gameui.Switchuibutton(game.gameui[1].X + 80, game.gameui[1].Y + 96, topimage[38:40]), # toggle run button
+                           gameui.Switchuibutton(game.gameui[1].X + 120, game.gameui[1].Y + 96, topimage[40:43])]  # toggle melee mode
 
     game.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
 
@@ -470,7 +471,7 @@ def loadgamedata(game):
     game.battleui.add(game.buttonui[8:17])
     game.battleui.add(game.logscroll, game.selectscroll)
 
-    gameui.Selectedsquad.image = topimage[-1]
+    gameui.Selectedsquad.image = topimage[-1] # squad border image always the last one
     game.inspectselectedborder = gameui.Selectedsquad((15000, 15000)) #yellow border on selected subnit in inspect ui
     game.mainui.remove(game.inspectselectedborder) #remove subnit border sprite from main menu drawer
     game.terraincheck = gamepopup.Terrainpopup() #popup box that show terrain information when right click on map

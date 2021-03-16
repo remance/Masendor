@@ -284,9 +284,10 @@ class Subunit(pygame.sprite.Sprite):
         maxrandom = 3
         if len(closelist) < 4:
             maxrandom = len(closelist) - 1
-        if maxrandom < 0:
-            maxrandom = 0
-        self.closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
+            if maxrandom < 0:
+                maxrandom = 0
+        if len(closelist) > 0:
+            self.closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
 
     def statusupdate(self, thisweather):
         """calculate stat from stamina, morale state, skill, status, terrain"""
@@ -756,8 +757,8 @@ class Subunit(pygame.sprite.Sprite):
 
                                 break
                     elif parentstate == 10:
-                        if self.attacking:
-                            if self.chargemomentum == 1 and (self.parentunit.attackmode == 1 or self.frontline):
+                        if self.attacking and self.parentunit.attackmode != 1:
+                            if self.chargemomentum == 1 and self.frontline: # self.parentunit.attackmode == 0
                               # attack to nearest target instead
                                 if self.meleetarget is None and self.parentunit.attacktarget is not None:
                                     self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
@@ -767,43 +768,39 @@ class Subunit(pygame.sprite.Sprite):
                                     #v Pathfinding
                                     self.combatmovequeue = []
                                     movearray = self.maingame.mapmovearray.copy()
-                                    print(self.closetarget.posrange, self.closetarget.basepos)
-                                    for row in self.closetarget.posrange[0]:
-                                        for col in self.closetarget.posrange[1]:
-                                            movearray[row][col] = 9 # reset path in the enemy sprite position
+                                    intbasetarget = (int(self.closetarget.basepos[0]),int(self.closetarget.basepos[1]))
+                                    for y in self.closetarget.posrange[0]:
+                                        for x in self.closetarget.posrange[1]:
+                                            movearray[x][y] = 100 # reset path in the enemy sprite position
+
 
                                     intbasepos = (int(self.basepos[0]), int(self.basepos[1]))
-                                    print(self.posrange, self.basepos)
-                                    for row in self.posrange[0]:
-                                        for col in self.posrange[1]:
-                                            movearray[row][col] = 7 # reset path for sub-unit sprite position
+                                    for y in self.posrange[0]:
+                                        for x in self.posrange[1]:
+                                            movearray[x][y] = 100 # reset path for sub-unit sprite position
 
-                                    startpoint = (min([max(0, intbasepos[0] - 10), max(0, int(self.closetarget.basepos[0]) - 10)]), # start point of new smaller array
-                                                  min([max(0, intbasepos[1] - 10), max(0, int(self.closetarget.basepos[1] - 10))]))
-                                    endpoint = (max([min(999, intbasepos[0] + 10), min(999, int(self.closetarget.basepos[0] + 10))]), # end point of new array
-                                                max([min(999, intbasepos[1] + 10), min(999, int(self.closetarget.basepos[1] + 10))]))
+                                    startpoint = (min([max(0, intbasepos[0] - 10), max(0, intbasetarget[0] - 10)]), # start point of new smaller array
+                                                  min([max(0, intbasepos[1] - 10), max(0, intbasetarget[1] - 10)]))
+                                    endpoint = (max([min(999, intbasepos[0] + 11), min(999, intbasetarget[0] + 11)]), # end point of new array
+                                                max([min(999, intbasepos[1] + 11), min(999, intbasetarget[1] + 11)]))
 
                                     movearray = movearray[startpoint[1]:endpoint[1]] # cut 1000x1000 array into smaller one by row
                                     movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray] # cut by column
 
                                     grid = Grid(matrix=movearray)
                                     grid.cleanup()
-                                    print(self.gameid, startpoint, endpoint, intbasepos[0] - startpoint[0],
-                                          intbasepos[1] - startpoint[1])
-                                    for array in movearray:
-                                        print(array)
 
                                     start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
-                                    end = grid.node(int(self.closetarget.basepos[0]) - startpoint[0], int(self.closetarget.basepos[1])-startpoint[1]) # end point
+                                    end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
 
                                     finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
                                     path, runs = finder.find_path(start, end, grid)
                                     path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
-                                    self.combatmovequeue+=path # add path into combat movement queue
-                                    print('operations:', runs, 'path length:', len(path))
-                                    print(grid.grid_str(path=path, start=start, end=end))
-                                    print(self.combatmovequeue)
-                                    print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+                                    self.combatmovequeue+=path[2:] # add path into combat movement queue
+                                    # print('operations:', runs, 'path length:', len(path))
+                                    # print(grid.grid_str(path=path, start=start, end=end))
+                                    # print(self.combatmovequeue)
+                                    # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
                                     #^ End path finding
 
                                 if self.meleetarget.parentunit.state != 100:
@@ -823,7 +820,7 @@ class Subunit(pygame.sprite.Sprite):
                                                 self.newangle = self.setrotate()
                                         if len(self.enemyfront) != 0 or len(self.enemyside) != 0: # in fight, stop timer
                                             self.movetimer = 0
-                                        elif self.movetimer > 10 or len(self.combatmovequeue) == 0: # time up, or no path
+                                        elif self.movetimer > 10 or len(self.combatmovequeue) == 0:  # time up, or no path. reset
                                             self.movetimer = 0
                                             self.closetarget = None
 
@@ -984,8 +981,9 @@ class Subunit(pygame.sprite.Sprite):
 
                         if move_length > 0:  # movement length longer than 0.1, not reach basetarget yet
                             move.normalize_ip()
+                            oldmove = move
 
-                            if self.state in (1, 3, 5):  # walking
+                            if self.state in (1, 3, 5, 12):  # walking
                                 move = move * self.parentunit.walkspeed * dt # use walk speed
                                 self.walk = True
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
@@ -1011,9 +1009,9 @@ class Subunit(pygame.sprite.Sprite):
                                 self.makefrontsidepos()
                                 self.makeposrange()
 
-                                for row in self.posrange[0]:
-                                    for col in self.posrange[1]:
-                                        self.maingame.subunitposarray[row][col] = 0
+                                for y in self.posrange[0]:
+                                    for x in self.posrange[1]:
+                                        self.maingame.subunitposarray[x][y] = 0
 
                                 if self.unitleader: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     if self.parentunit.moverotate is False:
@@ -1119,6 +1117,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.skilleffect = {} # remove all skill effects
 
                 self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+                self.haveredcorner = False
 
                 self.parentunit.deadchange = True
 

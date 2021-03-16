@@ -429,6 +429,31 @@ class Battle():
         elif self.basecamerapos[1] < 0:
             self.basecamerapos[1] = 0
 
+    def addbehaviourui(self, whoinput, elsecheck = False):
+        if whoinput.control:
+            self.battleui.add(self.buttonui[7])  # add decimation button
+            self.battleui.add(*self.switchbuttonui[0:7])  # add parentunit behaviour change button
+            self.switchbuttonui[0].event = whoinput.useskillcond
+            self.switchbuttonui[1].event = whoinput.fireatwill
+            self.switchbuttonui[2].event = whoinput.hold
+            self.switchbuttonui[3].event = whoinput.useminrange
+            self.switchbuttonui[4].event = whoinput.shoothow
+            self.switchbuttonui[5].event = whoinput.runtoggle
+            self.switchbuttonui[6].event = whoinput.attackmode
+            self.checksplit(whoinput)  # check if selected parentunit can split, if yes draw button
+        elif elsecheck:
+            if self.rowsplitbutton in self.battleui:
+                self.rowsplitbutton.kill()
+            if self.colsplitbutton in self.battleui:
+                self.colsplitbutton.kill()
+            self.battleui.remove(self.buttonui[7])  # add decimation button
+            self.battleui.remove(*self.switchbuttonui[0:6])  # add parentunit behaviour change button
+
+        self.leadernow = whoinput.leader
+        self.battleui.add(*self.leadernow)  # add leader portrait to draw
+        self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
+        self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
+
     def rungame(self):
         #v Create Starting Values
         self.mixervolume = SoundVolume
@@ -442,6 +467,7 @@ class Battle():
         self.combattimer = 0 # This is timer for combat related function, use game time (realtime * gamespeed)
         self.lastmouseover = None # Which subunit last mouse over
         self.gamespeed = 1 # Current game speed
+        self.speednumber.speedupdate(self.gamespeed)
         self.gamespeedset = (0, 0.5, 1, 2, 4, 6) # availabe game speed
         self.leadernow = [] # list of showing leader in command ui
         self.uiclick = False # for checking if mouse click is on ui
@@ -698,7 +724,7 @@ class Battle():
                         elif event.key == pygame.K_2:
                             self.textdrama.queue.append('Showcase: New melee combat test')
                         elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('Now each sub-unit is a sprite instead of a whole unit')
+                            self.textdrama.queue.append('Also add pathfind algorithm for melee combat')
                         elif event.key == pygame.K_4:
                             self.textdrama.queue.append('The combat mechanic will be much more dynamic')
                         elif event.key == pygame.K_5:
@@ -927,21 +953,7 @@ class Battle():
                         self.battleui.add(*self.gameui[0:2])  # add leader and top ui
                         self.battleui.add(self.inspectbutton)  # add inspection ui open/close button
 
-                        if whoinput.control:
-                            self.battleui.add(self.buttonui[7])  # add decimation button
-                            self.battleui.add(*self.switchbuttonui[0:6])  # add parentunit behaviour change button
-                            self.switchbuttonui[0].event = whoinput.useskillcond
-                            self.switchbuttonui[1].event = whoinput.fireatwill
-                            self.switchbuttonui[2].event = whoinput.hold
-                            self.switchbuttonui[3].event = whoinput.useminrange
-                            self.switchbuttonui[4].event = whoinput.shoothow
-                            self.switchbuttonui[5].event = whoinput.runtoggle
-                            self.checksplit(whoinput)  # check if selected parentunit can split, if yes draw button
-
-                        self.leadernow = whoinput.leader
-                        self.battleui.add(*self.leadernow) # add leader portrait to draw
-                        self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
-                        self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
+                        self.addbehaviourui(whoinput)
 
                     elif self.beforeselected != self.lastselected:  # change subunit information on ui when select other parentunit
                         if self.inspectui: # change inspect ui
@@ -962,28 +974,7 @@ class Battle():
                                                       splithappen=self.splithappen)
                         self.battleui.remove(*self.leadernow)
 
-                        if whoinput.control:
-                            self.battleui.add(self.buttonui[7])  # add decimation button
-                            self.battleui.add(*self.switchbuttonui[0:6])  # add parentunit behaviour change button
-                            self.switchbuttonui[0].event = whoinput.useskillcond
-                            self.switchbuttonui[1].event = whoinput.fireatwill
-                            self.switchbuttonui[2].event = whoinput.hold
-                            self.switchbuttonui[3].event = whoinput.useminrange
-                            self.switchbuttonui[4].event = whoinput.shoothow
-                            self.switchbuttonui[5].event = whoinput.runtoggle
-                            self.checksplit(whoinput)
-                        else:
-                            if self.rowsplitbutton in self.battleui:
-                                self.rowsplitbutton.kill()
-                            if self.colsplitbutton in self.battleui:
-                                self.colsplitbutton.kill()
-                            self.battleui.remove(self.buttonui[7])  # add decimation button
-                            self.battleui.remove(*self.switchbuttonui[0:6])  # add parentunit behaviour change button
-
-                        self.leadernow = whoinput.leader
-                        self.battleui.add(*self.leadernow)
-                        self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
-                        self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
+                        self.addbehaviourui(whoinput,elsecheck=True)
 
                     else: # Update topbar and command ui value every 1.1 seconds
                         if self.uitimer >= 1.1:
@@ -1094,6 +1085,17 @@ class Battle():
                                 if self.switchbuttonui[5].rect.collidepoint(self.mousepos):  # popup name when mouse over
                                     poptext = ("Toggle walk", "Toggle run")
                                     self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[5].event])
+                                    self.battleui.add(self.buttonnamepopup)
+
+                            elif self.switchbuttonui[6].rect.collidepoint(self.mousepos): # or keypress == pygame.K_j
+                                if mouse_up: #or keypress == pygame.K_j  # rotate min range condition when clicked
+                                    whoinput.attackmode += 1
+                                    if whoinput.attackmode > 1:
+                                        whoinput.attackmode = 0
+                                    self.switchbuttonui[6].event = whoinput.attackmode
+                                if self.switchbuttonui[6].rect.collidepoint(self.mousepos):  # popup name when mouse over
+                                    poptext = ("Frontline Combat Only", "All Out Combat", "Keep Formation")
+                                    self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[6].event])
                                     self.battleui.add(self.buttonnamepopup)
 
                             elif self.colsplitbutton in self.battleui and self.colsplitbutton.rect.collidepoint(self.mousepos):
@@ -1273,9 +1275,9 @@ class Battle():
 
                 self.subunitposarray = self.mapmovearray.copy()
                 for subunit in self.allsubunitlist:
-                    for row in subunit.posrange[0]:
-                        for col in subunit.posrange[1]:
-                            self.subunitposarray[row][col] = 0
+                    for y in subunit.posrange[0]:
+                        for x in subunit.posrange[1]:
+                            self.subunitposarray[x][y] = 0
                 self.leaderupdater.update()
                 self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer,
                                          self.battlemousepos[0], mouse_up)
@@ -1351,20 +1353,26 @@ class Battle():
                                     self.battlecamera.clear(self.screen, self.background) # remove all sprite
 
                                     self.battleui.remove(self.battlemenu, *self.battlemenubutton, *self.escslidermenu,
-                                                         *self.escvaluebox)  # remove menu sprite
+                                                         *self.escvaluebox)  # remove menu
+
                                     for group in (self.subunit, self.armyleader, self.team0army, self.team1army, self.team2army,
-                                                  self.armyicon, self.troopnumbersprite, self.inspectsubunit):
+                                                  self.armyicon, self.troopnumbersprite, self.inspectsubunit): # remove all reference from battle object
                                         for stuff in group:
                                             stuff.delete()
                                             stuff.kill()
                                             del stuff
+
                                     for arrow in self.arrows: # remove all range attack
                                         arrow.kill()
                                         del arrow
+
                                     self.subunitselected = None
                                     self.allunitlist = []
                                     self.team0poslist, self.team1poslist, self.team2poslist = {}, {}, {}
                                     self.beforeselected = None
+
+                                    self.dramatimer = 0 # reset drama text popup
+                                    self.battleui.remove(self.textdrama)
 
                                     return # end battle game loop
 
