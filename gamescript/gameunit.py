@@ -215,7 +215,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.changefaction = False # For initiating change faction function
         self.runtoggle = 0 # 0 = double right click to run, 1 = only one right click will make parentunit run
         self.shoothow = 0 # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
-        self.attackmode = 0 # front only, 1 = formation attack           not use yet: free for all attack,
+        self.attackmode = 0 # frontline attack, 1 = formation attack           not use yet: free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fireatwill = 0  # 0 = fire at will, 1 = no fire
         self.retreatstart = False
@@ -299,6 +299,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     allshootrange.append(subunit.shootrange)
                 subunit.useskillcond = self.useskillcond
                 howmany += 1
+        self.troopnumber = int(self.troopnumber) # convert to int to prevent float decimal
         #^ End grab subunit stat
 
         #v calculate stat for parentunit related calculation

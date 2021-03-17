@@ -79,7 +79,7 @@ class Terrainpopup(pygame.sprite.Sprite):
 
 class Onelinepopup(pygame.sprite.Sprite):
     def __init__(self):
-        self._layer = 12
+        self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", 18)
         self.pos = (0, 0)

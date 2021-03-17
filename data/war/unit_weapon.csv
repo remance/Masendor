@@ -19,9 +19,9 @@
 18,"Whip",7,5,5,0,0,0,0,,9,0,
 19,"Quarterstaff",9,45,10,0,0,0,0,,20,0,
 20,"Sling",23,35,5,16,6,1,170,,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
-21,"Blowgun",18,10,3,0,5,1,50,,12,0,
-22,"Javelin",55,45,15,16,7,1,100,,13,0,
-23,"Throwing Axe",50,50,20,21,7,1,80,,14,0,
+21,"Blowgun",18,10,3,0,5,1,40,,12,0,
+22,"Javelin",55,45,15,16,7,1,80,,13,0,
+23,"Throwing Axe",50,50,20,21,7,1,70,,14,0,
 24,"Longbow",70,40,15,16,20,1,200,,15,0,"Longbow "
 25,"Shortbow",50,15,10,16,15,1,150,,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
 26,"Greatbow",90,60,20,16,25,1,250,,17,0,
@@ -29,7 +29,7 @@
 28,"Heavy Crossbow",80,50,15,0,25,1,150,,19,0,"Heavy crossbow can be regarded as the first ever weapon that can effectively kill a knight. "
 29,"Repeater Crossbow",40,10,15,0,25,5,100,,18,0,
 30,"Arbalest",100,70,25,0,30,1,200,,19,0,
-31,"Stone",14,20,5,16,5,1,70,,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
+31,"Stone",14,20,5,16,5,1,50,,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
 32,"Composite Bow",60,30,15,16,15,1,170,,16,0,
 33,"Trebuchet",10000,100,95,"16,222",100,"1","800",,,0,
 34,"Catapult",5000,100,70,"16,222",80,"1","500",,,0,

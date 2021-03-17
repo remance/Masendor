@@ -278,6 +278,7 @@ class Subunit(pygame.sprite.Sprite):
         return elem
 
     def findeclosetarget(self):
+        """Find close enemy sub-unit to move to fight"""
         closelist = {subunit: subunit.basepos.distance_to(self.basepos) for subunit in
                      self.meleetarget.parentunit.subunitsprite}
         closelist = dict(sorted(closelist.items(), key=lambda item: item[1]))
@@ -287,7 +288,10 @@ class Subunit(pygame.sprite.Sprite):
             if maxrandom < 0:
                 maxrandom = 0
         if len(closelist) > 0:
-            self.closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
+            closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
+            if closetarget.basepos.distance_to(self.basepos) < 20: # in case can't find close target
+                self.closetarget = closetarget
+            print(closetarget.basepos.distance_to(self.basepos))
 
     def statusupdate(self, thisweather):
         """calculate stat from stamina, morale state, skill, status, terrain"""
@@ -654,14 +658,6 @@ class Subunit(pygame.sprite.Sprite):
 
         if self.state != 100:
 
-            dt = newdt
-            self.walk = False  # reset walk
-            self.run = False  # reset run
-            self.attacktarget = self.parentunit.attacktarget
-            self.attackpos = self.parentunit.baseattackpos
-            if self.attacktarget is not None:
-                self.attackpos = self.attacktarget.leadersubunit.basepos
-
             # v Mouse collision detection
             if self.rect.collidepoint(mousepos):
                 self.maingame.lastmouseover = self.parentunit  # last mouse over on this parentunit
@@ -710,11 +706,21 @@ class Subunit(pygame.sprite.Sprite):
                 #^ End stamina bar
             #^ End hp/stamina
 
+            dt = newdt
+
             if dt > 0: # only run these when game not pause
                 self.timer += dt
+
                 parentstate = self.parentunit.state
                 if parentstate in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (97, 98, 99):
                     self.state = parentstate # Enforce parentunit state to subunit when moving and breaking
+
+                self.walk = False  # reset walk
+                self.run = False  # reset run
+                self.attacktarget = self.parentunit.attacktarget
+                self.attackpos = self.parentunit.baseattackpos
+                if self.attacktarget is not None:
+                    self.attackpos = self.attacktarget.leadersubunit.basepos
 
                 if self.timer > 1: # Update status and skill use around every 1 second
                     self.statusupdate(weather)
@@ -765,43 +771,52 @@ class Subunit(pygame.sprite.Sprite):
                                 if self.closetarget is None: # movement queue is empty regenerate new one
                                     self.findeclosetarget() # find new close target
 
-                                    #v Pathfinding
-                                    self.combatmovequeue = []
-                                    movearray = self.maingame.mapmovearray.copy()
-                                    intbasetarget = (int(self.closetarget.basepos[0]),int(self.closetarget.basepos[1]))
-                                    for y in self.closetarget.posrange[0]:
-                                        for x in self.closetarget.posrange[1]:
-                                            movearray[x][y] = 100 # reset path in the enemy sprite position
+                                    if self.closetarget is not None: # found target to fight
 
+                                        #v Pathfinding
+                                        self.combatmovequeue = []
+                                        movearray = self.maingame.mapmovearray.copy()
+                                        intbasetarget = (int(self.closetarget.basepos[0]),int(self.closetarget.basepos[1]))
+                                        for y in self.closetarget.posrange[0]:
+                                            for x in self.closetarget.posrange[1]:
+                                                movearray[x][y] = 100 # reset path in the enemy sprite position
 
-                                    intbasepos = (int(self.basepos[0]), int(self.basepos[1]))
-                                    for y in self.posrange[0]:
-                                        for x in self.posrange[1]:
-                                            movearray[x][y] = 100 # reset path for sub-unit sprite position
+                                        intbasepos = (int(self.basepos[0]), int(self.basepos[1]))
+                                        for y in self.posrange[0]:
+                                            for x in self.posrange[1]:
+                                                movearray[x][y] = 100 # reset path for sub-unit sprite position
 
-                                    startpoint = (min([max(0, intbasepos[0] - 10), max(0, intbasetarget[0] - 10)]), # start point of new smaller array
-                                                  min([max(0, intbasepos[1] - 10), max(0, intbasetarget[1] - 10)]))
-                                    endpoint = (max([min(999, intbasepos[0] + 11), min(999, intbasetarget[0] + 11)]), # end point of new array
-                                                max([min(999, intbasepos[1] + 11), min(999, intbasetarget[1] + 11)]))
+                                        startpoint = (min([max(0, intbasepos[0] - 10), max(0, intbasetarget[0] - 10)]), # start point of new smaller array
+                                                      min([max(0, intbasepos[1] - 10), max(0, intbasetarget[1] - 10)]))
+                                        endpoint = (max([min(999, intbasepos[0] + 11), min(999, intbasetarget[0] + 11)]), # end point of new array
+                                                    max([min(999, intbasepos[1] + 11), min(999, intbasetarget[1] + 11)]))
 
-                                    movearray = movearray[startpoint[1]:endpoint[1]] # cut 1000x1000 array into smaller one by row
-                                    movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray] # cut by column
+                                        movearray = movearray[startpoint[1]:endpoint[1]] # cut 1000x1000 array into smaller one by row
+                                        movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray] # cut by column
 
-                                    grid = Grid(matrix=movearray)
-                                    grid.cleanup()
+                                        grid = Grid(matrix=movearray)
+                                        grid.cleanup()
 
-                                    start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
-                                    end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
+                                        start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
+                                        end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
 
-                                    finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-                                    path, runs = finder.find_path(start, end, grid)
-                                    path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
-                                    self.combatmovequeue+=path[2:] # add path into combat movement queue
-                                    # print('operations:', runs, 'path length:', len(path))
-                                    # print(grid.grid_str(path=path, start=start, end=end))
-                                    # print(self.combatmovequeue)
-                                    # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
-                                    #^ End path finding
+                                        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+                                        path, runs = finder.find_path(start, end, grid)
+                                        path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
+
+                                        if len(self.friendfront) > 0: # remove some starting path that may clip with friendly sub-unit sprite
+                                            path = path[3:]
+
+                                        self.combatmovequeue+=path # add path into combat movement queue
+                                        # print('operations:', runs, 'path length:', len(path))
+                                        # print(grid.grid_str(path=path, start=start, end=end))
+                                        # print(self.combatmovequeue)
+                                        # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+                                        #^ End path finding
+
+                                    else: # no target to fight move back to command pos first
+                                        self.basetarget = self.commandtarget
+                                        self.newangle = self.setrotate()
 
                                 if self.meleetarget.parentunit.state != 100:
                                     if self.movetimer == 0:
@@ -831,6 +846,7 @@ class Subunit(pygame.sprite.Sprite):
                                     self.basetarget = self.commandtarget
                                     self.newangle = self.parentunit.angle
                                     self.state = 0
+
                             elif self.chargemomentum > 1:
                                 self.chargemomentum -= dt
                                 if self.chargemomentum < 1:
@@ -1047,65 +1063,67 @@ class Subunit(pygame.sprite.Sprite):
                 self.stamina = self.stamina - (dt * 0.5) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
                         dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina  # consume stamina depending on activity/state
 
-            #v Morale check
-            if self.basemorale < self.maxmorale: #TODO change to chance between broken or shattered where broken can regain control, also commander dead chance to completely lose control
-                if self.morale < 1: # Enter broken state when morale reach 0
-                    if self.state != 99: # This is top state above other states except dead for subunit
-                        self.state = 99 # broken state
-                        self.moraleregen -= 0.3 # morale regen gradually slower per broken state
-                        for subunit in self.parentunit.subunitsprite:
-                            subunit.basemorale -= (15 * subunit.mental) # reduce morale of other subunit, creating panic when seeing friend panic and may cause mass panic
-                    self.morale = 0 # morale cannot be lower than 0
+                #v Morale check
+                if self.basemorale < self.maxmorale: #TODO change to chance between broken or shattered where broken can regain control, also commander dead chance to completely lose control
+                    if self.morale < 1: # Enter broken state when morale reach 0
+                        if self.state != 99: # This is top state above other states except dead for subunit
+                            self.state = 99 # broken state
+                            self.moraleregen -= 0.3 # morale regen gradually slower per broken state
+                            for subunit in self.parentunit.subunitsprite:
+                                subunit.basemorale -= (15 * subunit.mental) # reduce morale of other subunit, creating panic when seeing friend panic and may cause mass panic
+                        self.morale = 0 # morale cannot be lower than 0
 
-                if self.basemorale < 0:
-                    self.basemorale = 0
+                    if self.basemorale < 0: # morale cannot be negative
+                        self.basemorale = 0
+                    elif self.basemorale > 200: # morale cannot be higher than 200
+                        self.basemorale = 200
 
-                if self.parentunit.leader[0].state not in (96, 97, 98, 99, 100): # If not missing main leader can replenish morale
-                    self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
+                    if self.parentunit.leader[0].state not in (96, 97, 98, 99, 100): # If not missing main leader can replenish morale
+                        self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
 
-                if self.state == 99:
-                    if parentstate not in (98, 99):
-                        self.unithealth -= (dt * 100) # Unit begin to desert if broken but parentunit keep fighting
-                    if self.moralestatecal > 0.2:
-                        self.state = 0  # Reset state to 0 when exit broken state
+                    if self.state == 99:
+                        if parentstate not in (98, 99):
+                            self.unithealth -= (dt * 100) # Unit begin to desert if broken but parentunit keep fighting
+                        if self.moralestatecal > 0.2:
+                            self.state = 0  # Reset state to 0 when exit broken state
 
-            elif self.basemorale > self.maxmorale:
-                self.basemorale -= dt # gradually reduce morale that exceed the starting max amount
-            #^ End morale check
+                elif self.basemorale > self.maxmorale:
+                    self.basemorale -= dt # gradually reduce morale that exceed the starting max amount
+                #^ End morale check
 
-            if self.oldlasthealth != self.unithealth:
-                self.troopnumber = self.unithealth / self.troophealth  # Calculate how many troop left based on current hp
-                if self.troopnumber.is_integer() is False:  # always round up if there is decimal
-                    self.troopnumber = int(self.troopnumber + 1)
-                self.oldlasthealth = self.unithealth
+                if self.oldlasthealth != self.unithealth:
+                    self.troopnumber = self.unithealth / self.troophealth  # Calculate how many troop left based on current hp
+                    if self.troopnumber.is_integer() is False:  # always round up if there is decimal
+                        self.troopnumber = int(self.troopnumber + 1)
+                    self.oldlasthealth = self.unithealth
 
-            #v Hp and stamina regen
-            if self.stamina < self.maxstamina:
-                if self.stamina <= 0:  # Collapse and cannot act
-                    self.stamina = 0
-                    if self.state != 99: # Can only collapse when subunit is not broken
-                        self.state = 97 # Collapse
-                if self.state == 97 and self.stamina > self.stamina25: # exit collapse state
-                    self.state = 0 # Reset to idle
-            elif self.stamina > self.maxstamina: # stamina cannot exceed the max stamina
-                self.stamina = self.maxstamina
+                #v Hp and stamina regen
+                if self.stamina < self.maxstamina:
+                    if self.stamina <= 0:  # Collapse and cannot act
+                        self.stamina = 0
+                        if self.state != 99: # Can only collapse when subunit is not broken
+                            self.state = 97 # Collapse
+                    if self.state == 97 and self.stamina > self.stamina25: # exit collapse state
+                        self.state = 0 # Reset to idle
+                elif self.stamina > self.maxstamina: # stamina cannot exceed the max stamina
+                    self.stamina = self.maxstamina
 
-            if self.hpregen > 0 and self.unithealth % self.troophealth != 0:  ## hp regen cannot ressurect troop only heal to max hp
-                alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive subunit
-                self.unithealth += self.hpregen * dt # regen hp back based on time and regen stat
-                if self.unithealth > alivehp: self.unithealth = alivehp # Cannot exceed health of alive subunit (exceed mean resurrection)
-            elif self.hpregen < 0:  ## negative regen can kill
-                self.unithealth += self.hpregen * dt # use the same as positive regen (negative regen number * dt will reduce hp)
-                self.troopnumber = self.unithealth / self.troophealth  # Recal number of troop again in case some die from negative regen
-                if round(self.troopnumber) < self.troopnumber: # no method to always round up number so I need to do this manually
-                    self.troopnumber = int(self.troopnumber + 1)
-                else:
-                    self.troopnumber = int(self.troopnumber)
+                if self.hpregen > 0 and self.unithealth % self.troophealth != 0:  ## hp regen cannot ressurect troop only heal to max hp
+                    alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive subunit
+                    self.unithealth += self.hpregen * dt # regen hp back based on time and regen stat
+                    if self.unithealth > alivehp: self.unithealth = alivehp # Cannot exceed health of alive subunit (exceed mean resurrection)
+                elif self.hpregen < 0:  ## negative regen can kill
+                    self.unithealth += self.hpregen * dt # use the same as positive regen (negative regen number * dt will reduce hp)
+                    self.troopnumber = self.unithealth / self.troophealth  # Recal number of troop again in case some die from negative regen
+                    if round(self.troopnumber) < self.troopnumber: # no method to always round up number so I need to do this manually
+                        self.troopnumber = int(self.troopnumber + 1)
+                    else:
+                        self.troopnumber = int(self.troopnumber)
 
-            if self.unithealth < 0: self.unithealth = 0 # can't have negative hp
-            elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth # hp can't exceed max hp (would increase number of troop)
-            if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0 # awake from collaspe when stamina reach 25%
-            #^ End regen
+                if self.unithealth < 0: self.unithealth = 0 # can't have negative hp
+                elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth # hp can't exceed max hp (would increase number of troop)
+                if self.state == 97 and self.stamina >= (self.maxstamina/4): self.state = 0 # awake from collaspe when stamina reach 25%
+                #^ End regen
 
             if self.troopnumber <= 0:  # enter dead state
                 self.state = 100 # enter dead state
@@ -1117,7 +1135,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.skilleffect = {} # remove all skill effects
 
                 self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
-                self.haveredcorner = False
+                self.haveredcorner = True # to prevent red border appear when dead
 
                 self.parentunit.deadchange = True
 
