@@ -767,11 +767,9 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
         self.unithealth * 0.5), round(self.unithealth * 0.25)  # health percentage
     self.oldlasthealth, self.oldlaststamina = self.unithealth, self.stamina  # save previous health and stamina in previous update
     self.maxtroop = self.troopnumber  # max number of troop at the start
-    self.moralestate = round((self.basemorale * 100) / self.maxmorale)  # turn into percentage
+    self.moralestate = round(self.basemorale / self.maxmorale)  # turn into percentage
     self.staminastate = round((self.stamina * 100) / self.maxstamina)  # turn into percentage
     self.staminastatecal = self.staminastate / 100  # for using as modifer on stat
-    self.moralestatecal = self.moralestate / 100  # for using as modifer on stat
-
 
 def csv_read(file, subfolder=[], outputtype=0, defaultmaindir=True):
     """output type 0 = dict, 1 = list"""

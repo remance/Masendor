@@ -74,8 +74,24 @@ class Subunit(pygame.sprite.Sprite):
         self.getfeature = self.gamemapfeature.getfeature
         self.getheight = self.gamemapheight.getheight
 
-        ## Setup troop stat
+        #v Setup troop stat
         self.createtroopstat(self.team, self.statlist.unitlist[self.unitid].copy(), unitscale, starthp, startstamina)
+
+        self.criteffect = 1 # default critical effect
+        self.frontdmgeffect = 1 # default frontal damage
+        self.sidedmgeffect = 1 # default side damage
+
+        self.corneratk = False # cannot attack corner enemy by default
+        self.tempunbraekable = False
+        self.tempfulldef = False
+
+        self.authpenalty = self.baseauthpenalty
+        self.hpregen = self.basehpregen
+        self.staminaregen = self.basestaminaregen
+        self.inflictstatus = self.baseinflictstatus
+        self.elemmelee = self.baseelemmelee
+        self.elemrange = self.baseelemrange
+        #^ End setup stat
 
         #v Subunit block team colour
         image = self.images[0].copy()  # Subunit block blue colour for team1 for shown in inspect ui
@@ -291,9 +307,8 @@ class Subunit(pygame.sprite.Sprite):
             closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
             if closetarget.basepos.distance_to(self.basepos) < 20: # in case can't find close target
                 self.closetarget = closetarget
-            print(closetarget.basepos.distance_to(self.basepos))
 
-    def statusupdate(self, thisweather):
+    def statusupdate(self, thisweather=None):
         """calculate stat from stamina, morale state, skill, status, terrain"""
 
         if self.haveredcorner:  # have red corner reset image
@@ -307,22 +322,15 @@ class Subunit(pygame.sprite.Sprite):
         self.morale = self.basemorale
         self.authority = self.parentunit.authority # parentunit total authoirty
         self.commandbuff = self.parentunit.commandbuff[self.unittype] * 100 # command buff from main leader according to this subunit subunit type
-        self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0) # authority less than 100 will create negative effect
-        self.moralestatecal = self.moralestate / 100  # for using as modifer to stat
-        self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        self.staminastatecal = self.staminastate / 100 # for using as modifer to stat
-        self.discipline = (self.basediscipline * self.moralestatecal * self.staminastatecal) + self.parentunit.leadersocial[
-            self.grade + 1] + (self.authority / 10) # use morale, stamina, leader social vs grade and authority
-        self.attack = (self.baseattack * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        self.meleedef = (self.basemeleedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        self.rangedef = (self.baserangedef * (self.moralestatecal + 0.1)) * self.staminastatecal + (self.commandbuff/2) # use morale, stamina and half command buff
-        self.accuracy = self.baseaccuracy * self.staminastatecal + self.commandbuff # use stamina and command buff
-        self.reload = self.basereload * (2 - self.staminastatecal) # the less stamina, the higher reload time
-        self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        heightdiff = (self.height / self.frontheight) ** 2  # walking down hill increase speed while walking up hill reduce speed
-        self.speed = self.basespeed * self.staminastatecal * heightdiff # use stamina
-        self.charge = (self.basecharge + self.speed) * (self.moralestatecal + 0.1) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-
+        self.discipline = self.basediscipline
+        self.attack = self.baseattack
+        self.meleedef = self.basemeleedef
+        self.rangedef = self.baserangedef
+        self.accuracy = self.baseaccuracy
+        self.reload = self.basereload
+        self.chargedef = self.basechargedef
+        self.speed = self.basespeed
+        self.charge = self.basecharge
         self.shootrange = self.baserange
 
         self.criteffect = 1 # default critical effect
@@ -355,22 +363,25 @@ class Subunit(pygame.sprite.Sprite):
         #^ End trait
 
         #v apply effect from weather"""
-        weather = thisweather
-        self.attack += weather.meleeatk_buff
-        self.meleedef += weather.meleedef_buff
-        self.rangedef += weather.rangedef_buff
-        self.armour += weather.armour_buff
-        self.speed += weather.speed_buff
-        self.accuracy += weather.accuracy_buff
-        self.reload += weather.reload_buff
-        self.charge += weather.charge_buff
-        self.chargedef += weather.chargedef_buff
-        self.hpregen += weather.hpregen_buff
-        self.staminaregen += weather.staminaregen_buff
-        self.morale += (weather.morale_buff * self.mental)
-        self.discipline += weather.discipline_buff
-        if weather.elem[0] != 0: # Weather can cause elemental effect such as wet
-            self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
+        weathertemperature = 0
+        if thisweather is not None:
+            weather = thisweather
+            self.attack += weather.meleeatk_buff
+            self.meleedef += weather.meleedef_buff
+            self.rangedef += weather.rangedef_buff
+            self.armour += weather.armour_buff
+            self.speed += weather.speed_buff
+            self.accuracy += weather.accuracy_buff
+            self.reload += weather.reload_buff
+            self.charge += weather.charge_buff
+            self.chargedef += weather.chargedef_buff
+            self.hpregen += weather.hpregen_buff
+            self.staminaregen += weather.staminaregen_buff
+            self.morale += (weather.morale_buff * self.mental)
+            self.discipline += weather.discipline_buff
+            if weather.elem[0] != 0: # Weather can cause elemental effect such as wet
+                self.elemcount[weather.elem[0]] += ((weather.elem[1] * (100 - self.elemresist[weather.elem[0]]) / 100))
+            weathertemperature = weather.temperature
         #^ End weather
 
         #v Map feature modifier to stat
@@ -417,7 +428,7 @@ class Subunit(pygame.sprite.Sprite):
         #^ End map feature
 
         #v Temperature mod function from terrain and weather
-        tempreach = mapfeaturemod[10] + weather.temperature # temperature the subunit will change to based on current terrain feature and weather
+        tempreach = mapfeaturemod[10] + weathertemperature # temperature the subunit will change to based on current terrain feature and weather
         for status in self.statuseffect.values():
             tempreach += status[19] # add more from status effect
         if tempreach < 0: # cold temperature
@@ -538,6 +549,28 @@ class Subunit(pygame.sprite.Sprite):
                     self.tempfulldef = True
         #^ End status effect
 
+        moralestate = self.morale
+        if moralestate > 300: # morale more than 300 give no more benefit
+            moralestate = 300
+        self.moralestate = round((moralestate / self.maxmorale) * (self.authority / 100), 0)  # for using as modifer to stat
+        self.staminastate = round((self.stamina * 100) / self.maxstamina)
+        self.staminastatecal = self.staminastate / 100  # for using as modifer to stat
+        self.discipline = (self.discipline * self.moralestate * self.staminastatecal) + self.parentunit.leadersocial[
+            self.grade + 1] + (self.authority / 10)  # use morale, stamina, leader social vs grade and authority
+        self.attack = (self.attack * (self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+        self.meleedef = (self.meleedef * (
+                    self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+        self.rangedef = (self.rangedef * (self.moralestate + 0.1)) * self.staminastatecal + (
+                    self.commandbuff / 2)  # use morale, stamina and half command buff
+        self.accuracy = self.accuracy * self.staminastatecal + self.commandbuff  # use stamina and command buff
+        self.reload = self.reload * (2 - self.staminastatecal)  # the less stamina, the higher reload time
+        self.chargedef = (self.chargedef * (
+                    self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+        heightdiff = (self.height / self.frontheight) ** 2  # walking down hill increase speed while walking up hill reduce speed
+        self.speed = self.speed * self.staminastatecal * heightdiff  # use stamina
+        self.charge = (self.charge + self.speed) * (
+                    self.moralestate + 0.1) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+
         #v Rounding up, add discipline to stat and forbid negative int stat
         self.discipline = round(self.discipline, 0)
         disciplinecal = self.discipline / 10
@@ -613,41 +646,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.maxstamina > 100: # Max stamina gradually decrease over time - (self.timer * 0.05)
             self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.maxstamina-(self.timer*0.05), round(self.maxstamina * 0.75), round(
                 self.maxstamina * 0.5), round(self.maxstamina * 0.25)
-        self.morale = self.basemorale
-        self.authority = self.parentunit.authority # parentunit total authoirty
-        self.commandbuff = self.parentunit.commandbuff[self.unittype] * 100 # command buff from main leader according to this subunit subunit type
-        self.moralestate = round(((self.basemorale * 100) / self.maxmorale) * (self.authority / 100), 0) # authority less than 100 will create negative effect
-        self.moralestatecal = self.moralestate / 100  # for using as modifer to stat
-        self.staminastate = round((self.stamina * 100) / self.maxstamina)
-        self.staminastatecal = self.staminastate / 100 # for using as modifer to stat
-        self.discipline = (self.basediscipline * self.moralestatecal * self.staminastatecal) + self.parentunit.leadersocial[
-            self.grade + 1] + (self.authority / 10) # use morale, stamina, leader social vs grade and authority
-        self.attack = (self.baseattack * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        self.meleedef = (self.basemeleedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        self.rangedef = (self.baserangedef * (self.moralestatecal + 0.1)) * self.staminastatecal + (self.commandbuff/2) # use morale, stamina and half command buff
-        self.accuracy = self.baseaccuracy * self.staminastatecal + self.commandbuff # use stamina and command buff
-        self.reload = self.basereload * (2 - self.staminastatecal) # the less stamina, the higher reload time
-        self.chargedef = (self.basechargedef * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-        self.speed = self.basespeed * self.staminastatecal # use stamina
-        self.charge = (self.basecharge * (self.moralestatecal + 0.1)) * self.staminastatecal + self.commandbuff # use morale, stamina and command buff
-
-        self.shootrange = self.baserange
-
-        self.criteffect = 1 # default critical effect
-        self.frontdmgeffect = 1 # default frontal damage
-        self.sidedmgeffect = 1 # default side damage
-
-        self.corneratk = False # cannot attack corner enemy by default
-        self.tempunbraekable = False
-        self.tempfulldef = False
-
-        self.authpenalty = self.baseauthpenalty
-        self.hpregen = self.basehpregen
-        self.staminaregen = self.basestaminaregen
-        self.inflictstatus = self.baseinflictstatus
-        self.elemmelee = self.baseelemmelee
-        self.elemrange = self.baseelemrange
-        #^ End default stat
+        self.statusupdate()
 
     def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
         if self.lastzoom != zoom: # camera zoom is changed
@@ -763,16 +762,15 @@ class Subunit(pygame.sprite.Sprite):
 
                                 break
                     elif parentstate == 10:
-                        if self.attacking and self.parentunit.attackmode != 1:
-                            if self.chargemomentum == 1 and self.frontline: # self.parentunit.attackmode == 0
+                        if self.attacking and self.parentunit.collide:
+                            if self.chargemomentum == 1 and self.frontline and self.parentunit.attackmode != 1: # self.parentunit.attackmode == 0
                               # attack to nearest target instead
                                 if self.meleetarget is None and self.parentunit.attacktarget is not None:
                                     self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
                                 if self.closetarget is None: # movement queue is empty regenerate new one
                                     self.findeclosetarget() # find new close target
 
-                                    if self.closetarget is not None: # found target to fight
-
+                                    if self.closetarget is not None: # found target to fight TODO problem: unit still not return to original position when too far
                                         #v Pathfinding
                                         self.combatmovequeue = []
                                         movearray = self.maingame.mapmovearray.copy()
@@ -980,10 +978,10 @@ class Subunit(pygame.sprite.Sprite):
                 #v Move function to given basetarget position
                 if ((self.angle != self.newangle and revertmove is False) or (self.angle == self.newangle \
                     and (self.basepos != self.basetarget or self.chargemomentum > 1))): # cannot move if still need to rotate
-                    if parentstate in (3, 4):
+                    if parentstate in (1, 2, 3, 4):
                         # if self.attackpos.distance_to(self.basepos) < 50:
                         self.attacking = True
-                    elif self.attacking and parentstate not in (3, 4, 10): # cancel charge when no longer move to melee or in combat
+                    elif self.attacking and parentstate not in (1, 2, 3, 4, 10): # cancel charge when no longer move to melee or in combat
                         self.attacking = False
 
                     #v Can move if front not collided
@@ -1084,7 +1082,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.state == 99:
                         if parentstate not in (98, 99):
                             self.unithealth -= (dt * 100) # Unit begin to desert if broken but parentunit keep fighting
-                        if self.moralestatecal > 0.2:
+                        if self.moralestate > 0.2:
                             self.state = 0  # Reset state to 0 when exit broken state
 
                 elif self.basemorale > self.maxmorale:
