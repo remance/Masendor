@@ -155,7 +155,7 @@ class Battle():
         self.squadwidth = main.squadwidth
         self.squadheight = main.squadheight
         self.collidedistance = self.squadheight / 10 # distance to check collision
-        self.frontdistance = self.squadheight / 20
+        self.frontdistance = self.squadheight / 15
 
         self.escslidermenu = main.escslidermenu
         self.escvaluebox = main.escvaluebox

@@ -631,8 +631,8 @@ class Subunit(pygame.sprite.Sprite):
         self.frontsidepos = self.rotationxy(self.basepos, self.frontsidepos, self.radians_angle)
 
     def makeposrange(self):
-        self.posrange = [range(int(max(0, self.basepos[0] - self.imageheight)), int(min(1000, self.basepos[0] + self.imageheight + 1))),
-                         range(int(max(0, self.basepos[1] - self.imageheight)), int(min(1000, self.basepos[1] + self.imageheight + 1)))]
+        self.posrange = (range(int(max(0, self.basepos[0] - (self.imageheight - 1))), int(min(1000, self.basepos[0] + self.imageheight))),
+                         range(int(max(0, self.basepos[1] - (self.imageheight - 1))), int(min(1000, self.basepos[1] + self.imageheight))))
 
     def gamestart(self, zoom):
         # run once when game start or subunit just get created
@@ -706,6 +706,8 @@ class Subunit(pygame.sprite.Sprite):
             #^ End hp/stamina
 
             dt = newdt
+            if dt > 0.1: # make it so stutter does not cause sprite to clip other sprite especially when zoom change
+                dt = 0.1
 
             if dt > 0: # only run these when game not pause
                 self.timer += dt
@@ -718,8 +720,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.run = False  # reset run
                 self.attacktarget = self.parentunit.attacktarget
                 self.attackpos = self.parentunit.baseattackpos
-                if self.attacktarget is not None:
-                    self.attackpos = self.attacktarget.leadersubunit.basepos
+                # if self.attacktarget is not None:
+                #     self.attackpos = self.attacktarget.leadersubunit.basepos
 
                 if self.timer > 1: # Update status and skill use around every 1 second
                     self.statusupdate(weather)
@@ -792,50 +794,49 @@ class Subunit(pygame.sprite.Sprite):
                                         movearray = movearray[startpoint[1]:endpoint[1]] # cut 1000x1000 array into smaller one by row
                                         movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray] # cut by column
 
-                                        grid = Grid(matrix=movearray)
-                                        grid.cleanup()
+                                        if len(movearray) < 100: # if too big then skip combat pathfinding
 
-                                        start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
-                                        end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
+                                            grid = Grid(matrix=movearray)
+                                            grid.cleanup()
 
-                                        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-                                        path, runs = finder.find_path(start, end, grid)
-                                        path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
+                                            start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
+                                            end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
 
-                                        if len(self.friendfront) > 0: # remove some starting path that may clip with friendly sub-unit sprite
+                                            finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+                                            path, runs = finder.find_path(start, end, grid)
+                                            path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
+
+                                            # if len(self.friendfront) > 0: # remove some starting path that may clip with friendly sub-unit sprite
                                             path = path[3:]
 
-                                        self.combatmovequeue+=path # add path into combat movement queue
-                                        # print('operations:', runs, 'path length:', len(path))
-                                        # print(grid.grid_str(path=path, start=start, end=end))
-                                        # print(self.combatmovequeue)
-                                        # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+                                            self.combatmovequeue = path # add path into combat movement queue
+                                            # print('operations:', runs, 'path length:', len(path))
+                                            # print(grid.grid_str(path=path, start=start, end=end))
+                                            # print(self.combatmovequeue)
+                                            # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
                                         #^ End path finding
 
                                     else: # no target to fight move back to command pos first
-                                        self.basetarget = self.commandtarget
-                                        self.newangle = self.setrotate()
+                                        self.basetarget = self.attacktarget.basepos
+                                    #     self.newangle = self.setrotate()
 
                                 if self.meleetarget.parentunit.state != 100:
                                     if self.movetimer == 0:
                                         self.movetimer = 0.1 # recalculate again in 10 seconds if not in fight
                                         # if len(self.friendfront) != 0 and len(self.enemyfront) == 0: # collide with friend try move to basetarget first before enemy
                                             # self.combatmovequeue = [] # clean queue since the old one no longer without collide
-                                        if self.closetarget is not None and len(self.combatmovequeue) > 0: # no collide move to enemy
-                                            if len(self.combatmovequeue) > 0:
-                                                self.basetarget = pygame.Vector2(self.combatmovequeue[0])
-                                                self.newangle = self.setrotate()
                                     else:
                                         self.movetimer += dt
-                                        if self.closetarget is not None and len(self.combatmovequeue) > 0: # no collide move to enemy
-                                            if len(self.combatmovequeue) > 0:
-                                                self.basetarget = pygame.Vector2(self.combatmovequeue[0])
-                                                self.newangle = self.setrotate()
                                         if len(self.enemyfront) != 0 or len(self.enemyside) != 0: # in fight, stop timer
                                             self.movetimer = 0
-                                        elif self.movetimer > 10 or len(self.combatmovequeue) == 0:  # time up, or no path. reset
+
+                                        elif self.movetimer > 10: # or len(self.combatmovequeue) == 0 # time up, or no path. reset
                                             self.movetimer = 0
                                             self.closetarget = None
+
+                                        elif len(self.combatmovequeue) > 0: # no collide move to enemy
+                                            self.basetarget = pygame.Vector2(self.combatmovequeue[0])
+                                            self.newangle = self.setrotate()
 
                                 else: # whole enemy unit destroyed
                                     self.meleetarget = None
@@ -979,7 +980,6 @@ class Subunit(pygame.sprite.Sprite):
                 if ((self.angle != self.newangle and revertmove is False) or (self.angle == self.newangle \
                     and (self.basepos != self.basetarget or self.chargemomentum > 1))): # cannot move if still need to rotate
                     if parentstate in (1, 2, 3, 4):
-                        # if self.attackpos.distance_to(self.basepos) < 50:
                         self.attacking = True
                     elif self.attacking and parentstate not in (1, 2, 3, 4, 10): # cancel charge when no longer move to melee or in combat
                         self.attacking = False
@@ -1017,15 +1017,15 @@ class Subunit(pygame.sprite.Sprite):
                                     self.basepos += move  # adjust base position according to movement
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = self.pos  # no need to do list
-                                if len(self.combatmovequeue) > 0 and self.basepos.distance_to(pygame.Vector2(self.combatmovequeue[0])) < 1: #:  # reach the current queue point, remove from queue
+                                if len(self.combatmovequeue) > 0 and self.basepos.distance_to(pygame.Vector2(self.combatmovequeue[0])) < 0.1: #:  # reach the current queue point, remove from queue
                                     self.combatmovequeue = self.combatmovequeue[1:]
 
                                 self.makefrontsidepos()
                                 self.makeposrange()
 
-                                for y in self.posrange[0]:
-                                    for x in self.posrange[1]:
-                                        self.maingame.subunitposarray[x][y] = 0
+                                # for y in self.posrange[0]:
+                                #     for x in self.posrange[1]:
+                                #         self.maingame.subunitposarray[x][y] = 0
 
                                 if self.unitleader: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     if self.parentunit.moverotate is False:
