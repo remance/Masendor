@@ -1,6 +1,6 @@
 ![alt text](https://github.com/remance/Masendor/blob/master/pygamelogo.gif?raw=true)
 
-![alt text](https://github.com/remance/Masendor/blob/master/preview.png?raw=true)
+![alt text](https://github.com/remance/Masendor/blob/master/preview.gif?raw=true)
 
 Historical wargame simulation made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 
