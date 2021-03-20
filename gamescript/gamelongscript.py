@@ -211,7 +211,7 @@ def loadgamedata(game):
                       69: "Partying", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
 
     # v create subunit related class
-    imgsold = load_images(['war', 'unit_ui', 'weapon'])
+    imgsold = load_images(['ui', 'unit_ui', 'weapon'])
     imgs = []
     for img in imgsold:
         x, y = img.get_width(), img.get_height()
@@ -219,7 +219,7 @@ def loadgamedata(game):
         imgs.append(img)
     game.allweapon = gameunitstat.Weaponstat(main_dir, imgs, game.ruleset)  # Create weapon class
 
-    imgs = load_images(['war', 'unit_ui', 'armour'])
+    imgs = load_images(['ui', 'unit_ui', 'armour'])
     game.allarmour = gameunitstat.Armourstat(main_dir, imgs, game.ruleset)  # Create armour class
 
     game.statusimgs = load_images(['ui', 'status_icon'], loadorder=False)
@@ -240,7 +240,7 @@ def loadgamedata(game):
     gameunit.Unitarmy.statuslist = game.gameunitstat.statuslist
     rangeattack.Rangearrow.gamemapheight = game.battlemapheight
 
-    imgs = load_images(['war', 'unit_ui'])
+    imgs = load_images(['ui', 'unit_ui'])
     gamesubunit.Subunit.images = imgs
     gamesubunit.Subunit.gamemap = game.battlemapbase  # add battle map to all parentunit class
     gamesubunit.Subunit.gamemapfeature = game.battlemapfeature  # add battle map to all parentunit class

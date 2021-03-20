@@ -18,6 +18,20 @@ Meaning: It is playable but still a bloody mess. More work to do.
 
 Plan
 
+Currently rework on combat system to be more dynamic.
+
+Progress done so far:
+- A: Unit basic movement seem to be working correctly.
+- B: Range combat Working correctly.
+- C: Unit dead working correctly.
+- D: Ally collision detection, rework troop number sprite
+- E: Melee combat and position system
+
+Work in progress:
+- F: Retreat and collapse
+- G: Multiple unit melee combat
+- H: Unit split
+
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
 0.6.2 - 0.6.5: custom battle, battle result screen, in game unit and custom sub-unit editor

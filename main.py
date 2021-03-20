@@ -56,8 +56,8 @@ try: # for printing error log when error exception happen
     def makebarlist(listtodo, menuimage):
         """Make a drop down bar list option button"""
         barlist = []
-        img = load_image('bar_normal.jpg', 'ui')
-        img2 = load_image('bar_mouse.jpg', 'ui')
+        img = load_image('bar_normal.jpg', 'ui\mainmenu_ui')
+        img2 = load_image('bar_mouse.jpg', 'ui\mainmenu_ui')
         img3 = img2
         for index, bar in enumerate(listtodo):
             barimage = (img.copy(), img2.copy(), img3.copy())
@@ -66,9 +66,9 @@ try: # for printing error log when error exception happen
         return barlist
 
     def load_base_button():
-        img = load_image('idle_button.png', 'ui')
-        img2 = load_image('mouse_button.png', 'ui')
-        img3 = load_image('click_button.png', 'ui')
+        img = load_image('idle_button.png', 'ui\mainmenu_ui')
+        img2 = load_image('mouse_button.png', 'ui\mainmenu_ui')
+        img3 = load_image('click_button.png', 'ui\mainmenu_ui')
         return [img, img2, img3]
 
     def text_objects(text, font):
@@ -347,7 +347,7 @@ try: # for printing error log when error exception happen
             game_intro(self.screen, self.clock, False) # run game intro
 
             #v Background image
-            bgdtile = load_image('background.jpg', 'ui').convert()
+            bgdtile = load_image('background.jpg', 'ui\mainmenu_ui').convert()
             bgdtile = pygame.transform.scale(bgdtile, SCREENRECT.size)
             self.background = pygame.Surface(SCREENRECT.size)
             self.background.blit(bgdtile,(0,0))
@@ -420,7 +420,7 @@ try: # for printing error log when error exception happen
             # ^ End subunit editor
 
             #v Army editor
-            boximg = load_image('army_presetbox.png', 'ui').convert()
+            boximg = load_image('army_presetbox.png', 'ui\mainmenu_ui').convert()
             self.armylistbox = gameprepare.Listbox((0, SCREENRECT.height/3), boximg) # box for showing army preset list
             self.armypresetnamescroll = gameui.Uiscroller(self.armylistbox.rect.topright, self.armylistbox.image.get_height(),
                                                  self.armylistbox.maxshowlist, layer=14) # preset name scroll
@@ -443,7 +443,7 @@ try: # for printing error log when error exception happen
                                                      self.popuplistbox.maxshowlist,
                                                      layer=14)
 
-            boximg = load_image('mapchange.png', 'ui').convert()
+            boximg = load_image('mapchange.png', 'ui\mainmenu_ui').convert()
             self.terrainchangebutton = gameunitedit.Previewchangebutton((SCREENRECT.width/3, SCREENRECT.height), boximg, "Temperate") # start with temperate terrain
             self.featurechangebutton = gameunitedit.Previewchangebutton((SCREENRECT.width/2, SCREENRECT.height), boximg, "Plain") # start with plain feature
             self.weatherchangebutton = gameunitedit.Previewchangebutton((SCREENRECT.width/1.5, SCREENRECT.height), boximg, "Light Sunny") # start with light sunny
@@ -501,7 +501,7 @@ try: # for printing error log when error exception happen
             self.previewleaderlist = [self.team1previewleader, self.team2testfrontaleader, self.team2testleftleader,
                                       self.team2testrightleader,self.team2testrearleader]
 
-            boximg = load_image('filterbox.png', 'ui').convert()
+            boximg = load_image('filterbox.png', 'ui\mainmenu_ui').convert()
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)
 
             self.armyeditorbutton = (self.armybackbutton, self.armysavebutton)
@@ -509,7 +509,7 @@ try: # for printing error log when error exception happen
             #^ End army editor
 
             # v Input box popup
-            inputuiimg = load_image('inputui.png', 'ui')
+            inputuiimg = load_image('inputui.png', 'ui\mainmenu_ui')
             self.inputui = gameprepare.Inputui(inputuiimg, (SCREENRECT.width / 2, SCREENRECT.height / 2)) # user text input ui box popup
             self.inputokbutton = gameprepare.Menubutton(images=imagelist,
                                                         pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
@@ -527,7 +527,7 @@ try: # for printing error log when error exception happen
 
             #v profile box
             self.profilename = Profilename
-            img = load_image('profilebox.png', 'ui')
+            img = load_image('profilebox.png', 'ui\mainmenu_ui')
             self.profilebox = gameprepare.Profilebox(img, (ScreenWidth, 0), self.profilename) # profile name box at top right of screen at main menu screen
             #^ End profile box
 
@@ -535,27 +535,27 @@ try: # for printing error log when error exception happen
             self.backbutton = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height / 1.2), text="BACK")
 
             # Resolution changing bar that fold out the list when clicked
-            img = load_image('scroll_normal.jpg', 'ui')
+            img = load_image('scroll_normal.jpg', 'ui\mainmenu_ui')
             img2 = img
-            img3 = load_image('scroll_click.jpg', 'ui')
+            img3 = load_image('scroll_click.jpg', 'ui\mainmenu_ui')
             imagelist = [img, img2, img3]
             self.resolutionscroll = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height / 2.3),
                                                text=str(ScreenWidth) + " x " + str(ScreenHeight), size=16)
             resolutionlist = ['1920 x 1080', '1600 x 900', '1366 x 768', '1280 x 720', '1024 x 768', ]
             self.resolutionbar = makebarlist(listtodo=resolutionlist, menuimage=self.resolutionscroll)
-            img = load_image('resolution_icon.png', 'ui')
+            img = load_image('resolution_icon.png', 'ui\mainmenu_ui')
             self.resolutionicon = gameprepare.Menuicon([img], (self.resolutionscroll.pos[0] - (self.resolutionscroll.pos[0] / 4.5), self.resolutionscroll.pos[1]), imageresize=50)
             # End resolution
 
             # Volume change scroller bar
-            img = load_image('scroller.png', 'ui')
-            img2 = load_image('scoll_button_normal.png', 'ui')
-            img3 = load_image('scoll_button_click.png', 'ui')
-            img4 = load_image('numbervalue_icon.jpg', 'ui')
+            img = load_image('scroller.png', 'ui\mainmenu_ui')
+            img2 = load_image('scoll_button_normal.png', 'ui\mainmenu_ui')
+            img3 = load_image('scoll_button_click.png', 'ui\mainmenu_ui')
+            img4 = load_image('numbervalue_icon.jpg', 'ui\mainmenu_ui')
             self.volumeslider = gameprepare.Slidermenu(barimage=img, buttonimage=[img2, img3], pos=(SCREENRECT.width / 2, SCREENRECT.height / 3),
                                            value=Soundvolume)
             self.valuebox = [gameprepare.Valuebox(img4, (self.volumeslider.rect.topright[0] * 1.1, self.volumeslider.rect.topright[1]), Soundvolume)]
-            img = load_image('volume_icon.png', 'ui')
+            img = load_image('volume_icon.png', 'ui\mainmenu_ui')
             self.volumeicon = gameprepare.Menuicon([img], (self.volumeslider.pos[0] - (self.volumeslider.pos[0] / 4.5), self.volumeslider.pos[1]), imageresize=50)
             # End volume change
 

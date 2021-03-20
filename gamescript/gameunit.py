@@ -891,9 +891,9 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
 
             elif othercommand == 1 and self.state not in (10, 97, 98, 99, 100):  # Pause all action except combat or broken
-                # if self.attacking: # TODO change pause option to come into effect much slower when attacking
-                #     self.leader[0].authority -= self.authpenalty # decrease authority of the first leader for stop charge
-                #     self.authrecal() # recal authority
+                if self.charging:
+                    self.leader[0].authority -= self.authpenalty # decrease authority of the first leader for stop charge
+                    self.authrecal() # recal authority
 
                 self.state = 0 # go into idle state
                 self.commandstate = self.state # reset command state

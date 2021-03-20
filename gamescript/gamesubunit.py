@@ -734,10 +734,12 @@ class Subunit(pygame.sprite.Sprite):
                             and self.basepos.distance_to(self.basetarget) < 100: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
                         self.chargemomentum = self.parentunit.runspeed
+                        self.parentunit.charging = True
 
                     if self.chargemomentum > 1 and self.chargeskill not in self.skilleffect:  # reset charge momentum if charge skill not active
                         self.chargemomentum -= self.timer
                         if self.chargemomentum < 1:
+                            self.parentunit.charging = False
                             self.chargemomentum = 1
 
                     skillchance = random.randint(0, 10) # random chance to use random available skill
@@ -772,7 +774,8 @@ class Subunit(pygame.sprite.Sprite):
                                 if self.closetarget is None: # movement queue is empty regenerate new one
                                     self.findeclosetarget() # find new close target
 
-                                    if self.closetarget is not None: # found target to fight TODO problem: unit still not return to original position when too far
+                                    if self.closetarget is not None: # found target to fight
+
                                         #v Pathfinding
                                         self.combatmovequeue = []
                                         movearray = self.maingame.mapmovearray.copy()
@@ -806,8 +809,7 @@ class Subunit(pygame.sprite.Sprite):
                                             path, runs = finder.find_path(start, end, grid)
                                             path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
 
-                                            # if len(self.friendfront) > 0: # remove some starting path that may clip with friendly sub-unit sprite
-                                            path = path[3:]
+                                            path = path[3:] # remove some starting path that may clip with friendly sub-unit sprite
 
                                             self.combatmovequeue = path # add path into combat movement queue
                                             # print('operations:', runs, 'path length:', len(path))
@@ -987,15 +989,15 @@ class Subunit(pygame.sprite.Sprite):
                     #v Can move if front not collided
                     if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.attacking) or self.chargemomentum > 1) \
                             and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
-                        if self.chargemomentum > 1 and self.basepos == self.basetarget and parentstate == 10:
+                        if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
                             self.basetarget = self.basetarget + newtarget
+                            self.commandtarget = self.basetarget
                         move = self.basetarget - self.basepos
                         move_length = move.length()  # convert length
 
                         if move_length > 0:  # movement length longer than 0.1, not reach basetarget yet
                             move.normalize_ip()
-                            oldmove = move
 
                             if self.state in (1, 3, 5, 12):  # walking
                                 move = move * self.parentunit.walkspeed * dt # use walk speed
