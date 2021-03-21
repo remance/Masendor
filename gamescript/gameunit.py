@@ -142,7 +142,6 @@ class Unitarmy(pygame.sprite.Sprite):
     statuslist = None # status effect list
     maxzoom = 10 # max zoom allow
     maingame = None
-    squadcombatcal = gamelongscript.squadcombatcal
     rotationxy = gamelongscript.rotationxy
     die = gamelongscript.die # die script
     setrotate = gamelongscript.setrotate

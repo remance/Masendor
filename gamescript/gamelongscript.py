@@ -9,6 +9,10 @@ import pygame.freetype
 import os
 import math
 
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+
 """This file contains fuctions of various purposes"""
 
 ## Default game mechanic value
@@ -1059,105 +1063,47 @@ def rotationxy(self, origin, point, angle):
     y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
     return pygame.Vector2(x, y)
 
-def squadcombatcal(who, target, whoside, targetside, sortindex = (3,4,2,5,1,6,0,7)):
-    """calculate subunit engagement using information after battalionengage who is attacker, basetarget is defender parentunit"""
-    squadtargetside = [2 if targetside == 3 else 3 if targetside == 2 else targetside][0]
-    whofrontline = who.frontlineobject[whoside]
-    # """only calculate if the attack is attack with the front side"""
-    if whoside == 0:
-        # print(whoside, targetside, basetarget.frontline[targetside])
-        sortmidfront = [whofrontline[3], whofrontline[4], whofrontline[2], whofrontline[5],
-                        whofrontline[1], whofrontline[6], whofrontline[0], whofrontline[7]]
-    # else: sortmidfront = whofrontline
+def combatpathfind(self):
+    # v Pathfinding
+    self.combatmovequeue = []
+    movearray = self.maingame.mapmovearray.copy()
+    intbasetarget = (int(self.closetarget.basepos[0]), int(self.closetarget.basepos[1]))
+    for y in self.closetarget.posrange[0]:
+        for x in self.closetarget.posrange[1]:
+            movearray[x][y] = 100  # reset path in the enemy sprite position
 
-        combatpositioncal(sortmidfront, sortindex, target, whoside, targetside, squadtargetside)
+    intbasepos = (int(self.basepos[0]), int(self.basepos[1]))
+    for y in self.posrange[0]:
+        for x in self.posrange[1]:
+            movearray[x][y] = 100  # reset path for sub-unit sprite position
 
-def combatpositioncal(sortmidfront, sortindex, receiver, attackerside, receiverside, squadside):
-    """Find enemy subunit to fight starting at the front of attacker, then either right or left side on the frontline array"""
-    for position, attackersquad in enumerate(sortmidfront):
-        if attackersquad != 0 and (attackersquad.battleside[squadside] is None or attackersquad.battleside[squadside].state == 100): # only pick new basetarget if not fighting or basetarget already dead
-            receiversquad = receiver.frontlineobject[receiverside][sortindex[position]]
-            if any(battle > 0 for battle in attackersquad.battlesideid) is False: # check if subunit not already fighting if true skip picking new enemy
-                if receiversquad != 0: # found front basetarget
-                    receiversquad = receiver.frontlineobject[receiverside][sortindex[position]] # get front of another parentunit frontline to assign front combat
-                    if receiversquad.battlesideid[squadside] == 0: # only attack if the side is already free else just wait until it free
-                        attackersquad.battleside[attackerside] = receiversquad
-                        attackersquad.battlesideid[attackerside] = receiversquad.gameid
+    startpoint = (min([max(0, intbasepos[0] - 5), max(0, intbasetarget[0] - 5)]),  # start point of new smaller array
+                  min([max(0, intbasepos[1] - 5), max(0, intbasetarget[1] - 5)]))
+    endpoint = (max([min(999, intbasepos[0] + 5), min(999, intbasetarget[0] + 5)]),  # end point of new array
+                max([min(999, intbasepos[1] + 5), min(999, intbasetarget[1] + 5)]))
 
-                        receiversquad.battleside[squadside] = attackersquad
-                        receiversquad.battlesideid[squadside] = attackersquad.gameid
+    movearray = movearray[startpoint[1]:endpoint[1]]  # cut 1000x1000 array into smaller one by row
+    movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray]  # cut by column
 
-                else:  # pick flank attack instead if no front basetarget to fight
-                    chance = random.randint(0, 1) # attack left array side of the subunit if get random 0, right if 1
-                    secondpick = 0 # if the first side search result in no basetarget to fight pick another one
-                    if chance == 0: secondpick = 1
-                    truetargetside = changecombatside(chance, receiverside) # find combatside according to the parentunit combat side
-                    receiversquad = squadselectside(receiver.frontlineobject[receiverside], chance, sortindex[position])
-                    if receiversquad != 0: # attack if the found defender at that side if not check another side
-                        if receiversquad.battlesideid[truetargetside] == 0:
-                            attackersquad.battleside[attackerside] = receiversquad
-                            attackersquad.battlesideid[attackerside] = receiversquad.gameid
+    # if len(movearray) < 100 and len(movearray[0]) < 100: # if too big then skip combat pathfinding
+    grid = Grid(matrix=movearray)
+    grid.cleanup()
 
-                            receiversquad.battleside[truetargetside] = attackersquad
-                            receiversquad.battlesideid[truetargetside] = attackersquad.gameid
+    start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])  # start point
+    end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1] - startpoint[1])  # end point
 
-                    else: # Switch to another side if the first chosen side not found enemy to fight
-                        truetargetside = changecombatside(secondpick, receiverside)
-                        receiversquad = squadselectside(receiver.frontlineobject[receiverside], secondpick, sortindex[position])
-                        if receiversquad != 0:
-                            if receiversquad.battlesideid[truetargetside] == 0:
-                                attackersquad.battleside[attackerside] = receiversquad
-                                attackersquad.battlesideid[attackerside] = receiversquad.gameid
+    finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+    path, runs = finder.find_path(start, end, grid)
+    path = [(thispath[0] + startpoint[0], thispath[1] + startpoint[1]) for thispath in path]  # remake pos into actual map pos
 
-                                receiversquad.battleside[truetargetside] = attackersquad
-                                receiversquad.battlesideid[truetargetside] = attackersquad.gameid
-                        else: # simply no enemy to fight
-                            attackersquad.battleside[attackerside] = None
-                            attackersquad.battlesideid[attackerside] = 0
+    path = path[4:]  # remove some starting path that may clip with friendly sub-unit sprite
 
-def squadselectside(targetside, side, position):
-    """Search subunit from selected side to attack from nearby to furthest"""
-    thisposition = position
-    if side == 0: # left side
-        max = 0 # keep searching to the the left until reach the first subunit
-        while targetside[thisposition] == 0 and thisposition != max: # keep searching until found or it reach max
-            thisposition -= 1
-    else: # 1 right side
-        max = 7 # keep searching to the the right until reach the last subunit
-        while targetside[thisposition] == 0 and thisposition != max:
-            thisposition += 1
-    fronttarget = 0
-    if targetside[thisposition] != 0:
-        fronttarget = targetside[thisposition]
-    return fronttarget
-
-def changecombatside(side, position):
-    """position is attacker position against defender 0 = front 1 = left 2 = rear 3 = right
-    side is side of attack for rotating to find the correct side the defender got attack accordingly (e.g. left attack on right side is front)
-        0               0                               front
-    1       2  to   1       3   for side index      left     right
-        3               2                                rear
-    this will make rotation with number easier, - is rotate clockwise and + is rotate anticlockwise
-    """
-    subposition = position
-    if subposition == 2:
-        subposition = 3
-    elif subposition == 3:
-        subposition = 2
-
-    changepos = 1
-    if subposition == 2:
-        changepos = -1
-
-    finalposition = subposition + changepos  # rotate clockwise (right)
-    if side == 0:
-        finalposition = subposition - changepos  # rotate anticlockwise
-
-    if finalposition == -1: # - clockwise from front to right (0 to 3)
-        finalposition = 3
-    elif finalposition == 4: # + anticlockwise from right to front (3 to 0)
-        finalposition = 0
-    return finalposition
+    self.combatmovequeue = path  # add path into combat movement queue
+    # print('operations:', runs, 'path length:', len(path))
+    # print(grid.grid_str(path=path, start=start, end=end))
+    # print(self.combatmovequeue)
+    # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+    # ^ End path finding
 
 def losscal(attacker, defender, hit, defense, type, defside = None):
     """Calculate damage"""

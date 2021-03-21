@@ -5,9 +5,6 @@ import pygame.freetype
 import math
 from pygame.transform import scale
 from gamescript import rangeattack, gamelongscript
-from pathfinding.core.diagonal_movement import DiagonalMovement
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
 
 class Subunit(pygame.sprite.Sprite):
     images = []
@@ -777,46 +774,7 @@ class Subunit(pygame.sprite.Sprite):
 
                                     if self.closetarget is not None: # found target to fight
 
-                                        #v Pathfinding
-                                        self.combatmovequeue = []
-                                        movearray = self.maingame.mapmovearray.copy()
-                                        intbasetarget = (int(self.closetarget.basepos[0]),int(self.closetarget.basepos[1]))
-                                        for y in self.closetarget.posrange[0]:
-                                            for x in self.closetarget.posrange[1]:
-                                                movearray[x][y] = 100 # reset path in the enemy sprite position
-
-                                        intbasepos = (int(self.basepos[0]), int(self.basepos[1]))
-                                        for y in self.posrange[0]:
-                                            for x in self.posrange[1]:
-                                                movearray[x][y] = 100 # reset path for sub-unit sprite position
-
-                                        startpoint = (min([max(0, intbasepos[0] - 5), max(0, intbasetarget[0] - 5)]), # start point of new smaller array
-                                                      min([max(0, intbasepos[1] - 5), max(0, intbasetarget[1] - 5)]))
-                                        endpoint = (max([min(999, intbasepos[0] + 5), min(999, intbasetarget[0] + 5)]), # end point of new array
-                                                    max([min(999, intbasepos[1] + 5), min(999, intbasetarget[1] + 5)]))
-
-                                        movearray = movearray[startpoint[1]:endpoint[1]] # cut 1000x1000 array into smaller one by row
-                                        movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray] # cut by column
-
-                                        # if len(movearray) < 100 and len(movearray[0]) < 100: # if too big then skip combat pathfinding
-                                        grid = Grid(matrix=movearray)
-                                        grid.cleanup()
-
-                                        start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
-                                        end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
-
-                                        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-                                        path, runs = finder.find_path(start, end, grid)
-                                        path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
-
-                                        path = path[4:] # remove some starting path that may clip with friendly sub-unit sprite
-
-                                        self.combatmovequeue = path # add path into combat movement queue
-                                        print('operations:', runs, 'path length:', len(path))
-                                        print(grid.grid_str(path=path, start=start, end=end))
-                                        print(self.combatmovequeue)
-                                        print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
-                                        #^ End path finding
+                                        self.maingame.combatpathqueue.append(self)
 
                                     else: # no target to fight move back to command pos first
                                         self.basetarget = self.attacktarget.basepos
@@ -938,7 +896,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 if parentstate != 10: # reset basetarget every update to command basetarget outside of combat
                     self.basetarget = self.commandtarget
-                    self.newangle = self.setrotate()
+                    # self.newangle = self.setrotate()
                 # elif self.state != 10 and self.frontline: # set basetarget to enemy basepos
                 #     if self.attacktarget is not None:
                 #         pass

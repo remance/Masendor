@@ -34,10 +34,10 @@ load_image = gamelongscript.load_image
 load_images = gamelongscript.load_images
 csv_read = gamelongscript.csv_read
 load_sound = gamelongscript.load_sound
+combatpathfind = gamelongscript.combatpathfind
 
 class Battle():
     splitunit = gamelongscript.splitunit
-    losscal = gamelongscript.losscal
     traitskillblit = gamelongscript.traitskillblit
     effecticonblit = gamelongscript.effecticonblit
     countdownskillicon = gamelongscript.countdownskillicon
@@ -156,6 +156,8 @@ class Battle():
         self.squadheight = main.squadheight
         self.collidedistance = self.squadheight / 10 # distance to check collision
         self.frontdistance = self.squadheight / 20
+
+        self.combatpathqueue = [] # queue of sub-unit to run melee combat pathfiding
 
         self.escslidermenu = main.escslidermenu
         self.escvaluebox = main.escvaluebox
@@ -1102,7 +1104,7 @@ class Battle():
                                 self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                    self.splitunit(whoinput, 1)
+                                    splitunit(whoinput, 1)
                                     self.splithappen = True
                                     self.checksplit(whoinput)
                                     self.battleui.remove(*self.leadernow)
@@ -1114,7 +1116,7 @@ class Battle():
                                 self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                    self.splitunit(whoinput, 0)
+                                    splitunit(whoinput, 0)
                                     self.splithappen = True
                                     self.checksplit(whoinput)
                                     self.battleui.remove(*self.leadernow)
@@ -1282,6 +1284,15 @@ class Battle():
                 self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer,
                                          self.battlemousepos[0], mouse_up)
 
+                #v Run pathfinding for melee combat no more than limit number of sub-unit per update to prevent stutter
+                if len(self.combatpathqueue) > 0:
+                    run = 0
+                    while len(self.combatpathqueue) > 0 and run < 10:
+                        combatpathfind(self.combatpathqueue[0])
+                        self.combatpathqueue = self.combatpathqueue[1:]
+                #^ End melee pathfinding
+
+
                 if self.uitimer > 1:
                     self.scaleui.changefightscale(self.teamtroopnumber) # change fight colour scale on timeui bar
                     self.lastteamtroopnumber = self.teamtroopnumber
@@ -1372,6 +1383,7 @@ class Battle():
 
                                     self.subunitselected = None
                                     self.allunitlist = []
+                                    self.combatpathqueue = []
                                     self.team0poslist, self.team1poslist, self.team2poslist = {}, {}, {}
                                     self.beforeselected = None
 
