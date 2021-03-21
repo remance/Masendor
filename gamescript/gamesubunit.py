@@ -631,8 +631,13 @@ class Subunit(pygame.sprite.Sprite):
         self.frontsidepos = self.rotationxy(self.basepos, self.frontsidepos, self.radians_angle)
 
     def makeposrange(self):
+        # (range(int(max(0, round(self.basepos[0] - (self.imageheight - 1), 0))), int(min(1000, round(self.basepos[0] + self.imageheight, 0)))),
+        #  range(int(max(0, round(self.basepos[1] - (self.imageheight - 1), 0))), int(min(1000, round(self.basepos[1] + self.imageheight, 0)))))
+
         self.posrange = (range(int(max(0, self.basepos[0] - (self.imageheight - 1))), int(min(1000, self.basepos[0] + self.imageheight))),
                          range(int(max(0, self.basepos[1] - (self.imageheight - 1))), int(min(1000, self.basepos[1] + self.imageheight))))
+        # self.posrange = (range(int(max(0, self.basepos[0] - (self.imageheight))), int(min(1000, self.basepos[0] + self.imageheight+1))),
+        #                  range(int(max(0, self.basepos[1] - (self.imageheight))), int(min(1000, self.basepos[1] + self.imageheight+1))))
 
     def gamestart(self, zoom):
         # run once when game start or subunit just get created
@@ -706,9 +711,6 @@ class Subunit(pygame.sprite.Sprite):
             #^ End hp/stamina
 
             dt = newdt
-            if dt > 0.1: # make it so stutter does not cause sprite to clip other sprite especially when zoom change
-                dt = 0.1
-
             if dt > 0: # only run these when game not pause
                 self.timer += dt
 
@@ -767,8 +769,7 @@ class Subunit(pygame.sprite.Sprite):
                                 break
                     elif parentstate == 10:
                         if self.attacking and self.parentunit.collide:
-                            if self.chargemomentum == 1 and self.frontline and self.parentunit.attackmode != 1: # self.parentunit.attackmode == 0
-                              # attack to nearest target instead
+                            if self.chargemomentum == 1 and (self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1: # attack to nearest target instead
                                 if self.meleetarget is None and self.parentunit.attacktarget is not None:
                                     self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
                                 if self.closetarget is None: # movement queue is empty regenerate new one
@@ -789,38 +790,37 @@ class Subunit(pygame.sprite.Sprite):
                                             for x in self.posrange[1]:
                                                 movearray[x][y] = 100 # reset path for sub-unit sprite position
 
-                                        startpoint = (min([max(0, intbasepos[0] - 10), max(0, intbasetarget[0] - 10)]), # start point of new smaller array
-                                                      min([max(0, intbasepos[1] - 10), max(0, intbasetarget[1] - 10)]))
-                                        endpoint = (max([min(999, intbasepos[0] + 11), min(999, intbasetarget[0] + 11)]), # end point of new array
-                                                    max([min(999, intbasepos[1] + 11), min(999, intbasetarget[1] + 11)]))
+                                        startpoint = (min([max(0, intbasepos[0] - 5), max(0, intbasetarget[0] - 5)]), # start point of new smaller array
+                                                      min([max(0, intbasepos[1] - 5), max(0, intbasetarget[1] - 5)]))
+                                        endpoint = (max([min(999, intbasepos[0] + 5), min(999, intbasetarget[0] + 5)]), # end point of new array
+                                                    max([min(999, intbasepos[1] + 5), min(999, intbasetarget[1] + 5)]))
 
                                         movearray = movearray[startpoint[1]:endpoint[1]] # cut 1000x1000 array into smaller one by row
                                         movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray] # cut by column
 
-                                        if len(movearray) < 100: # if too big then skip combat pathfinding
+                                        # if len(movearray) < 100 and len(movearray[0]) < 100: # if too big then skip combat pathfinding
+                                        grid = Grid(matrix=movearray)
+                                        grid.cleanup()
 
-                                            grid = Grid(matrix=movearray)
-                                            grid.cleanup()
+                                        start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
+                                        end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
 
-                                            start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1]) # start point
-                                            end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1]-startpoint[1]) # end point
+                                        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+                                        path, runs = finder.find_path(start, end, grid)
+                                        path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
 
-                                            finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-                                            path, runs = finder.find_path(start, end, grid)
-                                            path = [(thispath[0]+startpoint[0],thispath[1]+startpoint[1]) for thispath in path] # remake pos into actual map pos
+                                        path = path[4:] # remove some starting path that may clip with friendly sub-unit sprite
 
-                                            path = path[3:] # remove some starting path that may clip with friendly sub-unit sprite
-
-                                            self.combatmovequeue = path # add path into combat movement queue
-                                            # print('operations:', runs, 'path length:', len(path))
-                                            # print(grid.grid_str(path=path, start=start, end=end))
-                                            # print(self.combatmovequeue)
-                                            # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+                                        self.combatmovequeue = path # add path into combat movement queue
+                                        print('operations:', runs, 'path length:', len(path))
+                                        print(grid.grid_str(path=path, start=start, end=end))
+                                        print(self.combatmovequeue)
+                                        print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
                                         #^ End path finding
 
                                     else: # no target to fight move back to command pos first
                                         self.basetarget = self.attacktarget.basepos
-                                    #     self.newangle = self.setrotate()
+                                        self.newangle = self.setrotate()
 
                                 if self.meleetarget.parentunit.state != 100:
                                     if self.movetimer == 0:
@@ -845,6 +845,7 @@ class Subunit(pygame.sprite.Sprite):
                                     self.closetarget = None
                                     self.attacktarget = None
                                     self.basetarget = self.commandtarget
+                                    self.newangle = self.setrotate()
                                     self.newangle = self.parentunit.angle
                                     self.state = 0
 
@@ -937,6 +938,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 if parentstate != 10: # reset basetarget every update to command basetarget outside of combat
                     self.basetarget = self.commandtarget
+                    self.newangle = self.setrotate()
                 # elif self.state != 10 and self.frontline: # set basetarget to enemy basepos
                 #     if self.attacktarget is not None:
                 #         pass
@@ -987,7 +989,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.attacking = False
 
                     #v Can move if front not collided
-                    if self.stamina > 0 and (self.parentunit.collide is False or (self.frontline and self.attacking) or self.chargemomentum > 1) \
+                    if self.stamina > 0 and (self.parentunit.collide is False or ((self.frontline or self.parentunit.attackmode == 2) and self.attacking) or self.chargemomentum > 1) \
                             and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
                         if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
@@ -1038,16 +1040,6 @@ class Subunit(pygame.sprite.Sprite):
                                     numberpos = (self.parentunit.basepos[0] - self.parentunit.basewidthbox, (self.parentunit.basepos[1] + self.parentunit.baseheightbox))
                                     self.parentunit.numberpos = self.rotationxy(self.parentunit.basepos, numberpos, self.parentunit.radians_angle)
                                     self.parentunit.truenumberpos = self.parentunit.numberpos * (11 - self.parentunit.zoom) # find new position for troop number text
-
-                            # v move to shoot, stop moving if reach shoot range instead of basetarget
-                            elif self.state in (5, 6):
-                                shootrange = self.maxrange
-                                if self.useminrange == 0:  # user set to use min shoot range
-                                    shootrange = self.minrange
-                                if (self.attacktarget is not None and self.basepos .distance_to(self.attacktarget.leadersubunit.basepos) <= shootrange) or \
-                                        self.basepos.distance_to(self.baseattackpos) <= shootrange:
-                                    self.set_target(self.basepos)  # stop moving when reach shoot range
-                            # ^ End move to shoot
 
                         else:  # Stopping subunit when reach basetarget
                             self.state = 0  # idle

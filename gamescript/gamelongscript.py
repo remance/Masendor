@@ -17,6 +17,54 @@ battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side mod
 
 ## Data Loading gamescript
 
+
+def makebarlist(listtodo, menuimage):
+    """Make a drop down bar list option button"""
+    from gamescript import gameprepare
+    barlist = []
+    img = load_image('bar_normal.jpg', 'ui\mainmenu_ui')
+    img2 = load_image('bar_mouse.jpg', 'ui\mainmenu_ui')
+    img3 = img2
+    for index, bar in enumerate(listtodo):
+        barimage = (img.copy(), img2.copy(), img3.copy())
+        bar = gameprepare.Menubutton(images=barimage, pos=(menuimage.pos[0], menuimage.pos[1] + img.get_height() * (index + 1)), text=bar)
+        barlist.append(bar)
+    return barlist
+
+def load_base_button():
+    img = load_image('idle_button.png', 'ui\mainmenu_ui')
+    img2 = load_image('mouse_button.png', 'ui\mainmenu_ui')
+    img3 = load_image('click_button.png', 'ui\mainmenu_ui')
+    return [img, img2, img3]
+
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, (200, 200, 200))
+    return textSurface, textSurface.get_rect()
+
+
+def game_intro(screen, clock, introoption):
+    intro = introoption
+    if introoption:
+        intro = True
+    timer = 0
+    # quote = ["Those who fail to learn from the mistakes of their predecessors are destined to repeat them. George Santayana", "It is more important to outhink your enemy, than to outfight him, Sun Tzu"]
+    while intro:
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                intro = False
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        largeText = pygame.font.Font('freesansbold.ttf', 115)
+        TextSurf, TextRect = text_objects("Test Intro", largeText)
+        TextRect.center = (700, 600)
+        screen.blit(TextSurf, TextRect)
+        pygame.display.update()
+        clock.tick(60)
+        timer += 1
+        if timer == 1000: intro = False
+
 def load_image(file, subfolder=""):
     """loads an image, prepares it for play"""
     import main

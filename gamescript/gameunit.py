@@ -215,7 +215,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.changefaction = False # For initiating change faction function
         self.runtoggle = 0 # 0 = double right click to run, 1 = only one right click will make parentunit run
         self.shoothow = 0 # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
-        self.attackmode = 0 # frontline attack, 1 = formation attack           not use yet: free for all attack,
+        self.attackmode = 0 # frontline attack, 1 = formation attack, 2 = free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fireatwill = 0  # 0 = fire at will, 1 = no fire
         self.retreatstart = False
@@ -525,6 +525,29 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.zoom = (11 - zoom) # save scale
                 self.changeposscale() # update parentunit sprite according to new scale
 
+        #v Setup frontline again when any subunit die
+        if self.deadchange:
+            self.setupfrontline()
+
+            for subunit in self.subunitsprite:
+                subunit.basemorale -= (30 * subunit.mental)
+            self.deadchange = False
+        # ^End setup frontline when subunit die
+
+        # v remove when go pass the map border for any reason or when troop number reach 0
+        if len(self.armysquad) < 1 or self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
+            1] > 999:
+            self.stamina, self.morale, self.speed = 0, 0, 0
+
+            leaderlist = [leader for leader in self.leader]  # create temp list to remove leader
+            for leader in leaderlist:  # leader retreat
+                if leader.state not in (96, 97, 98, 99, 100):  # Leaders may get flee/captured/die when parentunit destroyed
+                    leader.state = 96
+                    leader.gone()
+
+            self.state = 100
+        # ^ End remove
+
         if self.state != 100:
             if self.team == 1:
                 self.maingame.team1poslist[self.gameid] = self.basepos # update current position to team list
@@ -553,15 +576,6 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.authrecal()
                 self.authrecalnow = False
 
-            #v Setup frontline again when any subunit die
-            if self.deadchange:
-                self.setupfrontline()
-
-                for subunit in self.subunitsprite:
-                    subunit.basemorale -= (30 * subunit.mental)
-                self.deadchange = False
-            # ^End setup frontline when subunit die
-
             if self.justselected: # add highlight to subunit in selected unit
                 for subunit in self.subunitsprite:
                     subunit.zoomscale()
@@ -581,12 +595,6 @@ class Unitarmy(pygame.sprite.Sprite):
                                     (self.leader[0].cavcommand - 5) * 0.1]
                 self.leaderchange = False
             #^ End recal stat when leader die
-
-            # if self.collide: # enemy collide on any side
-            #     self.rangecombatcheck = False # can not use range attack in melee combat
-            #     if self.state not in (96, 98, 99): # enter melee combat state if not retreat
-            #         self.state = 10
-            #         self.newangle = self.angle # stop rotating when get attacked
 
             if self.rangecombatcheck:
                 self.state = 11 # can only shoot if rangecombatcheck is true
@@ -773,20 +781,6 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.state = self.commandstate # resume previous order
             #^ End colapse related
 
-            #v remove when go pass the map border for any reason or when troop number reach 0
-            if self.troopnumber <= 0 or self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
-                1] > 999:
-                self.stamina, self.morale, self.speed = 0, 0, 0
-
-                leaderlist = [leader for leader in self.leader] # create temp list to remove leader
-                for leader in leaderlist: # leader retreat
-                    if leader.state not in (96, 97, 98, 99, 100): # Leaders may get flee/captured/die when parentunit destroyed
-                        leader.state = 96
-                        leader.gone()
-
-                self.state = 100
-            #^ End remove
-
             self.collide = False # reset collide
 
         else: # dead parentunit
@@ -888,7 +882,12 @@ class Unitarmy(pygame.sprite.Sprite):
                     if self.state in (10,96) and whomouseover is None:
                         self.processretreat(mouse_pos, whomouseover)  # retreat
                     else:
+                        # if self.state == 10:
+                        for subunit in self.subunitsprite:
+                            subunit.attacking = True
+                        # else:
                         self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
+
 
             elif othercommand == 1 and self.state not in (10, 97, 98, 99, 100):  # Pause all action except combat or broken
                 if self.charging:

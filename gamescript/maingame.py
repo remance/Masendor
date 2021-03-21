@@ -155,7 +155,7 @@ class Battle():
         self.squadwidth = main.squadwidth
         self.squadheight = main.squadheight
         self.collidedistance = self.squadheight / 10 # distance to check collision
-        self.frontdistance = self.squadheight / 15
+        self.frontdistance = self.squadheight / 20
 
         self.escslidermenu = main.escslidermenu
         self.escvaluebox = main.escvaluebox
@@ -1090,11 +1090,11 @@ class Battle():
                             elif self.switchbuttonui[6].rect.collidepoint(self.mousepos): # or keypress == pygame.K_j
                                 if mouse_up: #or keypress == pygame.K_j  # rotate min range condition when clicked
                                     whoinput.attackmode += 1
-                                    if whoinput.attackmode > 1:
+                                    if whoinput.attackmode > 2:
                                         whoinput.attackmode = 0
                                     self.switchbuttonui[6].event = whoinput.attackmode
                                 if self.switchbuttonui[6].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                    poptext = ("Frontline Combat Only", "All Out Combat", "Keep Formation")
+                                    poptext = ("Frontline Attack Only", "Keep Formation", "All Out Attack")
                                     self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[6].event])
                                     self.battleui.add(self.buttonnamepopup)
 
@@ -1249,7 +1249,7 @@ class Battle():
 
                 self.lastmouseover = None  # reset last parentunit mouse over
 
-                tree = KDTree([sprite.basepos for sprite in self.allsubunitlist]) # collision loop check
+                tree = KDTree([sprite.basepos for sprite in self.allsubunitlist]) # collision loop check, much faster than pygame collide check
                 collisions = tree.query_pairs(self.collidedistance)
                 for one, two in collisions:
                     spriteone = self.allsubunitlist[one]
@@ -1319,8 +1319,12 @@ class Battle():
                 #v Update game time
                 self.dt = self.clock.get_time() / 1000 # dt before gamespeed
                 self.uitimer += self.dt # ui update by real time instead of game time to reduce workload
-                self.uidt = self.dt # get ui timer before apply game speed
+                self.uidt = self.dt # get ui timer before apply game
+
                 self.dt = self.dt * self.gamespeed # apply dt with gamespeed for ingame calculation
+                if self.dt > 0.1:
+                    self.dt = 0.1 # make it so stutter does not cause sprite to clip other sprite especially when zoom change
+
                 self.combattimer += self.dt # update combat timer
                 self.timenumber.timerupdate(self.dt*10) # update ingame time with 5x speed
                 #^ End update game time
