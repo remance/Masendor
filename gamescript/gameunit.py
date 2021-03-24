@@ -164,7 +164,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.control = control # player control or not
         self.starthp = starthp # starting hp percentage
         self.startstamina = startstamina # starting stamina percentage
-        self.armysquad = squadlist # subunit array
+        self.armysubunit = squadlist # subunit array
         self.colour = colour # box colour according to team
         self.commander = commander # commander parentunit if true
 
@@ -172,7 +172,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.lastzoom = 1 # zoom level without calculate with 11 - zoom for scale
 
         self.imgsize = imgsize
-        self.basewidthbox, self.baseheightbox =  len(self.armysquad[0]) * (self.imgsize[0] + 10) / 20, len(self.armysquad) * (self.imgsize[1] + 2) / 20
+        self.basewidthbox, self.baseheightbox = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, len(self.armysubunit) * (self.imgsize[1] + 2) / 20
 
         self.basepos = pygame.Vector2(startposition)  # Basepos is for true pos that is used for ingame calculation
         self.lastbasepos = self.basepos
@@ -245,9 +245,9 @@ class Unitarmy(pygame.sprite.Sprite):
         self.statedelay = 3 # some state has delay before can change state, default at 3 seconds
         #^ End default starting value
 
-        if np.array_split(self.armysquad, 2)[0].size > 10 and np.array_split(self.armysquad, 2)[1].size > 10: self.cansplitrow = True
+        if np.array_split(self.armysubunit, 2)[0].size > 10 and np.array_split(self.armysubunit, 2)[1].size > 10: self.cansplitrow = True
         self.cansplitcol = False
-        if np.array_split(self.armysquad, 2, axis=1)[0].size > 10 and np.array_split(self.armysquad, 2, axis=1)[1].size > 10: self.cansplitcol = True
+        if np.array_split(self.armysubunit, 2, axis=1)[0].size > 10 and np.array_split(self.armysubunit, 2, axis=1)[1].size > 10: self.cansplitcol = True
         self.authpenalty = 0 # authority penalty
         self.tacticeffect = {}
         self.coa = coa # coat of arm image
@@ -262,11 +262,11 @@ class Unitarmy(pygame.sprite.Sprite):
         #v Set up subunit position list for drawing
         width, height = 0, 0
         squadnum = 0 # Number of subunit based on the position in row and column
-        for squad in self.armysquad.flat:
+        for squad in self.armysubunit.flat:
             width += self.imgsize[0]
             self.squadpositionlist.append((width, height))
             squadnum += 1
-            if squadnum >= len(self.armysquad[0]): # Reach the last subunit in the row, go to the next one
+            if squadnum >= len(self.armysubunit[0]): # Reach the last subunit in the row, go to the next one
                 width = 0
                 height += self.imgsize[1]
                 squadnum = 0
@@ -328,29 +328,29 @@ class Unitarmy(pygame.sprite.Sprite):
         #v check if complelely empty side row/col, then delete and re-adjust array
         stoploop = False
         while stoploop is False: # loop until no longer find completely empty row/col
-            whoarray = self.armysquad
+            whoarray = self.armysubunit
             fullwhoarray = [whoarray, np.fliplr(whoarray.swapaxes(0, 1)), np.rot90(whoarray),
                             np.fliplr([whoarray])[0]]  # rotate the array based on the side
             whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0], fullwhoarray[3][0]]
             for index, whofrontline in enumerate(whoarray):
                 if any(subunit != 0 for subunit in whofrontline) is False:
                     if index == 0: # front side
-                        self.armysquad = np.delete(self.armysquad, index, 0)
+                        self.armysubunit = np.delete(self.armysubunit, index, 0)
                         for subunit in self.subunitsprite:
                             subunit.armypos = (subunit.armypos[0], subunit.armypos[1] - (self.imgsize[1] / 8))
                     elif index == 1: # left side
-                        self.armysquad = np.delete(self.armysquad, 0, 1)
+                        self.armysubunit = np.delete(self.armysubunit, 0, 1)
                         for subunit in self.subunitsprite:
                             subunit.armypos = (subunit.armypos[0] - (self.imgsize[0] / 8), subunit.armypos[1])
                     elif index == 2: # right side
-                        self.armysquad = np.delete(self.armysquad, -1, 1)
+                        self.armysubunit = np.delete(self.armysubunit, -1, 1)
                     elif index == 3: # rear side
-                        self.armysquad = np.delete(self.armysquad, -1, 0)
+                        self.armysubunit = np.delete(self.armysubunit, -1, 0)
 
-                    if len(self.armysquad) > 0:
+                    if len(self.armysubunit) > 0:
                         oldwidthbox, oldheightbox = self.basewidthbox, self.baseheightbox
-                        self.basewidthbox, self.baseheightbox = len(self.armysquad[0]) * (self.imgsize[0] + 10) / 20, \
-                                                                len(self.armysquad) * (self.imgsize[1] + 2) / 20
+                        self.basewidthbox, self.baseheightbox = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, \
+                                                                len(self.armysubunit) * (self.imgsize[1] + 2) / 20
 
                         numberpos = (self.basepos[0] - self.basewidthbox,
                                      (self.basepos[1] + self.baseheightbox))  # find position for number text
@@ -468,7 +468,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """recalculate authority from all alive leaders"""
         self.authority = int(self.teamcommander.authority + (self.leader[0].authority / 2) + (self.leader[1].authority / 4) +
                               (self.leader[2].authority / 4) + (self.leader[3].authority / 10))
-        bigarmysize = self.armysquad > 0
+        bigarmysize = self.armysubunit > 0
         bigarmysize = bigarmysize.sum()
         if bigarmysize > 20: # army size larger than 20 will reduce main leader authority
             self.authority = int(self.teamcommander.authority +
@@ -480,7 +480,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.setuparmy(False)
         self.setupfrontline()
         self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
-        self.spritearray = self.armysquad
+        self.spritearray = self.armysubunit
         self.leadersocial = self.leader[0].social
         for leader in self.leader:
             if leader.gameid != 1:
@@ -534,7 +534,7 @@ class Unitarmy(pygame.sprite.Sprite):
         # ^End setup frontline when subunit die
 
         # v remove when go pass the map border for any reason or when troop number reach 0
-        if len(self.armysquad) < 1 or self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
+        if len(self.armysubunit) < 1 or self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
             1] > 999:
             self.stamina, self.morale, self.speed = 0, 0, 0
 
@@ -699,9 +699,9 @@ class Unitarmy(pygame.sprite.Sprite):
 
                 ## Rotate logic to continuously rotate based on angle and shortest length
                 if self.state in (1, 3, 5):
-                    self.rotatespeed = round(self.walkspeed * 50 / (len(self.armysquad[0]) * len(self.armysquad))) # rotate speed is based on move speed and parentunit block size (not subunit total number)
+                    self.rotatespeed = round(self.walkspeed * 50 / (len(self.armysubunit[0]) * len(self.armysubunit))) # rotate speed is based on move speed and parentunit block size (not subunit total number)
                 else:
-                    self.rotatespeed = round(self.runspeed * 50 / (len(self.armysquad[0]) * len(self.armysquad)))
+                    self.rotatespeed = round(self.runspeed * 50 / (len(self.armysubunit[0]) * len(self.armysubunit)))
 
                 if self.rotatespeed > 20: self.rotatespeed = 20 # state 10 melee combat rotate is auto placement
                 if self.rotatespeed < 1: # no less than speed 1, it will be too slow or can't rotate with speed 0

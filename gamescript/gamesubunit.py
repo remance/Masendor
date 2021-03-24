@@ -225,7 +225,7 @@ class Subunit(pygame.sprite.Sprite):
         """Find nearby friendly squads in the same parentunit for applying buff"""
         self.nearbysquadlist = []
         cornersquad = []
-        for rowindex, rowlist in enumerate(self.parentunit.armysquad.tolist()):
+        for rowindex, rowlist in enumerate(self.parentunit.armysubunit.tolist()):
             if self.gameid in rowlist:
                 if rowlist.index(self.gameid) - 1 != -1:  #get subunit from left if not at first column
                     self.nearbysquadlist.append(self.parentunit.spritearray[rowindex][rowlist.index(self.gameid) - 1]) # index 0
@@ -302,8 +302,8 @@ class Subunit(pygame.sprite.Sprite):
                 maxrandom = 0
         if len(closelist) > 0:
             closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
-            if closetarget.basepos.distance_to(self.basepos) < 20: # in case can't find close target
-                self.closetarget = closetarget
+            # if closetarget.basepos.distance_to(self.basepos) < 20: # in case can't find close target
+            self.closetarget = closetarget
 
     def statusupdate(self, thisweather=None):
         """calculate stat from stamina, morale state, skill, status, terrain"""
@@ -483,7 +483,7 @@ class Subunit(pygame.sprite.Sprite):
                         if self.statuseffect[effect][2] > 1:
                             self.statustonearby(self.statuseffect[effect][2], effect, self.statuslist)
                         # if status[2] > 1:
-                        #     self.parentunit.armysquad
+                        #     self.parentunit.armysubunit
                         # if status[2] > 2:
                 #^ End apply status to
 
@@ -774,7 +774,8 @@ class Subunit(pygame.sprite.Sprite):
 
                                     if self.closetarget is not None: # found target to fight
 
-                                        self.maingame.combatpathqueue.append(self)
+                                        if self not in self.maingame.combatpathqueue:
+                                            self.maingame.combatpathqueue.append(self)
 
                                     else: # no target to fight move back to command pos first
                                         self.basetarget = self.attacktarget.basepos
@@ -790,24 +791,29 @@ class Subunit(pygame.sprite.Sprite):
                                         if len(self.enemyfront) != 0 or len(self.enemyside) != 0: # in fight, stop timer
                                             self.movetimer = 0
 
-                                        elif self.movetimer > 10: # or len(self.combatmovequeue) == 0 # time up, or no path. reset
+                                        elif self.movetimer > 10 or len(self.combatmovequeue) == 0: # # time up, or no path. reset
                                             self.movetimer = 0
                                             self.closetarget = None
+                                            if self in self.maingame.combatpathqueue:
+                                                self.maingame.combatpathqueue.pop(self)
 
                                         elif len(self.combatmovequeue) > 0: # no collide move to enemy
                                             self.basetarget = pygame.Vector2(self.combatmovequeue[0])
                                             self.newangle = self.setrotate()
 
-                                else: # whole enemy unit destroyed
+                                else: # whole targeted enemy unit destroyed, reset target and state
                                     self.meleetarget = None
                                     self.closetarget = None
+                                    if self in self.maingame.combatpathqueue:
+                                        self.maingame.combatpathqueue.pop(self)
+
                                     self.attacktarget = None
                                     self.basetarget = self.commandtarget
                                     self.newangle = self.setrotate()
                                     self.newangle = self.parentunit.angle
                                     self.state = 0
 
-                            elif self.chargemomentum > 1:
+                            elif self.chargemomentum > 1: # gradually reduce charge momentum during combat
                                 self.chargemomentum -= dt
                                 if self.chargemomentum < 1:
                                     self.chargemomentum = 1
@@ -815,6 +821,9 @@ class Subunit(pygame.sprite.Sprite):
                         elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
                             self.meleetarget = None
                             self.closetarget = None
+                            if self in self.maingame.combatpathqueue:
+                                self.maingame.combatpathqueue.pop(self)
+
                             self.attacktarget = None
                             self.basetarget = self.commandtarget
                             self.newangle = self.parentunit.angle
@@ -985,10 +994,6 @@ class Subunit(pygame.sprite.Sprite):
                                 self.makefrontsidepos()
                                 self.makeposrange()
 
-                                # for y in self.posrange[0]:
-                                #     for x in self.posrange[1]:
-                                #         self.maingame.subunitposarray[x][y] = 0
-
                                 if self.unitleader: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     if self.parentunit.moverotate is False:
                                         self.parentunit.basepos += move
@@ -1100,9 +1105,9 @@ class Subunit(pygame.sprite.Sprite):
                         self.parentunit.subunitsprite.pop(index)
                         break
 
-                for subunit in self.parentunit.armysquad.flat: # remove from index array
+                for subunit in self.parentunit.armysubunit.flat: # remove from index array
                     if subunit == self.gameid:
-                        self.parentunit.armysquad = np.where(self.parentunit.armysquad == self.gameid , 0,self.parentunit.armysquad)
+                        self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.gameid, 0, self.parentunit.armysubunit)
                         break
 
                 #v Leader change subunit or gone/die
@@ -1181,5 +1186,7 @@ class Subunit(pygame.sprite.Sprite):
             del self.attacktarget
             del self.meleetarget
             del self.closetarget
+            if self in self.maingame.combatpathqueue:
+                self.maingame.combatpathqueue.pop(self)
 
 

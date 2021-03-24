@@ -1003,8 +1003,8 @@ def unitsetup(maingame):
 
             #v Setup subunit in army to subunit group
             row, column = 0, 0
-            maxcolumn = len(army.armysquad[0])
-            for squadnum in np.nditer(army.armysquad, op_flags=['readwrite'], order='C'):
+            maxcolumn = len(army.armysubunit[0])
+            for squadnum in np.nditer(army.armysubunit, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
                     addsubunit = gamesubunit.Subunit(squadnum, squadgameid, army, army.squadpositionlist[armysquadindex],
                                                    army.starthp, army.startstamina, maingame.unitscale)
@@ -1066,7 +1066,7 @@ def rotationxy(self, origin, point, angle):
 def combatpathfind(self):
     # v Pathfinding
     self.combatmovequeue = []
-    movearray = self.maingame.mapmovearray.copy()
+    movearray = self.maingame.subunitposarray.copy()
     intbasetarget = (int(self.closetarget.basepos[0]), int(self.closetarget.basepos[1]))
     for y in self.closetarget.posrange[0]:
         for x in self.closetarget.posrange[1]:
@@ -1308,25 +1308,25 @@ def die(who, battle, group, enemygroup):
         for squad in thisarmy.subunitsprite:
             squad.basemorale -= 20
 
-def moveleadersquad(leader, oldarmysquad, newarmysquad, alreadypick=[]):
-    """oldarmysquad is armysquad list that the subunit currently in and need to be move out to the new one (newarmysquad), alreadypick is list of position need to be skipped"""
-    replace = [np.where(oldarmysquad == leader.subunit.gameid)[0][0],
-               np.where(oldarmysquad == leader.subunit.gameid)[1][0]] # grab old array position of subunit
-    replaceflat = np.where(oldarmysquad.flat == leader.subunit.gameid)[0] # grab old flat array pos
-    newrow = int(len(newarmysquad) / 2) # set up new row subunit will be place in at the middle at the start
-    newplace = int(len(newarmysquad[newrow]) / 2) # setup new column position
+def moveleadersquad(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
+    """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit), alreadypick is list of position need to be skipped"""
+    replace = [np.where(oldarmysubunit == leader.subunit.gameid)[0][0],
+               np.where(oldarmysubunit == leader.subunit.gameid)[1][0]] # grab old array position of subunit
+    replaceflat = np.where(oldarmysubunit.flat == leader.subunit.gameid)[0] # grab old flat array pos
+    newrow = int(len(newarmysubunit) / 2) # set up new row subunit will be place in at the middle at the start
+    newplace = int(len(newarmysubunit[newrow]) / 2) # setup new column position
     placedone = False # finish finding slot to place yet
-    newarmysquadlen = len(newarmysquad[newrow]) # get size of row in new armysquad
+    newarmysubunitlen = len(newarmysubunit[newrow]) # get size of row in new armysubunit
 
     while placedone is False:
-        if leader.subunit.parentunit.armysquad.flat[(newrow * newarmysquadlen) + newplace] != 0:
+        if leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace] != 0:
             for squad in leader.subunit.parentunit.subunitsprite:
-                if squad.gameid == leader.subunit.parentunit.armysquad.flat[(newrow * newarmysquadlen) + newplace]:
+                if squad.gameid == leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace]:
                     if squad.leader is not None or (newrow,newplace) in alreadypick:
                         newplace += 1
-                        if newplace > len(newarmysquad[newrow])-1: # find new column
+                        if newplace > len(newarmysubunit[newrow])-1: # find new column
                             newplace = 0
-                        elif newplace == int(len(newarmysquad[newrow]) / 2): # find in new row when loop back to the first one
+                        elif newplace == int(len(newarmysubunit[newrow]) / 2): # find in new row when loop back to the first one
                             newrow += 1
                         placedone = False
                     else: # found slot to replace
@@ -1335,8 +1335,8 @@ def moveleadersquad(leader, oldarmysquad, newarmysquad, alreadypick=[]):
         else:  # fill in the subunit if the slot is empty
             placedone = True
 
-    oldarmysquad[replace[0]][replace[1]] = newarmysquad[newrow][newplace]
-    newarmysquad[newrow][newplace] = leader.subunit.gameid
+    oldarmysubunit[replace[0]][replace[1]] = newarmysubunit[newrow][newplace]
+    newarmysubunit[newrow][newplace] = leader.subunit.gameid
     return replace, replaceflat, newplace, newrow
 
 def splitunit(battle, who, how):
@@ -1344,43 +1344,43 @@ def splitunit(battle, who, how):
     from gamescript import gameunit, gameleader
 
     if how == 0:  # split by row
-        newarmysquad = np.array_split(who.armysquad, 2)[1]
-        who.armysquad = np.array_split(who.armysquad, 2)[0]
+        newarmysubunit = np.array_split(who.armysubunit, 2)[1]
+        who.armysubunit = np.array_split(who.armysubunit, 2)[0]
         who.squadalive = np.array_split(who.squadalive, 2)[0]
         newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.basepos) / 2) # position of new parentunit when split
         who.basepos = who.allsidepos[0] - ((who.allsidepos[0] - who.basepos) / 2) # position of original parentunit
 
     else:  # split by column
-        newarmysquad = np.array_split(who.armysquad, 2, axis=1)[1]
-        who.armysquad = np.array_split(who.armysquad, 2, axis=1)[0]
+        newarmysubunit = np.array_split(who.armysubunit, 2, axis=1)[1]
+        who.armysubunit = np.array_split(who.armysubunit, 2, axis=1)[0]
         who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
         newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.basepos) / 2)
         who.basepos = who.allsidepos[1] - ((who.allsidepos[1] - who.basepos) / 2)
 
-    if who.leader[1].subunit.gameid not in newarmysquad:  # move leader if subunit not in new one
-        replace, replaceflat, newplace, newrow = moveleadersquad(who.leader[1], who.armysquad, newarmysquad)
+    if who.leader[1].subunit.gameid not in newarmysubunit:  # move leader if subunit not in new one
+        replace, replaceflat, newplace, newrow = moveleadersquad(who.leader[1], who.armysubunit, newarmysubunit)
         who.squadalive[replace[0]][replace[1]] = \
-            [0 if who.armysquad[replace[0]][replace[1]] == 0 or who.subunitsprite[replaceflat[0]].state == 100 else 1][0]
+            [0 if who.armysubunit[replace[0]][replace[1]] == 0 or who.subunitsprite[replaceflat[0]].state == 100 else 1][0]
 
     alreadypick = []
     for leader in (who.leader[0], who.leader[2], who.leader[3]):
-        if leader.subunit.gameid not in who.armysquad:
-            replace, replaceflat, newplace, newrow = moveleadersquad(leader, newarmysquad, who.armysquad, alreadypick)
+        if leader.subunit.gameid not in who.armysubunit:
+            replace, replaceflat, newplace, newrow = moveleadersquad(leader, newarmysubunit, who.armysubunit, alreadypick)
             alreadypick.append((newrow,newplace))
             who.squadalive[replace[0]][replace[1]] = \
-                [0 if who.armysquad[replace[0]][replace[1]] == 0 or who.subunitsprite[replaceflat[0]].state == 100 else 1][0]
+                [0 if who.armysubunit[replace[0]][replace[1]] == 0 or who.subunitsprite[replaceflat[0]].state == 100 else 1][0]
             leader.subunitpos = newplace + (newrow * 8)
 
-    squadsprite = [squad for squad in who.subunitsprite if squad.gameid in newarmysquad]  # list of sprite not sorted yet
+    squadsprite = [squad for squad in who.subunitsprite if squad.gameid in newarmysubunit]  # list of sprite not sorted yet
     newsquadsprite = []
 
     #v Sort so the new leader subunit position match what set before
-    for squadindex in newarmysquad.flat:
+    for squadindex in newarmysubunit.flat:
         for squad in squadsprite:
             if squad.gameid == squadindex:
                 newsquadsprite.append(squad)
                 break
-    who.subunitsprite = [squad for squad in who.subunitsprite if squad.gameid in who.armysquad]
+    who.subunitsprite = [squad for squad in who.subunitsprite if squad.gameid in who.armysubunit]
     #^ End sort
 
     #v Reset position in inspectui for both parentunit
@@ -1390,7 +1390,7 @@ def splitunit(battle, who, how):
         for squad in sprite:
             width += battle.squadwidth
 
-            if squadnum >= len(who.armysquad[0]):
+            if squadnum >= len(who.armysubunit[0]):
                 width = 0
                 width += battle.squadwidth
                 height += battle.squadheight

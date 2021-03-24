@@ -254,6 +254,11 @@ class Battle():
         self.battlemapbase.drawimage(imgs[0])
         self.battlemapfeature.drawimage(imgs[1])
         self.battlemapheight.drawimage(imgs[2])
+
+        try: # placename map layer is optional, if not existed in folder then assign None
+            placenamemap = imgs[3]
+        except:
+            placenamemap = None
         self.showmap.drawimage(self.battlemapbase, self.battlemapfeature, self.battlemapheight, imgs[3], self)
         #^ End create battle map
 
@@ -323,7 +328,7 @@ class Battle():
     def checksplit(self, whoinput):
         """Check if army can be splitted, if not remove splitting button"""
         #v split by middle collumn
-        if np.array_split(whoinput.armysquad, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysquad, 2, axis=1)[1].size >= 10 and \
+        if np.array_split(whoinput.armysubunit, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysubunit, 2, axis=1)[1].size >= 10 and \
                 whoinput.leader[1].name != "None": # can only split if both parentunit size will be larger than 10 and second leader exist
             self.battleui.add(self.colsplitbutton)
         elif self.colsplitbutton in self.battleui:
@@ -331,7 +336,7 @@ class Battle():
         #^ End col
 
         #v split by middle row
-        if np.array_split(whoinput.armysquad, 2)[0].size >= 10 and np.array_split(whoinput.armysquad, 2)[1].size >= 10 and whoinput.leader[
+        if np.array_split(whoinput.armysubunit, 2)[0].size >= 10 and np.array_split(whoinput.armysubunit, 2)[1].size >= 10 and whoinput.leader[
             1].name != "None":
             self.battleui.add(self.rowsplitbutton)
         elif self.rowsplitbutton in self.battleui:
@@ -1063,7 +1068,7 @@ class Battle():
                                         whoinput.useminrange = 0
                                     self.switchbuttonui[3].event = whoinput.useminrange
                                 if self.switchbuttonui[3].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                    poptext = ("Shoot from min range", "Shoot from max range")
+                                    poptext = ("Minimum Shoot Range", "Naximum Shoot range")
                                     self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[3].event])
                                     self.battleui.add(self.buttonnamepopup)
 
@@ -1074,7 +1079,7 @@ class Battle():
                                         whoinput.shoothow = 0
                                     self.switchbuttonui[4].event = whoinput.shoothow
                                 if self.switchbuttonui[4].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                    poptext = ("Allow both arc and direct shot", "Allow only arc shot", "Allow only direct shot")
+                                    poptext = ("Both Arc and Direct Shot", "Only Arc Shot", "Only Direct Shot")
                                     self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[4].event])
                                     self.battleui.add(self.buttonnamepopup)
 
@@ -1085,7 +1090,7 @@ class Battle():
                                         whoinput.runtoggle = 0
                                     self.switchbuttonui[5].event = whoinput.runtoggle
                                 if self.switchbuttonui[5].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                    poptext = ("Toggle walk", "Toggle run")
+                                    poptext = ("Toggle Walk", "Toggle Run")
                                     self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[5].event])
                                     self.battleui.add(self.buttonnamepopup)
 
@@ -1101,7 +1106,7 @@ class Battle():
                                     self.battleui.add(self.buttonnamepopup)
 
                             elif self.colsplitbutton in self.battleui and self.colsplitbutton.rect.collidepoint(self.mousepos):
-                                self.buttonnamepopup.pop(self.mousepos, "Split by middle column")
+                                self.buttonnamepopup.pop(self.mousepos, "Split By Middle Column")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
                                     splitunit(whoinput, 1)
@@ -1113,7 +1118,7 @@ class Battle():
                                     self.setuparmyicon()
 
                             elif self.rowsplitbutton in self.battleui and self.rowsplitbutton.rect.collidepoint(self.mousepos):
-                                self.buttonnamepopup.pop(self.mousepos, "Split by middle row")
+                                self.buttonnamepopup.pop(self.mousepos, "Split by Middle Row")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
                                     splitunit(whoinput, 0)
@@ -1287,7 +1292,7 @@ class Battle():
                 #v Run pathfinding for melee combat no more than limit number of sub-unit per update to prevent stutter
                 if len(self.combatpathqueue) > 0:
                     run = 0
-                    while len(self.combatpathqueue) > 0 and run < 10:
+                    while len(self.combatpathqueue) > 0 and run < 5:
                         combatpathfind(self.combatpathqueue[0])
                         self.combatpathqueue = self.combatpathqueue[1:]
                 #^ End melee pathfinding

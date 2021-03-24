@@ -64,7 +64,11 @@ Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing
 
 Ver 1.9: Naval battle
 
-Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command, order dalay?
+Ver 2.0: Multiplayer battle
+
+Ver 2.1: Begin working on fantasy setting
+
+Unforeseenable future: forced march (Moved here from 0.2.7 as this feature won't have much used until game map become much larger than just a single battlefield), Queue command
 
 For those who have read this far, thank you for your interested in the game. To be honest, every single update begin with how do I even start with this. 
 I start developing this game with zero knowledge in video game development let alone how to use pygame. I start learning how to use pygame by tinkering 

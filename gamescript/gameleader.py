@@ -54,7 +54,7 @@ class Leader(pygame.sprite.Sprite):
         """Change stat that related to army position such as in leader dead event"""
         leader.badmorale = (20, 30)  # sub general morale lost for bad event
         if leader.armyposition == 0: # if leader become parentunit commander
-            squadpenal = int((leader.subunitpos / len(leader.parentunit.armysquad[0])) * 10) # recalculate authority penalty based on subunit position
+            squadpenal = int((leader.subunitpos / len(leader.parentunit.armysubunit[0])) * 10) # recalculate authority penalty based on subunit position
             leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2) # recalculate total authority
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
 
@@ -143,7 +143,7 @@ class Leader(pygame.sprite.Sprite):
             self.subunit.unitleader = True
 
             squadpenal = int(
-                (self.subunitpos / len(self.parentunit.armysquad[0])) * 10)  # Authority get reduced the further leader stay in the back line
+                (self.subunitpos / len(self.parentunit.armysubunit[0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
             self.badmorale = (30, 50)  ## main general morale lost when die
             if self.parentunit.commander:
