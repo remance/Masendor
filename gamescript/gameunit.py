@@ -866,6 +866,9 @@ class Unitarmy(pygame.sprite.Sprite):
             self.attacktarget = None
             self.baseattackpos = 0
             self.leader[0].authority -= self.authpenalty # retreat reduce main leader authority
+            if self.charging:  # change order when attacking will cause authority penalty
+                self.leader[0].authority -= self.authpenalty
+                self.authrecal()
             self.authrecal()
             self.retreatstart = True # start retreat process
             self.set_target(mouse_pos[1])
@@ -881,10 +884,9 @@ class Unitarmy(pygame.sprite.Sprite):
                     if self.state in (10,96) and whomouseover is None:
                         self.processretreat(mouse_pos, whomouseover)  # retreat
                     else:
-                        # if self.state == 10:
                         for subunit in self.subunitsprite:
                             subunit.attacking = True
-                        # else:
+                        # if self.state == 10:
                         self.processcommand(mouse_pos, double_mouse_right, whomouseover, keystate)
 
 

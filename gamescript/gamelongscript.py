@@ -1099,6 +1099,10 @@ def combatpathfind(self):
     path = path[4:]  # remove some starting path that may clip with friendly sub-unit sprite
 
     self.combatmovequeue = path  # add path into combat movement queue
+    if len(self.combatmovequeue) < 1: # simply try walk to target anyway if pathfinder return empty
+        self.combatmovequeue = [self.closetarget.basepos]
+    # if self.gameid == 10087:
+    #     print('done', self.basepos != self.basetarget)
     # print('operations:', runs, 'path length:', len(path))
     # print(grid.grid_str(path=path, start=start, end=end))
     # print(self.combatmovequeue)

@@ -1153,6 +1153,7 @@ class Battle():
                                     if subunit.rect.collidepoint(self.mousepos) and subunit in self.battleui:  # Change showing stat to the clicked subunit one
                                         if mouse_up:
                                             self.subunitselected = subunit
+                                            # print(self.subunitselected.who.gameid)
                                             self.subunitselectedborder.pop(self.subunitselected.pos)
                                             self.eventlog.addlog(
                                                 [0, str(self.subunitselected.who.boardpos) + " " + str(self.subunitselected.who.name) + " in " +
@@ -1295,6 +1296,7 @@ class Battle():
                     while len(self.combatpathqueue) > 0 and run < 5:
                         combatpathfind(self.combatpathqueue[0])
                         self.combatpathqueue = self.combatpathqueue[1:]
+                        run += 1
                 #^ End melee pathfinding
 
 

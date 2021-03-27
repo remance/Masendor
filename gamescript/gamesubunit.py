@@ -729,7 +729,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.useskillcond != 3: # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.checkskillcondition()
 
-                    if self.state == 4 and self.attacking and self.chargeskill not in self.skillcooldown \
+                    if self.state == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skillcooldown \
                             and self.basepos.distance_to(self.basetarget) < 100: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
                         self.chargemomentum = self.parentunit.runspeed
@@ -777,7 +777,10 @@ class Subunit(pygame.sprite.Sprite):
                                         if self not in self.maingame.combatpathqueue:
                                             self.maingame.combatpathqueue.append(self)
 
-                                    else: # no target to fight move back to command pos first
+                                        # if self.gameid == 10087:
+                                        #     print('run', self.basepos != self.basetarget)
+
+                                    else: # no target to fight move back to command pos first)
                                         self.basetarget = self.attacktarget.basepos
                                         self.newangle = self.setrotate()
 
@@ -795,7 +798,7 @@ class Subunit(pygame.sprite.Sprite):
                                             self.movetimer = 0
                                             self.closetarget = None
                                             if self in self.maingame.combatpathqueue:
-                                                self.maingame.combatpathqueue.pop(self)
+                                                self.maingame.combatpathqueue.remove(self)
 
                                         elif len(self.combatmovequeue) > 0: # no collide move to enemy
                                             self.basetarget = pygame.Vector2(self.combatmovequeue[0])
@@ -805,7 +808,7 @@ class Subunit(pygame.sprite.Sprite):
                                     self.meleetarget = None
                                     self.closetarget = None
                                     if self in self.maingame.combatpathqueue:
-                                        self.maingame.combatpathqueue.pop(self)
+                                        self.maingame.combatpathqueue.remove(self)
 
                                     self.attacktarget = None
                                     self.basetarget = self.commandtarget
@@ -822,7 +825,7 @@ class Subunit(pygame.sprite.Sprite):
                             self.meleetarget = None
                             self.closetarget = None
                             if self in self.maingame.combatpathqueue:
-                                self.maingame.combatpathqueue.pop(self)
+                                self.maingame.combatpathqueue.remove(self)
 
                             self.attacktarget = None
                             self.basetarget = self.commandtarget
@@ -833,16 +836,16 @@ class Subunit(pygame.sprite.Sprite):
 
                     #v Unit in melee combat, set subunit state to be in idle, melee combat or range attack state
                     if parentstate == 10:
-                        if self.state != 10 and self.ammo > 0 and (self.arcshot or self.frontline) and self.chargemomentum == 1 and self.parentunit.fireatwill == 0:  # Help range attack when parentunit in melee combat if has arcshot or frontline
+                        if self.state != 10 and self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.arcshot or self.frontline) and self.chargemomentum == 1:  # Help range attack when parentunit in melee combat if has arcshot or frontline
                             self.state = 11
-                            if self.parentunit.neartarget != {} and self.attacktarget is None:
+                            if self.parentunit.neartarget != {} and (self.attacktarget is None or self.attackpos == 0):
                                 self.findshootingtarget(parentstate)
                     #^End parentunit in melee combat
 
                     #v Range attack function
                     elif parentstate == 11: # Unit in range attack state and self is not collapse or broken
                         self.state = 0 # Default state at idle
-                        if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos is not None \
+                        if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
                                 and self.shootrange >= self.attackpos.distance_to(self.basepos): # can shoot if have ammo and in shoot range
                             self.state = 11 # range combat state
 
@@ -895,8 +898,7 @@ class Subunit(pygame.sprite.Sprite):
                                                 (self.attacktarget is None and self.attackpos != 0)) \
                                                 and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
                                 # can shoot if reload finish and basetarget existed and not dead. Non arcshot cannot shoot if forbidded
-                                rangeattack.Rangearrow(self, self.basepos.distance_to(self.attackpos), self.shootrange,
-                                                       self.zoom) # Shoot at enemy
+                                rangeattack.Rangearrow(self, self.basepos.distance_to(self.attackpos), self.shootrange, self.zoom) # Shoot at enemy
                                 self.magazinenow -= 1 # use 1 ammo in magazine
                             elif self.attacktarget is not None and self.attacktarget.state == 100: # if basetarget die when it about to shoot
                                 self.parentunit.rangecombatcheck, self.parentunit.attacktarget = False, 0 # reset range combat check and basetarget
@@ -1095,15 +1097,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.parentunit.deadchange = True
 
                 self.maingame.battlecamera.change_layer(sprite=self, new_layer=1)
-                for index, subunit in enumerate(self.maingame.allsubunitlist):
-                    if subunit == self:
-                        self.maingame.allsubunitlist.pop(index) # remove sprite from alive subunit list
-                        break
-
-                for index, subunit in enumerate(self.parentunit.subunitsprite): # remove subunit from subunit list in parent unit
-                    if subunit == self:
-                        self.parentunit.subunitsprite.pop(index)
-                        break
+                self.maingame.allsubunitlist.remove(self)
+                self.parentunit.subunitsprite.remove(self)
 
                 for subunit in self.parentunit.armysubunit.flat: # remove from index array
                     if subunit == self.gameid:
@@ -1187,6 +1182,6 @@ class Subunit(pygame.sprite.Sprite):
             del self.meleetarget
             del self.closetarget
             if self in self.maingame.combatpathqueue:
-                self.maingame.combatpathqueue.pop(self)
+                self.maingame.combatpathqueue.remove(self)
 
 
