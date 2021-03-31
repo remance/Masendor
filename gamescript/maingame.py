@@ -17,9 +17,6 @@ import sys
 import pygame.freetype
 from pygame.locals import *
 from scipy.spatial import KDTree
-from pathfinding.core.diagonal_movement import DiagonalMovement
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
 
 import main
 from gamescript import gamesubunit, gameunit, gameui, gameleader, gamemap, gamecamera, rangeattack, gamepopup, gamedrama, gamemenu, gamelongscript, \
@@ -722,8 +719,8 @@ class Battle():
                                 self.logscroll.changeimage(newrow=self.eventlog.currentstartrow)
 
                         elif event.key == pygame.K_SPACE and self.lastselected is not None:
-                            whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
-                                             self.lastmouseover, keystate, othercommand=1)
+                            whoinput.command(self.battlemousepos[0], mouse_right, double_mouse_right,
+                                             self.lastmouseover, keystate, othercommand=2)
 
                         #v FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
@@ -1068,7 +1065,7 @@ class Battle():
                                         whoinput.useminrange = 0
                                     self.switchbuttonui[3].event = whoinput.useminrange
                                 if self.switchbuttonui[3].rect.collidepoint(self.mousepos):  # popup name when mouse over
-                                    poptext = ("Minimum Shoot Range", "Naximum Shoot range")
+                                    poptext = ("Minimum Shoot Range", "Maximum Shoot range")
                                     self.buttonnamepopup.pop(self.mousepos, poptext[self.switchbuttonui[3].event])
                                     self.battleui.add(self.buttonnamepopup)
 
@@ -1226,8 +1223,8 @@ class Battle():
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()
 
-                    if (mouse_up or mouse_right) and self.uiclick is False: # Unit command
-                        whoinput.command(self.battlemousepos, mouse_right, double_mouse_right,
+                    if mouse_right and self.uiclick is False: # Unit command
+                        whoinput.command(self.battlemousepos[1], mouse_right, double_mouse_right,
                                          self.lastmouseover, keystate)
 
                     self.beforeselected = self.lastselected

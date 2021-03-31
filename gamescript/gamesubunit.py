@@ -142,7 +142,7 @@ class Subunit(pygame.sprite.Sprite):
         self.cornerimagerect = self.images[11].get_rect(center=self.imageblock.get_rect().center) # red corner when take dmg shown in image block
         #^ End weapon icon
 
-        self.image_original =  self.image.copy()  # original for rotate
+        self.image_original =  self.image.copy()  # original for rotate #TODO enlarge image a bit so no empty space between two sprite when click
         self.image_original2 =  self.image.copy() # original2 for saving original notclicked
         self.image_original3 = self.image.copy() # original3 for saving original zoom level
 
@@ -714,6 +714,8 @@ class Subunit(pygame.sprite.Sprite):
                 parentstate = self.parentunit.state
                 if parentstate in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (97, 98, 99):
                     self.state = parentstate # Enforce parentunit state to subunit when moving and breaking
+                    if 9 in self.statuseffect: # fight to the death
+                        self.state = 10
 
                 self.walk = False  # reset walk
                 self.run = False  # reset run
@@ -732,7 +734,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.state == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skillcooldown \
                             and self.basepos.distance_to(self.basetarget) < 100: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
-                        self.chargemomentum = self.parentunit.runspeed
+                        self.chargemomentum = self.parentunit.runspeed / 2
                         self.parentunit.charging = True
 
                     if self.chargemomentum > 1 and self.chargeskill not in self.skilleffect:  # reset charge momentum if charge skill not active
@@ -846,7 +848,7 @@ class Subunit(pygame.sprite.Sprite):
                     elif parentstate == 11: # Unit in range attack state and self is not collapse or broken
                         self.state = 0 # Default state at idle
                         if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
-                                and self.shootrange >= self.attackpos.distance_to(self.basepos): # can shoot if have ammo and in shoot range
+                                and self.shootrange >= self.attackpos.distance_to(self.parentunit.basepos): # can shoot if have ammo and in shoot range
                             self.state = 11 # range combat state
 
                     elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
