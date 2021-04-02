@@ -3,7 +3,7 @@
 10001,"Thane",1000,40,4,4,2,5,4,2,"Saxon thane (or thegn) is the landowner, which is considered to be a minor noble title in Saxon England. Thanes are responsible for governing their local land and raising the militia (fyrd) to respond to the call of war by their king. After the Norman invasion, William the Conqueror replace Saxon political structure with Norman's one and integrate the thane class to Norman knight class."
 10002,"Minor Noble",1000,50,4,3,4,5,4,0,"In the time of inefficient record, it is impossible to keep track the name of every person who was the leader of the army units let alone participated in the battle. History oftentimes remembers only the major nobles who were the top in the chain of command, but it is important to know that no army can be led by such a few individuals even for an organised mass. These minor nobles were one of such people that often joined their lord army as a minor leader or warrior."
 10003,"Noble",1000,60,5,5,5,5,4,0,"Not even an important noble would be assuredly recorded in the chronicle of a battle in the time of pre-industrialisation period. The majority of battles in world history did not have historians to record the event or its existence as the well-known battles we know today, some may even be lost to the flow time, accident or intentional erasing. These unnamed nobles still without a doubt aided their sovereign as commanders of the contingent in the battle."
-10004,"Knight",1000,30,6,3,6,6,3,0,
+10004,"Knight",1000,30,6,3,6,6,3,0,"A Knight is more than just a warrior. Honour and chivalry in warfare are what differentiate us from mere animals for even in conflicts against the most hated enemy we fought with civility."
 10005,"Warlord",1000,70,6,6,6,5,5,0,
 10006,"Count",1000,60,5,5,5,5,4,0,
 10007,"Duke",1000,70,5,5,5,5,4,0,
@@ -16,14 +16,14 @@
 10014,"Royalty",1000,70,5,5,5,5,5,0,
 10015,"Commander",1000,60,7,7,7,5,4,0,
 10016,"Hero",1000,90,,,,7,6,0,
-10017,"Champion",1000,75,,,,6,4,0,
+10017,"Champion",1000,75,,,,6,4,0,"A champion can represent the might of an army just as well as thousands of men. Why waste lives when a battle can end with a single death?"
 10018,"Warrior",1000,25,,,,5,3,0,
 10019,"Guard",1000,30,,,,5,3,0,
 10020,"Admiral",1000,40,,,,5,3,0,
 10021,"Mercenary Captain",1000,35,,,,5,1,0,
 10022,"Mercenary",1000,25,,,,5,1,0,
-10023,"Citizen",1000,20,,,,3,2,0,
-10024,"Slave",1000,10,,,,2,0,0,
+10023,"Citizen",1000,20,,,,3,2,0,"It is hard to tell what can a simple Citizen accomplish in battle let alone warfare. Maybe they are a hidden gem waiting to be polished or simply a nuisance?"
+10024,"Slave",1000,10,,,,2,0,0,"Slave revolt can signal the end of an empire. Even those with the worst malnutrition can fight if their lives are upon it. Nevertheless, expect nothing too extravagant. "
 10025,"Mayor",1000,40,,,,4,4,0,
 10026,"Slave Master",1000,35,,,,5,2,0,
 10027,"Logistic Expert",1000,30,,,,4,3,0,
@@ -51,7 +51,7 @@
 10049,"Patrician",1000,30,,,,4,4,0,
 10050,"Hunter",1000,2,,,,5,2,0,
 10051,"Sniper",1000,0,,,,5,3,0,
-10052,"Messenger",1000,7,,,,3,2,0,
+10052,"Messenger",1000,7,,,,3,2,0,"Information is one of the most crucial components of any strategy. A Messenger can make sure that the chain of command is never broken even in the midst of a battle."
 10053,"Raider",1000,10,,,,5,1,0,
 10054,"Pirate",1000,10,,,,5,1,0,
 10055,"Blacksmith",1000,3,,,,4,2,0,
@@ -59,12 +59,12 @@
 10057,"Animal Handler",1000,4,,,,3,2,0,
 10058,"Monk",1000,40,,,,5,2,0,
 10059,"Squire",1000,10,,,,5,3,0,
-10060,"Artist",1000,0,,,,2,2,0,
+10060,"Artist",1000,0,,,,2,2,0,"Who can capture the glorious victory than those who have seen it with their owns eyes? With superb ability to translate the greatest deed any leader can accomplish into eternal memory, Artist will make sure your name is forever etched into the fabric of history until the end of time. "
 10061,"Historian",1000,5,,,,2,2,0,
 10062,"Diviner",1000,35,,,,3,2,0,
 10063,"Cartographer",1000,14,,,,3,2,0,
-10064,"Builder",1000,10,,,,3,2,0,
-10065,"Chef",1000,10,,,,3,2,0,
+10064,"Builder",1000,10,,,,3,2,0,"Sometimes war cannot be won in a day or a single battle. Having a Builder accompany the army to war can make the encampment process much more efficient or maybe they can even assist in the rebuilding of the conquered city or fort."
+10065,"Chef",1000,10,,,,3,2,0,"Soldiers cannot fight at their best with a hungry stomach. Even though a Chef cannot provide any assistance directly in a battle or combat. They can greatly improve the rations and quality of mealtime."
 10066,"Procurer",1000,10,,,,,,0,
 10067,"Inventor",1000,3,,,,2,2,0,
 10068,"Explorer",1000,17,,,,3,2,0,

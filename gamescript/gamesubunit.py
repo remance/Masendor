@@ -79,7 +79,6 @@ class Subunit(pygame.sprite.Sprite):
         self.sidedmgeffect = 1 # default side damage
 
         self.corneratk = False # cannot attack corner enemy by default
-        self.tempunbraekable = False
         self.tempfulldef = False
 
         self.authpenalty = self.baseauthpenalty
@@ -95,7 +94,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.team == 2:
             image = self.images[13].copy()
 
-        self.image = pygame.Surface((image.get_width()+1, image.get_height()+1), pygame.SRCALPHA) # subunit sprite image
+        self.image = pygame.Surface((image.get_width()+2, image.get_height()+2), pygame.SRCALPHA) # subunit sprite image
         pygame.draw.circle(self.image, self.parentunit.colour, (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2)
 
         if self.unittype == 2: # cavalry draw line on block
@@ -290,7 +289,7 @@ class Subunit(pygame.sprite.Sprite):
                 elem = 0 # reset elemental count
         return elem
 
-    def findeclosetarget(self):
+    def findclosetarget(self):
         """Find close enemy sub-unit to move to fight"""
         closelist = {subunit: subunit.basepos.distance_to(self.basepos) for subunit in
                      self.meleetarget.parentunit.subunitsprite}
@@ -335,7 +334,6 @@ class Subunit(pygame.sprite.Sprite):
         self.sidedmgeffect = 1 # default side damage
 
         self.corneratk = False # cannot attack corner enemy by default
-        self.tempunbraekable = False
         self.tempfulldef = False
 
         self.authpenalty = self.baseauthpenalty
@@ -540,9 +538,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.discipline += calstatus[16]
                 # self.sight += status[18]
                 # self.hidden += status[19]
-                if status == 1: # Fearless status
-                    self.tempunbraekable = True
-                elif status == 91: # All round defense status
+                if status == 91: # All round defense status
                     self.tempfulldef = True
         #^ End status effect
 
@@ -772,7 +768,7 @@ class Subunit(pygame.sprite.Sprite):
                                 if self.meleetarget is None and self.parentunit.attacktarget is not None:
                                     self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
                                 if self.closetarget is None: # movement queue is empty regenerate new one
-                                    self.findeclosetarget() # find new close target
+                                    self.findclosetarget() # find new close target
 
                                     if self.closetarget is not None: # found target to fight
 
@@ -960,7 +956,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.attacking = False
 
                     #v Can move if front not collided
-                    if self.stamina > 0 and (self.parentunit.collide is False or ((self.frontline or self.parentunit.attackmode == 2) and self.attacking) or self.chargemomentum > 1) \
+                    if self.stamina > 0 and (self.parentunit.collide is False or parentstate in (98, 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.attacking) or self.chargemomentum > 1) \
                             and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
                         if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
@@ -1037,14 +1033,14 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.basemorale > 200: # morale cannot be higher than 200
                         self.basemorale = 200
 
-                    if self.parentunit.leader[0].state not in (96, 97, 98, 99, 100): # If not missing main leader can replenish morale
+                    if self.authority > 0 or parentstate != 99: # If not missing main leader can replenish morale
                         self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
 
-                    if self.state == 99:
+                    if self.state in (98, 99):
                         if parentstate not in (98, 99):
                             self.unithealth -= (dt * 100) # Unit begin to desert if broken but parentunit keep fighting
-                        if self.moralestate > 0.2:
-                            self.state = 0  # Reset state to 0 when exit broken state
+                            if parentstate != 99 and self.moralestate > 0.2:
+                                self.state = 0  # Reset state to 0 when exit broken state
 
                 elif self.basemorale > self.maxmorale:
                     self.basemorale -= dt # gradually reduce morale that exceed the starting max amount

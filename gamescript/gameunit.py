@@ -220,7 +220,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.fireatwill = 0  # 0 = fire at will, 1 = no fire
         self.retreatstart = False
         self.retreatway = None
-        self.desertion = False
         self.collide = False # for checking if subunit collide if yes stop moving
         self.rangecombatcheck = False
         self.attacktarget = None # attack basetarget, can be either int or parentunit object
@@ -468,14 +467,16 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def authrecal(self):
         """recalculate authority from all alive leaders"""
-        self.authority = int(self.teamcommander.authority + (self.leader[0].authority / 2) + (self.leader[1].authority / 4) +
-                              (self.leader[2].authority / 4) + (self.leader[3].authority / 10))
-        bigarmysize = self.armysubunit > 0
-        bigarmysize = bigarmysize.sum()
-        if bigarmysize > 20: # army size larger than 20 will reduce main leader authority
-            self.authority = int(self.teamcommander.authority +
-                (self.leader[0].authority / 2 * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
-                self.leader[3].authority / 4)
+        self.authority = int((self.leader[0].authority / 2) + (self.leader[1].authority / 4) + (self.leader[2].authority / 4) + (self.leader[3].authority / 10))
+        if self.authority > 0:
+            bigarmysize = self.armysubunit > 0
+            bigarmysize = bigarmysize.sum()
+            if bigarmysize > 20: # army size larger than 20 will reduce main leader authority
+                self.authority = int(self.teamcommander.authority +
+                    (self.leader[0].authority / 2 * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[2].authority / 2 +
+                    self.leader[3].authority / 4)
+            else:
+                self.authority = int(self.authority + self.teamcommander.authority)
 
     def startset(self, squadgroup):
         """Setup stuff at the start of game or when parentunit spawn"""
@@ -601,20 +602,22 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.state = 11 # can only shoot if rangecombatcheck is true
 
             #v Retreat function
-            if round(self.morale) <= 10 and self.state != 97:  ## Retreat state when morale lower than 20
-                self.state = 98
+            if round(self.morale) <= 10 and self.state != 97:  # Retreat state when morale lower than 20
+                if self.state not in (98,99):
+                    if self.brokenlimit > 50:  # begin checking broken state
+                        if random.randint(self.brokenlimit, 100) > 80: # check whether unit enter broken state or not
+                            self.morale, self.state = 0, 99 # Broken state
+                            print(self.brokenlimit, 'done')
+                    else:
+                        self.state = 98
                 if self.retreatstart is False:
                     self.retreatstart = True
-                if self.brokenlimit > 20:  # begin checking broken state
-                    if random.randint(self.brokenlimit, 100) > 80: # check whether unit enter broken state or not
-                        self.morale, self.state = 0, 99 # Broken state
-                        self.desertion = True
+
             if self.state == 98 and self.morale >= self.brokenlimit/2:  # quit retreat when morale reach increasing limit
-                self.state = 0 # become idle, not resume previous command
+                self.state = 0 # become idle, not resume previous command TODO problem with unit stop retreat but some fleeing unit still stuck fleeing
                 self.retreatstart = False
                 self.retreatway = None
-                self.processcommand(self.basepos, False, False)
-                self.revert = True
+                self.processcommand(self.basepos, False, False, othercommand=1)
                 self.brokenlimit += random.randint(1,20)
 
             if self.retreatstart:
@@ -638,7 +641,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                         else: # right
                                             self.retreatway = (self.basepos[0] + self.basewidthbox, self.basepos[1])  # find position to retreat
                                         self.retreatway = [self.rotationxy(self.basepos, self.retreatway, self.radians_angle), index]
-                            basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*10)
+                            basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*100)
                             self.processcommand(basetarget, True, True)
                 else:  # no way to retreat, Fight to the death
                     self.state = 10
@@ -882,7 +885,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def command(self, mouse_pos, mouse_right, double_mouse_right, whomouseover, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-        if self.state not in (97, 98, 99):
+        if self.state not in (97, 98, 99) and self.authority > 0:
             self.revert = False
             self.retreatstart = False  # reset retreat
             self.rotateonly = False
