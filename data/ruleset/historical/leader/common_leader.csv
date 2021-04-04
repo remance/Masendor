@@ -25,12 +25,12 @@
 10023,"Citizen",1000,20,,,,3,2,0,"It is hard to tell what can a simple Citizen accomplish in battle let alone warfare. Maybe they are a hidden gem waiting to be polished or simply a nuisance?"
 10024,"Slave",1000,10,,,,2,0,0,"Slave revolt can signal the end of an empire. Even those with the worst malnutrition can fight if their lives are upon it. Nevertheless, expect nothing too extravagant. "
 10025,"Mayor",1000,40,,,,4,4,0,
-10026,"Slave Master",1000,35,,,,5,2,0,
+10026,"Slave Master",1000,35,,,,5,2,0,"Slaves are properties. They are trained to obey every command of their master even if that command is to die. A Slave Master will make sure that their servitude is absolute. "
 10027,"Logistic Expert",1000,30,,,,4,3,0,
 10028,"Combat Expert",1000,30,,,,6,3,0,
 10029,"Ranger",1000,25,,,,5,3,0,
 10030,"Strategist",1000,60,7,7,7,5,4,0,
-10031,"Standard-bearer",1000,30,3,3,3,4,3,0,
+10031,"Standard-bearer",1000,30,3,3,3,4,3,0,"An army or royal standard represents the symbol of an army and its leader. Such a symbol not only boost soldiers' morale but can even inflict fear into the enemy heart. A standard-bearer will make sure that everyone on the battlefield can spot this magnificent symbol without fail."
 10032,"Shaman",1000,60,,,,4,3,0,
 10033,"Paladin",1000,60,,,,5,3,0,
 10034,"Inquisitor",1000,55,,,,5,2,0,
@@ -61,7 +61,7 @@
 10059,"Squire",1000,10,,,,5,3,0,
 10060,"Artist",1000,0,,,,2,2,0,"Who can capture the glorious victory than those who have seen it with their owns eyes? With superb ability to translate the greatest deed any leader can accomplish into eternal memory, Artist will make sure your name is forever etched into the fabric of history until the end of time. "
 10061,"Historian",1000,5,,,,2,2,0,
-10062,"Diviner",1000,35,,,,3,2,0,
+10062,"Diviner",1000,35,,,,3,2,0,"A Diviner can observe and interpret any sign from heaven beyond human calculation. A positive sign can greatly boost the morale of the entire army, while a negative one allows a leader to recalculate their move to avoid catastrophe.  "
 10063,"Cartographer",1000,14,,,,3,2,0,
 10064,"Builder",1000,10,,,,3,2,0,"Sometimes war cannot be won in a day or a single battle. Having a Builder accompany the army to war can make the encampment process much more efficient or maybe they can even assist in the rebuilding of the conquered city or fort."
 10065,"Chef",1000,10,,,,3,2,0,"Soldiers cannot fight at their best with a hungry stomach. Even though a Chef cannot provide any assistance directly in a battle or combat. They can greatly improve the rations and quality of mealtime."

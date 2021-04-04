@@ -127,7 +127,6 @@ class Leader(pygame.sprite.Sprite):
         self.rangecommand = 0
         self.cavcommand = 0
         self.combat = 0
-        self.social = 0
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5) # draw dead cross on leader image
         self.maingame.setuparmyicon()

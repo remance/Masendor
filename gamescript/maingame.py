@@ -751,6 +751,9 @@ class Battle():
                             self.subunitselected.who.unithealth -= self.subunitselected.who.unithealth
                         elif event.key == pygame.K_m and self.lastselected is not None:
                             self.lastselected.leader[0].health -= 1000
+                        elif event.key == pygame.K_COMMA and self.lastselected is not None:
+                            for index, subunit in enumerate(self.lastselected.subunitsprite):
+                                subunit.stamina -= subunit.stamina
                         #^ End For development test
 
                         else: # pressing other keys (Not hold)

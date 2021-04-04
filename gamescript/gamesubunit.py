@@ -708,7 +708,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.timer += dt
 
                 parentstate = self.parentunit.state
-                if parentstate in (0, 1, 2, 3, 4, 5, 6, 96, 97, 98, 99) and self.state not in (97, 98, 99):
+                if parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99) and self.state not in (97, 98, 99):
                     self.state = parentstate # Enforce parentunit state to subunit when moving and breaking
                     if 9 in self.statuseffect: # fight to the death
                         self.state = 10
@@ -730,7 +730,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.state == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skillcooldown \
                             and self.basepos.distance_to(self.basetarget) < 100: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
-                        self.chargemomentum = self.parentunit.runspeed / 2
+                        self.chargemomentum = self.parentunit.runspeed
                         self.parentunit.charging = True
 
                     if self.chargemomentum > 1 and self.chargeskill not in self.skilleffect:  # reset charge momentum if charge skill not active
@@ -774,9 +774,6 @@ class Subunit(pygame.sprite.Sprite):
 
                                         if self not in self.maingame.combatpathqueue:
                                             self.maingame.combatpathqueue.append(self)
-
-                                        # if self.gameid == 10087:
-                                        #     print('run', self.basepos != self.basetarget)
 
                                     else: # no target to fight move back to command pos first)
                                         self.basetarget = self.attacktarget.basepos
@@ -830,35 +827,40 @@ class Subunit(pygame.sprite.Sprite):
                             self.newangle = self.parentunit.angle
                             self.state = 0
 
-                    #^ End melee check
-
-                    #v Unit in melee combat, set subunit state to be in idle, melee combat or range attack state
-                    if parentstate == 10:
-                        if self.state != 10 and self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.arcshot or self.frontline) and self.chargemomentum == 1:  # Help range attack when parentunit in melee combat if has arcshot or frontline
+                        if self.state != 10 and self.ammo > 0 and self.parentunit.fireatwill == 0 and (
+                                self.arcshot or self.frontline) and self.chargemomentum == 1:  # Help range attack when parentunit in melee combat if has arcshot or frontline
                             self.state = 11
                             if self.parentunit.neartarget != {} and (self.attacktarget is None or self.attackpos == 0):
                                 self.findshootingtarget(parentstate)
-                    #^End parentunit in melee combat
 
-                    #v Range attack function
-                    elif parentstate == 11: # Unit in range attack state and self is not collapse or broken
-                        self.state = 0 # Default state at idle
-                        if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
-                                and self.shootrange >= self.attackpos.distance_to(self.parentunit.basepos): # can shoot if have ammo and in shoot range
-                            self.state = 11 # range combat state
+                    #^ End melee check
+                    else:
+                        self.meleetarget = None
+                        self.closetarget = None
+                        if self in self.maingame.combatpathqueue:
+                            self.maingame.combatpathqueue.remove(self)
+                        self.attacktarget = None
+                        self.combatmovequeue = []
 
-                    elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
-                                                                                                    and self.shootmove)):  # Fire at will, auto pick closest enemy
-                        if self.parentunit.neartarget != {} and self.attacktarget is None:
-                            self.findshootingtarget(parentstate)
+                        #v Range attack function
+                        if parentstate == 11: # Unit in range attack state and self is not collapse or broken
+                            self.state = 0 # Default state at idle
+                            if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
+                                    and self.shootrange >= self.attackpos.distance_to(self.parentunit.basepos): # can shoot if have ammo and in shoot range
+                                self.state = 11 # range combat state
 
-                    if self.state in (11, 12, 13) and self.ammo > 0 and self.magazinenow == 0: # reloading ammo
-                        self.reloadtime += dt
-                        if self.reloadtime >= self.reload:
-                            self.magazinenow = self.magazinesize
-                            self.ammo -= 1
-                            self.reloadtime = 0
-                        self.stamina = self.stamina - (dt * 2) # use stamina while reloading
+                        elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
+                                                                                                        and self.shootmove)):  # Fire at will, auto pick closest enemy
+                            if self.parentunit.neartarget != {} and self.attacktarget is None:
+                                self.findshootingtarget(parentstate)
+
+                        if self.state in (11, 12, 13) and self.ammo > 0 and self.magazinenow == 0: # reloading ammo
+                            self.reloadtime += dt
+                            if self.reloadtime >= self.reload:
+                                self.magazinenow = self.magazinesize
+                                self.ammo -= 1
+                                self.reloadtime = 0
+                            self.stamina = self.stamina - (dt * 2) # use stamina while reloading
                     #^ End range attack function
 
                     #v Combat action related
@@ -956,7 +958,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.attacking = False
 
                     #v Can move if front not collided
-                    if self.stamina > 0 and (self.parentunit.collide is False or parentstate in (98, 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.attacking) or self.chargemomentum > 1) \
+                    if self.stamina > 0 and (self.parentunit.collide is False or parentstate in (96, 98, 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.attacking) or self.chargemomentum > 1) \
                             and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
                         if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
@@ -978,7 +980,8 @@ class Subunit(pygame.sprite.Sprite):
 
                             if (self.state not in (98, 99) and (newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999)) \
                                     or self.state in (98, 99):  # cannot go pass map unless in retreat
-                                if move.length() <= move_length:  # move normally according to move speed
+                                # print('test1', move.length(), move_length, self.chargemomentum)
+                                if move.length() <= move_length:  # move normally according to move speed TODO rest state cause charge to stuck before hit enemy?
                                     self.basepos = newpos
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
@@ -1019,7 +1022,7 @@ class Subunit(pygame.sprite.Sprite):
                         dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina  # consume stamina depending on activity/state
 
                 #v Morale check
-                if self.basemorale < self.maxmorale: #TODO change to chance between broken or shattered where broken can regain control, also commander dead chance to completely lose control
+                if self.basemorale < self.maxmorale:
                     if self.morale < 1: # Enter broken state when morale reach 0
                         if self.state != 99: # This is top state above other states except dead for subunit
                             self.state = 99 # broken state
@@ -1033,8 +1036,11 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.basemorale > 200: # morale cannot be higher than 200
                         self.basemorale = 200
 
-                    if self.authority > 0 or parentstate != 99: # If not missing main leader can replenish morale
+                    if self.state != 95 or parentstate != 99: # If not missing main leader can replenish morale
                         self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
+                if self.state == 95:
+                    self.basemorale -= dt * self.mental
+
 
                     if self.state in (98, 99):
                         if parentstate not in (98, 99):
