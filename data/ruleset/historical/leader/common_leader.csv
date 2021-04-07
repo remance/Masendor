@@ -44,7 +44,7 @@
 10042,"Military Engineer",1000,15,,,,4,3,0,
 10043,"Medic",1000,15,,,,3,3,0,
 10044,"Bard",1000,20,,,,3,2,0,
-10045,"Steward",1000,10,,,,3,2,0,
+10045,"Steward",1000,10,,,,3,2,0,"The economy is as crucial as the military might in warfare. A careful calculation will go a long way to prevent the country from going bankrupt even if victory is assured."
 10046,"Spy",1000,0,,,,4,1,0,
 10047,"Assassin",1000,0,,,,5,1,0,
 10048,"Adventurer",1000,25,,,,5,1,0,
@@ -57,20 +57,20 @@
 10055,"Blacksmith",1000,3,,,,4,2,0,
 10056,"Dancer",1000,15,,,,3,2,0,
 10057,"Animal Handler",1000,4,,,,3,2,0,
-10058,"Monk",1000,40,,,,5,2,0,
+10058,"Monk",1000,40,,,,5,2,0,"Even a man of faith can partake in a war that is righteous. The presence of a Monk in battle reassure the soldiers that God is indeed on their side."
 10059,"Squire",1000,10,,,,5,3,0,
 10060,"Artist",1000,0,,,,2,2,0,"Who can capture the glorious victory than those who have seen it with their owns eyes? With superb ability to translate the greatest deed any leader can accomplish into eternal memory, Artist will make sure your name is forever etched into the fabric of history until the end of time. "
-10061,"Historian",1000,5,,,,2,2,0,
+10061,"Historian",1000,5,,,,2,2,0,"Humanity's history is incomplete without the subject of conflict. And what is a better way to be remembered with a Historian on your side? All deeds must not be left unwritten lest your enemies will write them for you."
 10062,"Diviner",1000,35,,,,3,2,0,"A Diviner can observe and interpret any sign from heaven beyond human calculation. A positive sign can greatly boost the morale of the entire army, while a negative one allows a leader to recalculate their move to avoid catastrophe.  "
 10063,"Cartographer",1000,14,,,,3,2,0,
 10064,"Builder",1000,10,,,,3,2,0,"Sometimes war cannot be won in a day or a single battle. Having a Builder accompany the army to war can make the encampment process much more efficient or maybe they can even assist in the rebuilding of the conquered city or fort."
 10065,"Chef",1000,10,,,,3,2,0,"Soldiers cannot fight at their best with a hungry stomach. Even though a Chef cannot provide any assistance directly in a battle or combat. They can greatly improve the rations and quality of mealtime."
 10066,"Procurer",1000,10,,,,,,0,
-10067,"Inventor",1000,3,,,,2,2,0,
+10067,"Inventor",1000,3,,,,2,2,0,"A glimpse into the weakness and practicality of inventions in warfare can only be gained from direct experience, not in a peaceful box of a building that knows no bloodshed. Bringing an Inventor into battle will allow them to absorb all necessary knowledge to bring forth true destruction."
 10068,"Explorer",1000,17,,,,3,2,0,
 10069,"Herald",1000,50,,,,,,0,
 10070,"Mentor",1000,40,,,,5,2,0,
-10071,"Forger",1000,0,,,,2,,0,
+10071,"Forger",1000,0,,,,2,,0,"Deception to create confusion. A Forger can fabricate a command letter or intelligence. The direction of force is prone to manipulation when such force can not even think for itself."
 10072,"Jester",1000,1,,,,2,2,0,
 10073,"Musician",1000,15,,,,2,2,0,
 10074,"Navigator",1000,16,,,,3,2,0,

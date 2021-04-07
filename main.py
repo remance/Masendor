@@ -1291,7 +1291,7 @@ try: # for printing error log when error exception happen
                                                 leader.changeleader(1, self.leaderstat)
 
 
-                                        # self.gameui[2].valueinput(who=self.showincard, weaponlist=self.allweapon, armourlist=self.allarmour,
+                                        # self.gameui[2].valueinput(attacker=self.showincard, weaponlist=self.allweapon, armourlist=self.allarmour,
                                         #                       changeoption=1)
 
                         elif self.gameui[1].rect.collidepoint(self.mousepos):

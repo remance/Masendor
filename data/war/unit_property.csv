@@ -42,7 +42,7 @@
 41,"Unadvancable",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops cannot gain experience from normal means."
 42,"Hunger Instinct",1,,140,80,80,0,130,,,,,0,0,0,-10,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Hunger is one of the most important factor for the aggressivity in most animal. If these troops are in hunger stage, they will fight much harder than usual to obtain the food which in this case is the enemy in front of them."
 43,"Famed",2,,,,,0,,,,,,0,0,0,10,10,0,3,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops have been fighting through many battle and war, gaining them the fame it deserve. Increase some morale for allies nearby while reducing for enemies."
-44,"Armistice Bringer",4,,,,,0,,,,,,0,0,0,-50,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
+44,"Armistice Bringer",3,,,,,0,,,,,,0,0,0,-50,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 45,"Shield Expert",1,,,120,120,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"Survive to fight another day by improving your defense is never a bad idea."
 46,"Crumble",1,,60,60,100,-70,60,60,,60,60,-100,0,0,60,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Nothing last forever, even for an inanimate material creatures. Time has render these troops much less powerful compare to its former glory."
 47,"Superb Flanker",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,"These troops fight better against enemies from flanking position."
@@ -55,8 +55,8 @@
 54,"Magical Weapon",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops’ weapons have magic property which deals additional magic damage and can deals damage to Incorporeal enemies."
 55,"Oblivious To Unexpected",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These soldiers are so oblivious to unexpected events that they have no idea or plan to defend against them making it receive defense penalty from rear attack."
 56,"Causes Fear",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Only the brave can resist the fear, and those are the ones that die young."
-57,"Causes Terror",3,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Terror is in the mind until it manifest into reality in front of you. Fleeing is always an option."
-58,"Inspires Hope",1,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,10,0,,,0,"Instilling hope to your brother in arms is one of the greatest achievement one can perform in an army."
+57,"Causes Terror",2,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,2,,,0,"Terror is in the mind until it manifest into reality in front of you. Fleeing is always an option."
+58,"Inspires Hope",2,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,10,0,,,0,"Instilling hope to your brother in arms is one of the greatest achievement one can perform in an army."
 59,"Inspires Bravery",3,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,10,0,,,0,"Bravery is a rare luxury in a place likes battlefield. To share such rarity to others is a noble deed indeed."
 60,"Heart Of Steel",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 61,"Hope And Despair",,,,,,0,,,,,,0,0,0,0,0,0,3,,,0,0,0,0,0,0,0,0,,,0,2,,,2,"A bringer of hope yet also a herald of calamity. Can it be the result of insanity?"
@@ -155,7 +155,7 @@
 154,"Kelsilious's Zeal",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 155,"Epganates's Persistence",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 156,"Arcane Protection",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
-157,"Heroic Spirit",10,,120,120,,40,120,120,,120,120,120,0,0,100,20,0,,,,,,,,,,,,,,0,0,,,2,"These troops are being led by a heroic spirit from the past. This make the troops in high spirit when follow their great hero into battle."
+157,"Heroic Spirit",4,,120,120,,40,120,120,,120,120,120,0,0,100,20,0,,,,,,,,,,,,,,0,0,,,2,"These troops are being led by a heroic spirit from the past. This make the troops in high spirit when follow their great hero into battle."
 158,"Deathwish",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,"These troops fight like it seeks death itself. Their morale can never be decreased."
 159,"Algolga's Disciple",,,,,,,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,2,
 160,"Troll Blood",,,,,,0,,,,,,0,0,0,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"Troll blood help its body to heal any wound it receives much faster than other creatures even during combat. "

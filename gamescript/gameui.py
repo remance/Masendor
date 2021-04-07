@@ -541,7 +541,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         return imagechange
 
     def addlog(self, log, modelist, eventmapid=None):
-        """Add log to appropiate event log, the log must be in list format following this rule [who (gameid), logtext]"""
+        """Add log to appropiate event log, the log must be in list format following this rule [attacker (gameid), logtext]"""
         atlastrow = False
         imagechange = False
         imagechange2 = False

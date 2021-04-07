@@ -52,7 +52,7 @@ def game_intro(screen, clock, introoption):
     if introoption:
         intro = True
     timer = 0
-    # quote = ["Those who fail to learn from the mistakes of their predecessors are destined to repeat them. George Santayana", "It is more important to outhink your enemy, than to outfight him, Sun Tzu"]
+    # quote = ["Those attacker fail to learn from the mistakes of their predecessors are destined to repeat them. George Santayana", "It is more important to outhink your enemy, than to outfight him, Sun Tzu"]
     while intro:
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -403,7 +403,6 @@ def loadgamedata(game):
     #^ End encyclopedia objects
 
     # v Create battle game ui objects
-
     game.minimap = gameui.Minimap((SCREENRECT.width, SCREENRECT.height))
 
     #Popup Ui
@@ -437,7 +436,7 @@ def loadgamedata(game):
                                      image=topimage[1], icon=iconimage,
                                      uitype="commandbar"))
 
-    #Squad information card ui
+    #Subunit information card ui
     game.gameui.append(
         gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
                       image=topimage[2], icon="", uitype="unitcard"))
@@ -905,6 +904,10 @@ def traitskillblit(self):
 
 def effecticonblit(self):
     """For blitting all status effect icon"""
+    from gamescript import gameui
+    import main
+    SCREENRECT = main.SCREENRECT
+
     position = self.gameui[2].rect.topleft
     position = [position[0] + 70, position[1] + 140]
     startrow = position[0]
@@ -1167,7 +1170,8 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
     moraledmg = dmg / 20
 
-    if unitdmg < 0: # Damage cannot be negative (it would heal instead), same for morale and leader damage
+    # Damage cannot be negative (it would heal instead), same for morale and leader damage
+    if unitdmg < 0:
         unitdmg = 0
     if leaderdmg < 0:
         leaderdmg = 0
@@ -1176,25 +1180,24 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
     return unitdmg, moraledmg, leaderdmg
 
-
 def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside, receiverside):
     """apply aoe status effect to enemy squads"""
     for status in inflictstatus.items():
         if status[1] == 1 and attackerside == 0: # only front enemy
             receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
-        elif status[1] in (2, 3): # aoe effect to side only (2), to also corner enemy (3)
+        elif status[1] == 2: # aoe effect to side enemy
             receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
             if status[1] == 3: # apply to corner enemy subunit (left and right of self front enemy subunit)
                 cornerenemyapply = receiver.nearbysquadlist[0:2]
                 if receiverside in (1,2): # attack on left/right side means corner enemy would be from front and rear side of the enemy
                     cornerenemyapply = [receiver.nearbysquadlist[2],receiver.nearbysquadlist[5]]
-                for squad in cornerenemyapply:
-                    if squad != 0:
-                        squad.statuseffect[status[0]] = statuslist[status[0]].copy()
-        elif status[1] == 4: # whole parentunit aoe
-            for squad in receiver.parentunit.subunitsprite:
-                if squad.state != 100:
-                    squad.statuseffect[status[0]] = statuslist[status[0]].copy()
+                for subunit in cornerenemyapply:
+                    if subunit != 0:
+                        subunit.statuseffect[status[0]] = statuslist[status[0]].copy()
+        elif status[1] == 3: # whole parentunit aoe
+            for subunit in receiver.parentunit.subunitsprite:
+                if subunit.state != 100:
+                    subunit.statuseffect[status[0]] = statuslist[status[0]].copy()
 
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
     finaldmg = round(dmg * dmgeffect * timermod)
@@ -1224,26 +1227,26 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
         receiver.leader.health -= finalleaderdmg
 
 
-def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
-    """basetarget position 0 = Front, 1 = Side, 3 = Rear, whoside and targetside is the side attacking and defending respectively"""
+def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
+    """basetarget position 0 = Front, 1 = Side, 3 = Rear, attackerside and targetside is the side attacking and defending respectively"""
     wholuck = random.randint(-50, 50) # attacker luck
     targetluck = random.randint(-50, 50) # defender luck
-    whopercent = battlesidecal[whoside] # attacker attack side modifier
+    whopercent = battlesidecal[attackerside] # attacker attack side modifier
 
     """34 battlemaster fulldef or 91 allrounddef status = no flanked penalty"""
-    if who.fulldef or 91 in who.statuseffect:
+    if attacker.fulldef or 91 in attacker.statuseffect:
         whopercent = 1
     targetpercent = battlesidecal[targetside] # defender defend side
 
     if target.fulldef or 91 in target.statuseffect:
         targetpercent = 1
 
-    dmgeffect = who.frontdmgeffect
+    dmgeffect = attacker.frontdmgeffect
     targetdmgeffect = target.frontdmgeffect
 
-    if whoside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
-        whopercent = battlesidecal[whoside] + (who.discipline / 300)
-        dmgeffect = who.sidedmgeffect # use side dmg effect as some skill boost only front dmg
+    if attackerside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
+        whopercent = battlesidecal[attackerside] + (attacker.discipline / 300)
+        dmgeffect = attacker.sidedmgeffect # use side dmg effect as some skill boost only front dmg
         if whopercent > 1: whopercent = 1
 
     if targetside != 0 and targetpercent != 1: # same for the basetarget defender
@@ -1251,39 +1254,39 @@ def dmgcal(who, target, whoside, targetside, statuslist, combattimer):
         targetdmgeffect = target.sidedmgeffect
         if targetpercent > 1: targetpercent = 1
 
-    whohit = float(who.attack * whopercent) + wholuck
-    whodefense =  float(who.meleedef * whopercent) + wholuck
-    targethit = float(who.attack * targetpercent) + targetluck
+    whohit = float(attacker.attack * whopercent) + wholuck
+    whodefense = float(attacker.meleedef * whopercent) + wholuck
+    targethit = float(attacker.attack * targetpercent) + targetluck
     targetdefense = float(target.meleedef * targetpercent) + targetluck
 
     """33 backstabber ignore def when attack rear side, 55 Oblivious To Unexpected can't defend from rear at all"""
-    if (who.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
-            target.flanker and whoside in (1, 3)): # Apply only for attacker
+    if (attacker.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
+            target.flanker and attackerside in (1, 3)): # Apply only for attacker
         targetdefense = 0
 
-    whodmg, whomoraledmg, wholeaderdmg = losscal(who, target, whohit, targetdefense, 0, targetside) # get dmg by attacker
-    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, who, targethit, whodefense, 0, whoside) # get dmg by defender
+    whodmg, whomoraledmg, wholeaderdmg = losscal(attacker, target, whohit, targetdefense, 0, targetside) # get dmg by attacker
+    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, attacker, targethit, whodefense, 0, attackerside) # get dmg by defender
 
     timermod = combattimer / 0.5 # Since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
-    complexdmg(who, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod) # Inflict dmg to defender
-    complexdmg(target, who, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod) # Inflict dmg to attacker
+    complexdmg(attacker, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod) # Inflict dmg to defender
+    complexdmg(target, attacker, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod) # Inflict dmg to attacker
 
     #v Attack corner (side) of self with aoe attack
-    if who.corneratk:
+    if attacker.corneratk:
         listloop = [target.nearbysquadlist[2], target.nearbysquadlist[5]] # Side attack get (2) front and (5) rear nearby subunit
         if targetside in (0, 2): listloop = target.nearbysquadlist[0:2] # Front/rear attack get (0) left and (1) right nearbysquad
-        for squad in listloop:
-            if squad != 0 and squad.state != 100:
-                targethit, targetdefense = float(who.attack * targetpercent) + targetluck, float(squad.meleedef * targetpercent) + targetluck
-                whodmg, whomoraledmg = losscal(who, squad, whohit, targetdefense, 0)
-                complexdmg(who, squad, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
+        for subunit in listloop:
+            if subunit != 0 and subunit.state != 100:
+                targethit, targetdefense = float(attacker.attack * targetpercent) + targetluck, float(subunit.meleedef * targetpercent) + targetluck
+                whodmg, whomoraledmg = losscal(attacker, subunit, whohit, targetdefense, 0)
+                complexdmg(attacker, subunit, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
     #^ End attack corner
 
     #v inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy subunit, 4 entire parentunit
-    if who.inflictstatus != {}:
-        applystatustoenemy(statuslist, who.inflictstatus, target, whoside, targetside)
+    if attacker.inflictstatus != {}:
+        applystatustoenemy(statuslist, attacker.inflictstatus, target, attackerside, targetside)
     if target.inflictstatus != {}:
-        applystatustoenemy(statuslist, target.inflictstatus, who, targetside, whoside)
+        applystatustoenemy(statuslist, target.inflictstatus, attacker, targetside, attackerside)
     #^ End inflict status
 
 
@@ -1308,8 +1311,8 @@ def die(who, battle, group, enemygroup):
         thisarmy.authority += 5
 
     for thisarmy in group:  # morale dmg to every subunit in army when allied parentunit destroyed
-        for squad in thisarmy.subunitsprite:
-            squad.basemorale -= 20
+        for subunit in thisarmy.subunitsprite:
+            subunit.basemorale -= 20
 
 def moveleadersquad(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
     """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit), alreadypick is list of position need to be skipped"""
@@ -1323,9 +1326,9 @@ def moveleadersquad(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
 
     while placedone is False:
         if leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace] != 0:
-            for squad in leader.subunit.parentunit.subunitsprite:
-                if squad.gameid == leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace]:
-                    if squad.leader is not None or (newrow,newplace) in alreadypick:
+            for subunit in leader.subunit.parentunit.subunitsprite:
+                if subunit.gameid == leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace]:
+                    if subunit.leader is not None or (newrow,newplace) in alreadypick:
                         newplace += 1
                         if newplace > len(newarmysubunit[newrow])-1: # find new column
                             newplace = 0
@@ -1432,10 +1435,10 @@ def splitunit(battle, who, how):
     maxstamina = []
     maxmorale = []
 
-    for squad in who.subunitsprite:
-        maxhealth.append(squad.maxtroop)
-        maxstamina.append(squad.maxstamina)
-        maxmorale.append(squad.maxmorale)
+    for subunit in who.subunitsprite:
+        maxhealth.append(subunit.maxtroop)
+        maxstamina.append(subunit.maxstamina)
+        maxmorale.append(subunit.maxmorale)
 
     maxhealth = sum(maxhealth)
     maxstamina = sum(maxstamina) / len(maxstamina)
@@ -1468,8 +1471,8 @@ def splitunit(battle, who, how):
     army.leader = newleader
     army.subunitsprite = newsquadsprite
 
-    for squad in army.subunitsprite:
-        squad.parentunit = army
+    for subunit in army.subunitsprite:
+        subunit.parentunit = army
 
     for index, leader in enumerate(army.leader):  # Change army position of all leader in new parentunit
         if how == 0:

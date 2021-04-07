@@ -497,8 +497,7 @@ class Battle():
 
         self.setuparmyicon()
         self.selectscroll.changeimage(newrow=self.armyselector.currentrow)
-        # self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
-        #                         self.battlemousepos[0], False)   # run once at the start of battle to avoid combat bug
+
         #v Run starting function
         for army in self.allunitlist:
             army.startset(self.subunit)
@@ -512,10 +511,6 @@ class Battle():
 
         # self.mapdefarray = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
-
-
-        # self.leaderupdater.update()
-        # self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer)
 
         while True: # game running
             self.fpscount.fpsshow(self.clock)
@@ -1109,7 +1104,7 @@ class Battle():
                                 self.buttonnamepopup.pop(self.mousepos, "Split By Middle Column")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                    splitunit(whoinput, 1)
+                                    self.splitunit(whoinput, 1)
                                     self.splithappen = True
                                     self.checksplit(whoinput)
                                     self.battleui.remove(*self.leadernow)
@@ -1121,7 +1116,7 @@ class Battle():
                                 self.buttonnamepopup.pop(self.mousepos, "Split by Middle Row")
                                 self.battleui.add(self.buttonnamepopup)
                                 if mouse_up and whoinput.basepos.distance_to(list(whoinput.neartarget.values())[0]) > 50:
-                                    splitunit(whoinput, 0)
+                                    self.splitunit(whoinput, 0)
                                     self.splithappen = True
                                     self.checksplit(whoinput)
                                     self.battleui.remove(*self.leadernow)
@@ -1153,7 +1148,7 @@ class Battle():
                                     if subunit.rect.collidepoint(self.mousepos) and subunit in self.battleui:  # Change showing stat to the clicked subunit one
                                         if mouse_up:
                                             self.subunitselected = subunit
-                                            # print(self.subunitselected.who.gameid)
+                                            # print(self.subunitselected.attacker.gameid)
                                             self.subunitselectedborder.pop(self.subunitselected.pos)
                                             self.eventlog.addlog(
                                                 [0, str(self.subunitselected.who.boardpos) + " " + str(self.subunitselected.who.name) + " in " +
