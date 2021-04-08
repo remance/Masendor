@@ -786,19 +786,6 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.newangle = self.setrotate() # also keep rotate to basetarget
             #^ End range attack state
 
-            #v Collapse related
-            if self.stamina <= 0: # parentunit only enter collpase state when all subunit stamina is 0
-                self.state = 97 # Enter collaspse state
-            if self.state == 97: # Awake from collapse when there is no subunit in collaspe state
-                awake = True
-                for subunit in self.subunitsprite: # check if any subunit in collapse state
-                    if subunit.state == 97: # can't stop collapse state yet if any subunit still in collaspe state
-                        awake = False
-                        break # no need to find any subunit still in collapse state
-                if awake:
-                    self.state = self.commandstate # resume previous order
-            #^ End colapse related
-
             self.collide = False # reset collide
 
         else: # dead parentunit

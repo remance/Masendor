@@ -1166,7 +1166,7 @@ class Battle():
                                                 for icon in self.effecticon.sprites(): icon.kill()
 
                                         elif mouse_right:
-                                            self.popoutlorebook(3, subunit.unitid)
+                                            self.popoutlorebook(3, subunit.who.unitid)
                                         break
 
                             elif self.gameui[2].rect.collidepoint(self.mousepos): # mouse position in subunit card

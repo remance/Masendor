@@ -569,17 +569,17 @@ class Subunit(pygame.sprite.Sprite):
                     self.moralestate + 0.1) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
 
         #v Rounding up, add discipline to stat and forbid negative int stat
-        self.discipline = round(self.discipline, 0)
-        disciplinecal = self.discipline / 10
-        self.attack = round((self.attack + disciplinecal), 0)
-        self.meleedef = round((self.meleedef + disciplinecal), 0)
-        self.rangedef = round((self.rangedef + disciplinecal), 0)
+        # self.discipline = round(self.discipline, 0)
+        disciplinecal = self.discipline / 200
+        self.attack = round(self.attack + (self.attack * disciplinecal), 0)
+        self.meleedef = round(self.meleedef + (self.meleedef * disciplinecal), 0)
+        self.rangedef = round(self.rangedef + (self.rangedef * disciplinecal), 0)
         self.armour = round(self.armour, 0)
-        self.speed = round(self.speed + disciplinecal, 0)
+        self.speed = round(self.speed + (self.speed * disciplinecal/2), 0)
         self.accuracy = round(self.accuracy, 0)
         self.reload = round(self.reload, 0)
-        self.chargedef = round((self.chargedef + disciplinecal), 0)
-        self.charge = round((self.charge + disciplinecal), 0)
+        self.chargedef = round(self.chargedef + (self.chargedef * disciplinecal), 0)
+        self.charge = round(self.charge + (self.charge * disciplinecal), 0)
 
         if self.ammo == 0 and self.magazinenow == 0:
             self.shootrange = 0
@@ -588,7 +588,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.rangedef < 0: self.rangedef = 0
         if self.armour < 0: self.armour = 0
         elif self.armour > 100: self.armour = 100 # Armour cannot be higher than 100 since it is percentage reduction
-        if self.speed < 1: self.speed = 1 # speed cannot be lower than 1 or it won't be able to move
+        if self.speed < 0: self.speed = 0
         if self.accuracy < 0: self.accuracy = 0
         if self.reload < 0: self.reload = 0
         if self.charge < 0: self.charge = 0
@@ -850,7 +850,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.combatmovequeue = []
 
                         #v Range attack function
-                        if parentstate == 11: # Unit in range attack state and self is not collapse or broken
+                        if parentstate == 11: # Unit in range attack state
                             self.state = 0 # Default state at idle
                             if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
                                     and self.shootrange >= self.attackpos.distance_to(self.parentunit.basepos): # can shoot if have ammo and in shoot range
@@ -947,6 +947,10 @@ class Subunit(pygame.sprite.Sprite):
                             self.angle -= rotatetiny
                             if self.angle < self.newangle: self.angle = self.newangle  # if rotate pass basetarget angle, rotate to basetarget angle
                     self.rotate()  # rotate sprite to new angle
+                    if self.walk:
+                        self.stamina = self.stamina - (dt * 3)
+                    elif self.run:
+                        self.stamina = self.stamina - (dt * 5)
                     self.makefrontsidepos()  # generate new pos related to side
                     self.mask = pygame.mask.from_surface(self.image) # make new mask
                 # ^ End rotate
@@ -1001,6 +1005,11 @@ class Subunit(pygame.sprite.Sprite):
                                 if len(self.combatmovequeue) > 0 and self.basepos.distance_to(pygame.Vector2(self.combatmovequeue[0])) < 0.1: #:  # reach the current queue point, remove from queue
                                     self.combatmovequeue = self.combatmovequeue[1:]
 
+                                if self.walk:
+                                    self.stamina = self.stamina - (dt * 3)
+                                elif self.run:
+                                    self.stamina = self.stamina - (dt * 5)
+
                                 self.makefrontsidepos()
                                 self.makeposrange()
 
@@ -1024,9 +1033,6 @@ class Subunit(pygame.sprite.Sprite):
                         self.mask = pygame.mask.from_surface(self.image) # make new mask
                         self.lastpos = self.basepos
                     # ^ End move function
-
-                self.stamina = self.stamina - (dt * 0.5) if self.walk else self.stamina - (dt * 2) if self.run else self.stamina + (
-                        dt * self.staminaregen) if self.stamina < self.maxstamina else self.stamina  # consume stamina depending on activity/state
 
                 #v Morale check
                 if self.basemorale < self.maxmorale:
@@ -1069,10 +1075,8 @@ class Subunit(pygame.sprite.Sprite):
                 if self.stamina < self.maxstamina:
                     if self.stamina <= 0:  # Collapse and cannot act
                         self.stamina = 0
-                        if self.state != 99: # Can only collapse when subunit is not broken
-                            self.state = 97 # Collapse
-                    if self.state == 97 and self.stamina > self.stamina25: # exit collapse state
-                        self.state = 0 # Reset to idle
+                        self.statuseffect[105] = self.statuslist[105].copy() # receive collapse status
+                    self.stamina = self.stamina + (dt * self.staminaregen) # regen
                 elif self.stamina > self.maxstamina: # stamina cannot exceed the max stamina
                     self.stamina = self.maxstamina
 
