@@ -9,21 +9,23 @@ from pygame.transform import scale
 from gamescript import gamelongscript
 
 
-class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the longer it travel
+class Rangearrow(pygame.sprite.Sprite):
     images = []
     gamemapheight = None
 
     def __init__(self, shooter, shootrange, maxrange, viewmode):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.speed = 50 # arrow speed
         self.image = self.images[0]
         self.image_original = self.image.copy()
         self.shooter = shooter # subunit that shoot arrow
+        self.speed = self.shooter.arrowspeed # arrow speed
         self.arcshot = False # direct shot will no go pass collided parentunit
         if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2: self.arcshot = True # arc shot will go pass parentunit to land at final basetarget
-        self.startheight = self.shooter.height
+        self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
+        self.damage = self.shooter.rangedmg
+        self.penetrate = self.shooter.rangepenetrate
         if self.shooter.state in (12, 13) and self.shooter.agileaim is False: self.accuracy -= 10 # accuracy penalty for shoot while moving
         self.passwho = None # check which parentunit arrow passing through
         self.side = None # hitbox side that arrow collided last
@@ -124,7 +126,7 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
         targetdefense = float(target.rangedef * targetpercent) + targetluck # calculate defense
         if targetdefense < 0: targetdefense = 0 # defense cannot be negative
 
-        whodmg, whomoraledmg, wholeaderdmg = gamelongscript.losscal(who, target, whohit, targetdefense, 1)
+        whodmg, whomoraledmg, wholeaderdmg = gamelongscript.losscal(who, target, whohit, targetdefense, self)
         target.unithealth -= whodmg
         target.basemorale -= whomoraledmg
 
@@ -172,6 +174,13 @@ class Rangearrow(pygame.sprite.Sprite): #TODO make range attack dmg drop the lon
                 self.basepos = self.basetarget
                 self.pos = self.basepos * viewmode
                 self.rect.center = self.pos
+
+            self.damage -= 0.05 # damage and penetration power drop the longer arrow travel
+            self.penetrate -= 0.002
+            if self.damage < 1:
+                self.damage = 1
+            if self.penetrate < 0:
+                self.penetrate = 0
 
             for subunit in pygame.sprite.spritecollide(self, unitlist, 0):
                 posmask = int(self.pos[0] - subunit.rect.x), int(self.pos[1] - subunit.rect.y)

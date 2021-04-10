@@ -145,7 +145,6 @@ class Unitarmy(pygame.sprite.Sprite):
     rotationxy = gamelongscript.rotationxy
     die = gamelongscript.die # die script
     setrotate = gamelongscript.setrotate
-    brokenlimit = 50  # morale require for parentunit to stop broken state, will increase everytime broken state stop
     formchangetimer = 10
 
     def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander, startangle, starthp=100, startstamina=100, team=0):
@@ -243,6 +242,8 @@ class Unitarmy(pygame.sprite.Sprite):
         self.deadchange = False # for checking when subunit dead and run related code
         self.timer = random.random()
         self.statedelay = 3 # some state has delay before can change state, default at 3 seconds
+        self.rotatespeed = 1
+        self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
         #^ End default starting value
 
         if np.array_split(self.armysubunit, 2)[0].size > 10 and np.array_split(self.armysubunit, 2)[1].size > 10: self.cansplitrow = True
@@ -438,8 +439,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def setsubunittarget(self, target="rotate"):
         """generate all four side, hitbox and subunit positions"""
-        if target == "rotate":
-
+        if target == "rotate": # rotate unit before moving
             parentunittopleft = pygame.Vector2(self.basepos[0] - self.basewidthbox,  # get the top left corner of sprite to generate subunit position
                                                self.basepos[1] - self.baseheightbox)
             # parentunittopleft = self.rotationxy(self.basepos, parentunittopleft, self.radians_angle)
@@ -451,15 +451,16 @@ class Unitarmy(pygame.sprite.Sprite):
                 subunit.commandtarget = pygame.Vector2(self.rotationxy(self.basepos, newtarget, self.radians_angle)) # rotate according to sprite current rotation
                 subunit.newangle = self.newangle
 
-        elif target == "stop":
+        elif target == "stop": # stop unit from moving
             pass
 
-        else:
+        else: # moving unit
             parentunittopleft = pygame.Vector2(target[0] - self.basewidthbox, # get the top left corner of sprite to generate subunit position
                                              target[1]) #- (self.baseheightbox/2)
             # parentunittopleft = self.rotationxy(basetarget, parentunittopleft, self.radians_angle)
 
             for subunit in self.subunitsprite: # generate position of each subunit
+                subunit.newangle = self.newangle
                 newtarget = parentunittopleft + subunit.armypos
                 subunit.commandtarget = pygame.Vector2(self.rotationxy(target, newtarget, self.radians_angle)) # rotate according to sprite current rotation
 
@@ -710,7 +711,7 @@ class Unitarmy(pygame.sprite.Sprite):
             #^ End retreat function
 
             #v Rotate Function
-            if self.state != 10 and self.angle != self.newangle and self.stamina > 0 and self.collide is False:
+            if self.angle != self.newangle and self.state != 10 and self.stamina > 0 and self.collide is False:
                 self.rotatecal = abs(self.newangle - self.angle) # amount of angle left to rotate
                 self.rotatecheck = 360 - self.rotatecal # rotate distance used for preventing angle calculation bug (pygame rotate related)
                 self.moverotate = True
@@ -811,6 +812,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.setsubunittarget(self.basetarget)
 
     def revertmove(self):
+        """Only subunit will rotate to move, not the entire unit"""
         self.newangle = self.angle
         self.moverotate = False # will not rotate to move
         self.revert = True
@@ -835,14 +837,16 @@ class Unitarmy(pygame.sprite.Sprite):
                 else:
                     self.attacktarget = enemy
                     self.baseattackpos = enemy.basepos
+                    self.set_target(self.baseattackpos)
+
+            else:
+                self.set_target(targetpoint)
 
             if runcommand or self.runtoggle == 1:
                 self.state += 1 # run state
 
             self.commandstate = self.state
             self.rangecombatcheck = False
-
-            self.set_target(targetpoint)
             self.commandtarget = self.basetarget
             self.newangle = self.setrotate()
 
@@ -894,7 +898,6 @@ class Unitarmy(pygame.sprite.Sprite):
             self.attacktarget = None
             self.baseattackpos = 0
             self.attackplace = False
-            revertmove = False
 
             #register user keyboard
             if keystate[pygame.K_LCTRL]: self.forcedmelee = True
@@ -911,10 +914,10 @@ class Unitarmy(pygame.sprite.Sprite):
                         if keystate[pygame.K_LSHIFT]:
                             self.rotateonly = True
                         if keystate[pygame.K_z]:
-                            revertmove = True
-                        self.processcommand(mouse_pos, double_mouse_right, revertmove, whomouseover)
+                            self.revert = True
+                        self.processcommand(mouse_pos, double_mouse_right, self.revert, whomouseover)
                 elif othercommand != 0:
-                    self.processcommand(mouse_pos, double_mouse_right, revertmove, whomouseover, othercommand)
+                    self.processcommand(mouse_pos, double_mouse_right, self.revert, whomouseover, othercommand)
 
     def switchfaction(self, oldgroup, newgroup, oldposlist, allunitindex, enactment):
         """Change army group and gameid when change side"""

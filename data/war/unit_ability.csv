@@ -86,9 +86,9 @@
 85,"Smoke Arrow",1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,0,0,62,0,2,
 86,"Magic Arrow",1,1,30,100,11,11,,60,0,,,,,,,,,0,0,0,0,0,,150,,0,0,0,0,0,5,2,
 87,"Fireblast Arrow",1,3,30,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,50,,0,0,0,2,0,1,2,"Exploding arrow is nothing short of innovative engineering between the new and the old."
-88,"Unwavering Resolve",0,1,30,120,10,10,,55,0,,,,,,,,,0,0,0,80,0,,,,0,0,0,0,0,0,0,
+88,"Unwavering Resolve",0,1,30,120,10,10,,55,0,,,,,,,,,0,0,0,80,0,,,,0,0,0,0,0,0,0,"Never give up, never surrender!"
 89,"Heroic Resolve",0,1,45,120,10,10,,75,0,,,,,,,,,0,0,0,150,0,,,,0,0,0,0,0,0,0,
-90,"Sacrifical Strike",0,1,5,60,10,10,,61,50,130,0,0,,,,,,0,0,,0,0,,150,,0,0,0,0,0,0,2,
+90,"Sacrifical Strike",0,1,5,60,10,10,,61,50,130,0,0,,,,,,0,0,,0,0,,150,,0,0,0,0,0,0,2,"Sacrifice to accomplish the impossible. Or is it merely a foolish struggle?"
 91,"Stalwart Defense",0,1,60,90,10,10,,60,20,,130,130,,,,,,20,0,-1,0,0,,,,0,0,0,0,0,0,0,
 92,"Sudden Fortitude",0,1,1,180,10,10,,70,0,,,,,,,,,0,0,50,0,0,,0,,0,0,0,0,0,0,0,
 93,"Indestructible",0,1,50,100,10,10,,40,30,,170,170,,,,,,50,0,0,200,0,,,,0,0,0,0,0,0,2,"Why attack something that cannot be destroyed?"
@@ -107,8 +107,8 @@
 106,"The Great Banner",0,4,1200,1200,,,,40,15,105,105,105,105,105,,105,105,5,0,0,110,5,,,,0,0,0,0,,0,2,
 107,"Hammer Of Faith",0,1,1,60,10,10,,60,40,,,,,,,,,0,0,0,0,0,,200,,0,3,0,6,,0,2,
 108,"Blade Dance",0,2,10,60,10,10,,75,88,,,,,,,,,0,0,,0,0,,40,,0,0,0,0,,0,2,"The dance of death never end. A man and his sword never part until the stage turn red from the audiences’ gore."
-109,"Desperate Struggle",0,1,,,10,10,,20,0,130,130,130,130,130,,130,130,30,0,-1,-30,-10,,,,0,0,0,0,,0,2,
-110,"Payday Imminent",0,1,90,300,,,,50,15,125,,,150,,,,,0,0,,15,0,,,,0,0,0,0,,0,2,
+109,"Desperate Struggle",0,1,,,10,10,,20,0,130,130,130,130,130,,130,130,30,0,-1,-30,-10,,,,0,0,0,0,,0,2,"Desperation to cling to survival in a crisis that may not be overturned. No price is too cheap to pay."
+110,"Payday Imminent",0,1,90,300,,,,50,15,125,,,150,,,,,0,0,,15,0,,,,0,0,0,0,,0,2,"Nothing can bring joy as waiting for payday! Hard-earned money and reward are one of the meanings of work after all."
 111,"Finest Hour",0,1,60,6000,,3,,70,30,150,150,150,150,150,,150,150,60,0,,150,100,,,,0,0,0,0,,0,2,
 112,"Final Strike",0,1,5,6000,10,10,,65,100,,,,,,,,,0,0,,0,0,,200,,0,0,0,0,,0,2,"Final breath in this world, one final farewell to the beloved enemy so we may meet together in the afterlife."
 113,"All Out Assault",0,1,20,300,10,10,,60,35,130,80,80,140,,,,130,-70,0,,0,0,,,,0,0,0,0,,0,2,
@@ -121,12 +121,12 @@
 120,"Crushing Leap",0,1,1,120,10,10,,60,80,,,,,,,,,0,0,0,0,0,,120,,0,0,0,0,23,0,2,
 121,"Final Showdown",0,1,120,10000,10,10,,50,0,160,160,160,160,160,,160,160,60,0,-10,160,50,,,,0,0,0,0,,0,2,
 122,"Unto Demise",0,,,,,,,,20,,,,,,,,,0,0,,0,0,,,,0,0,20,5,,0,2,
-123,"Stun Strike",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,60,,0,0,0,0,23,0,2,
+123,"Stun Strike",0,1,1,60,10,10,,50,50,,,,,,,,,0,0,0,0,0,,60,,0,0,0,0,23,0,2,"Stun the enemy so they can not fight back. An effective solution."
 124,"Purge The Infidels",0,1,,,,,,80,20,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,,0,2,"The villains of the peace must be purged. For the true peace only existed in our lord’s guidance."
 125,"Corrupted Mist",0,3,,,,,,30,40,,,,,,,,,0,0,,0,0,,0,,0,0,5,5,,6,2,
 126,"Grasp The Opportunity",0,,15,60,,,,50,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,
 127,"Blood Demand",0,,,,,,,75,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,"Demand to be made. Or this tribunal will never end."
-128,"Valiant Struggle",0,1,,,,,,80,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,
+128,"Valiant Struggle",0,1,,,,,,80,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,2,"History will remember this day of our valiant struggle!"
 129,"Ground Shake",0,3,5,600,10,10,,40,80,,,,,,,,,0,0,0,0,0,,20,,0,0,0,0,23,0,2,
 130,"Spike Burst",0,1,2,120,,,,45,55,,,,,,,,,0,0,,0,0,,150,,0,0,0,0,23,4,2,
 131,"Deathblow",0,1,3,6000,10,10,,,70,,,,,,,,,0,0,0,,,,250,,,,0,0,,0,2,"This sub-unit can muster its last strength to deals final blow before it die. Death in melee combat will cause damage to attacker."
@@ -155,7 +155,7 @@
 154,"Spellbind",0,1,30,,,,,65,10,,,,,,,,,0,0,,,,,,,,,0,0,"8,69",5,2,
 155,"Callback Companion",0,1,1,,,,,40,0,,,,,,,,,0,0,,,,,,,,,0,0,,0,0,
 156,"Unleash Companion",0,1,,,,,,40,0,,,,,,,,,70,0,,,,,,,,,0,0,70,0,0,
-157,"Clear Insight",0,1,60,,,,,70,0,,,,,110,,,,20,0,0,15,10,,,,,50,0,0,,0,2,
+157,"Clear Insight",0,1,60,,,,,70,0,,,,,110,,,,20,0,0,15,10,,,,,50,0,0,,0,2,"The route is clear. Now only "
 158,"Blood For Blood",0,,200,,,,,35,25,200,0,0,,,,,150,0,,,,,,,,,,,,,0,2,
 159,"Shield Breaking",0,,1,,10,10,,,35,,,,,,,,,0,0,,,,,,,,,,,,0,2,
 160,"Reconnaissance",0,,100,,,,,50,20,,,,,,,,,20,0,,,,,,125,,,0,0,,0,0,
@@ -170,7 +170,7 @@
 169,"Mark For Death",0,1,,,,,,50,,,,,,,,,,0,0,,,,,,,,,,,58,0,2,
 170,"Dominate",0,1,60,,,,,60,,,,,,,,,,0,0,,,,,,,,,,,73,5,2,
 171,"Will Release",0,1,1,,,,,60,,,,,,,,,,0,0,,,,,,,,50,0,0,,5,2,
-172,"Revival",0,1,1,,,,,0,,,,,,,,,,0,,,,,,,,,,0,0,,5,2,
+172,"Revival",0,1,1,,,,,0,,,,,,,,,,0,,,,,,,,,,0,0,,5,2,"Return from death to fulfill their duty once more."
 173,"Bounty Hunting",0,1,,,,,,60,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
 174,"Put A Bounty",0,1,600,,,,,60,0,,,,,,,,,0,0,,,,,,,,,0,0,51,0,2,
 175,"Digging",0,1,,,,,,40,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
@@ -180,7 +180,7 @@
 179,"Tar Ball Sling",1,1,1,,,,,,,,,,,,,,,0,0,,,,,5,,,,0,0,,0,2,
 180,"Storming Impact",0,1,1,,,,,,,,,,,,,,,0,0,,,,,,,,,0,0,,0,2,
 181,"Skewing Impale",0,1,1,,,,,,,,,,,,,,,0,0,,,,,150,,,,0,0,52,0,2,
-182,"Into Insanity",0,1,,,,,,0,,,,,,,,,,0,0,,,,,,,,77,0,0,,0,2,
+182,"Into Insanity",0,1,,,,,,0,,,,,,,,,,0,0,,,,,,,,77,0,0,,0,2,"Crossing the line into the domain that no sane mind will ever glance inside."
 183,"Gobble",0,1,,,,,,10,,,,,,,,,,0,,,,,,,,,78,0,0,,,2,
 184,"Vampiric Aura",0,2,,,,,,0,,,,,,,,,,0,,,,,,,,,,,,,,2,
 185,"Polymorph",0,1,,,,,,20,,,,,,,,,,0,,,,,,,,,79,,,,,2,
@@ -198,3 +198,4 @@
 197,"Guiding Wind",1,,,,11,11,,,,,,,,,,,,0,0,,,,,,,,,0,0,,,2,
 198,"Spear Schiltron",0,,,,,,,,,,,,,,,,,100,0,,,,,,,,,0,0,,0,0,
 199,"Vacillation Influence",,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,2,
+200,"Fantasy Imagination",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"The route is clear. Now only the body must accomplish what the imagination can fantasise. "

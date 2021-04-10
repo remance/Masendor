@@ -587,7 +587,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.basereload = stat[15] + int(self.statlist.gradelist[self.grade][5])
     self.reloadtime = 0  # Unit can only refill magazine when reloadtime is equal or more than reload stat
     self.basecharge = stat[16]
-    self.basechargedef = 100  # All infantry subunit has default 100 charge defence
+    self.basechargedef = 50  # All infantry subunit has default 50 charge defence
     self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
     self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
     skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
@@ -610,6 +610,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.rangepenetrate = 1 - (self.weaponlist.weaponlist[self.rangeweapon[0]][2] * self.weaponlist.quality[self.rangeweapon[1]] / 100)
     self.magazinesize = self.weaponlist.weaponlist[self.rangeweapon[0]][6] # can shoot how many time before have to reload
     self.baserange = int(self.weaponlist.weaponlist[self.rangeweapon[0]][7] * self.weaponlist.quality[self.rangeweapon[1]]) # base weapon range depend on weapon range stat and quality
+    self.arrowspeed = self.weaponlist.weaponlist[self.rangeweapon[0]][8] # travel speed of range attack
     self.trait = self.trait + self.weaponlist.weaponlist[self.meleeweapon[0]][4]  # apply trait from range weapon
     self.trait = self.trait + self.weaponlist.weaponlist[self.rangeweapon[0]][4]  # apply trait from melee weapon
     if self.rangepenetrate > 1:
@@ -631,7 +632,7 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.mountgrade = self.statlist.mountgradelist[stat[29][1]]
     self.mountarmour = self.statlist.mountarmourlist[stat[29][2]]
     if stat[29][0] != 1:  # have mount, add mount stat with its grade to subunit stat
-        self.basechargedef = 50  # charge defence only 50 for cav
+        self.basechargedef = 25  # charge defence only 25 for cav
         self.basespeed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
         self.troophealth += (self.mount[2] * self.mountgrade[3]) + self.mountarmour[1]  # Add mount health to the troop health
         self.basecharge += (self.mount[3] + self.mountgrade[2])  # Add charge power of mount to troop
@@ -1112,7 +1113,8 @@ def combatpathfind(self):
     # ^ End path finding
 
 def losscal(attacker, defender, hit, defense, type, defside = None):
-    """Calculate damage"""
+    """Calculate damage, type 0 is melee attack and will use attacker subunit stat,
+    type that is not 0 will use object stat instead (mostly used for range attack)"""
     who = attacker
     target = defender
 
@@ -1130,7 +1132,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
         if hitchance > 200:
             hitchance = 200
 
-    combatscore = round(hitchance / 50, 1)
+    combatscore = round(hitchance / 100, 1)
     if combatscore == 0 and random.randint(0, 10) > 9:  # Final chence to not miss
         combatscore = 0.1
 
@@ -1149,7 +1151,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
             else:
                 dmg = dmg + (who.charge * 2)
 
-        if target.attacking and target.ignorechargedef is False: # Also include chargedef in dmg if enemy attacking
+        if target.chargeskill in target.skilleffect and target.ignorechargedef is False: # Also include chargedef in dmg if enemy charging
             chargedefcal = who.chargedef - target.charge
             if chargedefcal < 0:
                 chargedefcal = 0
@@ -1157,18 +1159,17 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
         dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
 
-        if target.state == 10: dmg = dmg / 4 # More dmg against enemy not fighting
-    elif type == 1:  # Range Damage
-        dmg = who.rangedmg * ((100 - (target.armour * who.rangepenetrate)) / 100) * combatscore
+    else:  # Range Damage
+        dmg = type.damage * ((100 - (target.armour * type.penetrate)) / 100) * combatscore
 
     leaderdmg = dmg
     unitdmg = (dmg * who.troopnumber) + leaderdmgbonus # damage on subunit is dmg multiply by troop number with addition from leader combat
     if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         unitdmg = unitdmg * 1.25
-    if type == 0: # melee do less damage per hit because the combat happen more frequently than range
-        unitdmg = unitdmg / 10
+    # if type == 0: # melee do less damage per hit because the combat happen more frequently than range
+    #     unitdmg = unitdmg / 20
 
-    moraledmg = dmg / 20
+    moraledmg = dmg / 50
 
     # Damage cannot be negative (it would heal instead), same for morale and leader damage
     if unitdmg < 0:

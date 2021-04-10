@@ -76,9 +76,9 @@
 75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Entertainment may look like it has no place in this hell. But it sure improve the soldiers’ morale."
 76,"Virtue Of Honour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 77,"Kings Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,0,
-78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
-79,"Pain Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
-80,"Poison Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,50,,,0,0,,,2,
+78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Piecing damage from missile can do little damage to these troops. Not even a hail of arrows can stop their advance."
+79,"Pain Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"Ultimate soldiers. Pain and suffering is not even a concept to these monsters of war."
+80,"Poison Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,50,,,0,0,,,2,"Underhand tactic won't work well on these troops. Try crushing them with raw might instead."
 81,"Cold Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,50,0,,,0,0,,,0,"Cold resistant allows these troops to resist negative effect of cold terrain."
 82,"Heat Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,50,0,0,,,0,0,,,0,"Heat resistant allows these troops to resist negative effect of hot terrain."
 83,"Fire Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,50,0,0,0,0,30,0,0,,,0,0,,,2,

@@ -77,7 +77,9 @@ unit_weapon: list of all sub-units' weapons including artillery weapons. The dat
 
 - Magazine for range weapon, how many time the unit can shoot before having to reload. 1 magazine is equal to 1 ammo.
 
-- Range only for range weapon, for now this is convert directly to ingame range  
+- Range for only range weapon, for now this is convert directly to ingame range  
+
+- Travel speed for only range weapon, this is speed of sprite traveling to target
 
 - ImageID, the id of weapon image that will be used for sub-unit icon
 
