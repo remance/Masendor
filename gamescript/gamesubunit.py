@@ -713,14 +713,15 @@ class Subunit(pygame.sprite.Sprite):
             if dt > 0: # only run these when game not pause
                 self.timer += dt
 
+                self.walk = False  # reset walk
+                self.run = False  # reset run
+
                 parentstate = self.parentunit.state
-                if parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99) and self.state not in (97, 98, 99):
+                if parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99) and self.state not in (95, 97, 98, 99):
                     self.state = parentstate # Enforce parentunit state to subunit when moving and breaking
                     if 9 in self.statuseffect: # fight to the death
                         self.state = 10
 
-                self.walk = False  # reset walk
-                self.run = False  # reset run
                 self.attacktarget = self.parentunit.attacktarget
                 self.attackpos = self.parentunit.baseattackpos
                 # if self.attacktarget is not None:
@@ -736,7 +737,7 @@ class Subunit(pygame.sprite.Sprite):
                     if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skillcooldown \
                             and self.basepos.distance_to(self.basetarget) < 100: # charge skill only when running to melee
                         self.useskill(0) # Use charge skill
-                        self.chargemomentum = self.parentunit.runspeed
+                        self.chargemomentum = self.parentunit.runspeed * 2
                         self.parentunit.charging = True
 
                     if self.chargemomentum > 1 and self.chargeskill not in self.skilleffect:  # reset charge momentum if charge skill not active
@@ -751,12 +752,11 @@ class Subunit(pygame.sprite.Sprite):
                     self.timer -= 1
 
                 if parentstate not in (96,97,98,99):
-                    #v Check if in combat or not with collision
-                    if self.enemyfront != [] or self.enemyside != []:
+                    if self.enemyfront != [] or self.enemyside != []: # Check if in combat or not with collision
                         collidelist = self.enemyfront + self.enemyside
                         for subunit in collidelist:
                             if subunit.team != self.team:
-                                if self.state not in (96, 97, 98, 99):
+                                if self.state not in (97, 98, 99):
                                     self.state = 10
                                     self.meleetarget = subunit
                                     if self.enemyfront == []:  # no enemy in front try rotate to enemy at side
@@ -964,8 +964,8 @@ class Subunit(pygame.sprite.Sprite):
                         self.attacking = False
 
                     #v Can move if front not collided
-                    if self.stamina > 0 and (self.parentunit.collide is False or parentstate in (96, 98, 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.attacking) or self.chargemomentum > 1) \
-                            and len(self.enemyfront) == 0 and ((len(self.friendfront) == 0 and parentstate == 10) or parentstate != 10): #  or self.parentunit.retreatstart
+                    if self.stamina > 0 and ((self.parentunit.collide is False or parentstate == 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1) or self.chargemomentum > 1) \
+                            and len(self.enemyfront) == 0 and len(self.friendfront) == 0: #  or self.parentunit.retreatstart
                         if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
                             self.basetarget = self.basetarget + newtarget
@@ -987,7 +987,6 @@ class Subunit(pygame.sprite.Sprite):
 
                             if (self.state not in (98, 99) and (newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999)) \
                                     or self.state in (98, 99):  # cannot go pass map unless in retreat
-                                # print('test1', move.length(), move_length, self.chargemomentum)
                                 if newmove_length <= move_length:  # move normally according to move speed TODO rest state cause charge to stuck before hit enemy?
                                     self.basepos = newpos
                                     self.pos = self.basepos * self.zoom
@@ -1011,7 +1010,6 @@ class Subunit(pygame.sprite.Sprite):
                                 if self.unitleader and newmove_length > 0: #parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     if self.parentunit.moverotate is False:
                                         self.parentunit.basepos += move
-                                    print('test', move.length())
                                     frontpos = (self.parentunit.basepos[0], (self.parentunit.basepos[1] - self.parentunit.baseheightbox))  # find front position
                                     self.parentunit.frontpos = self.rotationxy(self.parentunit.basepos, frontpos, self.parentunit.radians_angle)
 
@@ -1047,8 +1045,6 @@ class Subunit(pygame.sprite.Sprite):
 
                     if self.state != 95 or parentstate not in (10,99): # If not missing main leader can replenish morale
                         self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
-                    else:
-                        print(self.state, parentstate)
                 if self.state == 95: # disobey state, morale gradually decrease until recover
                     self.basemorale -= dt * self.mental
                 if self.state in (98, 99):

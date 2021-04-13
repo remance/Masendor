@@ -1,13 +1,3 @@
-"""
-## Known problem
-another rare bug where subunit easily get killed for some reason, can't seem to repricate it
-autoplacement of 2 units somehow allow the other subunit that stop from retreat to auto place to the enemy side already occupied
-Optimise list
-melee combat need to be optimised more
-change all percentage calculation to float instead of int/100 if possible. Especially number from csv file
-remove index and change call to the sprite itself
-"""
-
 import datetime
 import glob
 import random

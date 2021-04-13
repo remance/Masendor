@@ -30,7 +30,7 @@ Progress done so far:
 Work in progress:
 - F: Retreat and collapse
 - G: Multiple unit melee combat
-- H: Unit split
+- H: Unit split, check for memery leak
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
