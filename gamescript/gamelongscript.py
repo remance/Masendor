@@ -1346,6 +1346,46 @@ def moveleadersquad(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
     newarmysubunit[newrow][newplace] = leader.subunit.gameid
     return replace, replaceflat, newplace, newrow
 
+def leaderchange(self, type):
+    """Leader change subunit or gone/die, type can be "die" or "broken" """
+    checkstate = [100]
+    if type == "broken":
+        checkstate = [99,100]
+    if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
+        for subunit in self.nearbysquadlist:
+            if subunit != 0 and subunit.state not in checkstate and subunit.leader == None:
+                subunit.leader = self.leader
+                self.leader.subunit = subunit
+                for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
+                    if subunit.gameid == self.leader.subunit.gameid:
+                        subunit.leader.subunitpos = index
+                        if self.unitleader:  # set leader subunit to new one
+                            self.parentunit.leadersubunit = subunit
+                            subunit.unitleader = True
+
+                self.leader = None
+                break
+
+        if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in parentunit
+            for index, subunit in enumerate(self.parentunit.subunitsprite):
+                if subunit.state not in checkstate and subunit.leader == None:
+                    subunit.leader = self.leader
+                    self.leader.subunit = subunit
+                    subunit.leader.subunitpos = index
+                    self.leader = None
+                    if self.unitleader:  # set leader subunit to new one
+                        self.parentunit.leadersubunit = subunit
+                        subunit.unitleader = True
+
+                    break
+
+            if self.leader is not None and type == "die":  # Still can't find new subunit so leader disappear with chance of different result
+                self.leader.state = random.randint(97, 100)  # captured, retreated, wounded, dead
+                self.leader.health = 0
+                self.leader.gone()
+
+        self.unitleader = False
+
 def splitunit(battle, who, how):
     """split parentunit either by row or column into two seperate parentunit"""
     from gamescript import gameunit, gameleader

@@ -19,6 +19,7 @@ class Subunit(pygame.sprite.Sprite):
     createtroopstat = gamelongscript.createtroopstat
     rotationxy = gamelongscript.rotationxy
     setrotate = gamelongscript.setrotate
+    leaderchange = gamelongscript.leaderchange
     maxzoom = 10 # max zoom allow
     # use same position as subunit front index 0 = front, 1 = left, 2 = rear, 3 = right
 
@@ -67,6 +68,7 @@ class Subunit(pygame.sprite.Sprite):
         self.magazinenow = 0
         self.zoom = 1
         self.lastzoom = 10
+        self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
 
         self.getfeature = self.gamemapfeature.getfeature
         self.getheight = self.gamemapheight.getheight
@@ -717,7 +719,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.run = False  # reset run
 
                 parentstate = self.parentunit.state
-                if parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99) and self.state not in (95, 97, 98, 99):
+                if self.state not in (95, 97, 98, 99) and parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99):
                     self.state = parentstate # Enforce parentunit state to subunit when moving and breaking
                     if 9 in self.statuseffect: # fight to the death
                         self.state = 10
@@ -751,7 +753,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
                     self.timer -= 1
 
-                if parentstate not in (96,97,98,99):
+                if parentstate not in (96,97,98,99) and self.state != 99:
                     if self.enemyfront != [] or self.enemyside != []: # Check if in combat or not with collision
                         collidelist = self.enemyfront + self.enemyside
                         for subunit in collidelist:
@@ -764,7 +766,8 @@ class Subunit(pygame.sprite.Sprite):
                                         self.newangle = self.setrotate(self.meleetarget.basepos)
                                 parentstate = 10
                                 self.parentunit.state = 10
-                                self.parentunit.attacktarget = self.meleetarget.parentunit
+                                if self.meleetarget is not None:
+                                    self.parentunit.attacktarget = self.meleetarget.parentunit
                                 break
 
                     elif parentstate == 10: # no collide enemy while parent unit in fight state
@@ -951,13 +954,11 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 revertmove = False
-                if self.state != 10 and (self.parentunit.revert or \
-                        (self.angle != self.parentunit.angle and self.parentunit.moverotate is False) or parentstate == 10):
+                if self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
                     revertmove = True # revert move check for in case subunit still need to rotate before moving
 
                 #v Move function to given basetarget position
-                if ((self.angle != self.newangle and revertmove is False) or (self.angle == self.newangle \
-                    and (self.basepos != self.basetarget or self.chargemomentum > 1))): # cannot move if still need to rotate
+                if (revertmove is False or self.angle == self.newangle) and (self.basepos != self.basetarget or self.chargemomentum > 1): # cannot move if still need to rotate
                     if parentstate in (1, 2, 3, 4):
                         self.attacking = True
                     elif self.attacking and parentstate not in (1, 2, 3, 4, 10): # cancel charge when no longer move to melee or in combat
@@ -965,7 +966,7 @@ class Subunit(pygame.sprite.Sprite):
 
                     #v Can move if front not collided
                     if self.stamina > 0 and ((self.parentunit.collide is False or parentstate == 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1) or self.chargemomentum > 1) \
-                            and len(self.enemyfront) == 0 and len(self.friendfront) == 0: #  or self.parentunit.retreatstart
+                            and len(self.enemyfront) == 0 and (len(self.friendfront) == 0 or self.state == 99):
                         if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
                             self.basetarget = self.basetarget + newtarget
@@ -977,17 +978,20 @@ class Subunit(pygame.sprite.Sprite):
                             move.normalize_ip()
 
                             if parentstate in (1, 3, 5, 7):  # walking
-                                move = move * self.parentunit.walkspeed * dt # use walk speed
+                                speed = self.parentunit.walkspeed #use walk speed
                                 self.walk = True
-                            else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                                move = move * self.parentunit.runspeed * dt # use run speed
+                            elif parentstate == 99: # broken run
+                                speed = self.speed / 15 # use its own speed when broken
                                 self.run = True
+                            else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
+                                speed = self.parentunit.runspeed # use run speed
+                                self.run = True
+                            move = move * speed * dt
                             newmove_length = move.length()
                             newpos = self.basepos + move
 
-                            if (self.state not in (98, 99) and (newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999)) \
-                                    or self.state in (98, 99):  # cannot go pass map unless in retreat
-                                if newmove_length <= move_length:  # move normally according to move speed TODO rest state cause charge to stuck before hit enemy?
+                            if  self.state in (98, 99) or (self.state not in (98, 99) and (newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999)):  # cannot go pass map unless in retreat
+                                if newmove_length <= move_length:  # move normally according to move speed
                                     self.basepos = newpos
                                     self.pos = self.basepos * self.zoom
                                     self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
@@ -1030,31 +1034,51 @@ class Subunit(pygame.sprite.Sprite):
 
                 #v Morale check
                 if self.basemorale < self.maxmorale:
-                    if self.morale < 1: # Enter broken state when morale reach 0
-                        if self.state != 99: # This is top state above other states except dead for subunit
-                            self.state = 99 # broken state
+                    if self.morale <= 10: # Enter retreat state when morale reach 0
+                        if self.state not in (98, 99):
+                            self.state = 98 # retreat state
+                            self.brokenlimit += random.randint(10, 20)
+
                             self.moraleregen -= 0.3 # morale regen slower per broken state
+                            if self.brokenlimit > 50:  # begin checking broken state
+                                if self.brokenlimit > 100:
+                                    self.brokenlimit = 100
+                                if random.randint(self.brokenlimit, 100) > 80:  # check whether unit enter broken state or not
+                                    self.state = 99  # Broken state
+                                    self.leaderchange(type="broken")
+
+                                    cornerlist = [[0,self.basepos[1]], [1000,self.basepos[1]],[self.basepos[0],0],[self.basepos[0],1000]]
+                                    whichcorner = [self.basepos.distance_to(cornerlist[0]),self.basepos.distance_to(cornerlist[1]),
+                                                   self.basepos.distance_to(cornerlist[2]),self.basepos.distance_to(cornerlist[3])] # find closest map corner to run to
+                                    foundcorner = whichcorner.index(min(whichcorner))
+                                    self.basetarget = pygame.Vector2(cornerlist[foundcorner])
+                                    self.commandtarget = self.basetarget
+                                    self.newangle = self.setrotate()
+
                             for subunit in self.parentunit.subunitsprite:
                                 subunit.basemorale -= (15 * subunit.mental) # reduce morale of other subunit, creating panic when seeing friend panic and may cause mass panic
-                        self.morale = 0 # morale cannot be lower than 0
-
-                    if self.basemorale < 0: # morale cannot be negative
-                        self.basemorale = 0
-                    elif self.basemorale > 200: # morale cannot be higher than 200
-                        self.basemorale = 200
-
-                    if self.state != 95 or parentstate not in (10,99): # If not missing main leader can replenish morale
-                        self.basemorale += (dt * self.staminastatecal * self.moraleregen) # Morale replenish based on stamina
-                if self.state == 95: # disobey state, morale gradually decrease until recover
-                    self.basemorale -= dt * self.mental
-                if self.state in (98, 99):
-                    if parentstate not in (98, 99):
-                        self.unithealth -= (dt * 100) # Unit begin to desert if broken but parentunit keep fighting
-                        if parentstate != 99 and self.moralestate > 0.2:
-                            self.state = 0  # Reset state to 0 when exit broken state
+                        if self.morale < 0:
+                            self.morale = 0 # morale cannot be lower than 0
 
                 elif self.basemorale > self.maxmorale:
                     self.basemorale -= dt # gradually reduce morale that exceed the starting max amount
+
+                if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing main leader can replenish morale
+                    self.basemorale += (dt * self.staminastatecal * self.moraleregen)  # Morale replenish based on stamina
+
+                if self.state == 95:  # disobey state, morale gradually decrease until recover
+                    self.basemorale -= dt * self.mental
+
+                if self.state == 98:
+                    if parentstate not in (98, 99):
+                        self.unithealth -= (dt * 100)  # Unit begin to desert if retreating but parentunit not retreat/broken
+                        if self.moralestate > 0.2:
+                            self.state = 0  # Reset state to 0 when exit retreat state
+
+                if self.basemorale < 0:  # morale cannot be negative
+                    self.basemorale = 0
+                elif self.basemorale > 200:  # morale cannot be higher than 200
+                    self.basemorale = 200
                 #^ End morale check
 
                 if self.oldlasthealth != self.unithealth:
@@ -1088,6 +1112,11 @@ class Subunit(pygame.sprite.Sprite):
                 elif self.unithealth > self.maxhealth: self.unithealth = self.maxhealth # hp can't exceed max hp (would increase number of troop)
                 #^ End regen
 
+            if self.state in (98, 99) and (self.basepos[0] <= 0 or self.basepos[0] >= 999 or self.basepos[1] <= 0 or self.basepos[1] >= 999): # remove when unit move pass map border
+                self.state = 100  # enter dead state
+                self.troopnumber = 0
+                self.maingame.battlecamera.remove(self)
+
             if self.troopnumber <= 0:  # enter dead state
                 self.state = 100 # enter dead state
                 self.image_original3.blit(self.images[5], self.healthimagerect) # blit white hp bar
@@ -1102,7 +1131,8 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.parentunit.deadchange = True
 
-                self.maingame.battlecamera.change_layer(sprite=self, new_layer=1)
+                if self in self.maingame.battlecamera:
+                    self.maingame.battlecamera.change_layer(sprite=self, new_layer=1)
                 self.maingame.allsubunitlist.remove(self)
                 self.parentunit.subunitsprite.remove(self)
 
@@ -1111,43 +1141,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.gameid, 0, self.parentunit.armysubunit)
                         break
 
-                #v Leader change subunit or gone/die
-                if self.leader is not None and self.leader.state != 100: # Find new subunit for leader if there is one in this subunit
-                    for subunit in self.nearbysquadlist:
-                        if subunit != 0 and subunit.state != 100 and subunit.leader == None:
-                            subunit.leader = self.leader
-                            self.leader.subunit = subunit
-                            for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
-                                if subunit.gameid == self.leader.subunit.gameid:
-                                    subunit.leader.subunitpos = index
-                                    if self.unitleader:  # set leader subunit to new one
-                                        self.parentunit.leadersubunit = subunit
-                                        subunit.unitleader = True
-
-                            self.leader = None
-                            break
-
-                    if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in parentunit
-                        for index, subunit in enumerate(self.parentunit.subunitsprite):
-                            if subunit.state != 100 and subunit.leader == None:
-                                subunit.leader = self.leader
-                                self.leader.subunit = subunit
-                                subunit.leader.subunitpos = index
-                                self.leader = None
-                                if self.unitleader:  # set leader subunit to new one
-                                    self.parentunit.leadersubunit = subunit
-                                    subunit.unitleader = True
-
-                                break
-
-                        if self.leader is not None: # Still can't find new subunit so leader disappear with chance of different result
-                            self.leader.state = random.randint(97,100) # captured, retreated, wounded, dead
-                            self.leader.health = 0
-                            self.leader.gone()
-
-
-                    self.unitleader = False
-                #^ End leader change
+                self.leaderchange(type="die")
 
                 self.maingame.eventlog.addlog([0, str(self.boardpos) + " " + str(self.name)
                                                + " in " + self.parentunit.leader[0].name

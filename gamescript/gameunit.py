@@ -243,7 +243,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.timer = random.random()
         self.statedelay = 3 # some state has delay before can change state, default at 3 seconds
         self.rotatespeed = 1
-        self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
         #^ End default starting value
 
         if np.array_split(self.armysubunit, 2)[0].size > 10 and np.array_split(self.armysubunit, 2)[1].size > 10: self.cansplitrow = True
@@ -288,6 +287,7 @@ class Unitarmy(pygame.sprite.Sprite):
         allshootrange = [] # list of shoot range, use to get the shortest and longest one
 
         #v Grab subunit stat
+        notbroken = False
         for subunit in self.subunitsprite:
             if subunit.state != 100: # only get stat from alive subunit
                 self.troopnumber += subunit.troopnumber
@@ -299,7 +299,12 @@ class Unitarmy(pygame.sprite.Sprite):
                     allshootrange.append(subunit.shootrange)
                 subunit.useskillcond = self.useskillcond
                 howmany += 1
+            if subunit.state not in (99, 100): # check if unit completely broken
+                notbroken = True
         self.troopnumber = int(self.troopnumber) # convert to int to prevent float decimal
+
+        if notbroken == False:
+            self.state = 99 # completely broken
         #^ End grab subunit stat
 
         #v calculate stat for parentunit related calculation
@@ -457,9 +462,10 @@ class Unitarmy(pygame.sprite.Sprite):
 
 
             for subunit in self.subunitsprite: # generate position of each subunit
-                newtarget = parentunittopleft + subunit.armypos
-                subunit.commandtarget = pygame.Vector2(self.rotationxy(self.basepos, newtarget, self.radians_angle)) # rotate according to sprite current rotation
-                subunit.newangle = self.newangle
+                if subunit.state != 99 or (subunit.state == 99 and self.retreatstart):
+                    newtarget = parentunittopleft + subunit.armypos
+                    subunit.commandtarget = pygame.Vector2(self.rotationxy(self.basepos, newtarget, self.radians_angle)) # rotate according to sprite current rotation
+                    subunit.newangle = self.newangle
 
         elif target == "stop": # stop unit from moving
             pass
@@ -470,9 +476,10 @@ class Unitarmy(pygame.sprite.Sprite):
             # parentunittopleft = self.rotationxy(basetarget, parentunittopleft, self.radians_angle)
 
             for subunit in self.subunitsprite: # generate position of each subunit
-                subunit.newangle = self.newangle
-                newtarget = parentunittopleft + subunit.armypos
-                subunit.commandtarget = pygame.Vector2(self.rotationxy(target, newtarget, self.radians_angle)) # rotate according to sprite current rotation
+                if subunit.state != 99 or (subunit.state == 99 and self.retreatstart):
+                    subunit.newangle = self.newangle
+                    newtarget = parentunittopleft + subunit.armypos
+                    subunit.commandtarget = pygame.Vector2(self.rotationxy(target, newtarget, self.radians_angle)) # rotate according to sprite current rotation
 
 
     def authrecal(self):
@@ -547,9 +554,8 @@ class Unitarmy(pygame.sprite.Sprite):
             self.deadchange = False
         #^ End setup frontline when subunit die
 
-        #v remove when go pass the map border for any reason or when troop number reach 0
-        if len(self.armysubunit) < 1 or self.basepos[0] < 0 or self.basepos[0] > 999 or self.basepos[1] < 0 or self.basepos[
-            1] > 999:
+        #v remove when troop number reach 0
+        if len(self.armysubunit) < 1:
             self.stamina, self.morale, self.speed = 0, 0, 0
 
             leaderlist = [leader for leader in self.leader]  # create temp list to remove leader
@@ -661,22 +667,17 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.leader[0].authority += 20
                         self.authrecal()
 
-                if round(self.morale) <= 10 and self.state != 97:  # Retreat state when morale lower than 20
+                if self.morale <= 10:  # Retreat state when morale lower than 10
                     if self.state not in (98,99):
-                        if self.brokenlimit > 50:  # begin checking broken state
-                            if random.randint(self.brokenlimit, 100) > 80: # check whether unit enter broken state or not
-                                self.morale, self.state = 0, 99 # Broken state
-                        else:
                             self.state = 98
                     if self.retreatstart is False:
                         self.retreatstart = True
 
-                if self.state == 98 and self.morale >= self.brokenlimit/2:  # quit retreat when morale reach increasing limit
+                if self.state == 98 and self.morale >= 50:  # quit retreat when morale reach increasing limit
                     self.state = 0 # become idle, not resume previous command
                     self.retreatstart = False
                     self.retreatway = None
                     self.processcommand(self.basepos, False, False, othercommand=1)
-                    self.brokenlimit += random.randint(1,20)
 
                 if self.retreatstart:
                     retreatside = ([any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[0] if subunit != 0)][0],
@@ -699,10 +700,11 @@ class Unitarmy(pygame.sprite.Sprite):
                                             else: # right
                                                 self.retreatway = (self.basepos[0] + self.basewidthbox, self.basepos[1])  # find position to retreat
                                             self.retreatway = [self.rotationxy(self.basepos, self.retreatway, self.radians_angle), index]
-                                basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*100)
+                                basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*1000)
                                 self.processcommand(basetarget, True, True)
                     else:  # no way to retreat, Fight to the death TODO recheck this
                         self.state = 10
+                        print('test')
                         for subunit in self.subunitsprite:
                             if 9 not in subunit.statuseffect:
                                 subunit.statuseffect[9] = self.statuslist[9].copy() # fight to the death status
@@ -823,7 +825,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def processcommand(self, targetpoint, runcommand=False, revertmove=False, enemy=None, othercommand=0):
         """Process input order into state and subunit basetarget action"""
-        if othercommand == 0: # command command
+        if othercommand == 0: # move or attack command
             self.state = 1
 
             if self.attackplace or (enemy is not None and (self.team != enemy.team)): # attack
@@ -860,7 +862,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.leader[0].authority -= self.authpenalty
                 self.authrecal()
 
-        elif othercommand in (1, 2) and self.state != 10: # Pause all action command except combat or broken
+        elif othercommand in (1, 2) and self.state != 10: # Pause all action command except combat
             if self.charging and othercommand == 2: # halt order instead of auto halt
                 self.leader[0].authority -= self.authpenalty  # decrease authority of the first leader for stop charge
                 self.authrecal()  # recal authority
@@ -875,7 +877,6 @@ class Unitarmy(pygame.sprite.Sprite):
     def processretreat(self, mouse_pos, whomouseover):
         if whomouseover is None: # click at empty map
             self.state = 96 # controlled retreat state (not same as 98)
-            print(self.state, 'yes')
             self.commandstate = self.state # command retreat
             self.leader[0].authority -= self.authpenalty # retreat reduce main leader authority
             if self.charging:  # change order when attacking will cause authority penalty
@@ -885,7 +886,6 @@ class Unitarmy(pygame.sprite.Sprite):
             self.set_target(mouse_pos)
             self.revertmove()
             self.commandtarget = self.basetarget
-            print(self.state, 'yes')
 
     def command(self, mouse_pos, mouse_right, double_mouse_right, whomouseover, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""

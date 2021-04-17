@@ -735,7 +735,10 @@ class Battle():
                             #     subunit.unithealth -= subunit.unithealth
                             self.subunitselected.who.unithealth -= self.subunitselected.who.unithealth
                         elif event.key == pygame.K_m and self.lastselected is not None:
-                            self.lastselected.leader[0].health -= 1000
+                            # self.lastselected.leader[0].health -= 1000
+                            self.subunitselected.who.basemorale -= 1000
+                            self.subunitselected.who.brokenlimit = 80
+                            # self.subunitselected.who.state = 99
                         elif event.key == pygame.K_COMMA and self.lastselected is not None:
                             for index, subunit in enumerate(self.lastselected.subunitsprite):
                                 subunit.stamina -= subunit.stamina
@@ -1260,11 +1263,12 @@ class Battle():
                             spritetwo.enemyside.append(spriteone)
                     else: # collide with subunit in same unit
                         if spriteone.frontsidepos.distance_to(spritetwo.basepos) < self.frontdistance: # first subunit collision
-                            # if spritetwo.frontline:
-                            spriteone.friendfront.append(spritetwo)
+                            if spritetwo.state != 99:
+                                spriteone.friendfront.append(spritetwo)
                         if spritetwo.frontsidepos.distance_to(spriteone.basepos) < self.frontdistance: # second subunit
                             # if spriteone.frontline:
-                            spritetwo.friendfront.append(spriteone)
+                            if spriteone.state != 99:
+                                spritetwo.friendfront.append(spriteone)
 
                 self.subunitposarray = self.mapmovearray.copy()
                 for subunit in self.allsubunitlist:
