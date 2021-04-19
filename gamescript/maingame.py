@@ -1240,10 +1240,8 @@ class Battle():
                 #^ End drama
 
                 #v Updater
-                self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
-                                        self.battlemousepos[0], mouse_up)
-
-                self.lastmouseover = None  # reset last parentunit mouse over
+                for unit in self.allunitlist:
+                    unit.collide = False  # reset collide
 
                 tree = KDTree([sprite.basepos for sprite in self.allsubunitlist]) # collision loop check, much faster than pygame collide check
                 collisions = tree.query_pairs(self.collidedistance)
@@ -1275,6 +1273,11 @@ class Battle():
                     for y in subunit.posrange[0]:
                         for x in subunit.posrange[1]:
                             self.subunitposarray[x][y] = 0
+
+                self.unitupdater.update(self.currentweather, self.subunit, self.dt, self.camerascale,
+                                        self.battlemousepos[0], mouse_up)
+                self.lastmouseover = None  # reset last parentunit mouse over
+
                 self.leaderupdater.update()
                 self.subunitupdater.update(self.currentweather, self.dt, self.camerascale, self.combattimer,
                                          self.battlemousepos[0], mouse_up)

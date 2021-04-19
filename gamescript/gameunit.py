@@ -680,34 +680,25 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.processcommand(self.basepos, False, False, othercommand=1)
 
                 if self.retreatstart:
-                    retreatside = ([any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[0] if subunit != 0)][0],
-                                   [any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[1] if subunit != 0)][0],
-                                   [any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[2] if subunit != 0)][0],
-                                   [any(subunit.enemyfront != [] and subunit.enemyside != [] for subunit in self.frontlineobject[3] if subunit != 0)][0])
-                    if any(side is False for side in retreatside): # has no collided side to flee
-                        if self.state in (98, 99): # retreat/broken state
-                            if self.retreatway is None or retreatside[self.retreatway[1]]: # not yet start retreat or previous retreat way got blocked
-                                if retreatside[3] is False: # prioritise rear retreat
-                                    self.retreatway = (self.basepos[0], (self.basepos[1] + self.baseheightbox))  # find rear position to retreat
-                                    self.retreatway = [self.rotationxy(self.basepos, self.retreatway, self.radians_angle), 3]
-                                else:
-                                    for index, side in enumerate(retreatside):
-                                        if side is False:
-                                            if index == 0: # front
-                                                self.retreatway = (self.basepos[0], (self.basepos[1] - self.baseheightbox))  # find position to retreat
-                                            elif index == 1: # left
-                                                self.retreatway = (self.basepos[0] - self.basewidthbox, self.basepos[1])  # find position to retreat
-                                            else: # right
-                                                self.retreatway = (self.basepos[0] + self.basewidthbox, self.basepos[1])  # find position to retreat
-                                            self.retreatway = [self.rotationxy(self.basepos, self.retreatway, self.radians_angle), index]
-                                basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*1000)
-                                self.processcommand(basetarget, True, True)
-                    else:  # no way to retreat, Fight to the death TODO recheck this
-                        self.state = 10
-                        print('test')
-                        for subunit in self.subunitsprite:
-                            if 9 not in subunit.statuseffect:
-                                subunit.statuseffect[9] = self.statuslist[9].copy() # fight to the death status
+                    if self.retreatway is None: # not yet start retreat or previous retreat way got blocked
+                        retreatside = (
+                        sum(subunit.enemyfront != [] or subunit.enemyside != [] for subunit in self.frontlineobject[0] if subunit != 0),
+                        sum(subunit.enemyfront != [] or subunit.enemyside != [] for subunit in self.frontlineobject[1] if subunit != 0),
+                        sum(subunit.enemyfront != [] or subunit.enemyside != [] for subunit in self.frontlineobject[2] if subunit != 0),
+                        sum(subunit.enemyfront != [] or subunit.enemyside != [] for subunit in self.frontlineobject[3] if subunit != 0))
+
+                        thisindex = retreatside.index(min(retreatside))  # find side with least subunit fighting to retreat
+                        if thisindex == 0: # front
+                            self.retreatway = (self.basepos[0], (self.basepos[1] - self.baseheightbox))  # find position to retreat
+                        elif thisindex == 1: # left
+                            self.retreatway = (self.basepos[0] - self.basewidthbox, self.basepos[1])  # find position to retreat
+                        elif thisindex == 2: # right
+                            self.retreatway = (self.basepos[0] + self.basewidthbox, self.basepos[1])  # find position to retreat
+                        else: # rear
+                            self.retreatway = (self.basepos[0], (self.basepos[1] + self.baseheightbox))  # find rear position to retreat
+                        self.retreatway = [self.rotationxy(self.basepos, self.retreatway, self.radians_angle), thisindex]
+                        basetarget = self.basepos + ((self.retreatway[0] - self.basepos)*1000)
+                        self.processcommand(basetarget, True, True)
                         # if random.randint(0, 100) > 99:  ## change side via surrender or betrayal
                         #     if self.team == 1:
                         #         self.maingame.allunitindex = self.switchfaction(self.maingame.team1army, self.maingame.team2army,
@@ -789,8 +780,6 @@ class Unitarmy(pygame.sprite.Sprite):
                     self.set_target(self.attacktarget.basepos) # move to new basetarget
                     self.newangle = self.setrotate() # also keep rotate to basetarget
                 #^ End range attack state
-
-                self.collide = False # reset collide
 
         else: # dead parentunit
             #v parentunit just got killed

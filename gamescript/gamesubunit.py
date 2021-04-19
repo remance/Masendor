@@ -599,6 +599,8 @@ class Subunit(pygame.sprite.Sprite):
         #^ End rounding up
 
         self.rotatespeed = self.parentunit.rotatespeed * 2 # rotate speed for subunit only use for self rotate not subunit rotate related
+        if self.state == 99:
+            self.rotatespeed = self.speed
 
         #v cooldown, active and effect timer function
         self.skillcooldown = {key: val - self.timer for key, val in self.skillcooldown.items()} # cooldown decrease overtime
@@ -719,6 +721,10 @@ class Subunit(pygame.sprite.Sprite):
                 self.run = False  # reset run
 
                 parentstate = self.parentunit.state
+                if parentstate in (1, 2, 3, 4):
+                    self.attacking = True
+                elif self.attacking and parentstate not in (1, 2, 3, 4, 10):  # cancel charge when no longer move to melee or in combat
+                    self.attacking = False
                 if self.state not in (95, 97, 98, 99) and parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99):
                     self.state = parentstate # Enforce parentunit state to subunit when moving and breaking
                     if 9 in self.statuseffect: # fight to the death
@@ -753,166 +759,175 @@ class Subunit(pygame.sprite.Sprite):
                         self.useskill(self.availableskill[random.randint(0, len(self.availableskill) - 1)])
                     self.timer -= 1
 
-                if parentstate not in (96,97,98,99) and self.state != 99:
-                    if self.enemyfront != [] or self.enemyside != []: # Check if in combat or not with collision
-                        collidelist = self.enemyfront + self.enemyside
-                        for subunit in collidelist:
-                            if subunit.team != self.team:
-                                if self.state not in (97, 98, 99):
+                # if parentstate not in (96,97,98,99) and self.state != 99:
+                if self.enemyfront != [] or self.enemyside != []: # Check if in combat or not with collision
+                    collidelist = self.enemyfront + self.enemyside
+                    for subunit in collidelist:
+                        if subunit.team != self.team:
+                            if self.state not in (96, 98, 99):
+                                self.state = 10
+                                self.meleetarget = subunit
+                                if self.enemyfront == []:  # no enemy in front try rotate to enemy at side
+                                    # self.basetarget = self.meleetarget.basepos
+                                    self.newangle = self.setrotate(self.meleetarget.basepos)
+                            else:  # no way to retreat, Fight to the death
+                                if self.enemyfront != [] and self.enemyside != []: # if both front and any side got attacked
                                     self.state = 10
-                                    self.meleetarget = subunit
-                                    if self.enemyfront == []:  # no enemy in front try rotate to enemy at side
-                                        # self.basetarget = self.meleetarget.basepos
-                                        self.newangle = self.setrotate(self.meleetarget.basepos)
+                                    if 9 not in self.statuseffect:
+                                        self.statuseffect[9] = self.statuslist[9].copy() # fight to the death status
+                            if parentstate not in (96,98,99):
                                 parentstate = 10
                                 self.parentunit.state = 10
-                                if self.meleetarget is not None:
-                                    self.parentunit.attacktarget = self.meleetarget.parentunit
-                                break
+                            if self.meleetarget is not None:
+                                self.parentunit.attacktarget = self.meleetarget.parentunit
+                            break
 
-                    elif parentstate == 10: # no collide enemy while parent unit in fight state
-                        if self.attacking and self.parentunit.collide:
-                            if self.chargemomentum == 1 and (self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1: # attack to nearest target instead
-                                if self.meleetarget is None and self.parentunit.attacktarget is not None:
-                                    self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
-                                if self.closetarget is None: # movement queue is empty regenerate new one
-                                    self.findclosetarget() # find new close target
+                elif parentstate == 10: # no collide enemy while parent unit in fight state
+                    print(self.attacking)
+                    if self.attacking and self.parentunit.collide:
+                        if self.chargemomentum == 1 and (self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1: # attack to nearest target instead
+                            print('test')
+                            if self.meleetarget is None and self.parentunit.attacktarget is not None:
+                                self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
+                            if self.closetarget is None: # movement queue is empty regenerate new one
+                                self.findclosetarget() # find new close target
 
-                                    if self.closetarget is not None: # found target to fight
+                                if self.closetarget is not None: # found target to fight
+                                    if self.state != 10:
+                                        print(self.gameid)
+                                    if self not in self.maingame.combatpathqueue:
+                                        self.maingame.combatpathqueue.append(self)
 
-                                        if self not in self.maingame.combatpathqueue:
-                                            self.maingame.combatpathqueue.append(self)
+                                else: # no target to fight move back to command pos first)
+                                    self.basetarget = self.attacktarget.basepos
+                                    self.newangle = self.setrotate()
 
-                                    else: # no target to fight move back to command pos first)
-                                        self.basetarget = self.attacktarget.basepos
+                            if self.meleetarget.parentunit.state != 100:
+                                if self.movetimer == 0:
+                                    self.movetimer = 0.1 # recalculate again in 10 seconds if not in fight
+                                    # if len(self.friendfront) != 0 and len(self.enemyfront) == 0: # collide with friend try move to basetarget first before enemy
+                                        # self.combatmovequeue = [] # clean queue since the old one no longer without collide
+                                else:
+                                    self.movetimer += dt
+                                    if len(self.enemyfront) != 0 or len(self.enemyside) != 0: # in fight, stop timer
+                                        self.movetimer = 0
+
+                                    elif self.movetimer > 10 or len(self.combatmovequeue) == 0: # # time up, or no path. reset path
+                                        self.movetimer = 0
+                                        self.closetarget = None
+                                        if self in self.maingame.combatpathqueue:
+                                            self.maingame.combatpathqueue.remove(self)
+
+                                    elif len(self.combatmovequeue) > 0: # no collide move to enemy
+                                        self.basetarget = pygame.Vector2(self.combatmovequeue[0])
                                         self.newangle = self.setrotate()
 
-                                if self.meleetarget.parentunit.state != 100:
-                                    if self.movetimer == 0:
-                                        self.movetimer = 0.1 # recalculate again in 10 seconds if not in fight
-                                        # if len(self.friendfront) != 0 and len(self.enemyfront) == 0: # collide with friend try move to basetarget first before enemy
-                                            # self.combatmovequeue = [] # clean queue since the old one no longer without collide
-                                    else:
-                                        self.movetimer += dt
-                                        if len(self.enemyfront) != 0 or len(self.enemyside) != 0: # in fight, stop timer
-                                            self.movetimer = 0
+                            else: # whole targeted enemy unit destroyed, reset target and state
+                                self.meleetarget = None
+                                self.closetarget = None
+                                if self in self.maingame.combatpathqueue:
+                                    self.maingame.combatpathqueue.remove(self)
 
-                                        elif self.movetimer > 10 or len(self.combatmovequeue) == 0: # # time up, or no path. reset path
-                                            self.movetimer = 0
-                                            self.closetarget = None
-                                            if self in self.maingame.combatpathqueue:
-                                                self.maingame.combatpathqueue.remove(self)
+                                self.attacktarget = None
+                                self.basetarget = self.commandtarget
+                                self.newangle = self.setrotate()
+                                self.newangle = self.parentunit.angle
+                                self.state = 0
 
-                                        elif len(self.combatmovequeue) > 0: # no collide move to enemy
-                                            self.basetarget = pygame.Vector2(self.combatmovequeue[0])
-                                            self.newangle = self.setrotate()
+                        elif self.chargemomentum > 1: # gradually reduce charge momentum during combat
+                            self.chargemomentum -= dt
+                            if self.chargemomentum < 1:
+                                self.chargemomentum = 1
 
-                                else: # whole targeted enemy unit destroyed, reset target and state
-                                    self.meleetarget = None
-                                    self.closetarget = None
-                                    if self in self.maingame.combatpathqueue:
-                                        self.maingame.combatpathqueue.remove(self)
-
-                                    self.attacktarget = None
-                                    self.basetarget = self.commandtarget
-                                    self.newangle = self.setrotate()
-                                    self.newangle = self.parentunit.angle
-                                    self.state = 0
-
-                            elif self.chargemomentum > 1: # gradually reduce charge momentum during combat
-                                self.chargemomentum -= dt
-                                if self.chargemomentum < 1:
-                                    self.chargemomentum = 1
-
-                        elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
-                            self.meleetarget = None
-                            self.closetarget = None
-                            if self in self.maingame.combatpathqueue:
-                                self.maingame.combatpathqueue.remove(self)
-
-                            self.attacktarget = None
-                            self.basetarget = self.commandtarget
-                            self.newangle = self.parentunit.angle
-                            self.state = 0
-
-                        if self.state != 10 and self.ammo > 0 and self.parentunit.fireatwill == 0 and (
-                                self.arcshot or self.frontline) and self.chargemomentum == 1:  # Help range attack when parentunit in melee combat if has arcshot or frontline
-                            self.state = 11
-                            if self.parentunit.neartarget != {} and (self.attacktarget is None or self.attackpos == 0):
-                                self.findshootingtarget(parentstate)
-
-                    #^ End melee check
-
-                    else: # range attack
+                    elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
                         self.meleetarget = None
                         self.closetarget = None
                         if self in self.maingame.combatpathqueue:
                             self.maingame.combatpathqueue.remove(self)
+
                         self.attacktarget = None
-                        self.combatmovequeue = []
+                        self.basetarget = self.commandtarget
+                        self.newangle = self.parentunit.angle
+                        self.state = 0
 
-                        #v Range attack function
-                        if parentstate == 11: # Unit in range attack state
-                            self.state = 0 # Default state at idle
-                            if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
-                                    and self.shootrange >= self.attackpos.distance_to(self.parentunit.basepos): # can shoot if have ammo and in shoot range
-                                self.state = 11 # range combat state
+                    if self.state != 10 and self.ammo > 0 and self.parentunit.fireatwill == 0 and (
+                            self.arcshot or self.frontline) and self.chargemomentum == 1:  # Help range attack when parentunit in melee combat if has arcshot or frontline
+                        self.state = 11
+                        if self.parentunit.neartarget != {} and (self.attacktarget is None or self.attackpos == 0):
+                            self.findshootingtarget(parentstate)
 
-                        elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
-                                                                                                        and self.shootmove)):  # Fire at will, auto pick closest enemy
-                            if self.parentunit.neartarget != {} and self.attacktarget is None:
-                                self.findshootingtarget(parentstate)
+                #^ End melee check
 
-                    if self.state in (11, 12, 13) and self.ammo > 0 and self.magazinenow == 0: # reloading ammo
-                        self.reloadtime += dt
-                        if self.reloadtime >= self.reload:
-                            self.magazinenow = self.magazinesize
-                            self.ammo -= 1
-                            self.reloadtime = 0
-                        self.stamina = self.stamina - (dt * 5) # use stamina while reloading
-                    #^ End range attack function
+                else: # range attack
+                    self.meleetarget = None
+                    self.closetarget = None
+                    if self in self.maingame.combatpathqueue:
+                        self.maingame.combatpathqueue.remove(self)
+                    self.attacktarget = None
+                    self.combatmovequeue = []
 
-                    #v Combat action related
-                    if combattimer >= 0.5: # combat is calculated every 0.5 second in game time
-                        if self.state == 10: # if melee combat (engaging anyone on any side)
-                            collidelist = [subunit for subunit in self.enemyfront if subunit.team != self.team]
-                            for subunit in collidelist:
-                                anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
-                                if anglecheck >= 135:  # front
-                                    hitside = 0
-                                elif anglecheck >= 45:  # side
-                                    hitside = 1
-                                else: # rear
-                                    hitside = 2
-                                self.dmgcal(subunit, 0, hitside, self.maingame.gameunitstat.statuslist, combattimer)
-                                self.stamina = self.stamina - (combattimer * 5)
+                    #v Range attack function
+                    if parentstate == 11: # Unit in range attack state
+                        self.state = 0 # Default state at idle
+                        if (self.ammo > 0 or self.magazinenow > 0) and self.attackpos != 0 \
+                                and self.shootrange >= self.attackpos.distance_to(self.parentunit.basepos): # can shoot if have ammo and in shoot range
+                            self.state = 11 # range combat state
 
-                        elif self.state in (11, 12, 13): # range combat
-                            if type(self.attacktarget) == int: # For fire at will, which attacktarge is int
-                                allunitindex = self.maingame.allunitindex
-                                if self.attacktarget in allunitindex: # if the attack basetarget still alive (if dead it would not be in index list)
-                                    self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)] # change attacktarget index into sprite
-                                else: # enemy dead
-                                    self.attackpos = 0 # reset attackpos to 0
-                                    self.attacktarget = None # reset attacktarget to 0
+                    elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
+                                                                                                    and self.shootmove)):  # Fire at will, auto pick closest enemy
+                        if self.parentunit.neartarget != {} and self.attacktarget is None:
+                            self.findshootingtarget(parentstate)
 
-                                    for target in list(self.parentunit.neartarget.values()): # find other nearby basetarget to shoot
-                                        if target in allunitindex: # check if basetarget alive
-                                            self.attackpos = target[1]
-                                            self.attacktarget = target[1]
-                                            self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
-                                            break # found new basetarget break loop
+                if self.state in (11, 12, 13) and self.ammo > 0 and self.magazinenow == 0: # reloading ammo
+                    self.reloadtime += dt
+                    if self.reloadtime >= self.reload:
+                        self.magazinenow = self.magazinesize
+                        self.ammo -= 1
+                        self.reloadtime = 0
+                    self.stamina = self.stamina - (dt * 5) # use stamina while reloading
+                #^ End range attack function
 
-                            if self.magazinenow > 0 and self.shootrange > 0 and ((self.attacktarget is not None and self.attacktarget.state != 100) or
-                                                (self.attacktarget is None and self.attackpos != 0)) \
-                                                and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
-                                # can shoot if reload finish and basetarget existed and not dead. Non arcshot cannot shoot if forbidded
-                                rangeattack.Rangearrow(self, self.basepos.distance_to(self.attackpos), self.shootrange, self.zoom) # Shoot at enemy
-                                self.magazinenow -= 1 # use 1 ammo in magazine
-                            elif self.attacktarget is not None and self.attacktarget.state == 100: # if basetarget die when it about to shoot
-                                self.parentunit.rangecombatcheck, self.parentunit.attacktarget = False, 0 # reset range combat check and basetarget
+                #v Combat action related
+                if combattimer >= 0.5: # combat is calculated every 0.5 second in game time
+                    if self.state == 10: # if melee combat (engaging anyone on any side)
+                        collidelist = [subunit for subunit in self.enemyfront if subunit.team != self.team]
+                        for subunit in collidelist:
+                            anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
+                            if anglecheck >= 135:  # front
+                                hitside = 0
+                            elif anglecheck >= 45:  # side
+                                hitside = 1
+                            else: # rear
+                                hitside = 2
+                            self.dmgcal(subunit, 0, hitside, self.maingame.gameunitstat.statuslist, combattimer)
+                            self.stamina = self.stamina - (combattimer * 5)
 
-                    #^ End combat related
+                    elif self.state in (11, 12, 13): # range combat
+                        if type(self.attacktarget) == int: # For fire at will, which attacktarge is int
+                            allunitindex = self.maingame.allunitindex
+                            if self.attacktarget in allunitindex: # if the attack basetarget still alive (if dead it would not be in index list)
+                                self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)] # change attacktarget index into sprite
+                            else: # enemy dead
+                                self.attackpos = 0 # reset attackpos to 0
+                                self.attacktarget = None # reset attacktarget to 0
+
+                                for target in list(self.parentunit.neartarget.values()): # find other nearby basetarget to shoot
+                                    if target in allunitindex: # check if basetarget alive
+                                        self.attackpos = target[1]
+                                        self.attacktarget = target[1]
+                                        self.attacktarget = self.maingame.allunitlist[allunitindex.index(self.attacktarget)]
+                                        break # found new basetarget break loop
+
+                        if self.magazinenow > 0 and self.shootrange > 0 and ((self.attacktarget is not None and self.attacktarget.state != 100) or
+                                            (self.attacktarget is None and self.attackpos != 0)) \
+                                            and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
+                            # can shoot if reload finish and basetarget existed and not dead. Non arcshot cannot shoot if forbidded
+                            rangeattack.Rangearrow(self, self.basepos.distance_to(self.attackpos), self.shootrange, self.zoom) # Shoot at enemy
+                            self.magazinenow -= 1 # use 1 ammo in magazine
+                        elif self.attacktarget is not None and self.attacktarget.state == 100: # if basetarget die when it about to shoot
+                            self.parentunit.rangecombatcheck, self.parentunit.attacktarget = False, 0 # reset range combat check and basetarget
+
+                #^ End combat related
 
                 if parentstate != 10: # reset basetarget every update to command basetarget outside of combat
                     self.basetarget = self.commandtarget
@@ -959,10 +974,6 @@ class Subunit(pygame.sprite.Sprite):
 
                 #v Move function to given basetarget position
                 if (revertmove is False or self.angle == self.newangle) and (self.basepos != self.basetarget or self.chargemomentum > 1): # cannot move if still need to rotate
-                    if parentstate in (1, 2, 3, 4):
-                        self.attacking = True
-                    elif self.attacking and parentstate not in (1, 2, 3, 4, 10): # cancel charge when no longer move to melee or in combat
-                        self.attacking = False
 
                     #v Can move if front not collided
                     if self.stamina > 0 and ((self.parentunit.collide is False or parentstate == 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1) or self.chargemomentum > 1) \
