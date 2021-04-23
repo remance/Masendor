@@ -1393,29 +1393,23 @@ def splitunit(battle, who, how):
     if how == 0:  # split by row
         newarmysubunit = np.array_split(who.armysubunit, 2)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2)[0]
-        who.squadalive = np.array_split(who.squadalive, 2)[0]
-        newpos = who.allsidepos[3] - ((who.allsidepos[3] - who.basepos) / 2) # position of new parentunit when split
-        who.basepos = who.allsidepos[0] - ((who.allsidepos[0] - who.basepos) / 2) # position of original parentunit
+        newpos = pygame.Vector2(who.basepos[0], who.basepos[1] + (who.baseheightbox / 2))
+        who.basepos = pygame.Vector2(who.basepos[0], who.basepos[1] - (who.baseheightbox / 2)) # new position for original parentunit
 
     else:  # split by column
         newarmysubunit = np.array_split(who.armysubunit, 2, axis=1)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2, axis=1)[0]
-        who.squadalive = np.array_split(who.squadalive, 2, axis=1)[0]
-        newpos = who.allsidepos[2] - ((who.allsidepos[2] - who.basepos) / 2)
-        who.basepos = who.allsidepos[1] - ((who.allsidepos[1] - who.basepos) / 2)
+        newpos = pygame.Vector2(who.basepos[0] + (who.basewidthbox / 2), who.basepos[1])
+        who.basepos =  pygame.Vector2(who.basepos[0] - (who.basewidthbox / 2), who.basepos[1])
 
     if who.leader[1].subunit.gameid not in newarmysubunit:  # move leader if subunit not in new one
         replace, replaceflat, newplace, newrow = moveleadersquad(who.leader[1], who.armysubunit, newarmysubunit)
-        who.squadalive[replace[0]][replace[1]] = \
-            [0 if who.armysubunit[replace[0]][replace[1]] == 0 or who.subunitsprite[replaceflat[0]].state == 100 else 1][0]
 
     alreadypick = []
     for leader in (who.leader[0], who.leader[2], who.leader[3]):
         if leader.subunit.gameid not in who.armysubunit:
             replace, replaceflat, newplace, newrow = moveleadersquad(leader, newarmysubunit, who.armysubunit, alreadypick)
             alreadypick.append((newrow,newplace))
-            who.squadalive[replace[0]][replace[1]] = \
-                [0 if who.armysubunit[replace[0]][replace[1]] == 0 or who.subunitsprite[replaceflat[0]].state == 100 else 1][0]
             leader.subunitpos = newplace + (newrow * 8)
 
     squadsprite = [squad for squad in who.subunitsprite if squad.gameid in newarmysubunit]  # list of sprite not sorted yet
@@ -1428,6 +1422,7 @@ def splitunit(battle, who, how):
                 newsquadsprite.append(squad)
                 break
     who.subunitsprite = [squad for squad in who.subunitsprite if squad.gameid in who.armysubunit]
+    # who.subunitspritearray =
     #^ End sort
 
     #v Reset position in inspectui for both parentunit
@@ -1460,14 +1455,11 @@ def splitunit(battle, who, how):
         leader.rect = leader.image.get_rect(center=leader.imgposition)
 
     coa = who.coa
-    who.createsprite()
     who.setsubunittarget()
     who.setupfrontline()
+    who.setuparmy()
     who.zoom = battle.camerascale
-    who.zoomscale()
-    who.height = who.gamemapheight.getheight(who.basepos)
 
-    who.rotate()
     who.newangle = who.angle
     #^ End change original
 
@@ -1505,7 +1497,7 @@ def splitunit(battle, who, how):
     newgameid = battle.allunitlist[-1].gameid + 1
 
     army = gameunit.Unitarmy(startposition=newpos, gameid=newgameid,
-                                  squadlist=newarmysquad, imgsize=(battle.squadwidth, battle.squadheight),
+                                  squadlist=newarmysubunit, imgsize=(battle.squadwidth, battle.squadheight),
                                   colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle, team=who.team)
 
     whosearmy.add(army)
@@ -1518,7 +1510,7 @@ def splitunit(battle, who, how):
     for index, leader in enumerate(army.leader):  # Change army position of all leader in new parentunit
         if how == 0:
             if leader.name != "None":
-                leader.subunitpos -= newarmysquad.size  # Just minus the row gone to find new position
+                leader.subunitpos -= newarmysubunit.size  # Just minus the row gone to find new position
             else: leader.subunitpos = 0
         else:
             if leader.name != "None":
@@ -1543,20 +1535,10 @@ def splitunit(battle, who, how):
 
     army.zoom = battle.camerascale
 
-    #v Remake sprite to match the current varible (angle, zoom level, position)
-    army.createsprite()
+    army.startset(battle.subunit)
     army.setsubunittarget()
-    army.zoomscale()
-    army.angle = army.angle
-    army.rotate()
-    #^ End remake sprite
-
-    army.terrain, army.feature = army.getfeature(army.basepos, army.gamemap)
-
-    army.sidefeature = [army.getfeature(army.allsidepos[0], army.gamemap), army.getfeature(army.allsidepos[1], army.gamemap),
-                        army.getfeature(army.allsidepos[2], army.gamemap), army.getfeature(army.allsidepos[3], army.gamemap)]
-
-    army.autosquadplace = False
+    for subunit in army.subunitsprite:
+        subunit.gamestart(subunit.zoom)
 
     battle.troopnumbersprite.add(gameunit.Troopnumber(army))
     #^ End making new parentunit

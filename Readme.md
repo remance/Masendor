@@ -26,11 +26,12 @@ Progress done so far:
 - C: Unit dead working correctly.
 - D: Ally collision detection, rework troop number sprite
 - E: Melee combat and position system
+- F: Retreat and collapse
 
 Work in progress:
-- F: Retreat and collapse
-- G: Multiple unit melee combat
-- H: Unit split, check for memery leak
+
+- G: Unit split, check for memery leak, final check for everything and multiple unit melee combat
+
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 

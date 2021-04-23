@@ -783,18 +783,14 @@ class Subunit(pygame.sprite.Sprite):
                             break
 
                 elif parentstate == 10: # no collide enemy while parent unit in fight state
-                    print(self.attacking)
                     if self.attacking and self.parentunit.collide:
                         if self.chargemomentum == 1 and (self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1: # attack to nearest target instead
-                            print('test')
                             if self.meleetarget is None and self.parentunit.attacktarget is not None:
                                 self.meleetarget = self.parentunit.attacktarget.subunitsprite[0]
                             if self.closetarget is None: # movement queue is empty regenerate new one
                                 self.findclosetarget() # find new close target
 
                                 if self.closetarget is not None: # found target to fight
-                                    if self.state != 10:
-                                        print(self.gameid)
                                     if self not in self.maingame.combatpathqueue:
                                         self.maingame.combatpathqueue.append(self)
 
