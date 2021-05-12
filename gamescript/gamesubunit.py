@@ -590,7 +590,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.rangedef < 0: self.rangedef = 0
         if self.armour < 0: self.armour = 0
         elif self.armour > 100: self.armour = 100 # Armour cannot be higher than 100 since it is percentage reduction
-        if self.speed < 1: self.speed = 1 # allow minor movement at all time
+        if self.speed < 0: self.speed = 0
         if self.accuracy < 0: self.accuracy = 0
         if self.reload < 0: self.reload = 0
         if self.charge < 0: self.charge = 0
@@ -690,24 +690,16 @@ class Subunit(pygame.sprite.Sprite):
 
             #v Stamina bar
             if self.oldlaststamina != self.stamina:
-                staminalist = (self.stamina75, self.stamina50, self.stamina25, 0, -1)
+                staminalist = (self.maxstamina, self.stamina75, self.stamina50, self.stamina25, 0)
                 for index, stamina in enumerate(staminalist):
-                    if self.stamina > stamina:
+                    if self.stamina >= stamina:
                         if self.laststaminastate != abs(4 - index):
-                            if index != 3:
-                                self.image_original3.blit(self.images[index + 6], self.staminaimagerect)
-                                self.zoomscale()
-                                self.imageblock_original.blit(self.images[index + 6], self.staminaimageblockrect)
-                                self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
-                                self.laststaminastate = abs(4 - index)
-                            else: # the last level is for collaspe state, condition is slightly different
-                                if self.state != 97: # not in collaspe state
-                                    self.image_original3.blit(self.images[10], self.staminaimagerect)
-                                    self.zoomscale()
-                                    self.imageblock_original.blit(self.images[10], self.staminaimageblockrect)
-                                    self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
-                                    self.laststaminastate = 0
-                                    self.oldlaststamina = self.stamina
+                            # if index != 3:
+                            self.image_original3.blit(self.images[index + 6], self.staminaimagerect)
+                            self.zoomscale()
+                            self.imageblock_original.blit(self.images[index + 6], self.staminaimageblockrect)
+                            self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+                            self.laststaminastate = abs(4 - index)
                         break
 
                 self.oldlaststamina = self.stamina
@@ -973,7 +965,7 @@ class Subunit(pygame.sprite.Sprite):
 
                     #v Can move if front not collided
                     if self.stamina > 0 and ((self.parentunit.collide is False or parentstate == 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1) or self.chargemomentum > 1) \
-                            and len(self.enemyfront) == 0 and (len(self.friendfront) == 0 or self.state == 99):
+                            and len(self.enemyfront) == 0 and (len(self.friendfront) == 0 or self.state == 99 or parentstate == 0):
                         if self.chargemomentum > 1 and self.basepos == self.basetarget:
                             newtarget = self.frontsidepos - self.basepos
                             self.basetarget = self.basetarget + newtarget
@@ -987,7 +979,7 @@ class Subunit(pygame.sprite.Sprite):
                             if parentstate in (1, 3, 5, 7):  # walking
                                 speed = self.parentunit.walkspeed #use walk speed
                                 self.walk = True
-                            elif parentstate == 99: # broken run
+                            elif parentstate in (10, 99) or self.chargemomentum > 1: # run with its own speed instead of uniformed run
                                 speed = self.speed / 15 # use its own speed when broken
                                 self.run = True
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
