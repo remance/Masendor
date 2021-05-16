@@ -136,6 +136,7 @@ class Leader(pygame.sprite.Sprite):
         row = int(self.subunitpos/8)
         column = self.subunitpos - (row*8)
         self.subunit = self.parentunit.subunitsprite[self.subunitpos] # setup subunit that leader belong
+        self.subunit.leader = self ## put in leader to subunit with the set pos
         if self.armyposition == 0:  # parentunit leader
             self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or main leader move ot other subunit
             # self.parentunit.leadersubunit - self.parentunit.basepos

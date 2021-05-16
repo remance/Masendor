@@ -163,6 +163,7 @@ class Battle():
 
         #v Assign default variable to some class
         gameunit.Unitarmy.maingame = self
+        gameunit.Unitarmy.imgsize = (self.squadwidth, self.squadheight)
         gamesubunit.Subunit.maingame = self
         gameleader.Leader.maingame = self
         #^ End assign default
@@ -940,7 +941,7 @@ class Battle():
                                                                         self.currentweather.speed,
                                                                         self.weathermatterimgs[self.currentweather.type][randompic]))
 
-                #v code that only run when any subunit is selected
+                #v code that only run when any unit is selected
                 if self.lastselected is not None and self.lastselected.state != 100:
                     whoinput = self.lastselected
                     if self.beforeselected is None:  # add back the pop up ui to group so it get shown when click subunit with none selected before
@@ -950,7 +951,7 @@ class Battle():
 
                         self.addbehaviourui(whoinput)
 
-                    elif self.beforeselected != self.lastselected:  # change subunit information on ui when select other parentunit
+                    elif self.beforeselected != self.lastselected or self.splithappen:  # change subunit information on ui when select other parentunit
                         if self.inspectui: # change inspect ui
                             self.newarmyclick = True
                             self.battleui.remove(*self.inspectsubunit)
@@ -970,6 +971,9 @@ class Battle():
                         self.battleui.remove(*self.leadernow)
 
                         self.addbehaviourui(whoinput,elsecheck=True)
+
+                        if self.splithappen:  # end split check
+                            self.splithappen = False
 
                     else: # Update topbar and command ui value every 1.1 seconds
                         if self.uitimer >= 1.1:
@@ -1205,11 +1209,6 @@ class Battle():
                             else:
                                 self.battleui.remove(self.effectpopup)
 
-                        if self.splithappen:  # change showing subunit in inspectui if split happen
-                            self.battleui.remove(*self.inspectsubunit)
-                            self.inspectsubunit = whoinput.subunitsprite
-                            self.battleui.add(*self.inspectsubunit)
-                            self.splithappen = False
                     else:
                         for icon in self.skillicon.sprites(): icon.kill()
                         for icon in self.effecticon.sprites(): icon.kill()

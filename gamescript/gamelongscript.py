@@ -942,12 +942,12 @@ def countdownskillicon(self):
 
 ## Battle Start related gamescript
 
-def addarmy(squadlist, position, gameid, colour, imagesize, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina,team):
+def addarmy(squadlist, position, gameid, colour, leader, leaderstat, unitstat, control, coa, command, startangle,starthp,startstamina,team):
     """Create batalion object into the battle and leader of the parentunit"""
     from gamescript import gameunit, gameleader
     oldsquadlist = squadlist[~np.all(squadlist == 0, axis=1)] # remove whole empty column in subunit list
     squadlist = oldsquadlist[:, ~np.all(oldsquadlist == 0, axis=0)] # remove whole empty row in subunit list
-    army = gameunit.Unitarmy(position, gameid, squadlist, imagesize, colour, control, coa, command, abs(360 - startangle),starthp,startstamina,team)
+    army = gameunit.Unitarmy(position, gameid, squadlist, colour, control, coa, command, abs(360 - startangle),starthp,startstamina,team)
 
     # add leader
     army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
@@ -999,7 +999,7 @@ def unitsetup(maingame):
             coa = pygame.transform.scale(maingame.coa[row[12]], (60, 60)) # get coa image and scale smaller to fit ui
 
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour, (maingame.squadwidth, maingame.squadheight), row[10] + row[11], maingame.leaderstat, maingame.gameunitstat, control,
+                           colour, row[10] + row[11], maingame.leaderstat, maingame.gameunitstat, control,
                            coa, command, row[13], row[14], row[15], row[16])
             whicharmy.add(army)
             armysquadindex = 0 # armysquadindex is list index for subunit list in a specific army
@@ -1291,35 +1291,115 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
     #^ End inflict status
 
 
-def die(who, battle, group, enemygroup):
+def die(who, battle,moralehit=True):
     """remove subunit when it dies"""
     if who.team == 1:
+        group = battle.team1army
+        enemygroup = battle.team2army
         battle.team1poslist.pop(who.gameid)
     else:
+        group = battle.team2army
+        enemygroup = battle.team1army
         battle.team2poslist.pop(who.gameid)
 
-    if who.commander:  # more morale penalty if the parentunit is a command parentunit
-        for army in group:
-            for subunit in army.subunitsprite:
-                subunit.basemorale -= 30
+    if moralehit:
+        if who.commander:  # more morale penalty if the parentunit is a command parentunit
+            for army in group:
+                for subunit in army.subunitsprite:
+                    subunit.basemorale -= 30
+
+        for thisarmy in enemygroup:  # get bonus authority to the another army
+            thisarmy.authority += 5
+
+        for thisarmy in group:  # morale dmg to every subunit in army when allied parentunit destroyed
+            for subunit in thisarmy.subunitsprite:
+                subunit.basemorale -= 20
 
     battle.allunitlist.remove(who)
     battle.allunitindex.remove(who.gameid)
     group.remove(who)
     who.gotkilled = True
 
-    for thisarmy in enemygroup:  # get bonus authority to the another army
-        thisarmy.authority += 5
 
-    for thisarmy in group:  # morale dmg to every subunit in army when allied parentunit destroyed
-        for subunit in thisarmy.subunitsprite:
-            subunit.basemorale -= 20
+def leaderchange(self, type):
+    """Leader change subunit or gone/die, type can be "die" or "broken" """
+    checkstate = [100]
+    if type == "broken":
+        checkstate = [99,100]
+    if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
+        for subunit in self.nearbysquadlist:
+            if subunit != 0 and subunit.state not in checkstate and subunit.leader == None:
+                subunit.leader = self.leader
+                self.leader.subunit = subunit
+                for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
+                    if subunit.gameid == self.leader.subunit.gameid:
+                        subunit.leader.subunitpos = index
+                        if self.unitleader:  # set leader subunit to new one
+                            self.parentunit.leadersubunit = subunit
+                            subunit.unitleader = True
 
-def moveleadersquad(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
+                self.leader = None
+                break
+
+        if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in parentunit
+            for index, subunit in enumerate(self.parentunit.subunitsprite):
+                if subunit.state not in checkstate and subunit.leader is None:
+                    subunit.leader = self.leader
+                    self.leader.subunit = subunit
+                    subunit.leader.subunitpos = index
+                    self.leader = None
+                    if self.unitleader:  # set leader subunit to new one
+                        self.parentunit.leadersubunit = subunit
+                        subunit.unitleader = True
+
+                    break
+
+            if self.leader is not None and type == "die":  # Still can't find new subunit so leader disappear with chance of different result
+                self.leader.state = random.randint(97, 100)  # captured, retreated, wounded, dead
+                self.leader.health = 0
+                self.leader.gone()
+
+        self.unitleader = False
+
+
+def addnewunitprocess(battle, who):
+    from gamescript import gameunit
+    # generate subunit sprite array for inspect ui
+    who.subunitspritearray = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
+    foundcount = 0
+    for row in range(0, 8):
+        for column in range (0, 8):
+            try:
+                if who.armysubunit[row][column] != 0:
+                    who.subunitspritearray[row][column] = who.subunitsprite[foundcount]
+                    foundcount += 1
+                else:
+                    who.subunitspritearray[row][column] = None
+            except:
+                pass
+    #^ End generate subunit array
+
+    for index, subunit in enumerate(who.subunitsprite): # reset leader subunitpos
+        if subunit.leader is not None:
+            subunit.leader.subunitpos = index
+
+    who.zoom = battle.camerascale
+    who.newangle = who.angle
+
+    who.startset(battle.subunit)
+    who.setsubunittarget()
+    for subunit in who.subunitsprite:
+        subunit.gamestart(subunit.zoom)
+
+    battle.allunitlist.append(who)
+    battle.allunitindex.append(who.gameid)
+
+    battle.troopnumbersprite.add(gameunit.Troopnumber(who))
+
+def moveleadersubunit(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
     """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit), alreadypick is list of position need to be skipped"""
     replace = [np.where(oldarmysubunit == leader.subunit.gameid)[0][0],
                np.where(oldarmysubunit == leader.subunit.gameid)[1][0]] # grab old array position of subunit
-    replaceflat = np.where(oldarmysubunit.flat == leader.subunit.gameid)[0] # grab old flat array pos
     newrow = int(len(newarmysubunit) / 2) # set up new row subunit will be place in at the middle at the start
     newplace = int(len(newarmysubunit[newrow]) / 2) # setup new column position
     placedone = False # finish finding slot to place yet
@@ -1344,50 +1424,11 @@ def moveleadersquad(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
 
     oldarmysubunit[replace[0]][replace[1]] = newarmysubunit[newrow][newplace]
     newarmysubunit[newrow][newplace] = leader.subunit.gameid
-    return replace, replaceflat, newplace, newrow
-
-def leaderchange(self, type):
-    """Leader change subunit or gone/die, type can be "die" or "broken" """
-    checkstate = [100]
-    if type == "broken":
-        checkstate = [99,100]
-    if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
-        for subunit in self.nearbysquadlist:
-            if subunit != 0 and subunit.state not in checkstate and subunit.leader == None:
-                subunit.leader = self.leader
-                self.leader.subunit = subunit
-                for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
-                    if subunit.gameid == self.leader.subunit.gameid:
-                        subunit.leader.subunitpos = index
-                        if self.unitleader:  # set leader subunit to new one
-                            self.parentunit.leadersubunit = subunit
-                            subunit.unitleader = True
-
-                self.leader = None
-                break
-
-        if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in parentunit
-            for index, subunit in enumerate(self.parentunit.subunitsprite):
-                if subunit.state not in checkstate and subunit.leader == None:
-                    subunit.leader = self.leader
-                    self.leader.subunit = subunit
-                    subunit.leader.subunitpos = index
-                    self.leader = None
-                    if self.unitleader:  # set leader subunit to new one
-                        self.parentunit.leadersubunit = subunit
-                        subunit.unitleader = True
-
-                    break
-
-            if self.leader is not None and type == "die":  # Still can't find new subunit so leader disappear with chance of different result
-                self.leader.state = random.randint(97, 100)  # captured, retreated, wounded, dead
-                self.leader.health = 0
-                self.leader.gone()
-
-        self.unitleader = False
+    newpostion = (newplace, newrow)
+    return oldarmysubunit, newarmysubunit, newpostion
 
 def splitunit(battle, who, how):
-    """split parentunit either by row or column into two seperate parentunit"""
+    """split parentunit either by row or column into two seperate parentunit""" # TODO check split when moving
     from gamescript import gameunit, gameleader
 
     if how == 0:  # split by row
@@ -1402,27 +1443,28 @@ def splitunit(battle, who, how):
         newpos = pygame.Vector2(who.basepos[0] + (who.basewidthbox / 2), who.basepos[1])
         who.basepos =  pygame.Vector2(who.basepos[0] - (who.basewidthbox / 2), who.basepos[1])
 
-    if who.leader[1].subunit.gameid not in newarmysubunit:  # move leader if subunit not in new one
-        replace, replaceflat, newplace, newrow = moveleadersquad(who.leader[1], who.armysubunit, newarmysubunit)
+    if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move first sub-general leader subunit if it not in new one
+        who.armysubunit, newarmysubunit, newposition = moveleadersubunit(who.leader[1], who.armysubunit, newarmysubunit)
+        who.leader[1].subunitpos = newposition[0] + (newposition[1] * 8)
 
     alreadypick = []
-    for leader in (who.leader[0], who.leader[2], who.leader[3]):
+    for leader in (who.leader[0], who.leader[2], who.leader[3]): # move other leader subunit to original one if they are in new one
         if leader.subunit.gameid not in who.armysubunit:
-            replace, replaceflat, newplace, newrow = moveleadersquad(leader, newarmysubunit, who.armysubunit, alreadypick)
-            alreadypick.append((newrow,newplace))
-            leader.subunitpos = newplace + (newrow * 8)
+            newarmysubunit, who.armysubunit, newposition = moveleadersubunit(leader, newarmysubunit, who.armysubunit, alreadypick)
+            alreadypick.append(newposition)
 
-    squadsprite = [squad for squad in who.subunitsprite if squad.gameid in newarmysubunit]  # list of sprite not sorted yet
+    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.leaderstat), gameleader.Leader(1, 0, 2, who, battle.leaderstat),
+                 gameleader.Leader(1, 0, 3, who, battle.leaderstat)] # create new leader list for new parentunit
+
+    subunitsprite = [subunit for subunit in who.subunitsprite if subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
     newsquadsprite = []
 
     #v Sort so the new leader subunit position match what set before
-    for squadindex in newarmysubunit.flat:
-        for squad in squadsprite:
-            if squad.gameid == squadindex:
-                newsquadsprite.append(squad)
-                break
-    who.subunitsprite = [squad for squad in who.subunitsprite if squad.gameid in who.armysubunit]
-    # who.subunitspritearray =
+    for squad in subunitsprite:
+        if squad.gameid in newarmysubunit.flat:
+            newsquadsprite.append(squad)
+
+    who.subunitsprite = [subunit for subunit in who.subunitsprite if subunit.gameid in  who.armysubunit.flat]
     #^ End sort
 
     #v Reset position in inspectui for both parentunit
@@ -1444,103 +1486,46 @@ def splitunit(battle, who, how):
             squadnum += 1
     #^ End reset position
 
-    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.leaderstat), gameleader.Leader(1, 0, 2, who, battle.leaderstat),
-                 gameleader.Leader(1, 0, 3, who, battle.leaderstat)] # create new leader list for new parentunit
-
     #v Change the original parentunit stat and sprite
-    who.leader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.leaderstat)]
-    for index, leader in enumerate(who.leader):  # Also change army position of all leader in that parentunit
+    originalleader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.leaderstat)]
+    for index, leader in enumerate(originalleader):  # Also change army position of all leader in that parentunit
         leader.armyposition = index  # Change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]
         leader.rect = leader.image.get_rect(center=leader.imgposition)
+    teamcommander = who.teamcommander
+    who.teamcommander = teamcommander
+    who.leader = originalleader
 
-    coa = who.coa
-    who.setsubunittarget()
-    who.setupfrontline()
-    who.setuparmy()
-    who.zoom = battle.camerascale
-
-    who.newangle = who.angle
-    #^ End change original
-
-    #v need to recalculate max stat again for the original parentunit
-    maxhealth = []
-    maxstamina = []
-    maxmorale = []
-
-    for subunit in who.subunitsprite:
-        maxhealth.append(subunit.maxtroop)
-        maxstamina.append(subunit.maxstamina)
-        maxmorale.append(subunit.maxmorale)
-
-    maxhealth = sum(maxhealth)
-    maxstamina = sum(maxstamina) / len(maxstamina)
-    maxmorale = sum(maxmorale) / len(maxmorale)
-
-    who.maxhealth, who.health75, who.health50, who.health25, = maxhealth, round(maxhealth * 0.75), round(
-        maxhealth * 0.50), round(maxhealth * 0.25)
-    who.maxstamina, who.stamina75, who.stamina50, who.stamina25, = maxstamina, round(maxstamina * 0.75), round(
-        maxstamina * 0.50), round(maxstamina * 0.25)
-    who.maxmorale = maxmorale
-    who.ammo75, who.ammo50, who.ammo25 = round(who.ammo * 0.75), round(who.ammo * 0.50), round(who.ammo * 0.25)
-    #^ end recal max stat
+    addnewunitprocess(battle, who)
+    #^ End change original unit
 
     #v start making new parentunit
     if who.team == 1:
-        playercommand = True #TODO change when player can select team
         whosearmy = battle.team1army
-        colour = (144, 167, 255)
     else:
-        playercommand = battle.enactment
         whosearmy= battle.team2army
-        colour = (255, 114, 114)
     newgameid = battle.allunitlist[-1].gameid + 1
 
-    army = gameunit.Unitarmy(startposition=newpos, gameid=newgameid,
-                                  squadlist=newarmysubunit, imgsize=(battle.squadwidth, battle.squadheight),
-                                  colour=colour, control=playercommand, coa=coa, commander=False, startangle=who.angle, team=who.team)
+    newarmy = gameunit.Unitarmy(startposition=newpos, gameid=newgameid,squadlist=newarmysubunit,colour=who.colour,
+                                control=who.control, coa=who.coa, commander=False, startangle=who.angle, team=who.team)
 
-    whosearmy.add(army)
-    army.leader = newleader
-    army.subunitsprite = newsquadsprite
+    whosearmy.add(newarmy)
+    newarmy.teamcommander = teamcommander
+    newarmy.leader = newleader
+    newarmy.subunitsprite = newsquadsprite
 
-    for subunit in army.subunitsprite:
-        subunit.parentunit = army
+    for subunit in newarmy.subunitsprite:
+        subunit.parentunit = newarmy
 
-    for index, leader in enumerate(army.leader):  # Change army position of all leader in new parentunit
-        if how == 0:
-            if leader.name != "None":
-                leader.subunitpos -= newarmysubunit.size  # Just minus the row gone to find new position
-            else: leader.subunitpos = 0
-        else:
-            if leader.name != "None":
-                for spriteindex, squad in enumerate(army.subunitsprite):  # Loop to find new subunit pos based on new subunitsprite list
-                    if squad.gameid == leader.subunit.gameid:
-                        leader.subunitpos = spriteindex
-                        break
-            else: leader.subunitpos = 0
-        leader.parentunit = army  # Set leader parentunit to new one
+    for index, leader in enumerate(newarmy.leader):  # Change army position of all leader in new parentunit
+        leader.parentunit = newarmy  # Set leader parentunit to new one
         leader.armyposition = index  # Change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]  # Change image pos
         leader.rect = leader.image.get_rect(center=leader.imgposition)
         leader.poschangestat(leader)  # Change stat based on new army position
 
-    army.teamcommander = who.teamcommander
-    army.commandbuff = [(army.leader[0].meleecommand - 5) * 0.1, (army.leader[0].rangecommand - 5) * 0.1, (army.leader[0].cavcommand - 5) * 0.1]
-    army.leadersocial = army.leader[0].social
-    army.authrecal()
-    battle.allunitlist.append(army)
-    battle.allunitindex.append(army.gameid)
-    battle.lastselected = who
+    addnewunitprocess(battle, newarmy)
 
-    army.zoom = battle.camerascale
-
-    army.startset(battle.subunit)
-    army.setsubunittarget()
-    for subunit in army.subunitsprite:
-        subunit.gamestart(subunit.zoom)
-
-    battle.troopnumbersprite.add(gameunit.Troopnumber(army))
     #^ End making new parentunit
 
 ## Other scripts

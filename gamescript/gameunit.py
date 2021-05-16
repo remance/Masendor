@@ -146,8 +146,9 @@ class Unitarmy(pygame.sprite.Sprite):
     die = gamelongscript.die # die script
     setrotate = gamelongscript.setrotate
     formchangetimer = 10
+    imgsize = None
 
-    def __init__(self, startposition, gameid, squadlist, imgsize, colour, control, coa, commander, startangle, starthp=100, startstamina=100, team=0):
+    def __init__(self, startposition, gameid, squadlist, colour, control, coa, commander, startangle, starthp=100, startstamina=100, team=0):
         """Although parentunit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -170,7 +171,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.zoom = 10 # start with closest zoom
         self.lastzoom = 1 # zoom level without calculate with 11 - zoom for scale
 
-        self.imgsize = imgsize
         self.basewidthbox, self.baseheightbox = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, len(self.armysubunit) * (self.imgsize[1] + 2) / 20
 
         self.basepos = pygame.Vector2(startposition)  # Basepos is for true pos that is used for ingame calculation
@@ -197,7 +197,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.selected = False # for checking if it currently selected or not
         self.justselected = False # for light up subunit when click
         self.zoomchange = False
-        self.cansplitrow = False
         self.revert = False
         self.moverotate = False # for checking if the movement require rotation first or not
         self.rotatecal = 0 # for calculate how much angle to rotate to the basetarget
@@ -245,9 +244,15 @@ class Unitarmy(pygame.sprite.Sprite):
         self.rotatespeed = 1
         #^ End default starting value
 
-        if np.array_split(self.armysubunit, 2)[0].size > 10 and np.array_split(self.armysubunit, 2)[1].size > 10: self.cansplitrow = True
+        # check if can split unit
+        self.cansplitrow = False
+        if np.array_split(self.armysubunit, 2)[0].size > 10 and np.array_split(self.armysubunit, 2)[1].size > 10:
+            self.cansplitrow = True
+
         self.cansplitcol = False
-        if np.array_split(self.armysubunit, 2, axis=1)[0].size > 10 and np.array_split(self.armysubunit, 2, axis=1)[1].size > 10: self.cansplitcol = True
+        if np.array_split(self.armysubunit, 2, axis=1)[0].size > 10 and np.array_split(self.armysubunit, 2, axis=1)[1].size > 10:
+            self.cansplitcol = True
+
         self.authpenalty = 0 # authority penalty
         self.tacticeffect = {}
         self.coa = coa # coat of arm image
@@ -299,12 +304,14 @@ class Unitarmy(pygame.sprite.Sprite):
                     allshootrange.append(subunit.shootrange)
                 subunit.useskillcond = self.useskillcond
                 howmany += 1
-            if subunit.state not in (99, 100): # check if unit completely broken
-                notbroken = True
+                if subunit.state != 99: # check if unit completely broken
+                    notbroken = True
         self.troopnumber = int(self.troopnumber) # convert to int to prevent float decimal
 
         if notbroken == False:
             self.state = 99 # completely broken
+            self.cansplitrow = False # can not split unit
+            self.cansplitcol = False
         #^ End grab subunit stat
 
         #v calculate stat for parentunit related calculation
@@ -503,9 +510,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
         self.spritearray = self.armysubunit
         self.leadersocial = self.leader[0].social
-        for leader in self.leader:
-            if leader.gameid != 1:
-                self.subunitsprite[leader.subunitpos].leader = leader  ## put in leader to subunit with the set pos
 
         # v assign team leader commander to every parentunit in team if this is commander parentunit
         if self.commander:
@@ -785,9 +789,9 @@ class Unitarmy(pygame.sprite.Sprite):
             #v parentunit just got killed
             if self.gotkilled is False:
                 if self.team == 1:
-                    self.die(self.maingame, self.maingame.team1army, self.maingame.team2army)
+                    self.die(self.maingame)
                 else:
-                    self.die(self.maingame, self.maingame.team2army, self.maingame.team1army)
+                    self.die(self.maingame)
 
 
                 self.maingame.setuparmyicon() # reset army icon (remove dead one)
