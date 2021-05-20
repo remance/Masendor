@@ -182,7 +182,7 @@ def loadgamedata(game):
     for img in imgsold:
         imgs.append(img)
     game.coa = imgs
-    game.factionlist = [item[0] for item in game.allfaction.factionlist.values()][1:]
+    game.faction_list = [item[0] for item in game.allfaction.faction_list.values()][1:]
     # ^ End faction
 
     # v create game map texture and their default variables
@@ -198,9 +198,9 @@ def loadgamedata(game):
     gamemap.Mapfeature.featuremod = game.featuremod
     gamemap.Beautifulmap.main_dir = main_dir
 
-    game.battlemapbase = gamemap.Basemap(1)  # create base terrain map
-    game.battlemapfeature = gamemap.Mapfeature(1)  # create terrain feature map
-    game.battlemapheight = gamemap.Mapheight(1)  # create height map
+    game.battlemap_base = gamemap.Basemap(1)  # create base terrain map
+    game.battlemap_feature = gamemap.Mapfeature(1)  # create terrain feature map
+    game.battlemap_height = gamemap.Mapheight(1)  # create height map
     game.showmap = gamemap.Beautifulmap(1)
 
     emptyimage = load_image('empty.png', 'map/texture')  # empty texture image
@@ -288,28 +288,28 @@ def loadgamedata(game):
 
     game.gameunitstat = gameunitstat.Unitstat(main_dir, game.ruleset, game.rulesetfolder)
 
-    gameunit.Unitarmy.statuslist = game.gameunitstat.statuslist
-    rangeattack.Rangearrow.gamemapheight = game.battlemapheight
+    gameunit.Unitarmy.status_list = game.gameunitstat.status_list
+    rangeattack.Rangearrow.gamemapheight = game.battlemap_height
 
     imgs = load_images(['ui', 'unit_ui'])
     gamesubunit.Subunit.images = imgs
-    gamesubunit.Subunit.gamemap = game.battlemapbase  # add battle map to all parentunit class
-    gamesubunit.Subunit.gamemapfeature = game.battlemapfeature  # add battle map to all parentunit class
-    gamesubunit.Subunit.gamemapheight = game.battlemapheight
-    gamesubunit.Subunit.weaponlist = game.allweapon
-    gamesubunit.Subunit.armourlist = game.allarmour
-    gamesubunit.Subunit.statlist = game.gameunitstat
+    gamesubunit.Subunit.gamemap = game.battlemap_base  # add battle map to all parentunit class
+    gamesubunit.Subunit.gamemapfeature = game.battlemap_feature  # add battle map to all parentunit class
+    gamesubunit.Subunit.gamemapheight = game.battlemap_height
+    gamesubunit.Subunit.weapon_list = game.allweapon
+    gamesubunit.Subunit.armour_list = game.allarmour
+    gamesubunit.Subunit.stat_list = game.gameunitstat
     gameunitedit.Armybuildslot.images = imgs
-    gameunitedit.Armybuildslot.weaponlist = game.allweapon
-    gameunitedit.Armybuildslot.armourlist = game.allarmour
-    gameunitedit.Armybuildslot.statlist = game.gameunitstat
+    gameunitedit.Armybuildslot.weapon_list = game.allweapon
+    gameunitedit.Armybuildslot.armour_list = game.allarmour
+    gameunitedit.Armybuildslot.stat_list = game.gameunitstat
 
     game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
     #^ End subunit class
 
     #v create leader list
     imgs, order = load_images(['ruleset', game.rulesetfolder.strip("/"), 'leader', 'portrait'], loadorder=False, returnorder=True)
-    game.leaderstat = gameunitstat.Leaderstat(main_dir, imgs, order, option=game.rulesetfolder)
+    game.leader_stat = gameunitstat.Leaderstat(main_dir, imgs, order, option=game.rulesetfolder)
     #^ End leader
 
     # v Game Effect related class
@@ -323,38 +323,38 @@ def loadgamedata(game):
     # ^ End game effect
 
     #v Encyclopedia related objects
-    gamelorebook.Lorebook.conceptstat = csv_read('concept_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
-    gamelorebook.Lorebook.conceptlore = csv_read('concept_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
-    gamelorebook.Lorebook.historystat = csv_read('history_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
-    gamelorebook.Lorebook.historylore = csv_read('history_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.concept_stat = csv_read('concept_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.concept_lore = csv_read('concept_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.history_stat = csv_read('history_stat.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
+    gamelorebook.Lorebook.history_lore = csv_read('history_lore.csv', ['data', 'ruleset', game.rulesetfolder.strip("/"), 'lore'])
 
-    gamelorebook.Lorebook.factionlore = game.allfaction.factionlist
-    gamelorebook.Lorebook.unitstat = game.gameunitstat.unitlist
-    gamelorebook.Lorebook.unitlore = game.gameunitstat.unitlore
-    gamelorebook.Lorebook.armourstat = game.allarmour.armourlist
-    gamelorebook.Lorebook.weaponstat = game.allweapon.weaponlist
-    gamelorebook.Lorebook.mountstat = game.gameunitstat.mountlist
-    gamelorebook.Lorebook.mountarmourstat = game.gameunitstat.mountarmourlist
-    gamelorebook.Lorebook.statusstat = game.gameunitstat.statuslist
-    gamelorebook.Lorebook.skillstat = game.gameunitstat.abilitylist
-    gamelorebook.Lorebook.traitstat = game.gameunitstat.traitlist
-    gamelorebook.Lorebook.leader = game.leaderstat
-    gamelorebook.Lorebook.leaderlore = game.leaderstat.leaderlore
-    gamelorebook.Lorebook.terrainstat = game.featuremod
-    gamelorebook.Lorebook.weatherstat = game.allweather
-    gamelorebook.Lorebook.landmarkstat = None
-    gamelorebook.Lorebook.unitgradestat = game.gameunitstat.gradelist
-    gamelorebook.Lorebook.unitclasslist = game.gameunitstat.role
-    gamelorebook.Lorebook.leaderclasslist = game.leaderstat.leaderclass
-    gamelorebook.Lorebook.mountgradestat = game.gameunitstat.mountgradelist
-    gamelorebook.Lorebook.racelist = game.gameunitstat.racelist
+    gamelorebook.Lorebook.faction_lore = game.allfaction.faction_list
+    gamelorebook.Lorebook.unit_stat = game.gameunitstat.unit_list
+    gamelorebook.Lorebook.unit_lore = game.gameunitstat.unit_lore
+    gamelorebook.Lorebook.armour_stat = game.allarmour.armour_list
+    gamelorebook.Lorebook.weapon_stat = game.allweapon.weapon_list
+    gamelorebook.Lorebook.mount_stat = game.gameunitstat.mount_list
+    gamelorebook.Lorebook.mount_armour_stat = game.gameunitstat.mount_armour_list
+    gamelorebook.Lorebook.status_stat = game.gameunitstat.status_list
+    gamelorebook.Lorebook.skillstat = game.gameunitstat.ability_list
+    gamelorebook.Lorebook.trait_stat = game.gameunitstat.trait_list
+    gamelorebook.Lorebook.leader = game.leader_stat
+    gamelorebook.Lorebook.leader_lore = game.leader_stat.leader_lore
+    gamelorebook.Lorebook.terrain_stat = game.featuremod
+    gamelorebook.Lorebook.weather_stat = game.allweather
+    gamelorebook.Lorebook.landmark_stat = None
+    gamelorebook.Lorebook.unit_grade_stat = game.gameunitstat.grade_list
+    gamelorebook.Lorebook.unit_class_list = game.gameunitstat.role
+    gamelorebook.Lorebook.leader_class_list = game.leader_stat.leader_class
+    gamelorebook.Lorebook.mount_grade_stat = game.gameunitstat.mount_grade_list
+    gamelorebook.Lorebook.race_list = game.gameunitstat.race_list
     gamelorebook.Lorebook.SCREENRECT = SCREENRECT
     gamelorebook.Lorebook.main_dir = main_dir
     gamelorebook.Lorebook.statetext = game.statetext
 
     imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
     game.lorebook = gamelorebook.Lorebook(imgs[0]) # encyclopedia sprite
-    game.lorenamelist = gamelorebook.Subsectionlist(game.lorebook.rect.topleft, imgs[1])
+    game.lorenamelist = gamelorebook.Subsection_list(game.lorebook.rect.topleft, imgs[1])
 
     imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
     for index, img in enumerate(imgs):
@@ -399,7 +399,7 @@ def loadgamedata(game):
                         imgs[14], 21, 13)]  # next page button
     game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
     game.lorescroll = gameui.Uiscroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
-                      game.lorebook.maxsubsectionshow, layer=25)  # add subsection list scroller
+                                        game.lorebook.max_subsection_show, layer=25)  # add subsection list scroller
     #^ End encyclopedia objects
 
     # v Create battle game ui objects
@@ -419,7 +419,7 @@ def loadgamedata(game):
     #Army select list ui
     game.armyselector = gameui.Armyselect((0, 0), topimage[30])
     game.selectscroll = gameui.Uiscroller(game.armyselector.rect.topright, topimage[30].get_height(),
-                                          game.armyselector.maxrowshow)  # scroller for army select ui
+                                          game.armyselector.max_row_show)  # scroller for army select ui
 
     #Right top bar ui that show rough information of selected battalions
     game.gameui = [
@@ -479,17 +479,17 @@ def loadgamedata(game):
                      gameui.Uibutton(game.gameui[1].X + 100, game.gameui[1].Y + 56, topimage[14], 1)]  # decimation button
 
     #Behaviour button that once click switch to other mode for subunit behaviour
-    game.switchbuttonui = [gameui.Switchuibutton(game.gameui[1].X - 40, game.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
-                           gameui.Switchuibutton(game.gameui[1].X - 80, game.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
-                           gameui.Switchuibutton(game.gameui[1].X, game.gameui[1].Y + 96, topimage[17:20]),  # behaviour button
-                           gameui.Switchuibutton(game.gameui[1].X + 40, game.gameui[1].Y + 96, topimage[20:22]),  # shoot range button
-                           gameui.Switchuibutton(game.gameui[1].X - 125, game.gameui[1].Y + 96, topimage[35:38]),  # arcshot button
-                           gameui.Switchuibutton(game.gameui[1].X + 80, game.gameui[1].Y + 96, topimage[38:40]), # toggle run button
-                           gameui.Switchuibutton(game.gameui[1].X + 120, game.gameui[1].Y + 96, topimage[40:43])]  # toggle melee mode
+    game.switch_button = [gameui.Switchuibutton(game.gameui[1].X - 40, game.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
+                          gameui.Switchuibutton(game.gameui[1].X - 80, game.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
+                          gameui.Switchuibutton(game.gameui[1].X, game.gameui[1].Y + 96, topimage[17:20]),  # behaviour button
+                          gameui.Switchuibutton(game.gameui[1].X + 40, game.gameui[1].Y + 96, topimage[20:22]),  # shoot range button
+                          gameui.Switchuibutton(game.gameui[1].X - 125, game.gameui[1].Y + 96, topimage[35:38]),  # arcshot button
+                          gameui.Switchuibutton(game.gameui[1].X + 80, game.gameui[1].Y + 96, topimage[38:40]),  # toggle run button
+                          gameui.Switchuibutton(game.gameui[1].X + 120, game.gameui[1].Y + 96, topimage[40:43])]  # toggle melee mode
 
     game.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
 
-    game.logscroll = gameui.Uiscroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.maxrowshow)  # event log scroller
+    game.logscroll = gameui.Uiscroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.max_row_show)  # event log scroller
     game.eventlog.logscroll = game.logscroll  # Link scroller to ui since it is easier to do here with the current order
     gamesubunit.Subunit.eventlog = game.eventlog  # Assign eventlog to subunit class to broadcast event to the log
 
@@ -514,7 +514,7 @@ def loadgamedata(game):
     game.screenbuttonlist = game.buttonui[8:17]
     game.unitcardbutton = game.buttonui[0:4]
     game.inspectbutton = game.buttonui[4]
-    game.colsplitbutton = game.buttonui[5]  # parentunit split by column button
+    game.col_split_button = game.buttonui[5]  # parentunit split by column button
     game.rowsplitbutton = game.buttonui[6]  # parentunit split by row button
 
     game.timebutton = game.buttonui[14:17]
@@ -525,7 +525,7 @@ def loadgamedata(game):
     game.inspectselectedborder = gameui.Selectedsquad((15000, 15000)) #yellow border on selected subnit in inspect ui
     game.mainui.remove(game.inspectselectedborder) #remove subnit border sprite from main menu drawer
     game.terraincheck = gamepopup.Terrainpopup() #popup box that show terrain information when right click on map
-    game.buttonnamepopup = gamepopup.Onelinepopup() #popup box that show button name when mouse over
+    game.button_name_popup = gamepopup.Onelinepopup() #popup box that show button name when mouse over
     game.leaderpopup = gamepopup.Onelinepopup() #popup box that show leader name when mouse over
     game.effectpopup = gamepopup.Effecticonpopup() #popup box that show skill/trait/status name when mouse over
 
@@ -539,20 +539,20 @@ def loadgamedata(game):
     imgs = load_images(['ui', 'battlemenu_ui'], loadorder=False)
     gamemenu.Escbox.images = imgs  # Create ESC Menu box
     gamemenu.Escbox.SCREENRECT = SCREENRECT
-    game.battlemenu = gamemenu.Escbox()
+    game.battle_menu = gamemenu.Escbox()
 
     buttonimage = load_images(['ui', 'battlemenu_ui', 'button'], loadorder=False)
-    menurectcenter0 = game.battlemenu.rect.center[0]
-    menurectcenter1 = game.battlemenu.rect.center[1]
+    menurectcenter0 = game.battle_menu.rect.center[0]
+    menurectcenter1 = game.battle_menu.rect.center[1]
 
-    game.battlemenubutton = [
+    game.battle_menu_button = [
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 - 100), text="Resume", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 - 50), text="Encyclopedia", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1), text="Option", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 50), text="Main Menu", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 100), text="Desktop", size=14)]
 
-    game.escoptionmenubutton = [
+    game.escoption_menu_button = [
         gamemenu.Escbutton(buttonimage, (menurectcenter0 - 50, menurectcenter1 + 70), text="Confirm", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0 + 50, menurectcenter1 + 70), text="Apply", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0 + 150, menurectcenter1 + 70), text="Cancel", size=14)]
@@ -561,248 +561,248 @@ def loadgamedata(game):
     game.escslidermenu = [
         gamemenu.Escslidermenu(sliderimage[0], sliderimage[1:3], (menurectcenter0 * 1.1, menurectcenter1), Soundvolume,
                                0)]
-    game.escvaluebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battlemenu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
+    game.escvaluebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battle_menu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
     # ^ End esc menu objects
 
-def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
+def create_troop_stat(self, team, stat, unitscale, starthp, startstamina):
     """Setup subunit troop stat"""
     self.name = stat[0]  # name according to the preset
     self.unitclass = stat[1]  # used to determine whether to use melee or range weapon as icon
     self.grade = stat[2]  # training level/class grade
     self.race = stat[3]  # creature race
     self.trait = stat[4]  # trait list from preset
-    self.trait = self.trait + self.statlist.gradelist[self.grade][-1]  # add trait from grade
+    self.trait = self.trait + self.stat_list.grade_list[self.grade][-1]  # add trait from grade
     skill = stat[5]  # skill list according to the preset
-    self.skillcooldown = {}
+    self.skill_cooldown = {}
     self.cost = stat[6]
-    self.baseattack = round(stat[8] + int(self.statlist.gradelist[self.grade][1]), 0)  # base melee attack with grade bonus
-    self.basemeleedef = round(stat[9] + int(self.statlist.gradelist[self.grade][2]), 0)  # base melee defence with grade bonus
-    self.baserangedef = round(stat[10] + int(self.statlist.gradelist[self.grade][2]), 0)  # base range defence with grade bonus
+    self.base_attack = round(stat[8] + int(self.stat_list.grade_list[self.grade][1]), 0)  # base melee attack with grade bonus
+    self.base_meleedef = round(stat[9] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base melee defence with grade bonus
+    self.base_rangedef = round(stat[10] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base range defence with grade bonus
     self.armourgear = stat[11]  # armour equipement
-    self.basearmour = self.armourlist.armourlist[self.armourgear[0]][1] \
-                      * self.armourlist.quality[self.armourgear[1]]  # Armour stat is cal from based armour * quality
-    self.baseaccuracy = stat[12] + int(self.statlist.gradelist[self.grade][4])
+    self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
+                       * self.armour_list.quality[self.armourgear[1]]  # Armour stat is cal from based armour * quality
+    self.base_accuracy = stat[12] + int(self.stat_list.grade_list[self.grade][4])
     self.basesight = stat[13]  # base sight range
     self.ammo = stat[14]  # amount of ammunition
-    self.basereload = stat[15] + int(self.statlist.gradelist[self.grade][5])
+    self.base_reload = stat[15] + int(self.stat_list.grade_list[self.grade][5])
     self.reloadtime = 0  # Unit can only refill magazine when reloadtime is equal or more than reload stat
-    self.basecharge = stat[16]
-    self.basechargedef = 50  # All infantry subunit has default 50 charge defence
+    self.base_charge = stat[16]
+    self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
     self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
     self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
     skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
-    self.skill = {x: self.statlist.abilitylist[x].copy() for x in skill if x != 0 and x in self.statlist.abilitylist}  # grab skill stat into dict
-    self.troophealth = round(stat[18] * self.statlist.gradelist[self.grade][7])  # Health of each troop
-    self.stamina = int(stat[19] * self.statlist.gradelist[self.grade][8] * (startstamina / 100))  # starting stamina with grade
+    self.skill = {x: self.stat_list.ability_list[x].copy() for x in skill if x != 0 and x in self.stat_list.ability_list}  # grab skill stat into dict
+    self.troophealth = round(stat[18] * self.stat_list.grade_list[self.grade][7])  # Health of each troop
+    self.stamina = int(stat[19] * self.stat_list.grade_list[self.grade][8] * (startstamina / 100))  # starting stamina with grade
     self.mana = stat[20]  # Resource for magic skill
 
     # v Weapon stat
     self.meleeweapon = stat[21]  # melee weapon equipment
     self.rangeweapon = stat[22]  # range weapon equipment
-    self.dmg = self.weaponlist.weaponlist[self.meleeweapon[0]][1] * self.weaponlist.quality[self.meleeweapon[1]]  # damage for melee
-    self.penetrate = 1 - (self.weaponlist.weaponlist[self.meleeweapon[0]][2] * self.weaponlist.quality[
+    self.dmg = self.weapon_list.weapon_list[self.meleeweapon[0]][1] * self.weapon_list.quality[self.meleeweapon[1]]  # damage for melee
+    self.penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[
         self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
     if self.penetrate > 1:
         self.penetrate = 1  # melee penetrate cannot be higher than 1
     elif self.penetrate < 0:
         self.penetrate = 0  # melee penetrate cannot be lower than 0
-    self.rangedmg = self.weaponlist.weaponlist[self.rangeweapon[0]][1] * self.weaponlist.quality[self.rangeweapon[1]]  # damage for range
-    self.rangepenetrate = 1 - (self.weaponlist.weaponlist[self.rangeweapon[0]][2] * self.weaponlist.quality[self.rangeweapon[1]] / 100)
-    self.magazinesize = self.weaponlist.weaponlist[self.rangeweapon[0]][6] # can shoot how many time before have to reload
-    self.baserange = int(self.weaponlist.weaponlist[self.rangeweapon[0]][7] * self.weaponlist.quality[self.rangeweapon[1]]) # base weapon range depend on weapon range stat and quality
-    self.arrowspeed = self.weaponlist.weaponlist[self.rangeweapon[0]][8] # travel speed of range attack
-    self.trait = self.trait + self.weaponlist.weaponlist[self.meleeweapon[0]][4]  # apply trait from range weapon
-    self.trait = self.trait + self.weaponlist.weaponlist[self.rangeweapon[0]][4]  # apply trait from melee weapon
+    self.rangedmg = self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]  # damage for range
+    self.rangepenetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
+    self.magazinesize = self.weapon_list.weapon_list[self.rangeweapon[0]][6] # can shoot how many time before have to reload
+    self.base_range = int(self.weapon_list.weapon_list[self.rangeweapon[0]][7] * self.weapon_list.quality[self.rangeweapon[1]]) # base weapon range depend on weapon range stat and quality
+    self.arrowspeed = self.weapon_list.weapon_list[self.rangeweapon[0]][8] # travel speed of range attack
+    self.trait = self.trait + self.weapon_list.weapon_list[self.meleeweapon[0]][4]  # apply trait from range weapon
+    self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][4]  # apply trait from melee weapon
     if self.rangepenetrate > 1:
         self.rangepenetrate = 1  # range penetrate cannot be higher than 1
     elif self.rangepenetrate < 0:
         self.rangepenetrate = 0  # range penetrate cannot be lower than 0
     # ^ End weapon stat
 
-    self.basemorale = int(stat[23] + int(self.statlist.gradelist[self.grade][9]))  # morale with grade bonus
-    self.basediscipline = int(stat[24] + int(self.statlist.gradelist[self.grade][10]))  # discilpline with grade bonus
-    self.mental = stat[25] + int(self.statlist.gradelist[self.grade][11]) # mental resistance from morale damage and mental status effect
+    self.base_morale = int(stat[23] + int(self.stat_list.grade_list[self.grade][9]))  # morale with grade bonus
+    self.base_discipline = int(stat[24] + int(self.stat_list.grade_list[self.grade][10]))  # discilpline with grade bonus
+    self.mental = stat[25] + int(self.stat_list.grade_list[self.grade][11]) # mental resistance from morale damage and mental status effect
     self.troopnumber = int(stat[27] * unitscale[team - 1] * starthp / 100)  # number of starting troop, team -1 to become list index
-    self.basespeed = 50  # All infantry has base speed at 50
-    self.unittype = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
+    self.base_speed = 50  # All infantry has base speed at 50
+    self.unit_type = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
     self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
 
     # v Mount stat
-    self.mount = self.statlist.mountlist[stat[29][0]]  # mount this subunit use
-    self.mountgrade = self.statlist.mountgradelist[stat[29][1]]
-    self.mountarmour = self.statlist.mountarmourlist[stat[29][2]]
+    self.mount = self.stat_list.mount_list[stat[29][0]]  # mount this subunit use
+    self.mountgrade = self.stat_list.mount_grade_list[stat[29][1]]
+    self.mountarmour = self.stat_list.mount_armour_list[stat[29][2]]
     if stat[29][0] != 1:  # have mount, add mount stat with its grade to subunit stat
-        self.basechargedef = 25  # charge defence only 25 for cav
-        self.basespeed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
+        self.base_chargedef = 25  # charge defence only 25 for cav
+        self.base_speed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
         self.troophealth += (self.mount[2] * self.mountgrade[3]) + self.mountarmour[1]  # Add mount health to the troop health
-        self.basecharge += (self.mount[3] + self.mountgrade[2])  # Add charge power of mount to troop
+        self.base_charge += (self.mount[3] + self.mountgrade[2])  # Add charge power of mount to troop
         self.stamina += self.mount[4]
         self.trait = self.trait + self.mount[6]  # Apply mount trait to subunit
-        self.unittype = 2  # If subunit has mount, count as cav for command buff
+        self.unit_type = 2  # If subunit has mount, count as cav for command buff
         self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
     # ^ End mount stat
 
-    self.weight = self.weaponlist.weaponlist[stat[21][0]][3] + self.weaponlist.weaponlist[stat[22][0]][3] + \
-                  self.armourlist.armourlist[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
-    if self.unittype == 2: # cavalry has half weight penalty
+    self.weight = self.weapon_list.weapon_list[stat[21][0]][3] + self.weapon_list.weapon_list[stat[22][0]][3] + \
+                  self.armour_list.armour_list[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
+    if self.unit_type == 2: # cavalry has half weight penalty
         self.weight = self.weight/2
 
-    self.trait = self.trait + self.armourlist.armourlist[stat[11][0]][4]  # Apply armour trait to subunit
-    self.basespeed = round((self.basespeed * ((100 - self.weight) / 100)) + int(self.statlist.gradelist[self.grade][3]),
-                           0)  # finalise base speed with weight and grade bonus
+    self.trait = self.trait + self.armour_list.armour_list[stat[11][0]][4]  # Apply armour trait to subunit
+    self.base_speed = round((self.base_speed * ((100 - self.weight) / 100)) + int(self.stat_list.grade_list[self.grade][3]),
+                            0)  # finalise base speed with weight and grade bonus
     self.description = stat[-1]  # subunit description for inspect ui
     # if self.hidden
 
     # v Elemental stat
-    self.baseelemmelee = 0  # start with physical element for melee weapon
-    self.baseelemrange = 0  # start with physical for range weapon
-    self.elemcount = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
-    self.tempcount = 0  # Temperature threshold count
-    fireres = 0  # resistance to fire, will be combine into list
-    waterres = 0  # resistance to water, will be combine into list
-    airres = 0  # resistance to air, will be combine into list
-    earthres = 0  # resistance to earth, will be combine into list
-    self.magicres = 0  # Resistance to any magic
-    self.heatres = 0  # Resistance to heat temperature
-    self.coldres = 0  # Resistance to cold temperature
-    poisonres = 0  # resistance to poison, will be combine into list
+    self.base_elemmelee = 0  # start with physical element for melee weapon
+    self.base_elemrange = 0  # start with physical for range weapon
+    self.elem_count = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
+    self.temp_count = 0  # Temperature threshold count
+    fire_res = 0  # resistance to fire, will be combine into list
+    water_res = 0  # resistance to water, will be combine into list
+    air_res = 0  # resistance to air, will be combine into list
+    earth_res = 0  # resistance to earth, will be combine into list
+    self.magic_res = 0  # Resistance to any magic
+    self.heat_res = 0  # Resistance to heat temperature
+    self.cold_res = 0  # Resistance to cold temperature
+    poison_res = 0  # resistance to poison, will be combine into list
     # ^ End elemental
 
-    self.criteffect = 1  # critical extra modifier
-    self.frontdmgeffect = 1  # Some skill affect only frontal combat damage
-    self.sidedmgeffect = 1  # Some skill affect damage for side combat as well (AOE)
-    self.corneratk = False  # Check if subunit can attack corner enemy or not
+    self.crit_effect = 1  # critical extra modifier
+    self.front_dmg_effect = 1  # Some skill affect only frontal combat damage
+    self.side_dmg_effect = 1  # Some skill affect damage for side combat as well (AOE)
+    self.corner_atk = False  # Check if subunit can attack corner enemy or not
     self.flankbonus = 1  # Combat bonus when flanking
-    self.baseauthpenalty = 0.1  # penalty to authority when bad event happen
-    self.bonusmoraledmg = 0  # extra morale damage
-    self.bonusstaminadmg = 0  # extra stamina damage
-    self.authpenalty = 0.1  # authority penalty for certain activities/order
-    self.basehpregen = 0  # hp regeneration modifier, will not resurrect dead troop by default
-    self.basestaminaregen = 2  # stamina regeneration modifier
+    self.base_auth_penalty = 0.1  # penalty to authority when bad event happen
+    self.bonus_morale_dmg = 0  # extra morale damage
+    self.bonus_stamina_dmg = 0  # extra stamina damage
+    self.auth_penalty = 0.1  # authority penalty for certain activities/order
+    self.base_hpregen = 0  # hp regeneration modifier, will not resurrect dead troop by default
+    self.base_staminaregen = 2  # stamina regeneration modifier
     self.moraleregen = 2  # morale regeneration modifier
-    self.statuseffect = {}  # list of current status effect
-    self.skilleffect = {}  # list of activate skill effect
-    self.baseinflictstatus = {}  # list of status that this subunit will inflict to enemy when attack
+    self.status_effect = {}  # list of current status effect
+    self.skill_effect = {}  # list of activate skill effect
+    self.base_inflictstatus = {}  # list of status that this subunit will inflict to enemy when attack
     self.specialstatus = []
 
     # v Set up trait variable
     self.arcshot = False
-    self.antiinf = False
-    self.anticav = False
+    self.anti_inf = False
+    self.anti_cav = False
     self.shootmove = False
     self.agileaim = False
-    self.norangepenal = False
-    self.longrangeacc = False
-    self.ignorechargedef = False
-    self.ignoredef = False
+    self.no_range_penal = False
+    self.long_range_acc = False
+    self.ignore_chargedef = False
+    self.ignore_def = False
     self.fulldef = False
-    self.tempfulldef = False
+    self.temp_fulldef = False
     self.backstab = False
     self.oblivious = False
     self.flanker = False
     self.unbreakable = False
-    self.tempunbraekable = False
+    self.temp_unbraekable = False
     self.stationplace = False
     # ^ End setup trait variable
 
     # v Add trait to base stat
     self.trait = list(set([trait for trait in self.trait if trait != 0]))
     if len(self.trait) > 0:
-        self.trait = {x: self.statlist.traitlist[x] for x in self.trait if
-                      x in self.statlist.traitlist}  # Any trait not available in ruleset will be ignored
+        self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
+                      x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
         for trait in self.trait.values():  # add trait modifier to base stat
-            self.baseattack *= trait[3]
-            self.basemeleedef *= trait[4]
-            self.baserangedef *= trait[5]
-            self.basearmour += trait[6]
-            self.basespeed *= trait[7]
-            self.baseaccuracy *= trait[8]
-            self.baserange *= trait[9]
-            self.basereload *= trait[10]
-            self.basecharge *= trait[11]
-            self.basechargedef += trait[12]
-            self.basehpregen += trait[13]
-            self.basestaminaregen += trait[14]
-            self.basemorale += trait[15]
-            self.basediscipline += trait[16]
-            self.criteffect += trait[17]
-            fireres += (trait[21] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
-            waterres += (trait[22] / 100)
-            airres += (trait[23] / 100)
-            earthres += (trait[24] / 100)
-            self.magicres += (trait[25] / 100)
-            self.heatres += (trait[26] / 100)
-            self.coldres += (trait[27] / 100)
-            poisonres += (trait[28] / 100)
+            self.base_attack *= trait[3]
+            self.base_meleedef *= trait[4]
+            self.base_rangedef *= trait[5]
+            self.base_armour += trait[6]
+            self.base_speed *= trait[7]
+            self.base_accuracy *= trait[8]
+            self.base_range *= trait[9]
+            self.base_reload *= trait[10]
+            self.base_charge *= trait[11]
+            self.base_chargedef += trait[12]
+            self.base_hpregen += trait[13]
+            self.base_staminaregen += trait[14]
+            self.base_morale += trait[15]
+            self.base_discipline += trait[16]
+            self.crit_effect += trait[17]
+            fire_res += (trait[21] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
+            water_res += (trait[22] / 100)
+            air_res += (trait[23] / 100)
+            earth_res += (trait[24] / 100)
+            self.magic_res += (trait[25] / 100)
+            self.heat_res += (trait[26] / 100)
+            self.cold_res += (trait[27] / 100)
+            poison_res += (trait[28] / 100)
             self.mental += trait[31]
             if trait[32] != [0]:
                 for effect in trait[32]:
-                    self.baseinflictstatus[effect] = trait[1]
-            # self.baseelemmelee =
-            # self.baseelemrange =
+                    self.base_inflictstatus[effect] = trait[1]
+            # self.base_elemmelee =
+            # self.base_elemrange =
 
         if 3 in self.trait:  # Varied training
-            self.baseattack *= (random.randint(80, 120) / 100)
-            self.basemeleedef *= (random.randint(80, 120) / 100)
-            self.baserangedef *= (random.randint(80, 120) / 100)
-            # self.basearmour *= (random.randint(80, 120) / 100)
-            self.basespeed *= (random.randint(80, 120) / 100)
-            self.baseaccuracy *= (random.randint(80, 120) / 100)
-            # self.baserange *= (random.randint(80, 120) / 100)
-            self.basereload *= (random.randint(80, 120) / 100)
-            self.basecharge *= (random.randint(80, 120) / 100)
-            self.basechargedef *= (random.randint(80, 120) / 100)
-            self.basemorale += random.randint(-10, 10)
-            self.basediscipline += random.randint(-10, 10)
+            self.base_attack *= (random.randint(80, 120) / 100)
+            self.base_meleedef *= (random.randint(80, 120) / 100)
+            self.base_rangedef *= (random.randint(80, 120) / 100)
+            # self.base_armour *= (random.randint(80, 120) / 100)
+            self.base_speed *= (random.randint(80, 120) / 100)
+            self.base_accuracy *= (random.randint(80, 120) / 100)
+            # self.base_range *= (random.randint(80, 120) / 100)
+            self.base_reload *= (random.randint(80, 120) / 100)
+            self.base_charge *= (random.randint(80, 120) / 100)
+            self.base_chargedef *= (random.randint(80, 120) / 100)
+            self.base_morale += random.randint(-10, 10)
+            self.base_discipline += random.randint(-10, 10)
             self.mental += random.randint(-10, 10)
 
         if 149 in self.trait:  # Impetuous
-            self.baseauthpenalty += 0.5
+            self.base_auth_penalty += 0.5
 
         # v Change trait variable
         if 16 in self.trait: self.arcshot = True  # can shoot in arc
         if 17 in self.trait: self.agileaim = True  # gain bonus accuracy when shoot while moving
         if 18 in self.trait: self.shootmove = True  # can shoot and move at same time
-        if 29 in self.trait: self.ignorechargedef = True  # ignore charge defence completely
-        if 30 in self.trait: self.ignoredef = True  # ignore defence completely
+        if 29 in self.trait: self.ignore_chargedef = True  # ignore charge defence completely
+        if 30 in self.trait: self.ignore_def = True  # ignore defence completely
         if 34 in self.trait: self.fulldef = True  # full effective defence for all side
         if 33 in self.trait: self.backstab = True  # bonus on rear attack
         if 47 in self.trait: self.flanker = True  # bonus on flank attack
         if 55 in self.trait: self.oblivious = True  # more penalty on flank/rear defend
-        if 73 in self.trait: self.norangepenal = True  # no range penalty
-        if 74 in self.trait: self.longrangeacc = True  # less range penalty
+        if 73 in self.trait: self.no_range_penal = True  # no range penalty
+        if 74 in self.trait: self.long_range_acc = True  # less range penalty
 
         if 111 in self.trait:
             self.unbreakable = True  # always unbreakable
-            self.tempunbraekable = True
+            self.temp_unbraekable = True
         # ^ End change trait variable
     # ^ End add trait to stat
 
     # self.loyalty
-    self.elemresist = (fireres, waterres, airres, earthres, poisonres)  # list of elemental resistance
+    self.elem_res = (fire_res, water_res, air_res, earth_res, poison_res)  # list of elemental resistance
     self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
         self.stamina * 0.5), round(self.stamina * 0.25)
-    self.unithealth = self.troophealth * self.troopnumber  # Total health of subunit from all troop
-    self.lasthealthstate = 4  # state start at full
-    self.laststaminastate = 4
+    self.unit_health = self.troophealth * self.troopnumber  # Total health of subunit from all troop
+    self.last_health_state = 4  # state start at full
+    self.last_stamina_state = 4
 
-    self.basereload = self.weaponlist.weaponlist[self.rangeweapon[0]][5] + \
-                      ((self.basereload - 50) * self.weaponlist.weaponlist[self.rangeweapon[0]][5] / 100) # final reload speed from weapon and skill
+    self.base_reload = self.weapon_list.weapon_list[self.rangeweapon[0]][5] + \
+                       ((self.base_reload - 50) * self.weapon_list.weapon_list[self.rangeweapon[0]][5] / 100) # final reload speed from weapon and skill
 
     # v Stat variable after receive modifier effect from various sources, used for activity and effect calculation
-    self.maxmorale = self.basemorale
-    self.attack = self.baseattack
-    self.meleedef = self.basemeleedef
-    self.rangedef = self.baserangedef
-    self.armour = self.basearmour
-    self.speed = self.basespeed
-    self.accuracy = self.baseaccuracy
-    self.reload = self.basereload
-    self.morale = self.basemorale
-    self.discipline = self.basediscipline
-    self.shootrange = self.baserange
-    self.charge = self.basecharge
-    self.chargedef = self.basechargedef
+    self.maxmorale = self.base_morale
+    self.attack = self.base_attack
+    self.meleedef = self.base_meleedef
+    self.rangedef = self.base_rangedef
+    self.armour = self.base_armour
+    self.speed = self.base_speed
+    self.accuracy = self.base_accuracy
+    self.reload = self.base_reload
+    self.morale = self.base_morale
+    self.discipline = self.base_discipline
+    self.shootrange = self.base_range
+    self.charge = self.base_charge
+    self.chargedef = self.base_chargedef
     # ^ End stat for status effect
 
     if self.mental < 0: # cannot be negative
@@ -812,15 +812,15 @@ def createtroopstat(self, team, stat, unitscale, starthp, startstamina):
     self.mentaltext = int(self.mental - 100)
     self.mental = (200 - self.mental) / 100 # convert to percentage
 
-    self.elemmelee = self.baseelemmelee
-    self.elemrange = self.baseelemrange
-    self.maxhealth, self.health75, self.health50, self.health25, = self.unithealth, round(self.unithealth * 0.75), round(
-        self.unithealth * 0.5), round(self.unithealth * 0.25)  # health percentage
-    self.oldlasthealth, self.oldlaststamina = self.unithealth, self.stamina  # save previous health and stamina in previous update
+    self.elemmelee = self.base_elemmelee
+    self.elemrange = self.base_elemrange
+    self.maxhealth, self.health75, self.health50, self.health25, = self.unit_health, round(self.unit_health * 0.75), round(
+        self.unit_health * 0.5), round(self.unit_health * 0.25)  # health percentage
+    self.oldlasthealth, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
     self.maxtroop = self.troopnumber  # max number of troop at the start
-    self.moralestate = round(self.basemorale / self.maxmorale)  # turn into percentage
+    self.moralestate = round(self.base_morale / self.maxmorale)  # turn into percentage
     self.staminastate = round((self.stamina * 100) / self.maxstamina)  # turn into percentage
-    self.staminastatecal = self.staminastate / 100  # for using as modifer on stat
+    self.staminastate_cal = self.staminastate / 100  # for using as modifer on stat
 
 def csv_read(file, subfolder=[], outputtype=0, defaultmaindir=True):
     """output type 0 = dict, 1 = list"""
@@ -882,11 +882,11 @@ def traitskillblit(self):
     position = [position[0] + 70, position[1] + 60] # start position
     startrow = position[0]
 
-    for icon in self.skillicon.sprites():
+    for icon in self.skill_icon.sprites():
         icon.kill()
 
     for trait in self.gameui[2].value2[0]:
-        self.skillicon.add(gameui.Skillcardicon(self.traitimgs[0], (position[0], position[1]), 0, id=trait))  # For now use placeholder image 0
+        self.skill_icon.add(gameui.Skillcardicon(self.traitimgs[0], (position[0], position[1]), 0, id=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -897,7 +897,7 @@ def traitskillblit(self):
     startrow = position[0]
 
     for skill in self.gameui[2].value2[1]:
-        self.skillicon.add(gameui.Skillcardicon(self.skillimgs[0], (position[0], position[1]), 1, id=skill))  # For now use placeholder image 0
+        self.skill_icon.add(gameui.Skillcardicon(self.skillimgs[0], (position[0], position[1]), 1, id=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -913,11 +913,11 @@ def effecticonblit(self):
     position = [position[0] + 70, position[1] + 140]
     startrow = position[0]
 
-    for icon in self.effecticon.sprites():
+    for icon in self.effect_icon.sprites():
         icon.kill()
 
     for status in self.gameui[2].value2[4]:
-        self.effecticon.add(gameui.Skillcardicon(self.statusimgs[0], (position[0], position[1]), 4, id=status))
+        self.effect_icon.add(gameui.Skillcardicon(self.statusimgs[0], (position[0], position[1]), 4, id=status))
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -925,7 +925,7 @@ def effecticonblit(self):
 
 def countdownskillicon(self):
     """count down timer on skill icon for activate and cooldown time"""
-    for skill in self.skillicon:
+    for skill in self.skill_icon:
         if skill.type == 1: # only do skill icon not trait
             cd = 0
             activetime = 0
@@ -934,7 +934,7 @@ def countdownskillicon(self):
             if skill.gameid in self.gameui[2].value2[3]:
                 activetime = int(self.gameui[2].value2[3][skill.gameid][3])
             skill.iconchange(cd, activetime)
-    # for effect in self.effecticon:
+    # for effect in self.effect_icon:
     #     cd = 0
     #     if effect.id in self.gameui[2].value2[4]:
     #         cd = int(self.gameui[2].value2[4][effect.id][3])
@@ -999,7 +999,7 @@ def unitsetup(maingame):
             coa = pygame.transform.scale(maingame.coa[row[12]], (60, 60)) # get coa image and scale smaller to fit ui
 
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour, row[10] + row[11], maingame.leaderstat, maingame.gameunitstat, control,
+                           colour, row[10] + row[11], maingame.leader_stat, maingame.gameunitstat, control,
                            coa, command, row[13], row[14], row[15], row[16])
             whicharmy.add(army)
             armysquadindex = 0 # armysquadindex is list index for subunit list in a specific army
@@ -1009,18 +1009,18 @@ def unitsetup(maingame):
             maxcolumn = len(army.armysubunit[0])
             for squadnum in np.nditer(army.armysubunit, op_flags=['readwrite'], order='C'):
                 if squadnum != 0:
-                    addsubunit = gamesubunit.Subunit(squadnum, squadgameid, army, army.squadpositionlist[armysquadindex],
-                                                   army.starthp, army.startstamina, maingame.unitscale)
+                    addsubunit = gamesubunit.Subunit(squadnum, squadgameid, army, army.subunit_position_list[armysquadindex],
+                                                     army.starthp, army.startstamina, maingame.unitscale)
                     maingame.subunit.add(addsubunit)
-                    addsubunit.boardpos = boardpos[armysquadindex]
+                    addsubunit.board_pos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
-                    army.subunitspritearray[row][column] = addsubunit
-                    army.subunitsprite.append(addsubunit)
+                    army.subunit_sprite_array[row][column] = addsubunit
+                    army.subunit_sprite.append(addsubunit)
                     squadindexlist.append(squadgameid)
                     squadgameid += 1
                     squadindex += 1
                 else:
-                    army.subunitspritearray[row][column] = None # replace numpy None with python None
+                    army.subunit_sprite_array[row][column] = None # replace numpy None with python None
 
                 column += 1
                 if column == maxcolumn:
@@ -1034,11 +1034,11 @@ def unitsetup(maingame):
 ## Battle related gamescript
 
 def setrotate(self, settarget=None):
-    """set basetarget and new angle for sprite rotation"""
+    """set base_target and new angle for sprite rotation"""
     if settarget is None: # For auto chase rotate
-        myradians = math.atan2(self.basetarget[1] - self.basepos[1], self.basetarget[0] - self.basepos[0])
+        myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
     else: # Command move or rotate
-        myradians = math.atan2(settarget[1] - self.basepos[1], settarget[0] - self.basepos[0])
+        myradians = math.atan2(settarget[1] - self.base_pos[1], settarget[0] - self.base_pos[0])
     newangle = math.degrees(myradians)
 
     # """upper left -"""
@@ -1068,14 +1068,14 @@ def rotationxy(self, origin, point, angle):
 
 def combatpathfind(self):
     # v Pathfinding
-    self.combatmovequeue = []
+    self.combat_move_queue = []
     movearray = self.maingame.subunitposarray.copy()
-    intbasetarget = (int(self.closetarget.basepos[0]), int(self.closetarget.basepos[1]))
-    for y in self.closetarget.posrange[0]:
-        for x in self.closetarget.posrange[1]:
+    intbasetarget = (int(self.close_target.base_pos[0]), int(self.close_target.base_pos[1]))
+    for y in self.close_target.posrange[0]:
+        for x in self.close_target.posrange[1]:
             movearray[x][y] = 100  # reset path in the enemy sprite position
 
-    intbasepos = (int(self.basepos[0]), int(self.basepos[1]))
+    intbasepos = (int(self.base_pos[0]), int(self.base_pos[1]))
     for y in self.posrange[0]:
         for x in self.posrange[1]:
             movearray[x][y] = 100  # reset path for sub-unit sprite position
@@ -1101,15 +1101,15 @@ def combatpathfind(self):
 
     path = path[4:]  # remove some starting path that may clip with friendly sub-unit sprite
 
-    self.combatmovequeue = path  # add path into combat movement queue
-    if len(self.combatmovequeue) < 1: # simply try walk to target anyway if pathfinder return empty
-        self.combatmovequeue = [self.closetarget.basepos]
+    self.combat_move_queue = path  # add path into combat movement queue
+    if len(self.combat_move_queue) < 1: # simply try walk to target anyway if pathfinder return empty
+        self.combat_move_queue = [self.close_target.base_pos]
     # if self.gameid == 10087:
-    #     print('done', self.basepos != self.basetarget)
+    #     print('done', self.base_pos != self.base_target)
     # print('operations:', runs, 'path length:', len(path))
     # print(grid.grid_str(path=path, start=start, end=end))
-    # print(self.combatmovequeue)
-    # print(self.basepos, self.closetarget.basepos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+    # print(self.combat_move_queue)
+    # print(self.base_pos, self.close_target.base_pos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
     # ^ End path finding
 
 def losscal(attacker, defender, hit, defense, type, defside = None):
@@ -1122,13 +1122,13 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
     if type == 1: heightadventage = int(heightadventage / 2) # Range attack use less height advantage
     hit += heightadventage
 
-    if defense < 0 or who.ignoredef: # Ignore def trait
+    if defense < 0 or who.ignore_def: # Ignore def trait
         defense = 0
 
     hitchance = hit - defense
     if hitchance < 0: hitchance = 0
     elif hitchance > 80: # Critical hit
-        hitchance *= who.criteffect # modify with crit effect further
+        hitchance *= who.crit_effect # modify with crit effect further
         if hitchance > 200:
             hitchance = 200
 
@@ -1142,16 +1142,16 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
     if type == 0:  # Melee damage
         dmg = who.dmg
-        if who.chargeskill in who.skilleffect: # Include charge in dmg if attacking
-            if who.ignorechargedef is False: # Ignore charge defense if have ignore trait
+        if who.chargeskill in who.skill_effect: # Include charge in dmg if attacking
+            if who.ignore_chargedef is False: # Ignore charge defense if have ignore trait
                 sidecal = battlesidecal[defside]
-                if target.fulldef or target.tempfulldef: # Defense all side
+                if target.fulldef or target.temp_fulldef: # Defense all side
                     sidecal = 1
                 dmg = dmg + (((who.charge) - (target.chargedef * sidecal)) * 2)
             else:
                 dmg = dmg + (who.charge * 2)
 
-        if target.chargeskill in target.skilleffect and target.ignorechargedef is False: # Also include chargedef in dmg if enemy charging
+        if target.chargeskill in target.skill_effect and target.ignore_chargedef is False: # Also include chargedef in dmg if enemy charging
             chargedefcal = who.chargedef - target.charge
             if chargedefcal < 0:
                 chargedefcal = 0
@@ -1164,7 +1164,7 @@ def losscal(attacker, defender, hit, defense, type, defside = None):
 
     leaderdmg = dmg
     unitdmg = (dmg * who.troopnumber) + leaderdmgbonus # damage on subunit is dmg multiply by troop number with addition from leader combat
-    if (who.antiinf and target.type in (1, 2)) or (who.anticav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
+    if (who.anti_inf and target.type in (1, 2)) or (who.anti_cav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         unitdmg = unitdmg * 1.25
     # if type == 0: # melee do less damage per hit because the combat happen more frequently than range
     #     unitdmg = unitdmg / 20
@@ -1185,41 +1185,41 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside, receiv
     """apply aoe status effect to enemy squads"""
     for status in inflictstatus.items():
         if status[1] == 1 and attackerside == 0: # only front enemy
-            receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
+            receiver.status_effect[status[0]] = statuslist[status[0]].copy()
         elif status[1] == 2: # aoe effect to side enemy
-            receiver.statuseffect[status[0]] = statuslist[status[0]].copy()
+            receiver.status_effect[status[0]] = statuslist[status[0]].copy()
             if status[1] == 3: # apply to corner enemy subunit (left and right of self front enemy subunit)
-                cornerenemyapply = receiver.nearbysquadlist[0:2]
+                corner_enemy_apply = receiver.nearby_subunit_list[0:2]
                 if receiverside in (1,2): # attack on left/right side means corner enemy would be from front and rear side of the enemy
-                    cornerenemyapply = [receiver.nearbysquadlist[2],receiver.nearbysquadlist[5]]
-                for subunit in cornerenemyapply:
+                    corner_enemy_apply = [receiver.nearby_subunit_list[2], receiver.nearby_subunit_list[5]]
+                for subunit in corner_enemy_apply:
                     if subunit != 0:
-                        subunit.statuseffect[status[0]] = statuslist[status[0]].copy()
+                        subunit.status_effect[status[0]] = statuslist[status[0]].copy()
         elif status[1] == 3: # whole parentunit aoe
-            for subunit in receiver.parentunit.subunitsprite:
+            for subunit in receiver.parentunit.subunit_sprite:
                 if subunit.state != 100:
-                    subunit.statuseffect[status[0]] = statuslist[status[0]].copy()
+                    subunit.status_effect[status[0]] = statuslist[status[0]].copy()
 
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
-    finaldmg = round(dmg * dmgeffect * timermod)
-    finalmoraledmg = round(moraledmg * dmgeffect * timermod)
-    if finaldmg > receiver.unithealth: # damage cannot be higher than remaining health
-        finaldmg = receiver.unithealth
+    final_dmg = round(dmg * dmgeffect * timermod)
+    final_moraledmg = round(moraledmg * dmgeffect * timermod)
+    if final_dmg > receiver.unit_health: # damage cannot be higher than remaining health
+        final_dmg = receiver.unit_health
 
-    receiver.unithealth -= finaldmg
-    receiver.basemorale -= (finalmoraledmg + attacker.bonusmoraledmg) * receiver.mental
-    receiver.stamina -= attacker.bonusstaminadmg
+    receiver.unit_health -= final_dmg
+    receiver.base_morale -= (final_moraledmg + attacker.bonus_morale_dmg) * receiver.mental
+    receiver.stamina -= attacker.bonus_stamina_dmg
 
     # v Add red corner to indicate combat
-    if receiver.haveredcorner is False:
+    if receiver.red_corner is False:
         receiver.imageblock.blit(receiver.images[11], receiver.cornerimagerect)
-        receiver.haveredcorner = True
+        receiver.red_corner = True
     # ^ End red corner
 
     if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
-        receiver.elemcount[attacker.elemmelee - 1] += round(finaldmg * (100 - receiver.elemresist[attacker.elemmelee - 1] / 100))
+        receiver.elem_count[attacker.elemmelee - 1] += round(final_dmg * (100 - receiver.elem_res[attacker.elemmelee - 1] / 100))
 
-    attacker.basemorale += round((finalmoraledmg / 5)) # recover some morale when deal morale dmg to enemy
+    attacker.base_morale += round((final_moraledmg / 5)) # recover some morale when deal morale dmg to enemy
 
     if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 9:  # dmg on subunit leader, only 10% chance
         finalleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat/101) * timermod)
@@ -1229,30 +1229,30 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
 
 
 def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
-    """basetarget position 0 = Front, 1 = Side, 3 = Rear, attackerside and targetside is the side attacking and defending respectively"""
+    """base_target position 0 = Front, 1 = Side, 3 = Rear, attackerside and targetside is the side attacking and defending respectively"""
     wholuck = random.randint(-50, 50) # attacker luck
     targetluck = random.randint(-50, 50) # defender luck
     whopercent = battlesidecal[attackerside] # attacker attack side modifier
 
     """34 battlemaster fulldef or 91 allrounddef status = no flanked penalty"""
-    if attacker.fulldef or 91 in attacker.statuseffect:
+    if attacker.fulldef or 91 in attacker.status_effect:
         whopercent = 1
     targetpercent = battlesidecal[targetside] # defender defend side
 
-    if target.fulldef or 91 in target.statuseffect:
+    if target.fulldef or 91 in target.status_effect:
         targetpercent = 1
 
-    dmgeffect = attacker.frontdmgeffect
-    targetdmgeffect = target.frontdmgeffect
+    dmgeffect = attacker.front_dmg_effect
+    targetdmgeffect = target.front_dmg_effect
 
     if attackerside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
         whopercent = battlesidecal[attackerside] + (attacker.discipline / 300)
-        dmgeffect = attacker.sidedmgeffect # use side dmg effect as some skill boost only front dmg
+        dmgeffect = attacker.side_dmg_effect # use side dmg effect as some skill boost only front dmg
         if whopercent > 1: whopercent = 1
 
-    if targetside != 0 and targetpercent != 1: # same for the basetarget defender
+    if targetside != 0 and targetpercent != 1: # same for the base_target defender
         targetpercent = battlesidecal[targetside] + (target.discipline / 300)
-        targetdmgeffect = target.sidedmgeffect
+        targetdmgeffect = target.side_dmg_effect
         if targetpercent > 1: targetpercent = 1
 
     whohit = float(attacker.attack * whopercent) + wholuck
@@ -1273,9 +1273,9 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
     complexdmg(target, attacker, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod) # Inflict dmg to attacker
 
     #v Attack corner (side) of self with aoe attack
-    if attacker.corneratk:
-        listloop = [target.nearbysquadlist[2], target.nearbysquadlist[5]] # Side attack get (2) front and (5) rear nearby subunit
-        if targetside in (0, 2): listloop = target.nearbysquadlist[0:2] # Front/rear attack get (0) left and (1) right nearbysquad
+    if attacker.corner_atk:
+        listloop = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]] # Side attack get (2) front and (5) rear nearby subunit
+        if targetside in (0, 2): listloop = target.nearby_subunit_list[0:2] # Front/rear attack get (0) left and (1) right nearbysquad
         for subunit in listloop:
             if subunit != 0 and subunit.state != 100:
                 targethit, targetdefense = float(attacker.attack * targetpercent) + targetluck, float(subunit.meleedef * targetpercent) + targetluck
@@ -1305,52 +1305,52 @@ def die(who, battle,moralehit=True):
     if moralehit:
         if who.commander:  # more morale penalty if the parentunit is a command parentunit
             for army in group:
-                for subunit in army.subunitsprite:
-                    subunit.basemorale -= 30
+                for subunit in army.subunit_sprite:
+                    subunit.base_morale -= 30
 
         for thisarmy in enemygroup:  # get bonus authority to the another army
             thisarmy.authority += 5
 
         for thisarmy in group:  # morale dmg to every subunit in army when allied parentunit destroyed
-            for subunit in thisarmy.subunitsprite:
-                subunit.basemorale -= 20
+            for subunit in thisarmy.subunit_sprite:
+                subunit.base_morale -= 20
 
     battle.allunitlist.remove(who)
     battle.allunitindex.remove(who.gameid)
     group.remove(who)
-    who.gotkilled = True
+    who.got_killed = True
 
 
-def leaderchange(self, type):
+def changeleader(self, type):
     """Leader change subunit or gone/die, type can be "die" or "broken" """
     checkstate = [100]
     if type == "broken":
         checkstate = [99,100]
     if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
-        for subunit in self.nearbysquadlist:
+        for subunit in self.nearby_subunit_list:
             if subunit != 0 and subunit.state not in checkstate and subunit.leader == None:
                 subunit.leader = self.leader
                 self.leader.subunit = subunit
-                for index, subunit in enumerate(self.parentunit.subunitsprite):  # loop to find new subunit pos based on new subunitsprite list
+                for index, subunit in enumerate(self.parentunit.subunit_sprite):  # loop to find new subunit pos based on new subunit_sprite list
                     if subunit.gameid == self.leader.subunit.gameid:
                         subunit.leader.subunitpos = index
-                        if self.unitleader:  # set leader subunit to new one
+                        if self.unit_leader:  # set leader subunit to new one
                             self.parentunit.leadersubunit = subunit
-                            subunit.unitleader = True
+                            subunit.unit_leader = True
 
                 self.leader = None
                 break
 
         if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in parentunit
-            for index, subunit in enumerate(self.parentunit.subunitsprite):
+            for index, subunit in enumerate(self.parentunit.subunit_sprite):
                 if subunit.state not in checkstate and subunit.leader is None:
                     subunit.leader = self.leader
                     self.leader.subunit = subunit
                     subunit.leader.subunitpos = index
                     self.leader = None
-                    if self.unitleader:  # set leader subunit to new one
+                    if self.unit_leader:  # set leader subunit to new one
                         self.parentunit.leadersubunit = subunit
-                        subunit.unitleader = True
+                        subunit.unit_leader = True
 
                     break
 
@@ -1359,36 +1359,37 @@ def leaderchange(self, type):
                 self.leader.health = 0
                 self.leader.gone()
 
-        self.unitleader = False
+        self.unit_leader = False
 
 
 def addnewunitprocess(battle, who):
     from gamescript import gameunit
     # generate subunit sprite array for inspect ui
-    who.subunitspritearray = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
+    who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
     foundcount = 0
     for row in range(0, 8):
         for column in range (0, 8):
             try:
                 if who.armysubunit[row][column] != 0:
-                    who.subunitspritearray[row][column] = who.subunitsprite[foundcount]
+                    who.subunit_sprite_array[row][column] = who.subunit_sprite[foundcount]
                     foundcount += 1
+                    who.subunit_sprite[foundcount].armypos = (who.subunit_position_list[foundcount][0] / 10, who.subunit_position_list[foundcount][1] / 10)  # position in parentunit sprite
                 else:
-                    who.subunitspritearray[row][column] = None
+                    who.subunit_sprite_array[row][column] = None
             except:
                 pass
     #^ End generate subunit array
 
-    for index, subunit in enumerate(who.subunitsprite): # reset leader subunitpos
+    for index, subunit in enumerate(who.subunit_sprite): # reset leader subunitpos
         if subunit.leader is not None:
             subunit.leader.subunitpos = index
 
     who.zoom = battle.camerascale
-    who.newangle = who.angle
+    who.new_angle = who.angle
 
     who.startset(battle.subunit)
-    who.setsubunittarget()
-    for subunit in who.subunitsprite:
+    who.set_subunit_target()
+    for subunit in who.subunit_sprite:
         subunit.gamestart(subunit.zoom)
 
     battle.allunitlist.append(who)
@@ -1407,7 +1408,7 @@ def moveleadersubunit(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
 
     while placedone is False:
         if leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace] != 0:
-            for subunit in leader.subunit.parentunit.subunitsprite:
+            for subunit in leader.subunit.parentunit.subunit_sprite:
                 if subunit.gameid == leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace]:
                     if subunit.leader is not None or (newrow,newplace) in alreadypick:
                         newplace += 1
@@ -1434,14 +1435,14 @@ def splitunit(battle, who, how):
     if how == 0:  # split by row
         newarmysubunit = np.array_split(who.armysubunit, 2)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2)[0]
-        newpos = pygame.Vector2(who.basepos[0], who.basepos[1] + (who.baseheightbox / 2))
-        who.basepos = pygame.Vector2(who.basepos[0], who.basepos[1] - (who.baseheightbox / 2)) # new position for original parentunit
+        newpos = pygame.Vector2(who.base_pos[0], who.base_pos[1] + (who.base_height_box / 2))
+        who.base_pos = pygame.Vector2(who.base_pos[0], who.base_pos[1] - (who.base_height_box / 2)) # new position for original parentunit
 
     else:  # split by column
         newarmysubunit = np.array_split(who.armysubunit, 2, axis=1)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2, axis=1)[0]
-        newpos = pygame.Vector2(who.basepos[0] + (who.basewidthbox / 2), who.basepos[1])
-        who.basepos =  pygame.Vector2(who.basepos[0] - (who.basewidthbox / 2), who.basepos[1])
+        newpos = pygame.Vector2(who.base_pos[0] + (who.base_width_box / 2), who.base_pos[1])
+        who.base_pos =  pygame.Vector2(who.base_pos[0] - (who.base_width_box / 2), who.base_pos[1])
 
     if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move first sub-general leader subunit if it not in new one
         who.armysubunit, newarmysubunit, newposition = moveleadersubunit(who.leader[1], who.armysubunit, newarmysubunit)
@@ -1453,10 +1454,23 @@ def splitunit(battle, who, how):
             newarmysubunit, who.armysubunit, newposition = moveleadersubunit(leader, newarmysubunit, who.armysubunit, alreadypick)
             alreadypick.append(newposition)
 
-    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.leaderstat), gameleader.Leader(1, 0, 2, who, battle.leaderstat),
-                 gameleader.Leader(1, 0, 3, who, battle.leaderstat)] # create new leader list for new parentunit
+    newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.leader_stat), gameleader.Leader(1, 0, 2, who, battle.leader_stat),
+                 gameleader.Leader(1, 0, 3, who, battle.leader_stat)] # create new leader list for new parentunit
 
-    subunitsprite = [subunit for subunit in who.subunitsprite if subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
+    who.subunit_position_list = []
+
+    width, height = 0, 0
+    squadnum = 0  # Number of subunit based on the position in row and column
+    for subunit in who.armysubunit.flat:
+        width += who.imgsize[0]
+        who.subunit_position_list.append((width, height))
+        squadnum += 1
+        if squadnum >= len(who.armysubunit[0]):  # Reach the last subunit in the row, go to the next one
+            width = 0
+            height += who.imgsize[1]
+            squadnum = 0
+
+    subunitsprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
     newsquadsprite = []
 
     #v Sort so the new leader subunit position match what set before
@@ -1464,11 +1478,11 @@ def splitunit(battle, who, how):
         if squad.gameid in newarmysubunit.flat:
             newsquadsprite.append(squad)
 
-    who.subunitsprite = [subunit for subunit in who.subunitsprite if subunit.gameid in  who.armysubunit.flat]
+    who.subunit_sprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in who.armysubunit.flat]
     #^ End sort
 
     #v Reset position in inspectui for both parentunit
-    for sprite in (who.subunitsprite, newsquadsprite):
+    for sprite in (who.subunit_sprite, newsquadsprite):
         width, height = 0, 0
         squadnum = 0
         for squad in sprite:
@@ -1487,7 +1501,7 @@ def splitunit(battle, who, how):
     #^ End reset position
 
     #v Change the original parentunit stat and sprite
-    originalleader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.leaderstat)]
+    originalleader = [who.leader[0], who.leader[2], who.leader[3], gameleader.Leader(1, 0, 3, who, battle.leader_stat)]
     for index, leader in enumerate(originalleader):  # Also change army position of all leader in that parentunit
         leader.armyposition = index  # Change army position to new one
         leader.imgposition = leader.baseimgposition[leader.armyposition]
@@ -1512,9 +1526,9 @@ def splitunit(battle, who, how):
     whosearmy.add(newarmy)
     newarmy.teamcommander = teamcommander
     newarmy.leader = newleader
-    newarmy.subunitsprite = newsquadsprite
+    newarmy.subunit_sprite = newsquadsprite
 
-    for subunit in newarmy.subunitsprite:
+    for subunit in newarmy.subunit_sprite:
         subunit.parentunit = newarmy
 
     for index, leader in enumerate(newarmy.leader):  # Change army position of all leader in new parentunit

@@ -6,7 +6,7 @@ class Weaponstat():
     def __init__(self, main_dir, img, ruleset):
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
-        self.weaponlist = {}
+        self.weapon_list = {}
         with open(main_dir + "\data\war" + "\\unit_weapon.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -23,7 +23,7 @@ class Weaponstat():
                                 row[n] = [int(i)]
                         elif i.isdigit():
                             row[n] = int(i)
-                    self.weaponlist[row[0]] = row[1:]
+                    self.weapon_list[row[0]] = row[1:]
         unitfile.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75) # Quality modifer to weapon stat
 
@@ -32,7 +32,7 @@ class Armourstat():
     def __init__(self, main_dir, img, ruleset):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
-        self.armourlist = {}
+        self.armour_list = {}
         with open(main_dir + "\data\war" + "\\unit_armour.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -49,7 +49,7 @@ class Armourstat():
                                 row[n] = [int(i)]
                         elif i.isdigit():
                             row[n] = int(i)
-                    self.armourlist[row[0]] = row[1:]
+                    self.armour_list[row[0]] = row[1:]
         unitfile.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifer to armour stat
 
@@ -58,7 +58,7 @@ class Unitstat():
     def __init__(self, main_dir, ruleset, rulesetfolder):
         """Unit stat data read"""
         #v Unit stat dict
-        self.unitlist = {}
+        self.unit_list = {}
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + "\\unit_preset.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -70,23 +70,23 @@ class Unitstat():
                             row[n] = [int(i)]
                     elif i.isdigit():
                         row[n] = int(i)  # No need to make it float
-                self.unitlist[row[0]] = row[1:]
+                self.unit_list[row[0]] = row[1:]
             unitfile.close()
         #^ End subunit stat list
         #v Lore of the subunit dict
-        self.unitlore = {}
+        self.unit_lore = {}
         with open(main_dir + "\data\\ruleset" + rulesetfolder + "\war" + "\\unit_lore.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
-                self.unitlore[row[0]] = row[1:]
+                self.unit_lore[row[0]] = row[1:]
             unitfile.close()
         #^ End subunit lore
 
         #v Unit status effect dict
-        self.statuslist = {}
+        self.status_list = {}
         with open(main_dir + "\data\war" + "\\unit_status.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -112,13 +112,13 @@ class Unitstat():
                                     row[n] = []
                             elif (i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None)) and n != 1: # negative number for bonus
                                 row[n] = float(i)
-                    self.statuslist[row[0]] = row[1:]
+                    self.status_list[row[0]] = row[1:]
                 run += 1
         unitfile.close()
         #^ End status effect
 
         #v Race dict
-        self.racelist = {}
+        self.race_list = {}
         with open(main_dir + "\data\war" + "\\unit_race.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -134,12 +134,12 @@ class Unitstat():
                         #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                         #     elif i.isdigit():
                         #         row[n] = [int(i)]
-                    self.racelist[row[0]] = row[1:]
+                    self.race_list[row[0]] = row[1:]
         unitfile.close()
         #^ End race
 
         #v Unit grade dict
-        self.gradelist = {}
+        self.grade_list = {}
         with open(main_dir + "\data\war" + "\\unit_grade.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -154,13 +154,13 @@ class Unitstat():
                                 row[n] = [int(i)]
                         elif n in (8,9): # health and stamina modifier effect
                             row[n] = float(i) / 100
-                self.gradelist[row[0]] = row[1:]
+                self.grade_list[row[0]] = row[1:]
                 run += 1
         unitfile.close()
         #^ End subunit grade
 
         #v Unit skill dict
-        self.abilitylist = {}
+        self.ability_list = {}
         with open(main_dir + "\data\war" + "\\unit_ability.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -192,13 +192,13 @@ class Unitstat():
                                     row[n] = float(i)
                                 else:
                                     row[n] = int(i)
-                    self.abilitylist[row[0]] = row[1:]
+                    self.ability_list[row[0]] = row[1:]
                     run += 1
         unitfile.close()
         #^ End subunit skill
 
         #v Unit property dict
-        self.traitlist = {}
+        self.trait_list = {}
         with open(main_dir + "\data\war" + "\\unit_property.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0
@@ -227,7 +227,7 @@ class Unitstat():
                             elif (i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None)) and n not in (1, 34, 35):
                                 row[n] = float(i)
 
-                    self.traitlist[row[0]] = row[1:]
+                    self.trait_list[row[0]] = row[1:]
                     run += 1
         unitfile.close()
         #^ End subunit property
@@ -244,7 +244,7 @@ class Unitstat():
         #^ End subunit role
 
         #v Unit mount dict
-        self.mountlist = {}
+        self.mount_list = {}
         with open(main_dir + "\data\war" + "\\mount_preset.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -261,12 +261,12 @@ class Unitstat():
                                 row[n] = [int(i)]
                         elif i.isdigit():
                             row[n] = int(i)
-                    self.mountlist[row[0]] = row[1:]
+                    self.mount_list[row[0]] = row[1:]
         unitfile.close()
         #^ End subunit mount dict
 
         #v Mount grade dict
-        self.mountgradelist = {}
+        self.mount_grade_list = {}
         with open(main_dir + "\data\war" + "\\mount_grade.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             run = 0 # for avoiding header
@@ -281,13 +281,13 @@ class Unitstat():
                                 row[n] = [int(i)]
                         elif n in (4,5): # health and stamina modifier effect
                             row[n] = float(i) / 100
-                self.mountgradelist[row[0]] = row[1:]
+                self.mount_grade_list[row[0]] = row[1:]
                 run += 1
         unitfile.close()
         #^ End mount grade
 
         #v Mount armour dict
-        self.mountarmourlist = {}
+        self.mount_armour_list = {}
         with open(main_dir + "\data\war" + "\\mount_armour.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -298,7 +298,7 @@ class Unitstat():
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):
                     for n, i in enumerate(row):
                         if i.isdigit(): row[n] = int(i)  # No need to be float
-                    self.mountarmourlist[row[0]] = row[1:]
+                    self.mount_armour_list[row[0]] = row[1:]
         unitfile.close()
         #^ End mount armour
 
@@ -306,7 +306,7 @@ class Leaderstat():
     def __init__(self, main_dir, img, imgorder, option):
         self.imgs = img
         self.imgorder = imgorder
-        self.leaderlist = {}
+        self.leader_list = {}
         with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\leader.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -315,7 +315,7 @@ class Leaderstat():
                     # if and n in []:
                     #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
-                self.leaderlist[row[0]] = row[1:]
+                self.leader_list[row[0]] = row[1:]
         unitfile.close()
 
         #v Add common leader to the leader list with gameid + 10000
@@ -327,24 +327,24 @@ class Leaderstat():
                     # if and n in []:
                     #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
-                self.leaderlist[row[0]] = row[1:]
+                self.leader_list[row[0]] = row[1:]
         unitfile.close()
         #^ End common leader
 
         #v Lore of the leader dict
-        self.leaderlore = {}
+        self.leader_lore = {}
         with open(main_dir + "\data\\ruleset" + str(option) + "\\leader" + "\\leader_lore.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
-                self.leaderlore[row[0]] = row[1:]
+                self.leader_lore[row[0]] = row[1:]
             unitfile.close()
         #^ End leader lore
 
         #v Leader class dict
-        self.leaderclass = {}
+        self.leader_class = {}
         with open(main_dir + "\data\leader" + "\\leader_class.csv", encoding="utf-8", mode = "r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -354,7 +354,7 @@ class Leaderstat():
                     # if and n in []:
                     #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
-                self.leaderclass[row[0]] = row[1:]
+                self.leader_class[row[0]] = row[1:]
         unitfile.close()
         #^ End leader class
 

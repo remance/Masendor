@@ -61,18 +61,18 @@ class Gameui(pygame.sprite.Sprite):
         self.text = text
         self.image = image
         self.icon = icon
-        self.uitype = uitype
+        self.ui_type = uitype
         self.value = [-1, -1]
-        self.lastvalue = 0
+        self.last_value = 0
         self.option = 0
         self.rect = self.image.get_rect(center=(self.X, self.Y))
         self.lastwho = -1 # parentunit last showed, start with -1 which mean any new clicked will show up at start
-        if self.uitype == "topbar": # setup variable for topbar ui
+        if self.ui_type == "topbar": # setup variable for topbar ui
             position = 10
             for ic in self.icon: # Blit icon into topbar ui
-                self.iconimagerect = ic.get_rect(
+                self.icon_rect = ic.get_rect(
                     topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
-                self.image.blit(ic, self.iconimagerect)
+                self.image.blit(ic, self.icon_rect)
                 position += 90
             self.options2 = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                              6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
@@ -80,26 +80,26 @@ class Gameui(pygame.sprite.Sprite):
             self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
                              7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"} # parentunit stamina state name
 
-        elif self.uitype == "commandbar": # setup variable for command bar ui
-            self.iconimagerect = self.icon[6].get_rect(
+        elif self.ui_type == "commandbar": # setup variable for command bar ui
+            self.icon_rect = self.icon[6].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-            self.image.blit(self.icon[6], self.iconimagerect)
+            self.image.blit(self.icon[6], self.icon_rect)
             self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]] # team 1 white chess head
             self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]] # team 2 black chess head
             self.lastauth = 0
 
-        elif self.uitype == "unitcard": # setup variable for subunit card ui
+        elif self.ui_type == "unitcard": # setup variable for subunit card ui
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(1)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
-            self.fronttext = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
+            self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
                               "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "] # stat name
-            self.subunitstate = {0:"Idle",1:"Walk",2:"Run",3:"Walk (M)",4:"Run (M)",5:"Walk (R)",6:"Run (R)",10:"Melee",11:"Shoot",
-                                 12:"Walk (S)", 13:"Run (S)",95:"Disobey",96:"Flee",97:"Rest",98:"Flee",99:"Broken",100:"Dead"}
-            self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # item quality name
-            self.leaderstatetext = {96:"Flee",97:"POW",98:"MIA",99:"WIA",100:"KIA"} # leader state name
-            self.terrainlist = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
+            self.subunit_state = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)", 10: "Melee", 11: "Shoot",
+                                  12:"Walk (S)", 13:"Run (S)", 95:"Disobey", 96:"Flee", 97:"Rest", 98:"Flee", 99:"Broken", 100:"Dead"}
+            self.quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # item quality name
+            self.leader_state_text = {96: "Flee", 97: "POW", 98: "MIA", 99: "WIA", 100: "KIA"} # leader state name
+            self.terrain_list = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
                                 "Deep water"] # terrain climate name
         self.image_original = self.image.copy()
 
@@ -125,7 +125,7 @@ class Gameui(pygame.sprite.Sprite):
         for thisbutton in button:
             thisbutton.draw(self.image)
         position = 65
-        if self.uitype == "topbar":
+        if self.ui_type == "topbar":
             self.value = ["{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxhealth) + ")", who.staminastate, who.moralestate, who.state]
             if self.value[3] in self.options1: # Check subunit state and blit name
                 self.value[3] = self.options1[self.value[3]]
@@ -141,7 +141,7 @@ class Gameui(pygame.sprite.Sprite):
             if self.value[1] in self.options3: # Check if stamina state and blit the name
                 self.value[1] = self.options3[self.value[1]]
 
-            if self.value != self.lastvalue or splithappen: # only blit new text when value change or subunit split
+            if self.value != self.last_value or splithappen: # only blit new text when value change or subunit split
                 self.image = self.image_original.copy()
                 for value in self.value: # blit value text
                     self.textsurface = self.font.render(str(value), 1, (0, 0, 0))
@@ -152,11 +152,11 @@ class Gameui(pygame.sprite.Sprite):
                         position += 50
                     else:
                         position += 95
-                self.lastvalue = self.value
+                self.last_value = self.value
         # for line in range(len(label)):
         #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
 
-        elif self.uitype == "commandbar":
+        elif self.ui_type == "commandbar":
             if who.gameid != self.lastwho or splithappen:  ## only redraw leader circle when change subunit
                 usecolour = self.white # colour of the chess icon for leader, white for team 1
                 if who.team == 2: # black for team 2
@@ -166,34 +166,34 @@ class Gameui(pygame.sprite.Sprite):
 
                 if who.commander: # commander parentunit use king and queen icon
                     ## main general
-                    self.iconimagerect = usecolour[0].get_rect(
+                    self.icon_rect = usecolour[0].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
-                    self.image.blit(usecolour[0], self.iconimagerect)
+                    self.image.blit(usecolour[0], self.icon_rect)
 
                     ## sub commander/strategist role
-                    self.iconimagerect = usecolour[1].get_rect(
+                    self.icon_rect = usecolour[1].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
-                    self.image.blit(usecolour[1], self.iconimagerect)
+                    self.image.blit(usecolour[1], self.icon_rect)
 
                 else: # the rest use rook and bishop
                     ## general
-                    self.iconimagerect = usecolour[2].get_rect(
+                    self.icon_rect = usecolour[2].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
-                    self.image.blit(usecolour[2], self.iconimagerect)
+                    self.image.blit(usecolour[2], self.icon_rect)
 
                     ## Special role
-                    self.iconimagerect = usecolour[5].get_rect(
+                    self.icon_rect = usecolour[5].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
-                    self.image.blit(usecolour[5], self.iconimagerect)
+                    self.image.blit(usecolour[5], self.icon_rect)
 
-                self.iconimagerect = usecolour[3].get_rect(center=(      # left sub general
+                self.icon_rect = usecolour[3].get_rect(center=(      # left sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
-                self.image.blit(usecolour[3], self.iconimagerect)
-                self.iconimagerect = usecolour[0].get_rect(center=(      # right sub general
+                self.image.blit(usecolour[3], self.icon_rect)
+                self.icon_rect = usecolour[0].get_rect(center=(      # right sub general
                     self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
                     self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
-                self.image.blit(usecolour[4], self.iconimagerect)
+                self.image.blit(usecolour[4], self.icon_rect)
 
                 self.image_original2 = self.image.copy()
             if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  ## authority number change only when not same as last
@@ -204,24 +204,24 @@ class Gameui(pygame.sprite.Sprite):
                 self.image.blit(self.textsurface, self.textrect)
                 self.lastauth = who.authority
 
-        elif self.uitype == "unitcard":
+        elif self.ui_type == "unitcard":
             position = 15 # starting row
             positionx = 45 # starting point of text
-            self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", str(int(who.stamina))+", " +self.subunitstate[who.state], int(who.morale),
+            self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", str(int(who.stamina)) +", " + self.subunit_state[who.state], int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
-                          int(who.accuracy), int(who.shootrange), who.ammo, str(int(who.reloadtime)) + "/" + str(int(who.reload)) + ": " + str(who.magazinenow),
-                          int(who.charge), int(who.chargedef), who.mentaltext, int(who.tempcount)]
-            self.value2 = [who.trait, who.skill, who.skillcooldown, who.skilleffect, who.statuseffect]
+                          int(who.accuracy), int(who.shootrange), who.ammo, str(int(who.reloadtime)) + "/" + str(int(who.reload)) + ": " + str(who.magazine_now),
+                          int(who.charge), int(who.chargedef), who.mentaltext, int(who.temp_count)]
+            self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
             self.description = who.description
             if type(self.description) == list: self.description = self.description[0]
-            if self.value != self.lastvalue or changeoption == 1 or who.gameid != self.lastwho:
+            if self.value != self.last_value or changeoption == 1 or who.gameid != self.lastwho:
                 self.image = self.image_original.copy()
                 row = 0
                 self.name = self.value[0]
                 leadertext = ""
                 if who.leader is not None:
                     leadertext = "/" + str(who.leader.name)
-                    if who.leader.state in self.leaderstatetext: leadertext += " " + "(" + self.leaderstatetext[who.leader.state] + ")"
+                    if who.leader.state in self.leader_state_text: leadertext += " " + "(" + self.leader_state_text[who.leader.state] + ")"
                 self.textsurface = self.fonthead.render(self.name + leadertext, 1, (0, 0, 0))  ##subunit and leader name at the top
                 self.textrect = self.textsurface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
@@ -229,7 +229,7 @@ class Gameui(pygame.sprite.Sprite):
                 row += 1
                 position += 20
                 if self.option == 1:  ## Stat card
-                    # self.iconimagerect = self.icon[0].get_rect(
+                    # self.icon_rect = self.icon[0].get_rect(
                     #     center=(
                     #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
                     # deletelist = [i for i,x in enumerate(self.value) if x == 0]
@@ -237,7 +237,7 @@ class Gameui(pygame.sprite.Sprite):
                     #     for i in sorted(deletelist, reverse = True):
                     #         self.value.pop(i)
                     #         text.pop(i)
-                    newvalue, text = self.value[0:-1], self.fronttext[1:]
+                    newvalue, text = self.value[0:-1], self.front_text[1:]
                     for n, value in enumerate(newvalue[1:]):
                         self.textsurface = self.font.render(text[n] + str(value), 1, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
@@ -250,23 +250,23 @@ class Gameui(pygame.sprite.Sprite):
                     self.longtext(self.image, self.description, (42, 25), self.fontlong) # blit long description
                 elif self.option == 3:  ## equipment and terrain
                     #v Terrain text
-                    terrain = self.terrainlist[who.terrain]
+                    terrain = self.terrain_list[who.terrain]
                     if who.feature is not None: terrain += "/" + self.featurelist[who.feature]
                     #^ End terrain text
 
                     #v Equipment text
-                    textvalue = [self.qualitytext[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": D " + str(who.dmg)
-                                 + ", P " + str(int((1 - who.penetrate) * 100))+ "%, W " + str(weaponlist.weaponlist[who.meleeweapon[0]][3]),
-                                 self.qualitytext[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": A "
+                    textvalue = [self.quality_text[who.meleeweapon[1]] + " " + str(weaponlist.weaponlist[who.meleeweapon[0]][0]) + ": D " + str(who.dmg)
+                                 + ", P " + str(int((1 - who.penetrate) * 100)) + "%, W " + str(weaponlist.weaponlist[who.meleeweapon[0]][3]),
+                                 self.quality_text[who.armourgear[1]] + " " + str(armourlist.armourlist[who.armourgear[0]][0]) + ": A "
                                  + str(int(who.armour)) + ", W " + str(armourlist.armourlist[who.armourgear[0]][2]),
                                  "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.height),
-                                 "Temperature:" + str(int(who.tempcount))]
+                                 "Temperature:" + str(int(who.temp_count))]
 
                     if who.rangeweapon[0] != 1: # only add range weapon if it is not none
                         textvalue.insert(1,
-                                         self.qualitytext[who.rangeweapon[1]] + " "  + str(weaponlist.weaponlist[who.rangeweapon[0]][0] + ": D "
-                                        + str(who.rangedmg) + ", P " + str(int((1 - who.rangepenetrate) * 100)) + "%, W "
-                                        + str(weaponlist.weaponlist[who.rangeweapon[0]][3])))
+                                         self.quality_text[who.rangeweapon[1]] + " " + str(weaponlist.weaponlist[who.rangeweapon[0]][0] + ": D "
+                                                                                           + str(who.rangedmg) + ", P " + str(int((1 - who.rangepenetrate) * 100)) + "%, W "
+                                                                                           + str(weaponlist.weaponlist[who.rangeweapon[0]][3])))
 
                     if "None" not in who.mount: # if mount is not the None mount id 1
                         armourtext = "//" + who.mountarmour[0]
@@ -281,7 +281,7 @@ class Gameui(pygame.sprite.Sprite):
                             midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
                         position += 20
-                self.lastvalue = self.value
+                self.last_value = self.value
         self.lastwho = who.gameid
 
 
@@ -296,12 +296,12 @@ class Skillcardicon(pygame.sprite.Sprite):
         self.gameid = id # ID of the skill
         self.pos = pos # pos of the skill on ui
         self.font = pygame.font.SysFont("helvetica", 18)
-        self.cooldowncheck = 0 # cooldown number
-        self.activecheck = 0 # active timer number
+        self.cooldown_check = 0 # cooldown number
+        self.active_check = 0 # active timer number
         self.image = image
         self.rect = self.image.get_rect(center=pos)
         self.image_original = self.image.copy() # keep original image without number
-        self.cooldownrect = self.image.get_rect(topleft=(0, 0))
+        self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
 
     def numberchange(self, number):
         """Change number more than thousand to K digit e.g. 1k = 1000"""
@@ -309,26 +309,26 @@ class Skillcardicon(pygame.sprite.Sprite):
 
     def iconchange(self, cooldown, activetimer):
         """Show active effect timer first if none show cooldown"""
-        if activetimer != self.activecheck:
-            self.activecheck = activetimer # renew number
+        if activetimer != self.active_check:
+            self.active_check = activetimer # renew number
             self.image = self.image_original.copy()
-            if self.activecheck > 0:
+            if self.active_check > 0:
                 rect = self.image.get_rect(topleft=(0, 0))
                 self.image.blit(self.activeskill, rect)
-                outputnumber = str(self.activecheck)
-                if self.activecheck >= 1000:
+                outputnumber = str(self.active_check)
+                if self.active_check >= 1000:
                     outputnumber = self.numberchange(outputnumber)
                 self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  ## timer number
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.textsurface, self.textrect)
 
-        elif cooldown != self.cooldowncheck and self.activecheck == 0: # Cooldown only get blit when skill is not active
-            self.cooldowncheck = cooldown
+        elif cooldown != self.cooldown_check and self.active_check == 0: # Cooldown only get blit when skill is not active
+            self.cooldown_check = cooldown
             self.image = self.image_original.copy()
-            if self.cooldowncheck > 0:
-                self.image.blit(self.cooldown, self.cooldownrect)
-                outputnumber = str(self.cooldowncheck)
-                if self.cooldowncheck >= 1000: # change thousand number into k (1k,2k)
+            if self.cooldown_check > 0:
+                self.image.blit(self.cooldown, self.cooldown_rect)
+                outputnumber = str(self.cooldown_check)
+                if self.cooldown_check >= 1000: # change thousand number into k (1k,2k)
                     outputnumber = self.numberchange(outputnumber)
                 self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
@@ -435,7 +435,7 @@ class Minimap(pygame.sprite.Sprite):
 
 
 class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if having it scrollable (probably when implement battle time)
-    maxrowshow = 9 # maximum 9 text rows can appear at once
+    max_row_show = 9 # maximum 9 text rows can appear at once
     logscroll = None  # Link from maingame after creation of both object
 
     def __init__(self, image, pos):
@@ -449,11 +449,11 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
 
     def makenew(self):
         self.mode = 0 # 0=war,1=army(subunit),2=leader,3=subunit(sub-subunit)
-        self.battlelog = [] # 0 war
-        self.battalionlog = [] # 1 army
-        self.leaderlog = [] # 2 leader
-        self.squadlog = [] # 3 subunit
-        self.currentstartrow = 0
+        self.battle_log = [] # 0 war
+        self.unit_log = [] # 1 army
+        self.leader_log = [] # 2 leader
+        self.subunit_log = [] # 3 subunit
+        self.current_start_row = 0
         self.lencheck = 0 # total number of row in the current mode
 
     def addeventlog(self, mapevent):
@@ -475,33 +475,33 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
     def changemode(self, mode):
         """Change tab"""
         self.mode = mode
-        self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
-        self.currentstartrow = 0
-        if self.lencheck > self.maxrowshow: # go to last row if there are more log than limit
-            self.currentstartrow = self.lencheck - self.maxrowshow
-        self.logscroll.currentrow = self.currentstartrow
+        self.lencheck = len((self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode])
+        self.current_start_row = 0
+        if self.lencheck > self.max_row_show: # go to last row if there are more log than limit
+            self.current_start_row = self.lencheck - self.max_row_show
+        self.logscroll.current_row = self.current_start_row
         self.logscroll.changeimage(logsize=self.lencheck)
         self.recreateimage()
 
     def cleartab(self, alltab=False):
         """Clear event from log for that mode"""
         self.lencheck = 0
-        self.currentstartrow = 0
-        currentlog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode] # log to edit
+        self.current_start_row = 0
+        currentlog = (self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode] # log to edit
         currentlog.clear()
         if alltab: # Clear event from every mode
-            for log in (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog):
+            for log in (self.battle_log, self.unit_log, self.leader_log, self.subunit_log):
                 log.clear()
-        self.logscroll.currentrow = self.currentstartrow
+        self.logscroll.current_row = self.current_start_row
         self.logscroll.changeimage(logsize=self.lencheck)
         self.recreateimage()
 
     def recreateimage(self):
-        thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode] # log to edit
+        thislog = (self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode] # log to edit
         self.image = self.image_original.copy()
         row = 10
-        for index, text in enumerate(thislog[self.currentstartrow:]):
-            if index == self.maxrowshow: break
+        for index, text in enumerate(thislog[self.current_start_row:]):
+            if index == self.max_row_show: break
             textsurface = self.font.render(text[1], 1, (0, 0, 0))
             textrect = textsurface.get_rect(topleft=(40, row))
             self.image.blit(textsurface, textrect)
@@ -511,7 +511,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         """Cut up whole log into seperate sentece based on space"""
         imagechange = False
         for mode in modelist:
-            thislog = (self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[mode] # log to edit
+            thislog = (self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[mode] # log to edit
             if len(textoutput) <= 45: # Eventlog each row cannot have more than 45 characters including space
                 thislog.append([who, textoutput])
             else:  # Cut the text log into multiple row if more than 45 char
@@ -545,7 +545,7 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
         atlastrow = False
         imagechange = False
         imagechange2 = False
-        if self.currentstartrow + self.maxrowshow >= self.lencheck:
+        if self.current_start_row + self.max_row_show >= self.lencheck:
             atlastrow = True
         if log is not None: # when event map log commentary come in, log will be none
             textoutput = ": " + log[1]
@@ -554,15 +554,15 @@ class Eventlog(pygame.sprite.Sprite):  ## Maybe Add timestamp to eventlog if hav
             textoutput = self.mapevent[eventmapid]
             imagechange2 = self.logtextprocess(textoutput[0], textoutput[2], str(textoutput[3]) + ": " +textoutput[1])
         if imagechange or imagechange2:
-            self.lencheck = len((self.battlelog, self.battalionlog, self.leaderlog, self.squadlog)[self.mode])
+            self.lencheck = len((self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode])
             if atlastrow and self.lencheck > 9:
-                self.currentstartrow = self.lencheck - self.maxrowshow
-                self.logscroll.currentrow = self.currentstartrow
+                self.current_start_row = self.lencheck - self.max_row_show
+                self.logscroll.current_row = self.current_start_row
             self.logscroll.changeimage(logsize=self.lencheck)
             self.recreateimage()
 
 class Uiscroller(pygame.sprite.Sprite):
-    def __init__(self, pos, uiheight, maxrowshow, layer=11):
+    def __init__(self, pos, uiheight, max_row_show, layer=11):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self)
         self.uiheight = uiheight
@@ -570,11 +570,11 @@ class Uiscroller(pygame.sprite.Sprite):
         self.image = pygame.Surface((10, self.uiheight))
         self.image.fill((255, 255, 255))
         self.image_original = self.image.copy()
-        self.buttoncolour = (100, 100, 100)
-        pygame.draw.rect(self.image, self.buttoncolour, (0, 0, self.image.get_width(), self.uiheight))
+        self.button_colour = (100, 100, 100)
+        pygame.draw.rect(self.image, self.button_colour, (0, 0, self.image.get_width(), self.uiheight))
         self.rect = self.image.get_rect(topright=self.pos)
         self.currentrow = 0
-        self.maxrowshow = maxrowshow
+        self.max_row_show = max_row_show
         self.logsize = 0
 
     def newimagecreate(self):
@@ -583,11 +583,11 @@ class Uiscroller(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         if self.logsize > 0:
             percentrow = self.currentrow * 100 / self.logsize
-        # if self.currentrow + self.maxrowshow < self.logsize:
+        # if self.current_row + self.max_row_show < self.logsize:
         if self.logsize > 0:
-            maxrow = (self.currentrow + self.maxrowshow) * 100 / self.logsize
+            maxrow = (self.currentrow + self.max_row_show) * 100 / self.logsize
         maxrow = maxrow - percentrow
-        pygame.draw.rect(self.image, self.buttoncolour,
+        pygame.draw.rect(self.image, self.button_colour,
                          (0, int(self.uiheight * percentrow / 100), self.image.get_width(), int(self.uiheight * maxrow / 100)))
 
     def changeimage(self, newrow=None, logsize=None):
@@ -608,8 +608,8 @@ class Uiscroller(pygame.sprite.Sprite):
         if self.mouse_value < 0:
             self.mouse_value = 0
         newrow = int(self.logsize * self.mouse_value / 100)
-        if self.logsize > self.maxrowshow and newrow > self.logsize - self.maxrowshow:
-            newrow = self.logsize - self.maxrowshow
+        if self.logsize > self.max_row_show and newrow > self.logsize - self.max_row_show:
+            newrow = self.logsize - self.max_row_show
         self.changeimage(newrow)
         return self.currentrow
 
@@ -621,9 +621,9 @@ class Armyselect(pygame.sprite.Sprite):
         self.image = image
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.currentrow = 0
-        self.maxrowshow = 2
-        self.maxcolumnshow = 6
+        self.current_row = 0
+        self.max_row_show = 2
+        self.max_column_show = 6
         self.logsize = 0
 
 

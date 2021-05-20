@@ -74,11 +74,11 @@ class Previewleader(pygame.sprite.Sprite):
     def changeleader(self, leaderid, leaderstat):
         self.gameid = leaderid  # Different than subunit game id, leadergameid is only used as reference to the id data
 
-        stat = leaderstat.leaderlist[leaderid]
+        stat = leaderstat.leader_list[leaderid]
 
         self.name = stat[0]
         self.authority = stat[2]
-        self.social = leaderstat.leaderclass[stat[7]]
+        self.social = leaderstat.leader_class[stat[7]]
         self.description = stat[-1]
 
         try:  # Put leader image into leader slot
@@ -101,7 +101,7 @@ class Armybuildslot(pygame.sprite.Sprite):
     weaponlist = None
     armourlist = None
     statlist = None
-    createtroopstat = gamelongscript.createtroopstat
+    createtroopstat = gamelongscript.create_troop_stat
 
     def __init__(self, gameid, team, armyid, colour, position, startpos):
         self._layer = 2
@@ -137,7 +137,7 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         if self.troopindex != troopindex:
             self.troopindex = troopindex
-            self.createtroopstat(self.team, self.statlist.unitlist[troopindex].copy(), [1,1], 100, 100)
+            self.createtroopstat(self.team, self.statlist.unit_list[troopindex].copy(), [1, 1], 100, 100)
 
         self.terrain = terrain
         self.feature = feature
@@ -169,9 +169,9 @@ class Armybuildslot(pygame.sprite.Sprite):
 
             # v weapon class icon in middle circle
             if self.unitclass == 0:
-                image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.meleeweapon[0]][-3]]
+                image1 = self.weaponlist.imgs[self.weaponlist.weapon_list[self.meleeweapon[0]][-3]]
             else:
-                image1 = self.weaponlist.imgs[self.weaponlist.weaponlist[self.rangeweapon[0]][-3]]
+                image1 = self.weaponlist.imgs[self.weaponlist.weapon_list[self.rangeweapon[0]][-3]]
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)
             # ^ End weapon icon
@@ -258,5 +258,5 @@ class Filterbox(pygame.sprite.Sprite):
 class Unitpreview(pygame.sprite.Sprite):
     def __init__(self, maingame, position, gameid, squadlist, colour, leader, leaderpos, coa, startangle, team):
         self = gamelongscript.addarmy(squadlist, position, gameid,
-                       colour, (maingame.squadwidth, maingame.squadheight), leader+leaderpos, maingame.leaderstat, maingame.gameunitstat, True,
-                       coa, False, startangle, 100, 100, team)
+                                      colour, (maingame.squadwidth, maingame.squadheight), leader + leaderpos, maingame.leader_stat, maingame.gameunitstat, True,
+                                      coa, False, startangle, 100, 100, team)

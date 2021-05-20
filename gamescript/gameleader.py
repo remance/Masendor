@@ -10,7 +10,7 @@ class Leader(pygame.sprite.Sprite):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
-        stat = leaderstat.leaderlist[leaderid]
+        stat = leaderstat.leader_list[leaderid]
         self.gameid = leaderid  # Different than subunit game id, leadergameid is only used as reference to the id data
         self.name = stat[0]
         self.health = stat[1]
@@ -19,7 +19,7 @@ class Leader(pygame.sprite.Sprite):
         self.rangecommand = stat[4]
         self.cavcommand = stat[5]
         self.combat = stat[6] * 10
-        self.social = leaderstat.leaderclass[stat[7]]
+        self.social = leaderstat.leader_class[stat[7]]
         self.description = stat[-1]
 
         self.subunitpos = position  # Squad position is the index of subunit in subunit sprite loop
@@ -74,15 +74,15 @@ class Leader(pygame.sprite.Sprite):
         elif self.armyposition + 1 != 4 and self.parentunit.leader[self.armyposition + 1].state not in (96, 97, 98, 99, 100) and self.parentunit.leader[self.armyposition + 1].name != "None":
             self.parentunit.leader.append(self.parentunit.leader.pop(self.armyposition))  ## move leader to last of list when dead
 
-        self.subunit.unitleader = False
+        self.subunit.unit_leader = False
 
         thisbadmorale = self.badmorale[0]
 
         if self.state == 99: # wounded inflict less morale penalty
             thisbadmorale = self.badmorale[1]
 
-        for subunit in self.parentunit.subunitsprite:
-            subunit.basemorale -= (thisbadmorale * subunit.mental)  # decrease all subunit morale when leader die depending on position
+        for subunit in self.parentunit.subunit_sprite:
+            subunit.base_morale -= (thisbadmorale * subunit.mental)  # decrease all subunit morale when leader die depending on position
             subunit.moraleregen -= (0.3 * subunit.mental) # all subunit morale regen slower per leader dead
 
         if self.commander:  # reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
@@ -98,8 +98,8 @@ class Leader(pygame.sprite.Sprite):
             else: self.maingame.eventlog.addlog([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2])
 
             for army in whicharmy:
-                for subunit in army.subunitsprite:
-                    subunit.basemorale -= (200 * subunit.mental) # all subunit morale -100 when commander die
+                for subunit in army.subunit_sprite:
+                    subunit.base_morale -= (200 * subunit.mental) # all subunit morale -100 when commander die
                     subunit.moraleregen -= (1 * subunit.mental)  #  all subunit morale regen even slower per commander dead
 
         else:
@@ -113,7 +113,7 @@ class Leader(pygame.sprite.Sprite):
                     leader.commander = True
 
                 self.parentunit.leadersubunit = leader.subunit
-                leader.subunit.unitleader = True
+                leader.subunit.unit_leader = True
 
             leader.imgposition = leader.baseimgposition[leader.armyposition]
             leader.rect = leader.image.get_rect(center=leader.imgposition)
@@ -130,17 +130,17 @@ class Leader(pygame.sprite.Sprite):
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5) # draw dead cross on leader image
         self.maingame.setuparmyicon()
-        self.parentunit.leaderchange = True # initiate leader change stat recalculation for parentunit
+        self.parentunit.leader_change = True # initiate leader change stat recalculation for parentunit
 
     def gamestart(self):
         row = int(self.subunitpos/8)
         column = self.subunitpos - (row*8)
-        self.subunit = self.parentunit.subunitsprite[self.subunitpos] # setup subunit that leader belong
+        self.subunit = self.parentunit.subunit_sprite[self.subunitpos] # setup subunit that leader belong
         self.subunit.leader = self ## put in leader to subunit with the set pos
         if self.armyposition == 0:  # parentunit leader
             self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or main leader move ot other subunit
-            # self.parentunit.leadersubunit - self.parentunit.basepos
-            self.subunit.unitleader = True
+            # self.parentunit.leadersubunit - self.parentunit.base_pos
+            self.subunit.unit_leader = True
 
             squadpenal = int(
                 (self.subunitpos / len(self.parentunit.armysubunit[0])) * 10)  # Authority get reduced the further leader stay in the back line

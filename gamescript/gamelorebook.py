@@ -4,30 +4,30 @@ import pygame.freetype
 from gamescript import gamelongscript
 
 class Lorebook(pygame.sprite.Sprite):
-    conceptstat = None
-    conceptlore = None
-    historystat = None
-    historylore = None
-    factionlore = None
-    unitstat = None
-    unitlore = None
-    armourstat = None
-    weaponstat = None
-    mountstat = None
-    mountarmourstat = None
-    statusstat = None
+    concept_stat = None
+    concept_lore = None
+    history_stat = None
+    history_lore = None
+    faction_lore = None
+    unit_stat = None
+    unit_lore = None
+    armour_stat = None
+    weapon_stat = None
+    mount_stat = None
+    mount_armour_stat = None
+    status_stat = None
     skillstat = None
-    traitstat = None
-    leader = None
-    leaderlore = None
-    terrainstat = None
-    landmarkstat = None
-    weatherstat = None
-    unitgradestat = None
-    unitclasslist = None
-    leaderclasslist = None
-    mountgradestat = None
-    racelist = None
+    trait_stat = None
+    leader_stat = None
+    leader_lore = None
+    terrain_stat = None
+    landmark_stat = None
+    weather_stat = None
+    unit_grade_stat = None
+    unit_class_list = None
+    leader_class_list = None
+    mount_grade_stat = None
+    race_list = None
     SCREENRECT = None
     main_dir = None
     statetext = None
@@ -45,43 +45,43 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
         self.image_original = self.image.copy()
-        self.leaderstat = self.leader.leaderlist
+        self.leader_stat = self.leader.leader_list
         self.section = 0  ## 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill, 7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark
         self.subsection = 1  ## subsection of that section e.g. swordmen subunit in subunit section Start with 1 instead of 0
         self.statdata = None  ## for getting the section stat data
         self.loredata = None  ## for getting the section lore data
         self.showsubsection = None  ## Subsection stat currently viewing
         self.showsubsection2 = None  ## Subsection lore currently viewing
-        self.subsectionlist = None
+        self.subsection_list = None
         self.portrait = None
 
         #v Make new equipment list that contain all type weapon, armour, mount
         self.equipmentstat = {}
         run = 1
-        self.equipmentlastindex = []
-        for statlist in (self.weaponstat, self.armourstat, self.mountstat, self.mountarmourstat):
+        self.equipment_last_index = []
+        for statlist in (self.weapon_stat, self.armour_stat, self.mount_stat, self.mount_armour_stat):
             for index in statlist:
                 if index != "ID":
                     self.equipmentstat[run] = statlist[index]
                     run += 1
                 else:
                     self.equipmentstat[index + str(run)] = statlist[index]
-            self.equipmentlastindex.append(run)
+            self.equipment_last_index.append(run)
         #^ End new equipment list
 
-        self.sectionlist = ((self.conceptstat,self.conceptlore), (self.historystat, self.historylore), (self.factionlore, None), (self.unitstat, self.unitlore),
-                            (self.equipmentstat, None), (self.statusstat, None), (self.skillstat, None),
-                            (self.traitstat, None), (self.leaderstat, self.leaderlore), (self.terrainstat, None), (self.weatherstat, None))
-        self.currentsubsectionrow = 0
-        self.maxsubsectionshow = 21
+        self.section_list = ((self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore), (self.faction_lore, None), (self.unit_stat, self.unit_lore),
+                             (self.equipmentstat, None), (self.status_stat, None), (self.skillstat, None),
+                             (self.trait_stat, None), (self.leader_stat, self.leader_lore), (self.terrain_stat, None), (self.weather_stat, None))
+        self.current_subsection_row = 0
+        self.max_subsection_show = 21
         self.logsize = 0
         self.page = 0
         self.maxpage = 0
         self.rect = self.image.get_rect(center=(self.SCREENRECT.width / 1.9, self.SCREENRECT.height / 1.9))
-        self.qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # text for item quality
-        self.leadertext = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
+        self.quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect") # text for item quality
+        self.leader_text = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master", "Genius", "Unmatched")
 
-    def changepage(self, page, pagebutton, allui, portrait=None):
+    def change_page(self, page, pagebutton, allui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
         self.page = page
         self.image = self.image_original.copy() # reset encyclopedia image
@@ -99,26 +99,26 @@ class Lorebook(pygame.sprite.Sprite):
             allui.remove(pagebutton[0])
         #^ End page button
 
-    def changesection(self, section, listsurface, listgroup, lorescroll, pagebutton, allui):
+    def change_section(self, section, listsurface, listgroup, lorescroll, pagebutton, allui):
         """Change to new section either by open encyclopedia or click section button"""
         self.portrait = None
         self.section = section # get new section
         self.subsection = 1 # reset subsection to the first one
-        self.statdata = self.sectionlist[self.section][0] # get new stat data of the new section
-        self.loredata = self.sectionlist[self.section][1] # get new lore data of the new section
+        self.statdata = self.section_list[self.section][0] # get new stat data of the new section
+        self.loredata = self.section_list[self.section][1] # get new lore data of the new section
         self.maxpage = 0 # reset max page
-        self.currentsubsectionrow = 0 # reset subsection scroll to the top one
+        self.current_subsection_row = 0 # reset subsection scroll to the top one
         thislist = self.statdata.values() # get list of subsection
-        self.subsectionlist = [name[0] for name in thislist if "Name" != name[0]] # remove the header from subsection list
-        self.logsize = len(self.subsectionlist) # get size of subsection list
+        self.subsection_list = [name[0] for name in thislist if "Name" != name[0]] # remove the header from subsection list
+        self.logsize = len(self.subsection_list) # get size of subsection list
 
-        self.changesubsection(self.subsection, pagebutton, allui)
-        self.setupsubsectionlist(listsurface, listgroup)
+        self.change_subsection(self.subsection, pagebutton, allui)
+        self.setup_subsection_list(listsurface, listgroup)
 
         lorescroll.changeimage(logsize=self.logsize)
-        lorescroll.changeimage(newrow=self.currentsubsectionrow)
+        lorescroll.changeimage(newrow=self.current_subsection_row)
 
-    def changesubsection(self, subsection, pagebutton, allui):
+    def change_subsection(self, subsection, pagebutton, allui):
         self.subsection = subsection
         self.page = 0 # reset page to the first one
         self.image = self.image_original.copy()
@@ -161,13 +161,13 @@ class Lorebook(pygame.sprite.Sprite):
             x = pos[0]  ## reset x
             y += wordheight  ## start on new row
 
-    def setupsubsectionlist(self, listsurface, listgroup):
+    def setup_subsection_list(self, listsurface, listgroup):
         """generate list of subsection of the left side of encyclopedia"""
         row = 15 * self.heightadjust
         column = 15 * self.widthadjust
         pos = listsurface.rect.topleft
-        if self.currentsubsectionrow > self.logsize - self.maxsubsectionshow:
-            self.currentsubsectionrow = self.logsize - self.maxsubsectionshow
+        if self.current_subsection_row > self.logsize - self.max_subsection_show:
+            self.current_subsection_row = self.logsize - self.max_subsection_show
 
         if len(listgroup) > 0: # remove previous subsection in the group before generate new one
             for stuff in listgroup:
@@ -175,11 +175,11 @@ class Lorebook(pygame.sprite.Sprite):
                 del stuff
 
         listloop = [item for item in list(self.statdata.keys()) if type(item) != str]
-        for index, item in enumerate(self.subsectionlist):
-            if index >= self.currentsubsectionrow:
-                listgroup.add(Subsectionname((pos[0] + column, pos[1] + row), item, listloop[index])) # add new subsection sprite to group
+        for index, item in enumerate(self.subsection_list):
+            if index >= self.current_subsection_row:
+                listgroup.add(Subsection_name((pos[0] + column, pos[1] + row), item, listloop[index])) # add new subsection sprite to group
                 row += (30*self.heightadjust) # next row
-                if len(listgroup) > self.maxsubsectionshow: break # will not generate more than space allowed
+                if len(listgroup) > self.max_subsection_show: break # will not generate more than space allowed
 
     def pagedesign(self):
         """Lore book format position of the text"""
@@ -187,7 +187,7 @@ class Lorebook(pygame.sprite.Sprite):
         secondpagecol = 650
         stat = self.statdata[self.subsection]
         if self.section != 4:
-            statheader = self.sectionlist[self.section][0]['ID'][1:-2]
+            statheader = self.section_list[self.section][0]['ID'][1:-2]
         else:  ## Equipment section use slightly different stat header
             statheader = []
             for index in self.equipmentstat:
@@ -258,16 +258,16 @@ class Lorebook(pygame.sprite.Sprite):
                                                 8: "Sniper", 9: "Recon"}
                                     role = []
 
-                                    basearmour = stat[11][1]+ self.armourstat[stat[11][0]][1]
+                                    basearmour = stat[11][1]+ self.armour_stat[stat[11][0]][1]
                                     if basearmour >= 50 and stat[9] >= 50: role.append(rolelist[2]) # armour and melee defense (stat[9]), defensive role
                                     if stat[8] >= 50: role.append(rolelist[1]) # melee attack, offensive role
 
                                     speed = 50 # Default speed not counting weight yet
 
-                                    mountstat = self.mountstat[stat[29][0]] # get mount stat
+                                    mountstat = self.mount_stat[stat[29][0]] # get mount stat
                                     if stat[29][0] != 1: speed = mountstat[2] # replace speed from mount
-                                    weight = self.armourstat[stat[11][0]][2] + self.weaponstat[stat[21][0]][3] + \
-                                             self.weaponstat[stat[22][0]][3] + self.mountarmourstat[stat[29][2]][2]
+                                    weight = self.armour_stat[stat[11][0]][2] + self.weapon_stat[stat[21][0]][3] + \
+                                             self.weapon_stat[stat[22][0]][3] + self.mount_armour_stat[stat[29][2]][2]
 
                                     speed = round((speed * ((100 - weight) / 100)))
                                     if speed > 50 and basearmour < 30: role.append(rolelist[3]) # skirmisher role
@@ -287,8 +287,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 traitlist = ""
                                 if text != [0]:
                                     for thistext in text:
-                                        if thistext in self.traitstat:  ## In case user put in trait not existed in ruleset
-                                            traitlist += self.traitstat[thistext][0] + ", "
+                                        if thistext in self.trait_stat:  ## In case user put in trait not existed in ruleset
+                                            traitlist += self.trait_stat[thistext][0] + ", "
                                     traitlist = traitlist[0:-2]
                                     createtext = statheader[index] + ": " + traitlist
                                 else:
@@ -299,8 +299,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 statuslist = ""
                                 if text != [0]:
                                     for thistext in text:
-                                        if thistext in self.statusstat:  ## In case user put in trait not existed in ruleset
-                                            statuslist += self.statusstat[thistext][0] + ", "
+                                        if thistext in self.status_stat:  ## In case user put in trait not existed in ruleset
+                                            statuslist += self.status_stat[thistext][0] + ", "
                                     statuslist = statuslist[0:-2]
                                     createtext = statheader[index] + ": " + statuslist
                                 else:
@@ -309,28 +309,28 @@ class Lorebook(pygame.sprite.Sprite):
 
                             if self.section == 3: # troop section
                                 if statheader[index] == "Grade": # grade text instead of number
-                                    createtext = statheader[index] + ": " + self.unitgradestat[text][0]
+                                    createtext = statheader[index] + ": " + self.unit_grade_stat[text][0]
 
                                 elif "Weapon" in statheader[index]: # weapon text with quality
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.weaponstat[text[0]][0]
+                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.weapon_stat[text[0]][0]
                                     if statheader[index] == "Range Weapon" and text[0] == 1: # no need to create range weapon text for None
                                         createtext = ""
                                         pass
 
                                 elif statheader[index] == "Armour": # armour text with quality
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armourstat[text[0]][0] + ", Base Armour: " + str(basearmour)
+                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armour_stat[text[0]][0] + ", Base Armour: " + str(basearmour)
 
                                 elif statheader[index] == "Unit Type":
-                                    createtext = statheader[index] + ": " + self.unitclasslist[text][0]
+                                    createtext = statheader[index] + ": " + self.unit_class_list[text][0]
 
                                 elif statheader[index] == "Race":
-                                    createtext = statheader[index] + ": " + self.racelist[text][0]
+                                    createtext = statheader[index] + ": " + self.race_list[text][0]
 
                                 elif statheader[index] == "Mount": # mount text with grade
-                                    createtext = statheader[index] + ": " + self.mountgradestat[text[1]][0] + " " + self.mountstat[text[0]][0] + "//" + self.mountarmourstat[text[2]][0]
-                                    if self.mountstat[text[0]][0] == "None":
+                                    createtext = statheader[index] + ": " + self.mount_grade_stat[text[1]][0] + " " + self.mount_stat[text[0]][0] + "//" + self.mount_armour_stat[text[2]][0]
+                                    if self.mount_stat[text[0]][0] == "None":
                                         createtext = ""
                                         pass
 
@@ -364,14 +364,14 @@ class Lorebook(pygame.sprite.Sprite):
 
                             elif self.section == 8: # leader section
                                 if statheader[index] in ("Melee Command", "Range Command", "Cavalry Command", "Combat"):
-                                    createtext = statheader[index] + ": " + self.leadertext[text]
+                                    createtext = statheader[index] + ": " + self.leader_text[text]
 
                                 elif statheader[index] == "Social Class":
-                                    print(self.leaderclasslist[text])
-                                    createtext = statheader[index] + ": " + self.leaderclasslist[text][0]
+                                    print(self.leader_class_list[text])
+                                    createtext = statheader[index] + ": " + self.leader_class_list[text][0]
 
                         else:  # Equipment section, header depends on equipment type
-                            for thisindex, lastindex in enumerate(self.equipmentlastindex):
+                            for thisindex, lastindex in enumerate(self.equipment_last_index):
                                 if self.subsection < lastindex:  ## Check if this index pass the last index of each type
                                     newstatheader = statheader[thisindex]
                                     break
@@ -385,8 +385,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 traitlist = ""
                                 if text != [0]:
                                     for thistext in text:
-                                        if thistext in self.traitstat:  ## In case user put in trait not existed in ruleset
-                                            traitlist += self.traitstat[thistext][0] + ", "
+                                        if thistext in self.trait_stat:  ## In case user put in trait not existed in ruleset
+                                            traitlist += self.trait_stat[thistext][0] + ", "
                                     traitlist = traitlist[0:-2]
                                     createtext = newstatheader[index] + ": " + traitlist
                                 else:
@@ -435,7 +435,7 @@ class Lorebook(pygame.sprite.Sprite):
                                 col = 550*self.widthadjust
                                 row = 50*self.heightadjust
 
-class Subsectionlist(pygame.sprite.Sprite):
+class Subsection_list(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         import main
         SCREENRECT = main.SCREENRECT
@@ -449,7 +449,7 @@ class Subsectionlist(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topright=pos)
 
 
-class Subsectionname(pygame.sprite.Sprite):
+class Subsection_name(pygame.sprite.Sprite):
     def __init__(self, pos, name, subsection, textsize=16):
         import main
         SCREENRECT = main.SCREENRECT
