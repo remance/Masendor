@@ -1388,7 +1388,7 @@ def addnewunitprocess(battle, who):
     who.new_angle = who.angle
 
     who.startset(battle.subunit)
-    who.set_subunit_target()
+    who.set_target()
     for subunit in who.subunit_sprite:
         subunit.gamestart(subunit.zoom)
 

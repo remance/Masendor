@@ -39,8 +39,12 @@ class Leader(pygame.sprite.Sprite):
 
         try:  # Put leader image into leader slot
             self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
-        except:  # Use Unknown leader image if there is none in list
+        except:  # Use Unknown leader image if there is none in list)
             self.fullimage = leaderstat.imgs[-1].copy()
+            font = pygame.font.SysFont("timesnewroman", 300)
+            textimage = font.render(str(self.gameid), True, pygame.Color('white'))
+            textrect = textimage.get_rect(center=(self.fullimage.get_width()/2, self.fullimage.get_height()/1.3))
+            self.fullimage.blit(textimage, textrect)
 
         self.image = pygame.transform.scale(self.fullimage, (50, 50))
         self.rect = self.image.get_rect(center=self.imgposition)

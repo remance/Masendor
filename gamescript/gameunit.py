@@ -135,8 +135,6 @@ class Troopnumber(pygame.sprite.Sprite):
         else:
             del self.who
 
-
-
 class Unitarmy(pygame.sprite.Sprite):
     images = []
     status_list = None # status effect list
@@ -183,7 +181,6 @@ class Unitarmy(pygame.sprite.Sprite):
         self.radians_angle = math.radians(360 - startangle) # radians for apply angle to position (allsidepos and subunit)
         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
         self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
-        self.set_target(self.front_pos)
         self.movement_queue = []
         self.base_target = self.front_pos
         self.command_target = self.front_pos
@@ -525,6 +522,7 @@ class Unitarmy(pygame.sprite.Sprite):
             subunit.base_pos = pygame.Vector2(self.rotationxy(self.base_pos, subunit.base_pos, self.radians_angle))
             subunit.pos = subunit.base_pos * subunit.zoom
             subunit.rect.center = subunit.pos
+            subunit.base_target = subunit.base_pos
             subunit.command_target = subunit.base_pos# rotate according to sprite current rotation
             subunit.makefrontsidepos()
 

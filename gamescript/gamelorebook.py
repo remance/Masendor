@@ -140,7 +140,12 @@ class Lorebook(pygame.sprite.Sprite):
             try:
                 self.portrait = self.leader.imgs[self.leader.imgorder.index(self.subsection)].copy() # get leader portrait based on subsection number as index
             except:
-                self.portrait = self.leader.imgs[-1].copy() # Use Unknown leader image if there is none in list
+                self.portrait = self.leader.imgs[-1].copy()  # Use Unknown leader image if there is none in list
+                font = pygame.font.SysFont("timesnewroman", 300)
+                textimage = font.render(str(self.subsection), True, pygame.Color('white'))
+                textrect = textimage.get_rect(center=(self.portrait.get_width()/2, self.portrait.get_height()/1.3))
+                self.portrait.blit(textimage, textrect)
+
             self.portrait = pygame.transform.scale(self.portrait, (int(150*self.widthadjust), int(150*self.heightadjust))) # scale leader image to 150x150
             self.pagedesign()
 
@@ -367,7 +372,6 @@ class Lorebook(pygame.sprite.Sprite):
                                     createtext = statheader[index] + ": " + self.leader_text[text]
 
                                 elif statheader[index] == "Social Class":
-                                    print(self.leader_class_list[text])
                                     createtext = statheader[index] + ": " + self.leader_class_list[text][0]
 
                         else:  # Equipment section, header depends on equipment type

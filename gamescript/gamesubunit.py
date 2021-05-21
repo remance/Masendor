@@ -727,12 +727,14 @@ class Subunit(pygame.sprite.Sprite):
 
                     if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown \
                             and self.base_pos.distance_to(self.base_target) < 100: # charge skill only when running to melee
-                        self.useskill(0) # Use charge skill
-                        self.charge_momentum = self.parentunit.runspeed * 2
-                        self.parentunit.charging = True
+                        self.charge_momentum += self.timer # TODO charge change target bug
+                        if self.charge_momentum >= 10:
+                            self.useskill(0)  # Use charge skill
+                            self.parentunit.charging = True
+                            self.charge_momentum = 10
 
-                    if self.charge_momentum > 1 and self.chargeskill not in self.skill_effect:  # reset charge momentum if charge skill not active
-                        self.charge_momentum -= self.timer
+                    elif parentstate != 4 and self.charge_momentum > 1:  # reset charge momentum if charge skill not active
+                        self.charge_momentum -= self.timer * 2
                         if self.charge_momentum < 1:
                             self.parentunit.charging = False
                             self.charge_momentum = 1
@@ -908,9 +910,17 @@ class Subunit(pygame.sprite.Sprite):
 
                 #^ End combat related
 
-                if parentstate != 10: # reset base_target every update to command base_target outside of combat
-                    self.base_target = self.command_target
-                    # self.new_angle = self.setrotate()
+                if parentstate != 10 and self.charge_momentum == 1: # reset base_target every update to command base_target outside of combat
+                    if self.base_target != self.command_target:
+                        print('test1')
+                        self.base_target = self.command_target
+                        if parentstate == 0:
+                            self.new_angle = self.setrotate()
+                            # self.new_angle = self.parentunit.angle
+                    elif self.base_pos == self.base_target and self.angle != self.parentunit.angle:
+                        print('testtse')
+                        self.new_angle = self.setrotate()
+                        self.new_angle = self.parentunit.angle
                 # elif self.state != 10 and self.frontline: # set base_target to enemy base_pos
                 #     if self.attack_target is not None:
                 #         pass
@@ -919,6 +929,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 # v Rotate Function
                 if self.angle != self.new_angle:
+                    print(self.new_angle, self.angle)
                     self.rotatecal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
                     self.rotatecheck = 360 - self.rotatecal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
                     self.radians_angle = math.radians(360 - self.angle)  # for allside rotate
@@ -948,7 +959,7 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 revertmove = False
-                if self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
+                if parentstate == 0 or self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
                     revertmove = True # revert move check for in case subunit still need to rotate before moving
 
                 #v Move function to given base_target position
@@ -956,11 +967,11 @@ class Subunit(pygame.sprite.Sprite):
 
                     #v Can move if front not collided
                     if self.stamina > 0 and ((self.parentunit.collide is False or parentstate == 99) or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1) or self.charge_momentum > 1) \
-                            and len(self.enemy_front) == 0 and (len(self.friend_front) == 0 or self.state == 99 or parentstate == 0):
+                            and len(self.enemy_front) == 0 and (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
                         if self.charge_momentum > 1 and self.base_pos == self.base_target:
                             newtarget = self.front_pos - self.base_pos
                             self.base_target = self.base_target + newtarget
-                            self.command_target = self.base_target
+                            # self.command_target = self.base_target
                         move = self.base_target - self.base_pos
                         move_length = move.length()  # convert length
 
