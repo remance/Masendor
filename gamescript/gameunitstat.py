@@ -16,7 +16,7 @@ class Weaponstat():
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
-                        if n == 5: # Properties must be in list
+                        if n == 6: # Properties must be in list
                             if "," in i:
                                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                             elif i.isdigit():

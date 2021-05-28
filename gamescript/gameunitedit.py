@@ -94,14 +94,13 @@ class Previewleader(pygame.sprite.Sprite):
         self.originalcommander = False # the first army commander at the start of battle
 
 
-class Armybuildslot(pygame.sprite.Sprite):
+class Armybuildslot(pygame.sprite.Sprite): # TODO change build slot from this class to use sub-unit sprite directly
     squadwidth = 0 # subunit sprite width size get add from main
     squadheight = 0 # subunit sprite height size get add from main
     images = [] # image related to subunit sprite, get add from loadgamedata in gamelongscript
     weaponlist = None
     armourlist = None
     statlist = None
-    createtroopstat = gamelongscript.create_troop_stat
 
     def __init__(self, gameid, team, armyid, colour, position, startpos):
         self._layer = 2
@@ -137,7 +136,7 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         if self.troopindex != troopindex:
             self.troopindex = troopindex
-            self.createtroopstat(self.team, self.statlist.unit_list[troopindex].copy(), [1, 1], 100, 100)
+            # self.createtroopstat(self.team, self.statlist.unit_list[troopindex].copy(), [1, 1], 100, 100)
 
         self.terrain = terrain
         self.feature = feature

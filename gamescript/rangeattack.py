@@ -24,7 +24,7 @@ class Rangearrow(pygame.sprite.Sprite):
         if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2: self.arcshot = True # arc shot will go pass parentunit to land at final base_target
         self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
-        self.damage = self.shooter.rangedmg
+        self.dmg = random.randint(self.shooter.rangedmg[0], self.shooter.rangedmg[1])
         self.penetrate = self.shooter.rangepenetrate
         if self.shooter.state in (12, 13) and self.shooter.agileaim is False: self.accuracy -= 10 # accuracy penalty for shoot while moving
         self.passwho = None # check which parentunit arrow passing through
@@ -130,7 +130,7 @@ class Rangearrow(pygame.sprite.Sprite):
         target.unit_health -= whodmg
         target.base_morale -= whomoraledmg
 
-        # v Add red corner to indicate damage
+        # v Add red corner to indicate dmg
         if target.red_corner is False:
             target.imageblock.blit(target.images[11], target.cornerimagerect)
             target.red_corner = True
@@ -143,7 +143,7 @@ class Rangearrow(pygame.sprite.Sprite):
             target.leader.health -= wholeaderdmg
 
     def registerhit(self, subunit=None):
-        """Calculatte damage when arrow reach base_target"""
+        """Calculatte dmg when arrow reach base_target"""
         if subunit is not None:
             anglecheck = abs(self.angle - subunit.angle) # calculate which side arrow hit the subunit
             if anglecheck >= 135: # front
@@ -153,7 +153,7 @@ class Rangearrow(pygame.sprite.Sprite):
             else:  # rear
                 self.side = 2
 
-            self.rangedmgcal(self.shooter, subunit, self.side)  # calculate damage
+            self.rangedmgcal(self.shooter, subunit, self.side)  # calculate dmg
 
     def update(self, unitlist, dt, viewmode):
         move = self.basetarget - self.basepos
@@ -175,10 +175,10 @@ class Rangearrow(pygame.sprite.Sprite):
                 self.pos = self.basepos * viewmode
                 self.rect.center = self.pos
 
-            self.damage -= 0.05 # damage and penetration power drop the longer arrow travel
+            self.dmg -= 0.05 # dmg and penetration power drop the longer arrow travel
             self.penetrate -= 0.002
-            if self.damage < 1:
-                self.damage = 1
+            if self.dmg < 1:
+                self.dmg = 1
             if self.penetrate < 0:
                 self.penetrate = 0
 
