@@ -132,7 +132,7 @@ class Rangearrow(pygame.sprite.Sprite):
 
         # v Add red corner to indicate dmg
         if target.red_corner is False:
-            target.imageblock.blit(target.images[11], target.cornerimagerect)
+            target.imageblock.blit(target.images[11], target.corner_image_rect)
             target.red_corner = True
         # ^ End red corner
 

@@ -954,7 +954,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
 
     # v Add red corner to indicate combat
     if receiver.red_corner is False:
-        receiver.imageblock.blit(receiver.images[11], receiver.cornerimagerect)
+        receiver.imageblock.blit(receiver.images[11], receiver.corner_image_rect)
         receiver.red_corner = True
     # ^ End red corner
 

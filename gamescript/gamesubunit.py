@@ -66,7 +66,7 @@ class Subunit(pygame.sprite.Sprite):
         self.timer = 0  # may need to use random.random()
         self.movetimer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing nearest enemy
-        self.magazine_now = 0
+        self.ammo_now = 0
         self.zoom = 1
         self.lastzoom = 10
         self.skill_cond = 0
@@ -94,9 +94,9 @@ class Subunit(pygame.sprite.Sprite):
                            * self.armour_list.quality[self.armourgear[1]]  # Armour stat is cal from based armour * quality
         self.base_accuracy = stat[12] + int(self.stat_list.grade_list[self.grade][4])
         self.basesight = stat[13]  # base sight range
-        self.ammo = stat[14]  # amount of ammunition
+        self.magazine_left = stat[14]  # amount of ammunition
         self.base_reload = stat[15] + int(self.stat_list.grade_list[self.grade][5])
-        self.reloadtime = 0  # Unit can only refill magazine when reloadtime is equal or more than reload stat
+        self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
         self.base_charge = stat[16]
         self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
         self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
@@ -122,7 +122,7 @@ class Subunit(pygame.sprite.Sprite):
         self.rangedmg = (int(self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]),
                          int(self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]]))  # dmg for range
         self.rangepenetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
-        self.magazinesize = self.weapon_list.weapon_list[self.rangeweapon[0]][7]  # can shoot how many time before have to reload
+        self.magazine_size = self.weapon_list.weapon_list[self.rangeweapon[0]][7]  # can shoot how many time before have to reload
         self.base_range = int(self.weapon_list.weapon_list[self.rangeweapon[0]][8] * self.weapon_list.quality[
             self.rangeweapon[1]])  # base weapon range depend on weapon range stat and quality
         self.arrowspeed = self.weapon_list.weapon_list[self.rangeweapon[0]][9]  # travel speed of range attack
@@ -304,8 +304,11 @@ class Subunit(pygame.sprite.Sprite):
 
         # self.loyalty
         self.elem_res = (fire_res, water_res, air_res, earth_res, poison_res)  # list of elemental resistance
-        self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
-            self.stamina * 0.5), round(self.stamina * 0.25)
+        self.maxstamina = self.stamina
+        self.stamina75 = round(self.stamina * 0.75)
+        self.stamina50 = round(self.stamina * 0.5)
+        self.stamina25 = round(self.stamina * 0.25)
+        self.stamina5 = round(self.stamina * 0.05)
         self.unit_health = self.troophealth * self.troopnumber  # Total health of subunit from all troop
         self.last_health_state = 4  # state start at full
         self.last_stamina_state = 4
@@ -390,18 +393,18 @@ class Subunit(pygame.sprite.Sprite):
 
         # v health circle image setup
         self.healthimage = self.images[1]
-        self.healthimagerect = self.healthimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
-        self.healthimageblockrect = self.healthimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
-        self.image.blit(self.healthimage, self.healthimagerect)
-        self.imageblock.blit(self.healthimage, self.healthimageblockrect)
+        self.health_image_rect = self.healthimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
+        self.health_imageblock_rect = self.healthimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
+        self.image.blit(self.healthimage, self.health_image_rect)
+        self.imageblock.blit(self.healthimage, self.health_imageblock_rect)
         # ^ End health circle
 
         # v stamina circle image setup
         self.staminaimage = self.images[6]
-        self.staminaimagerect = self.staminaimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
-        self.staminaimageblockrect = self.staminaimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
-        self.image.blit(self.staminaimage, self.staminaimagerect)
-        self.imageblock.blit(self.staminaimage, self.staminaimageblockrect)
+        self.stamina_image_rect = self.staminaimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
+        self.stamina_imageblock_rect = self.staminaimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
+        self.image.blit(self.staminaimage, self.stamina_image_rect)
+        self.imageblock.blit(self.staminaimage, self.stamina_imageblock_rect)
         # ^ End stamina circle
 
         # v weapon class icon in middle circle
@@ -416,7 +419,7 @@ class Subunit(pygame.sprite.Sprite):
         self.imageblock.blit(image1, image1rect)
         self.imageblock_original = self.imageblock.copy()
 
-        self.cornerimagerect = self.images[11].get_rect(center=self.imageblock.get_rect().center)  # red corner when take dmg shown in image block
+        self.corner_image_rect = self.images[11].get_rect(center=self.imageblock.get_rect().center)  # red corner when take dmg shown in image block
         # ^ End weapon icon
 
         self.image_original = self.image.copy()  # original for rotate
@@ -588,14 +591,16 @@ class Subunit(pygame.sprite.Sprite):
         """calculate stat from stamina, morale state, skill, status, terrain"""
 
         if self.red_corner:  # have red corner reset image
-            self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+            self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
             self.red_corner = False
 
         # v reset stat to default and apply morale, stamina, command buff to stat
-        if self.maxstamina > 100:  # Max stamina gradually decrease over time - (self.timer * 0.05)
-            self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.maxstamina - (self.timer * 0.05), round(
-                self.maxstamina * 0.75), round(
-                self.maxstamina * 0.5), round(self.maxstamina * 0.25)
+        if self.maxstamina > 100:
+            self.maxstamina = self.maxstamina - (self.timer * 0.05) # Max stamina gradually decrease over time - (self.timer * 0.05)
+            self.stamina75 = round(self.maxstamina * 0.75)
+            self.stamina50 = round(self.maxstamina * 0.5)
+            self.stamina25 = round(self.maxstamina * 0.25)
+            self.stamina5 = round(self.maxstamina * 0.05)
         self.morale = self.base_morale
         self.authority = self.parentunit.authority  # parentunit total authoirty
         self.commandbuff = self.parentunit.commandbuff[self.unit_type] * 100  # command buff from main leader according to this subunit subunit type
@@ -860,7 +865,7 @@ class Subunit(pygame.sprite.Sprite):
         self.chargedef = round(self.chargedef + (self.chargedef * disciplinecal), 0)
         self.charge = round(self.charge + (self.charge * disciplinecal), 0)
 
-        if self.ammo == 0 and self.magazine_now == 0:
+        if self.magazine_left == 0 and self.ammo_now == 0:
             self.shootrange = 0
         if self.attack < 0:  # seem like using if 0 is faster than max(0,)
             self.attack = 0
@@ -905,7 +910,7 @@ class Subunit(pygame.sprite.Sprite):
         self.status_effect = {key: val for key, val in self.status_effect.items() if val[3] > 0}
         # ^ End timer effectrangedamage
 
-    def findshootingtarget(self, parentstate):
+    def find_shooting_target(self, parentstate):
         # get nearby enemy base_target from list if not targeting anything yet
         self.attack_pos = list(self.parentunit.near_target.values())[0]  # replace attack_target with enemy pos
         self.attack_target = list(self.parentunit.near_target.keys())[0]  # replace attack_target with enemy id
@@ -916,13 +921,13 @@ class Subunit(pygame.sprite.Sprite):
             elif parentstate in (2, 4, 6):  # Run and shoot
                 self.state = 13
 
-    def makefrontsidepos(self):
+    def make_front_pos(self):
         """create new pos for front side of sprite"""
         self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))
 
         self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)
 
-    def makeposrange(self):
+    def make_pos_range(self):
         """create range of sprite pos for pathfinding"""
         self.posrange = (range(int(max(0, self.base_pos[0] - (self.imageheight - 1))), int(min(1000, self.base_pos[0] + self.imageheight))),
                          range(int(max(0, self.base_pos[1] - (self.imageheight - 1))), int(min(1000, self.base_pos[1] + self.imageheight))))
@@ -930,8 +935,8 @@ class Subunit(pygame.sprite.Sprite):
     def gamestart(self, zoom):
         """run once when game start or subunit just get created"""
         self.zoom = zoom
-        self.makefrontsidepos()
-        self.makeposrange()
+        self.make_front_pos()
+        self.make_pos_range()
         self.zoomscale()
         self.find_nearby_subunit()
         self.statusupdate()
@@ -963,9 +968,9 @@ class Subunit(pygame.sprite.Sprite):
                 for index, health in enumerate(healthlist):
                     if self.unit_health > health:
                         if self.last_health_state != abs(4 - index):
-                            self.image_original3.blit(self.images[index + 1], self.healthimagerect)
-                            self.imageblock_original.blit(self.images[index + 1], self.healthimageblockrect)
-                            self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+                            self.image_original3.blit(self.images[index + 1], self.health_image_rect)
+                            self.imageblock_original.blit(self.images[index + 1], self.health_imageblock_rect)
+                            self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
                             self.last_health_state = abs(4 - index)
                             self.zoomscale()
                         break
@@ -973,15 +978,15 @@ class Subunit(pygame.sprite.Sprite):
 
             # v Stamina bar
             if self.old_last_stamina != self.stamina:
-                staminalist = (self.maxstamina, self.stamina75, self.stamina50, self.stamina25, 0)
+                staminalist = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
                 for index, stamina in enumerate(staminalist):
                     if self.stamina >= stamina:
                         if self.last_stamina_state != abs(4 - index):
                             # if index != 3:
-                            self.image_original3.blit(self.images[index + 6], self.staminaimagerect)
+                            self.image_original3.blit(self.images[index + 6], self.stamina_image_rect)
                             self.zoomscale()
-                            self.imageblock_original.blit(self.images[index + 6], self.staminaimageblockrect)
-                            self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+                            self.imageblock_original.blit(self.images[index + 6], self.stamina_imageblock_rect)
+                            self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
                             self.last_stamina_state = abs(4 - index)
                         break
 
@@ -1019,15 +1024,15 @@ class Subunit(pygame.sprite.Sprite):
 
                     if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown \
                             and self.base_pos.distance_to(self.base_target) < 100:  # charge skill only when running to melee
-                        self.charge_momentum += self.timer  # TODO charge chase and  change target bug
+                        self.charge_momentum += self.timer * (self.speed/50)
                         if self.charge_momentum >= 10:
                             self.useskill(0)  # Use charge skill
                             self.parentunit.charging = True
                             self.charge_momentum = 10
 
                     elif self.charge_momentum > 1:  # reset charge momentum if charge skill not active
-                        self.charge_momentum -= self.timer * 2
-                        if self.charge_momentum < 1:
+                        self.charge_momentum -= self.timer * (self.speed/50)
+                        if self.charge_momentum <= 1:
                             self.parentunit.charging = False
                             self.charge_momentum = 1
 
@@ -1052,7 +1057,7 @@ class Subunit(pygame.sprite.Sprite):
                                     self.state = 10
                                     if 9 not in self.status_effect:
                                         self.status_effect[9] = self.status_list[9].copy()  # fight to the death status
-                            if parentstate not in (96, 98, 99):
+                            if parentstate not in (10, 96, 98, 99):
                                 parentstate = 10
                                 self.parentunit.state = 10
                             if self.melee_target is not None:
@@ -1119,11 +1124,11 @@ class Subunit(pygame.sprite.Sprite):
                         self.new_angle = self.parentunit.angle
                         self.state = 0
 
-                    if self.state != 10 and self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.arcshot or self.frontline) \
+                    if self.state != 10 and self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.arcshot or self.frontline) \
                             and self.charge_momentum == 1:  # Range attack when parentunit in melee state with arcshot
                         self.state = 11
                         if self.parentunit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
-                            self.findshootingtarget(parentstate)
+                            self.find_shooting_target(parentstate)
 
                 # ^ End melee check
 
@@ -1138,22 +1143,22 @@ class Subunit(pygame.sprite.Sprite):
                     # v Range attack function
                     if parentstate == 11:  # Unit in range attack state
                         self.state = 0  # Default state at idle
-                        if (self.ammo > 0 or self.magazine_now > 0) and self.attack_pos != 0 \
+                        if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 \
                                 and self.shootrange >= self.attack_pos.distance_to(
-                            self.parentunit.base_pos):  # can shoot if have ammo and in shoot range
+                            self.parentunit.base_pos):  # can shoot if have magazine_left and in shoot range
                             self.state = 11  # range combat state
 
-                    elif self.ammo > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
-                                                                                                    and self.shootmove)):  # Fire at will, auto pick closest enemy
+                    elif self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
+                                                                                                             and self.shootmove)):  # Fire at will, auto pick closest enemy
                         if self.parentunit.near_target != {} and self.attack_target is None:
-                            self.findshootingtarget(parentstate)
+                            self.find_shooting_target(parentstate)
 
-                if self.state in (11, 12, 13) and self.ammo > 0 and self.magazine_now == 0:  # reloading ammo
-                    self.reloadtime += dt
-                    if self.reloadtime >= self.reload:
-                        self.magazine_now = self.magazinesize
-                        self.ammo -= 1
-                        self.reloadtime = 0
+                if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
+                    self.reload_time += dt
+                    if self.reload_time >= self.reload:
+                        self.ammo_now = self.magazine_size
+                        self.magazine_left -= 1
+                        self.reload_time = 0
                     self.stamina = self.stamina - (dt * 5)  # use stamina while reloading
                 # ^ End range attack function
 
@@ -1189,18 +1194,22 @@ class Subunit(pygame.sprite.Sprite):
                                         self.attack_target = self.maingame.allunitlist[allunitindex.index(self.attack_target)]
                                         break  # found new base_target break loop
 
-                        if self.magazine_now > 0 and self.shootrange > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
-                                                                              (self.attack_target is None and self.attack_pos != 0)) \
+                        if self.ammo_now > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
+                                                  (self.attack_target is None and self.attack_pos != 0)) \
                                 and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
                             # can shoot if reload finish and base_target existed and not dead. Non arcshot cannot shoot if forbidded
-                            rangeattack.Rangearrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot at enemy
-                            self.magazine_now -= 1  # use 1 ammo in magazine
+                            try: # TODO add line of sight for range attack
+                                rangeattack.Rangearrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot at enemy
+                            except:
+                                print("fail", self.attack_pos, self.base_pos)
+                                killgame
+                            self.ammo_now -= 1  # use 1 magazine_left in magazine
                         elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target die when it about to shoot
                             self.parentunit.range_combat_check, self.parentunit.attack_target = False, 0  # reset range combat check and base_target
 
                 # ^ End combat related
 
-                if parentstate != 10 and self.charge_momentum < 5:  # reset base_target every update to command base_target outside of combat
+                if parentstate != 10:  # reset base_target every update to command base_target outside of combat
                     if self.base_target != self.command_target:
                         self.base_target = self.command_target
                         if parentstate == 0:
@@ -1240,7 +1249,7 @@ class Subunit(pygame.sprite.Sprite):
                             self.angle -= rotatetiny
                             if self.angle < self.new_angle: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     self.rotate()  # rotate sprite to new angle
-                    self.makefrontsidepos()  # generate new pos related to side
+                    self.make_front_pos()  # generate new pos related to side
                     self.mask = pygame.mask.from_surface(self.image)  # make new mask
                 # ^ End rotate
 
@@ -1261,6 +1270,11 @@ class Subunit(pygame.sprite.Sprite):
 
                     if self.stamina > 0 and colidecombat and len(self.enemy_front) == 0 \
                             and (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
+                        if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10: # keep charging until momentum run out
+                            new_target = self.front_pos - self.base_pos
+                            self.base_target = self.base_target + new_target
+                            self.command_target = self.base_target
+
                         move = self.base_target - self.base_pos
                         move_length = move.length()  # convert length
 
@@ -1270,7 +1284,7 @@ class Subunit(pygame.sprite.Sprite):
                             if parentstate in (1, 3, 5, 7):  # walking
                                 speed = self.parentunit.walkspeed  # use walk speed
                                 self.walk = True
-                            elif parentstate in (10, 99) or self.charge_momentum > 1:  # run with its own speed instead of uniformed run
+                            elif parentstate in (10, 99) or self.charge_momentum > 5:  # run with its own speed instead of uniformed run
                                 speed = self.speed / 15  # use its own speed when broken
                                 self.run = True
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
@@ -1280,8 +1294,8 @@ class Subunit(pygame.sprite.Sprite):
                             newmove_length = move.length()
                             newpos = self.base_pos + move
 
-                            if self.state in (98, 99) or (self.state not in (98, 99) and (
-                                    newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999)):  # cannot go pass map unless in retreat
+                            if speed > 0 and (self.state in (98, 99) or (self.state not in (98, 99) and (
+                                    newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999))):  # cannot go pass map unless in retreat
                                 if newmove_length <= move_length:  # move normally according to move speed
                                     self.base_pos = newpos
                                     self.pos = self.base_pos * self.zoom
@@ -1300,8 +1314,8 @@ class Subunit(pygame.sprite.Sprite):
                                         pygame.Vector2(self.combat_move_queue[0])) < 0.1:  # reach the current queue point, remove from queue
                                     self.combat_move_queue = self.combat_move_queue[1:]
 
-                                self.makefrontsidepos()
-                                self.makeposrange()
+                                self.make_front_pos()
+                                self.make_pos_range()
 
                                 if self.unit_leader and newmove_length > 0:  # parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
                                     if self.parentunit.moverotate is False:
@@ -1420,14 +1434,14 @@ class Subunit(pygame.sprite.Sprite):
 
             if self.troopnumber <= 0:  # enter dead state
                 self.state = 100  # enter dead state
-                self.image_original3.blit(self.images[5], self.healthimagerect)  # blit white hp bar
-                self.imageblock_original.blit(self.images[5], self.healthimageblockrect)
+                self.image_original3.blit(self.images[5], self.health_image_rect)  # blit white hp bar
+                self.imageblock_original.blit(self.images[5], self.health_imageblock_rect)
                 self.zoomscale()
                 self.last_health_state = 0
                 self.skill_cooldown = {}  # remove all cooldown
                 self.skill_effect = {}  # remove all skill effects
 
-                self.imageblock.blit(self.imageblock_original, self.cornerimagerect)
+                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
                 self.red_corner = True  # to prevent red border appear when dead
 
                 self.parentunit.deadchange = True

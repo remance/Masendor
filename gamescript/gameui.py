@@ -209,7 +209,7 @@ class Gameui(pygame.sprite.Sprite):
             positionx = 45 # starting point of text
             self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")", str(int(who.stamina)) +", " + self.subunit_state[who.state], int(who.morale),
                           int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
-                          int(who.accuracy), int(who.shootrange), who.ammo, str(int(who.reloadtime)) + "/" + str(int(who.reload)) + ": " + str(who.magazine_now),
+                          int(who.accuracy), int(who.shootrange), who.magazine_left, str(int(who.reload_time)) + "/" + str(int(who.reload)) + ": " + str(who.ammo_now),
                           int(who.charge), int(who.chargedef), who.mentaltext, int(who.temp_count)]
             self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
             self.description = who.description
