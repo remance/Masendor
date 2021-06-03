@@ -1,6 +1,7 @@
 import pygame
 import pygame.freetype
 
+
 class Weather:
     images = []
 
@@ -36,8 +37,8 @@ class Weather:
         image = self.images[(self.type * 3) + self.level]
         cropped = pygame.Surface((image.get_width(), image.get_height()))
         cropped.blit(timeui.image_original, (0, 0), (0, 0, 80, 80))
-        croprect = cropped.get_rect(topleft=(0,0))
-        cropped.blit(image,croprect)
+        croprect = cropped.get_rect(topleft=(0, 0))
+        cropped.blit(image, croprect)
         image = cropped
 
         rect = image.get_rect(topright=(timeui.image.get_width() - 5, 0))
@@ -52,8 +53,8 @@ class Mattersprite(pygame.sprite.Sprite):
         self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.speed = speed
-        self.pos = pygame.Vector2(pos) # should be at the end corner of screen
-        self.target = pygame.Vector2(target) # should be at another end corner of screen
+        self.pos = pygame.Vector2(pos)  # should be at the end corner of screen
+        self.target = pygame.Vector2(target)  # should be at another end corner of screen
         self.image = image
         self.rect = self.image.get_rect(center=self.pos)
 
@@ -70,7 +71,7 @@ class Mattersprite(pygame.sprite.Sprite):
             else:
                 self.pos = self.target
                 self.rect.center = self.target
-        else: # kill when it reach the end of screen
+        else:  # kill when it reach the end of screen
             self.kill()
 
 
@@ -96,10 +97,10 @@ class Specialeffect(pygame.sprite.Sprite):
             move = move * self.speed * dt
             if move.length() <= move_length:
                 self.pos += move
-                if timer < self.endtime and self.pos[0] > 0: ## Do not go beyond 0 if weather event not end yet
+                if timer < self.endtime and self.pos[0] > 0:  ## Do not go beyond 0 if weather event not end yet
                     self.rect.midleft = list(int(v) for v in self.pos)
                 else:
-                    self.rect.midleft = pygame.Vector2(0,self.pos[1])
+                    self.rect.midleft = pygame.Vector2(0, self.pos[1])
             else:
                 self.rect.midleft = self.target
         elif timer >= self.endtime and self.rect.midright[0] < 0:

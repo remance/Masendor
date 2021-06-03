@@ -1,10 +1,14 @@
+import math
 import random
+
 import numpy as np
 import pygame
 import pygame.freetype
-import math
-from pygame.transform import scale
 from gamescript import rangeattack, gamelongscript
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+from pygame.transform import scale
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -596,7 +600,7 @@ class Subunit(pygame.sprite.Sprite):
 
         # v reset stat to default and apply morale, stamina, command buff to stat
         if self.maxstamina > 100:
-            self.maxstamina = self.maxstamina - (self.timer * 0.05) # Max stamina gradually decrease over time - (self.timer * 0.05)
+            self.maxstamina = self.maxstamina - (self.timer * 0.05)  # Max stamina gradually decrease over time - (self.timer * 0.05)
             self.stamina75 = round(self.maxstamina * 0.75)
             self.stamina50 = round(self.maxstamina * 0.5)
             self.stamina25 = round(self.maxstamina * 0.25)
@@ -720,7 +724,8 @@ class Subunit(pygame.sprite.Sprite):
         if self.temp_count != tempreach:  # move temp_count toward tempreach
             if tempreach > 0:
                 if self.temp_count < tempreach:
-                    self.temp_count += (100 - self.heat_res) / 100 * self.timer  # increase temperature, rate depends on heat resistance (negative = faster)
+                    self.temp_count += (
+                                                   100 - self.heat_res) / 100 * self.timer  # increase temperature, rate depends on heat resistance (negative = faster)
             elif tempreach < 0:
                 if self.temp_count > tempreach:
                     self.temp_count -= (100 - self.cold_res) / 100 * self.timer  # decrease temperature, rate depends on cold resistance
@@ -1024,14 +1029,14 @@ class Subunit(pygame.sprite.Sprite):
 
                     if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown \
                             and self.base_pos.distance_to(self.base_target) < 100:  # charge skill only when running to melee
-                        self.charge_momentum += self.timer * (self.speed/50)
+                        self.charge_momentum += self.timer * (self.speed / 50)
                         if self.charge_momentum >= 10:
                             self.useskill(0)  # Use charge skill
                             self.parentunit.charging = True
                             self.charge_momentum = 10
 
                     elif self.charge_momentum > 1:  # reset charge momentum if charge skill not active
-                        self.charge_momentum -= self.timer * (self.speed/50)
+                        self.charge_momentum -= self.timer * (self.speed / 50)
                         if self.charge_momentum <= 1:
                             self.parentunit.charging = False
                             self.charge_momentum = 1
@@ -1198,9 +1203,9 @@ class Subunit(pygame.sprite.Sprite):
                                                   (self.attack_target is None and self.attack_pos != 0)) \
                                 and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
                             # can shoot if reload finish and base_target existed and not dead. Non arcshot cannot shoot if forbidded
-                            try: # TODO add line of sight for range attack
+                            try:  # TODO add line of sight for range attack
                                 rangeattack.Rangearrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot at enemy
-                            except:
+                            except Exception:
                                 print("fail", self.attack_pos, self.base_pos)
                                 killgame
                             self.ammo_now -= 1  # use 1 magazine_left in magazine
@@ -1270,7 +1275,7 @@ class Subunit(pygame.sprite.Sprite):
 
                     if self.stamina > 0 and colidecombat and len(self.enemy_front) == 0 \
                             and (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
-                        if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10: # keep charging until momentum run out
+                        if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10:  # keep charging until momentum run out
                             new_target = self.front_pos - self.base_pos
                             self.base_target = self.base_target + new_target
                             self.command_target = self.base_target
@@ -1295,7 +1300,8 @@ class Subunit(pygame.sprite.Sprite):
                             newpos = self.base_pos + move
 
                             if speed > 0 and (self.state in (98, 99) or (self.state not in (98, 99) and (
-                                    newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[1] < 999))):  # cannot go pass map unless in retreat
+                                    newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[
+                                1] < 999))):  # cannot go pass map unless in retreat
                                 if newmove_length <= move_length:  # move normally according to move speed
                                     self.base_pos = newpos
                                     self.pos = self.base_pos * self.zoom
@@ -1484,6 +1490,52 @@ class Subunit(pygame.sprite.Sprite):
     #             self.parentunit.selected = True
     #             self.parentunit.justselected = True
     #             self.wholastselect = self.gameid
+
+    def combatpathfind(self):
+        # v Pathfinding
+        self.combat_move_queue = []
+        movearray = self.maingame.subunitposarray.copy()
+        intbasetarget = (int(self.close_target.base_pos[0]), int(self.close_target.base_pos[1]))
+        for y in self.close_target.posrange[0]:
+            for x in self.close_target.posrange[1]:
+                movearray[x][y] = 100  # reset path in the enemy sprite position
+
+        intbasepos = (int(self.base_pos[0]), int(self.base_pos[1]))
+        for y in self.posrange[0]:
+            for x in self.posrange[1]:
+                movearray[x][y] = 100  # reset path for sub-unit sprite position
+
+        startpoint = (min([max(0, intbasepos[0] - 5), max(0, intbasetarget[0] - 5)]),  # start point of new smaller array
+                      min([max(0, intbasepos[1] - 5), max(0, intbasetarget[1] - 5)]))
+        endpoint = (max([min(999, intbasepos[0] + 5), min(999, intbasetarget[0] + 5)]),  # end point of new array
+                    max([min(999, intbasepos[1] + 5), min(999, intbasetarget[1] + 5)]))
+
+        movearray = movearray[startpoint[1]:endpoint[1]]  # cut 1000x1000 array into smaller one by row
+        movearray = [thisarray[startpoint[0]:endpoint[0]] for thisarray in movearray]  # cut by column
+
+        # if len(movearray) < 100 and len(movearray[0]) < 100: # if too big then skip combat pathfinding
+        grid = Grid(matrix=movearray)
+        grid.cleanup()
+
+        start = grid.node(intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])  # start point
+        end = grid.node(intbasetarget[0] - startpoint[0], intbasetarget[1] - startpoint[1])  # end point
+
+        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+        path, runs = finder.find_path(start, end, grid)
+        path = [(thispath[0] + startpoint[0], thispath[1] + startpoint[1]) for thispath in path]  # remake pos into actual map pos
+
+        path = path[4:]  # remove some starting path that may clip with friendly sub-unit sprite
+
+        self.combat_move_queue = path  # add path into combat movement queue
+        if len(self.combat_move_queue) < 1:  # simply try walk to target anyway if pathfinder return empty
+            self.combat_move_queue = [self.close_target.base_pos]
+        # if self.gameid == 10087:
+        #     print('done', self.base_pos != self.base_target)
+        # print('operations:', runs, 'path length:', len(path))
+        # print(grid.grid_str(path=path, start=start, end=end))
+        # print(self.combat_move_queue)
+        # print(self.base_pos, self.close_target.base_pos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+        # ^ End path finding
 
     def delete(self, local=False):
         """delete reference when del is called"""

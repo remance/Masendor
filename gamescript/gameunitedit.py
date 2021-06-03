@@ -1,14 +1,11 @@
-import math
-import random
-
-import numpy as np
-import csv
 import ast
+import csv
+
 import pygame
 import pygame.freetype
+from gamescript import gamelongscript
 from pygame.transform import scale
 
-from gamescript import gamelongscript, gameunit, gameleader, gamemap
 
 class Previewbox(pygame.sprite.Sprite):
     main_dir = None
@@ -29,7 +26,7 @@ class Previewbox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", int(24 * self.heightadjust))
 
         self.newcolourlist = {}
-        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode = "r") as unitfile:
+        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -50,8 +47,9 @@ class Previewbox(pygame.sprite.Sprite):
         self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
 
         textsurface = self.font.render(newterrain[0], True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() - (textsurface.get_height()/2)))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() - (textsurface.get_height() / 2)))
         self.image.blit(textsurface, textrect)
+
 
 class Previewleader(pygame.sprite.Sprite):
     baseimgposition = [(134, 65), (80, 115), (190, 115), (134, 163)]  # leader image position in command ui
@@ -65,9 +63,9 @@ class Previewleader(pygame.sprite.Sprite):
 
         self.squadpos = squadposition  # Squad position is the index of subunit in subunit sprite loop
 
-        self.armyposition = armyposition # position in the parentunit (e.g. general or sub-general)
+        self.armyposition = armyposition  # position in the parentunit (e.g. general or sub-general)
 
-        self.imgposition = self.baseimgposition[self.armyposition] # image position based on armyposition
+        self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
 
         self.changeleader(leaderid, leaderstat)
 
@@ -90,14 +88,14 @@ class Previewleader(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.imgposition)
         self.image_original = self.image.copy()
 
-        self.commander = False # army commander
-        self.originalcommander = False # the first army commander at the start of battle
+        self.commander = False  # army commander
+        self.originalcommander = False  # the first army commander at the start of battle
 
 
-class Armybuildslot(pygame.sprite.Sprite): # TODO change build slot from this class to use sub-unit sprite directly
-    squadwidth = 0 # subunit sprite width size get add from main
-    squadheight = 0 # subunit sprite height size get add from main
-    images = [] # image related to subunit sprite, get add from loadgamedata in gamelongscript
+class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this class to use sub-unit sprite directly
+    squadwidth = 0  # subunit sprite width size get add from main
+    squadheight = 0  # subunit sprite height size get add from main
+    images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
     weaponlist = None
     armourlist = None
     statlist = None
@@ -118,13 +116,13 @@ class Armybuildslot(pygame.sprite.Sprite): # TODO change build slot from this cl
             self.commander = True
         self.authority = 100
 
-        self.coa = pygame.Surface((0,0)) # empty coa to prevent leader ui error
+        self.coa = pygame.Surface((0, 0))  # empty coa to prevent leader ui error
 
         self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.squadwidth-2, self.squadheight-2))
+        whiteimage = pygame.Surface((self.squadwidth - 2, self.squadheight - 2))
         whiteimage.fill(colour)
-        whiterect = whiteimage.get_rect(center=(self.image.get_width()/2, self.image.get_height()/2))
+        whiterect = whiteimage.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(whiteimage, whiterect)
         self.image_original = self.image.copy()
 
@@ -143,7 +141,7 @@ class Armybuildslot(pygame.sprite.Sprite): # TODO change build slot from this cl
         self.weather = weather
         if self.name != "None":
             # v subunit block team colour
-            if self.unittype == 2: # cavalry draw line on block
+            if self.unittype == 2:  # cavalry draw line on block
                 pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
             # ^ End subunit block team colour
 
@@ -174,6 +172,7 @@ class Armybuildslot(pygame.sprite.Sprite): # TODO change build slot from this cl
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)
             # ^ End weapon icon
+
 
 class Warningmsg(pygame.sprite.Sprite):
     factionwarn = "Multiple factions subunit will not be usable with No Multiple Faction option enable"
@@ -210,6 +209,7 @@ class Warningmsg(pygame.sprite.Sprite):
     #     self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
     #     self.image.blit(self.textsurface, self.textrect)
 
+
 class Previewchangebutton(pygame.sprite.Sprite):
     def __init__(self, pos, image, text):
         import main
@@ -239,7 +239,6 @@ class Previewchangebutton(pygame.sprite.Sprite):
         self.image.blit(self.textsurface, self.textrect)
 
 
-
 class Filterbox(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         import main
@@ -257,5 +256,6 @@ class Filterbox(pygame.sprite.Sprite):
 class Unitpreview(pygame.sprite.Sprite):
     def __init__(self, maingame, position, gameid, squadlist, colour, leader, leaderpos, coa, startangle, team):
         self = gamelongscript.addarmy(squadlist, position, gameid,
-                                      colour, (maingame.squadwidth, maingame.squadheight), leader + leaderpos, maingame.leader_stat, maingame.gameunitstat, True,
+                                      colour, (maingame.squadwidth, maingame.squadheight), leader + leaderpos, maingame.leader_stat,
+                                      maingame.gameunitstat, True,
                                       coa, False, startangle, 100, 100, team)

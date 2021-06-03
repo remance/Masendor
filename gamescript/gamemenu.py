@@ -12,7 +12,7 @@ class Escbox(pygame.sprite.Sprite):
         self.pos = (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2)
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
-        self.mode = 0 # Current menu mode
+        self.mode = 0  # Current menu mode
 
     def changemode(self, mode):
         """Change between 0 menu, 1 option, 2 enclopedia mode"""
@@ -29,12 +29,12 @@ class Escbutton(pygame.sprite.Sprite):
         self.text = text
         self.font = pygame.font.SysFont("timesnewroman", size)
 
-        if text != "": # blit menu text into button image
+        if text != "":  # blit menu text into button image
             self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
             self.textrect = self.textsurface.get_rect(center=self.images[0].get_rect().center)
-            self.images[0].blit(self.textsurface, self.textrect) # button idle image
-            self.images[1].blit(self.textsurface, self.textrect) # button mouse over image
-            self.images[2].blit(self.textsurface, self.textrect) # button click image
+            self.images[0].blit(self.textsurface, self.textrect)  # button idle image
+            self.images[1].blit(self.textsurface, self.textrect)  # button mouse over image
+            self.images[2].blit(self.textsurface, self.textrect)  # button click image
 
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
@@ -51,10 +51,10 @@ class Escslidermenu(pygame.sprite.Sprite):
         self.buttonimagelist = buttonimage
         self.buttonimage = self.buttonimagelist[0]
         self.slidersize = self.image.get_size()[0] - 20
-        self.minvalue = self.pos[0] - (self.image.get_width() / 2) + 10.5 # min value position of the scroll bar
-        self.maxvalue = self.pos[0] + (self.image.get_width() / 2) - 10.5 # max value position
+        self.minvalue = self.pos[0] - (self.image.get_width() / 2) + 10.5  # min value position of the scroll bar
+        self.maxvalue = self.pos[0] + (self.image.get_width() / 2) - 10.5  # max value position
         self.value = value
-        self.mouse_value = (self.slidersize * value / 100) + 10.5 # mouse position on the scroll bar convert to value
+        self.mouse_value = (self.slidersize * value / 100) + 10.5  # mouse position on the scroll bar convert to value
         self.image_original = self.image.copy()
         self.buttonrect = self.buttonimagelist[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.buttonimage, self.buttonrect)

@@ -37,6 +37,7 @@ Wetground = (186, 184, 109, 255)
 featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Pandemonium, Mana, Rot, Wetground)
 feaurelist = ("Plain", "Barren", "PlantField", "Forest", "InlandWater", "Road", "UrbanBuilding", "Farm", "Pandemonium", "Mana", "Rot", "Wetground")
 
+
 class Basemap(pygame.sprite.Sprite):
     maxzoom = 10
 
@@ -64,7 +65,7 @@ class Basemap(pygame.sprite.Sprite):
         if (pos[0] >= 0 and pos[0] <= 999) and (pos[1] >= 0 and pos[1] <= 999):
             terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
             terrainindex = self.terraincolour.index(terrain)
-        else: # for handle terrain checking that clipping off map
+        else:  # for handle terrain checking that clipping off map
             newpos = pos
             if newpos[0] < 0:
                 newpos[0] = 0
@@ -187,7 +188,7 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.scale = scale
         self.mode = 0
         self.newcolourlist = {}
-        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode = "r") as unitfile:
+        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -202,14 +203,14 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.image = featuremap.image.copy()
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-        maingame.mapmovearray = [] # array for pathfinding
+        maingame.mapmovearray = []  # array for pathfinding
         maingame.mapdefarray = []
 
         for rowpos in range(0, 1000):  ## Recolour the map
             speedarray = []
             for colpos in range(0, 1000):
                 terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)
-                height = gamemapheight.getheight((rowpos,colpos))
+                height = gamemapheight.getheight((rowpos, colpos))
                 newcolour = self.newcolourlist[feature][1]
                 rect = pygame.Rect(rowpos, colpos, 1, 1)
                 self.image.fill(newcolour, rect)
@@ -221,7 +222,7 @@ class Beautifulmap(pygame.sprite.Sprite):
                 speedarray.append(speedmod)
             maingame.mapmovearray.append(speedarray)
 
-        #v Comment out this part and import PIL above if not want to use blur filtering
+        # v Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, "RGB")  ## Convert image to string data for filtering effect
         img = Image.frombytes("RGB", (1000, 1000), data)  ## Use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  ## Blue Image (or apply other filter in future)
@@ -231,9 +232,9 @@ class Beautifulmap(pygame.sprite.Sprite):
             (1000, 1000))  ## For unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
-        #^ PIL module code till here
+        # ^ PIL module code till here
 
-        #v Put in terrain feature texture
+        # v Put in terrain feature texture
         for rowpos in range(0, 991):
             for colpos in range(0, 991):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
@@ -242,24 +243,24 @@ class Beautifulmap(pygame.sprite.Sprite):
                     feature = self.textureimages[self.loadtexturelist.index(self.newcolourlist[thisfeature][0].replace(" ", "").lower())]
                     choose = random.randint(0, len(feature) - 1)
                     if thisfeature - (terrain * 12) in (0, 1, 4, 5, 7) and \
-                            random.randint(0,100) < 60:  ## reduce speical texture in empty terrain like glassland
+                            random.randint(0, 100) < 60:  ## reduce speical texture in empty terrain like glassland
                         thistexture = self.emptyimage  ## empty texture
                     else:
                         thistexture = feature[choose]
                     rect = thistexture.get_rect(center=(randompos))
                     self.image.blit(thistexture, rect)
-        #^ End terrain feature
+        # ^ End terrain feature
 
-        self.trueimage = self.image.copy() # image before adding effect and place name
+        self.trueimage = self.image.copy()  # image before adding effect and place name
         scalewidth = self.image.get_width()
         scaleheight = self.image.get_height()
         self.dim = pygame.Vector2(scalewidth, scaleheight)
 
-        self.placename = placename # save place name image as variable
+        self.placename = placename  # save place name image as variable
 
         self.addeffect(gamemapheight)
 
-    def addeffect(self, gamemapheight, effectimage = None):
+    def addeffect(self, gamemapheight, effectimage=None):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image = self.trueimage.copy()
 
@@ -271,7 +272,6 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.imagewithheight_original = self.image.copy()
         self.imagewithheight_original.blit(gamemapheight.image, rect)
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
-
 
     def changemode(self, mode):
         """Switch between normal and height map mode"""
