@@ -95,7 +95,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_rangedef = round(stat[10] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base range defence with grade bonus
         self.armourgear = stat[11]  # armour equipement
         self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
-                           * self.armour_list.quality[self.armourgear[1]]  # Armour stat is cal from based armour * quality
+                           * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
         self.base_accuracy = stat[12] + int(self.stat_list.grade_list[self.grade][4])
         self.basesight = stat[13]  # base sight range
         self.magazine_left = stat[14]  # amount of ammunition
@@ -112,31 +112,31 @@ class Subunit(pygame.sprite.Sprite):
         self.stamina = int(stat[19] * self.stat_list.grade_list[self.grade][8] * (startstamina / 100))  # starting stamina with grade
         self.mana = stat[20]  # Resource for magic skill
 
-        # v Weapon stat
+        # vv Weapon stat
         self.meleeweapon = stat[21]  # melee weapon equipment
         self.rangeweapon = stat[22]  # range weapon equipment
         self.dmg = (int(self.weapon_list.weapon_list[self.meleeweapon[0]][1] * self.weapon_list.quality[self.meleeweapon[1]]),
                     int(self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[self.meleeweapon[1]]))  # dmg for melee
-        self.penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][3] * self.weapon_list.quality[
+        self.melee_penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][3] * self.weapon_list.quality[
             self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
-        if self.penetrate > 1:
-            self.penetrate = 1  # melee penetrate cannot be higher than 1
-        elif self.penetrate < 0:
-            self.penetrate = 0  # melee penetrate cannot be lower than 0
+        if self.melee_penetrate > 1:
+            self.melee_penetrate = 1  # melee melee_penetrate cannot be higher than 1
+        elif self.melee_penetrate < 0:
+            self.melee_penetrate = 0  # melee melee_penetrate cannot be lower than 0
         self.rangedmg = (int(self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]),
                          int(self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]]))  # dmg for range
-        self.rangepenetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
+        self.range_penetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
         self.magazine_size = self.weapon_list.weapon_list[self.rangeweapon[0]][7]  # can shoot how many time before have to reload
         self.base_range = int(self.weapon_list.weapon_list[self.rangeweapon[0]][8] * self.weapon_list.quality[
             self.rangeweapon[1]])  # base weapon range depend on weapon range stat and quality
         self.arrowspeed = self.weapon_list.weapon_list[self.rangeweapon[0]][9]  # travel speed of range attack
         self.trait = self.trait + self.weapon_list.weapon_list[self.meleeweapon[0]][5]  # apply trait from range weapon
         self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][5]  # apply trait from melee weapon
-        if self.rangepenetrate > 1:
-            self.rangepenetrate = 1  # range penetrate cannot be higher than 1
-        elif self.rangepenetrate < 0:
-            self.rangepenetrate = 0  # range penetrate cannot be lower than 0
-        # ^ End weapon stat
+        if self.range_penetrate > 1:
+            self.range_penetrate = 1  # range melee_penetrate cannot be higher than 1
+        elif self.range_penetrate < 0:
+            self.range_penetrate = 0  # range melee_penetrate cannot be lower than 0
+        # ^^ End weapon stat
 
         self.base_morale = int(stat[23] + int(self.stat_list.grade_list[self.grade][9]))  # morale with grade bonus
         self.base_discipline = int(stat[24] + int(self.stat_list.grade_list[self.grade][10]))  # discilpline with grade bonus
@@ -145,8 +145,9 @@ class Subunit(pygame.sprite.Sprite):
         self.base_speed = 50  # All infantry has base speed at 50
         self.unit_type = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
         self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
+        self.authority = 100  # default start at 100
 
-        # v Mount stat
+        # vv Mount stat
         self.mount = self.stat_list.mount_list[stat[29][0]]  # mount this subunit use
         self.mountgrade = self.stat_list.mount_grade_list[stat[29][1]]
         self.mountarmour = self.stat_list.mount_armour_list[stat[29][2]]
@@ -159,10 +160,10 @@ class Subunit(pygame.sprite.Sprite):
             self.trait = self.trait + self.mount[6]  # Apply mount trait to subunit
             self.unit_type = 2  # If subunit has mount, count as cav for command buff
             self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
-        # ^ End mount stat
+        # ^^ End mount stat
 
-        self.weight = self.weapon_list.weapon_list[stat[21][0]][4] + self.weapon_list.weapon_list[stat[22][0]][4] + \
-                      self.armour_list.armour_list[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
+        self.weight = self.weapon_list.weapon_list[stat[21][0]][4] + self.weapon_list.weapon_list[stat[22][0]][4] \
+                      + self.armour_list.armour_list[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
         if self.unit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
 
@@ -172,9 +173,9 @@ class Subunit(pygame.sprite.Sprite):
         self.description = stat[-1]  # subunit description for inspect ui
         # if self.hidden
 
-        # v Elemental stat
-        self.base_elemmelee = 0  # start with physical element for melee weapon
-        self.base_elemrange = 0  # start with physical for range weapon
+        # vv Elemental stat
+        self.base_elem_melee = 0  # start with physical element for melee weapon
+        self.base_elem_range = 0  # start with physical for range weapon
         self.elem_count = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
         self.temp_count = 0  # Temperature threshold count
         fire_res = 0  # resistance to fire, will be combine into list
@@ -185,7 +186,7 @@ class Subunit(pygame.sprite.Sprite):
         self.heat_res = 0  # Resistance to heat temperature
         self.cold_res = 0  # Resistance to cold temperature
         poison_res = 0  # resistance to poison, will be combine into list
-        # ^ End elemental
+        # ^^ End elemental
 
         self.crit_effect = 1  # critical extra modifier
         self.front_dmg_effect = 1  # Some skill affect only frontal combat dmg
@@ -204,7 +205,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_inflictstatus = {}  # list of status that this subunit will inflict to enemy when attack
         self.specialstatus = []
 
-        # v Set up trait variable
+        # vv Set up trait variable
         self.arcshot = False
         self.anti_inf = False
         self.anti_cav = False
@@ -222,9 +223,9 @@ class Subunit(pygame.sprite.Sprite):
         self.unbreakable = False
         self.temp_unbraekable = False
         self.stationplace = False
-        # ^ End setup trait variable
+        # ^^ End setup trait variable
 
-        # v Add trait to base stat
+        # vv Add trait to base stat
         self.trait = list(set([trait for trait in self.trait if trait != 0]))
         if len(self.trait) > 0:
             self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
@@ -257,8 +258,8 @@ class Subunit(pygame.sprite.Sprite):
                 if trait[32] != [0]:
                     for effect in trait[32]:
                         self.base_inflictstatus[effect] = trait[1]
-                # self.base_elemmelee =
-                # self.base_elemrange =
+                # self.base_elem_melee =
+                # self.base_elem_range =
 
             if 3 in self.trait:  # Varied training
                 self.base_attack *= (random.randint(80, 120) / 100)
@@ -304,7 +305,7 @@ class Subunit(pygame.sprite.Sprite):
             if 149 in self.trait:  # Impetuous
                 self.base_auth_penalty += 0.5
             # ^ End change trait variable
-        # ^ End add trait to stat
+        # ^^ End add trait to stat
 
         # self.loyalty
         self.elem_res = (fire_res, water_res, air_res, earth_res, poison_res)  # list of elemental resistance
@@ -321,7 +322,7 @@ class Subunit(pygame.sprite.Sprite):
                                                                                    self.weapon_list.weapon_list[self.rangeweapon[0]][
                                                                                        6] / 100)  # final reload speed from weapon and skill
 
-        # v Stat variable after receive modifier effect from various sources, used for activity and effect calculation
+        # vv Stat variable after receive modifier effect from various sources, used for activity and effect calculation
         self.maxmorale = self.base_morale
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
@@ -335,7 +336,7 @@ class Subunit(pygame.sprite.Sprite):
         self.shootrange = self.base_range
         self.charge = self.base_charge
         self.chargedef = self.base_chargedef
-        # ^ End stat for status effect
+        # ^^ End stat for status effect
 
         if self.mental < 0:  # cannot be negative
             self.mental = 0
@@ -344,8 +345,8 @@ class Subunit(pygame.sprite.Sprite):
         self.mentaltext = int(self.mental - 100)
         self.mental = (200 - self.mental) / 100  # convert to percentage
 
-        self.elemmelee = self.base_elemmelee
-        self.elemrange = self.base_elemrange
+        self.elem_melee = self.base_elem_melee
+        self.elem_range = self.base_elem_range
         self.maxhealth, self.health75, self.health50, self.health25, = self.unit_health, round(self.unit_health * 0.75), round(
             self.unit_health * 0.5), round(self.unit_health * 0.25)  # health percentage
         self.oldlasthealth, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
@@ -365,14 +366,14 @@ class Subunit(pygame.sprite.Sprite):
         self.hpregen = self.base_hpregen
         self.staminaregen = self.base_staminaregen
         self.inflictstatus = self.base_inflictstatus
-        self.elemmelee = self.base_elemmelee
-        self.elemrange = self.base_elemrange
+        self.elem_melee = self.base_elem_melee
+        self.elem_range = self.base_elem_range
         # ^ End setup stat
 
-        # v Subunit block team colour
+        # v Subunit image block
         image = self.images[0].copy()  # Subunit block blue colour for team1 for shown in inspect ui
         if self.team == 2:
-            image = self.images[13].copy()
+            image = self.images[13].copy()  # red colour
 
         self.image = pygame.Surface((image.get_width() + 10, image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
         pygame.draw.circle(self.image, self.parentunit.colour, (self.image.get_width() / 2, self.image.get_height() / 2), image.get_width() / 2)
@@ -393,7 +394,7 @@ class Subunit(pygame.sprite.Sprite):
         pygame.draw.circle(self.selectedimage, (0, 0, 0, 255), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2, 1)
         self.selectedimage_original, self.selectedimage_original2 = self.selectedimage.copy(), self.selectedimage.copy()
         self.selectedimagerect = self.selectedimage.get_rect(topleft=(0, 0))
-        # ^ End subunit block team colour
+        # ^ End subunit block
 
         # v health circle image setup
         self.healthimage = self.images[1]
@@ -445,20 +446,19 @@ class Subunit(pygame.sprite.Sprite):
         self.command_target = self.base_pos  # actual base_target outside of combat
         self.pos = self.base_pos * self.zoom  # pos is for showing on screen
 
-        # v Generate front side position
         self.imageheight = (image.get_height() - 1) / 20  # get real half height of circle sprite
 
-        # v rotate the new front side according to sprite rotation
-        self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))
-        self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)
+        self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))  # generate front side position
+        self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
 
         self.attack_pos = self.parentunit.base_attack_pos
         self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)  # get new terrain and feature at each subunit position
-        self.height = self.gamemapheight.getheight(self.base_pos)  # Current terrain height
+        self.height = self.gamemapheight.getheight(self.base_pos)  # current terrain height
         self.front_height = self.gamemapheight.getheight(self.front_pos)  # terrain height at front position
         # ^ End position related
 
         self.rect = self.image.get_rect(center=self.pos)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def zoomscale(self):
         """camera zoom change and rescale the sprite and position scale"""
@@ -550,21 +550,21 @@ class Subunit(pygame.sprite.Sprite):
                     self.nearby_subunit_list.append(0)  # add number 0 instead
         self.nearby_subunit_list = self.nearby_subunit_list + corner_subunit
 
-    def status_to_friend(self, aoe, id, statuslist):
+    def status_to_friend(self, aoe, statusid, statuslist):
         """apply status effect to nearby subunit depending on aoe stat"""
         if aoe in (2, 3):
             if aoe > 1:  # only direct nearby friendly subunit
                 for subunit in self.nearby_subunit_list[0:4]:
                     if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
-                        subunit.statuseffect[id] = statuslist  # apply status effect
+                        subunit.statuseffect[statusid] = statuslist  # apply status effect
             if aoe > 2:  # all nearby including corner friendly subunit
                 for subunit in self.nearby_subunit_list[4:]:
                     if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
-                        subunit.statuseffect[id] = statuslist  # apply status effect
+                        subunit.statuseffect[statusid] = statuslist  # apply status effect
         elif aoe == 4:  # apply to whole parentunit
             for subunit in self.parentunit.spritearray.flat:
                 if subunit.state != 100:  # only apply to alive squads
-                    subunit.status_effect[id] = statuslist  # apply status effect
+                    subunit.status_effect[statusid] = statuslist  # apply status effect
 
     def threshold_count(self, elem, t1status, t2status):
         """apply elemental status effect when reach elemental threshold"""
@@ -630,8 +630,8 @@ class Subunit(pygame.sprite.Sprite):
         self.hpregen = self.base_hpregen
         self.staminaregen = self.base_staminaregen
         self.inflictstatus = self.base_inflictstatus
-        self.elemmelee = self.base_elemmelee
-        self.elemrange = self.base_elemrange
+        self.elem_melee = self.base_elem_melee
+        self.elem_range = self.base_elem_range
         # ^ End default stat
 
         if self.height > 100:  # apply height to range for height that is higher than 100 #TODO redo height range cal to use enemy base_target height as well
@@ -665,7 +665,7 @@ class Subunit(pygame.sprite.Sprite):
             self.morale += (weather.morale_buff * self.mental)
             self.discipline += weather.discipline_buff
             if weather.elem[0] != 0:  # Weather can cause elemental effect such as wet
-                self.elem_count[weather.elem[0]] += ((weather.elem[1] * (100 - self.elem_res[weather.elem[0]]) / 100))
+                self.elem_count[weather.elem[0]] += (weather.elem[1] * (100 - self.elem_res[weather.elem[0]]) / 100)
             weathertemperature = weather.temperature
         # ^ End weather
 
@@ -724,8 +724,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.temp_count != tempreach:  # move temp_count toward tempreach
             if tempreach > 0:
                 if self.temp_count < tempreach:
-                    self.temp_count += (
-                                                   100 - self.heat_res) / 100 * self.timer  # increase temperature, rate depends on heat resistance (negative = faster)
+                    self.temp_count += (100 - self.heat_res) / 100 * self.timer  # increase temperature, rate depends on heat resistance (- is faster)
             elif tempreach < 0:
                 if self.temp_count > tempreach:
                     self.temp_count -= (100 - self.cold_res) / 100 * self.timer  # decrease temperature, rate depends on cold resistance
@@ -741,9 +740,9 @@ class Subunit(pygame.sprite.Sprite):
             for status in self.skill_effect:  # apply elemental effect to dmg if skill has element
                 calstatus = self.skill_effect[status]
                 if calstatus[1] == 0 and calstatus[31] != 0:  # melee elemental effect
-                    self.elemmelee = int(calstatus[31])
+                    self.elem_melee = int(calstatus[31])
                 elif calstatus[1] == 1 and calstatus[31] != 0:  # range elemental effect
-                    self.elemrange = int(calstatus[31])
+                    self.elem_range = int(calstatus[31])
                 self.attack = self.attack * calstatus[10]
                 self.meleedef = self.meleedef * calstatus[11]
                 self.rangedef = self.rangedef * calstatus[12]
@@ -945,6 +944,8 @@ class Subunit(pygame.sprite.Sprite):
         self.zoomscale()
         self.find_nearby_subunit()
         self.statusupdate()
+        self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)
+        self.height = self.gamemapheight.getheight(self.base_pos)
 
     def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
         if self.lastzoom != zoom:  # camera zoom is changed
@@ -1027,8 +1028,8 @@ class Subunit(pygame.sprite.Sprite):
                     if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.check_skill_condition()
 
-                    if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown \
-                            and self.base_pos.distance_to(self.base_target) < 100:  # charge skill only when running to melee
+                    if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown and \
+                            self.base_pos.distance_to(self.base_target) < 100:  # charge skill only when running to melee
                         self.charge_momentum += self.timer * (self.speed / 50)
                         if self.charge_momentum >= 10:
                             self.useskill(0)  # Use charge skill
@@ -1129,8 +1130,8 @@ class Subunit(pygame.sprite.Sprite):
                         self.new_angle = self.parentunit.angle
                         self.state = 0
 
-                    if self.state != 10 and self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.arcshot or self.frontline) \
-                            and self.charge_momentum == 1:  # Range attack when parentunit in melee state with arcshot
+                    if self.state != 10 and self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.arcshot or self.frontline) and \
+                            self.charge_momentum == 1:  # Range attack when parentunit in melee state with arcshot
                         self.state = 11
                         if self.parentunit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
                             self.find_shooting_target(parentstate)
@@ -1148,10 +1149,9 @@ class Subunit(pygame.sprite.Sprite):
                     # v Range attack function
                     if parentstate == 11:  # Unit in range attack state
                         self.state = 0  # Default state at idle
-                        if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 \
-                                and self.shootrange >= self.attack_pos.distance_to(
-                            self.parentunit.base_pos):  # can shoot if have magazine_left and in shoot range
-                            self.state = 11  # range combat state
+                        if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \
+                                self.shootrange >= self.attack_pos.distance_to(self.parentunit.base_pos):
+                            self.state = 11  # can shoot if have magazine_left and in shoot range, enter range combat state
 
                     elif self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
                                                                                                              and self.shootmove)):  # Fire at will, auto pick closest enemy
@@ -1241,18 +1241,22 @@ class Subunit(pygame.sprite.Sprite):
                         if self.rotatecal > 180:  # rotate with the smallest angle direction
                             self.angle -= rotatetiny
                             self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.rotatecheck <= 0:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                         else:
                             self.angle += rotatetiny
-                            if self.angle > self.new_angle: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.angle > self.new_angle:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     elif self.new_angle < self.angle:  # rotate to angle less than the current one
                         if self.rotatecal > 180:  # rotate with the smallest angle direction
                             self.angle += rotatetiny
                             self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.rotatecheck <= 0:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                         else:
                             self.angle -= rotatetiny
-                            if self.angle < self.new_angle: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.angle < self.new_angle:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     self.rotate()  # rotate sprite to new angle
                     self.make_front_pos()  # generate new pos related to side
                     self.mask = pygame.mask.from_surface(self.image)  # make new mask
@@ -1263,20 +1267,19 @@ class Subunit(pygame.sprite.Sprite):
                     revertmove = True  # revert move check for in case subunit still need to rotate before moving
 
                 # v Move function to given base_target position
-                if (revertmove is False or self.angle == self.new_angle) and (
-                        self.base_pos != self.base_target or self.charge_momentum > 1):  # cannot move if still need to rotate
+                if (revertmove is False or self.angle == self.new_angle) and \
+                        (self.base_pos != self.base_target or self.charge_momentum > 1):  # cannot move if still need to rotate
 
-                    # v Can move if front not collided
-                    colidecombat = False
+                    colidecombat = False  # can move if front not collided
                     if ((self.parentunit.collide is False or parentstate == 99)
                             or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
                             or self.charge_momentum > 1):
                         colidecombat = True
 
-                    if self.stamina > 0 and colidecombat and len(self.enemy_front) == 0 \
-                            and (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
-                        if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10:  # keep charging until momentum run out
-                            new_target = self.front_pos - self.base_pos
+                    if self.stamina > 0 and colidecombat and len(self.enemy_front) == 0 and \
+                            (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
+                        if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10:
+                            new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                             self.base_target = self.base_target + new_target
                             self.command_target = self.base_target
 
@@ -1299,9 +1302,9 @@ class Subunit(pygame.sprite.Sprite):
                             newmove_length = move.length()
                             newpos = self.base_pos + move
 
-                            if speed > 0 and (self.state in (98, 99) or (self.state not in (98, 99) and (
-                                    newpos[0] > 0 and newpos[0] < 999 and newpos[1] > 0 and newpos[
-                                1] < 999))):  # cannot go pass map unless in retreat
+                            if speed > 0 and (self.state in (98, 99) or (self.state not in (98, 99) and
+                                                                         (0 < newpos[0] < 999 and 0 < newpos[1] < 999))):
+                                # cannot go pass map unless in retreat state
                                 if newmove_length <= move_length:  # move normally according to move speed
                                     self.base_pos = newpos
                                     self.pos = self.base_pos * self.zoom
@@ -1323,7 +1326,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.make_front_pos()
                                 self.make_pos_range()
 
-                                if self.unit_leader and newmove_length > 0:  # parentstate != 10 and self.parentunit.moving is False and self.parentunit.moverotate is False:
+                                if self.unit_leader and newmove_length > 0:
                                     if self.parentunit.moverotate is False:
                                         self.parentunit.base_pos += move
                                     frontpos = (self.parentunit.base_pos[0],
@@ -1414,11 +1417,12 @@ class Subunit(pygame.sprite.Sprite):
                 elif self.stamina > self.maxstamina:  # stamina cannot exceed the max stamina
                     self.stamina = self.maxstamina
 
-                if self.hpregen > 0 and self.unit_health % self.troophealth != 0:  ## hp regen cannot ressurect troop only heal to max hp
-                    alivehp = self.troopnumber * self.troophealth  ## Max hp possible for the number of alive subunit
+                if self.hpregen > 0 and self.unit_health % self.troophealth != 0:  # hp regen cannot ressurect troop only heal to max hp
+                    alivehp = self.troopnumber * self.troophealth  # max hp possible for the number of alive subunit
                     self.unit_health += self.hpregen * dt  # regen hp back based on time and regen stat
-                    if self.unit_health > alivehp: self.unit_health = alivehp  # Cannot exceed health of alive subunit (exceed mean resurrection)
-                elif self.hpregen < 0:  ## negative regen can kill
+                    if self.unit_health > alivehp:
+                        self.unit_health = alivehp  # Cannot exceed health of alive subunit (exceed mean resurrection)
+                elif self.hpregen < 0:  # negative regen can kill
                     self.unit_health += self.hpregen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
                     self.troopnumber = self.unit_health / self.troophealth  # Recal number of troop again in case some die from negative regen
                     if round(self.troopnumber) < self.troopnumber:  # no method to always round up number so I need to do this manually
@@ -1432,8 +1436,8 @@ class Subunit(pygame.sprite.Sprite):
                     self.unit_health = self.maxhealth  # hp can't exceed max hp (would increase number of troop)
                 # ^ End regen
 
-            if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or self.base_pos[1] <= 0 or self.base_pos[
-                1] >= 999):  # remove when unit move pass map border
+            if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
+                                           self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
                 self.troopnumber = 0
                 self.maingame.battlecamera.remove(self)
@@ -1491,7 +1495,7 @@ class Subunit(pygame.sprite.Sprite):
     #             self.parentunit.justselected = True
     #             self.wholastselect = self.gameid
 
-    def combatpathfind(self):
+    def combat_pathfind(self):
         # v Pathfinding
         self.combat_move_queue = []
         movearray = self.maingame.subunitposarray.copy()

@@ -4,7 +4,7 @@ import re
 """This file contains all class and function that read subunit/leader related data and save them into dict for ingame use"""
 
 
-class Weaponstat():
+class Weaponstat:
     def __init__(self, main_dir, img, ruleset):
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
@@ -30,7 +30,7 @@ class Weaponstat():
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifer to weapon stat
 
 
-class Armourstat():
+class Armourstat:
     def __init__(self, main_dir, img, ruleset):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
@@ -56,7 +56,7 @@ class Armourstat():
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifer to armour stat
 
 
-class Unitstat():
+class Unitstat:
     def __init__(self, main_dir, ruleset, rulesetfolder):
         """Unit stat data read"""
         # v Unit stat dict
@@ -130,7 +130,8 @@ class Unitstat():
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
-                        if i.isdigit(): row[n] = int(i)  # No need to be float
+                        if i.isdigit():
+                            row[n] = int(i)  # No need to be float
                         # if n == 12:
                         #     if "," in i:
                         #         row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
@@ -147,7 +148,8 @@ class Unitstat():
             run = 0
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)  # No need to be float
+                    if i.isdigit():
+                        row[n] = int(i)  # No need to be float
                     if run != 0:
                         if n == 13:
                             if "," in i:  # Properties to subunit in list
@@ -240,7 +242,8 @@ class Unitstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = float(i)
+                    if i.isdigit():
+                        row[n] = float(i)
                 self.role[row[0]] = row[1:]
         unitfile.close()
         # ^ End subunit role
@@ -274,7 +277,8 @@ class Unitstat():
             run = 0  # for avoiding header
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)  # No need to be float
+                    if i.isdigit():
+                        row[n] = int(i)  # No need to be float
                     if run != 0:
                         if n == 8:  # Properties list
                             if "," in i:
@@ -299,13 +303,14 @@ class Unitstat():
                     thisruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):
                     for n, i in enumerate(row):
-                        if i.isdigit(): row[n] = int(i)  # No need to be float
+                        if i.isdigit():
+                            row[n] = int(i)  # No need to be float
                     self.mount_armour_list[row[0]] = row[1:]
         unitfile.close()
         # ^ End mount armour
 
 
-class Leaderstat():
+class Leaderstat:
     def __init__(self, main_dir, img, imgorder, option):
         self.imgs = img
         self.imgorder = imgorder
@@ -314,7 +319,8 @@ class Leaderstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)
+                    if i.isdigit():
+                        row[n] = int(i)
                     # if and n in []:
                     #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]
@@ -326,7 +332,8 @@ class Leaderstat():
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit(): row[n] = int(i)
+                    if i.isdigit():
+                        row[n] = int(i)
                     # if and n in []:
                     #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                     # else: row[n] = [int(i)]

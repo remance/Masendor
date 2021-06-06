@@ -30,7 +30,7 @@ class Escbutton(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", size)
 
         if text != "":  # blit menu text into button image
-            self.textsurface = self.font.render(self.text, 1, (0, 0, 0))
+            self.textsurface = self.font.render(self.text, True, (0, 0, 0))
             self.textrect = self.textsurface.get_rect(center=self.images[0].get_rect().center)
             self.images[0].blit(self.textsurface, self.textrect)  # button idle image
             self.images[1].blit(self.textsurface, self.textrect)  # button mouse over image
@@ -41,12 +41,12 @@ class Escbutton(pygame.sprite.Sprite):
         self.event = False
 
 
-class Escslidermenu(pygame.sprite.Sprite):
-    def __init__(self, barimage, buttonimage, pos, value, type):
+class Escslider(pygame.sprite.Sprite):
+    def __init__(self, barimage, buttonimage, pos, value, uitype):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.type = type
+        self.uitype = uitype
         self.image = barimage
         self.buttonimagelist = buttonimage
         self.buttonimage = self.buttonimagelist[0]
@@ -70,7 +70,7 @@ class Escslidermenu(pygame.sprite.Sprite):
                 self.mouse_value = self.minvalue
             self.value = (self.mouse_value - self.minvalue) / 2
             self.mouse_value = (self.slidersize * self.value / 100) + 10.5
-        else:  ## For revert, cancel or esc in the option menu
+        else:  # for revert, cancel or esc in the option menu
             self.value = mouse_pos
             self.mouse_value = (self.slidersize * self.value / 100) + 10.5
         self.image = self.image_original.copy()
@@ -88,7 +88,7 @@ class Escvaluebox(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(textimage, (int(textimage.get_size()[0] / 2), int(textimage.get_size()[1] / 2)))
         self.image_original = self.image.copy()
         self.value = value
-        self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
+        self.textsurface = self.font.render(str(self.value), True, (0, 0, 0))
         self.textrect = self.textsurface.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.textsurface, self.textrect)
         self.rect = self.image.get_rect(center=self.pos)
@@ -96,5 +96,5 @@ class Escvaluebox(pygame.sprite.Sprite):
     def update(self, value):
         self.value = value
         self.image = self.image_original.copy()
-        self.textsurface = self.font.render(str(self.value), 1, (0, 0, 0))
+        self.textsurface = self.font.render(str(self.value), True, (0, 0, 0))
         self.image.blit(self.textsurface, self.textrect)

@@ -44,7 +44,7 @@ class Previewbox(pygame.sprite.Sprite):
         self.image.fill(newterrain[1])
 
         rect = self.image.get_rect(topleft=(0, 0))
-        self.image.blit(self.effectimage, rect)  ## Add special filter effect that make it look like old map
+        self.image.blit(self.effectimage, rect)  # add special filter effect that make it look like old map
 
         textsurface = self.font.render(newterrain[0], True, (0, 0, 0))
         textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() - (textsurface.get_height() / 2)))

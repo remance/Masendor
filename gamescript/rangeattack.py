@@ -8,6 +8,7 @@ from pygame.transform import scale
 
 
 class Rangearrow(pygame.sprite.Sprite):
+    angle: float
     images = []
     gamemapheight = None
 
@@ -19,25 +20,28 @@ class Rangearrow(pygame.sprite.Sprite):
         self.shooter = shooter  # subunit that shoot arrow
         self.speed = self.shooter.arrowspeed  # arrow speed
         self.arcshot = False  # direct shot will no go pass collided parentunit
-        if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2: self.arcshot = True  # arc shot will go pass parentunit to land at final base_target
+        if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2:
+            self.arcshot = True  # arc shot will go pass parentunit to land at final base_target
         self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
         self.dmg = random.randint(self.shooter.rangedmg[0], self.shooter.rangedmg[1])
-        self.penetrate = self.shooter.rangepenetrate
-        if self.shooter.state in (12, 13) and self.shooter.agileaim is False: self.accuracy -= 10  # accuracy penalty for shoot while moving
+        self.penetrate = self.shooter.range_penetrate
+        if self.shooter.state in (12, 13) and self.shooter.agileaim is False:
+            self.accuracy -= 10  # accuracy penalty for shoot while moving
         self.passwho = None  # check which parentunit arrow passing through
         self.side = None  # hitbox side that arrow collided last
-        randompos1 = random.randint(0, 1)  ## randpos1 is for left or right random
-        randompos2 = random.randint(0, 1)  ## randpos1 is for up or down random
+        randompos1 = random.randint(0, 1)  # randpos1 is for left or right random
+        randompos2 = random.randint(0, 1)  # randpos1 is for up or down random
 
         # v Calculate hitchance and final base_target where arrow will land
         hitchance = self.accuracy * (
                 100 - ((shootrange * 100 / maxrange) / 2)) / 100  # the further hitchance from 0 the further arrow will land from base_target
-        if hitchance == 0: hitchance = 1
+        if hitchance == 0:
+            hitchance = 1
         if self.shooter.no_range_penal:  # 73 no range penalty
             hitchance = self.accuracy
         elif self.shooter.long_range_acc:  # 74 long rance accuracy
-            hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  ## range penalty half
+            hitchance = self.accuracy * (100 - ((shootrange * 100 / maxrange) / 4)) / 100  # range penalty half
 
         howlong = shootrange / self.speed  # shooting distance divide arrow speed to find travel time
         targetnow = self.shooter.attack_pos
@@ -53,7 +57,8 @@ class Rangearrow(pygame.sprite.Sprite):
                     if targetmove.length() > 1:
                         targetmove.normalize_ip()
                         targetnow = targethit.base_pos + ((targetmove * (targethit.parentunit.walkspeed * howlong)) / 11)
-                        if self.shooter.agileaim is False: hitchance -= 10
+                        if self.shooter.agileaim is False:
+                            hitchance -= 10
                     else:  # movement too short, simiply hit the current position
                         targetnow = targethit.base_pos
 
@@ -63,7 +68,8 @@ class Rangearrow(pygame.sprite.Sprite):
                     if targetmove.length() > 1:
                         targetmove.normalize_ip()
                         targetnow = targethit.base_pos + ((targetmove * (targethit.parentunit.runspeed * howlong)) / 11)
-                        if self.shooter.agileaim is False: hitchance -= 20
+                        if self.shooter.agileaim is False:
+                            hitchance -= 20
                     else:
                         targetnow = targethit.base_pos
                 # ^ End base_target moving
@@ -91,15 +97,15 @@ class Rangearrow(pygame.sprite.Sprite):
         self.angle = math.degrees(myradians)
 
         # """upper left and upper right"""
-        if self.angle >= -180 and self.angle < 0:
+        if -180 <= self.angle < 0:
             self.angle = -self.angle - 90
 
         # """lower right -"""
-        elif self.angle >= 0 and self.angle <= 90:
+        elif 0 <= self.angle <= 90:
             self.angle = -(self.angle + 90)
 
         # """lower left +"""
-        elif self.angle > 90 and self.angle <= 180:
+        elif 90 < self.angle <= 180:
             self.angle = 270 - self.angle
 
         self.image = pygame.transform.rotate(self.image, self.angle)
@@ -110,18 +116,21 @@ class Rangearrow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=self.pos)
         self.target = self.basetarget * viewmode
 
-    def rangedmgcal(self, who, target, targetside, sidepercent=[1, 0.3, 0.3, 0]):
+    def rangedmgcal(self, who, target, targetside, sidepercent=(1, 0.3, 0.3, 0)):
         """Calculate hitchance and defense chance, sidepercent is more punishing than melee attack"""
         wholuck = random.randint(-20, 20)  # luck of the attacker subunit
         targetluck = random.randint(-20, 20)  # luck of the defender subunit
 
         targetpercent = sidepercent[targetside]  # side penalty
-        if target.fulldef or target.temp_fulldef: targetpercent = 1  # no side penalty for all round defend
+        if target.fulldef or target.temp_fulldef:
+            targetpercent = 1  # no side penalty for all round defend
         whohit = float(self.accuracy) + wholuck  # calculate hit chance
-        if whohit < 0: whohit = 0  # hitchance cannot be negative
+        if whohit < 0:
+            whohit = 0  # hitchance cannot be negative
 
         targetdefense = float(target.rangedef * targetpercent) + targetluck  # calculate defense
-        if targetdefense < 0: targetdefense = 0  # defense cannot be negative
+        if targetdefense < 0:
+            targetdefense = 0  # defense cannot be negative
 
         whodmg, whomoraledmg, wholeaderdmg = gamelongscript.losscal(who, target, whohit, targetdefense, self)
         target.unit_health -= whodmg
@@ -133,10 +142,10 @@ class Rangearrow(pygame.sprite.Sprite):
             target.red_corner = True
         # ^ End red corner
 
-        if who.elemrange not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
-            target.elem_count[who.elemrange - 1] += round(whodmg * (100 - target.elem_res[who.elemrange - 1] / 100))
+        if who.elem_range not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
+            target.elem_count[who.elem_range - 1] += round(whodmg * (100 - target.elem_res[who.elem_range - 1] / 100))
 
-        if target.leader != None and target.leader.health > 0 and random.randint(0, 10) > 5:  ## dmg on leader
+        if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  # dmg on leader
             target.leader.health -= wholeaderdmg
 
     def registerhit(self, subunit=None):
@@ -162,7 +171,7 @@ class Rangearrow(pygame.sprite.Sprite):
             move = move * self.speed * dt
             if move.length() <= move_length:
                 self.basepos += move
-                if self.arcshot is False:  ## direct shot will not be able to shoot pass higher height terrain midway
+                if self.arcshot is False:  # direct shot will not be able to shoot pass higher height terrain midway
                     if self.gamemapheight.getheight(self.basepos) > self.targetheight + 20:
                         self.kill()
                 self.pos = self.basepos * viewmode

@@ -140,7 +140,7 @@ class Leader(pygame.sprite.Sprite):
         self.combat = 0
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)  # draw dead cross on leader image
-        self.maingame.setuparmyicon()
+        self.maingame.setup_armyicon()
         self.parentunit.leader_change = True  # initiate leader change stat recalculation for parentunit
 
     def gamestart(self):

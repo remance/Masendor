@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 
 
-class Terrainpopup(pygame.sprite.Sprite):
+class TerrainPopup(pygame.sprite.Sprite):
     images = []
     SCREENRECT = None
 
@@ -30,13 +30,13 @@ class Terrainpopup(pygame.sprite.Sprite):
         self.pos = pos  # position to draw the image on screen
 
         # v Terrain feature name
-        self.textsurface = self.font.render(feature[0], 1, (0, 0, 0))
+        self.textsurface = self.font.render(feature[0], True, (0, 0, 0))
         self.textrect = self.textsurface.get_rect(topleft=(5, 5))
         self.image.blit(self.textsurface, self.textrect)
         # ^ End terrain feature
 
         # v Height number
-        self.textsurface = self.heightfont.render(str(height), 1, (0, 0, 0))
+        self.textsurface = self.heightfont.render(str(height), True, (0, 0, 0))
         self.textrect = self.textsurface.get_rect(topleft=(self.image.get_width() - (self.image.get_width() / 5), 5))
         self.image.blit(self.textsurface, self.textrect)
         # End height
@@ -79,7 +79,7 @@ class Terrainpopup(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft=self.pos)
 
 
-class Onelinepopup(pygame.sprite.Sprite):
+class OnelinePopup(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -87,15 +87,15 @@ class Onelinepopup(pygame.sprite.Sprite):
         self.pos = (0, 0)
         self.textinput = ""
 
-    def pop(self, pos, input):
+    def pop(self, pos, textinput):
         """Pop out text box with input text in one line"""
-        if self.pos != pos or self.textinput != input:
-            self.textinput = input
+        if self.pos != pos or self.textinput != textinput:
+            self.textinput = textinput
             self.pos = pos
-            textsurface = self.font.render(self.textinput, 1, (0, 0, 0))  ## text input font surface
+            textsurface = self.font.render(self.textinput, True, (0, 0, 0))  # text input font surface
             textrect = textsurface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
-            self.image = pygame.Surface((textrect.width + 6, textrect.height + 6))  ## Black border
-            image = pygame.Surface((textrect.width + 2, textrect.height + 2))  ## White Box
+            self.image = pygame.Surface((textrect.width + 6, textrect.height + 6))  # black border
+            image = pygame.Surface((textrect.width + 2, textrect.height + 2))  # white Box
             image.fill((255, 255, 255))
             image.blit(textsurface, textrect)  # blit text into white box
             rect = self.image.get_rect(topleft=(2, 2))  # white box image position at (2,2) on black border image
@@ -103,7 +103,7 @@ class Onelinepopup(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(bottomleft=self.pos)
 
 
-class Effecticonpopup(pygame.sprite.Sprite):
+class EffecticonPopup(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -112,16 +112,16 @@ class Effecticonpopup(pygame.sprite.Sprite):
         self.pos = (0, 0)
         self.textinput = ""
 
-    def pop(self, pos, input):
-        if self.pos != pos or self.textinput != input:
-            self.textinput = input
+    def pop(self, pos, textinput):
+        if self.pos != pos or self.textinput != textinput:
+            self.textinput = textinput
             self.pos = pos
-            namesurface = self.headfont.render(self.textinput[0], 1, (0, 0, 0))  # name font surface
+            namesurface = self.headfont.render(self.textinput[0], True, (0, 0, 0))  # name font surface
             namerect = namesurface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
             # textsurface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
             # textrect = textsurface.get_rect(topleft=(1, textrect.height + 1))
-            self.image = pygame.Surface((namerect.width + 6, namerect.height + 6))  ## Black border
-            image = pygame.Surface((namerect.width + 2, namerect.height + 2))  ## White Box for text
+            self.image = pygame.Surface((namerect.width + 6, namerect.height + 6))  # black border
+            image = pygame.Surface((namerect.width + 2, namerect.height + 2))  # white Box for text
             # self.image = pygame.Surface((namerect.width + 6, textrect.height + namerect.height + 6)) ## Black border
             # image = pygame.Surface((namerect.width + 2, textrect.height + namerect.height + 2)) ## White Box for text
             image.fill((255, 255, 255))

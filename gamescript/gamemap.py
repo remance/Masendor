@@ -6,7 +6,7 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter
 
-## Terrain base colour, change these when add new terrain
+# Terrain base colour, change these when add new terrain
 Temperate = (166, 255, 107, 255)
 Tropical = (255, 199, 13, 255)
 Volcanic = (255, 127, 39, 255)
@@ -20,8 +20,8 @@ ShallowWater = (153, 217, 235, 255)
 DeepWater = (100, 110, 214, 255)
 terraincolour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
 terrainlist = ("Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "ShallowWater", "DeepWater")
-## Terrain Feature colour, change these when add new feature
 
+# Terrain Feature colour, change these when add new feature
 Plain = (181, 230, 29, 255)
 Barren = (255, 127, 39, 255)
 PlantField = (167, 186, 139, 255)
@@ -62,8 +62,8 @@ class Basemap(pygame.sprite.Sprite):
 
     def getterrain(self, pos):
         """get the base terrain at that exact position"""
-        if (pos[0] >= 0 and pos[0] <= 999) and (pos[1] >= 0 and pos[1] <= 999):
-            terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
+        if (0 <= pos[0] <= 999) and (0 <= pos[1] <= 999):
+            terrain = self.trueimage.get_at((int(pos[0]), int(pos[1])))  # get colour at pos to obtain the terrain type
             terrainindex = self.terraincolour.index(terrain)
         else:  # for handle terrain checking that clipping off map
             newpos = pos
@@ -110,8 +110,8 @@ class Mapfeature(pygame.sprite.Sprite):
     def getfeature(self, pos, gamemap):
         """get the terrain feature at that exact position"""
         terrainindex = gamemap.getterrain(pos)
-        if (pos[0] >= 0 and pos[0] <= 999) and (pos[1] >= 0 and pos[1] <= 999):
-            feature = self.trueimage.get_at((int(pos[0]), int(pos[1])))  ##get colour at pos to obtain the terrain type
+        if (0 <= pos[0] <= 999) and (0 <= pos[1] <= 999):
+            feature = self.trueimage.get_at((int(pos[0]), int(pos[1])))  # get colour at pos to obtain the terrain type
             featureindex = None
             if feature in self.featurecolour:
                 featureindex = self.featurecolour.index(feature)
@@ -128,7 +128,7 @@ class Mapfeature(pygame.sprite.Sprite):
             elif newpos[1] > 999:
                 newpos[1] = 999
 
-            feature = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))  ##get colour at pos to obtain the terrain type
+            feature = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))  # get colour at pos to obtain the terrain type
             featureindex = None
             if feature in self.featurecolour:
                 featureindex = self.featurecolour.index(feature)
@@ -170,8 +170,9 @@ class Mapheight(pygame.sprite.Sprite):
 
         colour = self.trueimage.get_at((int(newpos[0]), int(newpos[1])))[2]
 
-        if colour == 0: colour = 255
-        heightindex = 256 - colour  ##get colour at pos to obtain the terrain type
+        if colour == 0:
+            colour = 255
+        heightindex = 256 - colour  # get colour at pos to obtain the terrain type
         return heightindex
 
 
@@ -206,7 +207,7 @@ class Beautifulmap(pygame.sprite.Sprite):
         maingame.mapmovearray = []  # array for pathfinding
         maingame.mapdefarray = []
 
-        for rowpos in range(0, 1000):  ## Recolour the map
+        for rowpos in range(0, 1000):  # recolour the map
             speedarray = []
             for colpos in range(0, 1000):
                 terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)
@@ -223,31 +224,31 @@ class Beautifulmap(pygame.sprite.Sprite):
             maingame.mapmovearray.append(speedarray)
 
         # v Comment out this part and import PIL above if not want to use blur filtering
-        data = pygame.image.tostring(self.image, "RGB")  ## Convert image to string data for filtering effect
-        img = Image.frombytes("RGB", (1000, 1000), data)  ## Use PIL to get image data
-        img = img.filter(ImageFilter.GaussianBlur(radius=2))  ## Blue Image (or apply other filter in future)
+        data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
+        img = Image.frombytes("RGB", (1000, 1000), data)  # use PIL to get image data
+        img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
         img = img.tobytes()
-        img = pygame.image.fromstring(img, (1000, 1000), "RGB")  ## Convert image back to a pygame surface
+        img = pygame.image.fromstring(img, (1000, 1000), "RGB")  # convert image back to a pygame surface
         self.image = pygame.Surface(
-            (1000, 1000))  ## For unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
+            (1000, 1000))  # for unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
-        # ^ PIL module code till here
+        # ^ PIL module code
 
         # v Put in terrain feature texture
         for rowpos in range(0, 991):
             for colpos in range(0, 991):
                 if rowpos % 20 == 0 and colpos % 20 == 0:
                     randompos = (rowpos + random.randint(0, 19), colpos + random.randint(0, 19))
-                    terrain, thisfeature = featuremap.getfeature((randompos), basemap)
+                    terrain, thisfeature = featuremap.getfeature(randompos, basemap)
                     feature = self.textureimages[self.loadtexturelist.index(self.newcolourlist[thisfeature][0].replace(" ", "").lower())]
                     choose = random.randint(0, len(feature) - 1)
                     if thisfeature - (terrain * 12) in (0, 1, 4, 5, 7) and \
-                            random.randint(0, 100) < 60:  ## reduce speical texture in empty terrain like glassland
-                        thistexture = self.emptyimage  ## empty texture
+                            random.randint(0, 100) < 60:  # reduce speical texture in empty terrain like glassland
+                        thistexture = self.emptyimage  # empty texture
                     else:
                         thistexture = feature[choose]
-                    rect = thistexture.get_rect(center=(randompos))
+                    rect = thistexture.get_rect(center=randompos)
                     self.image.blit(thistexture, rect)
         # ^ End terrain feature
 
@@ -265,9 +266,9 @@ class Beautifulmap(pygame.sprite.Sprite):
         self.image = self.trueimage.copy()
 
         if effectimage is not None:
-            self.image.blit(effectimage, rect)  ## Add special filter effect that make it look like old map
+            self.image.blit(effectimage, rect)  # add special filter effect that make it look like old map
 
-        self.image.blit(self.placename, rect)  ## Add placename layer to map
+        self.image.blit(self.placename, rect)  # add placename layer to map
         self.image_original = self.image.copy()
         self.imagewithheight_original = self.image.copy()
         self.imagewithheight_original.blit(gamemapheight.image, rect)

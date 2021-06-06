@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 
 
-class Camera():
+class Camera:
     SCREENRECT = None
 
     def __init__(self, startpos, zoom):

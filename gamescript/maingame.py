@@ -171,7 +171,7 @@ class Battle():
         self.background = pygame.Surface(SCREENRECT.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
-    def preparenew(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale):
+    def preparenewgame(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale):
 
         self.ruleset = ruleset  # current ruleset used
         self.rulesetfolder = rulesetfolder  # the folder of rulseset used
@@ -279,7 +279,7 @@ class Battle():
             self.allsubunitlist.append(subunit)
         # ^ End start subunit sprite
 
-    def setuparmyicon(self):
+    def setup_armyicon(self):
         """Setup army selection list in army selector ui top left of screen"""
         row = 30
         startcolumn = 25
@@ -325,13 +325,13 @@ class Battle():
         # ^ End col
 
         # v split by middle row
-        if np.array_split(whoinput.armysubunit, 2)[0].size >= 10 and np.array_split(whoinput.armysubunit, 2)[1].size >= 10 \
-                and whoinput.leader[1].name != "None":
+        if np.array_split(whoinput.armysubunit, 2)[0].size >= 10 and np.array_split(whoinput.armysubunit, 2)[1].size >= 10 and \
+                whoinput.leader[1].name != "None":
             self.battleui.add(self.rowsplitbutton)
         elif self.rowsplitbutton in self.battleui:
             self.rowsplitbutton.kill()
 
-    def popoutlorebook(self, section, gameid):
+    def popout_lorebook(self, section, gameid):
         """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
         self.gamestate = 0
         self.battlemenu.mode = 2
@@ -341,7 +341,7 @@ class Battle():
         self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
         self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
 
-    def uimouseover(self):
+    def ui_mouseover(self):
         """mouse over ui that is not subunit card and armybox (topbar and commandbar)"""
         for ui in self.gameui:
             if ui in self.battleui and ui.rect.collidepoint(self.mousepos):
@@ -350,7 +350,7 @@ class Battle():
                 break
         return self.clickany
 
-    def armyiconmouseover(self, mouseup, mouseright):
+    def armyicon_mouseover(self, mouseup, mouseright):
         """process user mouse input on army icon, left click = select, right click = go to parentunit position on map"""
         self.clickany = True
         self.uiclick = True
@@ -367,7 +367,7 @@ class Battle():
                 break
         return self.clickany
 
-    def buttonmouseover(self, mouseright):
+    def button_mouseover(self, mouseright):
         """process user mouse input on various ui buttons"""
         for button in self.buttonui:
             if button in self.battleui and button.rect.collidepoint(self.mousepos):
@@ -376,7 +376,7 @@ class Battle():
                 break
         return self.clickany
 
-    def leadermouseover(self, mouseright): #TODO make it so button and leader popup not show at same time
+    def leader_mouseover(self, mouseright): #TODO make it so button and leader popup not show at same time
         """process user mouse input on leader portrait in command ui"""
         leadermouseover = False
         for leader in self.leadernow:
@@ -391,26 +391,26 @@ class Battle():
                 leadermouseover = True
 
                 if mouseright:
-                    self.popoutlorebook(8, leader.gameid)
+                    self.popout_lorebook(8, leader.gameid)
                 break
         return leadermouseover
 
-    def effecticonmouseover(self, iconlist, mouseright):
+    def effecticon_mouseover(self, iconlist, mouseright):
         effectmouseover = False
         for icon in iconlist:
             if icon.rect.collidepoint(self.mousepos):
-                checkvalue = self.gameui[2].value2[icon.type]
+                checkvalue = self.gameui[2].value2[icon.icontype]
                 self.effectpopup.pop(self.mousepos, checkvalue[icon.gameid])
                 self.battleui.add(self.effectpopup)
                 effectmouseover = True
                 if mouseright:
-                    if icon.type == 0:  # Trait
+                    if icon.icontype == 0:  # Trait
                         section = 7
-                    elif icon.type == 1:  # Skill
+                    elif icon.icontype == 1:  # Skill
                         section = 6
                     else:
                         section = 5  # Status effect
-                    self.popoutlorebook(section, icon.gameid)
+                    self.popout_lorebook(section, icon.gameid)
                 break
         return effectmouseover
 
@@ -488,7 +488,7 @@ class Battle():
         self.armyselector.current_row = 0
         # ^ End start value
 
-        self.setuparmyicon()
+        self.setup_armyicon()
         self.selectscroll.changeimage(newrow=self.armyselector.current_row)
 
         # v Run starting function
@@ -612,7 +612,7 @@ class Battle():
                                 if self.armyselector.current_row < 0:
                                     self.armyselector.current_row = 0
                                 else:
-                                    self.setuparmyicon()
+                                    self.setup_armyicon()
                                     self.selectscroll.changeimage(newrow=self.armyselector.current_row)
 
                             elif self.mapscaledelay == 0:  # Scrolling in game map to zoom
@@ -628,8 +628,8 @@ class Battle():
                         elif event.button == 5:  # Mouse scroll down
                             if self.eventlog.rect.collidepoint(self.mousepos):  # Scrolling when mouse at event log
                                 self.eventlog.current_start_row += 1
-                                if self.eventlog.current_start_row + self.eventlog.max_row_show - 1 < self.eventlog.lencheck \
-                                        and self.eventlog.lencheck > 9:
+                                if self.eventlog.current_start_row + self.eventlog.max_row_show - 1 < self.eventlog.lencheck and \
+                                        self.eventlog.lencheck > 9:
                                     self.eventlog.recreateimage()
                                     self.logscroll.changeimage(newrow=self.eventlog.current_start_row)
                                 else:
@@ -638,7 +638,7 @@ class Battle():
                             elif self.armyselector.rect.collidepoint(self.mousepos):  # Scrolling when mouse at army selector ui
                                 self.armyselector.current_row += 1
                                 if self.armyselector.current_row < self.armyselector.logsize:
-                                    self.setuparmyicon()
+                                    self.setup_armyicon()
                                     self.selectscroll.changeimage(newrow=self.armyselector.current_row)
                                 else:
                                     self.armyselector.current_row -= 1
@@ -836,7 +836,7 @@ class Battle():
                             newrow = self.selectscroll.update(self.mousepos)
                             if self.armyselector.current_row != newrow:
                                 self.armyselector.current_row = newrow
-                                self.setuparmyicon()
+                                self.setup_armyicon()
 
                     elif self.eventlog.rect.collidepoint(self.mousepos):  # check mouse collide for event log ui
                         self.clickany = True
@@ -847,12 +847,12 @@ class Battle():
                         self.uiclick = True
 
                     elif self.armyselector.rect.collidepoint(self.mousepos):  # check mouse collide for army selector ui
-                        self.armyiconmouseover(mouse_up, mouse_right)
+                        self.armyicon_mouseover(mouse_up, mouse_right)
 
-                    elif self.uimouseover():  # check mouse collide for other ui
+                    elif self.ui_mouseover():  # check mouse collide for other ui
                         pass
 
-                    elif self.buttonmouseover(mouse_right):  # check mouse collide for button
+                    elif self.button_mouseover(mouse_right):  # check mouse collide for button
                         pass
 
                     elif mouse_right and self.last_selected is None and self.uiclick is False:  # draw terrain popup ui when right click at map with no selected parentunit
@@ -913,7 +913,7 @@ class Battle():
                     else:  # Random weather
                         self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2), self.allweather)
                     self.weatherevent.pop(0)
-                    self.showmap.addeffect(self.battlemapheight, self.weathereffectimgs[self.currentweather.type][self.currentweather.level])
+                    self.showmap.addeffect(self.battlemapheight, self.weathereffectimgs[self.currentweather.weathertype][self.currentweather.level])
 
                     try:  # Get end time of next event which is now index 0
                         self.weatherschedule = self.weatherevent[0][1]
@@ -943,10 +943,10 @@ class Battle():
                             truepos = (SCREENRECT.width, random.randint(0, SCREENRECT.height))
                             target = (0, truepos[1])
 
-                        randompic = random.randint(0, len(self.weathermatterimgs[self.currentweather.type]) - 1)
+                        randompic = random.randint(0, len(self.weathermatterimgs[self.currentweather.weathertype]) - 1)
                         self.weathermatter.add(gameweather.Mattersprite(truepos, target,
                                                                         self.currentweather.speed,
-                                                                        self.weathermatterimgs[self.currentweather.type][randompic]))
+                                                                        self.weathermatterimgs[self.currentweather.weathertype][randompic]))
 
                 # v code that only run when any unit is selected
                 if self.last_selected is not None and self.last_selected.state != 100:
@@ -1115,7 +1115,7 @@ class Battle():
                                     self.battleui.remove(*self.leadernow)
                                     self.leadernow = whoinput.leader
                                     self.battleui.add(*self.leadernow)
-                                    self.setuparmyicon()
+                                    self.setup_armyicon()
 
                             elif self.rowsplitbutton in self.battleui and self.rowsplitbutton.rect.collidepoint(self.mousepos):
                                 self.button_name_popup.pop(self.mousepos, "Split by Middle Row")
@@ -1127,7 +1127,7 @@ class Battle():
                                     self.battleui.remove(*self.leadernow)
                                     self.leadernow = whoinput.leader
                                     self.battleui.add(*self.leadernow)
-                                    self.setuparmyicon()
+                                    self.setup_armyicon()
 
                             elif self.buttonui[7].rect.collidepoint(self.mousepos):  # decimation effect
                                 self.button_name_popup.pop(self.mousepos, "Decimation")
@@ -1136,7 +1136,7 @@ class Battle():
                                     for subunit in whoinput.subunit_sprite:
                                         subunit.status_effect[98] = self.gameunitstat.status_list[98].copy()
                                         subunit.unit_health -= round(subunit.unit_health * 0.1)
-                        if self.leadermouseover(mouse_right):
+                        if self.leader_mouseover(mouse_right):
                             self.battleui.remove(self.button_name_popup)
                             pass
                     else:
@@ -1174,7 +1174,7 @@ class Battle():
                                                     icon.kill()
 
                                         elif mouse_right:
-                                            self.popoutlorebook(3, subunit.who.unitid)
+                                            self.popout_lorebook(3, subunit.who.unitid)
                                         break
 
                             elif self.gameui[2].rect.collidepoint(self.mousepos):  # mouse position in subunit card
@@ -1218,9 +1218,9 @@ class Battle():
                                     icon.kill()
 
                         if self.gameui[2].option == 2:
-                            if self.effecticonmouseover(self.skill_icon, mouse_right):
+                            if self.effecticon_mouseover(self.skill_icon, mouse_right):
                                 pass
-                            elif self.effecticonmouseover(self.effect_icon, mouse_right):
+                            elif self.effecticon_mouseover(self.effect_icon, mouse_right):
                                 pass
                             else:
                                 self.battleui.remove(self.effectpopup)
@@ -1303,7 +1303,7 @@ class Battle():
                 if len(self.combatpathqueue) > 0:
                     run = 0
                     while len(self.combatpathqueue) > 0 and run < 5:
-                        self.combatpathqueue[0].combatpathfind()
+                        self.combatpathqueue[0].combat_pathfind()
                         self.combatpathqueue = self.combatpathqueue[1:]
                         run += 1
                 # ^ End melee pathfinding

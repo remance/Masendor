@@ -153,7 +153,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """Although parentunit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon = None  ## for linking with army selection ui, got linked when icon created in gameui.Armyicon
+        self.icon = None  # for linking with army selection ui, got linked when icon created in gameui.Armyicon
         self.teamcommander = None  # commander leader
         self.startwhere = []
         self.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
@@ -310,7 +310,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     notbroken = True
         self.troopnumber = int(self.troopnumber)  # convert to int to prevent float decimal
 
-        if notbroken == False:
+        if notbroken is False:
             self.state = 99  # completely broken
             self.can_split_row = False  # can not split unit
             self.can_split_col = False
@@ -328,7 +328,8 @@ class Unitarmy(pygame.sprite.Sprite):
             else:
                 self.rotatespeed = round(self.runspeed * 50 / (len(self.armysubunit[0]) * len(self.armysubunit)))
 
-            if self.rotatespeed > 20: self.rotatespeed = 20  # state 10 melee combat rotate is auto placement
+            if self.rotatespeed > 20:
+                self.rotatespeed = 20  # state 10 melee combat rotate is auto placement
             if self.rotatespeed < 1:  # no less than speed 1, it will be too slow or can't rotate with speed 0
                 self.rotatespeed = 1
 
@@ -446,14 +447,14 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit
 
     # def useskill(self,whichskill):
-    #     ##charge skill
+    #     #charge skill
     #     skillstat = self.skill[list(self.skill)[0]].copy()
     #     if whichskill == 0:
     #         self.skill_effect[self.chargeskill] = skillstat
     #         if skillstat[26] != 0:
     #             self.status_effect[self.chargeskill] = skillstat[26]
     #         self.skill_cooldown[self.chargeskill] = skillstat[4]
-    #     ##other skill
+    #     # other skill
     #     else:
     #         if skillstat[1] == 1:
     #             self.skill[whichskill]
@@ -495,7 +496,7 @@ class Unitarmy(pygame.sprite.Sprite):
             bigarmysize = bigarmysize.sum()
             if bigarmysize > 20:  # army size larger than 20 will reduce main leader authority
                 self.authority = int((self.teamcommander.authority / 2) +
-                                     (self.leader[0].authority / 2 * (100 - (bigarmysize)) / 100) + self.leader[1].authority / 2 + self.leader[
+                                     (self.leader[0].authority / 2 * (100 - bigarmysize) / 100) + self.leader[1].authority / 2 + self.leader[
                                          2].authority / 2 +
                                      self.leader[3].authority / 4)
             else:
@@ -598,7 +599,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.near_target[n] = pygame.Vector2(thisside).distance_to(self.base_pos)
                     self.near_target = {k: v for k, v in sorted(self.near_target.items(), key=lambda item: item[1])}  # sort to the closest one
                     for n in self.enemy_pos_list:
-                        self.near_target[n] = self.enemy_pos_list[n]  ## change back near base_target list value to vector with sorted order
+                        self.near_target[n] = self.enemy_pos_list[n]  # change back near base_target list value to vector with sorted order
                     # ^ End find near base_target
 
                     # v Check if any subunit still fighting, if not change to idle state
@@ -628,11 +629,11 @@ class Unitarmy(pygame.sprite.Sprite):
                 # v skirmishing
                 if self.hold == 1 and self.state not in (97, 98, 99):
                     minrange = self.minrange  # run away from enemy that reach minimum range
-                    if minrange < 50: minrange = 50  # for in case minrange is 0 (melee troop only)
+                    if minrange < 50:
+                        minrange = 50  # for in case minrange is 0 (melee troop only)
                     if list(self.near_target.values())[0].distance_to(self.base_pos) <= minrange:  # if there is any enemy in minimum range
                         self.state = 96  # retreating
-                        basetarget = self.base_pos - ((list(self.near_target.values())[
-                                                           0] - self.base_pos) / 5)  # generate base_target to run away, opposite direction at same distance
+                        basetarget = self.base_pos - ((list(self.near_target.values())[0] - self.base_pos) / 5)  # generate base_target to run away
 
                         if basetarget[0] < 1:  # can't run away when reach corner of map same for below if elif
                             basetarget[0] = 1
@@ -700,7 +701,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         basetarget = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
 
                         self.processretreat(basetarget)
-                        # if random.randint(0, 100) > 99:  ## change side via surrender or betrayal
+                        # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
                         #     if self.team == 1:
                         #         self.maingame.allunitindex = self.switchfaction(self.maingame.team1army, self.maingame.team2army,
                         #                                                         self.maingame.team1poslist, self.maingame.allunitindex,
@@ -722,26 +723,32 @@ class Unitarmy(pygame.sprite.Sprite):
                     if self.angle < 0:  # negative angle (rotate to left side)
                         self.radians_angle = math.radians(-self.angle)
 
-                    ## Rotate logic to continuously rotate based on angle and shortest length
-
+                    # vv Rotate logic to continuously rotate based on angle and shortest length
                     rotatetiny = self.rotatespeed * dt  # rotate little by little according to time
                     if self.new_angle > self.angle:  # rotate to angle more than the current one
                         if self.rotatecal > 180:  # rotate with the smallest angle direction
                             self.angle -= rotatetiny
                             self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.rotatecheck <= 0:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                         else:
                             self.angle += rotatetiny
-                            if self.angle > self.new_angle: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.angle > self.new_angle:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     elif self.new_angle < self.angle:  # rotate to angle less than the current one
                         if self.rotatecal > 180:  # rotate with the smallest angle direction
                             self.angle += rotatetiny
                             self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.rotatecheck <= 0:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                         else:
                             self.angle -= rotatetiny
-                            if self.angle < self.new_angle: self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                            if self.angle < self.new_angle:
+                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                    # ^^ End rotate tiny
+
                     self.set_subunit_target()  # generate new pos related to side
+
                 elif self.moverotate and self.angle == self.new_angle:  # Finish
                     self.moverotate = False
                     if self.rotateonly is False:  # continue moving to base_target after finish rotate
@@ -791,7 +798,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 else:
                     self.die(self.maingame)
 
-                self.maingame.setuparmyicon()  # reset army icon (remove dead one)
+                self.maingame.setup_armyicon()  # reset army icon (remove dead one)
                 self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
                                               [0, 1])  # put destroyed event in war and army log
 
@@ -846,7 +853,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.command_target = self.base_target
             self.new_angle = self.setrotate()
 
-            if revertmove:  ## Revert subunit without rotate, cannot run in this state
+            if revertmove:  # revert subunit without rotate, cannot run in this state
                 self.revertmove()
                 # if runcommand or self.runtoggle:
                 #     self.state -= 1
@@ -892,11 +899,13 @@ class Unitarmy(pygame.sprite.Sprite):
             self.range_combat_check = False
 
             # register user keyboard
-            if keystate[pygame.K_LCTRL]: self.forced_melee = True
-            if keystate[pygame.K_LALT]: self.attack_place = True
+            if keystate[pygame.K_LCTRL]:
+                self.forced_melee = True
+            if keystate[pygame.K_LALT]:
+                self.attack_place = True
 
             if self.state != 100:
-                if mouse_right and mouse_pos[0] >= 1 and mouse_pos[0] < 998 and mouse_pos[1] >= 1 and mouse_pos[1] < 998:
+                if mouse_right and 1 <= mouse_pos[0] < 998 and 1 <= mouse_pos[1] < 998:
                     if self.state in (10, 96) and whomouseover is None:
                         self.processretreat(mouse_pos)  # retreat
                     else:
@@ -974,9 +983,9 @@ class Unitarmy(pygame.sprite.Sprite):
         self.penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[
             self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
         if self.penetrate > 1:
-            self.penetrate = 1  # melee penetrate cannot be higher than 1
+            self.penetrate = 1  # melee melee_penetrate cannot be higher than 1
         elif self.penetrate < 0:
-            self.penetrate = 0  # melee penetrate cannot be lower than 0
+            self.penetrate = 0  # melee melee_penetrate cannot be lower than 0
         self.rangedmg = self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]  # dmg for range
         self.rangepenetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
         self.magazinesize = self.weapon_list.weapon_list[self.rangeweapon[0]][6]  # can shoot how many time before have to reload
@@ -986,9 +995,9 @@ class Unitarmy(pygame.sprite.Sprite):
         self.trait = self.trait + self.weapon_list.weapon_list[self.meleeweapon[0]][4]  # apply trait from range weapon
         self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][4]  # apply trait from melee weapon
         if self.rangepenetrate > 1:
-            self.rangepenetrate = 1  # range penetrate cannot be higher than 1
+            self.rangepenetrate = 1  # range melee_penetrate cannot be higher than 1
         elif self.rangepenetrate < 0:
-            self.rangepenetrate = 0  # range penetrate cannot be lower than 0
+            self.rangepenetrate = 0  # range melee_penetrate cannot be lower than 0
         # ^ End weapon stat
 
         self.base_morale = int(stat[23] + int(self.stat_list.grade_list[self.grade][9]))  # morale with grade bonus
@@ -1110,8 +1119,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 if trait[32] != [0]:
                     for effect in trait[32]:
                         self.base_inflictstatus[effect] = trait[1]
-                # self.base_elemmelee =
-                # self.base_elemrange =
+                # self.base_elem_melee =
+                # self.base_elem_range =
 
             if 3 in self.trait:  # Varied training
                 self.base_attack *= (random.randint(80, 120) / 100)
@@ -1132,17 +1141,28 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.base_auth_penalty += 0.5
 
             # v Change trait variable
-            if 16 in self.trait: self.arcshot = True  # can shoot in arc
-            if 17 in self.trait: self.agileaim = True  # gain bonus accuracy when shoot while moving
-            if 18 in self.trait: self.shootmove = True  # can shoot and move at same time
-            if 29 in self.trait: self.ignore_chargedef = True  # ignore charge defence completely
-            if 30 in self.trait: self.ignore_def = True  # ignore defence completely
-            if 34 in self.trait: self.fulldef = True  # full effective defence for all side
-            if 33 in self.trait: self.backstab = True  # bonus on rear attack
-            if 47 in self.trait: self.flanker = True  # bonus on flank attack
-            if 55 in self.trait: self.oblivious = True  # more penalty on flank/rear defend
-            if 73 in self.trait: self.no_range_penal = True  # no range penalty
-            if 74 in self.trait: self.long_range_acc = True  # less range penalty
+            if 16 in self.trait:
+                self.arcshot = True  # can shoot in arc
+            if 17 in self.trait:
+                self.agileaim = True  # gain bonus accuracy when shoot while moving
+            if 18 in self.trait:
+                self.shootmove = True  # can shoot and move at same time
+            if 29 in self.trait:
+                self.ignore_chargedef = True  # ignore charge defence completely
+            if 30 in self.trait:
+                self.ignore_def = True  # ignore defence completely
+            if 34 in self.trait:
+                self.fulldef = True  # full effective defence for all side
+            if 33 in self.trait:
+                self.backstab = True  # bonus on rear attack
+            if 47 in self.trait:
+                self.flanker = True  # bonus on flank attack
+            if 55 in self.trait:
+                self.oblivious = True  # more penalty on flank/rear defend
+            if 73 in self.trait:
+                self.no_range_penal = True  # no range penalty
+            if 74 in self.trait:
+                self.long_range_acc = True  # less range penalty
 
             if 111 in self.trait:
                 self.unbreakable = True  # always unbreakable

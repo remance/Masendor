@@ -12,12 +12,12 @@ import pygame.freetype
 
 """This file contains fuctions of various purposes"""
 
-## Default game mechanic value
+# Default game mechanic value
 
 battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier,
 
 
-## Data Loading gamescript
+# Data Loading gamescript
 
 
 def makebarlist(listtodo, menuimage):
@@ -59,10 +59,10 @@ def game_intro(screen, clock, introoption):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        largeText = pygame.font.Font('freesansbold.ttf', 115)
-        TextSurf, TextRect = text_objects("Test Intro", largeText)
-        TextRect.center = (700, 600)
-        screen.blit(TextSurf, TextRect)
+        large_text = pygame.font.Font('freesansbold.ttf', 115)
+        text_surf, text_rect = text_objects("Test Intro", large_text)
+        text_rect.center = (700, 600)
+        screen.blit(text_surf, text_rect)
         pygame.display.update()
         clock.tick(60)
         timer += 1
@@ -97,7 +97,7 @@ def load_images(subfolder=None, loadorder=True, returnorder=False):
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
     else:  # load every file
-        loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  ## read all file
+        loadorderfile = [f for f in os.listdir(dirpath) if f.endswith('.' + "png")]  # read all file
         loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
         for file in loadorderfile:
             imgs.append(load_image(dirpath + "/" + file))
@@ -118,8 +118,8 @@ def load_game_data(game):
     main_dir = main.main_dir
     SCREENRECT = main.SCREENRECT
     Soundvolume = main.Soundvolume
-    from gamescript import gamemap, gamelorebook, gameweather, gameunitstat, gameui, gamefaction, gameunit, gamesubunit, rangeattack, gamemenu, gamepopup, gamedrama, \
-        gameunitedit
+    from gamescript import gamemap, gamelorebook, gameweather, gameunitstat, gameui, gamefaction, gameunit, \
+        gamesubunit, rangeattack, gamemenu, gamepopup, gamedrama, gameunitedit
 
     # v Craete feature terrain modifier
     game.featuremod = {}
@@ -139,7 +139,7 @@ def load_game_data(game):
                         if i != "":
                             row[n] = float(i) / 100
                         else:  # empty row assign 1.0 default
-                            i = 1.0
+                            row[n] = 1.0
 
                     elif i.isdigit() or "-" in i:  # modifer bonus (including negative) in other column
                         row[n] = int(i)
@@ -224,17 +224,17 @@ def load_game_data(game):
     mapfolder = Path(main_dir + '/data/ruleset/' + game.rulesetfolder + '/map')
     subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
 
-    for index, map in enumerate(subdirectories):
-        if "custom" in str(map):  # remove custom from this folder list to load
+    for index, filemap in enumerate(subdirectories):
+        if "custom" in str(filemap):  # remove custom from this folder list to load
             subdirectories.pop(index)
             break
 
     game.maplist = []  # map name list for map selection list
     game.mapfoldername = []  # folder for reading later
 
-    for map in subdirectories:
-        game.mapfoldername.append(str(map).split("\\")[-1])
-        with open(str(map) + "/info.csv", encoding="utf-8", mode="r") as unitfile:
+    for filemap in subdirectories:
+        game.mapfoldername.append(str(filemap).split("\\")[-1])
+        with open(str(filemap) + "/info.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "name":
@@ -249,9 +249,9 @@ def load_game_data(game):
     game.mapcustomlist = []
     game.mapcustomfoldername = []
 
-    for map in subdirectories:
-        game.mapcustomfoldername.append(str(map).split("\\")[-1])
-        with open(str(map) + "/info.csv", encoding="utf-8", mode="r") as unitfile:
+    for filemap in subdirectories:
+        game.mapcustomfoldername.append(str(filemap).split("\\")[-1])
+        with open(str(filemap) + "/info.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "name":
@@ -356,7 +356,7 @@ def load_game_data(game):
 
     imgs = load_images(['ui', 'lorebook_ui'], loadorder=False)
     game.lorebook = gamelorebook.Lorebook(imgs[0])  # encyclopedia sprite
-    game.lorenamelist = gamelorebook.Subsection_list(game.lorebook.rect.topleft, imgs[1])
+    game.lorenamelist = gamelorebook.SubsectionList(game.lorebook.rect.topleft, imgs[1])
 
     imgs = load_images(['ui', 'lorebook_ui', 'button'], loadorder=False)
     for index, img in enumerate(imgs):
@@ -409,8 +409,8 @@ def load_game_data(game):
 
     # Popup Ui
     imgs = load_images(['ui', 'popup_ui', 'terraincheck'], loadorder=False)
-    gamepopup.Terrainpopup.images = imgs
-    gamepopup.Terrainpopup.SCREENRECT = SCREENRECT
+    gamepopup.TerrainPopup.images = imgs
+    gamepopup.TerrainPopup.SCREENRECT = SCREENRECT
     imgs = load_images(['ui', 'popup_ui', 'dramatext'], loadorder=False)
     gamedrama.Textdrama.images = imgs
 
@@ -425,7 +425,7 @@ def load_game_data(game):
 
     # Right top bar ui that show rough information of selected battalions
     game.gameui = [
-        gameui.Gameui(X=SCREENRECT.width - topimage[0].get_size()[0] / 2, Y=topimage[0].get_size()[1] / 2, image=topimage[0],
+        gameui.Gameui(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                       icon=iconimage, uitype="topbar")]
     game.gameui[0].options1 = game.statetext
 
@@ -434,17 +434,17 @@ def load_game_data(game):
 
     # Left top command ui with leader and parentunit behavious button
     iconimage = load_images(['ui', 'battle_ui', 'commandbar_icon'])
-    game.gameui.append(gameui.Gameui(X=topimage[1].get_size()[0] / 2, Y=(topimage[1].get_size()[1] / 2) + game.armyselector.image.get_height(),
+    game.gameui.append(gameui.Gameui(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.armyselector.image.get_height(),
                                      image=topimage[1], icon=iconimage,
                                      uitype="commandbar"))
 
     # Subunit information card ui
     game.gameui.append(
-        gameui.Gameui(X=SCREENRECT.width - topimage[2].get_size()[0] / 2, Y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
+        gameui.Gameui(x=SCREENRECT.width - topimage[2].get_size()[0] / 2, y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
                       image=topimage[2], icon="", uitype="unitcard"))
     game.gameui[2].featurelist = game.featurelist  # add terrain feature list name to subunit card
 
-    game.gameui.append(gameui.Gameui(X=SCREENRECT.width - topimage[5].get_size()[0] / 2, Y=topimage[0].get_size()[1] * 4,
+    game.gameui.append(gameui.Gameui(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
                                      image=topimage[5], icon="", uitype="armybox"))  # inspect ui that show subnit in selected parentunit
     # v Subunit shown in inspect ui
     width, height = game.inspectuipos[0], game.inspectuipos[1]
@@ -471,23 +471,23 @@ def load_game_data(game):
     game.scaleui = gameui.Scaleui(game.timeui.rect.bottomleft, image)
 
     # Button related to subunit card and command
-    game.buttonui = [gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y + 10, topimage[3], 0),  # subunit card description button
-                     gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y - 70, topimage[4], 1),  # subunit card stat button
-                     gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y - 30, topimage[7], 2),  # subunit card skill button
-                     gameui.Uibutton(game.gameui[2].X - 152, game.gameui[2].Y + 50, topimage[22], 3),  # subunit card equipment button
-                     gameui.Uibutton(game.gameui[0].X - 206, game.gameui[0].Y - 1, topimage[6], 1),  # army inspect open/close button
-                     gameui.Uibutton(game.gameui[1].X - 115, game.gameui[1].Y + 26, topimage[8], 0),  # split by middle coloumn button
-                     gameui.Uibutton(game.gameui[1].X - 115, game.gameui[1].Y + 56, topimage[9], 1),  # split by middle row button
-                     gameui.Uibutton(game.gameui[1].X + 100, game.gameui[1].Y + 56, topimage[14], 1)]  # decimation button
+    game.buttonui = [gameui.Uibutton(game.gameui[2].x - 152, game.gameui[2].y + 10, topimage[3], 0),  # subunit card description button
+                     gameui.Uibutton(game.gameui[2].x - 152, game.gameui[2].y - 70, topimage[4], 1),  # subunit card stat button
+                     gameui.Uibutton(game.gameui[2].x - 152, game.gameui[2].y - 30, topimage[7], 2),  # subunit card skill button
+                     gameui.Uibutton(game.gameui[2].x - 152, game.gameui[2].y + 50, topimage[22], 3),  # subunit card equipment button
+                     gameui.Uibutton(game.gameui[0].x - 206, game.gameui[0].y - 1, topimage[6], 1),  # army inspect open/close button
+                     gameui.Uibutton(game.gameui[1].x - 115, game.gameui[1].y + 26, topimage[8], 0),  # split by middle coloumn button
+                     gameui.Uibutton(game.gameui[1].x - 115, game.gameui[1].y + 56, topimage[9], 1),  # split by middle row button
+                     gameui.Uibutton(game.gameui[1].x + 100, game.gameui[1].y + 56, topimage[14], 1)]  # decimation button
 
     # Behaviour button that once click switch to other mode for subunit behaviour
-    game.switch_button = [gameui.Switchuibutton(game.gameui[1].X - 40, game.gameui[1].Y + 96, topimage[10:14]),  # skill condition button
-                          gameui.Switchuibutton(game.gameui[1].X - 80, game.gameui[1].Y + 96, topimage[15:17]),  # fire at will button
-                          gameui.Switchuibutton(game.gameui[1].X, game.gameui[1].Y + 96, topimage[17:20]),  # behaviour button
-                          gameui.Switchuibutton(game.gameui[1].X + 40, game.gameui[1].Y + 96, topimage[20:22]),  # shoot range button
-                          gameui.Switchuibutton(game.gameui[1].X - 125, game.gameui[1].Y + 96, topimage[35:38]),  # arcshot button
-                          gameui.Switchuibutton(game.gameui[1].X + 80, game.gameui[1].Y + 96, topimage[38:40]),  # toggle run button
-                          gameui.Switchuibutton(game.gameui[1].X + 120, game.gameui[1].Y + 96, topimage[40:43])]  # toggle melee mode
+    game.switch_button = [gameui.Switchuibutton(game.gameui[1].x - 40, game.gameui[1].y + 96, topimage[10:14]),  # skill condition button
+                          gameui.Switchuibutton(game.gameui[1].x - 80, game.gameui[1].y + 96, topimage[15:17]),  # fire at will button
+                          gameui.Switchuibutton(game.gameui[1].x, game.gameui[1].y + 96, topimage[17:20]),  # behaviour button
+                          gameui.Switchuibutton(game.gameui[1].x + 40, game.gameui[1].y + 96, topimage[20:22]),  # shoot range button
+                          gameui.Switchuibutton(game.gameui[1].x - 125, game.gameui[1].y + 96, topimage[35:38]),  # arcshot button
+                          gameui.Switchuibutton(game.gameui[1].x + 80, game.gameui[1].y + 96, topimage[38:40]),  # toggle run button
+                          gameui.Switchuibutton(game.gameui[1].x + 120, game.gameui[1].y + 96, topimage[40:43])]  # toggle melee mode
 
     game.eventlog = gameui.Eventlog(topimage[23], (0, SCREENRECT.height))
 
@@ -526,10 +526,10 @@ def load_game_data(game):
     gameui.Selectedsquad.image = topimage[-1]  # squad border image always the last one
     game.inspectselectedborder = gameui.Selectedsquad((15000, 15000))  # yellow border on selected subnit in inspect ui
     game.mainui.remove(game.inspectselectedborder)  # remove subnit border sprite from main menu drawer
-    game.terraincheck = gamepopup.Terrainpopup()  # popup box that show terrain information when right click on map
-    game.button_name_popup = gamepopup.Onelinepopup()  # popup box that show button name when mouse over
-    game.leaderpopup = gamepopup.Onelinepopup()  # popup box that show leader name when mouse over
-    game.effectpopup = gamepopup.Effecticonpopup()  # popup box that show skill/trait/status name when mouse over
+    game.terraincheck = gamepopup.TerrainPopup()  # popup box that show terrain information when right click on map
+    game.button_name_popup = gamepopup.OnelinePopup()  # popup box that show button name when mouse over
+    game.leaderpopup = gamepopup.OnelinePopup()  # popup box that show leader name when mouse over
+    game.effectpopup = gamepopup.EffecticonPopup()  # popup box that show skill/trait/status name when mouse over
 
     gamedrama.Textdrama.SCREENRECT = SCREENRECT
     game.textdrama = gamedrama.Textdrama()  # messege at the top of screen that show up for important event
@@ -561,8 +561,8 @@ def load_game_data(game):
 
     sliderimage = load_images(['ui', 'battlemenu_ui', 'slider'], loadorder=False)
     game.escslidermenu = [
-        gamemenu.Escslidermenu(sliderimage[0], sliderimage[1:3], (menurectcenter0 * 1.1, menurectcenter1), Soundvolume,
-                               0)]
+        gamemenu.Escslider(sliderimage[0], sliderimage[1:3], (menurectcenter0 * 1.1, menurectcenter1), Soundvolume,
+                           0)]
     game.escvaluebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battle_menu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
     # ^ End esc menu objects
 
@@ -574,7 +574,8 @@ def csv_read(file, subfolder=[], outputtype=0, defaultmaindir=True):
     if defaultmaindir:
         main_dir = main.main_dir
     returnoutput = {}
-    if outputtype == 1: returnoutput = []
+    if outputtype == 1:
+        returnoutput = []
 
     folderlist = ""
     for folder in subfolder:
@@ -607,11 +608,7 @@ def editconfig(section, option, value, filename, config):
     with open(filename, 'w') as configfile:
         config.write(configfile)
 
-
-## mainmenu related script
-
-
-## Other battle gamescript
+# Other battle gamescript
 
 def convert_weather_time(weatherevent):
     for index, item in enumerate(weatherevent):
@@ -674,9 +671,9 @@ def effecticonblit(self):
 
 
 def countdownskillicon(self):
-    """count down timer on skill icon for activate and cooldown time"""
+    """Count down timer on skill icon for activate and cooldown time"""
     for skill in self.skill_icon:
-        if skill.type == 1:  # only do skill icon not trait
+        if skill.icontype == 1:  # only do skill icon not trait
             cd = 0
             activetime = 0
             if skill.gameid in self.gameui[2].value2[2]:
@@ -691,7 +688,7 @@ def countdownskillicon(self):
     #     effect.iconchange(cd, 0)
 
 
-## Battle Start related gamescript
+# Battle Start related gamescript
 
 def addarmy(squadlist, position, gameid, colour, leader, leaderstat, unitstat, control, coa, command, startangle, starthp, startstamina, team):
     """Create batalion object into the battle and leader of the parentunit"""
@@ -783,8 +780,7 @@ def unitsetup(maingame):
 
     unitfile.close()
 
-
-## Battle related gamescript
+# Battle related gamescript
 
 def setrotate(self, settarget=None):
     """set base_target and new angle for sprite rotation"""
@@ -823,12 +819,12 @@ def rotationxy(self, origin, point, angle):
 
 def losscal(attacker, defender, hit, defense, type, defside=None):
     """Calculate dmg, type 0 is melee attack and will use attacker subunit stat,
-    type that is not 0 will use object stat instead (mostly used for range attack)"""
+    type that is not 0 will use the type object stat instead (mostly used for range attack)"""
     who = attacker
     target = defender
 
     heightadventage = who.height - target.height
-    if type == 1: heightadventage = int(heightadventage / 2)  # Range attack use less height advantage
+    if type != 0: heightadventage = int(heightadventage / 2)  # Range attack use less height advantage
     hit += heightadventage
 
     if defense < 0 or who.ignore_def:  # Ignore def trait
@@ -867,14 +863,14 @@ def losscal(attacker, defender, hit, defense, type, defside=None):
                 chargedefcal = 0
             dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
 
-        dmg = dmg * ((100 - (target.armour * who.penetrate)) / 100) * combatscore
+        dmg = dmg * ((100 - (target.armour * who.melee_penetrate)) / 100) * combatscore
 
     else:  # Range Damage
         dmg = type.dmg * ((100 - (target.armour * type.penetrate)) / 100) * combatscore
 
     leaderdmg = dmg
     unitdmg = (dmg * who.troopnumber) + leaderdmgbonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
-    if (who.anti_inf and target.type in (1, 2)) or (who.anti_cav and target.type in (4, 5, 6, 7)):  # Anti trait dmg bonus
+    if (who.anti_inf and target.unit_type in (1, 2)) or (who.anti_cav and target.unit_type in (4, 5, 6, 7)):  # Anti trait dmg bonus
         unitdmg = unitdmg * 1.25
     # if type == 0: # melee do less dmg per hit because the combat happen more frequently than range
     #     unitdmg = unitdmg / 20
@@ -928,8 +924,8 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
         receiver.red_corner = True
     # ^ End red corner
 
-    if attacker.elemmelee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
-        receiver.elem_count[attacker.elemmelee - 1] += round(final_dmg * (100 - receiver.elem_res[attacker.elemmelee - 1] / 100))
+    if attacker.elem_melee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
+        receiver.elem_count[attacker.elem_melee - 1] += round(final_dmg * (100 - receiver.elem_res[attacker.elem_melee - 1] / 100))
 
     attacker.base_morale += round((final_moraledmg / 5))  # recover some morale when deal morale dmg to enemy
 
@@ -1074,7 +1070,7 @@ def changeleader(self, type):
         self.unit_leader = False
 
 
-def add_new_unit(battle, who):
+def add_new_unit(battle, who, addarmy=True):
     from gamescript import gameunit
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
@@ -1105,8 +1101,9 @@ def add_new_unit(battle, who):
     for subunit in who.subunit_sprite:
         subunit.gamestart(subunit.zoom)
 
-    battle.allunitlist.append(who)
-    battle.allunitindex.append(who.gameid)
+    if addarmy:
+        battle.allunitlist.append(who)
+        battle.allunitindex.append(who.gameid)
 
     battle.troopnumbersprite.add(gameunit.Troopnumber(who))
 
@@ -1159,11 +1156,14 @@ def splitunit(battle, who, how):
     else:  # split by column
         newarmysubunit = np.array_split(who.armysubunit, 2, axis=1)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2, axis=1)[0]
-        newpos = pygame.Vector2(who.base_pos[0] + (who.base_width_box / 2), who.base_pos[1])
+        newpos = pygame.Vector2(who.base_pos[0] + (who.base_width_box / 3.3), who.base_pos[1]) # 3.3 because 2 make new unit position overlap
         newpos = who.rotationxy(who.base_pos, newpos, who.radians_angle)  # new unit pos (right)
         base_pos = pygame.Vector2(who.base_pos[0] - (who.base_width_box / 2), who.base_pos[1])
         who.base_pos = who.rotationxy(who.base_pos, base_pos, who.radians_angle)  # new position for original parentunit (left)
         who.base_width_box /= 2
+        frontpos = (who.base_pos[0], (who.base_pos[1] - who.base_height_box))  # find new front position of unit
+        who.front_pos = who.rotationxy(who.base_pos, frontpos, who.radians_angle)
+        who.set_target(who.front_pos)
 
     if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move first sub-general leader subunit if it not in new one
         who.armysubunit, newarmysubunit, newposition = move_leader_subunit(who.leader[1], who.armysubunit, newarmysubunit)
@@ -1231,7 +1231,7 @@ def splitunit(battle, who, how):
     who.teamcommander = teamcommander
     who.leader = originalleader
 
-    add_new_unit(battle, who)
+    add_new_unit(battle, who, False)
     # ^ End change original unit
 
     # v start making new parentunit

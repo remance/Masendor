@@ -5,11 +5,11 @@ import pygame.freetype
 class Weather:
     images = []
 
-    def __init__(self, timeui, type, level, weatherlist):
-        self.type = type
-        stat = weatherlist[type]
-        self.level = level  ## Weather level 0 = Light, 1 = Normal, 2 = Strong
-        if self.level > 2:  ## In case adding higher level number by mistake
+    def __init__(self, timeui, weathertype, level, weatherlist):
+        self.weathertype = weathertype
+        stat = weatherlist[weathertype]
+        self.level = level  # weather level 0 = Light, 1 = Normal, 2 = Strong
+        if self.level > 2:  # in case adding higher level number by mistake
             self.level = 2
 
         self.meleeatk_buff = stat[1] * (self.level + 1)
@@ -34,7 +34,7 @@ class Weather:
         self.spawnangle = stat[20]
         self.speed = stat[21] * (self.level + 1)
 
-        image = self.images[(self.type * 3) + self.level]
+        image = self.images[(self.weathertype * 3) + self.level]
         cropped = pygame.Surface((image.get_width(), image.get_height()))
         cropped.blit(timeui.image_original, (0, 0), (0, 0, 80, 80))
         croprect = cropped.get_rect(topleft=(0, 0))
@@ -97,7 +97,7 @@ class Specialeffect(pygame.sprite.Sprite):
             move = move * self.speed * dt
             if move.length() <= move_length:
                 self.pos += move
-                if timer < self.endtime and self.pos[0] > 0:  ## Do not go beyond 0 if weather event not end yet
+                if timer < self.endtime and self.pos[0] > 0:  # do not go beyond 0 if weather event not end yet
                     self.rect.midleft = list(int(v) for v in self.pos)
                 else:
                     self.rect.midleft = pygame.Vector2(0, self.pos[1])

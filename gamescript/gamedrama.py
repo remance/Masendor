@@ -21,13 +21,13 @@ class Textdrama(pygame.sprite.Sprite):
         self.slowdrama(self.queue[0])  # Process the first item in list
         self.queue = self.queue[1:]  # Delete already processed item
 
-    def slowdrama(self, input):
+    def slowdrama(self, textinput):
         """Create text and image to play animation"""
         self.textblit = False
         self.currentlength = 20  # Current unfolded length start at 20
-        self.textinput = input
+        self.textinput = textinput
         self.leftcornerrect = self.leftcorner.get_rect(topleft=(0, 0))  # The starting point
-        self.textsurface = self.font.render(self.textinput, 1, (0, 0, 0))
+        self.textsurface = self.font.render(self.textinput, True, (0, 0, 0))
         self.textrect = self.textsurface.get_rect(topleft=(30, 1))
         self.image = pygame.Surface((self.textrect.width + 70, self.textrect.height), pygame.SRCALPHA)
         self.image.blit(self.leftcorner, self.leftcornerrect)  # start animation with the left corner
