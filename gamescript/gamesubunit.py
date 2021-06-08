@@ -23,7 +23,7 @@ class Subunit(pygame.sprite.Sprite):
     stat_list = None
     rotationxy = gamelongscript.rotationxy
     setrotate = gamelongscript.setrotate
-    changeleader = gamelongscript.changeleader
+    changeleader = gamelongscript.change_leader
     maxzoom = 10  # max zoom allow
 
     # use same position as subunit front index 0 = front, 1 = left, 2 = rear, 3 = right

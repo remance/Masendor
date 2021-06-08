@@ -560,9 +560,8 @@ def load_game_data(game):
         gamemenu.Escbutton(buttonimage, (menurectcenter0 + 150, menurectcenter1 + 70), text="Cancel", size=14)]
 
     sliderimage = load_images(['ui', 'battlemenu_ui', 'slider'], loadorder=False)
-    game.escslidermenu = [
-        gamemenu.Escslider(sliderimage[0], sliderimage[1:3], (menurectcenter0 * 1.1, menurectcenter1), Soundvolume,
-                           0)]
+    game.escslidermenu = [gamemenu.Escslider(sliderimage[0], sliderimage[1:3],
+                                             (menurectcenter0 * 1.1, menurectcenter1), Soundvolume, 0)]
     game.escvaluebox = [gamemenu.Escvaluebox(sliderimage[3], (game.battle_menu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
     # ^ End esc menu objects
 
@@ -618,11 +617,11 @@ def convert_weather_time(weatherevent):
 
 
 def traitskillblit(self):
+    """For blitting skill and trait icon into subunit info ui"""
     from gamescript import gameui
     import main
     SCREENRECT = main.SCREENRECT
 
-    """For blitting skill and trait icon into subunit info ui"""
     position = self.gameui[2].rect.topleft
     position = [position[0] + 70, position[1] + 60]  # start position
     startrow = position[0]
@@ -1029,7 +1028,7 @@ def die(who, battle, moralehit=True):
     who.got_killed = True
 
 
-def changeleader(self, type):
+def change_leader(self, type):
     """Leader change subunit or gone/die, type can be "die" or "broken" """
     checkstate = [100]
     if type == "broken":
@@ -1075,18 +1074,18 @@ def add_new_unit(battle, who, addarmy=True):
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
     foundcount = 0
-    for row in range(0, 8):
-        for column in range(0, 8):
-            try:
-                if who.armysubunit[row][column] != 0:
-                    who.subunit_sprite_array[row][column] = who.subunit_sprite[foundcount]
-                    foundcount += 1
-                    who.subunit_sprite[foundcount].armypos = (
-                    who.subunit_position_list[foundcount][0] / 10, who.subunit_position_list[foundcount][1] / 10)  # position in parentunit sprite
-                else:
-                    who.subunit_sprite_array[row][column] = None
-            except Exception:
-                pass
+    for row in range(0, len(who.armysubunit)):
+        for column in range(0, len(who.armysubunit[0])):
+            # try:
+            if who.armysubunit[row][column] != 0:
+                who.subunit_sprite_array[row][column] = who.subunit_sprite[foundcount]
+                who.subunit_sprite[foundcount].armypos = (who.subunit_position_list[foundcount][0] / 10,
+                                                          who.subunit_position_list[foundcount][1] / 10)  # position in parentunit sprite
+                foundcount += 1
+            else:
+                who.subunit_sprite_array[row][column] = None
+            # except Exception:
+            #     pass
     # ^ End generate subunit array
 
     for index, subunit in enumerate(who.subunit_sprite):  # reset leader subunitpos
@@ -1112,15 +1111,14 @@ def move_leader_subunit(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
     """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit), alreadypick is list of position need to be skipped"""
     replace = [np.where(oldarmysubunit == leader.subunit.gameid)[0][0],
                np.where(oldarmysubunit == leader.subunit.gameid)[1][0]]  # grab old array position of subunit
-    newrow = int(len(newarmysubunit) / 2)  # set up new row subunit will be place in at the middle at the start
-    newplace = int(len(newarmysubunit[newrow]) / 2)  # setup new column position
+    newrow = int((len(newarmysubunit)-1) / 2)  # set up new row subunit will be place in at the middle at the start
+    newplace = int((len(newarmysubunit[newrow])-1) / 2)  # setup new column position
     placedone = False  # finish finding slot to place yet
-    newarmysubunitlen = len(newarmysubunit[newrow])  # get size of row in new armysubunit
 
     while placedone is False:
-        if leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace] != 0:
+        if leader.subunit.parentunit.armysubunit.flat[newrow * newplace] != 0:
             for subunit in leader.subunit.parentunit.subunit_sprite:
-                if subunit.gameid == leader.subunit.parentunit.armysubunit.flat[(newrow * newarmysubunitlen) + newplace]:
+                if subunit.gameid == leader.subunit.parentunit.armysubunit.flat[newrow * newplace]:
                     if subunit.leader is not None or (newrow, newplace) in alreadypick:
                         newplace += 1
                         if newplace > len(newarmysubunit[newrow]) - 1:  # find new column
@@ -1136,8 +1134,8 @@ def move_leader_subunit(leader, oldarmysubunit, newarmysubunit, alreadypick=[]):
 
     oldarmysubunit[replace[0]][replace[1]] = newarmysubunit[newrow][newplace]
     newarmysubunit[newrow][newplace] = leader.subunit.gameid
-    newpostion = (newplace, newrow)
-    return oldarmysubunit, newarmysubunit, newpostion
+    newposition = (newplace, newrow)
+    return oldarmysubunit, newarmysubunit, newposition
 
 
 def splitunit(battle, who, how):
@@ -1165,14 +1163,16 @@ def splitunit(battle, who, how):
         who.front_pos = who.rotationxy(who.base_pos, frontpos, who.radians_angle)
         who.set_target(who.front_pos)
 
-    if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move first sub-general leader subunit if it not in new one
+    if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move the left sub-general leader subunit if it not in new one
         who.armysubunit, newarmysubunit, newposition = move_leader_subunit(who.leader[1], who.armysubunit, newarmysubunit)
-        who.leader[1].subunitpos = newposition[0] + (newposition[1] * 8)
+        who.leader[1].subunitpos = newposition[0] * newposition[1]
+        who.leader[1].subunit.unit_leader = True # make the sub-unit of this leader a main leader sub-unit
 
     alreadypick = []
     for leader in (who.leader[0], who.leader[2], who.leader[3]):  # move other leader subunit to original one if they are in new one
         if leader.subunit.gameid not in who.armysubunit:
             newarmysubunit, who.armysubunit, newposition = move_leader_subunit(leader, newarmysubunit, who.armysubunit, alreadypick)
+            leader.subunitpos = newposition[0] * newposition[1]
             alreadypick.append(newposition)
 
     newleader = [who.leader[1], gameleader.Leader(1, 0, 1, who, battle.leader_stat), gameleader.Leader(1, 0, 2, who, battle.leader_stat),
@@ -1191,19 +1191,24 @@ def splitunit(battle, who, how):
             height += who.imgsize[1]
             squadnum = 0
 
-    subunitsprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
-    newsquadsprite = []
-
     # v Sort so the new leader subunit position match what set before
-    for squad in subunitsprite:
-        if squad.gameid in newarmysubunit.flat:
-            newsquadsprite.append(squad)
+    subunitsprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
+    new_subunit_sprite = []
+    for thisid in newarmysubunit.flat:
+        for subunit in subunitsprite:
+            if thisid == subunit.gameid:
+                new_subunit_sprite.append(subunit)
 
-    who.subunit_sprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in who.armysubunit.flat]
+    subunitsprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in who.armysubunit.flat]
+    who.subunit_sprite = []
+    for thisid in who.armysubunit.flat:
+        for subunit in subunitsprite:
+            if thisid == subunit.gameid:
+                who.subunit_sprite.append(subunit)
     # ^ End sort
 
-    # v Reset position in inspectui for both parentunit
-    for sprite in (who.subunit_sprite, newsquadsprite):
+    # v Reset position of sub-unit in inspectui for both old and new unit
+    for sprite in (who.subunit_sprite, new_subunit_sprite):
         width, height = 0, 0
         squadnum = 0
         for squad in sprite:
@@ -1247,7 +1252,7 @@ def splitunit(battle, who, how):
     whosearmy.add(newarmy)
     newarmy.teamcommander = teamcommander
     newarmy.leader = newleader
-    newarmy.subunit_sprite = newsquadsprite
+    newarmy.subunit_sprite = new_subunit_sprite
 
     for subunit in newarmy.subunit_sprite:
         subunit.parentunit = newarmy

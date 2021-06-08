@@ -14,7 +14,7 @@ If anyone is interested in similar game like this, there is also another interes
 
 The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
-Meaning: It is playable but still a bloody mess. More work to do.
+Meaning: The revision is looking good. Should be able to continue working on the main update again soon.
 
 Plan
 

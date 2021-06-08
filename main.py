@@ -1229,7 +1229,7 @@ try:  # for printing error log when error exception happen
                             for leaderlist in self.previewleaderlist:
                                 for leader in leaderlist:
                                     leader.subunit = None  # remove subunit link in leader
-                                    leader.changeleader(1, self.leader_stat)
+                                    leader.change_leader(1, self.leader_stat)
 
                             del self.currentweather
 
@@ -1294,7 +1294,7 @@ try:  # for printing error log when error exception happen
                                             if self.team1previewleader[leaderindex].subunit is not None:
                                                 self.team1previewleader[leaderindex].subunit.leader = None
 
-                                            self.team1previewleader[leaderindex].changeleader(item, self.leader_stat)
+                                            self.team1previewleader[leaderindex].change_leader(item, self.leader_stat)
 
                                             posindex = 0
                                             for slot in self.armybuildslot:  # can't use gameid here as none subunit not count in position check
@@ -1318,7 +1318,7 @@ try:  # for printing error log when error exception happen
                                         for leaderlist in self.previewleaderlist:
                                             for leader in leaderlist:
                                                 leader.subunit = None  # remove subunit link in leader
-                                                leader.changeleader(1, self.leader_stat)
+                                                leader.change_leader(1, self.leader_stat)
 
                                         # self.gameui[2].valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
                                         #                       changeoption=1)
@@ -1585,7 +1585,7 @@ try:  # for printing error log when error exception happen
                                                                     self.effecticonblit()
                                                                     self.countdownskillicon()
                                                             elif slot.name == "None" and slot.leader is not None:  # remove leader from none subunit if any
-                                                                slot.leader.changeleader(1, self.leader_stat)
+                                                                slot.leader.change_leader(1, self.leader_stat)
                                                                 slot.leader.subunit = None  # remove subunit link in leader
                                                                 slot.leader = None  # remove leader link in subunit
                                                                 self.previewauthority(self.leadernow, slot.armyid)
