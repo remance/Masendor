@@ -93,7 +93,7 @@ class Gameui(pygame.sprite.Sprite):
             self.fonthead.set_italic(True)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
             self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
-                               "Melee Defense: ", 'Range Defense: ', 'Armour: ', 'Speed: ', "Accuracy: ",
+                               "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
                                "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
             self.subunit_state = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)", 10: "Melee", 11: "Shoot",
                                   12: "Walk (S)", 13: "Run (S)", 95: "Disobey", 96: "Flee", 97: "Rest", 98: "Flee", 99: "Broken", 100: "Dead"}
@@ -103,10 +103,10 @@ class Gameui(pygame.sprite.Sprite):
                                  "Deep water"]  # terrain climate name
         self.image_original = self.image.copy()
 
-    def longtext(self, surface, text, pos, font, color=pygame.Color('black')):
+    def longtext(self, surface, text, pos, font, color=pygame.Color("black")):
         """Blit long text into seperate row of text"""
-        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
-        space = font.size(' ')[0]  # the width of a space
+        words = [word.split(" ") for word in text.splitlines()]  # 2D array where each row is a list of words
+        space = font.size(" ")[0]  # the width of a space
         maxwidth, maxheight = surface.get_size()
         x, y = pos
         for line in words:
@@ -469,14 +469,14 @@ class Eventlog(pygame.sprite.Sprite):
     def addeventlog(self, mapevent):
         self.mapevent = mapevent
         if self.mapevent != {}:  # Edit map based event
-            self.mapevent.pop('id')
+            self.mapevent.pop("id")
             for event in self.mapevent:
                 if type(self.mapevent[event][2]) == int:
                     self.mapevent[event][2] = [self.mapevent[event][2]]
                 elif "," in self.mapevent[event][2]:  # Change mode list to list here since csvread don't have that function
-                    self.mapevent[event][2] = [int(item) if item.isdigit() else item for item in self.mapevent[event][2].split(',')]
+                    self.mapevent[event][2] = [int(item) if item.isdigit() else item for item in self.mapevent[event][2].split(",")]
                 if self.mapevent[event][3] != "":  # change time string to time delta same reason as above
-                    newtime = datetime.datetime.strptime(self.mapevent[event][3], '%H:%M:%S').time()
+                    newtime = datetime.datetime.strptime(self.mapevent[event][3], "%H:%M:%S").time()
                     newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
                     self.mapevent[event][3] = newtime
                 else:

@@ -181,8 +181,8 @@ class Battle():
         self.playerteam = teamselected  # player selected team
 
         # v load the sound effects
-        # boom_sound = load_sound('boom.wav')
-        # shoot_sound = load_sound('car_door.wav')
+        # boom_sound = load_sound("boom.wav")
+        # shoot_sound = load_sound("car_door.wav")
         # ^ End load sound effect
 
         # v Random music played from list
@@ -190,8 +190,8 @@ class Battle():
             pygame.mixer = None
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
-            # musiclist = os.path.join(main_dir, 'data/sound/')
-            self.musiclist = glob.glob(main_dir + '/data/sound/music/*.mp3')
+            # musiclist = os.path.join(main_dir, "data/sound/")
+            self.musiclist = glob.glob(main_dir + "/data/sound/music/*.mp3")
             self.pickmusic = random.randint(1, 1)
             pygame.mixer.music.set_endevent(self.SONG_END)
             pygame.mixer.music.load(self.musiclist[self.pickmusic])
@@ -200,7 +200,7 @@ class Battle():
 
         # v Load weather schedule
         try:
-            self.weatherevent = csv_read('weather.csv', ["data", 'ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], 1)
+            self.weatherevent = csv_read("weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
             self.weatherevent = self.weatherevent[1:]
             gamelongscript.convert_weather_time(self.weatherevent)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -211,7 +211,7 @@ class Battle():
         # ^ End weather schedule
 
         try:  # get new map event for event log
-            mapevent = csv_read('eventlog.csv', ["data", 'ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], 0)
+            mapevent = csv_read("eventlog.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 0)
             gameui.Eventlog.mapevent = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list
@@ -238,7 +238,7 @@ class Battle():
         gamecamera.Camera.SCREENRECT = SCREENRECT
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
 
-        imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', self.mapselected], loadorder=False)
+        imgs = load_images(["ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], loadorder=False)
         self.battlemapbase.drawimage(imgs[0])
         self.battlemapfeature.drawimage(imgs[1])
         self.battlemapheight.drawimage(imgs[2])
@@ -713,17 +713,17 @@ class Battle():
 
                         # v FOR DEVELOPMENT DELETE LATER
                         elif event.key == pygame.K_1:
-                            self.textdrama.queue.append('Hello and Welcome to update video')
+                            self.textdrama.queue.append("Hello and Welcome to update video")
                         elif event.key == pygame.K_2:
-                            self.textdrama.queue.append('Showcase: New melee combat test')
+                            self.textdrama.queue.append("Showcase: New melee combat test")
                         elif event.key == pygame.K_3:
-                            self.textdrama.queue.append('Also add pathfind algorithm for melee combat')
+                            self.textdrama.queue.append("Also add pathfind algorithm for melee combat")
                         elif event.key == pygame.K_4:
-                            self.textdrama.queue.append('The combat mechanic will be much more dynamic')
+                            self.textdrama.queue.append("The combat mechanic will be much more dynamic")
                         elif event.key == pygame.K_5:
-                            self.textdrama.queue.append('Will take a while for everything to work again')
+                            self.textdrama.queue.append("Will take a while for everything to work again")
                         elif event.key == pygame.K_6:
-                            self.textdrama.queue.append('Current special effect still need rework')
+                            self.textdrama.queue.append("Current special effect still need rework")
                         elif event.key == pygame.K_n and self.last_selected is not None:
                             if whoinput.team == 1:
                                 self.allunitindex = whoinput.switchfaction(self.team1army, self.team2army, self.team1poslist, self.allunitindex,
@@ -1431,7 +1431,7 @@ class Battle():
                                 if button.text == "Confirm":  # confirm button, save the setting and close option menu
                                     self.oldsetting = self.mixervolume  # save mixer volume
                                     pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                    main.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)  # save to config file
+                                    main.editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini", config)  # save to config file
                                     self.battlemenu.changemode(0)  # go back to main esc menu
                                     self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
                                                          *self.escvaluebox)  # remove option menu sprite
@@ -1440,7 +1440,7 @@ class Battle():
                                 elif button.text == "Apply":  # apply button, save the setting
                                     self.oldsetting = self.mixervolume  # save mixer volume
                                     pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                    main.editconfig('DEFAULT', 'SoundVolume', str(slider.value), 'configuration.ini', config)  # save to config file
+                                    main.editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini", config)  # save to config file
 
                                 elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                                     self.mixervolume = self.oldsetting  # revert to old setting

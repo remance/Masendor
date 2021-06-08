@@ -36,7 +36,7 @@ class Inputui(pygame.sprite.Sprite):
 
 
 class Inputbox(pygame.sprite.Sprite):
-    def __init__(self, pos, width, text='', clickinput=False):
+    def __init__(self, pos, width, text="", clickinput=False):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
@@ -293,13 +293,13 @@ class Mapdescription(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
 
-    def longtext(self, surface, textlist, pos, font, color=pygame.Color('black')):
+    def longtext(self, surface, textlist, pos, font, color=pygame.Color("black")):
         """Blit long text into seperate row of text"""
         x, y = pos
-        if textlist[0] != '':  # in case no map description in info.csv
+        if textlist[0] != "":  # in case no map description in info.csv
             for text in textlist:
-                words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
-                space = font.size(' ')[0]  # the width of a space
+                words = [word.split(" ") for word in text.splitlines()]  # 2D array where each row is a list of words
+                space = font.size(" ")[0]  # the width of a space
                 maxwidth, maxheight = surface.get_size()
                 for line in words:
                     for word in line:
@@ -340,13 +340,13 @@ class Sourcedescription(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
 
-    def longtext(self, surface, textlist, pos, font, color=pygame.Color('black')):
+    def longtext(self, surface, textlist, pos, font, color=pygame.Color("black")):
         """Blit long text into seperate row of text"""
         x, y = pos
-        if textlist[0] != '':  # in case no map description in info.csv
+        if textlist[0] != "":  # in case no map description in info.csv
             for text in textlist:
-                words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
-                space = font.size(' ')[0]  # the width of a space
+                words = [word.split(" ") for word in text.splitlines()]  # 2D array where each row is a list of words
+                space = font.size(" ")[0]  # the width of a space
                 maxwidth, maxheight = surface.get_size()
                 for line in words:
                     for word in line:

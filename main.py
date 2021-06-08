@@ -26,20 +26,20 @@ try:  # for printing error log when error exception happen
 
     config = configparser.ConfigParser()
     try:
-        config.read_file(open('configuration.ini'))  # read config file
+        config.read_file(open("configuration.ini"))  # read config file
     except Exception:  # Create config file if not found with the default
         config = configparser.ConfigParser()
-        config['DEFAULT'] = {'screenwidth': screenWidth, 'screenheight': screenHeight, 'fullscreen': '0',
-                             'playername': 'Noname', 'soundvolume': '100.0', 'musicvolume': '0.0',
-                             'voicevolume': '0.0', 'maxfps': '60', 'ruleset': '1'}
-        with open('configuration.ini', 'w') as cf:
+        config["DEFAULT"] = {"screenwidth": screenWidth, "screenheight": screenHeight, "fullscreen": "0",
+                             "playername": "Noname", "soundvolume": "100.0", "musicvolume": "0.0",
+                             "voicevolume": "0.0", "maxfps": "60", "ruleset": "1"}
+        with open("configuration.ini", "w") as cf:
             config.write(cf)
-        config.read_file(open('configuration.ini'))
-    ScreenHeight = int(config['DEFAULT']['ScreenHeight'])
-    ScreenWidth = int(config['DEFAULT']['ScreenWidth'])
-    FULLSCREEN = int(config['DEFAULT']['Fullscreen'])
-    Soundvolume = float(config['DEFAULT']['SoundVolume'])
-    Profilename = str(config['DEFAULT']['playername'])
+        config.read_file(open("configuration.ini"))
+    ScreenHeight = int(config["DEFAULT"]["ScreenHeight"])
+    ScreenWidth = int(config["DEFAULT"]["ScreenWidth"])
+    FULLSCREEN = int(config["DEFAULT"]["Fullscreen"])
+    Soundvolume = float(config["DEFAULT"]["SoundVolume"])
+    Profilename = str(config["DEFAULT"]["playername"])
 
     SCREENRECT = Rect(0, 0, ScreenWidth, ScreenHeight)
     widthadjust = SCREENRECT.width / 1366
@@ -84,15 +84,15 @@ try:  # for printing error log when error exception happen
                 self.customarmypresetlist = {"New Preset": 0, **customarmypresetlist}
             except Exception:
                 with open("profile/armypreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=',',
-                                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    filewriter = csv.writer(csvfile, delimiter=",",
+                                            quotechar="|", quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow(["presetname", "armyline2", "armyline3", "armyline4", "armyline15", "armyline6", "armyline7", "armyline8",
                                          "leader", "leaderposition", "faction"])  # create header
                     csvfile.close()
 
                 self.customarmypresetlist = {}
 
-            # if not os.path.exists('\customunit'): # make custom subunit folder if not existed
+            # if not os.path.exists("\customunit"): # make custom subunit folder if not existed
 
             self.enactment = True
             self.mapsource = 0  # current selected map source
@@ -109,7 +109,7 @@ try:  # for printing error log when error exception happen
             # ^ End set display
 
             # v Decorate the game window
-            # icon = load_image('sword.jpg')
+            # icon = load_image("sword.jpg")
             # icon = pygame.transform.scale(icon, (32, 32))
             # pygame.display.set_icon(icon)
             # ^ End decorate
@@ -155,8 +155,8 @@ try:  # for printing error log when error exception happen
 
             # battle object group
             self.battlecamera = pygame.sprite.LayeredUpdates()  # layer drawer game camera, all image pos should be based on the map not screen
-            # the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = , 4 = subunit,
-            # 5 = sub-subunit, 6 = flying parentunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
+            # the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = , 4 = subunit, 5 = sub-subunit,
+            # 6 = flying parentunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
             self.battleui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
             self.unit_updater = pygame.sprite.Group()  # updater for parentunit objects
@@ -250,7 +250,7 @@ try:  # for printing error log when error exception happen
             gameui.Uibutton.containers = self.lorebuttonui
 
             gameunitedit.Previewbox.main_dir = main_dir
-            img = load_image('effect.png', 'map')  # map special effect image
+            img = load_image("effect.png", "map")  # map special effect image
             gameunitedit.Previewbox.effectimage = img
             gameunitedit.Previewbox.containers = self.battlepreview
             gameunitedit.Filterbox.containers = self.filterbox
@@ -309,7 +309,7 @@ try:  # for printing error log when error exception happen
             game_intro(self.screen, self.clock, False)  # run game intro
 
             # v Background image
-            bgdtile = load_image('background.jpg', 'ui\mainmenu_ui').convert()
+            bgdtile = load_image("background.jpg", "ui\\mainmenu_ui").convert()
             bgdtile = pygame.transform.scale(bgdtile, SCREENRECT.size)
             self.background = pygame.Surface(SCREENRECT.size)
             self.background.blit(bgdtile, (0, 0))
@@ -353,7 +353,7 @@ try:  # for printing error log when error exception happen
             self.map_select_button = (self.select_button, self.map_back_button)
             self.battle_setup_button = (self.start_button, self.map_back_button)
 
-            imgs = load_images(['ui', 'mapselect_ui'], loadorder=False)
+            imgs = load_images(["ui", "mapselect_ui"], loadorder=False)
             self.map_listbox = gameprepare.Listbox((SCREENRECT.width / 25, SCREENRECT.height / 20), imgs[0])
             self.map_scroll = gameui.Uiscroller(self.map_listbox.rect.topright, self.map_listbox.image.get_height(),
                                                 self.map_listbox.maxshowlist, layer=14)  # scroller bar for map list
@@ -394,7 +394,7 @@ try:  # for printing error log when error exception happen
             # ^ End subunit editor
 
             # v Army editor
-            boximg = load_image('army_presetbox.png', 'ui\mainmenu_ui').convert()
+            boximg = load_image("army_presetbox.png", "ui\\mainmenu_ui").convert()
             self.army_listbox = gameprepare.Listbox((0, SCREENRECT.height / 3), boximg)  # box for showing army preset list
             self.army_presetname_scroll = gameui.Uiscroller(self.army_listbox.rect.topright, self.army_listbox.image.get_height(),
                                                             self.army_listbox.maxshowlist, layer=14)  # preset name scroll
@@ -418,7 +418,7 @@ try:  # for printing error log when error exception happen
                                                       self.popup_listbox.maxshowlist,
                                                       layer=14)
 
-            boximg = load_image('mapchange.png', 'ui\mainmenu_ui').convert()
+            boximg = load_image("mapchange.png", "ui\\mainmenu_ui").convert()
             self.terrain_change_button = gameunitedit.Previewchangebutton((SCREENRECT.width / 3, SCREENRECT.height), boximg,
                                                                           "Temperate")  # start with temperate terrain
             self.feature_change_button = gameunitedit.Previewchangebutton((SCREENRECT.width / 2, SCREENRECT.height), boximg,
@@ -480,7 +480,7 @@ try:  # for printing error log when error exception happen
             self.previewleaderlist = [self.team1previewleader, self.team2testfrontaleader, self.team2testleftleader,
                                       self.team2testrightleader, self.team2testrearleader]
 
-            boximg = load_image('filterbox.png', 'ui\mainmenu_ui').convert()
+            boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)
 
             self.army_editor_button = (self.army_back_button, self.army_save_button)
@@ -488,7 +488,7 @@ try:  # for printing error log when error exception happen
             # ^ End army editor
 
             # v Input box popup
-            input_ui_img = load_image('inputui.png', 'ui\mainmenu_ui')
+            input_ui_img = load_image("inputui.png", "ui\\mainmenu_ui")
             self.inputui = gameprepare.Inputui(input_ui_img, (SCREENRECT.width / 2, SCREENRECT.height / 2))  # user text input ui box popup
             self.input_ok_button = gameprepare.Menubutton(images=imagelist,
                                                           pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
@@ -506,7 +506,7 @@ try:  # for printing error log when error exception happen
 
             # v profile box
             self.profile_name = Profilename
-            img = load_image('profile_box.png', 'ui\mainmenu_ui')
+            img = load_image("profile_box.png", "ui\\mainmenu_ui")
             self.profile_box = gameprepare.Profilebox(img, (ScreenWidth, 0),
                                                       self.profile_name)  # profile name box at top right of screen at main menu screen
             # ^ End profile box
@@ -515,38 +515,38 @@ try:  # for printing error log when error exception happen
             self.back_button = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height / 1.2), text="BACK")
 
             # Resolution changing bar that fold out the list when clicked
-            img = load_image('scroll_normal.jpg', 'ui\mainmenu_ui')
+            img = load_image("scroll_normal.jpg", "ui\\mainmenu_ui")
             img2 = img
-            img3 = load_image('scroll_click.jpg', 'ui\mainmenu_ui')
+            img3 = load_image("scroll_click.jpg", "ui\\mainmenu_ui")
             imagelist = [img, img2, img3]
             self.resolution_scroll = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height / 2.3),
                                                             text=str(ScreenWidth) + " x " + str(ScreenHeight), size=16)
-            resolutionlist = ['1920 x 1080', '1600 x 900', '1366 x 768', '1280 x 720', '1024 x 768', ]
+            resolutionlist = ["1920 x 1080", "1600 x 900", "1366 x 768", "1280 x 720", "1024 x 768"]
             self.resolutionbar = makebarlist(listtodo=resolutionlist, menuimage=self.resolution_scroll)
-            img = load_image('resolution_icon.png', 'ui\mainmenu_ui')
+            img = load_image("resolution_icon.png", "ui\\mainmenu_ui")
             self.resolutionicon = gameprepare.Menuicon([img], (self.resolution_scroll.pos[0] - (self.resolution_scroll.pos[0] / 4.5),
                                                                self.resolution_scroll.pos[1]), imageresize=50)
             # End resolution
 
             # Volume change scroller bar
-            img = load_image('scroller.png', 'ui\mainmenu_ui')
-            img2 = load_image('scoll_button_normal.png', 'ui\mainmenu_ui')
-            img3 = load_image('scoll_button_click.png', 'ui\mainmenu_ui')
-            img4 = load_image('numbervalue_icon.jpg', 'ui\mainmenu_ui')
+            img = load_image("scroller.png", "ui\\mainmenu_ui")
+            img2 = load_image("scoll_button_normal.png", "ui\\mainmenu_ui")
+            img3 = load_image("scoll_button_click.png", "ui\\mainmenu_ui")
+            img4 = load_image("numbervalue_icon.jpg", "ui\\mainmenu_ui")
             self.volumeslider = gameprepare.Slidermenu(barimage=img, buttonimage=[img2, img3], pos=(SCREENRECT.width / 2, SCREENRECT.height / 3),
                                                        value=Soundvolume)
             self.valuebox = [gameprepare.Valuebox(img4, (self.volumeslider.rect.topright[0] * 1.1, self.volumeslider.rect.topright[1]), Soundvolume)]
-            img = load_image('volume_icon.png', 'ui\mainmenu_ui')
+            img = load_image("volume_icon.png", "ui\\mainmenu_ui")
             self.volumeicon = gameprepare.Menuicon([img], (self.volumeslider.pos[0] - (self.volumeslider.pos[0] / 4.5), self.volumeslider.pos[1]),
                                                    imageresize=50)
             # End volume change
 
             self.optioniconlist = (self.resolutionicon, self.volumeicon)
             self.optionmenu_button = (self.back_button, self.resolution_scroll)
-            self.optionmenu_slider = (self.volumeslider)
+            self.optionmenu_slider = self.volumeslider
             # ^ End option menu button
 
-            pygame.display.set_caption('Dream Decision')  # set the game name on program border/tab
+            pygame.display.set_caption("Dream Decision")  # set the game name on program border/tab
             pygame.mouse.set_visible(1)  # set mouse as visible
 
             # v Music player
@@ -554,7 +554,7 @@ try:  # for printing error log when error exception happen
                 self.mixervolume = float(Soundvolume / 100)
                 pygame.mixer.music.set_volume(self.mixervolume)
                 self.SONG_END = pygame.USEREVENT + 1
-                self.musiclist = glob.glob(main_dir + '/data/sound/music/*.mp3')
+                self.musiclist = glob.glob(main_dir + "/data/sound/music/*.mp3")
                 pygame.mixer.music.load(self.musiclist[0])
                 pygame.mixer.music.play(-1)
             # ^ End music
@@ -601,15 +601,16 @@ try:  # for printing error log when error exception happen
                 if index >= currentrow:
                     itemgroup.add(itemclass(box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
                     row += (30 * heightadjust)  # next row
-                    if len(itemgroup) > box.maxshowlist: break  # will not generate more than space allowed
+                    if len(itemgroup) > box.maxshowlist:
+                        break  # will not generate more than space allowed
 
             self.mainui.add(*itemgroup)
 
         def readmapdata(self, maplist, file):
             if self.menu_state == "presetselect" or self.lastselect == "presetselect":
-                data = csv_read(file, ['data', 'ruleset', self.rulesetfolder.strip("/"), 'map', maplist[self.current_map_select]])
+                data = csv_read(file, ["data", "ruleset", self.rulesetfolder.strip("/"), "map", maplist[self.current_map_select]])
             else:
-                data = csv_read(file, ['data', 'ruleset', self.rulesetfolder.strip("/"), 'map/custom', maplist[self.current_map_select]])
+                data = csv_read(file, ["data", "ruleset", self.rulesetfolder.strip("/"), "map/custom", maplist[self.current_map_select]])
             return data
 
         def maketeamcoa(self, data, oneteam=False, team1setpos=(SCREENRECT.width / 2 - (300 * widthadjust), SCREENRECT.height / 3)):
@@ -632,9 +633,9 @@ try:  # for printing error log when error exception happen
                 thismap.kill()
                 del thismap
             if self.menu_state == "presetselect":
-                imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map', mapfolderlist[self.current_map_select]], loadorder=False)
+                imgs = load_images(["ruleset", self.rulesetfolder.strip("/"), "map", mapfolderlist[self.current_map_select]], loadorder=False)
             else:
-                imgs = load_images(['ruleset', self.rulesetfolder.strip("/"), 'map/custom', mapfolderlist[self.current_map_select]], loadorder=False)
+                imgs = load_images(["ruleset", self.rulesetfolder.strip("/"), "map/custom", mapfolderlist[self.current_map_select]], loadorder=False)
             self.mapshow.add(gameprepare.Mapshow((SCREENRECT.width / 2, SCREENRECT.height / 3), imgs[0], imgs[1]))
             self.mainui.add(self.mapshow)
             # ^ End map preview
@@ -648,7 +649,7 @@ try:  # for printing error log when error exception happen
             # ^ End map title
 
             # v Create map description
-            data = self.readmapdata(mapfolderlist, 'info.csv')
+            data = self.readmapdata(mapfolderlist, "info.csv")
             description = [list(data.values())[1][0], list(data.values())[1][1]]
             for desc in self.mapdescription:
                 desc.kill()
@@ -670,10 +671,10 @@ try:  # for printing error log when error exception happen
             openfolder = self.mapfoldername
             if self.lastselect == "customselect":
                 openfolder = self.mapcustomfoldername
-            unitmapinfo = self.readmapdata(openfolder, 'unit_pos' + str(self.mapsource) + '.csv')
+            unitmapinfo = self.readmapdata(openfolder, "unit_pos" + str(self.mapsource) + ".csv")
 
-            team1pos = {row[8]: [int(item) for item in row[8].split(',')] for row in list(unitmapinfo.values()) if row[15] == 1}
-            team2pos = {row[8]: [int(item) for item in row[8].split(',')] for row in list(unitmapinfo.values()) if row[15] == 2}
+            team1pos = {row[8]: [int(item) for item in row[8].split(",")] for row in list(unitmapinfo.values()) if row[15] == 1}
+            team2pos = {row[8]: [int(item) for item in row[8].split(",")] for row in list(unitmapinfo.values()) if row[15] == 2}
             for thismap in self.mapshow:
                 thismap.changemode(1, team1poslist=team1pos, team2poslist=team2pos)
 
@@ -687,10 +688,10 @@ try:  # for printing error log when error exception happen
                 elif row[15] == 2:
                     listadd = team2army
                 for smallrow in row[0:7]:
-                    for item in smallrow.split(','):
+                    for item in smallrow.split(","):
                         listadd.append(int(item))
 
-                for item in row[9].split(','):
+                for item in row[9].split(","):
                     if row[15] == 1:
                         team1commander.append(int(item))
                     elif row[15] == 2:
@@ -769,7 +770,7 @@ try:  # for printing error log when error exception happen
             bigarmysize = len([slot for slot in self.armybuildslot if slot.armyid == armyid and slot.name != "None"])
             if bigarmysize > 20:  # army size larger than 20 will reduce main leader authority
                 authority = int(leaderlist[0].authority +
-                                (leaderlist[0].authority / 2 * (100 - (bigarmysize)) / 100) +
+                                (leaderlist[0].authority / 2 * (100 - bigarmysize) / 100) +
                                 leaderlist[1].authority / 2 + leaderlist[2].authority / 2 +
                                 leaderlist[3].authority / 4)
 
@@ -786,9 +787,9 @@ try:  # for printing error log when error exception happen
             self.currentpopuprow = 0
 
             if uitype == "leader":
-                self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=(newrect))
+                self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=newrect)
             else:
-                self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=(newrect))
+                self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
 
             self.setuplist(gameprepare.Namelist, 0, newlist, self.popupnamegroup,
                            self.popup_listbox, layer=17)
@@ -868,7 +869,7 @@ try:  # for printing error log when error exception happen
                             self.profile_name = self.input_box.text
                             self.profile_box.changename(self.profile_name)
 
-                            editconfig('DEFAULT', 'playername', self.profile_name, 'configuration.ini', config)
+                            editconfig("DEFAULT", "playername", self.profile_name, "configuration.ini", config)
 
                         self.input_box.textstart("")
                         self.textinputpopup = None
@@ -1003,17 +1004,17 @@ try:  # for printing error log when error exception happen
                             if self.lastselect == "customselect":
                                 openfolder = self.mapcustomfoldername
                             try:
-                                self.sourcelist = self.readmapdata(openfolder, 'source.csv')
+                                self.sourcelist = self.readmapdata(openfolder, "source.csv")
                                 self.sourcenamelist = [value[0] for value in list(self.sourcelist.values())[1:]]
                                 self.sourcescaletext = [value[1] for value in list(self.sourcelist.values())[1:]]
                                 self.sourcescale = [(float(value[2]), float(value[3]), float(value[4]), float(value[5])) for value in
                                                     list(self.sourcelist.values())[1:]]
                                 self.sourcetext = [value[-1] for value in list(self.sourcelist.values())[1:]]
                             except Exception:  # no source.csv make empty list
-                                self.sourcenamelist = ['']
-                                self.sourcescaletext = ['']
-                                self.sourcescale = ['']
-                                self.sourcetext = ['']
+                                self.sourcenamelist = [""]
+                                self.sourcescaletext = [""]
+                                self.sourcescale = [""]
+                                self.sourcetext = [""]
 
                             self.setuplist(gameprepare.Sourcename, self.current_source_row, self.sourcenamelist, self.sourcenamegroup,
                                            self.source_listbox)
@@ -1110,7 +1111,8 @@ try:  # for printing error log when error exception happen
                         elif self.start_button.event:  # start game button
                             self.start_button.event = False
                             self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, self.teamselected, self.enactment,
-                                                           self.mapfoldername[self.current_map_select], self.mapsource, self.sourcescale[self.mapsource])
+                                                           self.mapfoldername[self.current_map_select], self.mapsource,
+                                                           self.sourcescale[self.mapsource])
                             self.battlegame.rungame()
                             gc.collect()  # collect no longer used object in previous battle from memory
 
@@ -1275,11 +1277,11 @@ try:  # for printing error log when error exception happen
                                         arraylist = list(self.customarmypresetlist[list(self.customarmypresetlist.keys())[index]])
                                         for listnum in (0, 1, 2, 3, 4, 5, 6, 7):
                                             armylist += [int(item) if item.isdigit() else item
-                                                         for item in arraylist[listnum].split(',')]
+                                                         for item in arraylist[listnum].split(",")]
                                         leaderwholist = [int(item) if item.isdigit() else item
-                                                         for item in arraylist[8].split(',')]
+                                                         for item in arraylist[8].split(",")]
                                         leaderposlist = [int(item) if item.isdigit() else item
-                                                         for item in arraylist[9].split(',')]
+                                                         for item in arraylist[9].split(",")]
 
                                         for armyindex, item in enumerate(armylist):  # change all slot to whatever save in the selected preset
                                             for slot in self.armybuildslot:
@@ -1650,8 +1652,8 @@ try:  # for printing error log when error exception happen
                                 self.newScreenWidth = resolutionchange[0]
                                 self.newScreenHeight = resolutionchange[2]
 
-                                editconfig('DEFAULT', 'ScreenWidth', self.newScreenWidth, 'configuration.ini', config)
-                                editconfig('DEFAULT', 'ScreenHeight', self.newScreenHeight, 'configuration.ini', config)
+                                editconfig("DEFAULT", "ScreenWidth", self.newScreenWidth, "configuration.ini", config)
+                                editconfig("DEFAULT", "ScreenHeight", self.newScreenHeight, "configuration.ini", config)
                                 self.screen = pygame.display.set_mode(SCREENRECT.size, self.winstyle | pygame.RESIZABLE, self.bestdepth)
 
                                 self.menu_button.remove(self.resolutionbar)
@@ -1679,7 +1681,7 @@ try:  # for printing error log when error exception happen
                             elif self.volumeslider.rect.collidepoint(self.mousepos) and (mouse_down or mouse_up):  # mouse click on slider bar
                                 self.volumeslider.update(self.mousepos, self.valuebox[0])  # update slider button based on mouse value
                                 self.mixervolume = float(self.volumeslider.value / 100)  # for now only music volume slider exist
-                                editconfig('DEFAULT', 'SoundVolume', str(self.volumeslider.value), 'configuration.ini', config)
+                                editconfig("DEFAULT", "SoundVolume", str(self.volumeslider.value), "configuration.ini", config)
                                 pygame.mixer.music.set_volume(self.mixervolume)
 
                     elif self.menu_state == "encyclopedia":
@@ -1755,15 +1757,15 @@ try:  # for printing error log when error exception happen
             sys.exit()
 
 
-    if __name__ == '__main__':
+    if __name__ == "__main__":
         runmenu = Mainmenu()
         runmenu.run()
 
 except Exception:  # Save error output to txt file
     traceback.print_exc()
-    f = open("error_report.txt", 'w')
+    f = open("error_report.txt", "w")
     sys.stdout = f
     exc_type, exc_value, exc_traceback = sys.exc_info()
     lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-    print(''.join('!! ' + line for line in lines))  # Log it or whatever here
+    print("".join("!! " + line for line in lines))  # Log it or whatever here
     f.close()

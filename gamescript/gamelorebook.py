@@ -149,7 +149,7 @@ class Lorebook(pygame.sprite.Sprite):
             except:
                 self.portrait = self.leader.imgs[-1].copy()  # Use Unknown leader image if there is none in list
                 font = pygame.font.SysFont("timesnewroman", 300)
-                textimage = font.render(str(self.subsection), True, pygame.Color('white'))
+                textimage = font.render(str(self.subsection), True, pygame.Color("white"))
                 textrect = textimage.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
                 self.portrait.blit(textimage, textrect)
 
@@ -157,9 +157,9 @@ class Lorebook(pygame.sprite.Sprite):
                                                    (int(150 * self.widthadjust), int(150 * self.heightadjust)))  # scale leader image to 150x150
             self.pagedesign()
 
-    def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):
-        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words
-        space = font.size(' ')[0]  # the width of a space
+    def blit_text(self, surface, text, pos, font, color=pygame.Color("black")):
+        words = [word.split(" ") for word in text.splitlines()]  # 2D array where each row is a list of words
+        space = font.size(" ")[0]  # the width of a space
         maxwidth, maxheight = surface.get_size()
         x, y = pos
         for line in words:
@@ -201,7 +201,7 @@ class Lorebook(pygame.sprite.Sprite):
         secondpagecol = 650
         stat = self.statdata[self.subsection]
         if self.section != 4:
-            statheader = self.section_list[self.section][0]['ID'][1:-2]
+            statheader = self.section_list[self.section][0]["ID"][1:-2]
         else:  # equipment section use slightly different stat header
             statheader = []
             for index in self.equipmentstat:

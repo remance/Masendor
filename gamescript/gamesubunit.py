@@ -1534,8 +1534,8 @@ class Subunit(pygame.sprite.Sprite):
         if len(self.combat_move_queue) < 1:  # simply try walk to target anyway if pathfinder return empty
             self.combat_move_queue = [self.close_target.base_pos]
         # if self.gameid == 10087:
-        #     print('done', self.base_pos != self.base_target)
-        # print('operations:', runs, 'path length:', len(path))
+        #     print("done", self.base_pos != self.base_target)
+        # print("operations:", runs, "path length:", len(path))
         # print(grid.grid_str(path=path, start=start, end=end))
         # print(self.combat_move_queue)
         # print(self.base_pos, self.close_target.base_pos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
