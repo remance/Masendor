@@ -51,15 +51,15 @@ class Troopnumber(pygame.sprite.Sprite):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.heightadjust))
-
         self.who = who
         self.textcolour = pygame.Color("blue")
         if self.who.team == 2:
             self.textcolour = pygame.Color("red")
         self.pos = self.who.truenumber_pos
         self.number = self.who.troopnumber
-        self.zoom = 1
+        self.zoom = 0
+
+        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.heightadjust))
 
         self.image = self.render(str(self.number), self.font, self.textcolour)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -546,7 +546,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if self.lastzoom != zoom:  # camera zoom is changed
                 self.lastzoom = zoom
                 self.zoom_change = True
-                self.zoom = (11 - zoom)  # save scale
+                self.zoom = 11 - zoom  # save scale
                 self.change_pos_scale()  # update parentunit sprite according to new scale
         # ^ End zoom
 

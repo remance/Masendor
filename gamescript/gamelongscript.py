@@ -1081,30 +1081,35 @@ def add_new_unit(battle, who, addarmy=True):
     from gamescript import gameunit
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
-    foundcount = 0
+    foundcount = 0 # for subunit_sprite index
+    foundcount2 = 0 # for positioning
     for row in range(0, len(who.armysubunit)):
         for column in range(0, len(who.armysubunit[0])):
-            # try:
             if who.armysubunit[row][column] != 0:
                 who.subunit_sprite_array[row][column] = who.subunit_sprite[foundcount]
-                who.subunit_sprite[foundcount].armypos = (who.subunit_position_list[foundcount][0] / 10,
-                                                          who.subunit_position_list[foundcount][1] / 10)  # position in parentunit sprite
+                who.subunit_sprite[foundcount].armypos = (who.subunit_position_list[foundcount2][0] / 10,
+                                                          who.subunit_position_list[foundcount2][1] / 10)  # position in parentunit sprite
                 foundcount += 1
             else:
                 who.subunit_sprite_array[row][column] = None
-            # except Exception:
-            #     pass
+            foundcount2 += 1
     # ^ End generate subunit array
 
     for index, subunit in enumerate(who.subunit_sprite):  # reset leader subunitpos
         if subunit.leader is not None:
             subunit.leader.subunitpos = index
 
-    who.zoom = battle.camerascale
+    who.zoom = 11 - battle.camerascale
     who.new_angle = who.angle
 
     who.startset(battle.subunit)
     who.set_target(who.front_pos)
+
+    numberpos = (who.base_pos[0] - who.base_width_box,
+                 (who.base_pos[1] + who.base_height_box))
+    who.number_pos = who.rotationxy(who.base_pos, numberpos, who.radians_angle)
+    who.change_pos_scale() # find new position for troop number text
+
     for subunit in who.subunit_sprite:
         subunit.gamestart(subunit.zoom)
 
@@ -1112,7 +1117,8 @@ def add_new_unit(battle, who, addarmy=True):
         battle.allunitlist.append(who)
         battle.allunitindex.append(who.gameid)
 
-    battle.troopnumbersprite.add(gameunit.Troopnumber(who))
+    numberspite = gameunit.Troopnumber(who)
+    battle.troopnumbersprite.add(numberspite)
 
 
 def move_leader_subunit(leader, oldarmysubunit, newarmysubunit, alreadypick=()):
@@ -1174,7 +1180,7 @@ def splitunit(battle, who, how):
     if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move the left sub-general leader subunit if it not in new one
         who.armysubunit, newarmysubunit, newposition = move_leader_subunit(who.leader[1], who.armysubunit, newarmysubunit)
         who.leader[1].subunitpos = newposition[0] * newposition[1]
-        who.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a main leader sub-unit
+    who.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a main leader sub-unit
 
     alreadypick = []
     for leader in (who.leader[0], who.leader[2], who.leader[3]):  # move other leader subunit to original one if they are in new one
