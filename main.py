@@ -16,8 +16,8 @@ try:  # for printing error log when error exception happen
     import pygame.freetype
     from pygame.locals import *
 
-    from gamescript import maingame, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
-        gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gameunit, gamesubunit, rangeattack, gamepopup, gameunitedit
+    from gamescript import gamebattle, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
+        gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gameunit, gamesubunit, gamerangeattack, gamepopup, gameunitedit
 
     screen = screeninfo.get_monitors()[0]
 
@@ -69,7 +69,7 @@ try:  # for printing error log when error exception happen
         def __init__(self):
             pygame.init()  # Initialize pygame
 
-            self.rulesetlist = maingame.csv_read("ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
+            self.rulesetlist = gamebattle.csv_read("ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
             self.ruleset = 1  # for now default historical ruleset only
             self.rulesetfolder = "/" + str(self.rulesetlist[self.ruleset][1])
 
@@ -269,7 +269,7 @@ try:  # for printing error log when error exception happen
             gameleader.Leader.containers = self.armyleader, self.leader_updater
             gameunit.Troopnumber.containers = self.troopnumbersprite, self.effect_updater, self.battlecamera
 
-            rangeattack.Rangearrow.containers = self.arrows, self.effect_updater, self.battlecamera
+            gamerangeattack.Rangearrow.containers = self.arrows, self.effect_updater, self.battlecamera
             gameunit.Directionarrow.containers = self.directionarrows, self.effect_updater, self.battlecamera
 
             gameui.Gameui.containers = self.gameui, self.ui_updater
@@ -567,7 +567,7 @@ try:  # for printing error log when error exception happen
             self.textinputpopup = None  # popup for texting text input state
             self.choosingfaction = True  # swap list between faction and subunit, always start with choose faction first as true
 
-            self.battlegame = maingame.Battle(self, self.winstyle)
+            self.battlegame = gamebattle.Battle(self, self.winstyle)
 
         def backtomainmenu(self):
             self.menu_state = "mainmenu"
@@ -803,7 +803,7 @@ try:  # for printing error log when error exception happen
             self.popup_listbox.type = uitype
 
         def popout_lorebook(self, section, gameid):
-            # v Seem like encyclopedia in battle cause container to change allui in main to maingame one, change back with this
+            # v Seem like encyclopedia in battle cause container to change allui in main to gamebattle one, change back with this
             gamelorebook.SubsectionName.containers = self.subsection_name, self.mainui
             # ^ End container change
 
@@ -931,7 +931,7 @@ try:  # for printing error log when error exception happen
                             self.mainui.add(*self.optioniconlist)
 
                         elif self.lore_button.event:  # open encyclopedia
-                            # v Seem like encyclopedia in battle cause container to change allui in main to maingame one, change back with this
+                            # v Seem like encyclopedia in battle cause container to change allui in main to gamebattle one, change back with this
                             gamelorebook.SubsectionName.containers = self.subsection_name, self.mainui
                             # ^ End container change
 

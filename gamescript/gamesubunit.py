@@ -4,7 +4,7 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import rangeattack, gamelongscript
+from gamescript import gamerangeattack, gamelongscript
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -13,7 +13,7 @@ from pygame.transform import scale
 
 class Subunit(pygame.sprite.Sprite):
     images = []
-    maingame = None
+    gamebattle = None
     gamemap = None  # base map
     gamemapfeature = None  # feature map
     gamemapheight = None  # height map
@@ -35,7 +35,7 @@ class Subunit(pygame.sprite.Sprite):
         self.wholastselect = None
         self.mouse_over = False
         self.leader = None  # Leader in the sub-subunit if there is one, got add in leader gamestart
-        self.board_pos = None  # Used for event log position of subunit (Assigned in maingame subunit setup)
+        self.board_pos = None  # Used for event log position of subunit (Assigned in gamebattle subunit setup)
         self.walk = False  # currently walking
         self.run = False  # currently running
         self.frontline = False  # on front line of unit or not
@@ -50,9 +50,9 @@ class Subunit(pygame.sprite.Sprite):
         self.friend_front = []  # list of friendly front collide sprite
         self.team = self.parentunit.team
         if self.team == 1:  # add sprite to team subunit group for collision
-            groupcollide = self.maingame.team1subunit
+            groupcollide = self.gamebattle.team1subunit
         elif self.team == 2:
-            groupcollide = self.maingame.team2subunit
+            groupcollide = self.gamebattle.team2subunit
         groupcollide.add(self)
 
         self.status_list = self.parentunit.status_list
@@ -458,7 +458,6 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End position related
 
         self.rect = self.image.get_rect(center=self.pos)
-        self.mask = pygame.mask.from_surface(self.image)
 
     def zoomscale(self):
         """camera zoom change and rescale the sprite and position scale"""
@@ -475,7 +474,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.change_pos_scale()
         self.rotate()
-        self.mask = pygame.mask.from_surface(self.image)  # make new mask for collision
 
     def change_pos_scale(self):
         """Change position variable to new camera scale"""
@@ -605,6 +603,7 @@ class Subunit(pygame.sprite.Sprite):
             self.stamina50 = round(self.maxstamina * 0.5)
             self.stamina25 = round(self.maxstamina * 0.25)
             self.stamina5 = round(self.maxstamina * 0.05)
+
         self.morale = self.base_morale
         self.authority = self.parentunit.authority  # parentunit total authoirty
         self.commandbuff = self.parentunit.commandbuff[self.unit_type] * 100  # command buff from main leader according to this subunit subunit type
@@ -882,7 +881,7 @@ class Subunit(pygame.sprite.Sprite):
         elif self.armour > 100:
             self.armour = 100  # Armour cannot be higher than 100 since it is percentage reduction
         if self.speed < 1:
-            if 105 in self.status_effect:
+            if 105 in self.status_effect: # collapse state enforce 0 speed
                 self.speed = 0
             else:
                 self.speed = 1
@@ -958,14 +957,14 @@ class Subunit(pygame.sprite.Sprite):
 
             # v Mouse collision detection
             if self.rect.collidepoint(mousepos):
-                self.maingame.last_mouseover = self.parentunit  # last mouse over on this parentunit
-                if mouseup and self.maingame.uiclick is False:
-                    self.maingame.last_selected = self.parentunit  # become last selected parentunit
+                self.gamebattle.last_mouseover = self.parentunit  # last mouse over on this parentunit
+                if mouseup and self.gamebattle.uiclick is False:
+                    self.gamebattle.last_selected = self.parentunit  # become last selected parentunit
                     if self.parentunit.selected is False:
                         self.parentunit.justselected = True
                         self.parentunit.selected = True
                     self.wholastselect = self.gameid
-                    self.maingame.clickany = True
+                    self.gamebattle.clickany = True
             # ^ End mouse detect
 
             # v Health bar
@@ -1080,8 +1079,8 @@ class Subunit(pygame.sprite.Sprite):
                                 self.find_close_target()  # find new close target
 
                                 if self.close_target is not None:  # found target to fight
-                                    if self not in self.maingame.combatpathqueue:
-                                        self.maingame.combatpathqueue.append(self)
+                                    if self not in self.gamebattle.combatpathqueue:
+                                        self.gamebattle.combatpathqueue.append(self)
 
                                 else:  # no target to fight move back to command pos first)
                                     self.base_target = self.attack_target.base_pos
@@ -1100,8 +1099,8 @@ class Subunit(pygame.sprite.Sprite):
                                     elif self.movetimer > 10 or len(self.combat_move_queue) == 0:  # # time up, or no path. reset path
                                         self.movetimer = 0
                                         self.close_target = None
-                                        if self in self.maingame.combatpathqueue:
-                                            self.maingame.combatpathqueue.remove(self)
+                                        if self in self.gamebattle.combatpathqueue:
+                                            self.gamebattle.combatpathqueue.remove(self)
 
                                     elif len(self.combat_move_queue) > 0:  # no collide move to enemy
                                         self.base_target = pygame.Vector2(self.combat_move_queue[0])
@@ -1110,8 +1109,8 @@ class Subunit(pygame.sprite.Sprite):
                             else:  # whole targeted enemy unit destroyed, reset target and state
                                 self.melee_target = None
                                 self.close_target = None
-                                if self in self.maingame.combatpathqueue:
-                                    self.maingame.combatpathqueue.remove(self)
+                                if self in self.gamebattle.combatpathqueue:
+                                    self.gamebattle.combatpathqueue.remove(self)
 
                                 self.attack_target = None
                                 self.base_target = self.command_target
@@ -1122,8 +1121,8 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
                         self.melee_target = None
                         self.close_target = None
-                        if self in self.maingame.combatpathqueue:
-                            self.maingame.combatpathqueue.remove(self)
+                        if self in self.gamebattle.combatpathqueue:
+                            self.gamebattle.combatpathqueue.remove(self)
 
                         self.attack_target = None
                         self.base_target = self.command_target
@@ -1141,8 +1140,8 @@ class Subunit(pygame.sprite.Sprite):
                 else:  # range attack
                     self.melee_target = None
                     self.close_target = None
-                    if self in self.maingame.combatpathqueue:
-                        self.maingame.combatpathqueue.remove(self)
+                    if self in self.gamebattle.combatpathqueue:
+                        self.gamebattle.combatpathqueue.remove(self)
                     self.attack_target = None
                     self.combat_move_queue = []
 
@@ -1164,7 +1163,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.ammo_now = self.magazine_size
                         self.magazine_left -= 1
                         self.reload_time = 0
-                    self.stamina = self.stamina - (dt * 5)  # use stamina while reloading
+                    self.stamina = self.stamina - (dt * 2)  # use stamina while reloading
                 # ^ End range attack function
 
                 # v Combat action related
@@ -1179,14 +1178,14 @@ class Subunit(pygame.sprite.Sprite):
                                 hitside = 1
                             else:  # rear
                                 hitside = 2
-                            self.dmgcal(subunit, 0, hitside, self.maingame.gameunitstat.status_list, combattimer)
+                            self.dmgcal(subunit, 0, hitside, self.gamebattle.gameunitstat.status_list, combattimer)
                             self.stamina = self.stamina - (combattimer * 5)
 
                     elif self.state in (11, 12, 13):  # range combat
                         if type(self.attack_target) == int:  # For fire at will, which attacktarge is int
-                            allunitindex = self.maingame.allunitindex
+                            allunitindex = self.gamebattle.allunitindex
                             if self.attack_target in allunitindex:  # if the attack base_target still alive (if dead it would not be in index list)
-                                self.attack_target = self.maingame.allunitlist[
+                                self.attack_target = self.gamebattle.allunitlist[
                                     allunitindex.index(self.attack_target)]  # change attack_target index into sprite
                             else:  # enemy dead
                                 self.attack_pos = 0  # reset attack_pos to 0
@@ -1196,22 +1195,19 @@ class Subunit(pygame.sprite.Sprite):
                                     if target in allunitindex:  # check if base_target alive
                                         self.attack_pos = target[1]
                                         self.attack_target = target[1]
-                                        self.attack_target = self.maingame.allunitlist[allunitindex.index(self.attack_target)]
+                                        self.attack_target = self.gamebattle.allunitlist[allunitindex.index(self.attack_target)]
                                         break  # found new base_target break loop
 
                         if self.ammo_now > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
                                                   (self.attack_target is None and self.attack_pos != 0)) \
                                 and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
                             # can shoot if reload finish and base_target existed and not dead. Non arcshot cannot shoot if forbidded
-                            try:  # TODO add line of sight for range attack
-                                rangeattack.Rangearrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot at enemy
-                            except Exception:
-                                print("fail", self.attack_pos, self.base_pos)
-                                killgame
+                            # TODO add line of sight for range attack
+                            gamerangeattack.Rangearrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot
                             self.ammo_now -= 1  # use 1 magazine_left in magazine
                         elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target die when it about to shoot
-                            self.parentunit.range_combat_check, self.parentunit.attack_target = False, 0  # reset range combat check and base_target
-
+                            self.parentunit.range_combat_check = False
+                            self.parentunit.attack_target = 0  # reset range combat check and base_target
                 # ^ End combat related
 
                 if parentstate != 10:  # reset base_target every update to command base_target outside of combat
@@ -1259,7 +1255,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     self.rotate()  # rotate sprite to new angle
                     self.make_front_pos()  # generate new pos related to side
-                    self.mask = pygame.mask.from_surface(self.image)  # make new mask
+                    self.front_height = self.gamemapheight.getheight(self.front_pos)
                 # ^ End rotate
 
                 revertmove = False
@@ -1267,16 +1263,16 @@ class Subunit(pygame.sprite.Sprite):
                     revertmove = True  # revert move check for in case subunit still need to rotate before moving
 
                 # v Move function to given base_target position
-                if (revertmove is False or self.angle == self.new_angle) and \
-                        (self.base_pos != self.base_target or self.charge_momentum > 1):  # cannot move if still need to rotate
+                if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
+                        (revertmove is False or self.angle == self.new_angle):  # cannot move if unit still need to rotate
 
-                    colidecombat = False  # can move if front not collided
+                    colidecheck = False  # can move if front not collided
                     if ((self.parentunit.collide is False or parentstate == 99)
                             or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
                             or self.charge_momentum > 1):
-                        colidecombat = True
+                        colidecheck = True
 
-                    if self.stamina > 0 and colidecombat and len(self.enemy_front) == 0 and \
+                    if self.stamina > 0 and colidecheck and len(self.enemy_front) == 0 and \
                             (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
                         if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
@@ -1326,6 +1322,12 @@ class Subunit(pygame.sprite.Sprite):
                                 self.make_front_pos()
                                 self.make_pos_range()
 
+                                self.terrain, self.feature = self.getfeature(self.base_pos,
+                                                                             self.gamemap)  # get new terrain and feature at each subunit position
+                                self.height = self.gamemapheight.getheight(self.base_pos)  # get new height
+                                self.front_height = self.gamemapheight.getheight(self.front_pos)
+                                self.last_pos = self.base_pos
+
                                 if self.unit_leader and newmove_length > 0:
                                     if self.parentunit.moverotate is False:
                                         self.parentunit.base_pos += move
@@ -1341,14 +1343,6 @@ class Subunit(pygame.sprite.Sprite):
 
                         else:  # Stopping subunit when reach base_target
                             self.state = 0  # idle
-
-                        # if self.last_pos != self.base_pos:
-                        self.terrain, self.feature = self.getfeature(self.base_pos,
-                                                                     self.gamemap)  # get new terrain and feature at each subunit position
-                        self.height = self.gamemapheight.getheight(self.base_pos)  # get new height
-                        self.front_height = self.gamemapheight.getheight(self.front_pos)
-                        self.mask = pygame.mask.from_surface(self.image)  # make new mask
-                        self.last_pos = self.base_pos
                     # ^ End move function
 
                 # v Morale check
@@ -1440,7 +1434,7 @@ class Subunit(pygame.sprite.Sprite):
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
                 self.troopnumber = 0
-                self.maingame.battlecamera.remove(self)
+                self.gamebattle.battlecamera.remove(self)
 
             if self.troopnumber <= 0:  # enter dead state
                 self.state = 100  # enter dead state
@@ -1456,9 +1450,9 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.parentunit.deadchange = True
 
-                if self in self.maingame.battlecamera:
-                    self.maingame.battlecamera.change_layer(sprite=self, new_layer=1)
-                self.maingame.allsubunitlist.remove(self)
+                if self in self.gamebattle.battlecamera:
+                    self.gamebattle.battlecamera.change_layer(sprite=self, new_layer=1)
+                self.gamebattle.allsubunitlist.remove(self)
                 self.parentunit.subunit_sprite.remove(self)
 
                 for subunit in self.parentunit.armysubunit.flat:  # remove from index array
@@ -1468,7 +1462,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.changeleader(type="die")
 
-                self.maingame.eventlog.addlog([0, str(self.board_pos) + " " + str(self.name)
+                self.gamebattle.eventlog.addlog([0, str(self.board_pos) + " " + str(self.name)
                                                + " in " + self.parentunit.leader[0].name
                                                + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
 
@@ -1498,7 +1492,7 @@ class Subunit(pygame.sprite.Sprite):
     def combat_pathfind(self):
         # v Pathfinding
         self.combat_move_queue = []
-        movearray = self.maingame.subunitposarray.copy()
+        movearray = self.gamebattle.subunitposarray.copy()
         intbasetarget = (int(self.close_target.base_pos[0]), int(self.close_target.base_pos[1]))
         for y in self.close_target.posrange[0]:
             for x in self.close_target.posrange[1]:
@@ -1552,5 +1546,5 @@ class Subunit(pygame.sprite.Sprite):
             del self.attack_target
             del self.melee_target
             del self.close_target
-            if self in self.maingame.combatpathqueue:
-                self.maingame.combatpathqueue.remove(self)
+            if self in self.gamebattle.combatpathqueue:
+                self.gamebattle.combatpathqueue.remove(self)

@@ -7,8 +7,7 @@ import main
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, \
-    gameweather
+from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather
 from pygame.locals import *
 from scipy.spatial import KDTree
 
@@ -162,10 +161,10 @@ class Battle():
         self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up game screen
 
         # v Assign default variable to some class
-        gameunit.Unitarmy.maingame = self
+        gameunit.Unitarmy.gamebattle = self
         gameunit.Unitarmy.imgsize = (self.squadwidth, self.squadheight)
-        gamesubunit.Subunit.maingame = self
-        gameleader.Leader.maingame = self
+        gamesubunit.Subunit.gamebattle = self
+        gameleader.Leader.gamebattle = self
         # ^ End assign default
 
         self.background = pygame.Surface(SCREENRECT.size)  # Create background image

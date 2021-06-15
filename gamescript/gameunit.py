@@ -142,7 +142,7 @@ class Unitarmy(pygame.sprite.Sprite):
     images = []
     status_list = None  # status effect list
     maxzoom = 10  # max zoom allow
-    maingame = None
+    gamebattle = None
     rotationxy = gamelongscript.rotationxy
     die = gamelongscript.die  # die script
     setrotate = gamelongscript.setrotate
@@ -254,7 +254,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.auth_penalty = 0  # authority penalty
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
-        teamposlist = (self.maingame.team0poslist, self.maingame.team1poslist, self.maingame.team2poslist)
+        teamposlist = (self.gamebattle.team0poslist, self.gamebattle.team1poslist, self.gamebattle.team2poslist)
         self.team = team  # team
         self.ally_pos_list = teamposlist[self.team]
         if self.team == 1:
@@ -465,24 +465,24 @@ class Unitarmy(pygame.sprite.Sprite):
         """generate all four side, hitbox and subunit positions
         target parameter can be "rotate" for simply rotate whole unit but not move or tuple/vector2 for target position to move"""
         if target == "rotate":  # rotate unit before moving
-            unittopleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
+            unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
                                          self.base_pos[1] - self.base_height_box)
 
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
-                    newtarget = unittopleft + subunit.armypos
+                    newtarget = unit_topleft + subunit.armypos
                     subunit.command_target = pygame.Vector2(
                         self.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
                     subunit.new_angle = self.new_angle
 
         else:  # moving unit to specific target position
-            unittopleft = pygame.Vector2(target[0] - self.base_width_box,
+            unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
                                          target[1])  # get the top left corner of sprite to generate subunit position
 
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     subunit.new_angle = self.new_angle
-                    newtarget = unittopleft + subunit.armypos
+                    newtarget = unit_topleft + subunit.armypos
                     subunit.command_target = pygame.Vector2(
                         self.rotationxy(target, newtarget, self.radians_angle))  # rotate according to sprite current rotation
 
@@ -512,9 +512,9 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v assign team leader commander to every parentunit in team if this is commander parentunit
         if self.commander:
-            whicharmy = self.maingame.team1army
+            whicharmy = self.gamebattle.team1army
             if self.team == 2:  # team2
-                whicharmy = self.maingame.team2army
+                whicharmy = self.gamebattle.team2army
             for army in whicharmy:
                 army.teamcommander = self.leader[0]
         # ^ End assign commander
@@ -580,7 +580,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     subunit.zoomscale()
                 self.justselected = False
 
-            elif self.selected and self.maingame.last_selected != self:  # no longer selected
+            elif self.selected and self.gamebattle.last_selected != self:  # no longer selected
                 self.selected = False
                 for subunit in self.subunit_sprite:  # remove highlight
                     subunit.image_original = subunit.image_original2.copy()
@@ -589,7 +589,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
             if dt > 0:  # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
-                self.maingame.teamtroopnumber[self.team] += self.troopnumber
+                self.gamebattle.teamtroopnumber[self.team] += self.troopnumber
                 if self.timer >= 1:
                     self.setup_army()
 
@@ -674,7 +674,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     if self.retreat_start is False:
                         self.retreat_start = True
 
-                if self.state == 98 and self.morale >= 50:  # quit retreat when morale reach increasing limit
+                elif self.state == 98 and self.morale >= 50:  # quit retreat when morale reach increasing limit
                     self.state = 0  # become idle, not resume previous command
                     self.retreat_start = False
                     self.retreat_way = None
@@ -703,15 +703,15 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.processretreat(basetarget)
                         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
                         #     if self.team == 1:
-                        #         self.maingame.allunitindex = self.switchfaction(self.maingame.team1army, self.maingame.team2army,
-                        #                                                         self.maingame.team1poslist, self.maingame.allunitindex,
-                        #                                                         self.maingame.enactment)
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1army, self.gamebattle.team2army,
+                        #                                                         self.gamebattle.team1poslist, self.gamebattle.allunitindex,
+                        #                                                         self.gamebattle.enactment)
                         #     else:
-                        #         self.maingame.allunitindex = self.switchfaction(self.maingame.team2army, self.maingame.team1army,
-                        #                                                         self.maingame.team2poslist, self.maingame.allunitindex,
-                        #                                                         self.maingame.enactment)
-                        #     self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
-                        #     self.maingame.setuparmyicon()
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2army, self.gamebattle.team1army,
+                        #                                                         self.gamebattle.team2poslist, self.gamebattle.allunitindex,
+                        #                                                         self.gamebattle.enactment)
+                        #     self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
+                        #     self.gamebattle.setuparmyicon()
                 # ^ End retreat function
 
                 # v Rotate Function
@@ -794,12 +794,12 @@ class Unitarmy(pygame.sprite.Sprite):
             # v parentunit just got killed
             if self.got_killed is False:
                 if self.team == 1:
-                    self.die(self.maingame)
+                    self.die(self.gamebattle)
                 else:
-                    self.die(self.maingame)
+                    self.die(self.gamebattle)
 
-                self.maingame.setup_armyicon()  # reset army icon (remove dead one)
-                self.maingame.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
+                self.gamebattle.setup_armyicon()  # reset army icon (remove dead one)
+                self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
                                               [0, 1])  # put destroyed event in war and army log
 
                 self.kill()

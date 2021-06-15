@@ -121,7 +121,7 @@ def load_game_data(game):
     SCREENRECT = main.SCREENRECT
     Soundvolume = main.Soundvolume
     from gamescript import gamemap, gamelorebook, gameweather, gameunitstat, gameui, gamefaction, gameunit, \
-        gamesubunit, rangeattack, gamemenu, gamepopup, gamedrama, gameunitedit
+        gamesubunit, gamerangeattack, gamemenu, gamepopup, gamedrama, gameunitedit
 
     # v Craete feature terrain modifier
     game.featuremod = {}
@@ -293,7 +293,7 @@ def load_game_data(game):
     game.gameunitstat = gameunitstat.Unitstat(main_dir, game.ruleset, game.rulesetfolder)
 
     gameunit.Unitarmy.status_list = game.gameunitstat.status_list
-    rangeattack.Rangearrow.gamemapheight = game.battlemap_height
+    gamerangeattack.Rangearrow.gamemapheight = game.battlemap_height
 
     imgs = load_images(["ui", "unit_ui"])
     gamesubunit.Subunit.images = imgs
@@ -323,7 +323,7 @@ def load_game_data(game):
     # x, y = img.get_width(), img.get_height()
     # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
     # imgs.append(img)
-    rangeattack.Rangearrow.images = [imgs[0]]
+    gamerangeattack.Rangearrow.images = [imgs[0]]
     # ^ End game effect
 
     # v Encyclopedia related objects
@@ -707,7 +707,7 @@ def addarmy(squadlist, position, gameid, colour, leader, leaderstat, unitstat, c
     return army
 
 
-def unitsetup(maingame):
+def unitsetup(gamebattle):
     """read parentunit from unit_pos(source) file and create object with addarmy function"""
     import main
     main_dir = main.main_dir
@@ -724,10 +724,10 @@ def unitsetup(maingame):
     squadindex = 0  # squadindex is list index for all subunit group
     squadgameid = 10000
     teamstart = [0, 0, 0]
-    teamcolour = maingame.teamcolour
-    teamarmy = (maingame.team0army, maingame.team1army, maingame.team2army)
+    teamcolour = gamebattle.teamcolour
+    teamarmy = (gamebattle.team0army, gamebattle.team1army, gamebattle.team2army)
 
-    with open(main_dir + "/data/ruleset" + maingame.rulesetfolder + "/map/" + maingame.mapselected + "/unit_pos" + maingame.source + ".csv",
+    with open(main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/unit_pos" + gamebattle.source + ".csv",
               encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
@@ -738,7 +738,7 @@ def unitsetup(maingame):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
             control = False
 
-            if maingame.playerteam == row[16] or maingame.enactment:  # player can control only his team or both in enactment mode
+            if gamebattle.playerteam == row[16] or gamebattle.enactment:  # player can control only his team or both in enactment mode
                 control = True
             colour = teamcolour[row[16]]
             teamstart[row[16]] += 1
@@ -747,10 +747,10 @@ def unitsetup(maingame):
             command = False  # Not commander parentunit by default
             if len(whicharmy) == 0:  # First parentunit is commander
                 command = True
-            coa = pygame.transform.scale(maingame.coa[row[12]], (60, 60))  # get coa image and scale smaller to fit ui
+            coa = pygame.transform.scale(gamebattle.coa[row[12]], (60, 60))  # get coa image and scale smaller to fit ui
 
             army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour, row[10] + row[11], maingame.leader_stat, maingame.gameunitstat, control,
+                           colour, row[10] + row[11], gamebattle.leader_stat, gamebattle.gameunitstat, control,
                            coa, command, row[13], row[14], row[15], row[16])
             whicharmy.add(army)
             armysquadindex = 0  # armysquadindex is list index for subunit list in a specific army
@@ -761,8 +761,8 @@ def unitsetup(maingame):
             for squadnum in np.nditer(army.armysubunit, op_flags=["readwrite"], order="C"):
                 if squadnum != 0:
                     addsubunit = gamesubunit.Subunit(squadnum, squadgameid, army, army.subunit_position_list[armysquadindex],
-                                                     army.starthp, army.startstamina, maingame.unitscale)
-                    maingame.subunit.add(addsubunit)
+                                                     army.starthp, army.startstamina, gamebattle.unitscale)
+                    gamebattle.subunit.add(addsubunit)
                     addsubunit.board_pos = boardpos[armysquadindex]
                     squadnum[...] = squadgameid
                     army.subunit_sprite_array[row][column] = addsubunit

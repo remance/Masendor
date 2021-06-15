@@ -111,8 +111,8 @@ class Rangearrow(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, self.angle)
         # ^ End rotate
 
-        self.basepos = pygame.Vector2(self.shooter.base_pos[0], self.shooter.base_pos[1])
-        self.pos = self.basepos * viewmode
+        self.base_pos = pygame.Vector2(self.shooter.base_pos[0], self.shooter.base_pos[1])
+        self.pos = self.base_pos * viewmode
         self.rect = self.image.get_rect(midbottom=self.pos)
         self.target = self.basetarget * viewmode
 
@@ -162,7 +162,7 @@ class Rangearrow(pygame.sprite.Sprite):
             self.rangedmgcal(self.shooter, subunit, self.side)  # calculate dmg
 
     def update(self, unitlist, dt, viewmode):
-        move = self.basetarget - self.basepos
+        move = self.basetarget - self.base_pos
         move_length = move.length()
 
         # v Sprite move
@@ -170,15 +170,15 @@ class Rangearrow(pygame.sprite.Sprite):
             move.normalize_ip()
             move = move * self.speed * dt
             if move.length() <= move_length:
-                self.basepos += move
+                self.base_pos += move
                 if self.arcshot is False:  # direct shot will not be able to shoot pass higher height terrain midway
-                    if self.gamemapheight.getheight(self.basepos) > self.targetheight + 20:
+                    if self.gamemapheight.getheight(self.base_pos) > self.targetheight + 20:
                         self.kill()
-                self.pos = self.basepos * viewmode
+                self.pos = self.base_pos * viewmode
                 self.rect.center = list(int(v) for v in self.pos)
             else:
-                self.basepos = self.basetarget
-                self.pos = self.basepos * viewmode
+                self.base_pos = self.basetarget
+                self.pos = self.base_pos * viewmode
                 self.rect.center = self.pos
 
             self.dmg -= 0.05  # dmg and penetration power drop the longer arrow travel
@@ -189,18 +189,13 @@ class Rangearrow(pygame.sprite.Sprite):
                 self.penetrate = 0
 
             for subunit in pygame.sprite.spritecollide(self, unitlist, 0):
-                posmask = int(self.pos[0] - subunit.rect.x), int(self.pos[1] - subunit.rect.y)
-                try:
-                    if subunit.mask.get_at(posmask) == 1:
-                        if self.arcshot is False and subunit != self.shooter:  # direct shot
-                            self.registerhit(subunit)
-                            self.kill()
-                        else:
-                            self.passwho = subunit
-                        break
-                except:
-                    if self.passwho is not None and self.passwho != subunit:
-                        self.passwho = None
+                if subunit != self.shooter: #and subunit.base_pos.distance_to(self.base_pos) < subunit.imageheight:
+                    if self.arcshot is False:  # direct shot
+                        self.registerhit(subunit)
+                        self.kill()
+                    else:
+                        self.passwho = subunit
+                    break
 
         else:  # reach base_target
             self.registerhit(self.passwho)  # register hit whatever subunit the sprite land at
