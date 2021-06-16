@@ -3,7 +3,7 @@ import csv
 import pygame.freetype
 
 
-class Factiondata():
+class Factiondata:
     images = []
     main_dir = None
 

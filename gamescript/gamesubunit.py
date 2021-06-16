@@ -23,7 +23,7 @@ class Subunit(pygame.sprite.Sprite):
     stat_list = None
     rotationxy = gamelongscript.rotationxy
     setrotate = gamelongscript.setrotate
-    changeleader = gamelongscript.change_leader
+    change_leader = gamelongscript.change_leader
     maxzoom = 10  # max zoom allow
 
     # use same position as subunit front index 0 = front, 1 = left, 2 = rear, 3 = right
@@ -67,7 +67,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.red_corner = False  # red corner to indicate taking dmg in inspect ui
         self.state = 0  # Current subunit state, similar to parentunit state
-        self.timer = 0  # may need to use random.random()
+        self.timer = random.random()  # may need to use random.random()
         self.movetimer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing nearest enemy
         self.ammo_now = 0
@@ -881,7 +881,7 @@ class Subunit(pygame.sprite.Sprite):
         elif self.armour > 100:
             self.armour = 100  # Armour cannot be higher than 100 since it is percentage reduction
         if self.speed < 1:
-            if 105 in self.status_effect: # collapse state enforce 0 speed
+            if 105 in self.status_effect:  # collapse state enforce 0 speed
                 self.speed = 0
             else:
                 self.speed = 1
@@ -966,37 +966,6 @@ class Subunit(pygame.sprite.Sprite):
                     self.wholastselect = self.gameid
                     self.gamebattle.clickany = True
             # ^ End mouse detect
-
-            # v Health bar
-            if self.oldlasthealth != self.unit_health:
-                healthlist = (self.health75, self.health50, self.health25, 0)
-                for index, health in enumerate(healthlist):
-                    if self.unit_health > health:
-                        if self.last_health_state != abs(4 - index):
-                            self.image_original3.blit(self.images[index + 1], self.health_image_rect)
-                            self.imageblock_original.blit(self.images[index + 1], self.health_imageblock_rect)
-                            self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
-                            self.last_health_state = abs(4 - index)
-                            self.zoomscale()
-                        break
-            # ^ End hp bar
-
-            # v Stamina bar
-            if self.old_last_stamina != self.stamina:
-                staminalist = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
-                for index, stamina in enumerate(staminalist):
-                    if self.stamina >= stamina:
-                        if self.last_stamina_state != abs(4 - index):
-                            # if index != 3:
-                            self.image_original3.blit(self.images[index + 6], self.stamina_image_rect)
-                            self.zoomscale()
-                            self.imageblock_original.blit(self.images[index + 6], self.stamina_imageblock_rect)
-                            self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
-                            self.last_stamina_state = abs(4 - index)
-                        break
-
-                self.old_last_stamina = self.stamina
-            # ^ End stamina bar
 
             dt = newdt
             if dt > 0:  # only run these when game not pause
@@ -1134,7 +1103,6 @@ class Subunit(pygame.sprite.Sprite):
                         self.state = 11
                         if self.parentunit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
                             self.find_shooting_target(parentstate)
-
                 # ^ End melee check
 
                 else:  # range attack
@@ -1258,18 +1226,18 @@ class Subunit(pygame.sprite.Sprite):
                     self.front_height = self.gamemapheight.getheight(self.front_pos)
                 # ^ End rotate
 
+                # v Move function to given base_target position
                 revertmove = False
                 if parentstate == 0 or self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
                     revertmove = True  # revert move check for in case subunit still need to rotate before moving
 
-                # v Move function to given base_target position
                 if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
                         (revertmove is False or self.angle == self.new_angle):  # cannot move if unit still need to rotate
 
-                    colidecheck = False  # can move if front not collided
-                    if ((self.parentunit.collide is False or parentstate == 99)
-                            or ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
-                            or self.charge_momentum > 1):
+                    colidecheck = False  # can move if front of unit not collided
+                    if (((self.parentunit.collide is False or self.frontline is False) or parentstate == 99)
+                            or (parentstate == 10 and ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
+                            or self.charge_momentum > 1)):
                         colidecheck = True
 
                     if self.stamina > 0 and colidecheck and len(self.enemy_front) == 0 and \
@@ -1358,7 +1326,7 @@ class Subunit(pygame.sprite.Sprite):
                                     self.brokenlimit = 100
                                 if random.randint(self.brokenlimit, 100) > 80:  # check whether unit enter broken state or not
                                     self.state = 99  # Broken state
-                                    self.changeleader(type="broken")
+                                    self.change_leader("broken")
 
                                     cornerlist = [[0, self.base_pos[1]], [1000, self.base_pos[1]], [self.base_pos[0], 0], [self.base_pos[0], 1000]]
                                     whichcorner = [self.base_pos.distance_to(cornerlist[0]), self.base_pos.distance_to(cornerlist[1]),
@@ -1375,16 +1343,16 @@ class Subunit(pygame.sprite.Sprite):
                         if self.morale < 0:
                             self.morale = 0  # morale cannot be lower than 0
 
+                    if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing main leader can replenish morale
+                        self.base_morale += (dt * self.staminastatecal * self.moraleregen)  # Morale replenish based on stamina
+
                 elif self.base_morale > self.maxmorale:
                     self.base_morale -= dt  # gradually reduce morale that exceed the starting max amount
-
-                if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing main leader can replenish morale
-                    self.base_morale += (dt * self.staminastatecal * self.moraleregen)  # Morale replenish based on stamina
 
                 if self.state == 95:  # disobey state, morale gradually decrease until recover
                     self.base_morale -= dt * self.mental
 
-                if self.state == 98:
+                elif self.state == 98:
                     if parentstate not in (98, 99):
                         self.unit_health -= (dt * 100)  # Unit begin to desert if retreating but parentunit not retreat/broken
                         if self.moralestate > 0.2:
@@ -1395,12 +1363,6 @@ class Subunit(pygame.sprite.Sprite):
                 elif self.base_morale > 200:  # morale cannot be higher than 200
                     self.base_morale = 200
                 # ^ End morale check
-
-                if self.oldlasthealth != self.unit_health:
-                    self.troopnumber = self.unit_health / self.troophealth  # Calculate how many troop left based on current hp
-                    if self.troopnumber.is_integer() is False:  # always round up if there is decimal
-                        self.troopnumber = int(self.troopnumber + 1)
-                    self.oldlasthealth = self.unit_health
 
                 # v Hp and stamina regen
                 if self.stamina < self.maxstamina:
@@ -1428,7 +1390,43 @@ class Subunit(pygame.sprite.Sprite):
                     self.unit_health = 0  # can't have negative hp
                 elif self.unit_health > self.maxhealth:
                     self.unit_health = self.maxhealth  # hp can't exceed max hp (would increase number of troop)
-                # ^ End regen
+
+                if self.oldlasthealth != self.unit_health:
+                    self.troopnumber = self.unit_health / self.troophealth  # Calculate how many troop left based on current hp
+                    if self.troopnumber.is_integer() is False:  # always round up if there is decimal
+                        self.troopnumber = int(self.troopnumber + 1)
+
+                    # v Health bar
+                    healthlist = (self.health75, self.health50, self.health25, 0)
+                    for index, health in enumerate(healthlist):
+                        if self.unit_health > health:
+                            if self.last_health_state != abs(4 - index):
+                                self.image_original3.blit(self.images[index + 1], self.health_image_rect)
+                                self.imageblock_original.blit(self.images[index + 1], self.health_imageblock_rect)
+                                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
+                                self.last_health_state = abs(4 - index)
+                                self.zoomscale()
+                            break
+                    # ^ End Health bar
+
+                    self.oldlasthealth = self.unit_health
+
+                # v Stamina bar
+                if self.old_last_stamina != self.stamina:
+                    staminalist = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
+                    for index, stamina in enumerate(staminalist):
+                        if self.stamina >= stamina:
+                            if self.last_stamina_state != abs(4 - index):
+                                # if index != 3:
+                                self.image_original3.blit(self.images[index + 6], self.stamina_image_rect)
+                                self.zoomscale()
+                                self.imageblock_original.blit(self.images[index + 6], self.stamina_imageblock_rect)
+                                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
+                                self.last_stamina_state = abs(4 - index)
+                            break
+
+                    self.old_last_stamina = self.stamina
+                # ^ End stamina bar
 
             if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
@@ -1460,7 +1458,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.gameid, 0, self.parentunit.armysubunit)
                         break
 
-                self.changeleader(type="die")
+                self.change_leader("die")
 
                 self.gamebattle.eventlog.addlog([0, str(self.board_pos) + " " + str(self.name)
                                                + " in " + self.parentunit.leader[0].name

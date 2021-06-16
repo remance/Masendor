@@ -446,7 +446,7 @@ class Minimap(pygame.sprite.Sprite):
 
 class Eventlog(pygame.sprite.Sprite):
     max_row_show = 9  # maximum 9 text rows can appear at once
-    logscroll = None  # Link from maingame after creation of both object
+    logscroll = None  # Link from gamebattle after creation of both object
 
     def __init__(self, image, pos):
         self._layer = 10

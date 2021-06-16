@@ -254,8 +254,8 @@ class Filterbox(pygame.sprite.Sprite):
 
 
 class Unitpreview(pygame.sprite.Sprite):
-    def __init__(self, maingame, position, gameid, squadlist, colour, leader, leaderpos, coa, startangle, team):
+    def __init__(self, gamebattle, position, gameid, squadlist, colour, leader, leaderpos, coa, startangle, team):
         self = gamelongscript.addarmy(squadlist, position, gameid,
-                                      colour, (maingame.squadwidth, maingame.squadheight), leader + leaderpos, maingame.leader_stat,
-                                      maingame.gameunitstat, True,
+                                      colour, (gamebattle.squadwidth, gamebattle.squadheight), leader + leaderpos, gamebattle.leader_stat,
+                                      gamebattle.gameunitstat, True,
                                       coa, False, startangle, 100, 100, team)

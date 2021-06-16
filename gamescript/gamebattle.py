@@ -738,9 +738,9 @@ class Battle():
                             #     subunit.unit_health -= subunit.unit_health
                             self.subunit_selected.who.unit_health -= self.subunit_selected.who.unit_health
                         elif event.key == pygame.K_m and self.last_selected is not None:
-                            # self.last_selected.leader[0].health -= 1000
-                            self.subunit_selected.who.base_morale -= 1000
-                            self.subunit_selected.who.brokenlimit = 80
+                            self.last_selected.leader[0].health -= 1000
+                            # self.subunit_selected.who.base_morale -= 1000
+                            # self.subunit_selected.who.brokenlimit = 80
                             # self.subunit_selected.who.state = 99
                         elif event.key == pygame.K_COMMA and self.last_selected is not None:
                             for index, subunit in enumerate(self.last_selected.subunit_sprite):

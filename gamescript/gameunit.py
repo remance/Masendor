@@ -353,15 +353,16 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v check if complelely empty side row/col, then delete and re-adjust array
         stoploop = False
-        whoarray = self.armysubunit
-        fullwhoarray = [whoarray, np.fliplr(whoarray.swapaxes(0, 1)), np.rot90(whoarray),
-                        np.fliplr([whoarray])[0]]  # rotate the array based on the side
-        whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0], fullwhoarray[3][0]]
         while stoploop is False:  # loop until no longer find completely empty row/col
+            stoploop = True
+            whoarray = self.armysubunit
+            fullwhoarray = [whoarray, np.fliplr(whoarray.swapaxes(0, 1)), np.rot90(whoarray),
+                            np.fliplr([whoarray])[0]]  # rotate the array based on the side
+            whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0], fullwhoarray[3][0]]
             for index, whofrontline in enumerate(whoarray):
-                if any(subunit != 0 for subunit in whofrontline) is False:
+                if any(subunit != 0 for subunit in whofrontline) is False: # has completely empty outer row or column, remove them
                     if index == 0:  # front side
-                        self.armysubunit = np.delete(self.armysubunit, index, 0)
+                        self.armysubunit = self.armysubunit[1:]
                         for subunit in self.subunit_sprite:
                             subunit.armypos = (subunit.armypos[0], subunit.armypos[1] - (self.imgsize[1] / 8))
                     elif index == 1:  # left side
@@ -373,7 +374,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     elif index == 3:  # rear side
                         self.armysubunit = np.delete(self.armysubunit, -1, 0)
 
-                    if len(self.armysubunit) > 0:  # has completely empty outer row or column, remove them
+                    if len(self.armysubunit) > 0: # still has row left
                         oldwidthbox, oldheightbox = self.base_width_box, self.base_height_box
                         self.base_width_box, self.base_height_box = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, \
                                                                     len(self.armysubunit) * (self.imgsize[1] + 2) / 20
@@ -398,11 +399,8 @@ class Unitarmy(pygame.sprite.Sprite):
 
                         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
                         self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
-                    else:
-                        stoploop = True
-                    break
-                else:
-                    stoploop = True
+                    stoploop = False
+            print(stoploop)
         # ^ End check completely empty row
 
         gotanother = True  # keep finding another subunit while true
@@ -461,9 +459,10 @@ class Unitarmy(pygame.sprite.Sprite):
     #         self.skill_cooldown[whichskill] = skillstat[4]
     # self.skill_cooldown[whichskill] =
 
-    def set_subunit_target(self, target="rotate"):
+    def set_subunit_target(self, target = "rotate", resetpath = False):
         """generate all four side, hitbox and subunit positions
-        target parameter can be "rotate" for simply rotate whole unit but not move or tuple/vector2 for target position to move"""
+        target parameter can be "rotate" for simply rotate whole unit but not move or tuple/vector2 for target position to move
+        resetpath argument True will reset sub-unit command queue"""
         if target == "rotate":  # rotate unit before moving
             unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
                                          self.base_pos[1] - self.base_height_box)
@@ -471,9 +470,13 @@ class Unitarmy(pygame.sprite.Sprite):
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     newtarget = unit_topleft + subunit.armypos
-                    subunit.command_target = pygame.Vector2(
-                        self.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
-                    subunit.new_angle = self.new_angle
+                    if resetpath:
+                        subunit.command_target.append(pygame.Vector2(
+                            self.rotationxy(self.base_pos, newtarget, self.radians_angle)))
+                    else:
+                        subunit.command_target = pygame.Vector2(
+                            self.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                        subunit.new_angle = self.new_angle
 
         else:  # moving unit to specific target position
             unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
@@ -483,8 +486,12 @@ class Unitarmy(pygame.sprite.Sprite):
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     subunit.new_angle = self.new_angle
                     newtarget = unit_topleft + subunit.armypos
-                    subunit.command_target = pygame.Vector2(
-                        self.rotationxy(target, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                    if resetpath:
+                        subunit.command_target.append(pygame.Vector2(
+                            self.rotationxy(target, newtarget, self.radians_angle)))
+                    else:
+                        subunit.command_target = pygame.Vector2(
+                            self.rotationxy(target, newtarget, self.radians_angle))  # rotate according to sprite current rotation
 
     def authrecal(self):
         """recalculate authority from all alive leaders"""
@@ -565,7 +572,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
             leaderlist = [leader for leader in self.leader]  # create temp list to remove leader
             for leader in leaderlist:  # leader retreat
-                if leader.state < 90:  # Leaders may get flee/captured/die when parentunit destroyed
+                if leader.state < 90:  # Leaders flee when parentunit destroyed
                     leader.state = 96
                     leader.gone()
 

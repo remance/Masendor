@@ -199,13 +199,13 @@ class Beautifulmap(pygame.sprite.Sprite):
                         row[n] = ast.literal_eval(i)
                 self.newcolourlist[row[0]] = row[1:]
 
-    def drawimage(self, basemap, featuremap, gamemapheight, placename, maingame):
+    def drawimage(self, basemap, featuremap, gamemapheight, placename, gamebattle):
 
         self.image = featuremap.image.copy()
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-        maingame.mapmovearray = []  # array for pathfinding
-        maingame.mapdefarray = []
+        gamebattle.mapmovearray = []  # array for pathfinding
+        gamebattle.mapdefarray = []
 
         for rowpos in range(0, 1000):  # recolour the map
             speedarray = []
@@ -221,7 +221,7 @@ class Beautifulmap(pygame.sprite.Sprite):
                 # infcombatmod = int(mapfeaturemod[3] * 100)
                 # cavcombatmod = int(mapfeaturemod[6] * 100)
                 speedarray.append(speedmod)
-            maingame.mapmovearray.append(speedarray)
+            gamebattle.mapmovearray.append(speedarray)
 
         # v Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
