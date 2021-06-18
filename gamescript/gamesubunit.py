@@ -323,6 +323,8 @@ class Subunit(pygame.sprite.Sprite):
                                                                                        6] / 100)  # final reload speed from weapon and skill
 
         # vv Stat variable after receive modifier effect from various sources, used for activity and effect calculation
+        if self.base_morale > 200: # starting morale cannot be higher than 200
+            self.base_morale = 200
         self.maxmorale = self.base_morale
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
@@ -592,7 +594,7 @@ class Subunit(pygame.sprite.Sprite):
     def statusupdate(self, thisweather=None):
         """calculate stat from stamina, morale state, skill, status, terrain"""
 
-        if self.red_corner:  # have red corner reset image
+        if self.red_corner and self.parentunit.selected:  # have red corner reset image
             self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
             self.red_corner = False
 
@@ -632,9 +634,6 @@ class Subunit(pygame.sprite.Sprite):
         self.elem_melee = self.base_elem_melee
         self.elem_range = self.base_elem_range
         # ^ End default stat
-
-        if self.height > 100:  # apply height to range for height that is higher than 100 #TODO redo height range cal to use enemy base_target height as well
-            self.shootrange = self.shootrange + (self.height / 10)
 
         # v Apply status effect from trait
         if len(self.trait) > 1:
@@ -953,8 +952,7 @@ class Subunit(pygame.sprite.Sprite):
             self.zoom = zoom  # save scale
             self.zoomscale()  # update parentunit sprite according to new scale
 
-        if self.state != 100:
-
+        if self.state != 100: # only run these when not dead
             # v Mouse collision detection
             if self.rect.collidepoint(mousepos):
                 self.gamebattle.last_mouseover = self.parentunit  # last mouse over on this parentunit
@@ -1227,9 +1225,9 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 # v Move function to given base_target position
-                revertmove = False
+                revertmove = False # revert move check for in case subunit still need to rotate before moving, ignored if whole unit rotating
                 if parentstate == 0 or self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
-                    revertmove = True  # revert move check for in case subunit still need to rotate before moving
+                    revertmove = True
 
                 if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
                         (revertmove is False or self.angle == self.new_angle):  # cannot move if unit still need to rotate
@@ -1346,8 +1344,13 @@ class Subunit(pygame.sprite.Sprite):
                     if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing main leader can replenish morale
                         self.base_morale += (dt * self.staminastatecal * self.moraleregen)  # Morale replenish based on stamina
 
+                    if self.base_morale < 0:  # morale cannot be negative
+                        self.base_morale = 0
+
                 elif self.base_morale > self.maxmorale:
                     self.base_morale -= dt  # gradually reduce morale that exceed the starting max amount
+                    if self.base_morale > 300:  # base morale cannot be higher than 300
+                        self.base_morale = 300
 
                 if self.state == 95:  # disobey state, morale gradually decrease until recover
                     self.base_morale -= dt * self.mental
@@ -1357,11 +1360,6 @@ class Subunit(pygame.sprite.Sprite):
                         self.unit_health -= (dt * 100)  # Unit begin to desert if retreating but parentunit not retreat/broken
                         if self.moralestate > 0.2:
                             self.state = 0  # Reset state to 0 when exit retreat state
-
-                if self.base_morale < 0:  # morale cannot be negative
-                    self.base_morale = 0
-                elif self.base_morale > 200:  # morale cannot be higher than 200
-                    self.base_morale = 200
                 # ^ End morale check
 
                 # v Hp and stamina regen
@@ -1370,7 +1368,7 @@ class Subunit(pygame.sprite.Sprite):
                         self.stamina = 0
                         self.status_effect[105] = self.status_list[105].copy()  # receive collapse status
                     self.stamina = self.stamina + (dt * self.staminaregen)  # regen
-                elif self.stamina > self.maxstamina:  # stamina cannot exceed the max stamina
+                else:  # stamina cannot exceed the max stamina
                     self.stamina = self.maxstamina
 
                 if self.hpregen > 0 and self.unit_health % self.troophealth != 0:  # hp regen cannot ressurect troop only heal to max hp
@@ -1525,8 +1523,6 @@ class Subunit(pygame.sprite.Sprite):
         self.combat_move_queue = path  # add path into combat movement queue
         if len(self.combat_move_queue) < 1:  # simply try walk to target anyway if pathfinder return empty
             self.combat_move_queue = [self.close_target.base_pos]
-        # if self.gameid == 10087:
-        #     print("done", self.base_pos != self.base_target)
         # print("operations:", runs, "path length:", len(path))
         # print(grid.grid_str(path=path, start=start, end=end))
         # print(self.combat_move_queue)

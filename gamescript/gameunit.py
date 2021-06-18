@@ -400,7 +400,6 @@ class Unitarmy(pygame.sprite.Sprite):
                         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
                         self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
                     stoploop = False
-            print(stoploop)
         # ^ End check completely empty row
 
         gotanother = True  # keep finding another subunit while true
