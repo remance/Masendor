@@ -155,10 +155,10 @@ def load_game_data(game):
     game.allweather = csv_read("weather.csv", ["data", "map", "weather"])
     weatherlist = [item[0] for item in game.allweather.values()][2:]
     strengthlist = ["Light ", "Normal ", "Strong "]
-    game.weatherlist = []
+    game.weather_list = []
     for item in weatherlist:
         for strength in strengthlist:
-            game.weatherlist.append(strength + item)
+            game.weather_list.append(strength + item)
     game.weathermatterimgs = []
 
     for weather in ("0", "1", "2", "3"):  # Load weather matter sprite image
@@ -398,9 +398,9 @@ def load_game_data(game):
         gameui.Uibutton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),  # close button
         gameui.Uibutton(game.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), game.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
-                        imgs[13], 20, 13),  # previous page button
+                        imgs[13], 20, 24),  # previous page button
         gameui.Uibutton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
-                        imgs[14], 21, 13)]  # next page button
+                        imgs[14], 21, 24)]  # next page button
     game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
     game.lorescroll = gameui.Uiscroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
                                         game.lorebook.max_subsection_show, layer=25)  # add subsection list scroller

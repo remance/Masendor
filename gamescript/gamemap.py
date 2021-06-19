@@ -199,7 +199,7 @@ class Beautifulmap(pygame.sprite.Sprite):
                         row[n] = ast.literal_eval(i)
                 self.newcolourlist[row[0]] = row[1:]
 
-    def drawimage(self, basemap, featuremap, gamemapheight, placename, gamebattle):
+    def drawimage(self, basemap, featuremap, gamemapheight, placename, gamebattle, drawfeature = True):
 
         self.image = featuremap.image.copy()
         self.rect = self.image.get_rect(topleft=(0, 0))
@@ -236,20 +236,21 @@ class Beautifulmap(pygame.sprite.Sprite):
         # ^ PIL module code
 
         # v Put in terrain feature texture
-        for rowpos in range(0, 991):
-            for colpos in range(0, 991):
-                if rowpos % 20 == 0 and colpos % 20 == 0:
-                    randompos = (rowpos + random.randint(0, 19), colpos + random.randint(0, 19))
-                    terrain, thisfeature = featuremap.getfeature(randompos, basemap)
-                    feature = self.textureimages[self.loadtexturelist.index(self.newcolourlist[thisfeature][0].replace(" ", "").lower())]
-                    choose = random.randint(0, len(feature) - 1)
-                    if thisfeature - (terrain * 12) in (0, 1, 4, 5, 7) and \
-                            random.randint(0, 100) < 60:  # reduce speical texture in empty terrain like glassland
-                        thistexture = self.emptyimage  # empty texture
-                    else:
-                        thistexture = feature[choose]
-                    rect = thistexture.get_rect(center=randompos)
-                    self.image.blit(thistexture, rect)
+        if drawfeature:
+            for rowpos in range(0, 991):
+                for colpos in range(0, 991):
+                    if rowpos % 20 == 0 and colpos % 20 == 0:
+                        randompos = (rowpos + random.randint(0, 19), colpos + random.randint(0, 19))
+                        terrain, thisfeature = featuremap.getfeature(randompos, basemap)
+                        feature = self.textureimages[self.loadtexturelist.index(self.newcolourlist[thisfeature][0].replace(" ", "").lower())]
+                        choose = random.randint(0, len(feature) - 1)
+                        if thisfeature - (terrain * 12) in (0, 1, 4, 5, 7) and \
+                                random.randint(0, 100) < 60:  # reduce speical texture in empty terrain like glassland
+                            thistexture = self.emptyimage  # empty texture
+                        else:
+                            thistexture = feature[choose]
+                        rect = thistexture.get_rect(center=randompos)
+                        self.image.blit(thistexture, rect)
         # ^ End terrain feature
 
         self.trueimage = self.image.copy()  # image before adding effect and place name
@@ -268,7 +269,9 @@ class Beautifulmap(pygame.sprite.Sprite):
         if effectimage is not None:
             self.image.blit(effectimage, rect)  # add special filter effect that make it look like old map
 
-        self.image.blit(self.placename, rect)  # add placename layer to map
+        if self.placename is not None:
+            self.image.blit(self.placename, rect)  # add placename layer to map
+
         self.image_original = self.image.copy()
         self.imagewithheight_original = self.image.copy()
         self.imagewithheight_original.blit(gamemapheight.image, rect)
