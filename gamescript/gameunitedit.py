@@ -100,7 +100,9 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
     armourlist = None
     statlist = None
 
-    def __init__(self, gameid, team, armyid, colour, position, startpos):
+    def __init__(self, gameid, team, armyid, position, startpos):
+        import main
+        self.colour = main.teamcolour
         self._layer = 2
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.selected = False
@@ -118,17 +120,20 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
         self.coa = pygame.Surface((0, 0))  # empty coa to prevent leader ui error
 
-        self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.squadwidth - 2, self.squadheight - 2))
-        whiteimage.fill(colour)
-        whiterect = whiteimage.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(whiteimage, whiterect)
-        self.image_original = self.image.copy()
+        self.changeteam()
 
         self.armypos = position  # position in parentunit array (0 to 63)
         self.inspposition = (self.armypos[0] + startpos[0], self.armypos[1] + startpos[1])  # position in inspect ui
         self.rect = self.image.get_rect(topleft=self.inspposition)
+
+    def changeteam(self):
+        self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
+        self.image.fill((0, 0, 0))
+        whiteimage = pygame.Surface((self.squadwidth - 2, self.squadheight - 2))
+        whiteimage.fill(self.colour[self.team])
+        whiterect = whiteimage.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(whiteimage, whiterect)
+        self.image_original = self.image.copy()
 
     def changetroop(self, troopindex, terrain, feature, weather):
         self.image = self.image_original.copy()
@@ -246,7 +251,7 @@ class Filterbox(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 13
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))

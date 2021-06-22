@@ -27,6 +27,7 @@ class Battle:
     traitskillblit = gamelongscript.traitskillblit
     effecticonblit = gamelongscript.effecticonblit
     countdownskillicon = gamelongscript.countdownskillicon
+    teamcolour = main.teamcolour
 
     def __init__(self, main, winstyle):
         # v Get game object/variable from main
@@ -45,9 +46,9 @@ class Battle:
         self.weather_updater = main.weather_updater
         self.effect_updater = main.effect_updater
 
-        self.battlemapbase = main.battlemap_base
-        self.battlemapfeature = main.battlemap_feature
-        self.battlemapheight = main.battlemap_height
+        self.battlemap_base = main.battlemap_base
+        self.battlemap_feature = main.battlemap_feature
+        self.battlemap_height = main.battlemap_height
         self.showmap = main.showmap
 
         self.team0army = main.team0army
@@ -68,9 +69,9 @@ class Battle:
         self.inspectsubunit = main.inspectsubunit
         self.popgameui = main.gameui  # saving list of gameui that will pop out when parentunit is selected
 
-        self.battlemapbase = main.battlemap_base
-        self.battlemapfeature = main.battlemap_feature
-        self.battlemapheight = main.battlemap_height
+        self.battlemap_base = main.battlemap_base
+        self.battlemap_feature = main.battlemap_feature
+        self.battlemap_height = main.battlemap_height
         self.showmap = main.showmap
 
         self.minimap = main.minimap
@@ -99,6 +100,9 @@ class Battle:
         self.troop_listbox = main.troop_listbox
         self.troopnamegroup = main.troopnamegroup
         self.filterbox = main.filterbox
+        self.teamchange_button = main.teamchange_button
+        self.slotdisplay_button = main.slotdisplay_button
+        self.deploy_button = main.deploy_button
         self.popup_listbox = main.popup_listbox
         self.popupnamegroup = main.popupnamegroup
         self.terrain_change_button = main.terrain_change_button
@@ -147,7 +151,6 @@ class Battle:
 
         self.allfaction = main.allfaction
         self.coa = main.coa
-        self.teamcolour = main.teamcolour
 
         self.allweapon = main.allweapon
         self.allarmour = main.allarmour
@@ -263,25 +266,25 @@ class Battle:
 
         if mapselected is not None:
             imgs = load_images(["ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], loadorder=False)
-            self.battlemapbase.drawimage(imgs[0])
-            self.battlemapfeature.drawimage(imgs[1])
-            self.battlemapheight.drawimage(imgs[2])
+            self.battlemap_base.drawimage(imgs[0])
+            self.battlemap_feature.drawimage(imgs[1])
+            self.battlemap_height.drawimage(imgs[2])
 
             try:  # placename map layer is optional, if not existed in folder then assign None
                 placenamemap = imgs[3]
             except Exception:
                 placenamemap = None
-            self.showmap.drawimage(self.battlemapbase, self.battlemapfeature, self.battlemapheight, placenamemap, self)
-        else: # for unit editor mode, create empty temperate glass map
+            self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, placenamemap, self)
+        else:  # for unit editor mode, create empty temperate glass map
             imgs = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
-            imgs[0].fill((166, 255, 107)) # start with temperate terrain
-            imgs[1].fill((181, 230, 29)) # start with plain feature
-            imgs[2].fill((255, 100, 100, 125)) # start with height 100 plain
+            imgs[0].fill((166, 255, 107))  # start with temperate terrain
+            imgs[1].fill((181, 230, 29))  # start with plain feature
+            imgs[2].fill((255, 100, 100, 125))  # start with height 100 plain
 
-            self.battlemapbase.drawimage(imgs[0])
-            self.battlemapfeature.drawimage(imgs[1])
-            self.battlemapheight.drawimage(imgs[2])
-            self.showmap.drawimage(self.battlemapbase, self.battlemapfeature, self.battlemapheight, None, self, False)
+            self.battlemap_base.drawimage(imgs[0])
+            self.battlemap_feature.drawimage(imgs[1])
+            self.battlemap_height.drawimage(imgs[2])
+            self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, None, self, False)
 
         # ^ End create battle map
 
@@ -397,6 +400,26 @@ class Battle:
         self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
         self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
         self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+
+    def popuplist_newopen(self, newrect, newlist, uitype):
+        """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
+        self.currentpopuprow = 0
+
+        if uitype == "leader":
+            self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=newrect)
+        else:
+            self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
+
+        self.mian.setuplist(gameprepare.Namelist, 0, newlist, self.popupnamegroup,
+                       self.popup_listbox, self.battleui, layer=17)
+
+        self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
+        self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
+        self.popup_listscroll.changeimage(newrow=0, logsize=len(newlist))
+
+        self.battleui.add(self.popup_listbox, *self.popupnamegroup, self.popup_listscroll)  # add the option list to screen
+
+        self.popup_listbox.type = uitype
 
     def ui_mouseover(self):
         """mouse over ui that is not subunit card and armybox (topbar and commandbar)"""
@@ -527,10 +550,10 @@ class Battle:
             self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][1:]  # generate leader name list
 
             self.main.setuplist(gameprepare.Namelist, self.current_army_row, list(self.customarmypresetlist.keys()),
-                           self.armypresetnamegroup, self.army_listbox)  # setup preset army list
+                           self.armypresetnamegroup, self.army_listbox, self.battleui)  # setup preset army list
 
             self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.troop_list,
-                           self.troopnamegroup, self.troop_listbox)  # setup troop name list
+                           self.troopnamegroup, self.troop_listbox, self.battleui)  # setup troop name list
 
             self.current_list_show = "troop"
             self.preparestate = True
@@ -542,9 +565,9 @@ class Battle:
             self.showincard = None  # current sub-subunit showing in subunit card
             self.leadernow = []  # list of showing leader in command ui
 
-            self.main.maketeamcoa([0], oneteam=True, team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.widthadjust) / 2),
-                                                             self.troop_listbox.rect.midleft[
-                                                                 1]))  # default faction select as all faction
+            self.main.maketeamcoa([0], uiclass=self.battleui, oneteam=True,
+                                  team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.widthadjust) / 2),
+                                               self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
 
             self.troop_scroll.changeimage(newrow=self.current_troop_row, logsize=len(self.troop_list))  # change troop scroll image
 
@@ -558,13 +581,36 @@ class Battle:
                 else:  # reset all other slot
                     slot.selected = False
 
-            self.battleui.add(*self.army_editor_button, self.troop_listbox, self.troop_scroll, self.army_listbox,
-                            self.army_presetname_scroll, self.filterbox, *self.unitcardbutton,
-                            self.terrain_change_button, self.feature_change_button, self.weather_change_button,
-                            *self.armybuildslot, self.teamcoa)
+            self.gameui[2].rect = self.gameui[2].image.get_rect(bottomright=(SCREENRECT.width,
+                                                                             SCREENRECT.height))  # troop info card ui
+            self.buttonui[0].rect = self.buttonui[0].image.get_rect(topleft=(self.gameui[2].rect.topleft[0],  # description button
+                                                                             self.gameui[2].rect.topleft[1] + 120))
+            self.buttonui[1].rect = self.buttonui[1].image.get_rect(topleft=(self.gameui[2].rect.topleft[0],  # stat button
+                                                                             self.gameui[2].rect.topleft[1]))
+            self.buttonui[2].rect = self.buttonui[2].image.get_rect(topleft=(self.gameui[2].rect.topleft[0],  # skill button
+                                                                             self.gameui[2].rect.topleft[1] + 40))
+            self.buttonui[3].rect = self.buttonui[3].image.get_rect(topleft=(self.gameui[2].rect.topleft[0],  # equipment button
+                                                                             self.gameui[2].rect.topleft[1] + 80))
 
-        else:
-            self.battleui.add(self.eventlog)
+            self.battleui.add(*self.army_editor_button, self.troop_listbox, self.troop_scroll, self.army_listbox,
+                              self.army_presetname_scroll, self.filterbox, self.teamchange_button, self.slotdisplay_button, self.deploy_button,
+                              *self.unitcardbutton, self.terrain_change_button, self.feature_change_button, self.weather_change_button,
+                              *self.armybuildslot, self.teamcoa, self.gameui[1], self.gameui[2])
+            self.battleui.remove(self.eventlog, self.logscroll, self.buttonui[8:14])
+
+        else: # add various ui that was disable in army editor
+            self.gameui[1].rect = self.gameui[1].image.get_rect(
+                center=(self.gameui[1].x, self.gameui[1].y))  # change leader ui position back
+            self.gameui[2].rect = self.gameui[2].image.get_rect(
+                center=(self.gameui[2].x, self.gameui[2].y))  # change subunit card position back
+            self.buttonui[0].rect = self.buttonui[0].image.get_rect(center=(self.gameui[2].x - 152, self.gameui[2].y + 10))
+            self.buttonui[1].rect = self.buttonui[1].image.get_rect(center=(self.gameui[2].x - 152, self.gameui[2].y - 70))
+            self.buttonui[2].rect = self.buttonui[2].image.get_rect(center=(self.gameui[2].x - 152, self.gameui[2].y - 30))
+            self.buttonui[3].rect = self.buttonui[3].image.get_rect(center=(self.gameui[2].x - 152, self.gameui[2].y + 50))
+
+
+            self.battleui.add(self.eventlog, self.logscroll, self.buttonui[8:14],
+                              self.gameui[1], self.gameui[2])
 
         self.mapscaledelay = 0  # delay for map zoom input
         self.mousetimer = 0  # This is timer for checking double mouse click, use realtime
@@ -642,7 +688,7 @@ class Battle:
                     pygame.mixer.music.load(self.musiclist[self.pickmusic])
                     pygame.mixer.music.play(0)
 
-                elif event.type == KEYDOWN and event.key == K_ESCAPE:  # open/close menu
+                elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:  # open/close menu
                     if self.gamestate in (1, 2):  # in battle
                         self.gamestate = 0  # open munu
                         self.battleui.add(self.battle_menu)  # add menu to drawer
@@ -910,7 +956,7 @@ class Battle:
                 self.uiupdater.update()  # update ui
                 self.camera.update(self.camerapos, self.battlecamera, self.camerascale)
 
-            if self.gamestate == 1: # only for battle
+            if self.gamestate == 1:  # only for battle
 
                 self.battle_mouse_pos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
                                                           self.mousepos[1] - self.centerscreen[1] + self.camerapos[
@@ -976,11 +1022,10 @@ class Battle:
                         pass
 
                     elif mouse_right and self.last_selected is None and self.uiclick is False:  # draw terrain popup ui when right click at map with no selected parentunit
-                        if self.battle_mouse_pos[1][0] >= 0 and self.battle_mouse_pos[1][0] <= 999 and self.battle_mouse_pos[1][1] >= 0 and \
-                                self.battle_mouse_pos[1][1] <= 999:  # not draw if pos is off the map
-                            terrainpop, featurepop = self.battlemapfeature.getfeature(self.battle_mouse_pos[1], self.battlemapbase)
-                            featurepop = self.battlemapfeature.featuremod[featurepop]
-                            heightpop = self.battlemapheight.getheight(self.battle_mouse_pos[1])
+                        if 0 <= self.battle_mouse_pos[1][0] <= 999 and 0 <= self.battle_mouse_pos[1][1] <= 999:  # not draw if pos is off the map
+                            terrainpop, featurepop = self.battlemap_feature.getfeature(self.battle_mouse_pos[1], self.battlemap_base)
+                            featurepop = self.battlemap_feature.featuremod[featurepop]
+                            heightpop = self.battlemap_height.getheight(self.battle_mouse_pos[1])
                             self.terraincheck.pop(self.mousepos, featurepop, heightpop)
                             self.battleui.add(self.terraincheck)
 
@@ -1033,7 +1078,7 @@ class Battle:
                     else:  # Random weather
                         self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2), self.allweather)
                     self.weatherevent.pop(0)
-                    self.showmap.addeffect(self.battlemapheight, self.weathereffectimgs[self.currentweather.weathertype][self.currentweather.level])
+                    self.showmap.addeffect(self.battlemap_height, self.weathereffectimgs[self.currentweather.weathertype][self.currentweather.level])
 
                     try:  # Get end time of next event which is now index 0
                         self.weatherschedule = self.weatherevent[0][1]
@@ -1140,8 +1185,10 @@ class Battle:
                             elif self.inspectui:  # Remove when click again and the ui already open
                                 self.battleui.remove(*self.inspectsubunit)
                                 self.battleui.remove(self.subunitselectedborder)
-                                for ui in self.gameui[2:4]: ui.kill()
-                                for button in self.unitcardbutton: button.kill()
+                                for ui in self.gameui[2:4]:
+                                    ui.kill()
+                                for button in self.unitcardbutton:
+                                    button.kill()
                                 self.inspectui = False
                                 self.newarmyclick = False
 
@@ -1540,7 +1587,7 @@ class Battle:
                                             if slot.name != "None":
                                                 posindex += 1
 
-                                self.previewauthority(self.team1previewleader, 0)  # calculate authority
+                                # self.previewauthority(self.team1previewleader, 0)  # calculate authority
 
                             else:  # new preset
                                 for slot in self.armybuildslot:  # reset all sub-subunit slot
@@ -1549,10 +1596,10 @@ class Battle:
                                                      self.currentweather)
                                     slot.leader = None  # remove leader link in
 
-                                for leaderlist in self.previewleaderlist:
-                                    for leader in leaderlist:
-                                        leader.subunit = None  # remove subunit link in leader
-                                        leader.change_leader(1, self.leader_stat)
+                                # for leaderlist in self.previewleaderlist:
+                                #     for leader in leaderlist:
+                                #         leader.subunit = None  # remove subunit link in leader
+                                #         leader.change_leader(1, self.leader_stat)
 
                                 # self.gameui[2].valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
                                 #                       changeoption=1)
@@ -1668,17 +1715,17 @@ class Battle:
                                 if self.popup_listbox.type == "terrain":
                                     self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.battlemap_base.terrainlist,
                                                    self.popupnamegroup,
-                                                   self.popup_listbox, layer=17)
+                                                   self.popup_listbox, self.battleui, layer=17)
                                 elif self.popup_listbox.type == "feature":
                                     self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.battlemap_feature.featurelist,
                                                    self.popupnamegroup,
-                                                   self.popup_listbox, layer=17)
+                                                   self.popup_listbox, self.battleui, layer=17)
                                 elif self.popup_listbox.type == "weather":
                                     self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.weather_list, self.popupnamegroup,
-                                                   self.popup_listbox, layer=17)
+                                                   self.popup_listbox, self.battleui, layer=17)
                                 elif self.popup_listbox.type == "leader":
                                     self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.leader_list, self.popupnamegroup,
-                                                   self.popup_listbox, layer=17)
+                                                   self.popup_listbox, self.battleui, layer=17)
 
                             else:
                                 self.battleui.remove(self.popup_listbox, self.popup_listscroll, *self.popupnamegroup)
@@ -1688,16 +1735,16 @@ class Battle:
                                 self.mousepos)  # update the scroller and get new current subsection
                             if self.current_list_show == "troop":
                                 self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.troop_list, self.troopnamegroup,
-                                               self.troop_listbox)
+                                               self.troop_listbox, self.battleui)
                             elif self.current_list_show == "faction":
                                 self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.faction_list, self.troopnamegroup,
-                                               self.troop_listbox)
+                                               self.troop_listbox, self.battleui)
 
                         elif self.army_presetname_scroll.rect.collidepoint(self.mousepos):
                             self.current_army_row = self.army_presetname_scroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
                             self.main.setuplist(gameprepare.Namelist, self.current_army_row, list(self.customarmypresetlist.keys()),
-                                           self.armypresetnamegroup, self.army_listbox)  # setup preset army list
+                                           self.armypresetnamegroup, self.army_listbox, self.battleui)  # setup preset army list
 
                         else:
                             for slot in self.armybuildslot:  # left click on any sub-subunit slot
@@ -1773,11 +1820,11 @@ class Battle:
                                                                                        self.leader_stat.leader_list.values()][1:]
 
                                             self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.troop_list, self.troopnamegroup,
-                                                           self.troop_listbox)  # setup troop name list
+                                                           self.troop_listbox, self.battleui)  # setup troop name list
                                             self.troop_scroll.changeimage(newrow=self.current_troop_row,
                                                                           logsize=len(self.troop_list))  # change troop scroll image
 
-                                            self.maketeamcoa([index], oneteam=True,
+                                            self.main.maketeamcoa([index], uiclass=self.battleui, oneteam=True,
                                                              team1setpos=(
                                                                  self.troop_listbox.rect.midleft[0] - int((200 * self.widthadjust) / 2),
                                                                  self.troop_listbox.rect.midleft[1]))  # change team coa
@@ -1829,7 +1876,31 @@ class Battle:
                                     break
 
                         elif mouse_up:
-                            if self.terrain_change_button.rect.collidepoint(self.mousepos):  # change map terrain button
+                            if self.filterbox.rect.collidepoint(self.mousepos):
+                                if self.teamchange_button.rect.collidepoint(self.mousepos):
+                                    if self.teamchange_button.event == 0:
+                                        self.teamchange_button.event = 1
+
+                                    elif self.teamchange_button.event == 1:
+                                        self.teamchange_button.event = 0
+
+                                    for slot in self.armybuildslot:
+                                        slot.team = self.teamchange_button.event + 1
+                                        slot.changeteam()
+
+                                elif self.slotdisplay_button.rect.collidepoint(self.mousepos):
+                                    if self.slotdisplay_button.event == 0:
+                                        self.slotdisplay_button.event = 1
+                                        self.battleui.remove(*self.armybuildslot)
+
+                                    elif self.slotdisplay_button.event == 1:
+                                        self.slotdisplay_button.event = 0
+                                        self.battleui.add(*self.armybuildslot)
+
+                                elif self.deploy_button.rect.collidepoint(self.mousepos):
+                                    pass
+
+                            elif self.terrain_change_button.rect.collidepoint(self.mousepos):  # change map terrain button
                                 self.popuplist_newopen(self.terrain_change_button.rect.midtop, self.battlemap_base.terrainlist, "terrain")
 
                             elif self.feature_change_button.rect.collidepoint(self.mousepos):  # change map feature button
@@ -1843,7 +1914,7 @@ class Battle:
                                     if self.current_list_show == "troop":
                                         self.current_troop_row = 0
                                         self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.faction_list, self.troopnamegroup,
-                                                       self.troop_listbox)
+                                                       self.troop_listbox, self.battleui)
                                         self.troop_scroll.changeimage(newrow=self.current_troop_row,
                                                                       logsize=len(self.faction_list))  # change troop scroll image
                                         self.current_list_show = "faction"
@@ -1873,7 +1944,6 @@ class Battle:
                 elif self.current_list_show == "faction":  # mouse scroll on faction list
                     self.current_troop_row = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.troop_scroll, self.troop_listbox,
                                                              self.current_troop_row, self.faction_list, self.troopnamegroup)
-
 
             else:  # Complete game pause when open either esc menu or enclycopedia
                 if self.battle_menu.mode == 0:  # main esc menu
@@ -1932,8 +2002,9 @@ class Battle:
                                     if self.mode == "uniteditor":
                                         self.showincard = None
 
-                                        self.battleui.remove(self.troop_listbox, self.troop_scroll, self.teamcoa, self.army_listbox,
-                                                             self.army_presetname_scroll, self.filterbox, *self.unitcardbutton,
+                                        self.battleui.remove(self.troop_listbox, self.teamchange_button, self.troop_scroll, self.teamcoa, self.army_listbox,
+                                                             self.army_presetname_scroll, self.filterbox, self.teamchange_button,
+                                                             self.slotdisplay_button, self.deploy_button, *self.unitcardbutton,
                                                              self.terrain_change_button, self.feature_change_button, self.weather_change_button,
                                                              self.timenumber, self.speednumber, *self.armybuildslot, *self.leadernow)
 
@@ -1948,10 +2019,10 @@ class Battle:
                                                              self.currentweather)
                                             slot.leader = None  # remove leader link in
 
-                                        for leaderlist in self.previewleaderlist:
-                                            for leader in leaderlist:
-                                                leader.subunit = None  # remove subunit link in leader
-                                                leader.change_leader(1, self.leader_stat)
+                                        # for leaderlist in self.previewleaderlist:
+                                        #     for leader in leaderlist:
+                                        #         leader.subunit = None  # remove subunit link in leader
+                                        #         leader.change_leader(1, self.leader_stat)
 
                                         del self.currentweather
 

@@ -515,7 +515,7 @@ def load_game_data(game):
                       gameui.Uibutton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
                       gameui.Uibutton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
-    game.screenbuttonlist = game.buttonui[8:17]
+    game.screenbuttonlist = game.buttonui[8:17] # event log and time buttons
     game.unitcardbutton = game.buttonui[0:4]
     game.inspectbutton = game.buttonui[4]
     game.col_split_button = game.buttonui[5]  # parentunit split by column button

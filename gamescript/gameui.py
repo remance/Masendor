@@ -5,7 +5,7 @@ import pygame.freetype
 
 
 class Uibutton(pygame.sprite.Sprite):
-    def __init__(self, x, y, image, event, newlayer=10):
+    def __init__(self, x, y, image, event, newlayer=11):
         self._layer = newlayer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (x, y)
@@ -20,7 +20,7 @@ class Uibutton(pygame.sprite.Sprite):
 
 class Switchuibutton(pygame.sprite.Sprite):
     def __init__(self, x, y, image):
-        self._layer = 10
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (x, y)
         self.images = image
@@ -39,7 +39,7 @@ class Switchuibutton(pygame.sprite.Sprite):
 
 class Popupicon(pygame.sprite.Sprite):
     def __init__(self, x, y, image, event, gameui, itemid=""):
-        self._layer = 11
+        self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.x, self.y = x, y
         self.image = image
