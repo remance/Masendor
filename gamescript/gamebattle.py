@@ -197,7 +197,7 @@ class Battle:
         self.background = pygame.Surface(SCREENRECT.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
-    def preparenewgame(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale):
+    def preparenewgame(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale, mode):
 
         self.ruleset = ruleset  # current ruleset used
         self.rulesetfolder = rulesetfolder  # the folder of rulseset used
@@ -300,6 +300,7 @@ class Battle:
         self.team2poslist = {}  # same for team 2
 
         # v initialise starting subunit sprites
+        self.mode = mode
         if self.mode == "battle":
             gamelongscript.unitsetup(self)
 
@@ -410,7 +411,7 @@ class Battle:
         else:
             self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
 
-        self.mian.setuplist(gameprepare.Namelist, 0, newlist, self.popupnamegroup,
+        self.main.setuplist(gameprepare.Namelist, 0, newlist, self.popupnamegroup,
                        self.popup_listbox, self.battleui, layer=17)
 
         self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
@@ -530,11 +531,10 @@ class Battle:
         self.gameui[0].valueinput(who=whoinput, splithappen=self.splithappen)
         self.gameui[1].valueinput(who=whoinput, splithappen=self.splithappen)
 
-    def rungame(self, mode):
+    def rungame(self):
         # v Create Starting Values
         self.mixervolume = SoundVolume
         self.gamestate = 1
-        self.mode = mode
         if self.mode == "uniteditor":
             self.gamestate = 2
             self.current_troop_row = 0

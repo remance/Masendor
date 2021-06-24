@@ -274,7 +274,7 @@ try:  # for printing error log when error exception happen
             gameui.FPScount.containers = self.battleui
             gameui.Uibutton.containers = self.buttonui, self.lorebuttonui
             gameui.Switchuibutton.containers = self.switchbuttonui, self.ui_updater
-            gameui.Selectedsquad.containers = self.inspectselectedborder, self.uniteditborder, self.mainui
+            gameui.Selectedsquad.containers = self.inspectselectedborder, self.uniteditborder, self.mainui, self.battleui
             gameui.Skillcardicon.containers = self.skill_icon, self.battleui, self.mainui
             gameui.Effectcardicon.containers = self.effect_icon, self.battleui, self.mainui
             gameui.Eventlog.containers = self.eventlog
@@ -1035,7 +1035,7 @@ try:  # for printing error log when error exception happen
                             self.start_button.event = False
                             self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, self.teamselected, self.enactment,
                                                            self.mapfoldername[self.current_map_select], self.mapsource,
-                                                           self.sourcescale[self.mapsource])
+                                                           self.sourcescale[self.mapsource], "battle")
                             self.battlegame.rungame()
                             gc.collect()  # collect no longer used object in previous battle from memory
 
@@ -1046,8 +1046,8 @@ try:  # for printing error log when error exception happen
 
                         elif self.unit_edit_button.event:
                             self.unit_edit_button.event = False
-                            self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, 1, True, None, 1, (1,1,1,1))
-                            self.battlegame.rungame("uniteditor")
+                            self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, 1, True, None, 1, (1,1,1,1), "uniteditor")
+                            self.battlegame.rungame()
 
                     elif self.menu_state == "option":
                         for bar in self.resolutionbar:  # loop to find which resolution bar is selected, this happen outside of clicking check below
