@@ -3,7 +3,7 @@ import csv
 
 import pygame
 import pygame.freetype
-from gamescript import gamelongscript
+from gamescript import gamelongscript, gamesubunit
 from pygame.transform import scale
 
 
@@ -52,24 +52,24 @@ class Previewbox(pygame.sprite.Sprite):
 
 
 class Previewleader(pygame.sprite.Sprite):
-    baseimgposition = [(134, 65), (80, 115), (190, 115), (134, 163)]  # leader image position in command ui
+    baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
 
-    def __init__(self, leaderid, squadposition, armyposition, leaderstat):
-        self._layer = 10
+    def __init__(self, leaderid, subunitpos, armyposition, leaderstat):
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.state = 0
-        self.squad = None
+        self.subunit = None
 
-        self.squadpos = squadposition  # Squad position is the index of subunit in subunit sprite loop
+        self.subunitpos = subunitpos  # Squad position is the index of subunit in subunit sprite loop
 
         self.armyposition = armyposition  # position in the parentunit (e.g. general or sub-general)
 
         self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
 
-        self.changeleader(leaderid, leaderstat)
+        self.change_leader(leaderid, leaderstat)
 
-    def changeleader(self, leaderid, leaderstat):
+    def change_leader(self, leaderid, leaderstat):
         self.gameid = leaderid  # Different than subunit game id, leadergameid is only used as reference to the id data
 
         stat = leaderstat.leader_list[leaderid]
@@ -96,9 +96,10 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
     squadwidth = 0  # subunit sprite width size get add from main
     squadheight = 0  # subunit sprite height size get add from main
     images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
-    weaponlist = None
+    weapon_list = None
     armourlist = None
-    statlist = None
+    stat_list = None
+    create_troop_stat = gamesubunit.create_troop_stat
 
     def __init__(self, gameid, team, armyid, position, startpos):
         import main
@@ -117,6 +118,8 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
         if self.armyid == 0:
             self.commander = True
         self.authority = 100
+        self.state = 0
+        self.ammo_now = 0
 
         self.coa = pygame.Surface((0, 0))  # empty coa to prevent leader ui error
 
@@ -139,20 +142,20 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
         self.image = self.image_original.copy()
         if self.troopindex != troopindex:
             self.troopindex = troopindex
-            # self.createtroopstat(self.team, self.statlist.unit_list[troopindex].copy(), [1, 1], 100, 100)
+            self.create_troop_stat(self.stat_list.unit_list[troopindex].copy(), 100, 100, [1, 1])
 
         self.terrain = terrain
         self.feature = feature
         self.weather = weather
         if self.name != "None":
             # v subunit block team colour
-            if self.unittype == 2:  # cavalry draw line on block
+            if self.unit_type == 2:  # cavalry draw line on block
                 pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
             # ^ End subunit block team colour
 
             # v armour circle colour (grey = light, gold = heavy)
             image1 = self.images[1]
-            if self.basearmour <= 50: image1 = self.images[2]
+            if self.base_armour <= 50: image1 = self.images[2]
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)
             # ^ End armour colour
@@ -171,9 +174,9 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
             # v weapon class icon in middle circle
             if self.unitclass == 0:
-                image1 = self.weaponlist.imgs[self.weaponlist.weapon_list[self.meleeweapon[0]][-3]]
+                image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.meleeweapon[0]][-3]]
             else:
-                image1 = self.weaponlist.imgs[self.weaponlist.weapon_list[self.rangeweapon[0]][-3]]
+                image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.rangeweapon[0]][-3]]
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)
             # ^ End weapon icon
@@ -257,10 +260,3 @@ class Filterbox(pygame.sprite.Sprite):
                                                     int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
 
-
-class Unitpreview(pygame.sprite.Sprite):
-    def __init__(self, gamebattle, position, gameid, squadlist, colour, leader, leaderpos, coa, startangle, team):
-        self = gamelongscript.addarmy(squadlist, position, gameid,
-                                      colour, (gamebattle.squadwidth, gamebattle.squadheight), leader + leaderpos, gamebattle.leader_stat,
-                                      gamebattle.gameunitstat, True,
-                                      coa, False, startangle, 100, 100, team)

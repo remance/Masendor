@@ -148,7 +148,7 @@ try:  # for printing error log when error exception happen
             self.weather_change_button = pygame.sprite.Group()  # button to change preview map weather
             self.armybuildslot = pygame.sprite.Group()  # slot for putting troop into army preset during preparation mode
             self.uniteditborder = pygame.sprite.Group()  # border that appear when selected sub-subunit
-            self.team1previewleader = pygame.sprite.Group()  # just to make preview leader class has containers
+            self.previewleader = pygame.sprite.Group()  # just to make preview leader class has containers
             self.armypresetnamegroup = pygame.sprite.Group()  # preset name list
 
             # battle object group
@@ -253,7 +253,7 @@ try:  # for printing error log when error exception happen
             gameunitedit.Filterbox.containers = self.filterbox
             gameunitedit.Previewchangebutton.containers = self.terrain_change_button, self.weather_change_button, self.feature_change_button
             gameunitedit.Armybuildslot.containers = self.armybuildslot
-            gameunitedit.Previewleader.containers = self.team1previewleader
+            gameunitedit.Previewleader.containers = self.previewleader
 
             # battle containers
             gamemap.Basemap.containers = self.battlemap_base
@@ -437,6 +437,12 @@ try:  # for printing error log when error exception happen
             self.team1previewarmy = np.array([[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
                                               [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
                                               [0, 0, 0, 0, 0, 0, 0, 0]])  # player teat army subunit list
+
+            self.previewleader = [gameunitedit.Previewleader(1, 0, 0, self.leader_stat),
+                                       gameunitedit.Previewleader(1, 0, 1, self.leader_stat),
+                                       gameunitedit.Previewleader(1, 0, 2, self.leader_stat),
+                                       gameunitedit.Previewleader(1, 0, 3, self.leader_stat)]
+            self.leader_updater.remove(*self.previewleader)
 
             boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)

@@ -10,6 +10,296 @@ from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
+def create_troop_stat(self, stat, starthp, startstamina, unitscale):
+    self.name = stat[0]  # name according to the preset
+    self.unitclass = stat[1]  # used to determine whether to use melee or range weapon as icon
+    self.grade = stat[2]  # training level/class grade
+    self.race = stat[3]  # creature race
+    self.trait = stat[4]  # trait list from preset
+    self.trait = self.trait + self.stat_list.grade_list[self.grade][-1]  # add trait from grade
+    skill = stat[5]  # skill list according to the preset
+    self.skill_cooldown = {}
+    self.cost = stat[6]
+    self.base_attack = round(stat[8] + int(self.stat_list.grade_list[self.grade][1]), 0)  # base melee attack with grade bonus
+    self.base_meleedef = round(stat[9] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base melee defence with grade bonus
+    self.base_rangedef = round(stat[10] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base range defence with grade bonus
+    self.armourgear = stat[11]  # armour equipement
+    self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
+                       * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
+    self.base_accuracy = stat[12] + int(self.stat_list.grade_list[self.grade][4])
+    self.basesight = stat[13]  # base sight range
+    self.magazine_left = stat[14]  # amount of ammunition
+    self.base_reload = stat[15] + int(self.stat_list.grade_list[self.grade][5])
+    self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
+    self.base_charge = stat[16]
+    self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
+    self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
+    self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
+    skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
+    self.skill = {x: self.stat_list.ability_list[x].copy() for x in skill if
+                  x != 0 and x in self.stat_list.ability_list}  # grab skill stat into dict
+    self.troophealth = round(stat[18] * self.stat_list.grade_list[self.grade][7])  # Health of each troop
+    self.stamina = int(stat[19] * self.stat_list.grade_list[self.grade][8] * (startstamina / 100))  # starting stamina with grade
+    self.mana = stat[20]  # Resource for magic skill
+
+    # vv Weapon stat
+    self.meleeweapon = stat[21]  # melee weapon equipment
+    self.rangeweapon = stat[22]  # range weapon equipment
+    self.dmg = (int(self.weapon_list.weapon_list[self.meleeweapon[0]][1] * self.weapon_list.quality[self.meleeweapon[1]]),
+                int(self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[self.meleeweapon[1]]))  # dmg for melee
+    self.melee_penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][3] * self.weapon_list.quality[
+        self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
+    if self.melee_penetrate > 1:
+        self.melee_penetrate = 1  # melee melee_penetrate cannot be higher than 1
+    elif self.melee_penetrate < 0:
+        self.melee_penetrate = 0  # melee melee_penetrate cannot be lower than 0
+    self.rangedmg = (int(self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]),
+                     int(self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]]))  # dmg for range
+    self.range_penetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
+    self.magazine_size = self.weapon_list.weapon_list[self.rangeweapon[0]][7]  # can shoot how many time before have to reload
+    self.base_range = int(self.weapon_list.weapon_list[self.rangeweapon[0]][8] * self.weapon_list.quality[
+        self.rangeweapon[1]])  # base weapon range depend on weapon range stat and quality
+    self.arrowspeed = self.weapon_list.weapon_list[self.rangeweapon[0]][9]  # travel speed of range attack
+    self.trait = self.trait + self.weapon_list.weapon_list[self.meleeweapon[0]][5]  # apply trait from range weapon
+    self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][5]  # apply trait from melee weapon
+    if self.range_penetrate > 1:
+        self.range_penetrate = 1  # range melee_penetrate cannot be higher than 1
+    elif self.range_penetrate < 0:
+        self.range_penetrate = 0  # range melee_penetrate cannot be lower than 0
+    # ^^ End weapon stat
+
+    self.base_morale = int(stat[23] + int(self.stat_list.grade_list[self.grade][9]))  # morale with grade bonus
+    self.base_discipline = int(stat[24] + int(self.stat_list.grade_list[self.grade][10]))  # discilpline with grade bonus
+    self.mental = stat[25] + int(self.stat_list.grade_list[self.grade][11])  # mental resistance from morale dmg and mental status effect
+    self.troopnumber = int(stat[27] * unitscale[self.team - 1] * starthp / 100)  # number of starting troop, team -1 to become list index
+    self.base_speed = 50  # All infantry has base speed at 50
+    self.unit_type = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
+    self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
+    self.authority = 100  # default start at 100
+
+    # vv Mount stat
+    self.mount = self.stat_list.mount_list[stat[29][0]]  # mount this subunit use
+    self.mountgrade = self.stat_list.mount_grade_list[stat[29][1]]
+    self.mountarmour = self.stat_list.mount_armour_list[stat[29][2]]
+    if stat[29][0] != 1:  # have mount, add mount stat with its grade to subunit stat
+        self.base_chargedef = 25  # charge defence only 25 for cav
+        self.base_speed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
+        self.troophealth += (self.mount[2] * self.mountgrade[3]) + self.mountarmour[1]  # Add mount health to the troop health
+        self.base_charge += (self.mount[3] + self.mountgrade[2])  # Add charge power of mount to troop
+        self.stamina += self.mount[4]
+        self.trait = self.trait + self.mount[6]  # Apply mount trait to subunit
+        self.unit_type = 2  # If subunit has mount, count as cav for command buff
+        self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
+    # ^^ End mount stat
+
+    self.weight = self.weapon_list.weapon_list[stat[21][0]][4] + self.weapon_list.weapon_list[stat[22][0]][4] \
+                  + self.armour_list.armour_list[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
+    if self.unit_type == 2:  # cavalry has half weight penalty
+        self.weight = self.weight / 2
+
+    self.trait = self.trait + self.armour_list.armour_list[stat[11][0]][4]  # Apply armour trait to subunit
+    self.base_speed = round((self.base_speed * ((100 - self.weight) / 100)) + int(self.stat_list.grade_list[self.grade][3]),
+                            0)  # finalise base speed with weight and grade bonus
+    self.description = stat[-1]  # subunit description for inspect ui
+    # if self.hidden
+
+    # vv Elemental stat
+    self.base_elem_melee = 0  # start with physical element for melee weapon
+    self.base_elem_range = 0  # start with physical for range weapon
+    self.elem_count = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
+    self.temp_count = 0  # Temperature threshold count
+    fire_res = 0  # resistance to fire, will be combine into list
+    water_res = 0  # resistance to water, will be combine into list
+    air_res = 0  # resistance to air, will be combine into list
+    earth_res = 0  # resistance to earth, will be combine into list
+    self.magic_res = 0  # Resistance to any magic
+    self.heat_res = 0  # Resistance to heat temperature
+    self.cold_res = 0  # Resistance to cold temperature
+    poison_res = 0  # resistance to poison, will be combine into list
+    # ^^ End elemental
+
+    self.crit_effect = 1  # critical extra modifier
+    self.front_dmg_effect = 1  # Some skill affect only frontal combat dmg
+    self.side_dmg_effect = 1  # Some skill affect dmg for side combat as well (AOE)
+    self.corner_atk = False  # Check if subunit can attack corner enemy or not
+    self.flankbonus = 1  # Combat bonus when flanking
+    self.base_auth_penalty = 0.1  # penalty to authority when bad event happen
+    self.bonus_morale_dmg = 0  # extra morale dmg
+    self.bonus_stamina_dmg = 0  # extra stamina dmg
+    self.auth_penalty = 0.1  # authority penalty for certain activities/order
+    self.base_hpregen = 0  # hp regeneration modifier, will not resurrect dead troop by default
+    self.base_staminaregen = 2  # stamina regeneration modifier
+    self.moraleregen = 2  # morale regeneration modifier
+    self.status_effect = {}  # list of current status effect
+    self.skill_effect = {}  # list of activate skill effect
+    self.base_inflictstatus = {}  # list of status that this subunit will inflict to enemy when attack
+    self.specialstatus = []
+
+    # vv Set up trait variable
+    self.arcshot = False
+    self.anti_inf = False
+    self.anti_cav = False
+    self.shootmove = False
+    self.agileaim = False
+    self.no_range_penal = False
+    self.long_range_acc = False
+    self.ignore_chargedef = False
+    self.ignore_def = False
+    self.fulldef = False
+    self.temp_fulldef = False
+    self.backstab = False
+    self.oblivious = False
+    self.flanker = False
+    self.unbreakable = False
+    self.temp_unbraekable = False
+    self.stationplace = False
+    # ^^ End setup trait variable
+
+    # vv Add trait to base stat
+    self.trait = list(set([trait for trait in self.trait if trait != 0]))
+    if len(self.trait) > 0:
+        self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
+                      x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+        for trait in self.trait.values():  # add trait modifier to base stat
+            self.base_attack *= trait[3]
+            self.base_meleedef *= trait[4]
+            self.base_rangedef *= trait[5]
+            self.base_armour += trait[6]
+            self.base_speed *= trait[7]
+            self.base_accuracy *= trait[8]
+            self.base_range *= trait[9]
+            self.base_reload *= trait[10]
+            self.base_charge *= trait[11]
+            self.base_chargedef += trait[12]
+            self.base_hpregen += trait[13]
+            self.base_staminaregen += trait[14]
+            self.base_morale += trait[15]
+            self.base_discipline += trait[16]
+            self.crit_effect += trait[17]
+            fire_res += (trait[21] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
+            water_res += (trait[22] / 100)
+            air_res += (trait[23] / 100)
+            earth_res += (trait[24] / 100)
+            self.magic_res += (trait[25] / 100)
+            self.heat_res += (trait[26] / 100)
+            self.cold_res += (trait[27] / 100)
+            poison_res += (trait[28] / 100)
+            self.mental += trait[31]
+            if trait[32] != [0]:
+                for effect in trait[32]:
+                    self.base_inflictstatus[effect] = trait[1]
+            # self.base_elem_melee =
+            # self.base_elem_range =
+
+        if 3 in self.trait:  # Varied training
+            self.base_attack *= (random.randint(80, 120) / 100)
+            self.base_meleedef *= (random.randint(80, 120) / 100)
+            self.base_rangedef *= (random.randint(80, 120) / 100)
+            # self.base_armour *= (random.randint(80, 120) / 100)
+            self.base_speed *= (random.randint(80, 120) / 100)
+            self.base_accuracy *= (random.randint(80, 120) / 100)
+            # self.base_range *= (random.randint(80, 120) / 100)
+            self.base_reload *= (random.randint(80, 120) / 100)
+            self.base_charge *= (random.randint(80, 120) / 100)
+            self.base_chargedef *= (random.randint(80, 120) / 100)
+            self.base_morale += random.randint(-10, 10)
+            self.base_discipline += random.randint(-10, 10)
+            self.mental += random.randint(-10, 10)
+
+        # v Change trait variable
+        if 16 in self.trait:
+            self.arcshot = True  # can shoot in arc
+        if 17 in self.trait:
+            self.agileaim = True  # gain bonus accuracy when shoot while moving
+        if 18 in self.trait:
+            self.shootmove = True  # can shoot and move at same time
+        if 29 in self.trait:
+            self.ignore_chargedef = True  # ignore charge defence completely
+        if 30 in self.trait:
+            self.ignore_def = True  # ignore defence completely
+        if 34 in self.trait:
+            self.fulldef = True  # full effective defence for all side
+        if 33 in self.trait:
+            self.backstab = True  # bonus on rear attack
+        if 47 in self.trait:
+            self.flanker = True  # bonus on flank attack
+        if 55 in self.trait:
+            self.oblivious = True  # more penalty on flank/rear defend
+        if 73 in self.trait:
+            self.no_range_penal = True  # no range penalty
+        if 74 in self.trait:
+            self.long_range_acc = True  # less range penalty
+        if 111 in self.trait:
+            self.unbreakable = True  # always unbreakable
+            self.temp_unbraekable = True
+        if 149 in self.trait:  # Impetuous
+            self.base_auth_penalty += 0.5
+        # ^ End change trait variable
+    # ^^ End add trait to stat
+
+    # self.loyalty
+    self.elem_res = (fire_res, water_res, air_res, earth_res, poison_res)  # list of elemental resistance
+    self.maxstamina = self.stamina
+    self.stamina75 = round(self.stamina * 0.75)
+    self.stamina50 = round(self.stamina * 0.5)
+    self.stamina25 = round(self.stamina * 0.25)
+    self.stamina5 = round(self.stamina * 0.05)
+    self.unit_health = self.troophealth * self.troopnumber  # Total health of subunit from all troop
+    self.last_health_state = 4  # state start at full
+    self.last_stamina_state = 4
+
+    self.base_reload = self.weapon_list.weapon_list[self.rangeweapon[0]][6] + ((self.base_reload - 50) *
+                                                                               self.weapon_list.weapon_list[self.rangeweapon[0]][
+                                                                                   6] / 100)  # final reload speed from weapon and skill
+
+    # vv Stat variable after receive modifier effect from various sources, used for activity and effect calculation
+    if self.base_morale > 200:  # starting morale cannot be higher than 200
+        self.base_morale = 200
+    self.maxmorale = self.base_morale
+    self.attack = self.base_attack
+    self.meleedef = self.base_meleedef
+    self.rangedef = self.base_rangedef
+    self.armour = self.base_armour
+    self.speed = self.base_speed
+    self.accuracy = self.base_accuracy
+    self.reload = self.base_reload
+    self.morale = self.base_morale
+    self.discipline = self.base_discipline
+    self.shootrange = self.base_range
+    self.charge = self.base_charge
+    self.chargedef = self.base_chargedef
+    # ^^ End stat for status effect
+
+    if self.mental < 0:  # cannot be negative
+        self.mental = 0
+    elif self.mental > 200:  # cannot exceed 100
+        self.mental = 200
+    self.mentaltext = int(self.mental - 100)
+    self.mental = (200 - self.mental) / 100  # convert to percentage
+
+    self.elem_melee = self.base_elem_melee
+    self.elem_range = self.base_elem_range
+    self.maxhealth, self.health75, self.health50, self.health25, = self.unit_health, round(self.unit_health * 0.75), round(
+        self.unit_health * 0.5), round(self.unit_health * 0.25)  # health percentage
+    self.oldlasthealth, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
+    self.maxtroop = self.troopnumber  # max number of troop at the start
+    self.moralestate = round(self.base_morale / self.maxmorale)  # turn into percentage
+    self.staminastate = round((self.stamina * 100) / self.maxstamina)  # turn into percentage
+    self.staminastate_cal = self.staminastate / 100  # for using as modifer on stat
+
+    self.crit_effect = 1  # default critical effect
+    self.front_dmg_effect = 1  # default frontal dmg
+    self.side_dmg_effect = 1  # default side dmg
+
+    self.corner_atk = False  # cannot attack corner enemy by default
+    self.temp_fulldef = False
+
+    self.auth_penalty = self.base_auth_penalty
+    self.hpregen = self.base_hpregen
+    self.staminaregen = self.base_staminaregen
+    self.inflictstatus = self.base_inflictstatus
+    self.elem_melee = self.base_elem_melee
+    self.elem_range = self.base_elem_range
 
 class Subunit(pygame.sprite.Sprite):
     images = []
@@ -25,10 +315,11 @@ class Subunit(pygame.sprite.Sprite):
     setrotate = gamelongscript.setrotate
     change_leader = gamelongscript.change_leader
     maxzoom = 10  # max zoom allow
+    create_troop_stat = create_troop_stat
 
     # use same position as subunit front index 0 = front, 1 = left, 2 = rear, 3 = right
 
-    def __init__(self, unitid, gameid, parentunit, position, starthp, startstamina, unitscale, testbuild=False):
+    def __init__(self, unitid, gameid, parentunit, position, starthp, startstamina, unitscale):
         """Although subunit in code, this is referred as sub-subunit ingame"""
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -81,295 +372,7 @@ class Subunit(pygame.sprite.Sprite):
 
         # v Setup troop stat
         stat = self.stat_list.unit_list[self.unitid].copy()
-        self.name = stat[0]  # name according to the preset
-        self.unitclass = stat[1]  # used to determine whether to use melee or range weapon as icon
-        self.grade = stat[2]  # training level/class grade
-        self.race = stat[3]  # creature race
-        self.trait = stat[4]  # trait list from preset
-        self.trait = self.trait + self.stat_list.grade_list[self.grade][-1]  # add trait from grade
-        skill = stat[5]  # skill list according to the preset
-        self.skill_cooldown = {}
-        self.cost = stat[6]
-        self.base_attack = round(stat[8] + int(self.stat_list.grade_list[self.grade][1]), 0)  # base melee attack with grade bonus
-        self.base_meleedef = round(stat[9] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base melee defence with grade bonus
-        self.base_rangedef = round(stat[10] + int(self.stat_list.grade_list[self.grade][2]), 0)  # base range defence with grade bonus
-        self.armourgear = stat[11]  # armour equipement
-        self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
-                           * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
-        self.base_accuracy = stat[12] + int(self.stat_list.grade_list[self.grade][4])
-        self.basesight = stat[13]  # base sight range
-        self.magazine_left = stat[14]  # amount of ammunition
-        self.base_reload = stat[15] + int(self.stat_list.grade_list[self.grade][5])
-        self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
-        self.base_charge = stat[16]
-        self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
-        self.chargeskill = stat[17]  # For easier reference to check what charge skill this subunit has
-        self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
-        skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
-        self.skill = {x: self.stat_list.ability_list[x].copy() for x in skill if
-                      x != 0 and x in self.stat_list.ability_list}  # grab skill stat into dict
-        self.troophealth = round(stat[18] * self.stat_list.grade_list[self.grade][7])  # Health of each troop
-        self.stamina = int(stat[19] * self.stat_list.grade_list[self.grade][8] * (startstamina / 100))  # starting stamina with grade
-        self.mana = stat[20]  # Resource for magic skill
-
-        # vv Weapon stat
-        self.meleeweapon = stat[21]  # melee weapon equipment
-        self.rangeweapon = stat[22]  # range weapon equipment
-        self.dmg = (int(self.weapon_list.weapon_list[self.meleeweapon[0]][1] * self.weapon_list.quality[self.meleeweapon[1]]),
-                    int(self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[self.meleeweapon[1]]))  # dmg for melee
-        self.melee_penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][3] * self.weapon_list.quality[
-            self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
-        if self.melee_penetrate > 1:
-            self.melee_penetrate = 1  # melee melee_penetrate cannot be higher than 1
-        elif self.melee_penetrate < 0:
-            self.melee_penetrate = 0  # melee melee_penetrate cannot be lower than 0
-        self.rangedmg = (int(self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]),
-                         int(self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]]))  # dmg for range
-        self.range_penetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
-        self.magazine_size = self.weapon_list.weapon_list[self.rangeweapon[0]][7]  # can shoot how many time before have to reload
-        self.base_range = int(self.weapon_list.weapon_list[self.rangeweapon[0]][8] * self.weapon_list.quality[
-            self.rangeweapon[1]])  # base weapon range depend on weapon range stat and quality
-        self.arrowspeed = self.weapon_list.weapon_list[self.rangeweapon[0]][9]  # travel speed of range attack
-        self.trait = self.trait + self.weapon_list.weapon_list[self.meleeweapon[0]][5]  # apply trait from range weapon
-        self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][5]  # apply trait from melee weapon
-        if self.range_penetrate > 1:
-            self.range_penetrate = 1  # range melee_penetrate cannot be higher than 1
-        elif self.range_penetrate < 0:
-            self.range_penetrate = 0  # range melee_penetrate cannot be lower than 0
-        # ^^ End weapon stat
-
-        self.base_morale = int(stat[23] + int(self.stat_list.grade_list[self.grade][9]))  # morale with grade bonus
-        self.base_discipline = int(stat[24] + int(self.stat_list.grade_list[self.grade][10]))  # discilpline with grade bonus
-        self.mental = stat[25] + int(self.stat_list.grade_list[self.grade][11])  # mental resistance from morale dmg and mental status effect
-        self.troopnumber = int(stat[27] * unitscale[self.team - 1] * starthp / 100)  # number of starting troop, team -1 to become list index
-        self.base_speed = 50  # All infantry has base speed at 50
-        self.unit_type = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
-        self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
-        self.authority = 100  # default start at 100
-
-        # vv Mount stat
-        self.mount = self.stat_list.mount_list[stat[29][0]]  # mount this subunit use
-        self.mountgrade = self.stat_list.mount_grade_list[stat[29][1]]
-        self.mountarmour = self.stat_list.mount_armour_list[stat[29][2]]
-        if stat[29][0] != 1:  # have mount, add mount stat with its grade to subunit stat
-            self.base_chargedef = 25  # charge defence only 25 for cav
-            self.base_speed = (self.mount[1] + self.mountgrade[1])  # use mount base speed instead
-            self.troophealth += (self.mount[2] * self.mountgrade[3]) + self.mountarmour[1]  # Add mount health to the troop health
-            self.base_charge += (self.mount[3] + self.mountgrade[2])  # Add charge power of mount to troop
-            self.stamina += self.mount[4]
-            self.trait = self.trait + self.mount[6]  # Apply mount trait to subunit
-            self.unit_type = 2  # If subunit has mount, count as cav for command buff
-            self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
-        # ^^ End mount stat
-
-        self.weight = self.weapon_list.weapon_list[stat[21][0]][4] + self.weapon_list.weapon_list[stat[22][0]][4] \
-                      + self.armour_list.armour_list[stat[11][0]][2] + self.mountarmour[2]  # Weight from both melee and range weapon and armour
-        if self.unit_type == 2:  # cavalry has half weight penalty
-            self.weight = self.weight / 2
-
-        self.trait = self.trait + self.armour_list.armour_list[stat[11][0]][4]  # Apply armour trait to subunit
-        self.base_speed = round((self.base_speed * ((100 - self.weight) / 100)) + int(self.stat_list.grade_list[self.grade][3]),
-                                0)  # finalise base speed with weight and grade bonus
-        self.description = stat[-1]  # subunit description for inspect ui
-        # if self.hidden
-
-        # vv Elemental stat
-        self.base_elem_melee = 0  # start with physical element for melee weapon
-        self.base_elem_range = 0  # start with physical for range weapon
-        self.elem_count = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
-        self.temp_count = 0  # Temperature threshold count
-        fire_res = 0  # resistance to fire, will be combine into list
-        water_res = 0  # resistance to water, will be combine into list
-        air_res = 0  # resistance to air, will be combine into list
-        earth_res = 0  # resistance to earth, will be combine into list
-        self.magic_res = 0  # Resistance to any magic
-        self.heat_res = 0  # Resistance to heat temperature
-        self.cold_res = 0  # Resistance to cold temperature
-        poison_res = 0  # resistance to poison, will be combine into list
-        # ^^ End elemental
-
-        self.crit_effect = 1  # critical extra modifier
-        self.front_dmg_effect = 1  # Some skill affect only frontal combat dmg
-        self.side_dmg_effect = 1  # Some skill affect dmg for side combat as well (AOE)
-        self.corner_atk = False  # Check if subunit can attack corner enemy or not
-        self.flankbonus = 1  # Combat bonus when flanking
-        self.base_auth_penalty = 0.1  # penalty to authority when bad event happen
-        self.bonus_morale_dmg = 0  # extra morale dmg
-        self.bonus_stamina_dmg = 0  # extra stamina dmg
-        self.auth_penalty = 0.1  # authority penalty for certain activities/order
-        self.base_hpregen = 0  # hp regeneration modifier, will not resurrect dead troop by default
-        self.base_staminaregen = 2  # stamina regeneration modifier
-        self.moraleregen = 2  # morale regeneration modifier
-        self.status_effect = {}  # list of current status effect
-        self.skill_effect = {}  # list of activate skill effect
-        self.base_inflictstatus = {}  # list of status that this subunit will inflict to enemy when attack
-        self.specialstatus = []
-
-        # vv Set up trait variable
-        self.arcshot = False
-        self.anti_inf = False
-        self.anti_cav = False
-        self.shootmove = False
-        self.agileaim = False
-        self.no_range_penal = False
-        self.long_range_acc = False
-        self.ignore_chargedef = False
-        self.ignore_def = False
-        self.fulldef = False
-        self.temp_fulldef = False
-        self.backstab = False
-        self.oblivious = False
-        self.flanker = False
-        self.unbreakable = False
-        self.temp_unbraekable = False
-        self.stationplace = False
-        # ^^ End setup trait variable
-
-        # vv Add trait to base stat
-        self.trait = list(set([trait for trait in self.trait if trait != 0]))
-        if len(self.trait) > 0:
-            self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
-                          x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
-            for trait in self.trait.values():  # add trait modifier to base stat
-                self.base_attack *= trait[3]
-                self.base_meleedef *= trait[4]
-                self.base_rangedef *= trait[5]
-                self.base_armour += trait[6]
-                self.base_speed *= trait[7]
-                self.base_accuracy *= trait[8]
-                self.base_range *= trait[9]
-                self.base_reload *= trait[10]
-                self.base_charge *= trait[11]
-                self.base_chargedef += trait[12]
-                self.base_hpregen += trait[13]
-                self.base_staminaregen += trait[14]
-                self.base_morale += trait[15]
-                self.base_discipline += trait[16]
-                self.crit_effect += trait[17]
-                fire_res += (trait[21] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
-                water_res += (trait[22] / 100)
-                air_res += (trait[23] / 100)
-                earth_res += (trait[24] / 100)
-                self.magic_res += (trait[25] / 100)
-                self.heat_res += (trait[26] / 100)
-                self.cold_res += (trait[27] / 100)
-                poison_res += (trait[28] / 100)
-                self.mental += trait[31]
-                if trait[32] != [0]:
-                    for effect in trait[32]:
-                        self.base_inflictstatus[effect] = trait[1]
-                # self.base_elem_melee =
-                # self.base_elem_range =
-
-            if 3 in self.trait:  # Varied training
-                self.base_attack *= (random.randint(80, 120) / 100)
-                self.base_meleedef *= (random.randint(80, 120) / 100)
-                self.base_rangedef *= (random.randint(80, 120) / 100)
-                # self.base_armour *= (random.randint(80, 120) / 100)
-                self.base_speed *= (random.randint(80, 120) / 100)
-                self.base_accuracy *= (random.randint(80, 120) / 100)
-                # self.base_range *= (random.randint(80, 120) / 100)
-                self.base_reload *= (random.randint(80, 120) / 100)
-                self.base_charge *= (random.randint(80, 120) / 100)
-                self.base_chargedef *= (random.randint(80, 120) / 100)
-                self.base_morale += random.randint(-10, 10)
-                self.base_discipline += random.randint(-10, 10)
-                self.mental += random.randint(-10, 10)
-
-            # v Change trait variable
-            if 16 in self.trait:
-                self.arcshot = True  # can shoot in arc
-            if 17 in self.trait:
-                self.agileaim = True  # gain bonus accuracy when shoot while moving
-            if 18 in self.trait:
-                self.shootmove = True  # can shoot and move at same time
-            if 29 in self.trait:
-                self.ignore_chargedef = True  # ignore charge defence completely
-            if 30 in self.trait:
-                self.ignore_def = True  # ignore defence completely
-            if 34 in self.trait:
-                self.fulldef = True  # full effective defence for all side
-            if 33 in self.trait:
-                self.backstab = True  # bonus on rear attack
-            if 47 in self.trait:
-                self.flanker = True  # bonus on flank attack
-            if 55 in self.trait:
-                self.oblivious = True  # more penalty on flank/rear defend
-            if 73 in self.trait:
-                self.no_range_penal = True  # no range penalty
-            if 74 in self.trait:
-                self.long_range_acc = True  # less range penalty
-            if 111 in self.trait:
-                self.unbreakable = True  # always unbreakable
-                self.temp_unbraekable = True
-            if 149 in self.trait:  # Impetuous
-                self.base_auth_penalty += 0.5
-            # ^ End change trait variable
-        # ^^ End add trait to stat
-
-        # self.loyalty
-        self.elem_res = (fire_res, water_res, air_res, earth_res, poison_res)  # list of elemental resistance
-        self.maxstamina = self.stamina
-        self.stamina75 = round(self.stamina * 0.75)
-        self.stamina50 = round(self.stamina * 0.5)
-        self.stamina25 = round(self.stamina * 0.25)
-        self.stamina5 = round(self.stamina * 0.05)
-        self.unit_health = self.troophealth * self.troopnumber  # Total health of subunit from all troop
-        self.last_health_state = 4  # state start at full
-        self.last_stamina_state = 4
-
-        self.base_reload = self.weapon_list.weapon_list[self.rangeweapon[0]][6] + ((self.base_reload - 50) *
-                                                                                   self.weapon_list.weapon_list[self.rangeweapon[0]][
-                                                                                       6] / 100)  # final reload speed from weapon and skill
-
-        # vv Stat variable after receive modifier effect from various sources, used for activity and effect calculation
-        if self.base_morale > 200: # starting morale cannot be higher than 200
-            self.base_morale = 200
-        self.maxmorale = self.base_morale
-        self.attack = self.base_attack
-        self.meleedef = self.base_meleedef
-        self.rangedef = self.base_rangedef
-        self.armour = self.base_armour
-        self.speed = self.base_speed
-        self.accuracy = self.base_accuracy
-        self.reload = self.base_reload
-        self.morale = self.base_morale
-        self.discipline = self.base_discipline
-        self.shootrange = self.base_range
-        self.charge = self.base_charge
-        self.chargedef = self.base_chargedef
-        # ^^ End stat for status effect
-
-        if self.mental < 0:  # cannot be negative
-            self.mental = 0
-        elif self.mental > 200:  # cannot exceed 100
-            self.mental = 200
-        self.mentaltext = int(self.mental - 100)
-        self.mental = (200 - self.mental) / 100  # convert to percentage
-
-        self.elem_melee = self.base_elem_melee
-        self.elem_range = self.base_elem_range
-        self.maxhealth, self.health75, self.health50, self.health25, = self.unit_health, round(self.unit_health * 0.75), round(
-            self.unit_health * 0.5), round(self.unit_health * 0.25)  # health percentage
-        self.oldlasthealth, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
-        self.maxtroop = self.troopnumber  # max number of troop at the start
-        self.moralestate = round(self.base_morale / self.maxmorale)  # turn into percentage
-        self.staminastate = round((self.stamina * 100) / self.maxstamina)  # turn into percentage
-        self.staminastate_cal = self.staminastate / 100  # for using as modifer on stat
-
-        self.crit_effect = 1  # default critical effect
-        self.front_dmg_effect = 1  # default frontal dmg
-        self.side_dmg_effect = 1  # default side dmg
-
-        self.corner_atk = False  # cannot attack corner enemy by default
-        self.temp_fulldef = False
-
-        self.auth_penalty = self.base_auth_penalty
-        self.hpregen = self.base_hpregen
-        self.staminaregen = self.base_staminaregen
-        self.inflictstatus = self.base_inflictstatus
-        self.elem_melee = self.base_elem_melee
-        self.elem_range = self.base_elem_range
+        self.create_troop_stat(stat, starthp, startstamina, unitscale)
         # ^ End setup stat
 
         # v Subunit image block

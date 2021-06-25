@@ -7,7 +7,7 @@ import main
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather, gameprepare, gameunitedit
+from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather, gameprepare, gameunitedit, gamemap
 from pygame.locals import *
 from scipy.spatial import KDTree
 
@@ -110,7 +110,7 @@ class Battle:
         self.weather_change_button = main.weather_change_button
         self.armybuildslot = main.armybuildslot
         self.uniteditborder = main.uniteditborder
-        self.team1previewleader = main.team1previewleader
+        self.previewleader = main.previewleader
         self.armypresetnamegroup = main.armypresetnamegroup
         self.customarmypresetlist = main.customarmypresetlist
         self.army_listbox = main.army_listbox
@@ -197,6 +197,17 @@ class Battle:
         self.background = pygame.Surface(SCREENRECT.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
+    def editor_map_change(self, basecolour, featurecolour):
+        imgs = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
+        imgs[0].fill(basecolour)  # start with temperate terrain
+        imgs[1].fill(featurecolour)  # start with plain feature
+        imgs[2].fill((255, 100, 100, 125))  # start with height 100 plain
+
+        self.battlemap_base.drawimage(imgs[0])
+        self.battlemap_feature.drawimage(imgs[1])
+        self.battlemap_height.drawimage(imgs[2])
+        self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, None, self, True)
+
     def preparenewgame(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale, mode):
 
         self.ruleset = ruleset  # current ruleset used
@@ -274,18 +285,9 @@ class Battle:
                 placenamemap = imgs[3]
             except Exception:
                 placenamemap = None
-            self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, placenamemap, self)
+            self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, placenamemap, self, False)
         else:  # for unit editor mode, create empty temperate glass map
-            imgs = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
-            imgs[0].fill((166, 255, 107))  # start with temperate terrain
-            imgs[1].fill((181, 230, 29))  # start with plain feature
-            imgs[2].fill((255, 100, 100, 125))  # start with height 100 plain
-
-            self.battlemap_base.drawimage(imgs[0])
-            self.battlemap_feature.drawimage(imgs[1])
-            self.battlemap_height.drawimage(imgs[2])
-            self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, None, self, False)
-
+            self.editor_map_change((166, 255, 107), (181, 230, 29))
         # ^ End create battle map
 
         self.minimap.drawimage(self.showmap.trueimage, self.camera)
@@ -551,7 +553,6 @@ class Battle:
 
             self.main.setuplist(gameprepare.Namelist, self.current_army_row, list(self.customarmypresetlist.keys()),
                            self.armypresetnamegroup, self.army_listbox, self.battleui)  # setup preset army list
-
             self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.troop_list,
                            self.troopnamegroup, self.troop_listbox, self.battleui)  # setup troop name list
 
@@ -578,6 +579,7 @@ class Battle:
                         border.kill()
                         del border
                     self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition))
+                    self.battleui.add(*self.uniteditborder)
                 else:  # reset all other slot
                     slot.selected = False
 
@@ -1321,7 +1323,6 @@ class Battle:
                                             self.mousepos) and subunit in self.battleui:  # Change showing stat to the clicked subunit one
                                         if mouse_up:
                                             self.subunit_selected = subunit
-                                            # print(self.subunit_selected.attacker.gameid)
                                             self.subunitselectedborder.pop(self.subunit_selected.pos)
                                             self.eventlog.addlog(
                                                 [0, str(self.subunit_selected.who.board_pos) + " " + str(self.subunit_selected.who.name) + " in " +
@@ -1571,23 +1572,23 @@ class Battle:
                                             break
 
                                 for leaderindex, item in enumerate(leaderwholist):
-                                    self.team1previewleader[leaderindex].leader = None
-                                    if self.team1previewleader[leaderindex].subunit is not None:
-                                        self.team1previewleader[leaderindex].subunit.leader = None
+                                    self.previewleader[leaderindex].leader = None
+                                    if self.previewleader[leaderindex].subunit is not None:
+                                        self.previewleader[leaderindex].subunit.leader = None
 
-                                    self.team1previewleader[leaderindex].change_leader(item, self.leader_stat)
+                                    self.previewleader[leaderindex].change_leader(item, self.leader_stat)
 
                                     posindex = 0
                                     for slot in self.armybuildslot:  # can't use gameid here as none subunit not count in position check
                                         if posindex == leaderposlist[leaderindex]:
-                                            self.team1previewleader[leaderindex].subunit = slot
-                                            slot.leader = self.team1previewleader[leaderindex]
+                                            self.previewleader[leaderindex].subunit = slot
+                                            slot.leader = self.previewleader[leaderindex]
                                             break
                                         else:
                                             if slot.name != "None":
                                                 posindex += 1
 
-                                # self.previewauthority(self.team1previewleader, 0)  # calculate authority
+                                # self.previewauthority(self.previewleader, 0)  # calculate authority
 
                             else:  # new preset
                                 for slot in self.armybuildslot:  # reset all sub-subunit slot
@@ -1596,10 +1597,9 @@ class Battle:
                                                      self.currentweather)
                                     slot.leader = None  # remove leader link in
 
-                                # for leaderlist in self.previewleaderlist:
-                                #     for leader in leaderlist:
-                                #         leader.subunit = None  # remove subunit link in leader
-                                #         leader.change_leader(1, self.leader_stat)
+                                for leader in self.previewleader:
+                                    leader.subunit = None  # remove subunit link in leader
+                                    leader.change_leader(1, self.leader_stat)
 
                                 # self.gameui[2].valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
                                 #                       changeoption=1)
@@ -1670,19 +1670,19 @@ class Battle:
                                         if self.popup_listbox.type == "terrain":
                                             self.terrain_change_button.changetext(self.battlemap_base.terrainlist[index])
                                             self.baseterrain = index
-                                            self.battlepreview.changeterrain(self.battlepreview.newcolourlist[(self.baseterrain * len(
-                                                self.battlemap_feature.featurelist)) + self.featureterrain])
+                                            self.editor_map_change(gamemap.terraincolour[self.baseterrain],
+                                                                   gamemap.featurecolour[self.featureterrain])
 
                                         elif self.popup_listbox.type == "feature":
                                             self.feature_change_button.changetext(self.battlemap_feature.featurelist[index])
                                             self.featureterrain = index
-                                            self.battlepreview.changeterrain(self.battlepreview.newcolourlist[(self.baseterrain * len(
-                                                self.battlemap_feature.featurelist)) + self.featureterrain])
+                                            self.editor_map_change(gamemap.terraincolour[self.baseterrain],
+                                                                   gamemap.featurecolour[self.featureterrain])
 
                                         elif self.popup_listbox.type == "weather":
                                             self.weathertype = int(index / 3)
                                             self.weatherstrength = index - (self.weathertype * 3)
-                                            self.weather_change_button.changetext(self.weather_list[self.current_map_select + index])
+                                            self.weather_change_button.changetext(self.weather_list[index])
                                             del self.currentweather
                                             self.currentweather = gameweather.Weather(self.timeui, self.weathertype + 1, self.weatherstrength,
                                                                                       self.allweather)
@@ -1747,11 +1747,13 @@ class Battle:
                                            self.armypresetnamegroup, self.army_listbox, self.battleui)  # setup preset army list
 
                         else:
+                            slotclick = False
                             for slot in self.armybuildslot:  # left click on any sub-subunit slot
                                 if slot.rect.collidepoint(self.mousepos):
-
+                                    slotclick = True
                                     if keystate[pygame.K_LSHIFT]:  # add all sub-subunit from the first selected
                                         firstone = None
+                                        slotclick = True
                                         for newslot in self.armybuildslot:
                                             if newslot.armyid == slot.armyid and newslot.gameid <= slot.gameid:
                                                 if firstone is None and newslot.selected:  # found the previous selected sub-subunit
@@ -1761,23 +1763,28 @@ class Battle:
                                                     else:  # forward select, acceptable
                                                         slot.selected = True
                                                         self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
+                                                        self.battleui.add(*self.uniteditborder)
                                                 elif firstone is not None and newslot.gameid > firstone and newslot.selected is False:  # select from first select to clicked
                                                     newslot.selected = True
                                                     self.uniteditborder.add(gameui.Selectedsquad(newslot.inspposition, 5))
+                                                    self.battleui.add(*self.uniteditborder)
 
                                     elif keystate[pygame.K_LCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
                                         slot.selected = True
                                         self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
+                                        self.battleui.add(*self.uniteditborder)
+
                                     else:  # select one sub-subunit by normal left click
                                         for border in self.uniteditborder:  # remove all other border
                                             border.kill()
                                             del border
                                         slot.selected = True
                                         self.uniteditborder.add(gameui.Selectedsquad(slot.inspposition, 5))
+                                        self.battleui.add(*self.uniteditborder)
 
                                     if slot.name != "None":
                                         self.battleui.remove(*self.leadernow)
-                                        self.leadernow = self.previewleaderlist[slot.armyid]
+                                        self.leadernow = [leader for leader in self.previewleader]
                                         self.battleui.add(*self.leadernow)  # add leader portrait to draw
                                         self.showincard = slot
                                         self.gameui[1].valueinput(who=self.showincard)
@@ -1788,7 +1795,7 @@ class Battle:
                                             self.effecticonblit()
                                             self.countdownskillicon()
 
-                                elif keystate[pygame.K_LCTRL] == 0 and \
+                                elif keystate[pygame.K_LCTRL] == 0 and slotclick is True and \
                                         keystate[pygame.K_LSHIFT] == 0:  # normal left click select remove all other
                                     slot.selected = False
 
@@ -1855,7 +1862,7 @@ class Battle:
 
                                                     if slot.name != "None":  # update information of subunit that just got changed
                                                         self.battleui.remove(*self.leadernow)
-                                                        self.leadernow = self.previewleaderlist[slot.armyid]
+                                                        self.leadernow = [leader for leader in self.previewleader]
                                                         self.battleui.add(*self.leadernow)  # add leader portrait to draw
                                                         self.showincard = slot
                                                         self.previewauthority(self.leadernow, slot.armyid)
@@ -2019,10 +2026,10 @@ class Battle:
                                                              self.currentweather)
                                             slot.leader = None  # remove leader link in
 
-                                        # for leaderlist in self.previewleaderlist:
-                                        #     for leader in leaderlist:
-                                        #         leader.subunit = None  # remove subunit link in leader
-                                        #         leader.change_leader(1, self.leader_stat)
+                                        for leaderlist in self.previewleaderlist:
+                                            for leader in leaderlist:
+                                                leader.subunit = None  # remove subunit link in leader
+                                                leader.change_leader(1, self.leader_stat)
 
                                         del self.currentweather
 

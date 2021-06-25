@@ -199,7 +199,7 @@ class Beautifulmap(pygame.sprite.Sprite):
                         row[n] = ast.literal_eval(i)
                 self.newcolourlist[row[0]] = row[1:]
 
-    def drawimage(self, basemap, featuremap, gamemapheight, placename, gamebattle, drawfeature = True):
+    def drawimage(self, basemap, featuremap, gamemapheight, placename, gamebattle, editormap):
 
         self.image = featuremap.image.copy()
         self.rect = self.image.get_rect(topleft=(0, 0))
@@ -207,21 +207,25 @@ class Beautifulmap(pygame.sprite.Sprite):
         gamebattle.mapmovearray = []  # array for pathfinding
         gamebattle.mapdefarray = []
 
-        for rowpos in range(0, 1000):  # recolour the map
-            speedarray = []
-            for colpos in range(0, 1000):
-                terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)
-                height = gamemapheight.getheight((rowpos, colpos))
-                newcolour = self.newcolourlist[feature][1]
-                rect = pygame.Rect(rowpos, colpos, 1, 1)
-                self.image.fill(newcolour, rect)
+        if editormap:
+            terrain, feature = featuremap.getfeature((1, 1), basemap)
+            newcolour = self.newcolourlist[feature][1]
+            self.image.fill(newcolour)
+        else:
+            for rowpos in range(0, 1000):  # recolour the map
+                speedarray = []
+                for colpos in range(0, 1000):
+                    terrain, feature = featuremap.getfeature((rowpos, colpos), basemap)
+                    newcolour = self.newcolourlist[feature][1]
+                    rect = pygame.Rect(rowpos, colpos, 1, 1)
+                    self.image.fill(newcolour, rect)
 
-                mapfeaturemod = featuremap.featuremod[feature]
-                speedmod = int(mapfeaturemod[2] * 100)
-                # infcombatmod = int(mapfeaturemod[3] * 100)
-                # cavcombatmod = int(mapfeaturemod[6] * 100)
-                speedarray.append(speedmod)
-            gamebattle.mapmovearray.append(speedarray)
+                    mapfeaturemod = featuremap.featuremod[feature]
+                    speedmod = int(mapfeaturemod[2] * 100)
+                    # infcombatmod = int(mapfeaturemod[3] * 100)
+                    # cavcombatmod = int(mapfeaturemod[6] * 100)
+                    speedarray.append(speedmod)
+                gamebattle.mapmovearray.append(speedarray)
 
         # v Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
@@ -236,7 +240,7 @@ class Beautifulmap(pygame.sprite.Sprite):
         # ^ PIL module code
 
         # v Put in terrain feature texture
-        if drawfeature:
+        if editormap is False:
             for rowpos in range(0, 991):
                 for colpos in range(0, 991):
                     if rowpos % 20 == 0 and colpos % 20 == 0:
