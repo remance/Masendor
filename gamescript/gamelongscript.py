@@ -453,7 +453,7 @@ def load_game_data(game):
     subunitnum = 0  # Number of subnit based on the position in row and column
     imgsize = (game.squadwidth, game.squadheight)
     game.inspectsubunit = []
-    for subnit in list(range(0, 64)):
+    for subunit in list(range(0, 64)):
         width += imgsize[0]
         game.inspectsubunit.append(gameui.Inspectsubunit((width, height)))
         subunitnum += 1
@@ -515,7 +515,7 @@ def load_game_data(game):
                       gameui.Uibutton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
                       gameui.Uibutton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
-    game.screenbuttonlist = game.buttonui[8:17] # event log and time buttons
+    game.screenbuttonlist = game.buttonui[8:17]  # event log and time buttons
     game.unitcardbutton = game.buttonui[0:4]
     game.inspectbutton = game.buttonui[4]
     game.col_split_button = game.buttonui[5]  # parentunit split by column button
@@ -1081,8 +1081,8 @@ def add_new_unit(battle, who, addarmy=True):
     from gamescript import gameunit
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
-    foundcount = 0 # for subunit_sprite index
-    foundcount2 = 0 # for positioning
+    foundcount = 0  # for subunit_sprite index
+    foundcount2 = 0  # for positioning
     for row in range(0, len(who.armysubunit)):
         for column in range(0, len(who.armysubunit[0])):
             if who.armysubunit[row][column] != 0:
@@ -1108,7 +1108,7 @@ def add_new_unit(battle, who, addarmy=True):
     numberpos = (who.base_pos[0] - who.base_width_box,
                  (who.base_pos[1] + who.base_height_box))
     who.number_pos = who.rotationxy(who.base_pos, numberpos, who.radians_angle)
-    who.change_pos_scale() # find new position for troop number text
+    who.change_pos_scale()  # find new position for troop number text
 
     for subunit in who.subunit_sprite:
         subunit.gamestart(subunit.zoom)
@@ -1122,7 +1122,8 @@ def add_new_unit(battle, who, addarmy=True):
 
 
 def move_leader_subunit(leader, oldarmysubunit, newarmysubunit, alreadypick=()):
-    """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit), alreadypick is list of position need to be skipped"""
+    """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit),
+    alreadypick is list of position need to be skipped"""
     replace = [np.where(oldarmysubunit == leader.subunit.gameid)[0][0],
                np.where(oldarmysubunit == leader.subunit.gameid)[1][0]]  # grab old array position of subunit
     newrow = int((len(newarmysubunit) - 1) / 2)  # set up new row subunit will be place in at the middle at the start

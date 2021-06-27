@@ -6,7 +6,7 @@ Historical wargame simulation made with Pygame. There is no main name for the ga
 
 To start testing the game run main.py or main.exe if you use the release version. To compile the source code into exe, I would recommend using main.spec for now as I had trouble getting to compile data folder properly. the main.spec compile only main.py so you will need to copy data, profile folder manually.
 
-Check the requirements.txt file for dependency requirement if running with the source code. Also the game is now optimised basing on pygame 2 module (much faster than 1.9.6) and python 3.7.9. (I may have to use cython later for a huge size battle)
+Check the requirements.txt file for dependency requirement if running with the source code. Also the game is now optimised basing on pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
 
 For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 

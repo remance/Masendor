@@ -62,9 +62,7 @@ class Previewleader(pygame.sprite.Sprite):
         self.subunit = None
 
         self.subunitpos = subunitpos  # Squad position is the index of subunit in subunit sprite loop
-
         self.armyposition = armyposition  # position in the parentunit (e.g. general or sub-general)
-
         self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
 
         self.change_leader(leaderid, leaderstat)

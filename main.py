@@ -408,10 +408,8 @@ try:  # for printing error log when error exception happen
                                                                 bottomheight),
                                                            text="Save")
 
-            self.army_editor_button = (self.army_delete_button, self.army_save_button)
-
             self.popup_listbox = gameprepare.Listbox((0, 0), boximg, 15)  # popup listbox need to be in higher layer
-            self.popup_listbox.maxshowlist = 12  # box is smaller than usual
+            self.popup_listbox.maxshowlist = 9  # box is smaller than usual
             self.popup_listscroll = gameui.Uiscroller(self.popup_listbox.rect.topright,
                                                       self.popup_listbox.image.get_height(),
                                                       self.popup_listbox.maxshowlist,
@@ -692,24 +690,22 @@ try:  # for printing error log when error exception happen
             for index, army in enumerate(self.armystat):
                 army.addstat(trooptypelist[index], armylooplist[index])
 
-        def listscroll(self, mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup):
+        def listscroll(self, mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass):
             if mouse_scrollup:
-                if listbox.rect.collidepoint(self.mousepos):  # Scrolling up at map name list
-                    currentrow -= 1
-                    if currentrow < 0:
-                        currentrow = 0
-                    else:
-                        self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, self.mainui)
-                        scroll.changeimage(newrow=currentrow, logsize=len(namelist))
+                currentrow -= 1
+                if currentrow < 0:
+                    currentrow = 0
+                else:
+                    self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, uiclass)
+                    scroll.changeimage(newrow=currentrow, logsize=len(namelist))
 
             elif mouse_scrolldown:
-                if listbox.rect.collidepoint(self.mousepos):  # Scrolling down at map name list
-                    currentrow += 1
-                    if currentrow + listbox.maxshowlist - 1 < len(namelist):
-                        self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, self.mainui)
-                        scroll.changeimage(newrow=currentrow, logsize=len(namelist))
-                    else:
-                        currentrow -= 1
+                currentrow += 1
+                if currentrow + listbox.maxshowlist - 1 < len(namelist):
+                    self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, uiclass)
+                    scroll.changeimage(newrow=currentrow, logsize=len(namelist))
+                else:
+                    currentrow -= 1
             return currentrow
 
         def makearmyslot(self, gameid, team, armyid, rangetorun, startpos, columnonly=False):
@@ -894,8 +890,9 @@ try:  # for printing error log when error exception happen
                                     self.mousepos)  # update the scroller and get new current subsection
                                 self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.mapnamegroup, self.map_listbox, self.mainui)
 
-                        self.current_map_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.map_scroll, self.map_listbox,
-                                                               self.current_map_row, self.maplist, self.mapnamegroup)
+                        if self.map_listbox.rect.collidepoint(self.mousepos):
+                            self.current_map_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.map_scroll, self.map_listbox,
+                                                                   self.current_map_row, self.maplist, self.mapnamegroup, self.mainui)
 
                         if self.map_back_button.event or esc_press:
                             self.map_back_button.event = False
@@ -1002,9 +999,9 @@ try:  # for printing error log when error exception happen
                                     self.mousepos)  # update the scroller and get new current subsection
                                 self.setuplist(gameprepare.Namelist, self.current_source_row, self.sourcelist, self.sourcenamegroup,
                                                self.source_listbox, self.mainui)
-
-                        self.current_source_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.sourcescroll, self.source_listbox,
-                                                                  self.current_source_row, self.sourcelist, self.sourcenamegroup)
+                        if self.source_listbox.rect.collidepoint(self.mousepos):
+                            self.current_source_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.sourcescroll, self.source_listbox,
+                                                                      self.current_source_row, self.sourcelist, self.sourcenamegroup, self.mainui)
 
                         if self.map_back_button.event or esc_press:
                             self.menu_state = self.lastselect
