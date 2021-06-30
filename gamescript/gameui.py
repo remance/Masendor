@@ -381,7 +381,7 @@ class FPScount(pygame.sprite.Sprite):
 class Selectedsquad(pygame.sprite.Sprite):
     image = None
 
-    def __init__(self, pos, layer=20):
+    def __init__(self, pos, layer=17):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.rect = self.image.get_rect(topleft=pos)

@@ -349,7 +349,7 @@ class Subunit(pygame.sprite.Sprite):
         self.status_list = self.parentunit.status_list
 
         self.gameid = gameid  # ID of this subunit
-        self.unitid = int(unitid)  # ID of preset used for this subunit
+        self.troopid = int(unitid)  # ID of preset used for this subunit
 
         self.angle = self.parentunit.angle
         self.new_angle = self.parentunit.angle
@@ -371,7 +371,7 @@ class Subunit(pygame.sprite.Sprite):
         self.getheight = self.gamemapheight.getheight
 
         # v Setup troop stat
-        stat = self.stat_list.unit_list[self.unitid].copy()
+        stat = self.stat_list.unit_list[self.troopid].copy()
         self.create_troop_stat(stat, starthp, startstamina, unitscale)
         # ^ End setup stat
 

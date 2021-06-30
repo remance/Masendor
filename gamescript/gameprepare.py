@@ -16,6 +16,7 @@ class Inputui(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
+        self._layer = 18
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
@@ -43,7 +44,7 @@ class Inputbox(pygame.sprite.Sprite):
         self.heightadjust = SCREENRECT.height / 768
 
         pygame.sprite.Sprite.__init__(self)
-        self._layer = 16
+        self._layer = 19
         self.font = pygame.font.SysFont("timesnewroman", int(20 * self.heightadjust))
         self.image = pygame.Surface((width - 10, int(26 * self.heightadjust)))  # already scale from input ui
         self.image.fill((255, 255, 255))
@@ -120,12 +121,13 @@ class Profilebox(pygame.sprite.Sprite):
 
 
 class Menubutton(pygame.sprite.Sprite):
-    def __init__(self, images, pos, text="", size=16):
+    def __init__(self, images, pos, text="", size=16, layer = 15):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.images = [image.copy() for image in images]
@@ -405,7 +407,8 @@ class Teamcoa(pygame.sprite.Sprite):
         self.team = team
         self.selected = False
 
-    def changeselect(self):
+    def changeselect(self, selected):
+        self.selected = selected
         if self.selected:
             self.image = self.selectedimage
         else:

@@ -331,12 +331,13 @@ class Leaderstat:
         with open(main_dir + "\\data\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
+                if "," in row[-2]:  # ruleset list, make str with "," into list
+                    row[-2] = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                else:
+                    row[-2] = [row[-2]]
                 for n, i in enumerate(row):
-                    if i.isdigit():
+                    if type(i) != list and i.isdigit():
                         row[n] = int(i)
-                    # if and n in []:
-                    #     if "," in i: row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
-                    # else: row[n] = [int(i)]
                 self.leader_list[row[0]] = row[1:]
         unitfile.close()
         # ^ End common leader

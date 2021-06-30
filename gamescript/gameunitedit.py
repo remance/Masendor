@@ -61,6 +61,8 @@ class Previewleader(pygame.sprite.Sprite):
         self.state = 0
         self.subunit = None
 
+        self.leaderid = leaderid
+
         self.subunitpos = subunitpos  # Squad position is the index of subunit in subunit sprite loop
         self.armyposition = armyposition  # position in the parentunit (e.g. general or sub-general)
         self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
@@ -68,7 +70,7 @@ class Previewleader(pygame.sprite.Sprite):
         self.change_leader(leaderid, leaderstat)
 
     def change_leader(self, leaderid, leaderstat):
-        self.gameid = leaderid  # Different than subunit game id, leadergameid is only used as reference to the id data
+        self.leaderid = leaderid  # leaderid is only used as reference to the leader data
 
         stat = leaderstat.leader_list[leaderid]
 
@@ -89,6 +91,23 @@ class Previewleader(pygame.sprite.Sprite):
         self.commander = False  # army commander
         self.originalcommander = False  # the first army commander at the start of battle
 
+    def change_subunit(self, subunit):
+        self.subunit = subunit
+        if subunit is None:
+            self.subunitpos = 0
+        else:
+            self.subunitpos = subunit.slotnumber
+
+class Selectedpresetborder(pygame.sprite.Sprite):
+    def __init__(self, width, height):
+        self._layer = 16
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((width+1, height+1), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 6)
+        self.rect = self.image.get_rect(topleft=(0, 0))
+
+    def changepos(self, pos):
+        self.rect = self.image.get_rect(topleft=pos)
 
 class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this class to use sub-unit sprite directly
     squadwidth = 0  # subunit sprite width size get add from main
@@ -99,7 +118,7 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
     stat_list = None
     create_troop_stat = gamesubunit.create_troop_stat
 
-    def __init__(self, gameid, team, armyid, position, startpos):
+    def __init__(self, gameid, team, armyid, position, startpos, slotnumber):
         import main
         self.colour = main.teamcolour
         self._layer = 2
@@ -108,7 +127,7 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
         self.gameid = gameid
         self.team = team
         self.armyid = armyid
-        self.troopindex = 0
+        self.troopid = 0  # index according to sub-unit file
         self.name = "None"
         self.leader = None
         self.height = 100
@@ -121,13 +140,14 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
         self.coa = pygame.Surface((0, 0))  # empty coa to prevent leader ui error
 
-        self.changeteam()
+        self.changeteam(False)
 
-        self.armypos = position  # position in parentunit array (0 to 63)
+        self.slotnumber = slotnumber
+        self.armypos = position  # position in parentunit sprite
         self.inspposition = (self.armypos[0] + startpos[0], self.armypos[1] + startpos[1])  # position in inspect ui
         self.rect = self.image.get_rect(topleft=self.inspposition)
 
-    def changeteam(self):
+    def changeteam(self, changetroop):
         self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
         whiteimage = pygame.Surface((self.squadwidth - 2, self.squadheight - 2))
@@ -135,11 +155,13 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
         whiterect = whiteimage.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(whiteimage, whiterect)
         self.image_original = self.image.copy()
+        if changetroop:
+            self.changetroop(self.troopid, self.terrain, self.feature, self.weather)
 
     def changetroop(self, troopindex, terrain, feature, weather):
         self.image = self.image_original.copy()
-        if self.troopindex != troopindex:
-            self.troopindex = troopindex
+        if self.troopid != troopindex:
+            self.troopid = troopindex
             self.create_troop_stat(self.stat_list.unit_list[troopindex].copy(), 100, 100, [1, 1])
 
         self.terrain = terrain
@@ -181,12 +203,14 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
 
 class Warningmsg(pygame.sprite.Sprite):
-    factionwarn = "Multiple factions subunit will not be usable with No Multiple Faction option enable"
+    factionwarn = "Multiple factions subunit will not be usable in battle with No Multiple Faction option enable"
     tenrequire = "Require at least 10 sub-units to be usable"
     emptyrowcol = "Empty row or column will be removed when employed"
     duplicateleader = "Duplicated leader will be removed with No Duplicated leaer option enable"
     leaderwarn = "Leaders from multiple factions subunit will not be usable with No Multiple Faction option enable"
+    outofmapwarn = "Unit(s) have sub-unit(s) outside of map border, test cannot be start"
     hardwarn = (tenrequire)
+    hardtestwarn = (tenrequire, outofmapwarn)
     softwarn = (factionwarn, duplicateleader, leaderwarn, emptyrowcol)
 
     def __init__(self, pos, image):

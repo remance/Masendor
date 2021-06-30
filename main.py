@@ -83,10 +83,9 @@ try:  # for printing error log when error exception happen
                 self.customarmypresetlist = {"New Preset": 0, **customarmypresetlist}
             except Exception:
                 with open("profile/armypreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=",",
-                                            quotechar="|", quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow(["presetname", "armyline2", "armyline3", "armyline4", "armyline15", "armyline6", "armyline7", "armyline8",
-                                         "leader", "leaderposition", "faction"])  # create header
+                    filewriter = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
+                    filewriter.writerow(["presetname", "armyline2", "armyline2", "armyline3", "armyline4", "armyline15", "armyline6",
+                                         "armyline7", "armyline8", "leader", "leaderposition", "faction"])  # create header
                     csvfile.close()
 
                 self.customarmypresetlist = {}
@@ -121,7 +120,7 @@ try:  # for printing error log when error exception happen
 
             self.menuslider = pygame.sprite.Group()
             self.map_listbox = pygame.sprite.Group()  # ui box for map list
-            self.mapnamegroup = pygame.sprite.Group()  # map name list group
+            self.map_namegroup = pygame.sprite.Group()  # map name list group
             self.mapshow = pygame.sprite.Group()  # preview image of selected map
             self.teamcoa = pygame.sprite.Group()  # team coat of arm that also act as team selection icon
             self.maptitle = pygame.sprite.Group()  # map title box
@@ -129,7 +128,7 @@ try:  # for printing error log when error exception happen
             self.sourcedescription = pygame.sprite.Group()  # map source description box in preset battle preparation screen
             self.armystat = pygame.sprite.Group()  # ui box that show army stat in preset battle preparation screen
 
-            self.sourcenamegroup = pygame.sprite.Group()  # source name list group
+            self.source_namegroup = pygame.sprite.Group()  # source name list group
 
             self.tickbox = pygame.sprite.Group()  # option tick box
 
@@ -139,17 +138,17 @@ try:  # for printing error log when error exception happen
             self.subsection_name = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lorenamelist
 
             self.troop_listbox = pygame.sprite.Group()  # ui box for troop name list
-            self.troopnamegroup = pygame.sprite.Group()  # troop name list group
+            self.troop_namegroup = pygame.sprite.Group()  # troop name list group
             self.filterbox = pygame.sprite.Group()
             self.popup_listbox = pygame.sprite.Group()
-            self.popupnamegroup = pygame.sprite.Group()
+            self.popup_namegroup = pygame.sprite.Group()
             self.terrain_change_button = pygame.sprite.Group()  # button to change preview map base terrain
             self.feature_change_button = pygame.sprite.Group()  # button to change preview map terrain feature
             self.weather_change_button = pygame.sprite.Group()  # button to change preview map weather
             self.armybuildslot = pygame.sprite.Group()  # slot for putting troop into army preset during preparation mode
             self.uniteditborder = pygame.sprite.Group()  # border that appear when selected sub-subunit
             self.previewleader = pygame.sprite.Group()  # just to make preview leader class has containers
-            self.armypresetnamegroup = pygame.sprite.Group()  # preset name list
+            self.armypreset_namegroup = pygame.sprite.Group()  # preset name list
 
             # battle object group
             self.battlecamera = pygame.sprite.LayeredUpdates()  # layer drawer game camera, all image pos should be based on the map not screen
@@ -230,7 +229,7 @@ try:  # for printing error log when error exception happen
             gameprepare.Valuebox.containers = self.valuebox
 
             gameprepare.Listbox.containers = self.map_listbox, self.troop_listbox, self.popup_listbox
-            gameprepare.Namelist.containers = self.mapnamegroup
+            gameprepare.Namelist.containers = self.map_namegroup
             gameprepare.Mapshow.containers = self.mapshow
             gameprepare.Teamcoa.containers = self.teamcoa
             gameprepare.Maptitle.containers = self.maptitle
@@ -238,7 +237,7 @@ try:  # for printing error log when error exception happen
             gameprepare.Sourcedescription.containers = self.sourcedescription
             gameprepare.Armystat.containers = self.armystat
 
-            gameprepare.Sourcename.containers = self.sourcenamegroup, self.mainui
+            gameprepare.Sourcename.containers = self.source_namegroup, self.mainui
 
             gameprepare.Tickbox.containers = self.tickbox
 
@@ -395,6 +394,8 @@ try:  # for printing error log when error exception happen
             self.army_listbox = gameprepare.Listbox((0, SCREENRECT.height / 2.2), boximg)  # box for showing army preset list
             self.army_presetname_scroll = gameui.Uiscroller(self.army_listbox.rect.topright, self.army_listbox.image.get_height(),
                                                             self.army_listbox.maxshowlist, layer=14)  # preset name scroll
+            self.presetselectborder = gameunitedit.Selectedpresetborder(self.army_listbox.image.get_width() - int(15 * self.widthadjust),
+                                                                        int(25 * self.heightadjust))
 
             self.troop_listbox = gameprepare.Listbox((SCREENRECT.width / 1.19, 0), imgs[0])
 
@@ -439,20 +440,26 @@ try:  # for printing error log when error exception happen
             self.previewleader = [gameunitedit.Previewleader(1, 0, 0, self.leader_stat),
                                        gameunitedit.Previewleader(1, 0, 1, self.leader_stat),
                                        gameunitedit.Previewleader(1, 0, 2, self.leader_stat),
-                                       gameunitedit.Previewleader(1, 0, 3, self.leader_stat)]
+                                       gameunitedit.Previewleader(1, 0, 3, self.leader_stat)] # list of preview leader for unit editor
             self.leader_updater.remove(*self.previewleader)
 
-            boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()
+            boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()  # filter box ui in editor
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)
-
-            img1 = load_image("team1_button.png", "ui\\mainmenu_ui").convert()
-            img2 = load_image("team2_button.png", "ui\\mainmenu_ui").convert()
+            img1 = load_image("team1_button.png", "ui\\mainmenu_ui").convert()  # change army slot to team 1 in editor
+            img2 = load_image("team2_button.png", "ui\\mainmenu_ui").convert()  # change army slot to team 2 in editor
             self.teamchange_button = gameui.Switchuibutton(self.filterbox.rect.topleft[0] + 220, self.filterbox.rect.topleft[1] + 30, [img1, img2])
-            img1 = load_image("show_button.png", "ui\\mainmenu_ui").convert()
-            img2 = load_image("hide_button.png", "ui\\mainmenu_ui").convert()
+            img1 = load_image("show_button.png", "ui\\mainmenu_ui").convert()  # show army slot ui in editor
+            img2 = load_image("hide_button.png", "ui\\mainmenu_ui").convert()  # hide army slot ui in editor
             self.slotdisplay_button = gameui.Switchuibutton(self.filterbox.rect.topleft[0] + 80, self.filterbox.rect.topleft[1] + 30, [img1, img2])
-            img1 = load_image("deploy_button.png", "ui\\mainmenu_ui").convert()
+            img1 = load_image("deploy_button.png", "ui\\mainmenu_ui").convert()  # deploy army in army slot to test map in editor
             self.deploy_button = gameui.Uibutton(self.filterbox.rect.topleft[0] + 150, self.filterbox.rect.topleft[1] + 90, img1, 0)
+            img1 = load_image("test_button.png", "ui\\mainmenu_ui").convert()  # start test button in editor
+            img2 = load_image("end_button.png", "ui\\mainmenu_ui").convert()  # stop test button
+            self.test_button = gameui.Switchuibutton(self.scaleui.rect.bottomleft[0] + 55, self.scaleui.rect.bottomleft[1] + 25, [img1, img2])
+            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # delete army button in editor
+            self.delete_button = gameui.Uibutton(0, 0, img1, 0)
+            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # move army button in editor
+            self.move_button = gameui.Uibutton(0, 0, img1, 0)
             # ^ End army editor
 
             # v Input box popup
@@ -461,15 +468,18 @@ try:  # for printing error log when error exception happen
             self.input_ok_button = gameprepare.Menubutton(images=imagelist,
                                                           pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                                self.inputui.rect.midleft[1] + imagelist[0].get_height()),
-                                                          text="Done")
+                                                          text="Confirm", layer = 20)
             self.input_cancel_button = gameprepare.Menubutton(images=imagelist,
                                                               pos=(self.inputui.rect.midright[0] - imagelist[0].get_width(),
                                                                    self.inputui.rect.midright[1] + imagelist[0].get_height()),
-                                                              text="Cancel")
+                                                              text="Cancel", layer = 20)
             self.input_button = (self.input_ok_button, self.input_cancel_button)
             self.input_box = gameprepare.Inputbox(self.inputui.rect.center, self.inputui.image.get_width())  # user text input box
 
             self.inputui_pop = (self.inputui, self.input_box, self.input_ok_button, self.input_cancel_button)
+
+            self.confirmui = gameprepare.Inputui(input_ui_img, (SCREENRECT.width / 2, SCREENRECT.height / 2))  # user confirm input ui box popup
+            self.confirmui_pop = (self.confirmui, self.input_ok_button, self.input_cancel_button)
             # ^ End input box popup
 
             # v profile box
@@ -532,7 +542,7 @@ try:  # for printing error log when error exception happen
             self.menu_button.add(*self.mainmenu_button)  # add only main menu button back
             self.mainui.add(*self.menu_button, self.profile_box)
             self.menu_state = "mainmenu"
-            self.textinputpopup = None  # popup for texting text input state
+            self.textinputpopup = (None, None)  # popup for texting text input state
             self.choosingfaction = True  # swap list between faction and subunit, always start with choose faction first as true
 
             self.battlegame = gamebattle.Battle(self, self.winstyle)
@@ -690,19 +700,19 @@ try:  # for printing error log when error exception happen
             for index, army in enumerate(self.armystat):
                 army.addstat(trooptypelist[index], armylooplist[index])
 
-        def listscroll(self, mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass):
+        def listscroll(self, mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=15):
             if mouse_scrollup:
                 currentrow -= 1
                 if currentrow < 0:
                     currentrow = 0
                 else:
-                    self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, uiclass)
+                    self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
                     scroll.changeimage(newrow=currentrow, logsize=len(namelist))
 
             elif mouse_scrolldown:
                 currentrow += 1
                 if currentrow + listbox.maxshowlist - 1 < len(namelist):
-                    self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, uiclass)
+                    self.setuplist(gameprepare.Namelist, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
                     scroll.changeimage(newrow=currentrow, logsize=len(namelist))
                 else:
                     currentrow -= 1
@@ -710,20 +720,19 @@ try:  # for printing error log when error exception happen
 
         def makearmyslot(self, gameid, team, armyid, rangetorun, startpos, columnonly=False):
             width, height = 0, 0
-            squadnum = 0  # Number of subunit based on the position in row and column
+            slotnum = 0  # Number of subunit based on the position in row and column
             for squad in rangetorun:  # generate player army slot for filling troop into preview army
                 if columnonly is False:
                     width += self.squadwidth
-                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, (width, height), startpos))
-                    squadnum += 1
-                    if squadnum == 8:  # Pass the last subunit in the row, go to the next one
+                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, (width, height), startpos, slotnum))
+                    slotnum += 1
+                    if slotnum % 8 == 0:  # Pass the last subunit in the row, go to the next one
                         width = 0
                         height += self.squadheight
-                        squadnum = 0
                 else:
                     height += self.squadheight
-                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, (width, height), startpos))
-                    squadnum += 1
+                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, (width, height), startpos, slotnum))
+                    slotnum += 1
                 gameid += 1
             return gameid
 
@@ -750,11 +759,9 @@ try:  # for printing error log when error exception happen
                 mouse_scrollup = False
                 keypress = None
                 esc_press = False
+                input_esc = False
                 keystate = pygame.key.get_pressed()
                 for event in pygame.event.get():
-                    if self.textinputpopup is not None:  # event update to input box
-                        self.input_box.userinput(event)
-
                     if pygame.mouse.get_pressed()[0]:  # Hold left click
                         mouse_down = True
 
@@ -770,43 +777,54 @@ try:  # for printing error log when error exception happen
                             mouse_scrolldown = True
 
                     elif event.type == KEYDOWN:
-                        if event.key == K_ESCAPE:
-                            esc_press = True
-                        else:  # holding other keys
-                            keypress = event.key
+                        if self.textinputpopup[0] is not None:  # event update to input box
+                            if event.key == K_ESCAPE:
+                                input_esc = True
+                            elif self.textinputpopup[0] == "text_input":
+                                self.input_box.userinput(event)
+                        else:
+                            if event.key == K_ESCAPE:
+                                esc_press = True
+                            else:  # holding other keys
+                                keypress = event.key
 
                     if event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "mainmenu"):
-                        return
+                        self.textinputpopup = ("confirm_input", "quit")
+                        self.confirmui.changeinstruction("Quit Game?")
+                        self.mainui.add(*self.confirmui_pop)
 
                 self.mousepos = pygame.mouse.get_pos()
                 # ^ End user input
 
                 self.screen.blit(self.background, (0, 0))  # blit blackground over instead of clear() to reset screen
 
-                if self.textinputpopup is not None:  # currently have input text pop up on screen, stop everything else until done
+                if self.textinputpopup[0] is not None:  # currently have input text pop up on screen, stop everything else until done
                     for button in self.input_button:
                         button.update(self.mousepos, mouse_up, mouse_down)
 
                     if self.input_ok_button.event:
                         self.input_ok_button.event = False
 
-                        if self.textinputpopup == "profile_name":
+                        if self.textinputpopup[1] == "profile_name":
                             self.profile_name = self.input_box.text
                             self.profile_box.changename(self.profile_name)
 
                             editconfig("DEFAULT", "playername", self.profile_name, "configuration.ini", config)
 
+                        elif self.textinputpopup[1] == "quit":
+                            return
+
                         self.input_box.textstart("")
-                        self.textinputpopup = None
+                        self.textinputpopup = (None, None)
                         self.mainui.remove(*self.inputui_pop)
 
-                    elif self.input_cancel_button.event or esc_press:
+                    elif self.input_cancel_button.event or input_esc:
                         self.input_cancel_button.event = False
                         self.input_box.textstart("")
-                        self.textinputpopup = None
-                        self.mainui.remove(*self.inputui_pop)
+                        self.textinputpopup = (None, None)
+                        self.mainui.remove(*self.inputui_pop, *self.confirmui_pop)
 
-                elif self.textinputpopup is None:
+                elif self.textinputpopup == (None, None):
                     self.menu_button.update(self.mousepos, mouse_up, mouse_down)
                     if self.menu_state == "mainmenu":
 
@@ -817,7 +835,7 @@ try:  # for printing error log when error exception happen
                             self.mainui.remove(*self.menu_button, self.profile_box)
                             self.menu_button.remove(*self.menu_button)
 
-                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.mapnamegroup, self.map_listbox, self.mainui)
+                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox, self.mainui)
                             self.makemap(self.mapfoldername, self.maplist)
 
                             self.menu_button.add(*self.map_select_button)
@@ -830,7 +848,7 @@ try:  # for printing error log when error exception happen
                             self.mainui.remove(*self.menu_button, self.profile_box)
                             self.menu_button.remove(*self.menu_button)
 
-                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.mapnamegroup, self.map_listbox, self.mainui)
+                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox, self.mainui)
                             self.makemap(self.mapcustomfoldername, self.mapcustomlist)
 
                             self.menu_button.add(*self.map_select_button)
@@ -868,7 +886,7 @@ try:  # for printing error log when error exception happen
                             self.lore_button.event = False
 
                         elif mouse_up and self.profile_box.rect.collidepoint(self.mousepos):
-                            self.textinputpopup = "profile_name"
+                            self.textinputpopup = ("text_input", "profile_name")
                             self.input_box.textstart(self.profile_name)
                             self.inputui.changeinstruction("Profile Name:")
                             self.mainui.add(self.inputui_pop)
@@ -876,7 +894,7 @@ try:  # for printing error log when error exception happen
                     elif self.menu_state == "presetselect" or self.menu_state == "customselect":
                         if mouse_up or mouse_down:
                             if mouse_up:
-                                for index, name in enumerate(self.mapnamegroup):  # user click on map name, change map
+                                for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
                                     if name.rect.collidepoint(self.mousepos):
                                         self.current_map_select = index
                                         if self.menu_state == "presetselect":  # make new map image
@@ -888,11 +906,11 @@ try:  # for printing error log when error exception happen
                             if self.map_scroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                                 self.current_map_row = self.map_scroll.update(
                                     self.mousepos)  # update the scroller and get new current subsection
-                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.mapnamegroup, self.map_listbox, self.mainui)
+                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox, self.mainui)
 
                         if self.map_listbox.rect.collidepoint(self.mousepos):
                             self.current_map_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.map_scroll, self.map_listbox,
-                                                                   self.current_map_row, self.maplist, self.mapnamegroup, self.mainui)
+                                                                   self.current_map_row, self.maplist, self.map_namegroup, self.mainui)
 
                         if self.map_back_button.event or esc_press:
                             self.map_back_button.event = False
@@ -902,7 +920,7 @@ try:  # for printing error log when error exception happen
                             self.mainui.remove(self.map_listbox, self.mapshow, self.map_scroll, self.mapdescription,
                                                self.teamcoa, self.maptitle)
 
-                            for group in (self.mapshow, self.mapnamegroup, self.teamcoa):  # remove no longer related sprites in group
+                            for group in (self.mapshow, self.map_namegroup, self.teamcoa):  # remove no longer related sprites in group
                                 for stuff in group:
                                     stuff.kill()
                                     del stuff
@@ -917,14 +935,13 @@ try:  # for printing error log when error exception happen
                             self.mainui.remove(*self.map_select_button, self.map_listbox, self.map_scroll, self.mapdescription)
                             self.menu_button.remove(*self.map_select_button)
 
-                            for stuff in self.mapnamegroup:  # remove map name item
+                            for stuff in self.map_namegroup:  # remove map name item
                                 stuff.kill()
                                 del stuff
 
                             for team in self.teamcoa:
                                 if self.teamselected == team.team:
-                                    team.selected = True
-                                    team.changeselect()
+                                    team.changeselect(True)
 
                             openfolder = self.mapfoldername
                             if self.lastselect == "customselect":
@@ -942,7 +959,7 @@ try:  # for printing error log when error exception happen
                                 self.sourcescale = [""]
                                 self.sourcetext = [""]
 
-                            self.setuplist(gameprepare.Sourcename, self.current_source_row, self.sourcenamelist, self.sourcenamegroup,
+                            self.setuplist(gameprepare.Sourcename, self.current_source_row, self.sourcenamelist, self.source_namegroup,
                                            self.source_listbox, self.mainui)
 
                             self.sourcescroll = gameui.Uiscroller(self.source_listbox.rect.topright, self.source_listbox.image.get_height(),
@@ -967,18 +984,15 @@ try:  # for printing error log when error exception happen
                                 for thisteam in self.teamcoa:  # User select any team by clicking on coat of arm
                                     if thisteam.rect.collidepoint(self.mousepos):
                                         self.teamselected = thisteam.team
-                                        thisteam.selected = True
-                                        thisteam.changeselect()
+                                        thisteam.changeselect(True)
 
                                         # Reset team selected on team user not currently selected
                                         for thisteam2 in self.teamcoa:
                                             if self.teamselected != thisteam2.team and thisteam2.selected:
-                                                team.selected = False
-                                                team.changeselect()
-
+                                                thisteam2.changeselect(False)
                                         break
 
-                                for index, name in enumerate(self.sourcenamegroup):  # user select source
+                                for index, name in enumerate(self.source_namegroup):  # user select source
                                     if name.rect.collidepoint(self.mousepos):  # click on source name
                                         self.mapsource = index
                                         self.changesource([self.sourcescaletext[self.mapsource], self.sourcetext[self.mapsource]],
@@ -997,11 +1011,11 @@ try:  # for printing error log when error exception happen
                             if self.sourcescroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                                 self.current_source_row = self.sourcescroll.update(
                                     self.mousepos)  # update the scroller and get new current subsection
-                                self.setuplist(gameprepare.Namelist, self.current_source_row, self.sourcelist, self.sourcenamegroup,
+                                self.setuplist(gameprepare.Namelist, self.current_source_row, self.sourcelist, self.source_namegroup,
                                                self.source_listbox, self.mainui)
                         if self.source_listbox.rect.collidepoint(self.mousepos):
                             self.current_source_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.sourcescroll, self.source_listbox,
-                                                                      self.current_source_row, self.sourcelist, self.sourcenamegroup, self.mainui)
+                                                                      self.current_source_row, self.sourcelist, self.source_namegroup, self.mainui)
 
                         if self.map_back_button.event or esc_press:
                             self.menu_state = self.lastselect
@@ -1012,8 +1026,7 @@ try:  # for printing error log when error exception happen
 
                             # v Reset selected team
                             for team in self.teamcoa:
-                                team.selected = False
-                                team.changeselect()
+                                team.changeselect(False)
                             self.teamselected = 1
                             # ^ End reset selected team
 
@@ -1021,15 +1034,15 @@ try:  # for printing error log when error exception happen
                             for thismap in self.mapshow:
                                 thismap.changemode(0)  # revert map preview back to without army dot
 
-                            for group in (self.sourcenamegroup, self.armystat):
+                            for group in (self.source_namegroup, self.armystat):
                                 for stuff in group:  # remove map name item
                                     stuff.kill()
                                     del stuff
 
                             if self.menu_state == "presetselect":  # regenerate map name list
-                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.mapnamegroup, self.map_listbox, self.mainui)
+                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox, self.mainui)
                             else:
-                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.mapnamegroup, self.map_listbox, self.mainui)
+                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox, self.mainui)
 
                             self.menu_button.add(*self.map_select_button)
                             self.mainui.add(*self.map_select_button, self.map_listbox, self.map_scroll, self.mapdescription)
