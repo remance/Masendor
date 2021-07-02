@@ -16,6 +16,12 @@ import pygame.freetype
 
 battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier,
 
+letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
+numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")  # same as above
+boardpos = []
+for dd in numberboard:
+    for ll in letterboard:
+        boardpos.append(ll + dd)
 
 # Data Loading gamescript
 
@@ -525,7 +531,7 @@ def load_game_data(game):
     game.battleui.add(game.buttonui[8:17])
     game.battleui.add(game.logscroll, game.selectscroll)
 
-    gameui.Selectedsquad.image = topimage[-1]  # squad border image always the last one
+    gameui.Selectedsquad.image = topimage[-1]  # subunit border image always the last one
     game.inspectselectedborder = gameui.Selectedsquad((15000, 15000))  # yellow border on selected subnit in inspect ui
     game.mainui.remove(game.inspectselectedborder)  # remove subnit border sprite from main menu drawer
     game.terraincheck = gamepopup.TerrainPopup()  # popup box that show terrain information when right click on map
@@ -689,15 +695,14 @@ def countdownskillicon(self):
     #         cd = int(self.gameui[2].value2[4][effect.id][3])
     #     effect.iconchange(cd, 0)
 
-
 # Battle Start related gamescript
 
-def addarmy(squadlist, position, gameid, colour, leader, leaderstat, unitstat, control, coa, command, startangle, starthp, startstamina, team):
+def addarmy(subunitlist, position, gameid, colour, leader, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
     """Create batalion object into the battle and leader of the parentunit"""
     from gamescript import gameunit, gameleader
-    oldsquadlist = squadlist[~np.all(squadlist == 0, axis=1)]  # remove whole empty column in subunit list
-    squadlist = oldsquadlist[:, ~np.all(oldsquadlist == 0, axis=0)]  # remove whole empty row in subunit list
-    army = gameunit.Unitarmy(position, gameid, squadlist, colour, control, coa, command, abs(360 - startangle), starthp, startstamina, team)
+    oldsubunitlist = subunitlist[~np.all(subunitlist == 0, axis=1)]  # remove whole empty column in subunit list
+    subunitlist = oldsubunitlist[:, ~np.all(oldsubunitlist == 0, axis=0)]  # remove whole empty row in subunit list
+    army = gameunit.Unitarmy(position, gameid, subunitlist, colour, control, coa, command, abs(360 - startangle), starthp, startstamina, team)
 
     # add leader
     army.leader = [gameleader.Leader(leader[0], leader[4], 0, army, leaderstat),
@@ -706,91 +711,93 @@ def addarmy(squadlist, position, gameid, colour, leader, leaderstat, unitstat, c
                    gameleader.Leader(leader[3], leader[7], 3, army, leaderstat)]
     return army
 
+def generateunit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
+    """generate unit data into game object
+    row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
+    from gamescript import gamesubunit
+    army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
+                   colour, row[10] + row[11], gamebattle.leader_stat, control,
+                   coa, command, row[13], row[14], row[15], row[16])
+    whicharmy.add(army)
+    armysubunitindex = 0  # armysubunitindex is list index for subunit list in a specific army
+
+    # v Setup subunit in army to subunit group
+    row, column = 0, 0
+    maxcolumn = len(army.armysubunit[0])
+    for subunitnum in np.nditer(army.armysubunit, op_flags=["readwrite"], order="C"):
+        if subunitnum != 0:
+            addsubunit = gamesubunit.Subunit(subunitnum, subunitgameid, army, army.subunit_position_list[armysubunitindex],
+                                             army.starthp, army.startstamina, gamebattle.unitscale)
+            gamebattle.subunit.add(addsubunit)
+            addsubunit.board_pos = boardpos[armysubunitindex]
+            subunitnum[...] = subunitgameid
+            army.subunit_sprite_array[row][column] = addsubunit
+            army.subunit_sprite.append(addsubunit)
+            subunitgameid += 1
+        else:
+            army.subunit_sprite_array[row][column] = None  # replace numpy None with python None
+
+        column += 1
+        if column == maxcolumn:
+            column = 0
+            row += 1
+        armysubunitindex += 1
+    return subunitgameid
 
 def unitsetup(gamebattle):
     """read parentunit from unit_pos(source) file and create object with addarmy function"""
     import main
     main_dir = main.main_dir
-    from gamescript import gamesubunit
     # defaultarmy = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
     # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-    letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
-    numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")  # same as above
-    boardpos = []
-    for dd in numberboard:
-        for ll in letterboard:
-            boardpos.append(ll + dd)
-    squadindexlist = []  # squadindexlist is list of every subunit index in the game for indexing the subunit group
-    squadindex = 0  # squadindex is list index for all subunit group
-    squadgameid = 10000
-    teamstart = [0, 0, 0]
+
     teamcolour = gamebattle.teamcolour
     teamarmy = (gamebattle.team0army, gamebattle.team1army, gamebattle.team2army)
 
     with open(main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/unit_pos" + gamebattle.source + ".csv",
               encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        subunitgameid = 0
         for row in rd:
             for n, i in enumerate(row):
                 if i.isdigit():
                     row[n] = int(i)
                 if n in range(1, 12):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
-            control = False
 
+            control = False
             if gamebattle.playerteam == row[16] or gamebattle.enactment:  # player can control only his team or both in enactment mode
                 control = True
+
             colour = teamcolour[row[16]]
-            teamstart[row[16]] += 1
             whicharmy = teamarmy[row[16]]
 
             command = False  # Not commander parentunit by default
             if len(whicharmy) == 0:  # First parentunit is commander
                 command = True
             coa = pygame.transform.scale(gamebattle.coa[row[12]], (60, 60))  # get coa image and scale smaller to fit ui
-
-            army = addarmy(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                           colour, row[10] + row[11], gamebattle.leader_stat, gamebattle.gameunitstat, control,
-                           coa, command, row[13], row[14], row[15], row[16])
-            whicharmy.add(army)
-            armysquadindex = 0  # armysquadindex is list index for subunit list in a specific army
-
-            # v Setup subunit in army to subunit group
-            row, column = 0, 0
-            maxcolumn = len(army.armysubunit[0])
-            for squadnum in np.nditer(army.armysubunit, op_flags=["readwrite"], order="C"):
-                if squadnum != 0:
-                    addsubunit = gamesubunit.Subunit(squadnum, squadgameid, army, army.subunit_position_list[armysquadindex],
-                                                     army.starthp, army.startstamina, gamebattle.unitscale)
-                    gamebattle.subunit.add(addsubunit)
-                    addsubunit.board_pos = boardpos[armysquadindex]
-                    squadnum[...] = squadgameid
-                    army.subunit_sprite_array[row][column] = addsubunit
-                    army.subunit_sprite.append(addsubunit)
-                    squadindexlist.append(squadgameid)
-                    squadgameid += 1
-                    squadindex += 1
-                else:
-                    army.subunit_sprite_array[row][column] = None  # replace numpy None with python None
-
-                column += 1
-                if column == maxcolumn:
-                    column = 0
-                    row += 1
-                armysquadindex += 1
+            subunitgameid = generateunit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid)
             # ^ End subunit setup
 
     unitfile.close()
 
+def covertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
+    print(row)
+    for n, i in enumerate(row):
+        if type(i) == str and i.isdigit():
+            row[n] = int(i)
+        if n in range(1, 12):
+            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
+    subunitgameid = generateunit(gamebattle, whicharmy, row, True, True, colour, coa, subunitgameid)
 
 # Battle related gamescript
 
-def setrotate(self, settarget=None):
+def setrotate(self, set_target=None):
     """set base_target and new angle for sprite rotation"""
-    if settarget is None:  # For auto chase rotate
+    if set_target is None:  # For auto chase rotate
         myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
     else:  # Command move or rotate
-        myradians = math.atan2(settarget[1] - self.base_pos[1], settarget[0] - self.base_pos[0])
+        myradians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
     newangle = math.degrees(myradians)
 
     # """upper left -"""
@@ -893,7 +900,7 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
 
 
 def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside, receiverside):
-    """apply aoe status effect to enemy squads"""
+    """apply aoe status effect to enemy subunits"""
     for status in inflictstatus.items():
         if status[1] == 1 and attackerside == 0:  # only front enemy
             receiver.status_effect[status[0]] = statuslist[status[0]].copy()
@@ -990,7 +997,7 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
     if attacker.corner_atk:
         listloop = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]  # Side attack get (2) front and (5) rear nearby subunit
         if targetside in (0, 2):
-            listloop = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearbysquad
+            listloop = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearbysubunit
         for subunit in listloop:
             if subunit != 0 and subunit.state != 100:
                 targethit, targetdefense = float(attacker.attack * targetpercent) + targetluck, float(subunit.meleedef * targetpercent) + targetluck
@@ -1196,15 +1203,15 @@ def splitunit(battle, who, how):
     who.subunit_position_list = []
 
     width, height = 0, 0
-    squadnum = 0  # Number of subunit based on the position in row and column
+    subunitnum = 0  # Number of subunit based on the position in row and column
     for subunit in who.armysubunit.flat:
         width += who.imgsize[0]
         who.subunit_position_list.append((width, height))
-        squadnum += 1
-        if squadnum >= len(who.armysubunit[0]):  # Reach the last subunit in the row, go to the next one
+        subunitnum += 1
+        if subunitnum >= len(who.armysubunit[0]):  # Reach the last subunit in the row, go to the next one
             width = 0
             height += who.imgsize[1]
-            squadnum = 0
+            subunitnum = 0
 
     # v Sort so the new leader subunit position match what set before
     subunitsprite = [subunit for subunit in who.subunit_sprite if subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
@@ -1225,20 +1232,20 @@ def splitunit(battle, who, how):
     # v Reset position of sub-unit in inspectui for both old and new unit
     for sprite in (who.subunit_sprite, new_subunit_sprite):
         width, height = 0, 0
-        squadnum = 0
-        for squad in sprite:
+        subunitnum = 0
+        for subunit in sprite:
             width += battle.squadwidth
 
-            if squadnum >= len(who.armysubunit[0]):
+            if subunitnum >= len(who.armysubunit[0]):
                 width = 0
                 width += battle.squadwidth
                 height += battle.squadheight
-                squadnum = 0
+                subunitnum = 0
 
-            squad.inspposition = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
-            squad.rect = squad.image.get_rect(topleft=squad.inspposition)
-            squad.pos = pygame.Vector2(squad.rect.centerx, squad.rect.centery)
-            squadnum += 1
+            subunit.inspposition = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
+            subunit.rect = subunit.image.get_rect(topleft=subunit.inspposition)
+            subunit.pos = pygame.Vector2(subunit.rect.centerx, subunit.rect.centery)
+            subunitnum += 1
     # ^ End reset position
 
     # v Change the original parentunit stat and sprite

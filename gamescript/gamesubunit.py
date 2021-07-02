@@ -324,7 +324,6 @@ class Subunit(pygame.sprite.Sprite):
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = None
-        self.mouse_over = False
         self.leader = None  # Leader in the sub-subunit if there is one, got add in leader gamestart
         self.board_pos = None  # Used for event log position of subunit (Assigned in gamebattle subunit setup)
         self.walk = False  # currently walking
@@ -1476,17 +1475,6 @@ class Subunit(pygame.sprite.Sprite):
             self.selectedimage = pygame.transform.rotate(self.selectedimage_original, self.angle)
             self.image.blit(self.selectedimage, self.selectedimagerect)
         self.rect = self.image.get_rect(center=self.pos)
-
-    # def command(self, mouse_pos, mouse_up, mouse_right, squadlastselect):
-    #     """For inspect ui clicking"""
-    #     self.wholastselect = squadlastselect
-    #     if self.rect.collidepoint(mouse_pos[0]):
-    #         self.mouse_over = True
-    #         self.whomouseover = self.gameid
-    #         if mouse_up:
-    #             self.parentunit.selected = True
-    #             self.parentunit.justselected = True
-    #             self.wholastselect = self.gameid
 
     def combat_pathfind(self):
         # v Pathfinding

@@ -4,7 +4,7 @@ Note that the effect to sub-unit stat can be classified into 2 types: Effect (e.
 
 Implement_record: This file is not used in game but for record keeping which effect I still haven't implement
 
-Unit_ability: list of all sub-units' abilities. The data structure of ability is as follows;
+troop_ability: list of all sub-units' abilities. The data structure of ability is as follows;
 
 - Skill Type (0=melee, 1=range, 2=charge) this will affect which damage and elemental effect the skill will boost| Area of Effect (1=self and frontal enemy damage,2=Direct Nearby only, 3=Nearby including corner, 4=whole unit) this also affect the enemy status infliction| Duration of skill in second 
 
@@ -30,7 +30,7 @@ Unit_ability: list of all sub-units' abilities. The data structure of ability is
 
 - List of "Ruleset" id that skill is available
 
-unit_armour: list of all sub-units' armours. The data structure of armour is as follows;
+troop_armour: list of all sub-units' armours. The data structure of armour is as follows;
 
 - "Armour" power that reduce the damage (0 to 100)
 
@@ -42,28 +42,28 @@ unit_armour: list of all sub-units' armours. The data structure of armour is as 
 
 - List of Ruleset id that armour is available
 
-unit_grade: list of all sub-units' grades, which represent the training level or class of the troop. The data structure of grade is as follows;
+troop_grade: list of all sub-units' grades, which represent the training level or class of the troop. The data structure of grade is as follows;
 
 - Stat Effect and bonus modifier as mentioned above
 
 - Properties list that will be applied to the sub-unit with this grade
 
-unit_item: Not yet implemented 
+troop_item: Not yet implemented 
 
 
-unit_property: list of all sub-units' properties. The data structure of property is as follows;
+troop_property: list of all sub-units' properties. The data structure of property is as follows;
 
 
-unit_race: Not yet implemented
+troop_race: Not yet implemented
 
 
-unit_status: list of all sub-units' status effects. The data structure of status is as follows;
+troop_status: list of all sub-units' status effects. The data structure of status is as follows;
 
 
-unit_type: list of all sub-units' types. Does not really affect anything yet beside just clarification.
+troop_type: list of all sub-units' types. Does not really affect anything yet beside just clarification.
 
 
-unit_weapon: list of all sub-units' weapons including artillery weapons. The data structure of weapon is as follows;
+troop_weapon: list of all sub-units' weapons including artillery weapons. The data structure of weapon is as follows;
 
 - "Damage" power per attack
 

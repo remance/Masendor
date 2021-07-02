@@ -138,6 +138,10 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
         self.state = 0
         self.ammo_now = 0
 
+        self.terrain = 0
+        self.feature = 0
+        self.weather = 0
+
         self.coa = pygame.Surface((0, 0))  # empty coa to prevent leader ui error
 
         self.changeteam(False)

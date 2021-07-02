@@ -949,6 +949,23 @@ class Unitarmy(pygame.sprite.Sprite):
         self.icon.changeimage(changeside=True)  # change army icon to new team
         return allunitindex
 
+    def placement(self, mouse_pos):
+        self.angle = self.setrotate(mouse_pos)
+        self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
+        if self.angle < 0:  # negative angle (rotate to left side)
+            self.radians_angle = math.radians(-self.angle)
+
+        unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
+                                      # get the top left corner of sprite to generate subunit position
+                                      self.base_pos[1] - self.base_height_box)
+
+        for subunit in self.subunit_sprite:  # generate position of each subunit
+            if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
+                newtarget = unit_topleft + subunit.armypos
+                subunit.base_pos = pygame.Vector2(
+                    self.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                subunit.angle = self.angle
+
 
     def delete(self, local=False):
         """delete reference when del is called"""
