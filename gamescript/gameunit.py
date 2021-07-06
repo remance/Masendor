@@ -255,6 +255,9 @@ class Unitarmy(pygame.sprite.Sprite):
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
         teamposlist = (self.gamebattle.team0poslist, self.gamebattle.team1poslist, self.gamebattle.team2poslist)
+        self.gamebattle.allunitlist.append(self)
+        self.gamebattle.allunitindex.append(self.gameid)
+
         self.team = team  # team
         self.ally_pos_list = teamposlist[self.team]
         if self.team == 1:
@@ -926,7 +929,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 elif othercommand != 0:
                     self.processcommand(mouse_pos, double_mouse_right, self.revert, whomouseover, othercommand)
 
-    def switchfaction(self, oldgroup, newgroup, oldposlist, allunitindex, enactment):
+    def switchfaction(self, oldgroup, newgroup, oldposlist, enactment):
         """Change army group and gameid when change side"""
         self.colour = (144, 167, 255)  # team1 colour
         self.control = True  # TODO need to change later when player can choose team
@@ -939,33 +942,34 @@ class Unitarmy(pygame.sprite.Sprite):
             if enactment is False:
                 self.control = False
 
-        newgameid = newgroup[-1].gameid + 1
         oldgroup.remove(self)  # remove from old team group
         newgroup.append(self)  # add to new team group
         oldposlist.pop(self.gameid)  # remove from old pos list
-        allunitindex = [newgameid if index == self.gameid else index for index in allunitindex]  # replace index in allunitindex
         self.gameid = newgameid  # change game id
         # self.changescale() # reset scale to the current zoom
         self.icon.changeimage(changeside=True)  # change army icon to new team
-        return allunitindex
 
-    def placement(self, mouse_pos):
-        self.angle = self.setrotate(mouse_pos)
-        self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
-        if self.angle < 0:  # negative angle (rotate to left side)
-            self.radians_angle = math.radians(-self.angle)
+    def placement(self, mouse_pos, mouse_right, mouse_rightdown, double_mouse_right):
+        if double_mouse_right:  # move unit to new pos
+            self.base_pos = mouse_pos
+
+        elif mouse_right or mouse_rightdown:  # rotate unit
+            self.angle = self.setrotate(mouse_pos)
+            self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
+            if self.angle < 0:  # negative angle (rotate to left side)
+                self.radians_angle = math.radians(-self.angle)
 
         unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
                                       # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
 
         for subunit in self.subunit_sprite:  # generate position of each subunit
-            if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
-                newtarget = unit_topleft + subunit.armypos
-                subunit.base_pos = pygame.Vector2(
-                    self.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
-                subunit.angle = self.angle
-
+            newtarget = unit_topleft + subunit.armypos
+            subunit.base_pos = pygame.Vector2(
+                subunit.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+            subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen
+            subunit.angle = self.angle
+            subunit.rotate()
 
     def delete(self, local=False):
         """delete reference when del is called"""

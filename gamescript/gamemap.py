@@ -211,6 +211,9 @@ class Beautifulmap(pygame.sprite.Sprite):
             terrain, feature = featuremap.getfeature((1, 1), basemap)
             newcolour = self.newcolourlist[feature][1]
             self.image.fill(newcolour)
+            mapfeaturemod = featuremap.featuremod[feature]
+            speedmod = int(mapfeaturemod[2] * 100)
+            gamebattle.mapmovearray = [[speedmod] * 1000] * 1000
         else:
             for rowpos in range(0, 1000):  # recolour the map
                 speedarray = []

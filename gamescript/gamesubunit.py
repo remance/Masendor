@@ -339,6 +339,7 @@ class Subunit(pygame.sprite.Sprite):
         self.enemy_side = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
         self.team = self.parentunit.team
+        self.gamebattle.allsubunitlist.append(self)
         if self.team == 1:  # add sprite to team subunit group for collision
             groupcollide = self.gamebattle.team1subunit
         elif self.team == 2:

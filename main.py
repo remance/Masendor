@@ -761,11 +761,10 @@ try:  # for printing error log when error exception happen
                 esc_press = False
                 input_esc = False
                 keystate = pygame.key.get_pressed()
+                if pygame.mouse.get_pressed()[0]:  # Hold left click
+                    mouse_down = True
                 for event in pygame.event.get():
-                    if pygame.mouse.get_pressed()[0]:  # Hold left click
-                        mouse_down = True
-
-                    elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.type == pygame.MOUSEBUTTONUP:
                         if event.button == 1:  # left click
                             mouse_up = True
                         elif event.button == 3:
