@@ -437,12 +437,12 @@ class Subunit(pygame.sprite.Sprite):
         self.image_original3 = self.image.copy()  # original3 for saving original zoom level
 
         # v position related
-        self.armypos = (position[0] / 10, position[1] / 10)  # position in parentunit sprite
+        self.unitposition = (position[0] / 10, position[1] / 10)  # position in parentunit sprite
         battaliontopleft = pygame.Vector2(self.parentunit.base_pos[0] - self.parentunit.base_width_box / 2,
                                           self.parentunit.base_pos[
                                               1] - self.parentunit.base_height_box / 2)  # get topleft corner position of parentunit to calculate true pos
-        self.base_pos = pygame.Vector2(battaliontopleft[0] + self.armypos[0],
-                                       battaliontopleft[1] + self.armypos[1])  # true position of subunit in map
+        self.base_pos = pygame.Vector2(battaliontopleft[0] + self.unitposition[0],
+                                       battaliontopleft[1] + self.unitposition[1])  # true position of subunit in map
         self.last_pos = self.base_pos
 
         self.movement_queue = []
@@ -1382,8 +1382,8 @@ class Subunit(pygame.sprite.Sprite):
                 elif self.hpregen < 0:  # negative regen can kill
                     self.unit_health += self.hpregen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
                     self.troopnumber = self.unit_health / self.troophealth  # Recal number of troop again in case some die from negative regen
-                    if round(self.troopnumber) < self.troopnumber:  # no method to always round up number so I need to do this manually
-                        self.troopnumber = int(self.troopnumber + 1)
+                    if self.troopnumber.is_integer() is False:  # always round up if there is decimal number
+                        self.troopnumber = int(self.troopnumber) + 1
                     else:
                         self.troopnumber = int(self.troopnumber)
 

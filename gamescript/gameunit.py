@@ -367,11 +367,11 @@ class Unitarmy(pygame.sprite.Sprite):
                     if index == 0:  # front side
                         self.armysubunit = self.armysubunit[1:]
                         for subunit in self.subunit_sprite:
-                            subunit.armypos = (subunit.armypos[0], subunit.armypos[1] - (self.imgsize[1] / 8))
+                            subunit.unitposition = (subunit.unitposition[0], subunit.unitposition[1] - (self.imgsize[1] / 8))
                     elif index == 1:  # left side
                         self.armysubunit = np.delete(self.armysubunit, 0, 1)
                         for subunit in self.subunit_sprite:
-                            subunit.armypos = (subunit.armypos[0] - (self.imgsize[0] / 8), subunit.armypos[1])
+                            subunit.unitposition = (subunit.unitposition[0] - (self.imgsize[0] / 8), subunit.unitposition[1])
                     elif index == 2:  # right side
                         self.armysubunit = np.delete(self.armysubunit, -1, 1)
                     elif index == 3:  # rear side
@@ -471,7 +471,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
-                    newtarget = unit_topleft + subunit.armypos
+                    newtarget = unit_topleft + subunit.unitposition
                     if resetpath:
                         subunit.command_target.append(pygame.Vector2(
                             self.rotationxy(self.base_pos, newtarget, self.radians_angle)))
@@ -487,7 +487,7 @@ class Unitarmy(pygame.sprite.Sprite):
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     subunit.new_angle = self.new_angle
-                    newtarget = unit_topleft + subunit.armypos
+                    newtarget = unit_topleft + subunit.unitposition
                     if resetpath:
                         subunit.command_target.append(pygame.Vector2(
                             self.rotationxy(target, newtarget, self.radians_angle)))
@@ -521,9 +521,9 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v assign team leader commander to every parentunit in team if this is commander parentunit
         if self.commander:
-            whicharmy = self.gamebattle.team1army
+            whicharmy = self.gamebattle.team1unit
             if self.team == 2:  # team2
-                whicharmy = self.gamebattle.team2army
+                whicharmy = self.gamebattle.team2unit
             for army in whicharmy:
                 army.teamcommander = self.leader[0]
         # ^ End assign commander
@@ -539,7 +539,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                            # get the top left corner of sprite to generate subunit position
                                            self.base_pos[1] - self.base_height_box)
         for subunit in self.subunit_sprite:  # generate start position of each subunit
-            subunit.base_pos = parentunittopleft + subunit.armypos
+            subunit.base_pos = parentunittopleft + subunit.unitposition
             subunit.base_pos = pygame.Vector2(self.rotationxy(self.base_pos, subunit.base_pos, self.radians_angle))
             subunit.pos = subunit.base_pos * subunit.zoom
             subunit.rect.center = subunit.pos
@@ -712,11 +712,11 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.processretreat(basetarget)
                         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
                         #     if self.team == 1:
-                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1army, self.gamebattle.team2army,
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1unit, self.gamebattle.team2unit,
                         #                                                         self.gamebattle.team1poslist, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     else:
-                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2army, self.gamebattle.team1army,
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2unit, self.gamebattle.team1unit,
                         #                                                         self.gamebattle.team2poslist, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
@@ -807,7 +807,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 else:
                     self.die(self.gamebattle)
 
-                self.gamebattle.setup_armyicon()  # reset army icon (remove dead one)
+                self.gamebattle.setup_uniticon()  # reset army icon (remove dead one)
                 self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
                                               [0, 1])  # put destroyed event in war and army log
 
@@ -883,7 +883,7 @@ class Unitarmy(pygame.sprite.Sprite):
             self.range_combat_check = False  # reset range combat check
             self.new_angle = self.setrotate()  # set rotation base_target
 
-    def processretreat(self, mouse_pos):
+    def processretreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)
         self.command_state = self.state  # command retreat
         self.leader[0].authority -= self.auth_penalty  # retreat reduce main leader authority
@@ -891,11 +891,11 @@ class Unitarmy(pygame.sprite.Sprite):
             self.leader[0].authority -= self.auth_penalty
         self.authrecal()
         self.retreat_start = True  # start retreat process
-        self.set_target(mouse_pos)
+        self.set_target(pos)
         self.revertmove()
         self.command_target = self.base_target
 
-    def command(self, mouse_pos, mouse_right, double_mouse_right, whomouseover, keystate, othercommand=0):
+    def command(self, pos, mouse_right, double_mouse_right, target, keystate, othercommand=0):
         """othercommand is special type of command such as stop all action, raise flag, decimation, duel and so on"""
         if self.control and self.state not in (95, 97, 98, 99):
             self.revert = False
@@ -914,9 +914,9 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.attack_place = True
 
             if self.state != 100:
-                if mouse_right and 1 <= mouse_pos[0] < 998 and 1 <= mouse_pos[1] < 998:
-                    if self.state in (10, 96) and whomouseover is None:
-                        self.processretreat(mouse_pos)  # retreat
+                if mouse_right and 1 <= pos[0] < 998 and 1 <= pos[1] < 998:
+                    if self.state in (10, 96) and target is None:
+                        self.processretreat(pos)  # retreat
                     else:
                         for subunit in self.subunit_sprite:
                             subunit.attacking = True
@@ -925,9 +925,9 @@ class Unitarmy(pygame.sprite.Sprite):
                             self.rotateonly = True
                         if keystate[pygame.K_z]:
                             self.revert = True
-                        self.processcommand(mouse_pos, double_mouse_right, self.revert, whomouseover)
+                        self.processcommand(pos, double_mouse_right, self.revert, target)
                 elif othercommand != 0:
-                    self.processcommand(mouse_pos, double_mouse_right, self.revert, whomouseover, othercommand)
+                    self.processcommand(pos, double_mouse_right, self.revert, target, othercommand)
 
     def switchfaction(self, oldgroup, newgroup, oldposlist, enactment):
         """Change army group and gameid when change side"""
@@ -964,7 +964,7 @@ class Unitarmy(pygame.sprite.Sprite):
                                       self.base_pos[1] - self.base_height_box)
 
         for subunit in self.subunit_sprite:  # generate position of each subunit
-            newtarget = unit_topleft + subunit.armypos
+            newtarget = unit_topleft + subunit.unitposition
             subunit.base_pos = pygame.Vector2(
                 subunit.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
             subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen

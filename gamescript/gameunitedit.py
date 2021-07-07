@@ -207,41 +207,66 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
 
 class Warningmsg(pygame.sprite.Sprite):
-    factionwarn = "Multiple factions subunit will not be usable in battle with No Multiple Faction option enable"
-    tenrequire = "Require at least 10 sub-units to be usable"
-    emptyrowcol = "Empty row or column will be removed when employed"
-    duplicateleader = "Duplicated leader will be removed with No Duplicated leaer option enable"
-    leaderwarn = "Leaders from multiple factions subunit will not be usable with No Multiple Faction option enable"
-    outofmapwarn = "Unit(s) have sub-unit(s) outside of map border, test cannot be start"
-    hardwarn = (tenrequire)
-    hardtestwarn = (tenrequire, outofmapwarn)
-    softwarn = (factionwarn, duplicateleader, leaderwarn, emptyrowcol)
+    faction_warn = "- Multiple factions subunit will not be usable with No Multiple Faction option enable"
+    tensubunit_warn = "- Require at least 10 sub-units for both test and employment"
+    mainleader_warn = "- Require a main leader for both test and employment"
+    emptyrowcol_warn = "- Empty row or column will be removed when employed"
+    duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leaer option enable"
+    leader_warn = "- Leaders from multiple factions will not be usable with No Multiple Faction option enable"
+    outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
 
-    def __init__(self, pos, image):
+    def __init__(self, pos):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 13
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        self._layer = 18
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("timesnewroman", int(20 * self.heightadjust))
-    #
-    # def addwarning(self):
-    #     self.image = self.image_original.copy()
-    #     self.text = text
-    #     self.textsurface = self.font.render(text, True, (0, 0, 0))
-    #     self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-    #     self.image.blit(self.textsurface, self.textrect)
-    #
-    #
-    # def removewarning(self):
-    #
-    #     self.image = self.image_original.copy()
-    #     self.text = text
-    #     self.textsurface = self.font.render(text, True, (0, 0, 0))
-    #     self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-    #     self.image.blit(self.textsurface, self.textrect)
+        self.rowcount = 0
+        self.warninglog = []
+        self.fixwidth = int(230 * self.heightadjust)
+        self.pos = pos
+
+    def warning(self, warnlist):
+        self.warninglog = []
+        self.rowcount = len(warnlist)
+        for warnitem in warnlist:
+            if len(warnitem) > 25:
+                newrow = len(warnitem) / 25
+                if newrow.is_integer() is False:
+                    newrow = int(newrow) + 1
+                else:
+                    newrow = int(newrow)
+                self.rowcount += newrow
+
+                cutspace = [index for index, letter in enumerate(warnitem) if letter == " "]
+                startingindex = 0
+                for run in range(1, newrow + 1):
+                    textcutnumber = [number for number in cutspace if number <= run * 25]
+                    cutnumber = textcutnumber[-1]
+                    finaltextoutput = warnitem[startingindex:cutnumber]
+                    if run == newrow:
+                        finaltextoutput = warnitem[startingindex:]
+                    self.warninglog.append(finaltextoutput)
+                    startingindex = cutnumber + 1
+            else:
+                self.warninglog.append(warnitem)
+
+        self.image = pygame.Surface((self.fixwidth, int(22 * self.heightadjust) * self.rowcount))
+        self.image.fill((0,0,0))
+        whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.heightadjust) * self.rowcount) - 2))
+        whiteimage.fill((255, 255, 255))
+        whiteimage_rect = whiteimage.get_rect(topleft=(1, 1))
+        self.image.blit(whiteimage, whiteimage_rect)
+        row = 5
+        for index, text in enumerate(self.warninglog):
+            textsurface = self.font.render(text, True, (0, 0, 0))
+            textrect = textsurface.get_rect(topleft=(5, row))
+            self.image.blit(textsurface, textrect)
+            row += 20  # Whitespace between text row
+        self.rect = self.image.get_rect(topleft=self.pos)
 
 
 class Previewchangebutton(pygame.sprite.Sprite):

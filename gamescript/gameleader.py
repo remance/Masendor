@@ -12,7 +12,7 @@ class Leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leaderstat.leader_list[leaderid]
-        self.gameid = leaderid  # Different than subunit game id, leadergameid is only used as reference to the id data
+        self.leaderid = leaderid  # Different than game id, leaderid is only used as reference to the data
         self.name = stat[0]
         self.health = stat[1]
         self.authority = stat[2]
@@ -43,7 +43,7 @@ class Leader(pygame.sprite.Sprite):
         except:  # Use Unknown leader image if there is none in list)
             self.fullimage = leaderstat.imgs[-1].copy()
             font = pygame.font.SysFont("timesnewroman", 300)
-            textimage = font.render(str(self.gameid), True, pygame.Color("white"))
+            textimage = font.render(str(self.leaderid), True, pygame.Color("white"))
             textrect = textimage.get_rect(center=(self.fullimage.get_width() / 2, self.fullimage.get_height() / 1.3))
             self.fullimage.blit(textimage, textrect)
 
@@ -68,9 +68,9 @@ class Leader(pygame.sprite.Sprite):
             leader.badmorale = (30, 50)  ## main general morale lost for bad event
 
             if leader.parentunit.commander:  ## become army commander
-                whicharmy = leader.gamebattle.team1army  # team1
+                whicharmy = leader.gamebattle.team1unit  # team1
                 if leader.parentunit.team == 2:  # team2
-                    whicharmy = self.gamebattle.team2army
+                    whicharmy = self.gamebattle.team2unit
                 for army in whicharmy:
                     army.teamcommander = leader
                     army.authrecal()
@@ -98,9 +98,9 @@ class Leader(pygame.sprite.Sprite):
         if self.commander:  # reduce morale to whole army if commander die from the dmg (leader die cal is in gameleader.py)
             self.gamebattle.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0"  # read ld0 event log for special log when team 1 commander die, not used for other leader
-            whicharmy = self.gamebattle.team1army
+            whicharmy = self.gamebattle.team1unit
             if self.parentunit.team == 2:
-                whicharmy = self.gamebattle.team2army
+                whicharmy = self.gamebattle.team2unit
                 eventmapid = "ld1"  # read ld1 event log for special log when team 2 commander die, not used for other leader
 
             if self.originalcommander and self.state == 100:
@@ -140,7 +140,7 @@ class Leader(pygame.sprite.Sprite):
         self.combat = 0
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)  # draw dead cross on leader image
-        self.gamebattle.setup_armyicon()
+        self.gamebattle.setup_uniticon()
         self.parentunit.leader_change = True  # initiate leader change stat recalculation for parentunit
 
     def gamestart(self):

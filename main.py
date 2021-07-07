@@ -74,21 +74,21 @@ try:  # for printing error log when error exception happen
 
             if not os.path.exists("profile"):  # make profile folder if not existed
                 os.makedirs("profile")
-                os.makedirs("profile/armypreset")
-            if not os.path.exists("profile/armypreset/" + str(self.ruleset)):  # create armypreset folder for ruleset
-                os.makedirs("profile/armypreset/" + str(self.ruleset))
+                os.makedirs("profile/unitpreset")
+            if not os.path.exists("profile/unitpreset/" + str(self.ruleset)):  # create unitpreset folder for ruleset
+                os.makedirs("profile/unitpreset/" + str(self.ruleset))
             try:
-                customarmypresetlist = csv_read("custom_unitpreset.csv", ["profile", "armypreset", str(self.ruleset)])
-                del customarmypresetlist["presetname"]
-                self.customarmypresetlist = {"New Preset": 0, **customarmypresetlist}
+                customunitpresetlist = csv_read("custom_unitpreset.csv", ["profile", "unitpreset", str(self.ruleset)])
+                del customunitpresetlist["presetname"]
+                self.customunitpresetlist = {"New Preset": 0, **customunitpresetlist}
             except Exception:
-                with open("profile/armypreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as csvfile:
+                with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow(["presetname", "armyline2", "armyline2", "armyline3", "armyline4", "armyline15", "armyline6",
-                                         "armyline7", "armyline8", "leader", "leaderposition", "faction"])  # create header
+                    filewriter.writerow(["presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
+                                         "unitline7", "unitline8", "leader", "leaderposition", "faction"])  # create header
                     csvfile.close()
 
-                self.customarmypresetlist = {}
+                self.customunitpresetlist = {}
 
             # if not os.path.exists("\customunit"): # make custom subunit folder if not existed
 
@@ -145,14 +145,14 @@ try:  # for printing error log when error exception happen
             self.terrain_change_button = pygame.sprite.Group()  # button to change preview map base terrain
             self.feature_change_button = pygame.sprite.Group()  # button to change preview map terrain feature
             self.weather_change_button = pygame.sprite.Group()  # button to change preview map weather
-            self.armybuildslot = pygame.sprite.Group()  # slot for putting troop into army preset during preparation mode
+            self.unitbuildslot = pygame.sprite.Group()  # slot for putting troop into unit preset during preparation mode
             self.uniteditborder = pygame.sprite.Group()  # border that appear when selected sub-subunit
             self.previewleader = pygame.sprite.Group()  # just to make preview leader class has containers
-            self.armypreset_namegroup = pygame.sprite.Group()  # preset name list
+            self.unitpreset_namegroup = pygame.sprite.Group()  # preset name list
 
             # battle object group
             self.battlecamera = pygame.sprite.LayeredUpdates()  # layer drawer game camera, all image pos should be based on the map not screen
-            # the camera layer is as followed 0 = terrain map, 1 = dead army, 2 = map special feature, 3 = , 4 = subunit, 5 = sub-subunit,
+            # the camera layer is as followed 0 = terrain map, 1 = dead unit, 2 = map special feature, 3 = , 4 = subunit, 5 = sub-subunit,
             # 6 = flying parentunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
             self.battleui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
@@ -168,9 +168,9 @@ try:  # for printing error log when error exception happen
             self.battlemap_height = pygame.sprite.Group()  # height map object
             self.showmap = pygame.sprite.Group()  # beautiful map object that is shown in gameplay
 
-            self.team0army = pygame.sprite.Group()  # taem 0 units group
-            self.team1army = pygame.sprite.Group()  # taem 1 units group
-            self.team2army = pygame.sprite.Group()  # team 2 units group
+            self.team0unit = pygame.sprite.Group()  # taem 0 units group
+            self.team1unit = pygame.sprite.Group()  # taem 1 units group
+            self.team2unit = pygame.sprite.Group()  # team 2 units group
 
             self.team0subunit = pygame.sprite.Group()  # taem 0 units group
             self.team1subunit = pygame.sprite.Group()  # taem 1 units group
@@ -190,7 +190,7 @@ try:  # for printing error log when error exception happen
             self.minimap = pygame.sprite.Group()  # minimap ui
             self.eventlog = pygame.sprite.Group()  # event log ui
             self.buttonui = pygame.sprite.Group()  # buttons for various ui group
-            self.inspectselectedborder = pygame.sprite.Group()  # subunit selected border in inspect ui army box
+            self.inspectselectedborder = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
             self.fpscount = pygame.sprite.Group()  # fps number counter
             self.switchbuttonui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. parentunit behaviour setting)
 
@@ -208,8 +208,8 @@ try:  # for printing error log when error exception happen
             self.escoption_menu_button = pygame.sprite.Group()  # buttons for esc menu option object group
             self.slidermenu = pygame.sprite.Group()  # volume slider in esc option menu
 
-            self.armyselector = pygame.sprite.Group()  # army selector ui
-            self.armyicon = pygame.sprite.Group()  # army icon object group in army selector ui
+            self.unitselector = pygame.sprite.Group()  # unit selector ui
+            self.uniticon = pygame.sprite.Group()  # unit icon object group in unit selector ui
 
             self.timeui = pygame.sprite.Group()  # time bar ui
             self.timenumber = pygame.sprite.Group()  # number text of in-game time
@@ -251,7 +251,7 @@ try:  # for printing error log when error exception happen
             gameunitedit.Previewbox.effectimage = img
             gameunitedit.Filterbox.containers = self.filterbox
             gameunitedit.Previewchangebutton.containers = self.terrain_change_button, self.weather_change_button, self.feature_change_button
-            gameunitedit.Armybuildslot.containers = self.armybuildslot
+            gameunitedit.Armybuildslot.containers = self.unitbuildslot
             gameunitedit.Previewleader.containers = self.previewleader
 
             # battle containers
@@ -277,8 +277,8 @@ try:  # for printing error log when error exception happen
             gameui.Skillcardicon.containers = self.skill_icon, self.battleui, self.mainui
             gameui.Effectcardicon.containers = self.effect_icon, self.battleui, self.mainui
             gameui.Eventlog.containers = self.eventlog
-            gameui.Armyselect.containers = self.armyselector, self.battleui
-            gameui.Armyicon.containers = self.armyicon, self.battleui
+            gameui.Armyselect.containers = self.unitselector, self.battleui
+            gameui.Armyicon.containers = self.uniticon, self.battleui
             gameui.Timeui.containers = self.timeui, self.battleui
             gameui.Timer.containers = self.timenumber, self.battleui
             gameui.Scaleui.containers = self.scaleui, self.battleui
@@ -371,13 +371,9 @@ try:  # for printing error log when error exception happen
             self.current_map_select = 0
 
             self.current_source_row = 0
-
-            self.current_troop_row = 0
-            self.current_army_row = 0
-
             # ^ End battle map menu button
 
-            # v Create subunit editor button and ui
+            # v Create unit and subunit editor button in main menu
 
             self.unit_edit_button = gameprepare.Menubutton(imagelist, (SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 4)),
                                                            text="Army Editor")
@@ -389,22 +385,23 @@ try:  # for printing error log when error exception happen
             self.editor_button = (self.unit_edit_button, self.subunit_create_button, self.editor_back_button)
             # ^ End subunit editor
 
-            # v Army editor
-            boximg = load_image("army_presetbox.png", "ui\\mainmenu_ui").convert()
-            self.army_listbox = gameprepare.Listbox((0, SCREENRECT.height / 2.2), boximg)  # box for showing army preset list
-            self.army_presetname_scroll = gameui.Uiscroller(self.army_listbox.rect.topright, self.army_listbox.image.get_height(),
-                                                            self.army_listbox.maxshowlist, layer=14)  # preset name scroll
-            self.presetselectborder = gameunitedit.Selectedpresetborder(self.army_listbox.image.get_width() - int(15 * self.widthadjust),
+            # v Army editor ui and button
+            boximg = load_image("unit_presetbox.png", "ui\\mainmenu_ui").convert()
+            self.unit_listbox = gameprepare.Listbox((0, SCREENRECT.height / 2.2), boximg)  # box for showing unit preset list
+            self.unit_presetname_scroll = gameui.Uiscroller(self.unit_listbox.rect.topright, self.unit_listbox.image.get_height(),
+                                                            self.unit_listbox.maxshowlist, layer=14)  # preset name scroll
+            self.presetselectborder = gameunitedit.Selectedpresetborder(self.unit_listbox.image.get_width() - int(15 * self.widthadjust),
                                                                         int(25 * self.heightadjust))
 
             self.troop_listbox = gameprepare.Listbox((SCREENRECT.width / 1.19, 0), imgs[0])
 
             self.troop_scroll = gameui.Uiscroller(self.troop_listbox.rect.topright, self.troop_listbox.image.get_height(),
                                                   self.troop_listbox.maxshowlist, layer=14)
-            self.army_delete_button = gameprepare.Menubutton(images=imagelist,
-                                                           pos=(imagelist[0].get_width() / 2, bottomheight),
-                                                           text="Delete")
-            self.army_save_button = gameprepare.Menubutton(images=imagelist,
+
+            self.unit_delete_button = gameprepare.Menubutton(images=imagelist,
+                                                             pos=(imagelist[0].get_width() / 2, bottomheight),
+                                                             text="Delete")
+            self.unit_save_button = gameprepare.Menubutton(images=imagelist,
                                                            pos=((SCREENRECT.width - (SCREENRECT.width - (imagelist[0].get_width() * 1.7))),
                                                                 bottomheight),
                                                            text="Save")
@@ -428,14 +425,7 @@ try:  # for printing error log when error exception happen
             gameunitedit.Armybuildslot.squadheight = self.squadheight
             startpos = [(SCREENRECT.width / 2) - (self.squadwidth * 5),
                         (SCREENRECT.height / 2) - (self.squadheight * 4)]
-            self.armyedit_gameid = 0
-            self.armyedit_team1id = 0
-            self.armyedit_team2id = 0
-            self.makearmyslot(self.armyedit_gameid, 1, self.armyedit_team1id, range(0, 64), startpos)  # make player army slot
-
-            self.team1previewarmy = np.array([[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
-                                              [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
-                                              [0, 0, 0, 0, 0, 0, 0, 0]])  # player teat army subunit list
+            self.makeunitslot(0, 1, 0, range(0, 64), startpos)  # make player custom unit slot
 
             self.previewleader = [gameunitedit.Previewleader(1, 0, 0, self.leader_stat),
                                        gameunitedit.Previewleader(1, 0, 1, self.leader_stat),
@@ -445,22 +435,24 @@ try:  # for printing error log when error exception happen
 
             boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()  # filter box ui in editor
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)
-            img1 = load_image("team1_button.png", "ui\\mainmenu_ui").convert()  # change army slot to team 1 in editor
-            img2 = load_image("team2_button.png", "ui\\mainmenu_ui").convert()  # change army slot to team 2 in editor
+            img1 = load_image("team1_button.png", "ui\\mainmenu_ui").convert()  # change unit slot to team 1 in editor
+            img2 = load_image("team2_button.png", "ui\\mainmenu_ui").convert()  # change unit slot to team 2 in editor
             self.teamchange_button = gameui.Switchuibutton(self.filterbox.rect.topleft[0] + 220, self.filterbox.rect.topleft[1] + 30, [img1, img2])
-            img1 = load_image("show_button.png", "ui\\mainmenu_ui").convert()  # show army slot ui in editor
-            img2 = load_image("hide_button.png", "ui\\mainmenu_ui").convert()  # hide army slot ui in editor
+            img1 = load_image("show_button.png", "ui\\mainmenu_ui").convert()  # show unit slot ui in editor
+            img2 = load_image("hide_button.png", "ui\\mainmenu_ui").convert()  # hide unit slot ui in editor
             self.slotdisplay_button = gameui.Switchuibutton(self.filterbox.rect.topleft[0] + 80, self.filterbox.rect.topleft[1] + 30, [img1, img2])
-            img1 = load_image("deploy_button.png", "ui\\mainmenu_ui").convert()  # deploy army in army slot to test map in editor
+            img1 = load_image("deploy_button.png", "ui\\mainmenu_ui").convert()  # deploy unit in unit slot to test map in editor
             self.deploy_button = gameui.Uibutton(self.filterbox.rect.topleft[0] + 150, self.filterbox.rect.topleft[1] + 90, img1, 0)
             img1 = load_image("test_button.png", "ui\\mainmenu_ui").convert()  # start test button in editor
             img2 = load_image("end_button.png", "ui\\mainmenu_ui").convert()  # stop test button
             self.test_button = gameui.Switchuibutton(self.scaleui.rect.bottomleft[0] + 55, self.scaleui.rect.bottomleft[1] + 25, [img1, img2])
-            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # delete army button in editor
+            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # delete unit button in editor
             self.delete_button = gameui.Uibutton(0, 0, img1, 0)
-            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # move army button in editor
+            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # move unit button in editor
             self.move_button = gameui.Uibutton(0, 0, img1, 0)
-            # ^ End army editor
+
+            self.warningmsg = gameunitedit.Warningmsg((self.test_button.rect.bottomleft[0], self.test_button.rect.bottomleft[1]))
+            # ^ End unit editor
 
             # v Input box popup
             input_ui_img = load_image("inputui.png", "ui\\mainmenu_ui")
@@ -718,20 +710,20 @@ try:  # for printing error log when error exception happen
                     currentrow -= 1
             return currentrow
 
-        def makearmyslot(self, gameid, team, armyid, rangetorun, startpos, columnonly=False):
+        def makeunitslot(self, gameid, team, unitid, rangetorun, startpos, columnonly=False):
             width, height = 0, 0
             slotnum = 0  # Number of subunit based on the position in row and column
-            for squad in rangetorun:  # generate player army slot for filling troop into preview army
+            for subunit in rangetorun:  # generate player unit slot for filling troop into preview unit
                 if columnonly is False:
                     width += self.squadwidth
-                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, (width, height), startpos, slotnum))
+                    self.unitbuildslot.add(gameunitedit.Armybuildslot(gameid, team, unitid, (width, height), startpos, slotnum))
                     slotnum += 1
                     if slotnum % 8 == 0:  # Pass the last subunit in the row, go to the next one
                         width = 0
                         height += self.squadheight
                 else:
                     height += self.squadheight
-                    self.armybuildslot.add(gameunitedit.Armybuildslot(gameid, team, armyid, (width, height), startpos, slotnum))
+                    self.unitbuildslot.add(gameunitedit.Armybuildslot(gameid, team, unitid, (width, height), startpos, slotnum))
                     slotnum += 1
                 gameid += 1
             return gameid
@@ -1031,7 +1023,7 @@ try:  # for printing error log when error exception happen
 
                             self.mapsource = 0
                             for thismap in self.mapshow:
-                                thismap.changemode(0)  # revert map preview back to without army dot
+                                thismap.changemode(0)  # revert map preview back to without unit dot
 
                             for group in (self.source_namegroup, self.armystat):
                                 for stuff in group:  # remove map name item
