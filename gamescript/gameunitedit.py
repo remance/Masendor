@@ -207,13 +207,12 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
 
 class Warningmsg(pygame.sprite.Sprite):
-    faction_warn = "- Multiple factions subunit will not be usable with No Multiple Faction option enable"
     tensubunit_warn = "- Require at least 10 sub-units for both test and employment"
     mainleader_warn = "- Require a main leader for both test and employment"
     emptyrowcol_warn = "- Empty row or column will be removed when employed"
     duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leaer option enable"
-    leader_warn = "- Leaders from multiple factions will not be usable with No Multiple Faction option enable"
-    outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
+    multifaction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"
+    # outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
 
     def __init__(self, pos):
         import main

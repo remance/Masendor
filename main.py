@@ -431,7 +431,7 @@ try:  # for printing error log when error exception happen
                                        gameunitedit.Previewleader(1, 0, 1, self.leader_stat),
                                        gameunitedit.Previewleader(1, 0, 2, self.leader_stat),
                                        gameunitedit.Previewleader(1, 0, 3, self.leader_stat)] # list of preview leader for unit editor
-            self.leader_updater.remove(*self.previewleader)
+            self.leader_updater.remove(*self.previewleader)  # remove preview leader from updater since not use in battle
 
             boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()  # filter box ui in editor
             self.filterbox = gameunitedit.Filterbox((SCREENRECT.width / 2.5, 0), boximg)

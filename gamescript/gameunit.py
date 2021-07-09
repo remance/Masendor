@@ -908,9 +908,9 @@ class Unitarmy(pygame.sprite.Sprite):
             self.range_combat_check = False
 
             # register user keyboard
-            if keystate[pygame.K_LCTRL]:
+            if keystate is not None and keystate[pygame.K_LCTRL]:
                 self.forced_melee = True
-            if keystate[pygame.K_LALT]:
+            if keystate is not None and keystate[pygame.K_LALT]:
                 self.attack_place = True
 
             if self.state != 100:
@@ -921,9 +921,9 @@ class Unitarmy(pygame.sprite.Sprite):
                         for subunit in self.subunit_sprite:
                             subunit.attacking = True
                         # if self.state == 10:
-                        if keystate[pygame.K_LSHIFT]:
+                        if keystate is not None and keystate[pygame.K_LSHIFT]:
                             self.rotateonly = True
-                        if keystate[pygame.K_z]:
+                        if keystate is not None and keystate[pygame.K_z]:
                             self.revert = True
                         self.processcommand(pos, double_mouse_right, self.revert, target)
                 elif othercommand != 0:
@@ -952,13 +952,19 @@ class Unitarmy(pygame.sprite.Sprite):
     def placement(self, mouse_pos, mouse_right, mouse_rightdown, double_mouse_right):
         if double_mouse_right:  # move unit to new pos
             self.base_pos = mouse_pos
+            self.last_base_pos = self.base_pos
 
         elif mouse_right or mouse_rightdown:  # rotate unit
             self.angle = self.setrotate(mouse_pos)
+            self.new_angle = self.angle
             self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
             if self.angle < 0:  # negative angle (rotate to left side)
                 self.radians_angle = math.radians(-self.angle)
 
+        frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
+        self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
+        self.base_target = self.base_pos
+        self.command_target = self.base_target  # reset command base_target
         unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
                                       # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
