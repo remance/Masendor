@@ -2,12 +2,9 @@
 
 block_cipher = None
 
-import os
-
-spec_root = os.path.abspath(SPECPATH)
 
 a = Analysis(['main.py'],
-             pathex=[specroot],
+             pathex=['C:\\Users\\masendor\\Documents\\PycharmProjects\\Masendor\\RTS'],
              binaries=[],
              datas=[],
              hiddenimports=[],

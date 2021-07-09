@@ -8,9 +8,11 @@ import numpy as np
 import main
 import pygame
 import pygame.freetype
+import scipy.spatial.transform._rotation_groups
 from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather, gameprepare, gameunitedit, gamemap
 from pygame.locals import *
 from scipy.spatial import KDTree
+
 
 config = main.config
 SoundVolume = main.Soundvolume
