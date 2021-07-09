@@ -2037,6 +2037,7 @@ class Battle:
                             if keystate[pygame.K_DELETE]:
                                 for subunit in self.last_selected.subunit_sprite:
                                     subunit.delete()
+                                    self.allsubunitlist.remove(subunit)
                                     subunit.kill()
                                     del subunit
                                 for leader in self.last_selected.leader:
