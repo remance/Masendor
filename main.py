@@ -274,8 +274,8 @@ try:  # for printing error log when error exception happen
             gameui.Uibutton.containers = self.buttonui, self.lorebuttonui
             gameui.Switchuibutton.containers = self.switchbuttonui, self.ui_updater
             gameui.Selectedsquad.containers = self.inspectselectedborder, self.uniteditborder, self.mainui, self.battleui
-            gameui.Skillcardicon.containers = self.skill_icon, self.battleui, self.mainui
-            gameui.Effectcardicon.containers = self.effect_icon, self.battleui, self.mainui
+            gameui.Skillcardicon.containers = self.skill_icon, self.battleui
+            gameui.Effectcardicon.containers = self.effect_icon, self.battleui
             gameui.Eventlog.containers = self.eventlog
             gameui.Armyselect.containers = self.unitselector, self.battleui
             gameui.Armyicon.containers = self.uniticon, self.battleui

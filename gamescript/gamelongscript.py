@@ -714,7 +714,7 @@ def addunit(subunitlist, position, gameid, colour, leader, leaderstat, control, 
 def generateunit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
     """generate unit data into game object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
-    from gamescript import gamesubunit
+    from gamescript import gameunit, gamesubunit
     unit = addunit(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                    colour, row[10] + row[11], gamebattle.leader_stat, control,
                    coa, command, row[13], row[14], row[15], row[16])
@@ -742,6 +742,8 @@ def generateunit(gamebattle, whicharmy, row, control, command, colour, coa, subu
             column = 0
             row += 1
         armysubunitindex += 1
+    gamebattle.troopnumbersprite.add(gameunit.Troopnumber(unit))  # create troop number text sprite
+
     return subunitgameid
 
 def unitsetup(gamebattle):
@@ -781,7 +783,7 @@ def unitsetup(gamebattle):
 
     unitfile.close()
 
-def covertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
+def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
     for n, i in enumerate(row):
         if type(i) == str and i.isdigit():
             row[n] = int(i)
@@ -1053,11 +1055,13 @@ def change_leader(self, event):
                 subunit.leader = self.leader
                 self.leader.subunit = subunit
                 for index, subunit2 in enumerate(self.parentunit.subunit_sprite):  # loop to find new subunit pos based on new subunit_sprite list
-                    if subunit2.gameid == self.leader.subunit.gameid:
-                        subunit2.leader.subunitpos = index
+                    if subunit2 == self.leader.subunit:
+                        self.leader.subunitpos = index
                         if self.unit_leader:  # set leader subunit to new one
                             self.parentunit.leadersubunit = subunit2
                             subunit2.unit_leader = True
+                            self.unit_leader = False
+                        break
 
                 self.leader = None
                 break

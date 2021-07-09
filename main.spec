@@ -2,6 +2,7 @@
 
 block_cipher = None
 
+# change pathex for compiling, also need to move data, gamescript folder to dist folder after.
 
 a = Analysis(['main.py'],
              pathex=['C:\\Users\\masendor\\Documents\\PycharmProjects\\Masendor\\RTS'],

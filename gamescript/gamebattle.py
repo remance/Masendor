@@ -237,6 +237,8 @@ class Battle:
         self.battlemap_feature.drawimage(imgs[1])
         self.battlemap_height.drawimage(imgs[2])
         self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, None, self, True)
+        self.minimap.drawimage(self.showmap.trueimage, self.camera)
+        self.showmap.changescale(self.camerascale)
 
     def preparenewgame(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale, mode):
 
@@ -323,7 +325,6 @@ class Battle:
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
         self.enactment = enactment  # enactment mod, control both team
-        self.mapshown = self.showmap
 
         self.team0poslist = {}  # team 0 parentunit position
         self.team1poslist = {}  # team 1 parentunit position
@@ -338,10 +339,6 @@ class Battle:
         self.mode = mode
         if self.mode == "battle":
             gamelongscript.unitsetup(self)
-
-        for unit in self.allunitlist:  # create troop number text sprite
-            self.troopnumbersprite.add(gameunit.Troopnumber(unit))
-
         # ^ End start subunit sprite
 
     def save_preset(self):
@@ -702,7 +699,12 @@ class Battle:
             # ^ End starting
 
         elif self.gamestate == 2:  # change to editor state
-            self.minimap.drawimage(self.showmap.trueimage, self.camera)
+            self.inspectui = False  # reset inspect ui
+            self.minimap.drawimage(self.showmap.trueimage, self.camera)  # reset minimap
+            for arrow in self.arrows:  # remove all range attack
+                arrow.kill()
+                del arrow
+
             for unit in self.allunitlist:  # reset all unit state
                 unit.command(self.battle_mouse_pos[0], False, False, self.last_mouseover, None, othercommand=2)
             self.gameui[2].rect = self.gameui[2].image.get_rect(bottomright=(SCREENRECT.width,
@@ -1022,7 +1024,7 @@ class Battle:
                                 else:
                                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
-                                    self.mapshown.changescale(self.camerascale)
+                                    self.showmap.changescale(self.camerascale)
                                     if self.gamestate == 1:  # only have delay in battle mode
                                         self.mapscaledelay = 0.001
 
@@ -1033,7 +1035,7 @@ class Battle:
                                 else:
                                     self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                                     self.camerapos[1] = self.basecamerapos[1] * self.camerascale
-                                    self.mapshown.changescale(self.camerascale)
+                                    self.showmap.changescale(self.camerascale)
                                     if self.gamestate == 1:  # only have delay in battle mode
                                         self.mapscaledelay = 0.001
                     # ^ End mouse scroll input
@@ -1046,7 +1048,7 @@ class Battle:
                         else:  # Currently in height mode
                             self.mapviewmode = 0
                             self.showmap.changemode(self.mapviewmode)
-                        self.mapshown.changescale(self.camerascale)
+                        self.showmap.changescale(self.camerascale)
 
                     elif keypress == pygame.K_o:  # Speed Pause/unpause Button
                         if self.showtroopnumber:
@@ -1655,14 +1657,12 @@ class Battle:
                                                         self.baseterrain = index
                                                         self.editor_map_change(gamemap.terraincolour[self.baseterrain],
                                                                                gamemap.featurecolour[self.featureterrain])
-                                                        self.minimap.drawimage(self.showmap.trueimage, self.camera)
 
                                                     elif self.popup_listbox.type == "feature":
                                                         self.feature_change_button.changetext(self.battlemap_feature.featurelist[index])
                                                         self.featureterrain = index
                                                         self.editor_map_change(gamemap.terraincolour[self.baseterrain],
                                                                                gamemap.featurecolour[self.featureterrain])
-                                                        self.minimap.drawimage(self.showmap.trueimage, self.camera)
 
                                                     elif self.popup_listbox.type == "weather":
                                                         self.weathertype = int(index / 3)
@@ -1918,9 +1918,9 @@ class Battle:
                                                                                                                 str(int(self.basecamerapos[1]))], 0)
                                                     for slot in self.unitbuildslot:  # just for grabing current selected team
                                                         currentpreset[self.unitpresetname] += (0, 100, 100, slot.team)
-                                                        gamelongscript.covertedit_unit(self, (self.team0unit, self.team1unit, self.team2unit)[slot.team],
-                                                                                       currentpreset[self.unitpresetname], self.teamcolour[slot.team],
-                                                                                       pygame.transform.scale(
+                                                        gamelongscript.convertedit_unit(self, (self.team0unit, self.team1unit, self.team2unit)[slot.team],
+                                                                                        currentpreset[self.unitpresetname], self.teamcolour[slot.team],
+                                                                                        pygame.transform.scale(
                                                                                            self.coa[int(currentpreset[self.unitpresetname][-1])],
                                                                                            (60, 60)), 0)
                                                         break
@@ -2035,6 +2035,11 @@ class Battle:
                                 self.last_selected.placement(self.battle_mouse_pos[1], mouse_right, mouse_rightdown, double_mouse_right)
 
                             if keystate[pygame.K_DELETE]:
+                                for unit in self.troopnumbersprite:
+                                    if unit.who == self.last_selected:
+                                        unit.delete()
+                                        unit.kill()
+                                        del unit
                                 for subunit in self.last_selected.subunit_sprite:
                                     subunit.delete()
                                     self.allsubunitlist.remove(subunit)
@@ -2077,7 +2082,8 @@ class Battle:
                     # ^ End remove
 
                     # v Update value of the clicked subunit every 1.1 second
-                    if self.inspectui and ((self.ui_timer >= 1.1 and self.gameui[2].option != 0) or self.before_selected != self.last_selected):
+                    if self.gamestate == 1 and self.inspectui and ((self.ui_timer >= 1.1 and self.gameui[2].option != 0) or
+                                                                   self.before_selected != self.last_selected):
                         self.gameui[2].valueinput(who=self.subunit_selected.who, weaponlist=self.allweapon, armourlist=self.allarmour,
                                                   splithappen=self.splithappen)
                         if self.gameui[2].option == 2:  # skill and status effect card
@@ -2316,8 +2322,8 @@ class Battle:
                                                                  self.unit_presetname_scroll, self.filterbox, self.teamchange_button,
                                                                  self.slotdisplay_button, self.test_button, self.deploy_button, *self.unitcardbutton,
                                                                  self.terrain_change_button, self.feature_change_button, self.weather_change_button,
-                                                                 self.timenumber, self.speednumber, *self.unitbuildslot, *self.leadernow,
-                                                                 self.presetselectborder)
+                                                                 *self.unitbuildslot, *self.leadernow, self.presetselectborder,
+                                                                 self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
 
                                             for group in self.troop_namegroup, self.uniteditborder, self.unitpreset_namegroup:
                                                 for item in group:  # remove name list

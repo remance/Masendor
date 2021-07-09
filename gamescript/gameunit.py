@@ -963,6 +963,11 @@ class Unitarmy(pygame.sprite.Sprite):
 
         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
         self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
+        numberpos = (self.base_pos[0] - self.base_width_box,
+                     (self.base_pos[1] + self.base_height_box))  # find position for number text
+        self.number_pos = self.rotationxy(self.base_pos, numberpos, self.radians_angle)
+        self.change_pos_scale()
+
         self.base_target = self.base_pos
         self.command_target = self.base_target  # reset command base_target
         unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
