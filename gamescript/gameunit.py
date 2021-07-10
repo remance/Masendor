@@ -561,25 +561,26 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v Setup frontline again when any subunit die
         if self.deadchange:
-            self.setup_frontline()
+            if len(self.armysubunit) > 1:
+                self.setup_frontline()
 
-            for subunit in self.subunit_sprite:
-                subunit.base_morale -= (30 * subunit.mental)
-            self.deadchange = False
+                for subunit in self.subunit_sprite:
+                    subunit.base_morale -= (30 * subunit.mental)
+                self.deadchange = False
+
+            # v remove when troop number reach 0
+            else:
+                self.stamina, self.morale, self.speed = 0, 0, 0
+
+                leaderlist = [leader for leader in self.leader]  # create temp list to remove leader
+                for leader in leaderlist:  # leader retreat
+                    if leader.state < 90:  # Leaders flee when parentunit destroyed
+                        leader.state = 96
+                        leader.gone()
+
+                self.state = 100
+            # ^ End remove
         # ^ End setup frontline when subunit die
-
-        # v remove when troop number reach 0
-        if len(self.armysubunit) < 1:
-            self.stamina, self.morale, self.speed = 0, 0, 0
-
-            leaderlist = [leader for leader in self.leader]  # create temp list to remove leader
-            for leader in leaderlist:  # leader retreat
-                if leader.state < 90:  # Leaders flee when parentunit destroyed
-                    leader.state = 96
-                    leader.gone()
-
-            self.state = 100
-        # ^ End remove
 
         if self.state != 100:
             self.ally_pos_list[self.gameid] = self.base_pos  # update current position to team position list

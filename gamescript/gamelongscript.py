@@ -697,6 +697,7 @@ def countdownskillicon(self):
 
 # Battle Start related gamescript
 
+
 def addunit(subunitlist, position, gameid, colour, leader, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
     """Create batalion object into the battle and leader of the parentunit"""
     from gamescript import gameunit, gameleader
@@ -710,6 +711,7 @@ def addunit(subunitlist, position, gameid, colour, leader, leaderstat, control, 
                    gameleader.Leader(leader[2], leader[6], 2, unit, leaderstat),
                    gameleader.Leader(leader[3], leader[7], 3, unit, leaderstat)]
     return unit
+
 
 def generateunit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
     """generate unit data into game object
@@ -745,6 +747,7 @@ def generateunit(gamebattle, whicharmy, row, control, command, colour, coa, subu
     gamebattle.troopnumbersprite.add(gameunit.Troopnumber(unit))  # create troop number text sprite
 
     return subunitgameid
+
 
 def unitsetup(gamebattle):
     """read parentunit from unit_pos(source) file and create object with addunit function"""
@@ -783,6 +786,7 @@ def unitsetup(gamebattle):
 
     unitfile.close()
 
+
 def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
     for n, i in enumerate(row):
         if type(i) == str and i.isdigit():
@@ -790,6 +794,7 @@ def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
         if n in range(1, 12):
             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
     subunitgameid = generateunit(gamebattle, whicharmy, row, True, True, colour, coa, subunitgameid)
+
 
 # Battle related gamescript
 

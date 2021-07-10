@@ -407,7 +407,6 @@ try:  # for printing error log when error exception happen
                                                            text="Save")
 
             self.popup_listbox = gameprepare.Listbox((0, 0), boximg, 15)  # popup listbox need to be in higher layer
-            self.popup_listbox.maxshowlist = 9  # box is smaller than usual
             self.popup_listscroll = gameui.Uiscroller(self.popup_listbox.rect.topright,
                                                       self.popup_listbox.image.get_height(),
                                                       self.popup_listbox.maxshowlist,
@@ -549,13 +548,10 @@ try:  # for printing error log when error exception happen
 
             self.mainui.add(*self.menu_button, self.profile_box)
 
-        def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, screenscale=False, layer=15):
+        def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
             """generate list of subsection of the left side of encyclopedia"""
-            widthadjust = 1
-            heightadjust = 1
-            if screenscale:
-                widthadjust = self.widthadjust
-                heightadjust = self.heightadjust
+            widthadjust = self.widthadjust
+            heightadjust = self.heightadjust
             row = 5 * heightadjust
             column = 5 * widthadjust
             pos = box.rect.topleft

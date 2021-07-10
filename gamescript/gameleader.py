@@ -78,13 +78,11 @@ class Leader(pygame.sprite.Sprite):
     def gone(self, eventtext={96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}):
         """leader no longer in command due to death or other events"""
         if self.commander and self.parentunit.leader[3].state not in (96, 97, 98, 99, 100) and self.parentunit.leader[3].name != "None":
-            ## If commander die will use strategist as next commander first
+            # If commander die will use strategist as next commander first
             self.parentunit.leader[0], self.parentunit.leader[3] = self.parentunit.leader[3], self.parentunit.leader[0]
         elif self.armyposition + 1 != 4 and self.parentunit.leader[self.armyposition + 1].state not in (96, 97, 98, 99, 100) and \
                 self.parentunit.leader[self.armyposition + 1].name != "None":
             self.parentunit.leader.append(self.parentunit.leader.pop(self.armyposition))  ## move leader to last of list when dead
-
-        self.subunit.unit_leader = False
 
         thisbadmorale = self.badmorale[0]
 
@@ -120,6 +118,7 @@ class Leader(pygame.sprite.Sprite):
         for index, leader in enumerate(self.parentunit.leader):
             leader.armyposition = index  ## change army position to new one
             if leader.armyposition == 0:  # new main general
+                self.subunit.unit_leader = False
                 if self.parentunit.commander:
                     leader.commander = True
 

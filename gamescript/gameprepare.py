@@ -468,7 +468,9 @@ class Listbox(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
-        self.maxshowlist = 18  # max number of map on list can be shown at once
+
+        self.listimageheight = int(25 * self.heightadjust)
+        self.maxshowlist = int(self.image.get_height() / (self.listimageheight + (6 * self.heightadjust)))  # max number of map on list can be shown
 
 
 class Namelist(pygame.sprite.Sprite):
