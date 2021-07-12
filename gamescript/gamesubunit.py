@@ -373,6 +373,7 @@ class Subunit(pygame.sprite.Sprite):
         # v Setup troop stat
         stat = self.stat_list.unit_list[self.troopid].copy()
         self.create_troop_stat(stat, starthp, startstamina, unitscale)
+        self.gamebattle.start_troopnumber[self.team] += self.troopnumber  # add troop number to counter how many troop join battle
         # ^ End setup stat
 
         # v Subunit image block
@@ -1381,11 +1382,15 @@ class Subunit(pygame.sprite.Sprite):
                         self.unit_health = alivehp  # Cannot exceed health of alive subunit (exceed mean resurrection)
                 elif self.hpregen < 0:  # negative regen can kill
                     self.unit_health += self.hpregen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
-                    self.troopnumber = self.unit_health / self.troophealth  # Recal number of troop again in case some die from negative regen
-                    if self.troopnumber.is_integer() is False:  # always round up if there is decimal number
-                        self.troopnumber = int(self.troopnumber) + 1
+                    remain = self.unit_health / self.troophealth
+                    if remain.is_integer() is False:  # always round up if there is decimal number
+                        remain = int(remain) + 1
                     else:
-                        self.troopnumber = int(self.troopnumber)
+                        remain = int(remain)
+                    wound = random.randint(0, (self.troopnumber - remain))  # chance to be wounded instead of dead
+                    self.gamebattle.death_troopnumber[self.team] += remain - wound
+                    self.gamebattle.wound_troopnumber[self.team] += wound
+                    self.troopnumber = remain  # Recal number of troop again in case some die from negative regen
 
                 if self.unit_health < 0:
                     self.unit_health = 0  # can't have negative hp
@@ -1393,9 +1398,18 @@ class Subunit(pygame.sprite.Sprite):
                     self.unit_health = self.maxhealth  # hp can't exceed max hp (would increase number of troop)
 
                 if self.oldlasthealth != self.unit_health:
-                    self.troopnumber = self.unit_health / self.troophealth  # Calculate how many troop left based on current hp
-                    if self.troopnumber.is_integer() is False:  # always round up if there is decimal
-                        self.troopnumber = int(self.troopnumber + 1)
+                    remain = self.unit_health / self.troophealth
+                    if remain.is_integer() is False:  # always round up if there is decimal number
+                        remain = int(remain) + 1
+                    else:
+                        remain = int(remain)
+                    wound = random.randint(0, (self.troopnumber - remain))  # chance to be wounded instead of dead
+                    self.gamebattle.death_troopnumber[self.team] += remain - wound
+                    if self.state in (98, 99):  # fleeing or broken got captured instead of wound
+                        self.gamebattle.capture_troopnumber[self.team] += wound
+                    else:
+                        self.gamebattle.wound_troopnumber[self.team] += wound
+                    self.troopnumber = remain  # Recal number of troop again in case some die from negative regen
 
                     # v Health bar
                     healthlist = (self.health75, self.health50, self.health25, 0)
@@ -1432,6 +1446,7 @@ class Subunit(pygame.sprite.Sprite):
             if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
+                self.gamebattle.flee_troopnumber[self.team] += self.troopnumber  # add number of troop retreat from battle
                 self.troopnumber = 0
                 self.gamebattle.battlecamera.remove(self)
 

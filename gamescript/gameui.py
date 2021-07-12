@@ -384,11 +384,13 @@ class Selectedsquad(pygame.sprite.Sprite):
     def __init__(self, pos, layer=17):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.rect = self.image.get_rect(topleft=pos)
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def pop(self, pos):
         """pop out at the selected subunit in inspect uo"""
-        self.rect = self.image.get_rect(topleft=pos)
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
 
 
 class Minimap(pygame.sprite.Sprite):

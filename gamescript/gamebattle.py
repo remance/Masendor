@@ -743,6 +743,13 @@ class Battle:
         self.textinputpopup = (None, None)  # no popup asking for user text input state
         self.leadernow = []  # list of showing leader in command ui
         self.currentweather = None
+        self.team_troopnumber = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
+        self.last_team_troopnumber = [1, 1, 1]
+        self.start_troopnumber = [0, 0, 0]
+        self.wound_troopnumber = [0, 0, 0]
+        self.death_troopnumber = [0, 0, 0]
+        self.flee_troopnumber = [0, 0, 0]
+        self.capture_troopnumber = [0, 0, 0]
         if self.mode == "uniteditor":
             self.gamestate = 2
 
@@ -821,8 +828,6 @@ class Battle:
         self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]  # center position of the screen
         self.battle_mouse_pos = [[0, 0],
                                  [0, 0]]  # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
-        self.teamtroopnumber = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
-        self.lastteamtroopnumber = [1, 1, 1]
         self.unitselector.current_row = 0
         # ^ End start value
 
@@ -1741,7 +1746,7 @@ class Battle:
                                                 break
 
                                         if slotclick is not None:
-                                            if keystate[pygame.K_LSHIFT]:  # add all sub-subunit from the first selected
+                                            if keystate[pygame.K_LSHIFT] or keystate[pygame.K_RSHIFT]:  # add all sub-subunit from the first selected
                                                 firstone = None
                                                 for newslot in self.unitbuildslot:
                                                     if newslot.armyid == slotclick.armyid and newslot.gameid <= slotclick.gameid:
@@ -1749,8 +1754,8 @@ class Battle:
                                                             firstone = newslot.gameid
                                                             if slotclick.gameid <= firstone:  # cannot go backward, stop loop
                                                                 break
-                                                            else:  # forward select, acceptable
-                                                                slotclickselected = True
+                                                            elif slotclick.selected is False:  # forward select, acceptable
+                                                                slotclick.selected = True
                                                                 self.uniteditborder.add(gameui.Selectedsquad(slotclick.inspposition, 5))
                                                                 self.battleui.add(*self.uniteditborder)
                                                         elif firstone is not None and newslot.gameid > firstone and newslot.selected is False:  # select from first select to clicked
@@ -1758,10 +1763,20 @@ class Battle:
                                                             self.uniteditborder.add(gameui.Selectedsquad(newslot.inspposition, 5))
                                                             self.battleui.add(*self.uniteditborder)
 
-                                            elif keystate[pygame.K_LCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
-                                                slotclick.selected = True
-                                                self.uniteditborder.add(gameui.Selectedsquad(slotclick.inspposition, 5))
-                                                self.battleui.add(*self.uniteditborder)
+                                            elif keystate[pygame.K_LCTRL] or keystate[pygame.K_RCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
+                                                if slotclick.selected is False:
+                                                    slotclick.selected = True
+                                                    self.uniteditborder.add(gameui.Selectedsquad(slotclick.inspposition, 5))
+                                                    self.battleui.add(*self.uniteditborder)
+
+                                            elif keystate[pygame.K_LALT] or keystate[pygame.K_RALT]:
+                                                if slotclick.selected and len(self.uniteditborder) > 1:
+                                                    slotclick.selected = False
+                                                    for border in self.uniteditborder:
+                                                        if border.pos == slotclick.inspposition:
+                                                            border.kill()
+                                                            del border
+                                                            break
 
                                             else:  # select one sub-subunit by normal left click
                                                 for border in self.uniteditborder:  # remove all other border
@@ -2113,7 +2128,7 @@ class Battle:
                     # ^ End drama
 
                     if self.dt > 0:
-                        self.teamtroopnumber = [1, 1, 1]  # reset troop count
+                        self.team_troopnumber = [1, 1, 1]  # reset troop count
 
                         # v Event log timer
                         if self.eventschedule is not None and self.eventlist != [] and self.timenumber.timenum >= self.eventschedule:
@@ -2230,8 +2245,8 @@ class Battle:
                     # ^ End melee pathfinding
 
                     if self.ui_timer > 1:
-                        self.scaleui.changefightscale(self.teamtroopnumber)  # change fight colour scale on timeui bar
-                        self.lastteamtroopnumber = self.teamtroopnumber
+                        self.scaleui.changefightscale(self.team_troopnumber)  # change fight colour scale on timeui bar
+                        self.last_team_troopnumber = self.team_troopnumber
 
                     if self.combattimer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combattimer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing

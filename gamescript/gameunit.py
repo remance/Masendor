@@ -599,7 +599,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
             if dt > 0:  # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
-                self.gamebattle.teamtroopnumber[self.team] += self.troopnumber
+                self.gamebattle.team_troopnumber[self.team] += self.troopnumber
                 if self.timer >= 1:
                     self.setup_army()
 
@@ -909,9 +909,9 @@ class Unitarmy(pygame.sprite.Sprite):
             self.range_combat_check = False
 
             # register user keyboard
-            if keystate is not None and keystate[pygame.K_LCTRL]:
+            if keystate is not None and (keystate[pygame.K_LCTRL] or keystate[pygame.K_RCTRL]):
                 self.forced_melee = True
-            if keystate is not None and keystate[pygame.K_LALT]:
+            if keystate is not None and (keystate[pygame.K_LALT] or keystate[pygame.K_RALT] ):
                 self.attack_place = True
 
             if self.state != 100:
@@ -922,7 +922,7 @@ class Unitarmy(pygame.sprite.Sprite):
                         for subunit in self.subunit_sprite:
                             subunit.attacking = True
                         # if self.state == 10:
-                        if keystate is not None and keystate[pygame.K_LSHIFT]:
+                        if keystate is not None and (keystate[pygame.K_LSHIFT] or keystate[pygame.K_RSHIFT]):
                             self.rotateonly = True
                         if keystate is not None and keystate[pygame.K_z]:
                             self.revert = True
