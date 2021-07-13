@@ -696,7 +696,7 @@ class Battle:
             self.buttonui[2].rect = self.buttonui[2].image.get_rect(center=(self.gameui[2].x - 152, self.gameui[2].y - 30))
             self.buttonui[3].rect = self.buttonui[3].image.get_rect(center=(self.gameui[2].x - 152, self.gameui[2].y + 50))
 
-            self.battleui.remove(self.filter_stuff, self.unitsetup_stuff, self.leadernow, self.buttonui)
+            self.battleui.remove(self.filter_stuff, self.unitsetup_stuff, self.leadernow, self.buttonui, self.warningmsg)
             self.battleui.add(self.eventlog, self.logscroll, self.buttonui[8:17])
 
             self.gamespeed = 1
@@ -1938,15 +1938,24 @@ class Battle:
                                                     warninglist.append(self.warningmsg.mainleader_warn)
 
                                                 if candeploy:
+                                                    unit_gameid = 0
+                                                    if len(self.allunitindex) > 0:
+                                                        unit_gameid = self.allunitindex[-1] + 1
                                                     currentpreset = self.convertslot_dict(self.unitpresetname, [str(int(self.basecamerapos[0])),
-                                                                                                                str(int(self.basecamerapos[1]))], 0)
+                                                                                                                str(int(self.basecamerapos[1]))],
+                                                                                          unit_gameid)
+                                                    subunit_gameid = 0
+                                                    if len(self.subunit) > 0:
+                                                        for subunit in self.subunit:
+                                                            subunit_gameid = subunit.gameid
+                                                        subunit_gameid = subunit_gameid + 1
                                                     for slot in self.unitbuildslot:  # just for grabing current selected team
                                                         currentpreset[self.unitpresetname] += (0, 100, 100, slot.team)
                                                         gamelongscript.convertedit_unit(self, (self.team0unit, self.team1unit, self.team2unit)[slot.team],
                                                                                         currentpreset[self.unitpresetname], self.teamcolour[slot.team],
                                                                                         pygame.transform.scale(
                                                                                            self.coa[int(currentpreset[self.unitpresetname][-1])],
-                                                                                           (60, 60)), 0)
+                                                                                           (60, 60)), subunit_gameid)
                                                         break
                                                     self.slotdisplay_button.event = 1
                                                     self.setup_uniticon()
@@ -2297,7 +2306,7 @@ class Battle:
                     self.combattimer += self.dt  # update combat timer
                     self.timenumber.timerupdate(self.dt * 10)  # update ingame time with 5x speed
 
-                    if len(self.team1unit) <= 0 or len(self.team2unit) <= 0:
+                    if self.mode == "battle" and (len(self.team1unit) <= 0 or len(self.team2unit) <= 0):
                         print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
                               self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
                     # ^ End update game time

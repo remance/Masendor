@@ -362,7 +362,6 @@ class Unitarmy(pygame.sprite.Sprite):
             fullwhoarray = [whoarray, np.fliplr(whoarray.swapaxes(0, 1)), np.rot90(whoarray),
                             np.fliplr([whoarray])[0]]  # rotate the array based on the side
             whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0], fullwhoarray[3][0]]
-            print(self.armysubunit)
             for index, whofrontline in enumerate(whoarray):
                 if any(subunit != 0 for subunit in whofrontline) is False: # has completely empty outer row or column, remove them
                     if index == 0:  # front side
@@ -404,7 +403,6 @@ class Unitarmy(pygame.sprite.Sprite):
                         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
                         self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
                     stoploop = False
-            print(self.armysubunit)
         # ^ End check completely empty row
 
         gotanother = True  # keep finding another subunit while true
@@ -563,7 +561,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v Setup frontline again when any subunit die
         if self.deadchange:
-            if len(self.armysubunit) > 0:
+            if len(self.armysubunit) > 0 and len(self.armysubunit[0]) > 1:
                 self.setup_frontline()
 
                 for subunit in self.subunit_sprite:

@@ -580,10 +580,9 @@ class Subunit(pygame.sprite.Sprite):
                 elem = 0  # reset elemental count
         return elem
 
-    def find_close_target(self):
+    def find_close_target(self, subunitlist):
         """Find close enemy sub-unit to move to fight"""
-        closelist = {subunit: subunit.base_pos.distance_to(self.base_pos) for subunit in
-                     self.melee_target.parentunit.subunit_sprite}
+        closelist = {subunit: subunit.base_pos.distance_to(self.base_pos) for subunit in subunitlist}
         closelist = dict(sorted(closelist.items(), key=lambda item: item[1]))
         maxrandom = 3
         if len(closelist) < 4:
@@ -593,7 +592,7 @@ class Subunit(pygame.sprite.Sprite):
         if len(closelist) > 0:
             closetarget = list(closelist.keys())[random.randint(0, maxrandom)]
             # if close_target.base_pos.distance_to(self.base_pos) < 20: # in case can't find close target
-            self.close_target = closetarget
+        return closetarget
 
     def statusupdate(self, thisweather=None):
         """calculate stat from stamina, morale state, skill, status, terrain"""
@@ -917,9 +916,9 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End timer effectrangedamage
 
     def find_shooting_target(self, parentstate):
-        # get nearby enemy base_target from list if not targeting anything yet
-        self.attack_pos = list(self.parentunit.near_target.values())[0]  # replace attack_target with enemy pos
-        self.attack_target = list(self.parentunit.near_target.keys())[0]  # replace attack_target with enemy id
+        """get nearby enemy base_target from list if not targeting anything yet"""
+        self.attack_pos = list(self.parentunit.near_target.values())[0]  # replace attack_pos with enemy unit pos
+        self.attack_target = list(self.parentunit.near_target.keys())[0]  # replace attack_target with enemy unit id
         if self.shootrange >= self.attack_pos.distance_to(self.base_pos):
             self.state = 11
             if parentstate in (1, 3, 5):  # Walk and shoot
@@ -988,8 +987,6 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.attack_target = self.parentunit.attack_target
                 self.attack_pos = self.parentunit.base_attack_pos
-                # if self.attack_target is not None:
-                #     self.attack_pos = self.attack_target.leadersubunit.base_pos
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.statusupdate(weather)
@@ -1047,7 +1044,7 @@ class Subunit(pygame.sprite.Sprite):
                             if self.melee_target is None and self.parentunit.attack_target is not None:
                                 self.melee_target = self.parentunit.attack_target.subunit_sprite[0]
                             if self.close_target is None:  # movement queue is empty regenerate new one
-                                self.find_close_target()  # find new close target
+                                self.close_target = self.find_close_target(self.melee_target.parentunit.subunit_sprite)  # find new close target
 
                                 if self.close_target is not None:  # found target to fight
                                     if self not in self.gamebattle.combatpathqueue:
@@ -1119,7 +1116,7 @@ class Subunit(pygame.sprite.Sprite):
                     if parentstate == 11:  # Unit in range attack state
                         self.state = 0  # Default state at idle
                         if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \
-                                self.shootrange >= self.attack_pos.distance_to(self.parentunit.base_pos):
+                                self.shootrange >= self.attack_pos.distance_to(self.base_pos):
                             self.state = 11  # can shoot if have magazine_left and in shoot range, enter range combat state
 
                     elif self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
@@ -1152,7 +1149,7 @@ class Subunit(pygame.sprite.Sprite):
                             self.stamina = self.stamina - (combattimer * 5)
 
                     elif self.state in (11, 12, 13):  # range combat
-                        if type(self.attack_target) == int:  # For fire at will, which attacktarge is int
+                        if type(self.attack_target) == int:  # For fire at will, which attacktarget is int
                             allunitindex = self.gamebattle.allunitindex
                             if self.attack_target in allunitindex:  # if the attack base_target still alive (if dead it would not be in index list)
                                 self.attack_target = self.gamebattle.allunitlist[
@@ -1167,6 +1164,8 @@ class Subunit(pygame.sprite.Sprite):
                                         self.attack_target = target[1]
                                         self.attack_target = self.gamebattle.allunitlist[allunitindex.index(self.attack_target)]
                                         break  # found new base_target break loop
+                        elif self.attack_target is None:
+                            self.attack_target = self.parentunit.attack_target
 
                         if self.ammo_now > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
                                                   (self.attack_target is None and self.attack_pos != 0)) \
@@ -1224,12 +1223,12 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 # v Move function to given base_target position
-                revertmove = False # revert move check for in case subunit still need to rotate before moving, ignored if whole unit rotating
+                revertmove = True # revert move check for in case subunit still need to rotate before moving, ignored when whole unit rotating
                 if parentstate == 0 or self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
-                    revertmove = True
+                    revertmove = False
 
                 if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
-                        (revertmove is False or self.angle == self.new_angle):  # cannot move if unit still need to rotate
+                        (revertmove or self.angle == self.new_angle):  # cannot move if unit still need to rotate
 
                     colidecheck = False  # can move if front of unit not collided
                     if (((self.parentunit.collide is False or self.frontline is False) or parentstate == 99)
