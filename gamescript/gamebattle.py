@@ -203,6 +203,13 @@ class Battle:
         self.gamespeed = 0
         self.gamespeedset = (0, 0.5, 1, 2, 4, 6)  # availabe game speed
         self.leadernow = []
+        self.team_troopnumber = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
+        self.last_team_troopnumber = [1, 1, 1]
+        self.start_troopnumber = [0, 0, 0]
+        self.wound_troopnumber = [0, 0, 0]
+        self.death_troopnumber = [0, 0, 0]
+        self.flee_troopnumber = [0, 0, 0]
+        self.capture_troopnumber = [0, 0, 0]
         self.last_selected = None
         self.before_selected = None
 
@@ -338,6 +345,11 @@ class Battle:
         # v initialise starting subunit sprites
         self.mode = mode
         if self.mode == "battle":
+            self.start_troopnumber = [0, 0, 0]
+            self.wound_troopnumber = [0, 0, 0]
+            self.death_troopnumber = [0, 0, 0]
+            self.flee_troopnumber = [0, 0, 0]
+            self.capture_troopnumber = [0, 0, 0]
             gamelongscript.unitsetup(self)
         # ^ End start subunit sprite
 
@@ -743,13 +755,9 @@ class Battle:
         self.textinputpopup = (None, None)  # no popup asking for user text input state
         self.leadernow = []  # list of showing leader in command ui
         self.currentweather = None
-        self.team_troopnumber = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
+        self.team_troopnumber = [1, 1, 1]  # reset list of troop number in each team
         self.last_team_troopnumber = [1, 1, 1]
-        self.start_troopnumber = [0, 0, 0]
-        self.wound_troopnumber = [0, 0, 0]
-        self.death_troopnumber = [0, 0, 0]
-        self.flee_troopnumber = [0, 0, 0]
-        self.capture_troopnumber = [0, 0, 0]
+        self.textdrama.queue = []  # reset drama text popup queue
         if self.mode == "uniteditor":
             self.gamestate = 2
 
@@ -1124,7 +1132,8 @@ class Battle:
                         #     subunit.unit_health -= subunit.unit_health
                         self.subunit_selected.who.unit_health -= self.subunit_selected.who.unit_health
                     elif keypress == pygame.K_m and self.last_selected is not None:
-                        self.last_selected.leader[0].health -= 1000
+                        # self.last_selected.leader[0].health -= 1000
+                        self.subunit_selected.who.leader.health -= 1000
                         # self.subunit_selected.who.base_morale -= 1000
                         # self.subunit_selected.who.brokenlimit = 80
                         # self.subunit_selected.who.state = 99
@@ -2202,22 +2211,37 @@ class Battle:
                                 spritetwo = self.allsubunitlist[two]
                                 if spriteone.parentunit != spritetwo.parentunit:  # collide with subunit in other unit
                                     if spriteone.front_pos.distance_to(spritetwo.base_pos) < self.frontdistance:  # first subunit collision
-                                        spriteone.enemy_front.append(spritetwo)
-                                        spriteone.parentunit.collide = True
+                                        if spriteone.team != spritetwo.team:  # enemy team
+                                            spriteone.enemy_front.append(spritetwo)
+                                            spriteone.parentunit.collide = True
+                                        elif spriteone.state in (2, 4, 6, 10, 11, 13) or \
+                                                spritetwo.state in (2, 4, 6, 10, 11, 13):  # cannot run pass other unit if either run or in combat
+                                            spriteone.enemy_front.append(spritetwo)
+                                            spriteone.parentunit.collide = True
                                     else:
-                                        spriteone.enemy_side.append(spritetwo)
+                                        if spriteone.team != spritetwo.team:  # enemy team
+                                            spriteone.enemy_side.append(spritetwo)
                                     if spritetwo.front_pos.distance_to(spriteone.base_pos) < self.frontdistance:  # second subunit
-                                        spritetwo.enemy_front.append(spriteone)
-                                        spritetwo.parentunit.collide = True
+                                        if spriteone.team != spritetwo.team:  # enemy team
+                                            spritetwo.enemy_front.append(spriteone)
+                                            spritetwo.parentunit.collide = True
+                                        elif spriteone.state in (2, 4, 6, 10, 11, 13) or \
+                                                spritetwo.state in (2, 4, 6, 10, 11, 13):
+                                            spritetwo.enemy_front.append(spriteone)
+                                            spritetwo.parentunit.collide = True
                                     else:
-                                        spritetwo.enemy_side.append(spriteone)
+                                        if spriteone.team != spritetwo.team:  # enemy team
+                                            spritetwo.enemy_side.append(spriteone)
+
                                 else:  # collide with subunit in same unit
                                     if spriteone.front_pos.distance_to(spritetwo.base_pos) < self.frontdistance:  # first subunit collision
-                                        if spritetwo.state != 99:
+                                        if spriteone.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
+                                                spritetwo.state in (2, 4, 6, 10, 11, 12, 13):
                                             spriteone.friend_front.append(spritetwo)
                                     if spritetwo.front_pos.distance_to(spriteone.base_pos) < self.frontdistance:  # second subunit
                                         # if spriteone.frontline:
-                                        if spriteone.state != 99:
+                                        if spriteone.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
+                                                spritetwo.state in (2, 4, 6, 10, 11, 12, 13):
                                             spritetwo.friend_front.append(spriteone)
 
                         self.subunitposarray = self.mapmovearray.copy()
@@ -2272,6 +2296,10 @@ class Battle:
 
                     self.combattimer += self.dt  # update combat timer
                     self.timenumber.timerupdate(self.dt * 10)  # update ingame time with 5x speed
+
+                    if len(self.team1unit) <= 0 or len(self.team2unit) <= 0:
+                        print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
+                              self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
                     # ^ End update game time
 
                 else:  # Complete game pause when open either esc menu or enclycopedia
@@ -2314,6 +2342,9 @@ class Battle:
                                                 stuff.delete()
                                                 stuff.kill()
                                                 del stuff
+
+                                        for button in self.buttonui[0:8]:
+                                            button.kill()  # remove button
 
                                         for arrow in self.arrows:  # remove all range attack
                                             arrow.kill()

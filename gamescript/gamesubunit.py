@@ -1188,11 +1188,6 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.base_pos == self.base_target and self.angle != self.parentunit.angle:  # reset angle
                         self.new_angle = self.setrotate()
                         self.new_angle = self.parentunit.angle
-                # elif self.state != 10 and self.frontline: # set base_target to enemy base_pos
-                #     if self.attack_target is not None:
-                #         pass
-                # self.base_target = self.attack_target.base_pos
-                # self.new_angle = self.setrotate()
 
                 # v Rotate Function
                 if self.angle != self.new_angle:
@@ -1243,7 +1238,7 @@ class Subunit(pygame.sprite.Sprite):
                         colidecheck = True
 
                     if self.stamina > 0 and colidecheck and len(self.enemy_front) == 0 and \
-                            (len(self.friend_front) == 0 or self.state == 99 or (parentstate == 0 and self.charge_momentum == 1)):
+                            (len(self.friend_front) == 0 or self.state == 99):
                         if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                             self.base_target = self.base_target + new_target
@@ -1405,7 +1400,7 @@ class Subunit(pygame.sprite.Sprite):
                         remain = int(remain)
                     wound = random.randint(0, (self.troopnumber - remain))  # chance to be wounded instead of dead
                     self.gamebattle.death_troopnumber[self.team] += remain - wound
-                    if self.state in (98, 99):  # fleeing or broken got captured instead of wound
+                    if self.state in (98, 99) and len(self.enemy_front) + len(self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
                         self.gamebattle.capture_troopnumber[self.team] += wound
                     else:
                         self.gamebattle.wound_troopnumber[self.team] += wound

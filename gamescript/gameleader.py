@@ -76,6 +76,7 @@ class Leader(pygame.sprite.Sprite):
                     army.authrecal()
 
     def gone(self, eventtext={96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}):
+        print('test')
         """leader no longer in command due to death or other events"""
         if self.commander and self.parentunit.leader[3].state not in (96, 97, 98, 99, 100) and self.parentunit.leader[3].name != "None":
             # If commander die will use strategist as next commander first
