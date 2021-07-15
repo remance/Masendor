@@ -7,7 +7,7 @@ class Escbox(pygame.sprite.Sprite):
     SCREENRECT = None
 
     def __init__(self):
-        self._layer = 11
+        self._layer = 24
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2)
         self.image = self.images[0]
@@ -22,7 +22,7 @@ class Escbox(pygame.sprite.Sprite):
 
 class Escbutton(pygame.sprite.Sprite):
     def __init__(self, images, pos, text="", size=16):
-        self._layer = 11
+        self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.images = [image.copy() for image in images]
@@ -43,7 +43,7 @@ class Escbutton(pygame.sprite.Sprite):
 
 class Escslider(pygame.sprite.Sprite):
     def __init__(self, barimage, buttonimage, pos, value, uitype):
-        self._layer = 11
+        self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.uitype = uitype
@@ -81,7 +81,7 @@ class Escslider(pygame.sprite.Sprite):
 
 class Escvaluebox(pygame.sprite.Sprite):
     def __init__(self, textimage, pos, value, textsize=16):
-        self._layer = 11
+        self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("timesnewroman", textsize)
         self.pos = pos

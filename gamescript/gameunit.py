@@ -561,7 +561,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v Setup frontline again when any subunit die
         if self.deadchange:
-            if len(self.armysubunit) > 0 and len(self.armysubunit[0]) > 1:
+            if len(self.armysubunit) > 0 and (len(self.armysubunit) > 1 or any(subunit != 0 for subunit in self.armysubunit[0])):
                 self.setup_frontline()
 
                 for subunit in self.subunit_sprite:

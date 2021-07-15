@@ -543,6 +543,9 @@ def load_game_data(game):
     game.textdrama = gamedrama.Textdrama()  # messege at the top of screen that show up for important event
 
     game.fpscount = gameui.FPScount()  # FPS number counter
+
+    game.battledone_box = gameui.Battledone(topimage[-3])
+    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.pos[1] * 1.5, topimage[-2], newlayer=19)
     # ^ End game ui
 
     # v Esc menu related objects
@@ -559,7 +562,7 @@ def load_game_data(game):
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 - 100), text="Resume", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 - 50), text="Encyclopedia", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1), text="Option", size=14),
-        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 50), text="Main Menu", size=14),
+        gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 50), text="End Battle", size=14),
         gamemenu.Escbutton(buttonimage, (menurectcenter0, menurectcenter1 + 100), text="Desktop", size=14)]
 
     game.escoption_menu_button = [

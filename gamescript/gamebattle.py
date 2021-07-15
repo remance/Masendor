@@ -198,6 +198,9 @@ class Battle:
         self.rowsplitbutton = main.rowsplitbutton
 
         self.leaderposname = main.leaderposname
+
+        self.battledone_box = main.battledone_box
+        self.gamedone_button = main.gamedone_button
         # ^ End load from main
 
         self.gamespeed = 0
@@ -2307,8 +2310,23 @@ class Battle:
                     self.timenumber.timerupdate(self.dt * 10)  # update ingame time with 5x speed
 
                     if self.mode == "battle" and (len(self.team1unit) <= 0 or len(self.team2unit) <= 0):
-                        print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
-                              self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
+                        if len(self.team1unit) <= 0 and len(self.team2unit) <= 0:
+                            teamwin = 0  # draw
+                        elif len(self.team2unit) <= 0:
+                            teamwin = 1
+                        else:
+                            teamwin = 2
+                        if teamwin != 0:
+                            for index, coa in enumerate(self.teamcoa):
+                                if index == teamwin:
+                                    self.battledone_box.popout(coa.name)
+                                    break
+                        else:
+                            self.battledone_box.popout("Draw")
+
+                        self.battleui.add(self.battledone_box, self.gamedone_button)
+                        # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
+                        #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
                     # ^ End update game time
 
                 else:  # Complete game pause when open either esc menu or enclycopedia
@@ -2337,7 +2355,7 @@ class Battle:
                                         self.battleui.add(*self.escoptionmenubutton, *self.escslidermenu, *self.escvaluebox)
                                         self.oldsetting = self.escslidermenu[0].value  # Save previous setting for in case of cancel
 
-                                    elif button.text == "Main Menu":  # back to main menu
+                                    elif button.text == "End Battle":  # back to main menu
                                         self.battleui.clear(self.screen, self.background)  # remove all sprite
                                         self.battlecamera.clear(self.screen, self.background)  # remove all sprite
 

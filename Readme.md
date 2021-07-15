@@ -4,13 +4,13 @@
 
 Historical wargame simulation made with Pygame. There is no main name for the game but rather the name will be based on major update. 
 
-To start testing the game run main.py or main.exe if you use the release version. To compile the source code into exe, I would recommend using main.spec for now as I had trouble getting to compile data folder properly. the main.spec compile only main.py so you will need to copy data, profile folder manually.
+To start testing the game run main.py or main.exe if you use the release version. To compile the source code into exe, I would recommend using main.spec to compile the game. The main.spec compile only main.py so you will need to copy gamescript ,data, profile folder manually to the distribute folder after.
 
-Check the requirements.txt file for dependency requirement if running with the source code. Also the game is now optimised basing on pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
+Check the requirements.txt file for dependency requirement if running with the python source code. Also the game is now optimised basing on pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
 
-For Video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
+For video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
-If anyone is interested in similar game like this, there is also another interesting game by another developer: https://kaetjaatyy.github.io/devlog/
+If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
 The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
@@ -20,7 +20,7 @@ Plan
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve main menu, Battle of Megiddo, Battle of Mohács
 
-0.6.2 - 0.6.5: custom battle, battle result screen, in game unit and custom sub-unit editor
+0.6.2 - 0.6.5: custom battle, battle result screen, in game custom sub-unit editor
  
 0.6.6 and 0.6.7: random map generator, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 

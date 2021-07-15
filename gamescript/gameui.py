@@ -5,7 +5,7 @@ import pygame.freetype
 
 
 class Uibutton(pygame.sprite.Sprite):
-    def __init__(self, x, y, image, event, newlayer=11):
+    def __init__(self, x, y, image, event=None, newlayer=11):
         self._layer = newlayer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (x, y)
@@ -798,3 +798,29 @@ class Inspectsubunit(pygame.sprite.Sprite):
 
     def delete(self):
         self.who = None
+
+class Battledone(pygame.sprite.Sprite):
+    def __init__(self, boximage):
+        import main
+        SCREENRECT = main.SCREENRECT
+        self.widthadjust = SCREENRECT.width / 1366
+        self.heightadjust = SCREENRECT.height / 768
+
+        self._layer = 18
+        pygame.sprite.Sprite.__init__(self)
+        self.boximage = boximage
+        self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 24))
+        self.pos = (SCREENRECT.width / 2, SCREENRECT.height / 5)
+        self.image = self.boximage.copy()
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def popout(self, winner):
+        self.image = self.boximage.copy()
+
+        textsurface = self.font.render(winner, True, (0, 0, 0))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 24) + 2))
+        self.image.blit(textsurface, textrect)
+        if winner != "Draw":
+            textsurface = self.font.render("Victory", True, (0, 0, 0))
+            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 24) * 2))
+            self.image.blit(textsurface, textrect)

@@ -348,7 +348,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.status_list = self.parentunit.status_list
 
-        self.gameid = gameid  # ID of this subunit
+        self.gameid = gameid  # ID of this
         self.troopid = int(unitid)  # ID of preset used for this subunit
 
         self.angle = self.parentunit.angle
@@ -1234,7 +1234,7 @@ class Subunit(pygame.sprite.Sprite):
                     if (((self.parentunit.collide is False or self.frontline is False) or parentstate == 99)
                             or (parentstate == 10 and ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
                             or self.charge_momentum > 1)):
-                        colidecheck = True
+                        colidecheck = True  # TODO change charge and collide so unit can ignore collide stop if charge bypass def and chance to move
 
                     if self.stamina > 0 and colidecheck and len(self.enemy_front) == 0 and \
                             (len(self.friend_front) == 0 or self.state == 99):

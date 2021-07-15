@@ -16,7 +16,7 @@ class Inputui(pygame.sprite.Sprite):
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
-        self._layer = 18
+        self._layer = 30
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
@@ -44,7 +44,7 @@ class Inputbox(pygame.sprite.Sprite):
         self.heightadjust = SCREENRECT.height / 768
 
         pygame.sprite.Sprite.__init__(self)
-        self._layer = 19
+        self._layer = 31
         self.font = pygame.font.SysFont("timesnewroman", int(20 * self.heightadjust))
         self.image = pygame.Surface((width - 10, int(26 * self.heightadjust)))  # already scale from input ui
         self.image.fill((255, 255, 255))
@@ -395,8 +395,9 @@ class Teamcoa(pygame.sprite.Sprite):
         # ^ End Coat of arm
 
         # v Faction name to image
+        self.name = name
         self.font = pygame.font.SysFont("oldenglishtext", int(32 * self.heightadjust))
-        self.textsurface = self.font.render(str(name), True, (0, 0, 0))
+        self.textsurface = self.font.render(str(self.name), True, (0, 0, 0))
         self.textrect = self.textsurface.get_rect(center=(int(100 * self.widthadjust), int(150 * self.heightadjust)))
         self.notselectedimage.blit(self.textsurface, self.textrect)
         self.selectedimage.blit(self.textsurface, self.textrect)

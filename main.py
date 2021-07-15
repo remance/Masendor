@@ -316,22 +316,22 @@ try:  # for printing error log when error exception happen
             for index, image in enumerate(imagelist):
                 imagelist[index] = pygame.transform.scale(image, (int(image.get_width() * widthadjust),
                                                                   int(image.get_height() * heightadjust)))
-            self.preset_map_button = gameprepare.Menubutton(images=imagelist,
+            self.preset_map_button = gameprepare.Menubutton(imagelist,
                                                             pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 8.5)),
                                                             text="Preset Map")
-            self.custom_map_button = gameprepare.Menubutton(images=imagelist,
+            self.custom_map_button = gameprepare.Menubutton(imagelist,
                                                             pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 7)),
                                                             text="Custom Map")
-            self.game_edit_button = gameprepare.Menubutton(images=imagelist,
+            self.game_edit_button = gameprepare.Menubutton(imagelist,
                                                            pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 5.5)),
                                                            text="Unit Editor")
-            self.lore_button = gameprepare.Menubutton(images=imagelist,
+            self.lore_button = gameprepare.Menubutton(imagelist,
                                                       pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 4)),
                                                       text="Encyclopedia")
-            self.option_button = gameprepare.Menubutton(images=imagelist,
+            self.option_button = gameprepare.Menubutton(imagelist,
                                                         pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
                                                         text="Option")
-            self.quit_button = gameprepare.Menubutton(images=imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height())),
+            self.quit_button = gameprepare.Menubutton(imagelist, pos=(SCREENRECT.width / 2, SCREENRECT.height - (imagelist[0].get_height())),
                                                       text="Quit")
             self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                     self.lore_button, self.option_button, self.quit_button)
@@ -339,11 +339,11 @@ try:  # for printing error log when error exception happen
 
             # v Create battle map menu button
             bottomheight = SCREENRECT.height - imagelist[0].get_height()
-            self.select_button = gameprepare.Menubutton(images=imagelist, pos=(SCREENRECT.width - imagelist[0].get_width(), bottomheight),
+            self.select_button = gameprepare.Menubutton(imagelist, pos=(SCREENRECT.width - imagelist[0].get_width(), bottomheight),
                                                         text="Select")
-            self.start_button = gameprepare.Menubutton(images=imagelist, pos=(SCREENRECT.width - imagelist[0].get_width(), bottomheight),
+            self.start_button = gameprepare.Menubutton(imagelist, pos=(SCREENRECT.width - imagelist[0].get_width(), bottomheight),
                                                        text="Start")
-            self.map_back_button = gameprepare.Menubutton(images=imagelist,
+            self.map_back_button = gameprepare.Menubutton(imagelist,
                                                           pos=(SCREENRECT.width - (SCREENRECT.width - imagelist[0].get_width()), bottomheight),
                                                           text="Back")
             self.map_select_button = (self.select_button, self.map_back_button)
@@ -398,10 +398,10 @@ try:  # for printing error log when error exception happen
             self.troop_scroll = gameui.Uiscroller(self.troop_listbox.rect.topright, self.troop_listbox.image.get_height(),
                                                   self.troop_listbox.maxshowlist, layer=14)
 
-            self.unit_delete_button = gameprepare.Menubutton(images=imagelist,
+            self.unit_delete_button = gameprepare.Menubutton(imagelist,
                                                              pos=(imagelist[0].get_width() / 2, bottomheight),
                                                              text="Delete")
-            self.unit_save_button = gameprepare.Menubutton(images=imagelist,
+            self.unit_save_button = gameprepare.Menubutton(imagelist,
                                                            pos=((SCREENRECT.width - (SCREENRECT.width - (imagelist[0].get_width() * 1.7))),
                                                                 bottomheight),
                                                            text="Save")
@@ -456,14 +456,14 @@ try:  # for printing error log when error exception happen
             # v Input box popup
             input_ui_img = load_image("inputui.png", "ui\\mainmenu_ui")
             self.inputui = gameprepare.Inputui(input_ui_img, (SCREENRECT.width / 2, SCREENRECT.height / 2))  # user text input ui box popup
-            self.input_ok_button = gameprepare.Menubutton(images=imagelist,
+            self.input_ok_button = gameprepare.Menubutton(imagelist,
                                                           pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                                self.inputui.rect.midleft[1] + imagelist[0].get_height()),
-                                                          text="Confirm", layer = 20)
-            self.input_cancel_button = gameprepare.Menubutton(images=imagelist,
+                                                          text="Confirm", layer = 31)
+            self.input_cancel_button = gameprepare.Menubutton(imagelist,
                                                               pos=(self.inputui.rect.midright[0] - imagelist[0].get_width(),
                                                                    self.inputui.rect.midright[1] + imagelist[0].get_height()),
-                                                              text="Cancel", layer = 20)
+                                                              text="Cancel", layer = 31)
             self.input_button = (self.input_ok_button, self.input_cancel_button)
             self.input_box = gameprepare.Inputbox(self.inputui.rect.center, self.inputui.image.get_width())  # user text input box
 
