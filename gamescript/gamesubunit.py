@@ -338,6 +338,7 @@ class Subunit(pygame.sprite.Sprite):
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
+        self.same_front = []  # list of same unit front collide sprite
         self.team = self.parentunit.team
         self.gamebattle.allsubunitlist.append(self)
         if self.team == 1:  # add sprite to team subunit group for collision
@@ -1015,27 +1016,27 @@ class Subunit(pygame.sprite.Sprite):
                     self.timer -= 1
 
                 # if parentstate not in (96,97,98,99) and self.state != 99:
+                collidelist = []
                 if self.enemy_front != [] or self.enemy_side != []:  # Check if in combat or not with collision
                     collidelist = self.enemy_front + self.enemy_side
                     for subunit in collidelist:
-                        if subunit.team != self.team:
-                            if self.state not in (96, 98, 99):
+                        if self.state not in (96, 98, 99):
+                            self.state = 10
+                            self.melee_target = subunit
+                            if self.enemy_front == []:  # no enemy in front try rotate to enemy at side
+                                # self.base_target = self.melee_target.base_pos
+                                self.new_angle = self.setrotate(self.melee_target.base_pos)
+                        else:  # no way to retreat, Fight to the death
+                            if self.enemy_front != [] and self.enemy_side != []:  # if both front and any side got attacked
                                 self.state = 10
-                                self.melee_target = subunit
-                                if self.enemy_front == []:  # no enemy in front try rotate to enemy at side
-                                    # self.base_target = self.melee_target.base_pos
-                                    self.new_angle = self.setrotate(self.melee_target.base_pos)
-                            else:  # no way to retreat, Fight to the death
-                                if self.enemy_front != [] and self.enemy_side != []:  # if both front and any side got attacked
-                                    self.state = 10
-                                    if 9 not in self.status_effect:
-                                        self.status_effect[9] = self.status_list[9].copy()  # fight to the death status
-                            if parentstate not in (10, 96, 98, 99):
-                                parentstate = 10
-                                self.parentunit.state = 10
-                            if self.melee_target is not None:
-                                self.parentunit.attack_target = self.melee_target.parentunit
-                            break
+                                if 9 not in self.status_effect:
+                                    self.status_effect[9] = self.status_list[9].copy()  # fight to the death status
+                        if parentstate not in (10, 96, 98, 99):
+                            parentstate = 10
+                            self.parentunit.state = 10
+                        if self.melee_target is not None:
+                            self.parentunit.attack_target = self.melee_target.parentunit
+                        break
 
                 elif parentstate == 10:  # no collide enemy while parent unit in fight state
                     if self.attacking and self.parentunit.collide:
@@ -1057,7 +1058,7 @@ class Subunit(pygame.sprite.Sprite):
                             if self.melee_target.parentunit.state != 100:
                                 if self.movetimer == 0:
                                     self.movetimer = 0.1  # recalculate again in 10 seconds if not in fight
-                                    # if len(self.friend_front) != 0 and len(self.enemy_front) == 0: # collide with friend try move to base_target first before enemy
+                                    # if len(self.same_front) != 0 and len(self.enemy_front) == 0: # collide with friend try move to base_target first before enemy
                                     # self.combat_move_queue = [] # clean queue since the old one no longer without collide
                                 else:
                                     self.movetimer += dt
@@ -1136,7 +1137,7 @@ class Subunit(pygame.sprite.Sprite):
                 # v Combat action related
                 if combattimer >= 0.5:  # combat is calculated every 0.5 second in game time
                     if self.state == 10:  # if melee combat (engaging anyone on any side)
-                        collidelist = [subunit for subunit in self.enemy_front if subunit.team != self.team]
+                        collidelist = [subunit for subunit in self.enemy_front]
                         for subunit in collidelist:
                             anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
                             if anglecheck >= 135:  # front
@@ -1230,15 +1231,25 @@ class Subunit(pygame.sprite.Sprite):
                 if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
                         (revertmove or self.angle == self.new_angle):  # cannot move if unit still need to rotate
 
-                    colidecheck = False  # can move if front of unit not collided
+                    nocolide_check = False  # can move if front of unit not collided
                     if (((self.parentunit.collide is False or self.frontline is False) or parentstate == 99)
                             or (parentstate == 10 and ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
                             or self.charge_momentum > 1)):
-                        colidecheck = True  # TODO change charge and collide so unit can ignore collide stop if charge bypass def and chance to move
+                        nocolide_check = True  # TODO change charge and collide so unit can ignore collide stop if charge bypass def and chance to move
 
-                    if self.stamina > 0 and colidecheck and len(self.enemy_front) == 0 and \
-                            (len(self.friend_front) == 0 or self.state == 99):
-                        if self.charge_momentum > 5 and self.base_pos == self.base_target and parentstate == 10:
+                    noenemycollide_check = True  # for chance to move or charge through enemy
+                    if len(collidelist) > 0:
+                        if self.state in (96, 98, 99):  # chance to escape
+                            if random.randint(0, len(collidelist) + 2) > 2:
+                                noenemycollide_check = False
+                        elif self.charge_momentum > 1 and random.randint(0, 1) == 0:  # chance to charge through
+                            noenemycollide_check = False
+                        elif self.charge_momentum == 1:  # cannot pass enemy in combat with no charge momentum
+                            noenemycollide_check = False
+
+                    if self.stamina > 0 and nocolide_check and noenemycollide_check and \
+                        len(self.same_front) == 0 and len(self.friend_front) == 0:
+                        if self.charge_momentum > 1 and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                             self.base_target = self.base_target + new_target
                             self.command_target = self.base_target
@@ -1252,12 +1263,14 @@ class Subunit(pygame.sprite.Sprite):
                             if parentstate in (1, 3, 5, 7):  # walking
                                 speed = self.parentunit.walkspeed  # use walk speed
                                 self.walk = True
-                            elif parentstate in (10, 99) or self.charge_momentum > 5:  # run with its own speed instead of uniformed run
+                            elif parentstate in (10, 99):  # run with its own speed instead of uniformed run
                                 speed = self.speed / 15  # use its own speed when broken
                                 self.run = True
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                                 speed = self.parentunit.runspeed  # use run speed
                                 self.run = True
+                            if self.charge_momentum > 1:  # speed gradually decrease with momentum during charge
+                                speed = speed * self.charge_momentum / 8
                             move = move * speed * dt
                             newmove_length = move.length()
                             newpos = self.base_pos + move
@@ -1476,7 +1489,7 @@ class Subunit(pygame.sprite.Sprite):
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []  # reset collide
-            self.friend_front = []
+            self.same_front = []
 
     def rotate(self):
         """rotate subunit image may use when subunit can change direction independently from parentunit"""

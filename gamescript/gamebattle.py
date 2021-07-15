@@ -1301,7 +1301,7 @@ class Battle:
                             # v code that only run when any unit is selected
                             if self.last_selected is not None and self.last_selected.state != 100:
                                 if self.inspectbutton.rect.collidepoint(self.mousepos) or (
-                                        mouse_up and self.inspectui and self.newunitclick):  # mouse on inspect ui open/close button
+                                        mouse_up and self.inspectui and self.newunitclick):  # click on inspect ui open/close button
                                     if self.inspectbutton.rect.collidepoint(self.mousepos):
                                         self.button_name_popup.pop(self.mousepos, "Inspect Subunit")
                                         self.battleui.add(self.button_name_popup)
@@ -2093,30 +2093,6 @@ class Battle:
                                 self.setup_uniticon()
                                 self.last_selected = None
 
-                    # v Remove the subunit ui when click at empyty space
-                    if self.clickany is False:  # not click at any parentunit
-                        if self.last_selected is not None:  # any parentunit is selected
-                            self.last_selected = None  # reset last_selected
-                            self.before_selected = None  # reset before selected parentunit after remove last selected
-
-                        if self.gamestate == 1:
-                            self.gameui[2].option = 1  # reset subunit card option
-                            for ui in self.gameui:
-                                ui.kill()  # remove ui
-                            for button in self.buttonui[0:8]:
-                                button.kill()  # remove button
-                            for icon in self.skill_icon.sprites():
-                                icon.kill()  # remove skill and trait icon
-                            for icon in self.effect_icon.sprites():
-                                icon.kill()  # remove effect icon
-                            self.battleui.remove(*self.switch_button, *self.inspectsubunit)  # remove change behaviour button and inspect ui subunit
-                            self.inspectui = False  # inspect ui close
-                            self.battleui.remove(*self.leadernow)  # remove leader image from command ui
-                            self.subunit_selected = None  # reset subunit selected
-                            self.battleui.remove(self.subunitselectedborder)  # remove subunit selected border sprite
-                            self.leadernow = []  # clear leader list in command ui
-                    # ^ End remove
-
                     # v Update value of the clicked subunit every 1.1 second
                     if self.gamestate == 1 and self.inspectui and ((self.ui_timer >= 1.1 and self.gameui[2].option != 0) or
                                                                    self.before_selected != self.last_selected):
@@ -2228,7 +2204,7 @@ class Battle:
                                             spriteone.parentunit.collide = True
                                         elif spriteone.state in (2, 4, 6, 10, 11, 13) or \
                                                 spritetwo.state in (2, 4, 6, 10, 11, 13):  # cannot run pass other unit if either run or in combat
-                                            spriteone.enemy_front.append(spritetwo)
+                                            spriteone.friend_front.append(spritetwo)
                                             spriteone.parentunit.collide = True
                                     else:
                                         if spriteone.team != spritetwo.team:  # enemy team
@@ -2239,7 +2215,7 @@ class Battle:
                                             spritetwo.parentunit.collide = True
                                         elif spriteone.state in (2, 4, 6, 10, 11, 13) or \
                                                 spritetwo.state in (2, 4, 6, 10, 11, 13):
-                                            spritetwo.enemy_front.append(spriteone)
+                                            spritetwo.friend_front.append(spriteone)
                                             spritetwo.parentunit.collide = True
                                     else:
                                         if spriteone.team != spritetwo.team:  # enemy team
@@ -2249,12 +2225,12 @@ class Battle:
                                     if spriteone.front_pos.distance_to(spritetwo.base_pos) < self.frontdistance:  # first subunit collision
                                         if spriteone.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
                                                 spritetwo.state in (2, 4, 6, 10, 11, 12, 13):
-                                            spriteone.friend_front.append(spritetwo)
+                                            spriteone.same_front.append(spritetwo)
                                     if spritetwo.front_pos.distance_to(spriteone.base_pos) < self.frontdistance:  # second subunit
                                         # if spriteone.frontline:
                                         if spriteone.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
                                                 spritetwo.state in (2, 4, 6, 10, 11, 12, 13):
-                                            spritetwo.friend_front.append(spriteone)
+                                            spritetwo.same_front.append(spriteone)
 
                         self.subunitposarray = self.mapmovearray.copy()
                         for subunit in self.allsubunitlist:
@@ -2279,6 +2255,30 @@ class Battle:
                             self.combatpathqueue = self.combatpathqueue[1:]
                             run += 1
                     # ^ End melee pathfinding
+
+                    # v Remove the subunit ui when click at empyty space
+                    if mouse_up and self.clickany is False:  # not click at any parentunit
+                        if self.last_selected is not None:  # any parentunit is selected
+                            self.last_selected = None  # reset last_selected
+                            self.before_selected = None  # reset before selected parentunit after remove last selected
+
+                        if self.gamestate == 1:
+                            self.gameui[2].option = 1  # reset subunit card option
+                            for ui in self.gameui:
+                                ui.kill()  # remove ui
+                            for button in self.buttonui[0:8]:
+                                button.kill()  # remove button
+                            for icon in self.skill_icon.sprites():
+                                icon.kill()  # remove skill and trait icon
+                            for icon in self.effect_icon.sprites():
+                                icon.kill()  # remove effect icon
+                            self.battleui.remove(*self.switch_button, *self.inspectsubunit)  # remove change behaviour button and inspect ui subunit
+                            self.inspectui = False  # inspect ui close
+                            self.battleui.remove(*self.leadernow)  # remove leader image from command ui
+                            self.subunit_selected = None  # reset subunit selected
+                            self.battleui.remove(self.subunitselectedborder)  # remove subunit selected border sprite
+                            self.leadernow = []  # clear leader list in command ui
+                    # ^ End remove
 
                     if self.ui_timer > 1:
                         self.scaleui.changefightscale(self.team_troopnumber)  # change fight colour scale on timeui bar
@@ -2310,21 +2310,24 @@ class Battle:
                     self.timenumber.timerupdate(self.dt * 10)  # update ingame time with 5x speed
 
                     if self.mode == "battle" and (len(self.team1unit) <= 0 or len(self.team2unit) <= 0):
-                        if len(self.team1unit) <= 0 and len(self.team2unit) <= 0:
-                            teamwin = 0  # draw
-                        elif len(self.team2unit) <= 0:
-                            teamwin = 1
+                        if self.battledone_box not in self.battleui:
+                            if len(self.team1unit) <= 0 and len(self.team2unit) <= 0:
+                                teamwin = 0  # draw
+                            elif len(self.team2unit) <= 0:
+                                teamwin = 1
+                            else:
+                                teamwin = 2
+                            if teamwin != 0:
+                                for index, coa in enumerate(self.teamcoa):
+                                    if index == teamwin - 1:
+                                        self.battledone_box.popout(coa.name)
+                                        break
+                            else:
+                                self.battledone_box.popout("Draw")
+                            self.battleui.add(self.battledone_box, self.gamedone_button)
                         else:
-                            teamwin = 2
-                        if teamwin != 0:
-                            for index, coa in enumerate(self.teamcoa):
-                                if index == teamwin:
-                                    self.battledone_box.popout(coa.name)
-                                    break
-                        else:
-                            self.battledone_box.popout("Draw")
-
-                        self.battleui.add(self.battledone_box, self.gamedone_button)
+                            if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
+                                print('test')
                         # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
                         #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
                     # ^ End update game time

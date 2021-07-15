@@ -545,7 +545,7 @@ def load_game_data(game):
     game.fpscount = gameui.FPScount()  # FPS number counter
 
     game.battledone_box = gameui.Battledone(topimage[-3])
-    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.pos[1] * 1.5, topimage[-2], newlayer=19)
+    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.pos[1] * 1.4, topimage[-2], newlayer=19)
     # ^ End game ui
 
     # v Esc menu related objects
@@ -874,6 +874,10 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
                 if target.fulldef or target.temp_fulldef:  # Defense all side
                     sidecal = 1
                 dmg = dmg + ((who.charge - (target.chargedef * sidecal)) * 2)
+                if target.chargedef >= who.charge / 2:
+                    who.charge_momentum = 1  # charge get stopped by charge def
+                else:
+                    who.charge_momentum -= target.chargedef / who.charge
             else:
                 dmg = dmg + (who.charge * 2)
 

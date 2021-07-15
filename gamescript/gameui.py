@@ -222,7 +222,7 @@ class Gameui(pygame.sprite.Sprite):
                 row = 0
                 self.name = self.value[0]
                 leadertext = ""
-                if who.leader is not None:
+                if who.leader is not None and who.leader.name != "None":
                     leadertext = "/" + str(who.leader.name)
                     if who.leader.state in self.leader_state_text:
                         leadertext += " " + "(" + self.leader_state_text[who.leader.state] + ")"
@@ -809,18 +809,18 @@ class Battledone(pygame.sprite.Sprite):
         self._layer = 18
         pygame.sprite.Sprite.__init__(self)
         self.boximage = boximage
-        self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 24))
+        self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 36))
         self.pos = (SCREENRECT.width / 2, SCREENRECT.height / 5)
         self.image = self.boximage.copy()
         self.rect = self.image.get_rect(center=self.pos)
 
     def popout(self, winner):
         self.image = self.boximage.copy()
-
+        print(winner)
         textsurface = self.font.render(winner, True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 24) + 2))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) + 3))
         self.image.blit(textsurface, textrect)
         if winner != "Draw":
             textsurface = self.font.render("Victory", True, (0, 0, 0))
-            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 24) * 2))
+            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) * 2))
             self.image.blit(textsurface, textrect)
