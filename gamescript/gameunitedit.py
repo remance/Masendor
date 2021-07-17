@@ -207,7 +207,7 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
 
 class Warningmsg(pygame.sprite.Sprite):
-    tensubunit_warn = "- Require at least 10 sub-units for both test and employment"
+    eightsubunit_warn = "- Require at least 8 sub-units for both test and employment"
     mainleader_warn = "- Require a main leader for both test and employment"
     emptyrowcol_warn = "- Empty row or column will be removed when employed"
     duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leaer option enable"

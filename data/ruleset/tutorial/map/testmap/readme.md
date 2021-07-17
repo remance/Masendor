@@ -8,7 +8,7 @@ Map image (should only be in png format and 1000x1000 size)
 
 - height: The image of terrain height of the map (the colour RGB should be (255(Fixed), G (adjustable), G (same number as Green))). The darker the red colour, the higher the height.
 
-- placename: The image of location name of the map. This data is for cosmetic purpose only but must be in full transparent base image. 
+- placename: The image of location name of the map. This image is for cosmetic purpose only but must be in full transparent base image. 
 
 Read data\map\Mapguide.doc for more detailed information on colour combination of terrain and feature and some other recommendation
 

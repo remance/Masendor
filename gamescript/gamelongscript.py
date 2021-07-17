@@ -545,7 +545,7 @@ def load_game_data(game):
     game.fpscount = gameui.FPScount()  # FPS number counter
 
     game.battledone_box = gameui.Battledone(topimage[-3])
-    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.pos[1] * 1.4, topimage[-2], newlayer=19)
+    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.pos[1] * 1.35, topimage[-2], newlayer=19)
     # ^ End game ui
 
     # v Esc menu related objects
@@ -765,7 +765,7 @@ def unitsetup(gamebattle):
     with open(main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/unit_pos" + gamebattle.source + ".csv",
               encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-        subunitgameid = 0
+        subunitgameid = 1
         for row in rd:
             for n, i in enumerate(row):
                 if i.isdigit():
@@ -881,11 +881,14 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
             else:
                 dmg = dmg + (who.charge * 2)
 
-        if target.chargeskill in target.skill_effect and target.ignore_chargedef is False:  # Also include chargedef in dmg if enemy charging
-            chargedefcal = who.chargedef - target.charge
-            if chargedefcal < 0:
-                chargedefcal = 0
-            dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
+        if target.chargeskill in target.skill_effect:  # Also include chargedef in dmg if enemy charging
+            if target.ignore_chargedef is False:
+                chargedefcal = who.chargedef - target.charge
+                if chargedefcal < 0:
+                    chargedefcal = 0
+                dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
+        elif who.chargeskill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
+            dmg += sum([random.randint(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
 
         dmg = dmg * ((100 - (target.armour * who.melee_penetrate)) / 100) * combatscore
 

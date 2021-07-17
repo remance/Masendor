@@ -53,6 +53,8 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         self.melee_penetrate = 1  # melee melee_penetrate cannot be higher than 1
     elif self.melee_penetrate < 0:
         self.melee_penetrate = 0  # melee melee_penetrate cannot be lower than 0
+    self.meleespeed = self.weapon_list.weapon_list[self.meleeweapon[0]][6]
+
     self.rangedmg = (int(self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]),
                      int(self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]]))  # dmg for range
     self.range_penetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)

@@ -262,18 +262,18 @@ class Gameui(pygame.sprite.Sprite):
 
                     # v Equipment text
                     textvalue = [
-                        self.quality_text[who.meleeweapon[1]] + " " + str(weaponlist.weapon_list[who.meleeweapon[0]][0]) + ": D " + str(who.dmg)
-                        + ", P " + str(int((1 - who.melee_penetrate) * 100)) + "%, W " + str(weaponlist.weapon_list[who.meleeweapon[0]][3]),
-                        self.quality_text[who.armourgear[1]] + " " + str(armourlist.armour_list[who.armourgear[0]][0]) + ": A "
-                        + str(int(who.armour)) + ", W " + str(armourlist.armour_list[who.armourgear[0]][2]),
-                        "Total Weight:" + str(who.weight), "Terrain:" + terrain, "Height:" + str(who.height),
-                        "Temperature:" + str(int(who.temp_count))]
+                        self.quality_text[who.meleeweapon[1]] + " " + str(weaponlist.weapon_list[who.meleeweapon[0]][0]) + ": D: " + str(who.dmg) +
+                        "R" + who.meleespeed + ", P: " + str(int((1 - who.melee_penetrate) * 100)) + "%, W: "
+                        + str(weaponlist.weapon_list[who.meleeweapon[0]][3]), self.quality_text[who.armourgear[1]] + " " +
+                        str(armourlist.armour_list[who.armourgear[0]][0]) + ": A: " + str(int(who.armour)) + ", W: " +
+                        str(armourlist.armour_list[who.armourgear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                        "Height:" + str(who.height), "Temperature:" + str(int(who.temp_count))]
 
                     if who.rangeweapon[0] != 1:  # only add range weapon if it is not none
                         textvalue.insert(1,
-                                         self.quality_text[who.rangeweapon[1]] + " " + str(weaponlist.weapon_list[who.rangeweapon[0]][0] + ": D "
-                                                                                           + str(who.rangedmg) + ", P " + str(
-                                             int((1 - who.range_penetrate) * 100)) + "%, W "
+                                         self.quality_text[who.rangeweapon[1]] + " " + str(weaponlist.weapon_list[who.rangeweapon[0]][0] + ": D: "
+                                                                                           + str(who.rangedmg) + ", P: " + str(
+                                             int((1 - who.range_penetrate) * 100)) + "%, W: "
                                                                                            + str(weaponlist.weapon_list[who.rangeweapon[0]][3])))
 
                     if "None" not in who.mount:  # if mount is not the None mount id 1

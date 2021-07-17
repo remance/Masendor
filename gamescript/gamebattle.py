@@ -1933,9 +1933,9 @@ class Battle:
                                                 for slot in self.unitbuildslot:
                                                     if slot.troopid != 0:
                                                         subunitcount += 1
-                                                if subunitcount < 10:
+                                                if subunitcount < 8:
                                                     candeploy = False
-                                                    warninglist.append(self.warningmsg.tensubunit_warn)
+                                                    warninglist.append(self.warningmsg.eightsubunit_warn)
                                                 if self.leadernow == [] or self.previewleader[0].name == "None":
                                                     candeploy = False
                                                     warninglist.append(self.warningmsg.mainleader_warn)
@@ -2531,7 +2531,7 @@ class Battle:
 
                             self.save_preset()
                         else:
-                            self.warningmsg.warning([self.warningmsg.tensubunit_warn])
+                            self.warningmsg.warning([self.warningmsg.eightsubunit_warn])
                             self.battleui.add(self.warningmsg)
 
                     elif self.textinputpopup[1] == "delete_preset":
