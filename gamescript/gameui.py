@@ -800,27 +800,49 @@ class Inspectsubunit(pygame.sprite.Sprite):
         self.who = None
 
 class Battledone(pygame.sprite.Sprite):
-    def __init__(self, boximage):
+    def __init__(self, boximage, resultimage):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
+        self.screenwidth = SCREENRECT.width
+        self.screenheight = SCREENRECT.height
 
         self._layer = 18
         pygame.sprite.Sprite.__init__(self)
         self.boximage = boximage
+        self.resultimage = resultimage
         self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 36))
-        self.pos = (SCREENRECT.width / 2, SCREENRECT.height / 5)
+        self.pos = (SCREENRECT.width / 2, 0)
         self.image = self.boximage.copy()
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
+        self.winner = None
 
     def popout(self, winner):
+        self.winner = winner
         self.image = self.boximage.copy()
-        print(winner)
-        textsurface = self.font.render(winner, True, (0, 0, 0))
+        textsurface = self.font.render(self.winner, True, (0, 0, 0))
         textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) + 3))
         self.image.blit(textsurface, textrect)
-        if winner != "Draw":
+        if self.winner != "Draw":
             textsurface = self.font.render("Victory", True, (0, 0, 0))
             textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) * 2))
             self.image.blit(textsurface, textrect)
+        self.pos = (self.screenwidth / 2, 0)
+        self.rect = self.image.get_rect(midtop=self.pos)
+
+    def showresult(self, teamcoa1, teamcoa2):
+        self.image = self.resultimage.copy()
+        textsurface = self.font.render(self.winner, True, (0, 0, 0))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) + 3))
+        self.image.blit(textsurface, textrect)
+        if self.winner != "Draw":
+            textsurface = self.font.render("Victory", True, (0, 0, 0))
+            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) * 2))
+            self.image.blit(textsurface, textrect)
+        coa1rect = teamcoa1.get_rect(center=(self.image.get_width() / 3, int(self.heightadjust * 36) * 5))
+        coa2rect = teamcoa2.get_rect(center=(self.image.get_width() / 1.5, int(self.heightadjust * 36) * 5))
+        self.image.blit(teamcoa1, coa1rect)
+        self.image.blit(teamcoa2, coa2rect)
+        self.pos = (self.screenwidth / 2, self.screenheight / 2)
+        self.rect = self.image.get_rect(center=self.pos)

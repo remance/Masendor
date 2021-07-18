@@ -544,8 +544,8 @@ def load_game_data(game):
 
     game.fpscount = gameui.FPScount()  # FPS number counter
 
-    game.battledone_box = gameui.Battledone(topimage[-3])
-    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.pos[1] * 1.35, topimage[-2], newlayer=19)
+    game.battledone_box = gameui.Battledone(topimage[-3], topimage[-4])
+    game.gamedone_button = gameui.Uibutton(game.battledone_box.pos[0], game.battledone_box.boximage.get_height() * 0.8, topimage[-2], newlayer=19)
     # ^ End game ui
 
     # v Esc menu related objects

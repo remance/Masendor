@@ -749,10 +749,79 @@ class Battle:
 
         self.speednumber.speedupdate(self.gamespeed)
 
+    def exitbattle(self):
+        self.battleui.clear(self.screen, self.background)  # remove all sprite
+        self.battlecamera.clear(self.screen, self.background)  # remove all sprite
+
+        self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
+                             *self.escvaluebox)  # remove menu
+
+        for group in (self.subunit, self.armyleader, self.team0unit, self.team1unit, self.team2unit,
+                      self.uniticon, self.troopnumbersprite,
+                      self.inspectsubunit):  # remove all reference from battle object
+            for stuff in group:
+                stuff.delete()
+                stuff.kill()
+                del stuff
+
+        for button in self.buttonui[0:8]:
+            button.kill()  # remove button
+
+        for arrow in self.arrows:  # remove all range attack
+            arrow.kill()
+            del arrow
+
+        self.subunit_selected = None
+        self.allunitlist = []
+        self.allunitindex = []
+        self.combatpathqueue = []
+        self.team0poslist, self.team1poslist, self.team2poslist = {}, {}, {}
+        self.before_selected = None
+
+        self.drama_timer = 0  # reset drama text popup
+        self.battleui.remove(self.textdrama)
+
+        if self.mode == "uniteditor":
+            self.showincard = None
+
+            self.battleui.remove(self.unit_delete_button, self.unit_save_button, self.troop_listbox,
+                                 self.teamchange_button, self.troop_scroll, self.teamcoa, self.unit_listbox,
+                                 self.unit_presetname_scroll, self.filterbox, self.teamchange_button,
+                                 self.slotdisplay_button, self.test_button, self.deploy_button, *self.unitcardbutton,
+                                 self.terrain_change_button, self.feature_change_button, self.weather_change_button,
+                                 *self.unitbuildslot, *self.leadernow, self.presetselectborder,
+                                 self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
+
+            for group in self.troop_namegroup, self.uniteditborder, self.unitpreset_namegroup:
+                for item in group:  # remove name list
+                    item.kill()
+                    del item
+
+            for slot in self.unitbuildslot:  # reset all sub-subunit slot
+                slot.changetroop(0, self.baseterrain,
+                                 self.baseterrain * len(self.battlemap_feature.featurelist) + self.featureterrain,
+                                 self.currentweather)
+                slot.leader = None  # remove leader link in
+
+            for leader in self.previewleader:
+                leader.change_subunit(None)  # remove subunit link in leader
+                leader.change_leader(1, self.leader_stat)
+
+            del self.currentweather
+
+            self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][
+                              1:]  # reset troop filter back to all faction
+            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
+
+            self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][
+                               1:]  # generate leader name list)
+
+            self.leadernow = []
+
     def rungame(self):
         # v Create Starting Values
         self.mixervolume = SoundVolume
-        self.gamestate = 1
+        self.gamestate = 1  # battle mode
         self.current_unit_row = 0
         self.current_troop_row = 0
         self.textinputpopup = (None, None)  # no popup asking for user text input state
@@ -762,7 +831,7 @@ class Battle:
         self.last_team_troopnumber = [1, 1, 1]
         self.textdrama.queue = []  # reset drama text popup queue
         if self.mode == "uniteditor":
-            self.gamestate = 2
+            self.gamestate = 2  # editor mode
 
             self.full_troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][1:]
 
@@ -918,7 +987,7 @@ class Battle:
                         self.battleui.add(self.battle_menu)  # add menu to drawer
                         self.battleui.add(*self.battle_menu_button)  # add menu button to
 
-                    else:  # in menu
+                    elif self.gamestate == 0:  # in menu
                         if self.battle_menu.mode in (0, 1):  # in menu or option
                             if self.battle_menu.mode == 1:  # option menu
                                 self.mixervolume = self.oldsetting
@@ -940,6 +1009,10 @@ class Battle:
 
                             if self.battle_menu not in self.battleui:
                                 self.gamestate = self.previous_gamestate
+                    elif self.gamestate == 3:
+                        self.exitbattle()
+                        return  # end battle game loop
+
 
                 elif mouse_scrollup:  # Mouse scroll up
                     if self.gamestate == 0 and self.battle_menu.mode == 2:  # Scrolling at lore book subsection list
@@ -961,7 +1034,7 @@ class Battle:
                             else:
                                 self.lorebook.current_subsection_row -= 1
 
-                if self.gamestate != 0:  # game in battle state
+                if self.gamestate in (1, 2):  # game in battle state
                     # v register user input during gameplay
                     if mouse_scrollup or mouse_scrolldown:  # Mouse scroll
                         if self.eventlog.rect.collidepoint(self.mousepos):  # Scrolling when mouse at event log
@@ -2327,12 +2400,18 @@ class Battle:
                             self.battleui.add(self.battledone_box, self.gamedone_button)
                         else:
                             if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
-                                print('test')
+                                self.gamestate = 3  #  end battle mode, result screen
+                                self.gamespeed = 0
+                                coalist = [None, None]
+                                for index, coa in enumerate(self.teamcoa):
+                                    coalist[index] = coa.image
+                                self.battledone_box.showresult(coalist[0], coalist[1])
+
                         # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
                         #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
                     # ^ End update game time
 
-                else:  # Complete game pause when open either esc menu or enclycopedia
+                elif self.gamestate == 0:  # Complete game pause when open either esc menu or enclycopedia
                     if self.battle_menu.mode == 0:  # main esc menu
                         for button in self.battle_menu_button:
                             if button.rect.collidepoint(self.mousepos):
@@ -2359,74 +2438,7 @@ class Battle:
                                         self.oldsetting = self.escslidermenu[0].value  # Save previous setting for in case of cancel
 
                                     elif button.text == "End Battle":  # back to main menu
-                                        self.battleui.clear(self.screen, self.background)  # remove all sprite
-                                        self.battlecamera.clear(self.screen, self.background)  # remove all sprite
-
-                                        self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
-                                                             *self.escvaluebox)  # remove menu
-
-                                        for group in (self.subunit, self.armyleader, self.team0unit, self.team1unit, self.team2unit,
-                                                      self.uniticon, self.troopnumbersprite,
-                                                      self.inspectsubunit):  # remove all reference from battle object
-                                            for stuff in group:
-                                                stuff.delete()
-                                                stuff.kill()
-                                                del stuff
-
-                                        for button in self.buttonui[0:8]:
-                                            button.kill()  # remove button
-
-                                        for arrow in self.arrows:  # remove all range attack
-                                            arrow.kill()
-                                            del arrow
-
-                                        self.subunit_selected = None
-                                        self.allunitlist = []
-                                        self.allunitindex = []
-                                        self.combatpathqueue = []
-                                        self.team0poslist, self.team1poslist, self.team2poslist = {}, {}, {}
-                                        self.before_selected = None
-
-                                        self.drama_timer = 0  # reset drama text popup
-                                        self.battleui.remove(self.textdrama)
-
-                                        if self.mode == "uniteditor":
-                                            self.showincard = None
-
-                                            self.battleui.remove(self.unit_delete_button, self.unit_save_button, self.troop_listbox,
-                                                                 self.teamchange_button, self.troop_scroll, self.teamcoa, self.unit_listbox,
-                                                                 self.unit_presetname_scroll, self.filterbox, self.teamchange_button,
-                                                                 self.slotdisplay_button, self.test_button, self.deploy_button, *self.unitcardbutton,
-                                                                 self.terrain_change_button, self.feature_change_button, self.weather_change_button,
-                                                                 *self.unitbuildslot, *self.leadernow, self.presetselectborder,
-                                                                 self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
-
-                                            for group in self.troop_namegroup, self.uniteditborder, self.unitpreset_namegroup:
-                                                for item in group:  # remove name list
-                                                    item.kill()
-                                                    del item
-
-                                            for slot in self.unitbuildslot:  # reset all sub-subunit slot
-                                                slot.changetroop(0, self.baseterrain,
-                                                                 self.baseterrain * len(self.battlemap_feature.featurelist) + self.featureterrain,
-                                                                 self.currentweather)
-                                                slot.leader = None  # remove leader link in
-
-                                            for leader in self.previewleader:
-                                                leader.change_subunit(None)  # remove subunit link in leader
-                                                leader.change_leader(1, self.leader_stat)
-
-                                            del self.currentweather
-
-                                            self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][
-                                                              1:]  # reset troop filter back to all faction
-                                            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
-
-                                            self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][
-                                                               1:]  # generate leader name list)
-
-                                            self.leadernow = []
-
+                                        self.exitbattle()
                                         return  # end battle game loop
 
                                     elif button.text == "Desktop":  # quit game
@@ -2508,6 +2520,11 @@ class Battle:
                                 self.lorebook.current_subsection_row = self.lorescroll.update(
                                     self.mousepos)  # update the scroller and get new current subsection
                                 self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)  # update subsection name list
+
+                elif self.gamestate == 3:
+                    if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
+                        self.exitbattle()
+                        return  # end battle game loop
 
             elif self.textinputpopup != (None, None):  # currently have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
