@@ -754,7 +754,7 @@ class Battle:
         self.battlecamera.clear(self.screen, self.background)  # remove all sprite
 
         self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
-                             *self.escvaluebox)  # remove menu
+                             *self.escvaluebox, self.battledone_box, self.gamedone_button)  # remove menu
 
         for group in (self.subunit, self.armyleader, self.team0unit, self.team1unit, self.team2unit,
                       self.uniticon, self.troopnumbersprite,
@@ -2405,7 +2405,9 @@ class Battle:
                                 coalist = [None, None]
                                 for index, coa in enumerate(self.teamcoa):
                                     coalist[index] = coa.image
-                                self.battledone_box.showresult(coalist[0], coalist[1])
+                                self.battledone_box.showresult(coalist[0], coalist[1], [self.start_troopnumber, self.team_troopnumber,
+                                                                                        self.wound_troopnumber, self.death_troopnumber,
+                                                                                        self.flee_troopnumber, self.capture_troopnumber])
 
                         # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
                         #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)

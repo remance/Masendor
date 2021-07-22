@@ -1397,7 +1397,7 @@ class Subunit(pygame.sprite.Sprite):
                     else:
                         remain = int(remain)
                     wound = random.randint(0, (self.troopnumber - remain))  # chance to be wounded instead of dead
-                    self.gamebattle.death_troopnumber[self.team] += remain - wound
+                    self.gamebattle.death_troopnumber[self.team] += self.troopnumber - remain - wound
                     self.gamebattle.wound_troopnumber[self.team] += wound
                     self.troopnumber = remain  # Recal number of troop again in case some die from negative regen
 
@@ -1413,7 +1413,7 @@ class Subunit(pygame.sprite.Sprite):
                     else:
                         remain = int(remain)
                     wound = random.randint(0, (self.troopnumber - remain))  # chance to be wounded instead of dead
-                    self.gamebattle.death_troopnumber[self.team] += remain - wound
+                    self.gamebattle.death_troopnumber[self.team] += self.troopnumber - remain - wound
                     if self.state in (98, 99) and len(self.enemy_front) + len(self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
                         self.gamebattle.capture_troopnumber[self.team] += wound
                     else:

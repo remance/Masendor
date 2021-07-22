@@ -813,6 +813,7 @@ class Battledone(pygame.sprite.Sprite):
         self.boximage = boximage
         self.resultimage = resultimage
         self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 36))
+        self.textfont = pygame.font.SysFont("arial", int(self.heightadjust * 24))
         self.pos = (SCREENRECT.width / 2, 0)
         self.image = self.boximage.copy()
         self.rect = self.image.get_rect(midtop=self.pos)
@@ -831,7 +832,7 @@ class Battledone(pygame.sprite.Sprite):
         self.pos = (self.screenwidth / 2, 0)
         self.rect = self.image.get_rect(midtop=self.pos)
 
-    def showresult(self, teamcoa1, teamcoa2):
+    def showresult(self, teamcoa1, teamcoa2, stat):
         self.image = self.resultimage.copy()
         textsurface = self.font.render(self.winner, True, (0, 0, 0))
         textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) + 3))
@@ -846,3 +847,17 @@ class Battledone(pygame.sprite.Sprite):
         self.image.blit(teamcoa2, coa2rect)
         self.pos = (self.screenwidth / 2, self.screenheight / 2)
         self.rect = self.image.get_rect(center=self.pos)
+        coa1rect.midbottom
+        teamcoarect = (coa1rect, coa2rect)
+        textheader = ("Total Troop: ", "Remaining: ", "Injured: ", "Death: ", "Flee: ", "Captured: ")
+        for index, team in enumerate([1,2]):
+            rownumber = 1
+            for statindex, thisstat in enumerate(stat):
+                if statindex == 1:
+                    textsurface = self.font.render(textheader[statindex] + str(thisstat[team] - 1), True, (0, 0, 0))
+                else:
+                    textsurface = self.font.render(textheader[statindex] + str(thisstat[team]), True, (0, 0, 0))
+                textrect = textsurface.get_rect(center=(teamcoarect[index].midbottom[0],
+                                                        teamcoarect[index].midbottom[1] + (int(self.heightadjust * 25) * rownumber)))
+                self.image.blit(textsurface, textrect)
+                rownumber += 1
