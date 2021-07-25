@@ -341,6 +341,7 @@ class Subunit(pygame.sprite.Sprite):
         self.enemy_side = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
         self.same_front = []  # list of same unit front collide sprite
+        self.collide_penalty = False
         self.team = self.parentunit.team
         self.gamebattle.allsubunitlist.append(self)
         if self.team == 1:  # add sprite to team subunit group for collision
@@ -1273,6 +1274,8 @@ class Subunit(pygame.sprite.Sprite):
                                 self.run = True
                             if self.charge_momentum > 1:  # speed gradually decrease with momentum during charge
                                 speed = speed * self.charge_momentum / 8
+                            if self.collide_penalty:  # reduce speed during moving through another unit
+                                speed = speed / 4
                             move = move * speed * dt
                             newmove_length = move.length()
                             newpos = self.base_pos + move
@@ -1490,8 +1493,10 @@ class Subunit(pygame.sprite.Sprite):
                                                + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
 
             self.enemy_front = []  # reset collide
-            self.enemy_side = []  # reset collide
+            self.enemy_side = []
+            self.friend_front = []
             self.same_front = []
+            self.collide_penalty = False
 
     def rotate(self):
         """rotate subunit image may use when subunit can change direction independently from parentunit"""

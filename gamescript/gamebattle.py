@@ -2279,6 +2279,7 @@ class Battle:
                                                 spritetwo.state in (2, 4, 6, 10, 11, 13):  # cannot run pass other unit if either run or in combat
                                             spriteone.friend_front.append(spritetwo)
                                             spriteone.parentunit.collide = True
+                                        spriteone.collide_penalty = True
                                     else:
                                         if spriteone.team != spritetwo.team:  # enemy team
                                             spriteone.enemy_side.append(spritetwo)
@@ -2290,6 +2291,7 @@ class Battle:
                                                 spritetwo.state in (2, 4, 6, 10, 11, 13):
                                             spritetwo.friend_front.append(spriteone)
                                             spritetwo.parentunit.collide = True
+                                        spritetwo.collide_penalty = True
                                     else:
                                         if spriteone.team != spritetwo.team:  # enemy team
                                             spritetwo.enemy_side.append(spriteone)
