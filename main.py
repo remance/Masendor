@@ -950,7 +950,7 @@ try:  # for printing error log when error exception happen
                                            self.source_listbox, self.mainui)
 
                             self.sourcescroll = gameui.Uiscroller(self.source_listbox.rect.topright, self.source_listbox.image.get_height(),
-                                                                  self.source_listbox.maxshowlist, layer=14)  # scroller bar for source list
+                                                                  self.source_listbox.maxshowlist, layer=16)  # scroller bar for source list
 
                             for index, team in enumerate(self.teamcoa):
                                 if index == 0:

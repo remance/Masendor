@@ -93,9 +93,9 @@
 92,"Severe Burning",,"29,93,101,102,104",10,,,,,,,,,0,-150,0,-50,0,0,0,70,0,"The burning become so severe now that simply drenching the fire may not save the person anymore. This also causes panic among the troop trying to flee from such fire."
 93,"Drench",,,60,,,,,50,,,50,0,0,0,0,0,0,0,-50,0,"Wet from head to toes almost as if swimming in the water. Avoid cold temperature or air elemental damage at all cost."
 94,"Electrocution",,,,,,,,,,,,,-40,-5,-20,-30,0,0,0,0,
-95,"Cold",,96,10,70,90,90,,80,80,80,80,0,0,-2,-10,0,0,0,0,0,"Cold and shivering, not a good sign for winter warfare. Find some place warm or light up the fire."
-96,"Hot",,95,10,70,90,90,,80,80,80,80,0,0,-2,-10,0,0,0,0,0,"Hot isn't it? Be careful of heatstroke."
-97,"Heatstroke",,95,30,50,50,50,,30,50,50,50,-50,-20,-10,-30,-20,0,,0,0,
+95,"Cold",,96,10,70,90,90,,80,80,80,80,0,0,-1,-10,0,0,0,0,0,"Cold and shivering, not a good sign for winter warfare. Find some place warm or light up the fire."
+96,"Hot",,95,10,70,90,90,,80,80,80,80,0,0,-1,-10,0,0,0,0,0,"Hot isn't it? Be careful of heatstroke."
+97,"Heatstroke",,95,30,50,50,50,,30,50,50,50,-50,-20,-5,-30,-20,0,,0,0,
 98,"Decimated",,,60,,,,,,,,,0,0,0,50,40,0,0,0,0,"Decimation can increase morale of the troop for a short while so they can fight longer, before they realise that surrender maybe an option after all. "
 99,"Enraged",,,60,200,,,,,,,150,0,0,0,50,,,,0,0,"Anger clouded rational judgment. Exploit this momentary weakness or suffer the punishment. "
 100,"Dishonourable Displayed",,,,,,,,,,,,,0,0,-30,-25,0,,0,0,

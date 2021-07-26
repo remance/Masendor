@@ -999,8 +999,9 @@ class Subunit(pygame.sprite.Sprite):
                     if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.check_skill_condition()
 
-                    if parentstate == 4 and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown and \
-                            self.base_pos.distance_to(self.base_target) < 100:  # charge skill only when running to melee
+                    if self.state in (4, 13) and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown and \
+                            self.base_pos.distance_to(self.base_target) < 50:  # charge skill only when running to melee
+
                         self.charge_momentum += self.timer * (self.speed / 50)
                         if self.charge_momentum >= 10:
                             self.useskill(0)  # Use charge skill
@@ -1047,48 +1048,49 @@ class Subunit(pygame.sprite.Sprite):
                                 self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1:  # attack to nearest target instead
                             if self.melee_target is None and self.parentunit.attack_target is not None:
                                 self.melee_target = self.parentunit.attack_target.subunit_sprite[0]
-                            if self.close_target is None:  # movement queue is empty regenerate new one
-                                self.close_target = self.find_close_target(self.melee_target.parentunit.subunit_sprite)  # find new close target
+                            if self.melee_target is not None:
+                                if self.close_target is None:  # movement queue is empty regenerate new one
+                                    self.close_target = self.find_close_target(self.melee_target.parentunit.subunit_sprite)  # find new close target
 
-                                if self.close_target is not None:  # found target to fight
-                                    if self not in self.gamebattle.combatpathqueue:
-                                        self.gamebattle.combatpathqueue.append(self)
+                                    if self.close_target is not None:  # found target to fight
+                                        if self not in self.gamebattle.combatpathqueue:
+                                            self.gamebattle.combatpathqueue.append(self)
 
-                                else:  # no target to fight move back to command pos first)
-                                    self.base_target = self.attack_target.base_pos
-                                    self.new_angle = self.setrotate()
-
-                            if self.melee_target.parentunit.state != 100:
-                                if self.movetimer == 0:
-                                    self.movetimer = 0.1  # recalculate again in 10 seconds if not in fight
-                                    # if len(self.same_front) != 0 and len(self.enemy_front) == 0: # collide with friend try move to base_target first before enemy
-                                    # self.combat_move_queue = [] # clean queue since the old one no longer without collide
-                                else:
-                                    self.movetimer += dt
-                                    if len(self.enemy_front) != 0 or len(self.enemy_side) != 0:  # in fight, stop timer
-                                        self.movetimer = 0
-
-                                    elif self.movetimer > 10 or len(self.combat_move_queue) == 0:  # # time up, or no path. reset path
-                                        self.movetimer = 0
-                                        self.close_target = None
-                                        if self in self.gamebattle.combatpathqueue:
-                                            self.gamebattle.combatpathqueue.remove(self)
-
-                                    elif len(self.combat_move_queue) > 0:  # no collide move to enemy
-                                        self.base_target = pygame.Vector2(self.combat_move_queue[0])
+                                    else:  # no target to fight move back to command pos first)
+                                        self.base_target = self.attack_target.base_pos
                                         self.new_angle = self.setrotate()
 
-                            else:  # whole targeted enemy unit destroyed, reset target and state
-                                self.melee_target = None
-                                self.close_target = None
-                                if self in self.gamebattle.combatpathqueue:
-                                    self.gamebattle.combatpathqueue.remove(self)
+                                if self.melee_target.parentunit.state != 100:
+                                    if self.movetimer == 0:
+                                        self.movetimer = 0.1  # recalculate again in 10 seconds if not in fight
+                                        # if len(self.same_front) != 0 and len(self.enemy_front) == 0: # collide with friend try move to base_target first before enemy
+                                        # self.combat_move_queue = [] # clean queue since the old one no longer without collide
+                                    else:
+                                        self.movetimer += dt
+                                        if len(self.enemy_front) != 0 or len(self.enemy_side) != 0:  # in fight, stop timer
+                                            self.movetimer = 0
 
-                                self.attack_target = None
-                                self.base_target = self.command_target
-                                self.new_angle = self.setrotate()
-                                self.new_angle = self.parentunit.angle
-                                self.state = 0
+                                        elif self.movetimer > 10 or len(self.combat_move_queue) == 0:  # # time up, or no path. reset path
+                                            self.movetimer = 0
+                                            self.close_target = None
+                                            if self in self.gamebattle.combatpathqueue:
+                                                self.gamebattle.combatpathqueue.remove(self)
+
+                                        elif len(self.combat_move_queue) > 0:  # no collide move to enemy
+                                            self.base_target = pygame.Vector2(self.combat_move_queue[0])
+                                            self.new_angle = self.setrotate()
+
+                                else:  # whole targeted enemy unit destroyed, reset target and state
+                                    self.melee_target = None
+                                    self.close_target = None
+                                    if self in self.gamebattle.combatpathqueue:
+                                        self.gamebattle.combatpathqueue.remove(self)
+
+                                    self.attack_target = None
+                                    self.base_target = self.command_target
+                                    self.new_angle = self.setrotate()
+                                    self.new_angle = self.parentunit.angle
+                                    self.state = 0
 
                     elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
                         self.melee_target = None
@@ -1272,7 +1274,7 @@ class Subunit(pygame.sprite.Sprite):
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                                 speed = self.parentunit.runspeed  # use run speed
                                 self.run = True
-                            if self.charge_momentum > 1:  # speed gradually decrease with momentum during charge
+                            if self.charge_momentum > 3:  # speed gradually decrease with momentum during charge
                                 speed = speed * self.charge_momentum / 8
                             if self.collide_penalty:  # reduce speed during moving through another unit
                                 speed = speed / 4
