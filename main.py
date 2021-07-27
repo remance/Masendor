@@ -445,11 +445,17 @@ try:  # for printing error log when error exception happen
             img1 = load_image("test_button.png", "ui\\mainmenu_ui").convert()  # start test button in editor
             img2 = load_image("end_button.png", "ui\\mainmenu_ui").convert()  # stop test button
             self.test_button = gameui.Switchuibutton(self.scaleui.rect.bottomleft[0] + 55, self.scaleui.rect.bottomleft[1] + 25, [img1, img2])
-            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # delete unit button in editor
-            self.delete_button = gameui.Uibutton(0, 0, img1, 0)
-            img1 = load_image("delete_button.png", "ui\\mainmenu_ui").convert() # move unit button in editor
-            self.move_button = gameui.Uibutton(0, 0, img1, 0)
-
+            img1 = load_image("tick_box_no.png", "ui\\mainmenu_ui").convert()  # start test button in editor
+            img2 = load_image("tick_box_yes.png", "ui\\mainmenu_ui").convert()  # stop test button
+            self.tickbox_filter = [gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 8),
+                                                         img1, img2, "melee"),
+                                   gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 1.7),
+                                                         img1, img2, "range"),
+                                   gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 8),
+                                                         img1, img2, "cavalry")]
+            for box in self.tickbox_filter:  # default start filter with all shown
+                box.tick = True
+            self.tickbox.add(*self.tickbox_filter)
             self.warningmsg = gameunitedit.Warningmsg((self.test_button.rect.bottomleft[0], self.test_button.rect.bottomleft[1]))
             # ^ End unit editor
 
@@ -987,7 +993,7 @@ try:  # for printing error log when error exception happen
                                         break
 
                                 for box in self.tickbox:
-                                    if box.rect.collidepoint(self.mousepos):
+                                    if box in self.mainui and box.rect.collidepoint(self.mousepos):
                                         if box.tick is False:
                                             box.changetick(True)
                                         else:

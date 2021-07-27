@@ -104,6 +104,7 @@ class Battle:
         self.troop_listbox = main.troop_listbox
         self.troop_namegroup = main.troop_namegroup
         self.filterbox = main.filterbox
+        self.tickbox_filter = main.tickbox_filter
         self.teamchange_button = main.teamchange_button
         self.slotdisplay_button = main.slotdisplay_button
         self.test_button = main.test_button
@@ -213,6 +214,7 @@ class Battle:
         self.death_troopnumber = [0, 0, 0]
         self.flee_troopnumber = [0, 0, 0]
         self.capture_troopnumber = [0, 0, 0]
+        self.filtertroop = [True, True, True]
         self.last_selected = None
         self.before_selected = None
 
@@ -222,7 +224,7 @@ class Battle:
                                 self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button,
                                 self.unit_presetname_scroll)
         self.filter_stuff = (self.filterbox, self.slotdisplay_button, self.teamchange_button, self.deploy_button, self.terrain_change_button,
-                             self.feature_change_button, self.weather_change_button)
+                             self.feature_change_button, self.weather_change_button, self.tickbox_filter)
 
         self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)  # Set the display mode
         self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up game screen
@@ -2049,7 +2051,19 @@ class Battle:
                                                 else:
                                                     self.warningmsg.warning(warninglist)
                                                     self.battleui.add(self.warningmsg)
-
+                                            else:
+                                                for box in self.tickbox_filter:
+                                                    if box in self.battleui and box.rect.collidepoint(self.mousepos):
+                                                        if box.tick is False:
+                                                            box.changetick(True)
+                                                        else:
+                                                            box.changetick(False)
+                                                        if box.option == "melee":
+                                                            self.filtertroop[0] = box.tick
+                                                        elif box.option == "range":
+                                                            self.filtertroop[1] = box.tick
+                                                        elif box.option == "cavalry":
+                                                            self.filtertroop[2] = box.tick
                                     elif self.terrain_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map terrain button
                                         self.uiclick = True
                                         self.popuplist_newopen(self.terrain_change_button.rect.midtop, self.battlemap_base.terrainlist, "terrain")
