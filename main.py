@@ -448,13 +448,16 @@ try:  # for printing error log when error exception happen
             img1 = load_image("tick_box_no.png", "ui\\mainmenu_ui").convert()  # start test button in editor
             img2 = load_image("tick_box_yes.png", "ui\\mainmenu_ui").convert()  # stop test button
             self.tickbox_filter = [gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 8),
-                                                         img1, img2, "melee"),
+                                                         img1, img2, "meleeinf"),
                                    gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 1.7),
-                                                         img1, img2, "range"),
+                                                         img1, img2, "rangeinf"),
                                    gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 8),
-                                                         img1, img2, "cavalry")]
+                                                         img1, img2, "meleecav"),
+                                   gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 1.7),
+                                                       img1, img2, "rangecav")
+                                   ]
             for box in self.tickbox_filter:  # default start filter with all shown
-                box.tick = True
+                box.changetick(True)
             self.tickbox.add(*self.tickbox_filter)
             self.warningmsg = gameunitedit.Warningmsg((self.test_button.rect.bottomleft[0], self.test_button.rect.bottomleft[1]))
             # ^ End unit editor

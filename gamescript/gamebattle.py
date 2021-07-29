@@ -214,7 +214,8 @@ class Battle:
         self.death_troopnumber = [0, 0, 0]
         self.flee_troopnumber = [0, 0, 0]
         self.capture_troopnumber = [0, 0, 0]
-        self.filtertroop = [True, True, True]
+        self.factionpick = 0
+        self.filtertroop = [True, True, True, True]
         self.last_selected = None
         self.before_selected = None
 
@@ -683,6 +684,48 @@ class Battle:
                             icon.kill()
                 break
 
+    def filtertrooplist(self):
+        """Filter troop list based on faction picked and type filter"""
+        if self.factionpick != 0:
+            self.troop_list = [item[1][0] for item in self.gameunitstat.unit_list.items()
+                               if item[1][0] == "None" or
+                               item[0] in self.allfaction.faction_list[self.factionpick][1]]
+            self.troop_index_list = [0] + self.allfaction.faction_list[self.factionpick][1]
+
+        else:  # pick all faction
+            self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][1:]
+            self.troop_index_list = list(range(0, len(self.troop_list)))
+
+        print(self.troop_index_list)
+        print(self.troop_list)
+        for unit in self.troop_index_list[::-1]:
+            if unit != 0:
+                if self.filtertroop[0] is False:  # filter out melee infantry
+                    if self.gameunitstat.unit_list[unit][8] > self.gameunitstat.unit_list[unit][12] and \
+                            self.gameunitstat.unit_list[unit][29] == [1, 0, 1]:
+                        self.troop_list.pop(self.troop_index_list.index(unit))
+                        self.troop_index_list.remove(unit)
+
+                if self.filtertroop[1] is False:  # filter out range infantry
+                    if self.gameunitstat.unit_list[unit][22] != [1, 0] and \
+                            self.gameunitstat.unit_list[unit][8] < self.gameunitstat.unit_list[unit][12] and \
+                            self.gameunitstat.unit_list[unit][29] == [1, 0, 1]:
+                        self.troop_list.pop(self.troop_index_list.index(unit))
+                        self.troop_index_list.remove(unit)
+
+                if self.filtertroop[2] is False:  # filter out melee cav
+                    if self.gameunitstat.unit_list[unit][8] > self.gameunitstat.unit_list[unit][12] and \
+                            self.gameunitstat.unit_list[unit][29] != [1, 0, 1]:
+                        self.troop_list.pop(self.troop_index_list.index(unit))
+                        self.troop_index_list.remove(unit)
+
+                if self.filtertroop[3] is False:  # filter out range cav
+                    if self.gameunitstat.unit_list[unit][22] != [1, 0] and \
+                            self.gameunitstat.unit_list[unit][8] < self.gameunitstat.unit_list[unit][12] and \
+                            self.gameunitstat.unit_list[unit][29] != [1, 0, 1]:
+                        self.troop_list.pop(self.troop_index_list.index(unit))
+                        self.troop_index_list.remove(unit)
+
     def changestate(self):
         self.previous_gamestate = self.gamestate
         if self.gamestate == 1:  # change to battle state
@@ -811,6 +854,8 @@ class Battle:
 
             del self.currentweather
 
+            self.factionpick = 0
+            self.filtertroop = [True, True, True, True]
             self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][
                               1:]  # reset troop filter back to all faction
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
@@ -1897,12 +1942,9 @@ class Battle:
                                                     self.current_troop_row = 0
 
                                                     if mouse_up:
+                                                        self.factionpick = index
+                                                        self.filtertrooplist()
                                                         if index != 0:  # pick faction
-                                                            self.troop_list = [item[1][0] for item in self.gameunitstat.unit_list.items()
-                                                                               if item[1][0] == "None" or
-                                                                               item[0] in self.allfaction.faction_list[index][1]]
-                                                            self.troop_index_list = [0] + self.allfaction.faction_list[index][1]
-
                                                             self.leader_list = [item[1][0] for thisindex, item in
                                                                                 enumerate(self.leader_stat.leader_list.items())
                                                                                 if thisindex > 0 and (item[1][0] == "None" or
@@ -1910,9 +1952,6 @@ class Battle:
                                                                                                       item[0] in self.allfaction.faction_list[index][2])]
 
                                                         else:  # pick all faction
-                                                            self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][1:]
-                                                            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
-
                                                             self.leader_list = self.leader_list = [item[0] for item in
                                                                                                    self.leader_stat.leader_list.values()][1:]
 
@@ -2058,12 +2097,20 @@ class Battle:
                                                             box.changetick(True)
                                                         else:
                                                             box.changetick(False)
-                                                        if box.option == "melee":
+                                                        if box.option == "meleeinf":
                                                             self.filtertroop[0] = box.tick
-                                                        elif box.option == "range":
+                                                        elif box.option == "rangeinf":
                                                             self.filtertroop[1] = box.tick
-                                                        elif box.option == "cavalry":
+                                                        elif box.option == "meleecav":
                                                             self.filtertroop[2] = box.tick
+                                                        elif box.option == "rangecav":
+                                                            self.filtertroop[3] = box.tick
+                                                        if self.current_list_show == "troop":
+                                                            self.current_troop_row = 0
+                                                            self.filtertrooplist()
+                                                            self.main.setuplist(gameprepare.Namelist, self.current_troop_row, self.troop_list,
+                                                                                self.troop_namegroup,
+                                                                                self.troop_listbox, self.battleui)  # setup troop name list
                                     elif self.terrain_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map terrain button
                                         self.uiclick = True
                                         self.popuplist_newopen(self.terrain_change_button.rect.midtop, self.battlemap_base.terrainlist, "terrain")
