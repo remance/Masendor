@@ -194,19 +194,19 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
             # self.base_elem_range =
 
         if 3 in self.trait:  # Varied training
-            self.base_attack *= (random.randint(80, 120) / 100)
-            self.base_meleedef *= (random.randint(80, 120) / 100)
-            self.base_rangedef *= (random.randint(80, 120) / 100)
+            self.base_attack *= (random.randint(70, 120) / 100)
+            self.base_meleedef *= (random.randint(70, 120) / 100)
+            self.base_rangedef *= (random.randint(70, 120) / 100)
             # self.base_armour *= (random.randint(80, 120) / 100)
-            self.base_speed *= (random.randint(80, 120) / 100)
-            self.base_accuracy *= (random.randint(80, 120) / 100)
+            self.base_speed *= (random.randint(70, 120) / 100)
+            self.base_accuracy *= (random.randint(70, 120) / 100)
             # self.base_range *= (random.randint(80, 120) / 100)
-            self.base_reload *= (random.randint(80, 120) / 100)
-            self.base_charge *= (random.randint(80, 120) / 100)
-            self.base_chargedef *= (random.randint(80, 120) / 100)
-            self.base_morale += random.randint(-10, 10)
-            self.base_discipline += random.randint(-10, 10)
-            self.mental += random.randint(-10, 10)
+            self.base_reload *= (random.randint(70, 120) / 100)
+            self.base_charge *= (random.randint(70, 120) / 100)
+            self.base_chargedef *= (random.randint(70, 120) / 100)
+            self.base_morale += random.randint(-15, 10)
+            self.base_discipline += random.randint(-20, 0)
+            self.mental += random.randint(-20, 10)
 
         # v Change trait variable
         if 16 in self.trait:
@@ -999,14 +999,14 @@ class Subunit(pygame.sprite.Sprite):
                     if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
                         self.check_skill_condition()
 
-                    if self.state in (4, 13) and self.attacking and self.parentunit.moverotate is False and self.chargeskill not in self.skill_cooldown and \
+                    if self.state in (4, 13) and parentstate != 10 and self.attacking and self.parentunit.moverotate is False and \
                             self.base_pos.distance_to(self.base_target) < 50:  # charge skill only when running to melee
 
                         self.charge_momentum += self.timer * (self.speed / 50)
-                        if self.charge_momentum >= 10:
+                        if self.charge_momentum >= 5:
                             self.useskill(0)  # Use charge skill
                             self.parentunit.charging = True
-                            self.charge_momentum = 10
+                            self.charge_momentum = 5
 
                     elif self.charge_momentum > 1:  # reset charge momentum if charge skill not active
                         self.charge_momentum -= self.timer * (self.speed / 50)
@@ -1229,7 +1229,7 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 # v Move function to given base_target position
-                revertmove = True # revert move check for in case subunit still need to rotate before moving, ignored when whole unit rotating
+                revertmove = True # revert move check for in case subunit still need to rotate before moving
                 if parentstate == 0 or self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
                     revertmove = False
 
@@ -1242,19 +1242,18 @@ class Subunit(pygame.sprite.Sprite):
                             or self.charge_momentum > 1)):
                         nocolide_check = True  # TODO change charge and collide so unit can ignore collide stop if charge bypass def and chance to move
 
-                    noenemycollide_check = True  # for chance to move or charge through enemy
+                    enemycollide_check = False # for chance to move or charge through enemy
                     if len(collidelist) > 0:
+                        enemycollide_check = True
                         if self.state in (96, 98, 99):  # chance to escape
-                            if random.randint(0, len(collidelist) + 2) > 2:
-                                noenemycollide_check = False
-                        elif self.charge_momentum > 1 and random.randint(0, 1) == 0:  # chance to charge through
-                            noenemycollide_check = False
-                        elif self.charge_momentum == 1:  # cannot pass enemy in combat with no charge momentum
-                            noenemycollide_check = False
+                            if random.randint(0, len(collidelist) + 2) < 2:
+                                enemycollide_check = False
+                        elif self.chargeskill in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
+                            enemycollide_check = False
 
-                    if self.stamina > 0 and nocolide_check and noenemycollide_check and \
+                    if self.stamina > 0 and nocolide_check and enemycollide_check is False and \
                         len(self.same_front) == 0 and len(self.friend_front) == 0:
-                        if self.charge_momentum > 1 and self.base_pos == self.base_target and parentstate == 10:
+                        if self.chargeskill in self.skill_effect and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                             self.base_target = self.base_target + new_target
                             self.command_target = self.base_target
@@ -1274,7 +1273,7 @@ class Subunit(pygame.sprite.Sprite):
                             else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                                 speed = self.parentunit.runspeed  # use run speed
                                 self.run = True
-                            if self.charge_momentum > 3:  # speed gradually decrease with momentum during charge
+                            if self.chargeskill in self.skill_effect:  # speed gradually decrease with momentum during charge
                                 speed = speed * self.charge_momentum / 8
                             if self.collide_penalty:  # reduce speed during moving through another unit
                                 speed = speed / 4

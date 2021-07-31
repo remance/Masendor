@@ -626,6 +626,23 @@ class Battle:
                 break
         return effectmouseover
 
+    def removeunitui(self):
+        self.gameui[2].option = 1  # reset subunit card option
+        for ui in self.gameui:
+            ui.kill()  # remove ui
+        for button in self.buttonui[0:8]:
+            button.kill()  # remove button
+        for icon in self.skill_icon.sprites():
+            icon.kill()  # remove skill and trait icon
+        for icon in self.effect_icon.sprites():
+            icon.kill()  # remove effect icon
+        self.battleui.remove(*self.switch_button, *self.inspectsubunit)  # remove change behaviour button and inspect ui subunit
+        self.inspectui = False  # inspect ui close
+        self.battleui.remove(*self.leadernow)  # remove leader image from command ui
+        self.subunit_selected = None  # reset subunit selected
+        self.battleui.remove(self.subunitselectedborder)  # remove subunit selected border sprite
+        self.leadernow = []  # clear leader list in command ui
+
     def camerafix(self):
         if self.basecamerapos[0] > 999:  # camera cannot go further than 999 x
             self.basecamerapos[0] = 999
@@ -654,8 +671,8 @@ class Battle:
                 self.rowsplitbutton.kill()
             if self.col_split_button in self.battleui:
                 self.col_split_button.kill()
-            self.battleui.remove(self.buttonui[7])  # add decimation button
-            self.battleui.remove(*self.switch_button[0:6])  # add parentunit behaviour change button
+            self.battleui.remove(self.buttonui[7])  # remove decimation button
+            self.battleui.remove(*self.switch_button[0:7])  # remove parentunit behaviour change button
 
         self.leadernow = whoinput.leader
         self.battleui.add(*self.leadernow)  # add leader portrait to draw
@@ -680,8 +697,10 @@ class Battle:
                     else:
                         for icon in self.skill_icon.sprites():
                             icon.kill()
+                            del icon
                         for icon in self.effect_icon.sprites():
                             icon.kill()
+                            del icon
                 break
 
     def filtertrooplist(self):
@@ -696,8 +715,6 @@ class Battle:
             self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][1:]
             self.troop_index_list = list(range(0, len(self.troop_list)))
 
-        print(self.troop_index_list)
-        print(self.troop_list)
         for unit in self.troop_index_list[::-1]:
             if unit != 0:
                 if self.filtertroop[0] is False:  # filter out melee infantry
@@ -809,8 +826,7 @@ class Battle:
                 stuff.kill()
                 del stuff
 
-        for button in self.buttonui[0:8]:
-            button.kill()  # remove button
+        self.removeunitui()
 
         for arrow in self.arrows:  # remove all range attack
             arrow.kill()
@@ -1604,8 +1620,10 @@ class Battle:
                                                         else:
                                                             for icon in self.skill_icon.sprites():
                                                                 icon.kill()
+                                                                del icon
                                                             for icon in self.effect_icon.sprites():
                                                                 icon.kill()
+                                                                del icon
 
                                                     elif mouse_right:
                                                         self.popout_lorebook(3, subunit.who.troopid)
@@ -1627,8 +1645,10 @@ class Battle:
                                 else:
                                     for icon in self.skill_icon.sprites():
                                         icon.kill()
+                                        del icon
                                     for icon in self.effect_icon.sprites():
                                         icon.kill()
+                                        del icon
 
                                 if mouse_right and self.uiclick is False:  # Unit command
                                     self.last_selected.command(self.battle_mouse_pos[1], mouse_right, double_mouse_right,
@@ -2241,8 +2261,10 @@ class Battle:
                         else:
                             for icon in self.skill_icon.sprites():
                                 icon.kill()
+                                del icon
                             for icon in self.effect_icon.sprites():
                                 icon.kill()
+                                del icon
                     # ^ End update value
 
                     # v Drama text function
@@ -2397,23 +2419,7 @@ class Battle:
                         if self.last_selected is not None:  # any parentunit is selected
                             self.last_selected = None  # reset last_selected
                             self.before_selected = None  # reset before selected parentunit after remove last selected
-
-                        if self.gamestate == 1:
-                            self.gameui[2].option = 1  # reset subunit card option
-                            for ui in self.gameui:
-                                ui.kill()  # remove ui
-                            for button in self.buttonui[0:8]:
-                                button.kill()  # remove button
-                            for icon in self.skill_icon.sprites():
-                                icon.kill()  # remove skill and trait icon
-                            for icon in self.effect_icon.sprites():
-                                icon.kill()  # remove effect icon
-                            self.battleui.remove(*self.switch_button, *self.inspectsubunit)  # remove change behaviour button and inspect ui subunit
-                            self.inspectui = False  # inspect ui close
-                            self.battleui.remove(*self.leadernow)  # remove leader image from command ui
-                            self.subunit_selected = None  # reset subunit selected
-                            self.battleui.remove(self.subunitselectedborder)  # remove subunit selected border sprite
-                            self.leadernow = []  # clear leader list in command ui
+                            self.removeunitui()
                     # ^ End remove
 
                     if self.ui_timer > 1:
@@ -2460,6 +2466,7 @@ class Battle:
                                         break
                             else:
                                 self.battledone_box.popout("Draw")
+                            self.gamedone_button.rect = self.gamedone_button.image.get_rect(midtop=self.gamedone_button.pos)
                             self.battleui.add(self.battledone_box, self.gamedone_button)
                         else:
                             if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
@@ -2471,6 +2478,8 @@ class Battle:
                                 self.battledone_box.showresult(coalist[0], coalist[1], [self.start_troopnumber, self.team_troopnumber,
                                                                                         self.wound_troopnumber, self.death_troopnumber,
                                                                                         self.flee_troopnumber, self.capture_troopnumber])
+                                self.gamedone_button.rect = self.gamedone_button.image.get_rect(center=(self.battledone_box.rect.midbottom[0],
+                                                                                                        self.battledone_box.rect.midbottom[1] / 1.3))
 
                         # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
                         #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)

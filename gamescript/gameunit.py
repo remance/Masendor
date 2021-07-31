@@ -662,7 +662,10 @@ class Unitarmy(pygame.sprite.Sprite):
                     if self.attack_target.state != 100:
                         if self.collide is False:
                             self.state = self.command_state  # resume attack command
-                            self.set_target(self.attack_target.leadersubunit.base_pos)  # set base_target to cloest enemy's side
+                            if self.base_pos.distance_to(self.attack_target.base_pos) < 10:
+                                self.set_target(self.attack_target.leadersubunit.base_pos)  # set base_target to cloest enemy's side
+                            else:
+                                self.set_target(self.attack_target.base_pos)
                             self.base_attack_pos = self.base_target
                             self.new_angle = self.setrotate()  # keep rotating while chasing
                     else:  # enemy dead stop chasing
@@ -725,14 +728,13 @@ class Unitarmy(pygame.sprite.Sprite):
                 # ^ End retreat function
 
                 # v Rotate Function
-                if self.angle != self.new_angle and self.state != 10 and self.stamina > 0 and self.collide is False:
+                if self.angle != self.new_angle and abs(self.angle - self.new_angle) > 5 and self.state != 10 and self.stamina > 0 and self.collide is False:
                     self.rotatecal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
                     self.rotatecheck = 360 - self.rotatecal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
                     self.moverotate = True
                     self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
                     if self.angle < 0:  # negative angle (rotate to left side)
                         self.radians_angle = math.radians(-self.angle)
-
                     # vv Rotate logic to continuously rotate based on angle and shortest length
                     rotatetiny = self.rotatespeed * dt  # rotate little by little according to time
                     if self.new_angle > self.angle:  # rotate to angle more than the current one
@@ -759,7 +761,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
                     self.set_subunit_target()  # generate new pos related to side
 
-                elif self.moverotate and self.angle == self.new_angle:  # Finish
+                elif (self.moverotate and self.angle == self.new_angle) or abs(self.angle - self.new_angle) < 5:  # Finish
                     self.moverotate = False
                     if self.rotateonly is False:  # continue moving to base_target after finish rotate
                         self.set_subunit_target(self.base_target)
