@@ -1,18 +1,16 @@
+import csv
 import datetime
 import glob
 import random
 import sys
-import csv
-import numpy as np
 
 import main
+import numpy as np
 import pygame
 import pygame.freetype
-import scipy.spatial.transform._rotation_groups
-from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather, gameprepare, gameunitedit, gamemap
+from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather, gameprepare, gamemap
 from pygame.locals import *
 from scipy.spatial import KDTree
-
 
 config = main.config
 SoundVolume = main.Soundvolume
@@ -346,7 +344,7 @@ class Battle:
         self.allunitlist = []  # list of every parentunit in game alive
         self.allunitindex = []  # list of every parentunit index alive
 
-        self.allsubunitlist = []   # list of all subunit alive in game
+        self.allsubunitlist = []  # list of all subunit alive in game
 
         # v initialise starting subunit sprites
         self.mode = mode
@@ -1459,7 +1457,8 @@ class Battle:
 
                                             self.subunitselectedborder.pop(self.subunit_selected.pos)
                                             self.battleui.add(self.subunitselectedborder)
-                                            self.gameui[2].valueinput(who=self.subunit_selected.who, weaponlist=self.allweapon, armourlist=self.allarmour,
+                                            self.gameui[2].valueinput(who=self.subunit_selected.who, weaponlist=self.allweapon,
+                                                                      armourlist=self.allarmour,
                                                                       splithappen=self.splithappen)
 
                                             if self.gameui[2].option == 2:  # blit skill icon is previous mode is skill
@@ -1661,7 +1660,8 @@ class Battle:
                         elif self.gamestate == 2:  # uniteditor state
                             self.battleui.remove(self.leaderpopup)
                             if self.popup_listbox in self.battleui and self.popup_listbox.type == "leader" \
-                                    and self.popup_listbox.rect.collidepoint(self.mousepos):  # this need to be at the top here to prioritise popup click
+                                    and self.popup_listbox.rect.collidepoint(
+                                self.mousepos):  # this need to be at the top here to prioritise popup click
                                 self.uiclick = True
                                 for index, name in enumerate(self.popup_namegroup):  # change leader with the new selected one
                                     if name.rect.collidepoint(self.mousepos):
@@ -1862,10 +1862,12 @@ class Battle:
                                                 self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.battlemap_feature.featurelist,
                                                                     self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "weather":
-                                                self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.weather_list, self.popup_namegroup,
+                                                self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.weather_list,
+                                                                    self.popup_namegroup,
                                                                     self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "leader":
-                                                self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.leader_list, self.popup_namegroup,
+                                                self.main.setuplist(gameprepare.Namelist, self.currentpopuprow, self.leader_list,
+                                                                    self.popup_namegroup,
                                                                     self.popup_listbox, self.battleui, layer=19)
 
                                         else:
@@ -1915,7 +1917,8 @@ class Battle:
                                                             self.uniteditborder.add(gameui.Selectedsquad(newslot.inspposition, 5))
                                                             self.battleui.add(*self.uniteditborder)
 
-                                            elif keystate[pygame.K_LCTRL] or keystate[pygame.K_RCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
+                                            elif keystate[pygame.K_LCTRL] or keystate[
+                                                pygame.K_RCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
                                                 if slotclick.selected is False:
                                                     slotclick.selected = True
                                                     self.uniteditborder.add(gameui.Selectedsquad(slotclick.inspposition, 5))
@@ -1968,8 +1971,10 @@ class Battle:
                                                             self.leader_list = [item[1][0] for thisindex, item in
                                                                                 enumerate(self.leader_stat.leader_list.items())
                                                                                 if thisindex > 0 and (item[1][0] == "None" or
-                                                                                                      (item[0] >= 10000 and item[1][8] in (0, index)) or
-                                                                                                      item[0] in self.allfaction.faction_list[index][2])]
+                                                                                                      (item[0] >= 10000 and item[1][8] in (
+                                                                                                      0, index)) or
+                                                                                                      item[0] in self.allfaction.faction_list[index][
+                                                                                                          2])]
 
                                                         else:  # pick all faction
                                                             self.leader_list = self.leader_list = [item[0] for item in
@@ -1983,8 +1988,9 @@ class Battle:
 
                                                         self.main.maketeamcoa([index], uiclass=self.battleui, oneteam=True,
                                                                               team1setpos=(
-                                                                              self.troop_listbox.rect.midleft[0] - int((200 * self.widthadjust) / 2),
-                                                                              self.troop_listbox.rect.midleft[1]))  # change team coa
+                                                                                  self.troop_listbox.rect.midleft[0] - int(
+                                                                                      (200 * self.widthadjust) / 2),
+                                                                                  self.troop_listbox.rect.midleft[1]))  # change team coa
 
                                                         self.current_list_show = "troop"
 
@@ -2000,7 +2006,8 @@ class Battle:
                                                                         if newslot.armyid == slot.armyid:
                                                                             newslot.changetroop(self.troop_index_list[index + self.current_troop_row],
                                                                                                 self.baseterrain,
-                                                                                                self.baseterrain * len(self.battlemap_feature.featurelist)
+                                                                                                self.baseterrain * len(
+                                                                                                    self.battlemap_feature.featurelist)
                                                                                                 + self.featureterrain, self.currentweather)
 
                                                                 else:
@@ -2088,11 +2095,13 @@ class Battle:
                                                         subunit_gameid = subunit_gameid + 1
                                                     for slot in self.unitbuildslot:  # just for grabing current selected team
                                                         currentpreset[self.unitpresetname] += (0, 100, 100, slot.team)
-                                                        gamelongscript.convertedit_unit(self, (self.team0unit, self.team1unit, self.team2unit)[slot.team],
-                                                                                        currentpreset[self.unitpresetname], self.teamcolour[slot.team],
+                                                        gamelongscript.convertedit_unit(self,
+                                                                                        (self.team0unit, self.team1unit, self.team2unit)[slot.team],
+                                                                                        currentpreset[self.unitpresetname],
+                                                                                        self.teamcolour[slot.team],
                                                                                         pygame.transform.scale(
-                                                                                           self.coa[int(currentpreset[self.unitpresetname][-1])],
-                                                                                           (60, 60)), subunit_gameid)
+                                                                                            self.coa[int(currentpreset[self.unitpresetname][-1])],
+                                                                                            (60, 60)), subunit_gameid)
                                                         break
                                                     self.slotdisplay_button.event = 1
                                                     self.setup_uniticon()
@@ -2144,7 +2153,7 @@ class Battle:
                                         self.popuplist_newopen(self.weather_change_button.rect.midtop, self.weather_list, "weather")
 
                                     elif self.unit_delete_button.rect.collidepoint(self.mousepos) and mouse_up and \
-                                        self.unit_delete_button in self.battleui:  # delete preset button
+                                            self.unit_delete_button in self.battleui:  # delete preset button
                                         self.uiclick = True
                                         if self.unitpresetname == "":
                                             pass
@@ -2470,7 +2479,7 @@ class Battle:
                             self.battleui.add(self.battledone_box, self.gamedone_button)
                         else:
                             if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
-                                self.gamestate = 3  #  end battle mode, result screen
+                                self.gamestate = 3  # end battle mode, result screen
                                 self.gamespeed = 0
                                 coalist = [None, None]
                                 for index, coa in enumerate(self.teamcoa):

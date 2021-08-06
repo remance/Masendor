@@ -58,6 +58,7 @@ try:  # for printing error log when error exception happen
     game_intro = gamelongscript.game_intro
     teamcolour = ((255, 255, 255), (144, 167, 255), (255, 114, 114))  # team colour, Neutral, 1, 2
 
+
     class Mainmenu:
         leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                          "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
@@ -427,9 +428,9 @@ try:  # for printing error log when error exception happen
             self.makeunitslot(0, 1, 0, range(0, 64), startpos)  # make player custom unit slot
 
             self.previewleader = [gameunitedit.Previewleader(1, 0, 0, self.leader_stat),
-                                       gameunitedit.Previewleader(1, 0, 1, self.leader_stat),
-                                       gameunitedit.Previewleader(1, 0, 2, self.leader_stat),
-                                       gameunitedit.Previewleader(1, 0, 3, self.leader_stat)] # list of preview leader for unit editor
+                                  gameunitedit.Previewleader(1, 0, 1, self.leader_stat),
+                                  gameunitedit.Previewleader(1, 0, 2, self.leader_stat),
+                                  gameunitedit.Previewleader(1, 0, 3, self.leader_stat)]  # list of preview leader for unit editor
             self.leader_updater.remove(*self.previewleader)  # remove preview leader from updater since not use in battle
 
             boximg = load_image("filterbox.png", "ui\\mainmenu_ui").convert()  # filter box ui in editor
@@ -448,11 +449,11 @@ try:  # for printing error log when error exception happen
             img1 = load_image("tick_box_no.png", "ui\\mainmenu_ui").convert()  # start test button in editor
             img2 = load_image("tick_box_yes.png", "ui\\mainmenu_ui").convert()  # stop test button
             self.tickbox_filter = [gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 8),
-                                                         img1, img2, "meleeinf"),
+                                                       img1, img2, "meleeinf"),
                                    gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 1.7),
-                                                         img1, img2, "rangeinf"),
+                                                       img1, img2, "rangeinf"),
                                    gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 8),
-                                                         img1, img2, "meleecav"),
+                                                       img1, img2, "meleecav"),
                                    gameprepare.Tickbox((self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 1.7),
                                                        img1, img2, "rangecav")
                                    ]
@@ -468,11 +469,11 @@ try:  # for printing error log when error exception happen
             self.input_ok_button = gameprepare.Menubutton(imagelist,
                                                           pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                                self.inputui.rect.midleft[1] + imagelist[0].get_height()),
-                                                          text="Confirm", layer = 31)
+                                                          text="Confirm", layer=31)
             self.input_cancel_button = gameprepare.Menubutton(imagelist,
                                                               pos=(self.inputui.rect.midright[0] - imagelist[0].get_width(),
                                                                    self.inputui.rect.midright[1] + imagelist[0].get_height()),
-                                                              text="Cancel", layer = 31)
+                                                              text="Cancel", layer=31)
             self.input_button = (self.input_ok_button, self.input_cancel_button)
             self.input_box = gameprepare.Inputbox(self.inputui.rect.center, self.inputui.image.get_width())  # user text input box
 
@@ -831,7 +832,8 @@ try:  # for printing error log when error exception happen
                             self.mainui.remove(*self.menu_button, self.profile_box)
                             self.menu_button.remove(*self.menu_button)
 
-                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox, self.mainui)
+                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                                           self.mainui)
                             self.makemap(self.mapfoldername, self.maplist)
 
                             self.menu_button.add(*self.map_select_button)
@@ -844,7 +846,8 @@ try:  # for printing error log when error exception happen
                             self.mainui.remove(*self.menu_button, self.profile_box)
                             self.menu_button.remove(*self.menu_button)
 
-                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox, self.mainui)
+                            self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
+                                           self.mainui)
                             self.makemap(self.mapcustomfoldername, self.mapcustomlist)
 
                             self.menu_button.add(*self.map_select_button)
@@ -902,7 +905,8 @@ try:  # for printing error log when error exception happen
                             if self.map_scroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                                 self.current_map_row = self.map_scroll.update(
                                     self.mousepos)  # update the scroller and get new current subsection
-                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox, self.mainui)
+                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                                               self.mainui)
 
                         if self.map_listbox.rect.collidepoint(self.mousepos):
                             self.current_map_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.map_scroll, self.map_listbox,
@@ -1036,9 +1040,11 @@ try:  # for printing error log when error exception happen
                                     del stuff
 
                             if self.menu_state == "presetselect":  # regenerate map name list
-                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox, self.mainui)
+                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                                               self.mainui)
                             else:
-                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox, self.mainui)
+                                self.setuplist(gameprepare.Namelist, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
+                                               self.mainui)
 
                             self.menu_button.add(*self.map_select_button)
                             self.mainui.add(*self.map_select_button, self.map_listbox, self.map_scroll, self.mapdescription)
@@ -1058,7 +1064,7 @@ try:  # for printing error log when error exception happen
 
                         elif self.unit_edit_button.event:
                             self.unit_edit_button.event = False
-                            self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, 1, True, None, 1, (1,1,1,1), "uniteditor")
+                            self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, 1, True, None, 1, (1, 1, 1, 1), "uniteditor")
                             self.battlegame.rungame()
 
                     elif self.menu_state == "option":

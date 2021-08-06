@@ -3,7 +3,7 @@ import csv
 
 import pygame
 import pygame.freetype
-from gamescript import gamelongscript, gamesubunit
+from gamescript import gamesubunit
 from pygame.transform import scale
 
 
@@ -98,16 +98,18 @@ class Previewleader(pygame.sprite.Sprite):
         else:
             self.subunitpos = subunit.slotnumber
 
+
 class Selectedpresetborder(pygame.sprite.Sprite):
     def __init__(self, width, height):
         self._layer = 16
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((width+1, height+1), pygame.SRCALPHA)
+        self.image = pygame.Surface((width + 1, height + 1), pygame.SRCALPHA)
         pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 6)
         self.rect = self.image.get_rect(topleft=(0, 0))
 
     def changepos(self, pos):
         self.rect = self.image.get_rect(topleft=pos)
+
 
 class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this class to use sub-unit sprite directly
     squadwidth = 0  # subunit sprite width size get add from main
@@ -212,6 +214,7 @@ class Warningmsg(pygame.sprite.Sprite):
     emptyrowcol_warn = "- Empty row or column will be removed when employed"
     duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leaer option enable"
     multifaction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"
+
     # outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
 
     def __init__(self, pos):
@@ -254,7 +257,7 @@ class Warningmsg(pygame.sprite.Sprite):
                 self.warninglog.append(warnitem)
 
         self.image = pygame.Surface((self.fixwidth, int(22 * self.heightadjust) * self.rowcount))
-        self.image.fill((0,0,0))
+        self.image.fill((0, 0, 0))
         whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.heightadjust) * self.rowcount) - 2))
         whiteimage.fill((255, 255, 255))
         whiteimage_rect = whiteimage.get_rect(topleft=(1, 1))
@@ -309,4 +312,3 @@ class Filterbox(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))
         self.rect = self.image.get_rect(topleft=pos)
-

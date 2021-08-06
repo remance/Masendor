@@ -10,6 +10,7 @@ from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
+
 def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.name = stat[0]  # name according to the preset
     self.unitclass = stat[1]  # used to determine whether to use melee or range weapon as icon
@@ -302,6 +303,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.inflictstatus = self.base_inflictstatus
     self.elem_melee = self.base_elem_melee
     self.elem_range = self.base_elem_range
+
 
 class Subunit(pygame.sprite.Sprite):
     images = []
@@ -959,7 +961,7 @@ class Subunit(pygame.sprite.Sprite):
             self.zoom = zoom  # save scale
             self.zoomscale()  # update parentunit sprite according to new scale
 
-        if self.state != 100: # only run these when not dead
+        if self.state != 100:  # only run these when not dead
             # v Mouse collision detection
             if self.rect.collidepoint(mousepos):
                 self.gamebattle.last_mouseover = self.parentunit  # last mouse over on this parentunit
@@ -1229,7 +1231,7 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End rotate
 
                 # v Move function to given base_target position
-                revertmove = True # revert move check for in case subunit still need to rotate before moving
+                revertmove = True  # revert move check for in case subunit still need to rotate before moving
                 if parentstate == 0 or self.parentunit.revert or (self.angle != self.parentunit.angle and self.parentunit.moverotate is False):
                     revertmove = False
 
@@ -1239,10 +1241,10 @@ class Subunit(pygame.sprite.Sprite):
                     nocolide_check = False  # can move if front of unit not collided
                     if (((self.parentunit.collide is False or self.frontline is False) or parentstate == 99)
                             or (parentstate == 10 and ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
-                            or self.charge_momentum > 1)):
+                                or self.charge_momentum > 1)):
                         nocolide_check = True  # TODO change charge and collide so unit can ignore collide stop if charge bypass def and chance to move
 
-                    enemycollide_check = False # for chance to move or charge through enemy
+                    enemycollide_check = False  # for chance to move or charge through enemy
                     if len(collidelist) > 0:
                         enemycollide_check = True
                         if self.state in (96, 98, 99):  # chance to escape
@@ -1252,7 +1254,7 @@ class Subunit(pygame.sprite.Sprite):
                             enemycollide_check = False
 
                     if self.stamina > 0 and nocolide_check and enemycollide_check is False and \
-                        len(self.same_front) == 0 and len(self.friend_front) == 0:
+                            len(self.same_front) == 0 and len(self.friend_front) == 0:
                         if self.chargeskill in self.skill_effect and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                             self.base_target = self.base_target + new_target
@@ -1490,8 +1492,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.change_leader("die")
 
                 self.gamebattle.eventlog.addlog([0, str(self.board_pos) + " " + str(self.name)
-                                               + " in " + self.parentunit.leader[0].name
-                                               + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
+                                                 + " in " + self.parentunit.leader[0].name
+                                                 + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []

@@ -189,7 +189,7 @@ class Rangearrow(pygame.sprite.Sprite):
                 self.penetrate = 0
 
             for subunit in pygame.sprite.spritecollide(self, unitlist, 0):
-                if subunit != self.shooter: #and subunit.base_pos.distance_to(self.base_pos) < subunit.imageheight:
+                if subunit != self.shooter:  # and subunit.base_pos.distance_to(self.base_pos) < subunit.imageheight:
                     if self.arcshot is False:  # direct shot
                         self.registerhit(subunit)
                         self.kill()

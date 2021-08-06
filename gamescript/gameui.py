@@ -799,6 +799,7 @@ class Inspectsubunit(pygame.sprite.Sprite):
     def delete(self):
         self.who = None
 
+
 class Battledone(pygame.sprite.Sprite):
     def __init__(self, boximage, resultimage):
         import main
@@ -850,7 +851,7 @@ class Battledone(pygame.sprite.Sprite):
         coa1rect.midbottom
         teamcoarect = (coa1rect, coa2rect)
         textheader = ("Total Troop: ", "Remaining: ", "Injured: ", "Death: ", "Flee: ", "Captured: ")
-        for index, team in enumerate([1,2]):
+        for index, team in enumerate([1, 2]):
             rownumber = 1
             for statindex, thisstat in enumerate(stat):
                 if statindex == 1:

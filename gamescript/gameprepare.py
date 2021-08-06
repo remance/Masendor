@@ -121,7 +121,7 @@ class Profilebox(pygame.sprite.Sprite):
 
 
 class Menubutton(pygame.sprite.Sprite):
-    def __init__(self, images, pos, text="", size=16, layer = 15):
+    def __init__(self, images, pos, text="", size=16, layer=15):
         import main
         SCREENRECT = main.SCREENRECT
         self.widthadjust = SCREENRECT.width / 1366

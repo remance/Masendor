@@ -173,7 +173,7 @@ class Unitarmy(pygame.sprite.Sprite):
         self.lastzoom = 1  # zoom level without calculate with 11 - zoom for scale
 
         self.base_width_box, self.base_height_box = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, len(self.armysubunit) * (
-                    self.imgsize[1] + 2) / 20
+                self.imgsize[1] + 2) / 20
 
         self.base_pos = pygame.Vector2(startposition)  # base_pos is for true pos that is used for ingame calculation
         self.last_base_pos = self.base_pos
@@ -363,7 +363,7 @@ class Unitarmy(pygame.sprite.Sprite):
                             np.fliplr([whoarray])[0]]  # rotate the array based on the side
             whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0], fullwhoarray[3][0]]
             for index, whofrontline in enumerate(whoarray):
-                if any(subunit != 0 for subunit in whofrontline) is False: # has completely empty outer row or column, remove them
+                if any(subunit != 0 for subunit in whofrontline) is False:  # has completely empty outer row or column, remove them
                     if index == 0:  # front side
                         self.armysubunit = self.armysubunit[1:]
                         for subunit in self.subunit_sprite:
@@ -377,7 +377,7 @@ class Unitarmy(pygame.sprite.Sprite):
                     elif index == 3:  # rear side
                         self.armysubunit = np.delete(self.armysubunit, -1, 0)
 
-                    if len(self.armysubunit) > 0: # still has row left
+                    if len(self.armysubunit) > 0:  # still has row left
                         oldwidthbox, oldheightbox = self.base_width_box, self.base_height_box
                         self.base_width_box, self.base_height_box = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, \
                                                                     len(self.armysubunit) * (self.imgsize[1] + 2) / 20
@@ -461,13 +461,13 @@ class Unitarmy(pygame.sprite.Sprite):
     #         self.skill_cooldown[whichskill] = skillstat[4]
     # self.skill_cooldown[whichskill] =
 
-    def set_subunit_target(self, target = "rotate", resetpath = False):
+    def set_subunit_target(self, target="rotate", resetpath=False):
         """generate all four side, hitbox and subunit positions
         target parameter can be "rotate" for simply rotate whole unit but not move or tuple/vector2 for target position to move
         resetpath argument True will reset sub-unit command queue"""
         if target == "rotate":  # rotate unit before moving
             unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
-                                         self.base_pos[1] - self.base_height_box)
+                                          self.base_pos[1] - self.base_height_box)
 
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
@@ -482,7 +482,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
         else:  # moving unit to specific target position
             unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
-                                         target[1])  # get the top left corner of sprite to generate subunit position
+                                          target[1])  # get the top left corner of sprite to generate subunit position
 
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
@@ -728,7 +728,8 @@ class Unitarmy(pygame.sprite.Sprite):
                 # ^ End retreat function
 
                 # v Rotate Function
-                if self.angle != self.new_angle and abs(self.angle - self.new_angle) > 5 and self.state != 10 and self.stamina > 0 and self.collide is False:
+                if self.angle != self.new_angle and abs(
+                        self.angle - self.new_angle) > 5 and self.state != 10 and self.stamina > 0 and self.collide is False:
                     self.rotatecal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
                     self.rotatecheck = 360 - self.rotatecal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
                     self.moverotate = True
@@ -812,7 +813,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
                 self.gamebattle.setup_uniticon()  # reset army icon (remove dead one)
                 self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
-                                              [0, 1])  # put destroyed event in war and army log
+                                                [0, 1])  # put destroyed event in war and army log
 
                 self.kill()
                 for subunit in self.subunit_sprite:
@@ -913,7 +914,7 @@ class Unitarmy(pygame.sprite.Sprite):
             # register user keyboard
             if keystate is not None and (keystate[pygame.K_LCTRL] or keystate[pygame.K_RCTRL]):
                 self.forced_melee = True
-            if keystate is not None and (keystate[pygame.K_LALT] or keystate[pygame.K_RALT] ):
+            if keystate is not None and (keystate[pygame.K_LALT] or keystate[pygame.K_RALT]):
                 self.attack_place = True
 
             if self.state != 100:

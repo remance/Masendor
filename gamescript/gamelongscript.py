@@ -23,6 +23,7 @@ for dd in numberboard:
     for ll in letterboard:
         boardpos.append(ll + dd)
 
+
 # Data Loading gamescript
 
 
@@ -697,6 +698,7 @@ def countdownskillicon(self):
     #     if effect.id in self.gameui[2].value2[4]:
     #         cd = int(self.gameui[2].value2[4][effect.id][3])
     #     effect.iconchange(cd, 0)
+
 
 # Battle Start related gamescript
 
