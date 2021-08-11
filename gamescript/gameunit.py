@@ -728,8 +728,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 # ^ End retreat function
 
                 # v Rotate Function
-                if self.angle != self.new_angle and abs(
-                        self.angle - self.new_angle) > 5 and self.state != 10 and self.stamina > 0 and self.collide is False:
+                if self.angle != self.new_angle and self.charging is False and self.state != 10 and self.stamina > 0 and self.collide is False:
                     self.rotatecal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
                     self.rotatecheck = 360 - self.rotatecal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
                     self.moverotate = True
