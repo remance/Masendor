@@ -2,7 +2,7 @@
 
 ![alt text](https://github.com/remance/Masendor/blob/master/preview.gif?raw=true)
 
-$ Educational and historical wargame simulation made with Pygame. 
+# Educational and historical wargame simulation made with Pygame. 
 
 There is no main name for the game but rather the name will be based on a major update. 
 
@@ -12,7 +12,7 @@ If anyone is interested in another similar game like this, there is an interesti
 
 ---------------
 
-$ How to run/compile
+# How to run/compile
 
 If you want to download the release version to test the game, go to release tags (https://github.com/remance/Masendor/releases) and download the zip file. 
 To start testing the game run main.py for the source code or main.exe for the release version. 
@@ -24,13 +24,13 @@ Also, the game is now optimised based on the pygame 2.0.1 module (much faster th
 
 ---------------
 
-$ Key features so far
+# Key features so far
 
 The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
 Meaning: The revision is looking good. Should be able to continue working on the main update again soon.
 
-$$ History is told by the victor, but sometimes the words of the loser do not fade away
+## History is told by the victor, but sometimes the words of the loser do not fade away
 
 Have you ever find it weird that most historical games follow only a specific version of the story? 
 For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.
@@ -38,33 +38,33 @@ Well in this game, all versions of the story are accepted and represented. Every
 
 ![alt text](https://github.com/remance/Masendor/blob/master/source.gif?raw=true)
 
-$$ Army is led by more than just a king
+## Army is led by more than just a king
 
 So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people
 that participated in the battle.   
 
 ![alt text](https://github.com/remance/Masendor/blob/master/leader.gif?raw=true)
 
-$$ Complex troop statistic system
+## Complex troop statistic system
 
 A lot of simplified soldier statistics yet complexly interchange together that affect combat capability in various ways.
 
 ![alt text](https://github.com/remance/Masendor/blob/master/troop.gif?raw=true)
 
-$$ Custom unit creator
+## Custom unit creator
 
 Bored of a simple line formation and want to try making weird unit formation? There is a custom unit editor that provides a complete freedom unit design. The custom units can be used in custom battles.
 
 ![alt text](https://github.com/remance/Masendor/blob/master/custom.gif?raw=true)
 
-$$ Extremely easy map creation
+## Extremely easy map creation
 
 Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to use paint or any drawing software (gimp, photoshop, etc.) to create a map.
 Draw the image with the right colour set and the game will convert them into a playable map. Most other map functions are also very easy to create and modify.
 
 Video demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
 
-$$ Encyclopedia and stuff
+## Encyclopedia and stuff
 
 This game's encyclopedia will have more information than just from the Wikipedia website as long as they can be found that is. 
 
@@ -74,7 +74,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 ---------------
 
-$ Future plan
+# Future plan
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
 
