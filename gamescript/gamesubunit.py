@@ -343,6 +343,7 @@ class Subunit(pygame.sprite.Sprite):
         self.enemy_side = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
         self.same_front = []  # list of same unit front collide sprite
+        self.fullmerge = []  # list of sprite that collide and almost overlap with this sprite
         self.collide_penalty = False
         self.team = self.parentunit.team
         self.gamebattle.allsubunitlist.append(self)
@@ -863,6 +864,10 @@ class Subunit(pygame.sprite.Sprite):
         self.charge = (self.charge + self.speed) * (
                 self.moralestate + 0.1) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
 
+        fullmergelen = len(self.fullmerge) + 1
+        if fullmergelen > 1:  # reduce discipline if there are overlap sub-unit
+            self.discipline = self.discipline / fullmergelen
+
         # v Rounding up, add discipline to stat and forbid negative int stat
         # self.discipline = round(self.discipline, 0)
         disciplinecal = self.discipline / 200
@@ -1278,7 +1283,7 @@ class Subunit(pygame.sprite.Sprite):
                             if self.chargeskill in self.skill_effect:  # speed gradually decrease with momentum during charge
                                 speed = speed * self.charge_momentum / 8
                             if self.collide_penalty:  # reduce speed during moving through another unit
-                                speed = speed / 4
+                                speed = speed / 2
                             move = move * speed * dt
                             newmove_length = move.length()
                             newpos = self.base_pos + move
@@ -1499,6 +1504,7 @@ class Subunit(pygame.sprite.Sprite):
             self.enemy_side = []
             self.friend_front = []
             self.same_front = []
+            self.fullmerge = []
             self.collide_penalty = False
 
     def rotate(self):

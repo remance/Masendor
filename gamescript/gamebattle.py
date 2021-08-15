@@ -183,7 +183,8 @@ class Battle:
         self.squadwidth = main.squadwidth
         self.squadheight = main.squadheight
         self.collidedistance = self.squadheight / 10  # distance to check collision
-        self.frontdistance = self.squadheight / 20
+        self.frontdistance = self.squadheight / 20  # distance from front side
+        self.fulldistance = self.frontdistance / 2  # distance for sprite merge check
 
         self.combatpathqueue = []  # queue of sub-unit to run melee combat pathfiding
 
@@ -2363,6 +2364,10 @@ class Battle:
                                 spriteone = self.allsubunitlist[one]
                                 spritetwo = self.allsubunitlist[two]
                                 if spriteone.parentunit != spritetwo.parentunit:  # collide with subunit in other unit
+                                    if spriteone.base_pos.distance_to(spriteone.base_pos) < self.fulldistance:
+                                        spriteone.fullmerge.append(spritetwo)
+                                        spritetwo.fullmerge.append(spriteone)
+
                                     if spriteone.front_pos.distance_to(spritetwo.base_pos) < self.frontdistance:  # first subunit collision
                                         if spriteone.team != spritetwo.team:  # enemy team
                                             spriteone.enemy_front.append(spritetwo)
@@ -2390,6 +2395,10 @@ class Battle:
 
                                 else:  # collide with subunit in same unit
                                     if spriteone.front_pos.distance_to(spritetwo.base_pos) < self.frontdistance:  # first subunit collision
+                                        if spriteone.base_pos.distance_to(spriteone.base_pos) < self.fulldistance:
+                                            spriteone.fullmerge.append(spritetwo)
+                                            spritetwo.fullmerge.append(spriteone)
+
                                         if spriteone.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
                                                 spritetwo.state in (2, 4, 6, 10, 11, 12, 13):
                                             spriteone.same_front.append(spritetwo)
