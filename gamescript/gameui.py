@@ -814,7 +814,7 @@ class Battledone(pygame.sprite.Sprite):
         self.boximage = boximage
         self.resultimage = resultimage
         self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 36))
-        self.textfont = pygame.font.SysFont("arial", int(self.heightadjust * 24))
+        self.textfont = pygame.font.SysFont("timesnewroman", int(self.heightadjust * 24))
         self.pos = (SCREENRECT.width / 2, 0)
         self.image = self.boximage.copy()
         self.rect = self.image.get_rect(midtop=self.pos)

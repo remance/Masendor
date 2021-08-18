@@ -284,7 +284,7 @@ class Mapdescription(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(16 * self.heightadjust))
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * self.widthadjust),
                                                          int(self.image.get_height() * self.heightadjust)))
 
@@ -331,7 +331,7 @@ class Sourcedescription(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.font = pygame.font.SysFont("helvetica", int(16 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(16 * self.heightadjust))
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * self.widthadjust),
                                                          int(self.image.get_height() * self.heightadjust)))
 

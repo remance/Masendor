@@ -764,7 +764,7 @@ def unitsetup(gamebattle):
     teamcolour = gamebattle.teamcolour
     teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
 
-    with open(main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/unit_pos" + gamebattle.source + ".csv",
+    with open(main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/" + gamebattle.source + "/unit_pos" + ".csv",
               encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunitgameid = 1

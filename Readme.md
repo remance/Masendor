@@ -32,16 +32,16 @@ Meaning: The revision is looking good. Should be able to continue working on the
 
 ## History is told by the victor, but sometimes the words of the loser do not fade away
 
-Have you ever find it weird that most historical games follow only a specific version of the story? 
+Have you ever find it weird that most historical games follow only a specific version of the story? Even a single battle may have more than one side of the story.
 For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.
-Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the army composition, size, even formation and possibly more 
+Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the army composition, size, even formation and possibly more. 
 
 ![alt text](https://github.com/remance/Masendor/blob/master/source.gif?raw=true)
 
 ## Army is led by more than just a king
 
 So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people
-that participated in the battle.   
+that participated in the battle.
 
 ![alt text](https://github.com/remance/Masendor/blob/master/leader.gif?raw=true)
 

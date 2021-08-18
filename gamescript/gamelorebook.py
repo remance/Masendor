@@ -43,7 +43,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("arial", int(textsize * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(textsize * self.heightadjust))
         self.fontheader = pygame.font.SysFont("oldenglishtext", int(40 * self.heightadjust))
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
                                                     int(image.get_height() * self.heightadjust)))

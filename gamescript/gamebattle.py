@@ -281,7 +281,7 @@ class Battle:
 
         # v Load weather schedule
         try:
-            self.weatherevent = csv_read("weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
+            self.weatherevent = csv_read("weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
             self.weatherevent = self.weatherevent[1:]
             gamelongscript.convert_weather_time(self.weatherevent)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -292,7 +292,7 @@ class Battle:
         # ^ End weather schedule
 
         try:  # get new map event for event log
-            mapevent = csv_read("eventlog.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 0)
+            mapevent = csv_read("eventlog.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 0)
             gameui.Eventlog.mapevent = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list

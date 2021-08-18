@@ -582,9 +582,13 @@ try:  # for printing error log when error exception happen
 
             uiclass.add(*itemgroup)
 
-        def readmapdata(self, maplist, file):
+        def readmapdata(self, maplist, file, source=False):
             if self.menu_state == "presetselect" or self.lastselect == "presetselect":
-                data = csv_read(file, ["data", "ruleset", self.rulesetfolder.strip("/"), "map", maplist[self.current_map_select]])
+                if source:
+                    data = csv_read(file,
+                                    ["data", "ruleset", self.rulesetfolder.strip("/"), "map", maplist[self.current_map_select], str(self.mapsource)])
+                else:
+                    data = csv_read(file, ["data", "ruleset", self.rulesetfolder.strip("/"), "map", maplist[self.current_map_select]])
             else:
                 data = csv_read(file, ["data", "ruleset", self.rulesetfolder.strip("/"), "map/custom", maplist[self.current_map_select]])
             return data
@@ -647,7 +651,7 @@ try:  # for printing error log when error exception happen
             openfolder = self.mapfoldername
             if self.lastselect == "customselect":
                 openfolder = self.mapcustomfoldername
-            unitmapinfo = self.readmapdata(openfolder, "unit_pos" + str(self.mapsource) + ".csv")
+            unitmapinfo = self.readmapdata(openfolder, "unit_pos" + ".csv", source=True)
 
             team1pos = {row[8]: [int(item) for item in row[8].split(",")] for row in list(unitmapinfo.values()) if row[15] == 1}
             team2pos = {row[8]: [int(item) for item in row[8].split(",")] for row in list(unitmapinfo.values()) if row[15] == 2}
