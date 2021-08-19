@@ -266,30 +266,45 @@ class Battle:
         # shoot_sound = load_sound("car_door.wav")
         # ^ End load sound effect
 
+        # v Load weather schedule
+        try:
+            self.weather_event = csv_read("weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
+            self.weather_event = self.weather_event[1:]
+            gamelongscript.convert_str_time(self.weather_event)
+        except Exception:  # If no weather found use default light sunny weather start at 9.00
+            newtime = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
+            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+            self.weather_event = [[4, newtime, 0]]  # default weather light sunny all day
+        self.weather_current = self.weather_event[0][1]  # weather_current here is used as the reference for map starting time
+        # ^ End weather schedule
+
         # v Random music played from list
         if pygame.mixer and not pygame.mixer.get_init():
             pygame.mixer = None
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
-            # musiclist = os.path.join(main_dir, "data/sound/")
-            self.musiclist = glob.glob(main_dir + "/data/sound/music/*.mp3")
-            self.pickmusic = random.randint(1, 1)
-            pygame.mixer.music.set_endevent(self.SONG_END)
-            pygame.mixer.music.load(self.musiclist[self.pickmusic])
-            pygame.mixer.music.play(0)
+            self.musiclist = glob.glob(main_dir + "/data/sound/music/*.ogg")
+            try:
+                self.music_event = csv_read("musicevent.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
+                self.music_event = self.music_event[1:]
+                if len(self.music_event) > 0:
+                    gamelongscript.convert_str_time(self.music_event)
+                    self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
+                    newlist = []
+                    for time in self.music_schedule:
+                        neweventlist = []
+                        for event in self.music_event:
+                            if time == event[1]:
+                                neweventlist.append(event[0])
+                        newlist.append(neweventlist)
+                    self.music_event = newlist
+                else:
+                    self.music_schedule = [self.weather_current]
+                    self.music_event = [[5]]  # TODO change later when has custom playlist
+            except:  # any reading error will play random custom music instead
+                self.music_schedule = [self.weather_current]
+                self.music_event = [[5]]  #TODO change later when has custom playlist
         # ^ End music play
-
-        # v Load weather schedule
-        try:
-            self.weatherevent = csv_read("weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
-            self.weatherevent = self.weatherevent[1:]
-            gamelongscript.convert_weather_time(self.weatherevent)
-        except Exception:  # If no weather found use default light sunny weather start at 9.00
-            newtime = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
-            newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-            self.weatherevent = [[4, newtime, 0]]  # default weather light sunny all day
-        self.weatherschedule = self.weatherevent[0][1]
-        # ^ End weather schedule
 
         try:  # get new map event for event log
             mapevent = csv_read("eventlog.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 0)
@@ -310,7 +325,7 @@ class Battle:
                     self.eventschedule = self.eventlog.mapevent[event][3]
                 self.eventlist.append(event)
 
-        self.timenumber.startsetup(self.weatherschedule)
+        self.timenumber.startsetup(self.weather_current)
 
         # v Create the battle map
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
@@ -934,7 +949,7 @@ class Battle:
                 else:  # reset all other slot
                     slot.selected = False
 
-            self.weatherschedule = None  # remove weather schedule from editor test
+            self.weather_current = None  # remove weather schedule from editor test
 
             self.changestate()
 
@@ -980,6 +995,7 @@ class Battle:
 
         # self.mapdefarray = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
+        pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
 
         while True:  # game running
             self.fpscount.fpsshow(self.clock)
@@ -1006,10 +1022,10 @@ class Battle:
                     self.battleui.add(*self.confirmui_pop)
 
                 elif event.type == self.SONG_END:  # change music track
-                    # pygame.mixer.music.unload()
-                    self.pickmusic = random.randint(1, 1)
-                    pygame.mixer.music.load(self.musiclist[self.pickmusic])
-                    pygame.mixer.music.play(0)
+                    pygame.mixer.music.unload()
+                    self.pickmusic = random.randint(0, len(self.music_current) - 1)
+                    pygame.mixer.music.load(self.musiclist[self.music_current[self.pickmusic]])
+                    pygame.mixer.music.play(fade_ms=100)
 
                 elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:  # open/close menu
                     esc_press = True
@@ -1074,7 +1090,6 @@ class Battle:
                     elif self.gamestate == 3:
                         self.exitbattle()
                         return  # end battle game loop
-
 
                 elif mouse_scrollup:  # Mouse scroll up
                     if self.gamestate == 0 and self.battle_menu.mode == 2:  # Scrolling at lore book subsection list
@@ -1248,11 +1263,11 @@ class Battle:
                     elif keypress == pygame.K_1:
                         self.textdrama.queue.append("Hello and Welcome to update video")
                     elif keypress == pygame.K_2:
-                        self.textdrama.queue.append("Showcase: New melee combat test")
+                        self.textdrama.queue.append("Showcase: Music queue system")
                     elif keypress == pygame.K_3:
-                        self.textdrama.queue.append("Also add pathfind algorithm for melee combat")
+                        self.textdrama.queue.append("Music will be selected according to time schedule")
                     elif keypress == pygame.K_4:
-                        self.textdrama.queue.append("The combat mechanic will be much more dynamic")
+                        self.textdrama.queue.append("Will make it more complex in later update")
                     elif keypress == pygame.K_5:
                         self.textdrama.queue.append("Will take a while for everything to work again")
                     elif keypress == pygame.K_6:
@@ -2305,23 +2320,23 @@ class Battle:
                         # ^ End event log timer
 
                         # v Weather system
-                        if self.weatherschedule is not None and self.timenumber.timenum >= self.weatherschedule:
+                        if self.weather_current is not None and self.timenumber.timenum >= self.weather_current:
                             del self.currentweather
-                            weather = self.weatherevent[0]
+                            weather = self.weather_event[0]
 
                             if weather[0] != 0:
                                 self.currentweather = gameweather.Weather(self.timeui, weather[0], weather[2], self.allweather)
                             else:  # Random weather
                                 self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2),
                                                                           self.allweather)
-                            self.weatherevent.pop(0)
+                            self.weather_event.pop(0)
                             self.showmap.addeffect(self.battlemap_height,
                                                    self.weathereffectimgs[self.currentweather.weathertype][self.currentweather.level])
 
-                            try:  # Get end time of next event which is now index 0
-                                self.weatherschedule = self.weatherevent[0][1]
-                            except Exception:
-                                self.weatherschedule = None
+                            if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
+                                self.weather_current = self.weather_event[0][1]
+                            else:
+                                self.weather_current = None
 
                         if self.currentweather.spawnrate > 0 and len(self.weathermatter) < self.currentweather.speed:
                             spawnnum = range(0,
@@ -2352,6 +2367,18 @@ class Battle:
                                                                                 self.currentweather.speed,
                                                                                 self.weathermatterimgs[self.currentweather.weathertype][
                                                                                     randompic]))
+                        #^ End weather system
+
+                        #v Music System
+                        if len(self.music_schedule) > 0 and self.timenumber.timenum >= self.music_schedule[0]:
+                            pygame.mixer.music.unload()
+                            self.music_current = self.music_event[0].copy()
+                            self.pickmusic = random.randint(0, len(self.music_current) - 1)
+                            pygame.mixer.music.load(self.musiclist[self.music_current[self.pickmusic]])
+                            pygame.mixer.music.play(fade_ms=100)
+                            self.music_schedule = self.music_schedule[1:]
+                            self.music_event = self.music_event[1:]
+                        #^ End music system
 
                         for unit in self.allunitlist:
                             unit.collide = False  # reset collide
@@ -2674,9 +2701,6 @@ class Battle:
             self.battleui.draw(self.screen)  # Draw the UI
             pygame.display.update()  # update game display, draw everything
             self.clock.tick(60)  # clock update even if game pause
-
-        if pygame.mixer:  # close music player
-            pygame.mixer.music.fadeout(1000)
 
         pygame.time.wait(1000)  # wait a bit before closing
         pygame.quit()

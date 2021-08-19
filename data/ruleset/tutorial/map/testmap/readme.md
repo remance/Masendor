@@ -16,6 +16,12 @@ Map data
 
 - info: Information of the map that will be shown in battle select menu, also used to find faction involve in battle as team
 
+- source: Source list of this map, unit troop scale and description
+
+- musicevent: the list of all music event that will occur during the battle. Empty or not existed file will play random custom map music.
+
+Inside each map source folder
+
 - unit_pos(with source number after, e.g. unit_pos0 or unit_pos5): List of unit the csv data structure is as follows: 
 
 unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction (not team) | start angle | start health state | start stamina state | team

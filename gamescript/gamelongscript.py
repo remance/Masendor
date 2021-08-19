@@ -622,11 +622,13 @@ def editconfig(section, option, value, filename, config):
 
 # Other battle gamescript
 
-def convert_weather_time(weatherevent):
-    for index, item in enumerate(weatherevent):
+def convert_str_time(event):
+    for index, item in enumerate(event):
         newtime = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
         newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-        weatherevent[index] = [item[0], newtime, item[2]]
+        event[index] = [item[0], newtime]
+        if len(item) == 3:
+            event[index].append(item[2])
 
 
 def traitskillblit(self):

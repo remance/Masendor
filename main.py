@@ -533,7 +533,7 @@ try:  # for printing error log when error exception happen
                 self.mixervolume = float(Soundvolume / 100)
                 pygame.mixer.music.set_volume(self.mixervolume)
                 self.SONG_END = pygame.USEREVENT + 1
-                self.musiclist = glob.glob(main_dir + "/data/sound/music/*.mp3")
+                self.musiclist = glob.glob(main_dir + "/data/sound/music/*.ogg")
                 pygame.mixer.music.load(self.musiclist[0])
                 pygame.mixer.music.play(-1)
             # ^ End music
@@ -813,6 +813,12 @@ try:  # for printing error log when error exception happen
                             editconfig("DEFAULT", "playername", self.profile_name, "configuration.ini", config)
 
                         elif self.textinputpopup[1] == "quit":
+                            pygame.time.wait(1000)
+                            if pygame.mixer:
+                                pygame.mixer.music.stop()
+                                pygame.mixer.music.unload()
+                            pygame.quit()
+                            sys.exit()
                             return
 
                         self.input_box.textstart("")
@@ -1059,6 +1065,10 @@ try:  # for printing error log when error exception happen
                                                            self.mapfoldername[self.current_map_select], self.mapsource,
                                                            self.sourcescale[self.mapsource], "battle")
                             self.battlegame.rungame()
+                            pygame.mixer.music.unload()
+                            pygame.mixer.music.set_endevent(self.SONG_END)
+                            pygame.mixer.music.load(self.musiclist[0])
+                            pygame.mixer.music.play(-1)
                             gc.collect()  # collect no longer used object in previous battle from memory
 
                     elif self.menu_state == "gamecreator":
@@ -1070,6 +1080,10 @@ try:  # for printing error log when error exception happen
                             self.unit_edit_button.event = False
                             self.battlegame.preparenewgame(self.ruleset, self.rulesetfolder, 1, True, None, 1, (1, 1, 1, 1), "uniteditor")
                             self.battlegame.rungame()
+                            pygame.mixer.music.unload()
+                            pygame.mixer.music.set_endevent(self.SONG_END)
+                            pygame.mixer.music.load(self.musiclist[0])
+                            pygame.mixer.music.play(-1)
 
                     elif self.menu_state == "option":
                         for bar in self.resolutionbar:  # loop to find which resolution bar is selected, this happen outside of clicking check below
@@ -1177,14 +1191,6 @@ try:  # for printing error log when error exception happen
                 self.mainui.draw(self.screen)
                 pygame.display.update()
                 self.clock.tick(60)
-
-            if pygame.mixer:
-                pygame.mixer.music.fadeout(1000)
-
-            pygame.time.wait(1000)
-            pygame.quit()
-            sys.exit()
-
 
     if __name__ == "__main__":
         runmenu = Mainmenu()
