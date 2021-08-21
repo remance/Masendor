@@ -28,7 +28,7 @@ Also, the game is now optimised based on the pygame 2.0.1 module (much faster th
 
 The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/Masendor/blob/master/gamestate.png?raw=true)
 
-Meaning: The revision is looking good. Should be able to continue working on the main update again soon.
+Meaning: The update is going well and steady.
 
 ## History is told by the victor, but sometimes the words of the loser do not fade away
 

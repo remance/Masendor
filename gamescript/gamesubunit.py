@@ -409,6 +409,14 @@ class Subunit(pygame.sprite.Sprite):
         self.selectedimagerect = self.selectedimage.get_rect(topleft=(0, 0))
         # ^ End subunit block
 
+        self.far_image = self.image.copy()
+        self.far_selectedimage = self.selectedimage.copy()
+        scalewidth = self.image.get_width() * 1 / self.maxzoom
+        scaleheight = self.image.get_height() * 1 / self.maxzoom
+        dim = pygame.Vector2(scalewidth, scaleheight)
+        self.far_image = pygame.transform.scale(self.far_image, (int(dim[0]), int(dim[1])))
+        self.far_selectedimage = pygame.transform.scale(self.far_selectedimage, (int(dim[0]), int(dim[1])))
+
         # v health circle image setup
         self.healthimage = self.images[1]
         self.health_image_rect = self.healthimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
@@ -474,17 +482,22 @@ class Subunit(pygame.sprite.Sprite):
 
     def zoomscale(self):
         """camera zoom change and rescale the sprite and position scale"""
-        self.image_original = self.image_original3.copy()  # reset image for new scale
-        scalewidth = self.image_original.get_width() * self.zoom / self.maxzoom
-        scaleheight = self.image_original.get_height() * self.zoom / self.maxzoom
-        self.dim = pygame.Vector2(scalewidth, scaleheight)
-        self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
+        if self.zoom != 1:
+            self.image_original = self.image_original3.copy()  # reset image for new scale
+            scalewidth = self.image_original.get_width() * self.zoom / self.maxzoom
+            scaleheight = self.image_original.get_height() * self.zoom / self.maxzoom
+            dim = pygame.Vector2(scalewidth, scaleheight)
+            self.image = pygame.transform.scale(self.image_original, (int(dim[0]), int(dim[1])))
+
+            if self.parentunit.selected and self.state != 100:
+                self.selectedimage_original = pygame.transform.scale(self.selectedimage_original2, (int(dim[0]), int(dim[1])))
+        else:
+            self.image_original = self.far_image.copy()
+            self.image = self.image_original.copy()
+            if self.parentunit.selected and self.state != 100:
+                self.selectedimage_original = self.far_selectedimage.copy()
         self.image_original = self.image.copy()
         self.image_original2 = self.image.copy()
-
-        if self.parentunit.selected and self.state != 100:
-            self.selectedimage_original = pygame.transform.scale(self.selectedimage_original2, (int(self.dim[0]), int(self.dim[1])))
-
         self.change_pos_scale()
         self.rotate()
 
