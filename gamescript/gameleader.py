@@ -65,7 +65,7 @@ class Leader(pygame.sprite.Sprite):
             except:
                 squadpenal = 0
             leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2)  # recalculate total authority
-            leader.badmorale = (30, 50)  ## main general morale lost for bad event
+            leader.badmorale = (30, 50)  ## gamestart general morale lost for bad event
 
             if leader.parentunit.commander:  ## become army commander
                 whicharmy = leader.gamebattle.team1unit  # team1
@@ -117,7 +117,7 @@ class Leader(pygame.sprite.Sprite):
         # v change army position of all leader in that parentunit
         for index, leader in enumerate(self.parentunit.leader):
             leader.armyposition = index  ## change army position to new one
-            if leader.armyposition == 0:  # new main general
+            if leader.armyposition == 0:  # new gamestart general
                 self.subunit.unit_leader = False
                 if self.parentunit.commander:
                     leader.commander = True
@@ -148,14 +148,14 @@ class Leader(pygame.sprite.Sprite):
         self.subunit = self.parentunit.subunit_sprite[self.subunitpos]  # setup subunit that leader belong
         self.subunit.leader = self  ## put in leader to subunit with the set pos
         if self.armyposition == 0:  # parentunit leader
-            self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or main leader move ot other subunit
+            self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or gamestart leader move ot other subunit
             # self.parentunit.leadersubunit - self.parentunit.base_pos
             self.subunit.unit_leader = True
 
             squadpenal = int(
                 (self.subunitpos / len(self.parentunit.armysubunit[0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
-            self.badmorale = (30, 50)  ## main general morale lost when die
+            self.badmorale = (30, 50)  ## gamestart general morale lost when die
             if self.parentunit.commander:
                 self.commander = True
                 self.originalcommander = True

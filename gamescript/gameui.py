@@ -165,7 +165,7 @@ class Gameui(pygame.sprite.Sprite):
                 self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
                 if who.commander:  # commander parentunit use king and queen icon
-                    # main general
+                    # gamestart general
                     self.icon_rect = usecolour[0].get_rect(
                         center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
                     self.image.blit(usecolour[0], self.icon_rect)
@@ -648,7 +648,7 @@ class Armyicon(pygame.sprite.Sprite):
         self.army = army  # link army object so when click can correctly select or go to position
         army.icon = self  # link this icon to army object, mostly for when it get killed so can easily remove from list
         self.pos = pos  # position on army selector ui
-        self.leaderimage = self.army.leader[0].image.copy()  # get main leader image
+        self.leaderimage = self.army.leader[0].image.copy()  # get gamestart leader image
         self.leaderimage = pygame.transform.scale(self.leaderimage, (int(self.leaderimage.get_width() / 1.5),
                                                                      int(self.leaderimage.get_height() / 1.5)))  # scale leader image to fit the icon
         self.image = pygame.Surface((self.leaderimage.get_width() + 4, self.leaderimage.get_height() + 4))  # create image black corner block
@@ -801,21 +801,19 @@ class Inspectsubunit(pygame.sprite.Sprite):
 
 
 class Battledone(pygame.sprite.Sprite):
-    def __init__(self, boximage, resultimage):
-        import main
-        SCREENRECT = main.SCREENRECT
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
-        self.screenwidth = SCREENRECT.width
-        self.screenheight = SCREENRECT.height
+    def __init__(self, main, boximage, resultimage):
+        self.width_adjust = main.width_adjust
+        self.height_adjust = main.height_adjust
+        self.screenwidth = main.ScreenWidth
+        self.screenheight = main.ScreenHeight
 
         self._layer = 18
         pygame.sprite.Sprite.__init__(self)
         self.boximage = boximage
         self.resultimage = resultimage
-        self.font = pygame.font.SysFont("oldenglishtext", int(self.heightadjust * 36))
-        self.textfont = pygame.font.SysFont("timesnewroman", int(self.heightadjust * 24))
-        self.pos = (SCREENRECT.width / 2, 0)
+        self.font = pygame.font.SysFont("oldenglishtext", int(self.height_adjust * 36))
+        self.textfont = pygame.font.SysFont("timesnewroman", int(self.height_adjust * 24))
+        self.pos = (self.screenwidth / 2, 0)
         self.image = self.boximage.copy()
         self.rect = self.image.get_rect(midtop=self.pos)
         self.winner = None
@@ -824,11 +822,11 @@ class Battledone(pygame.sprite.Sprite):
         self.winner = winner
         self.image = self.boximage.copy()
         textsurface = self.font.render(self.winner, True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) + 3))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) + 3))
         self.image.blit(textsurface, textrect)
         if self.winner != "Draw":
             textsurface = self.font.render("Victory", True, (0, 0, 0))
-            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) * 2))
+            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) * 2))
             self.image.blit(textsurface, textrect)
         self.pos = (self.screenwidth / 2, 0)
         self.rect = self.image.get_rect(midtop=self.pos)
@@ -836,14 +834,14 @@ class Battledone(pygame.sprite.Sprite):
     def showresult(self, teamcoa1, teamcoa2, stat):
         self.image = self.resultimage.copy()
         textsurface = self.font.render(self.winner, True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) + 3))
+        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) + 3))
         self.image.blit(textsurface, textrect)
         if self.winner != "Draw":
             textsurface = self.font.render("Victory", True, (0, 0, 0))
-            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.heightadjust * 36) * 2))
+            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) * 2))
             self.image.blit(textsurface, textrect)
-        coa1rect = teamcoa1.get_rect(center=(self.image.get_width() / 3, int(self.heightadjust * 36) * 5))
-        coa2rect = teamcoa2.get_rect(center=(self.image.get_width() / 1.5, int(self.heightadjust * 36) * 5))
+        coa1rect = teamcoa1.get_rect(center=(self.image.get_width() / 3, int(self.height_adjust * 36) * 5))
+        coa2rect = teamcoa2.get_rect(center=(self.image.get_width() / 1.5, int(self.height_adjust * 36) * 5))
         self.image.blit(teamcoa1, coa1rect)
         self.image.blit(teamcoa2, coa2rect)
         self.pos = (self.screenwidth / 2, self.screenheight / 2)
@@ -859,6 +857,6 @@ class Battledone(pygame.sprite.Sprite):
                 else:
                     textsurface = self.font.render(textheader[statindex] + str(thisstat[team]), True, (0, 0, 0))
                 textrect = textsurface.get_rect(center=(teamcoarect[index].midbottom[0],
-                                                        teamcoarect[index].midbottom[1] + (int(self.heightadjust * 25) * rownumber)))
+                                                        teamcoarect[index].midbottom[1] + (int(self.height_adjust * 25) * rownumber)))
                 self.image.blit(textsurface, textrect)
                 rownumber += 1

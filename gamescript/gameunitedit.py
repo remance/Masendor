@@ -111,18 +111,17 @@ class Selectedpresetborder(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
-class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this class to use sub-unit sprite directly
-    squadwidth = 0  # subunit sprite width size get add from main
-    squadheight = 0  # subunit sprite height size get add from main
+class Armybuildslot(pygame.sprite.Sprite):
+    squadwidth = 0  # subunit sprite width size get add from gamestart
+    squadheight = 0  # subunit sprite height size get add from gamestart
     images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
     weapon_list = None
     armourlist = None
     stat_list = None
     create_troop_stat = gamesubunit.create_troop_stat
 
-    def __init__(self, gameid, team, armyid, position, startpos, slotnumber):
-        import main
-        self.colour = main.teamcolour
+    def __init__(self, gameid, team, armyid, position, startpos, slotnumber, teamcolour):
+        self.colour = teamcolour
         self._layer = 2
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.selected = False
@@ -210,25 +209,23 @@ class Armybuildslot(pygame.sprite.Sprite):  # TODO change build slot from this c
 
 class Warningmsg(pygame.sprite.Sprite):
     eightsubunit_warn = "- Require at least 8 sub-units for both test and employment"
-    mainleader_warn = "- Require a main leader for both test and employment"
+    mainleader_warn = "- Require a gamestart leader for both test and employment"
     emptyrowcol_warn = "- Empty row or column will be removed when employed"
     duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leaer option enable"
     multifaction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"
 
     # outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
 
-    def __init__(self, pos):
-        import main
-        SCREENRECT = main.SCREENRECT
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
+    def __init__(self, main, pos):
+        self.width_adjust = main.width_adjust
+        self.height_adjust = main.height_adjust
 
         self._layer = 18
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("timesnewroman", int(20 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(20 * self.height_adjust))
         self.rowcount = 0
         self.warninglog = []
-        self.fixwidth = int(230 * self.heightadjust)
+        self.fixwidth = int(230 * self.height_adjust)
         self.pos = pos
 
     def warning(self, warnlist):
@@ -256,9 +253,9 @@ class Warningmsg(pygame.sprite.Sprite):
             else:
                 self.warninglog.append(warnitem)
 
-        self.image = pygame.Surface((self.fixwidth, int(22 * self.heightadjust) * self.rowcount))
+        self.image = pygame.Surface((self.fixwidth, int(22 * self.height_adjust) * self.rowcount))
         self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.heightadjust) * self.rowcount) - 2))
+        whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.height_adjust) * self.rowcount) - 2))
         whiteimage.fill((255, 255, 255))
         whiteimage_rect = whiteimage.get_rect(topleft=(1, 1))
         self.image.blit(whiteimage, whiteimage_rect)
@@ -272,15 +269,13 @@ class Warningmsg(pygame.sprite.Sprite):
 
 
 class Previewchangebutton(pygame.sprite.Sprite):
-    def __init__(self, pos, image, text):
-        import main
-        SCREENRECT = main.SCREENRECT
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
+    def __init__(self, main, pos, image, text):
+        self.width_adjust = main.width_adjust
+        self.height_adjust = main.height_adjust
 
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("timesnewroman", int(30 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(30 * self.height_adjust))
 
         self.image = image.copy()
         self.image_original = self.image.copy()
@@ -301,14 +296,12 @@ class Previewchangebutton(pygame.sprite.Sprite):
 
 
 class Filterbox(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
-        import main
-        SCREENRECT = main.SCREENRECT
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
+    def __init__(self, main, pos, image):
+        self.width_adjust = main.width_adjust
+        self.height_adjust = main.height_adjust
 
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = pygame.transform.scale(image, (int(image.get_width() * self.widthadjust),
-                                                    int(image.get_height() * self.heightadjust)))
+        self.image = pygame.transform.scale(image, (int(image.get_width() * self.width_adjust),
+                                                    int(image.get_height() * self.height_adjust)))
         self.rect = self.image.get_rect(topleft=pos)

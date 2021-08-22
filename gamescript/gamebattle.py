@@ -4,7 +4,6 @@ import glob
 import random
 import sys
 
-import main
 import numpy as np
 import pygame
 import pygame.freetype
@@ -12,15 +11,11 @@ from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, ga
 from pygame.locals import *
 from scipy.spatial import KDTree
 
-config = main.config
-SoundVolume = main.Soundvolume
-SCREENRECT = main.SCREENRECT
-main_dir = main.main_dir
-
 load_image = gamelongscript.load_image
 load_images = gamelongscript.load_images
 csv_read = gamelongscript.csv_read
 load_sound = gamelongscript.load_sound
+editconfig = gamelongscript.editconfig
 
 
 class Battle:
@@ -28,14 +23,18 @@ class Battle:
     traitskillblit = gamelongscript.traitskillblit
     effecticonblit = gamelongscript.effecticonblit
     countdownskillicon = gamelongscript.countdownskillicon
-    teamcolour = main.teamcolour
 
     def __init__(self, main, winstyle):
-        # v Get game object/variable from main
+        # v Get game object/variable from gamestart
         self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for game battle
         self.main = main
-        self.widthadjust = main.widthadjust
-        self.heightadjust = main.heightadjust
+        self.config = main.config
+        self.SoundVolume = main.Soundvolume
+        self.SCREENRECT = main.SCREENRECT
+        self.teamcolour = main.teamcolour
+        self.main_dir = main.main_dir
+        self.width_adjust = main.width_adjust
+        self.height_adjust = main.height_adjust
         self.eventlog = main.eventlog
         self.battlecamera = main.battlecamera
         self.battleui = main.battleui
@@ -201,7 +200,7 @@ class Battle:
 
         self.battledone_box = main.battledone_box
         self.gamedone_button = main.gamedone_button
-        # ^ End load from main
+        # ^ End load from gamestart
 
         self.gamespeed = 0
         self.gamespeedset = (0, 0.5, 1, 2, 4, 6)  # availabe game speed
@@ -226,8 +225,8 @@ class Battle:
         self.filter_stuff = (self.filterbox, self.slotdisplay_button, self.teamchange_button, self.deploy_button, self.terrain_change_button,
                              self.feature_change_button, self.weather_change_button, self.tickbox_filter)
 
-        self.bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)  # Set the display mode
-        self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up game screen
+        self.bestdepth = pygame.display.mode_ok(self.SCREENRECT.size, winstyle, 32)  # Set the display mode
+        self.screen = pygame.display.set_mode(self.SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up game screen
 
         # v Assign default variable to some class
         gameunit.Unitarmy.gamebattle = self
@@ -236,7 +235,7 @@ class Battle:
         gameleader.Leader.gamebattle = self
         # ^ End assign default
 
-        self.background = pygame.Surface(SCREENRECT.size)  # Create background image
+        self.background = pygame.Surface(self.SCREENRECT.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
     def editor_map_change(self, basecolour, featurecolour):
@@ -268,7 +267,7 @@ class Battle:
 
         # v Load weather schedule
         try:
-            self.weather_event = csv_read("weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
+            self.weather_event = csv_read(self.main_dir, "weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
             self.weather_event = self.weather_event[1:]
             gamelongscript.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -283,9 +282,9 @@ class Battle:
             pygame.mixer = None
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
-            self.musiclist = glob.glob(main_dir + "/data/sound/music/*.ogg")
+            self.musiclist = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
             try:
-                self.music_event = csv_read("musicevent.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
+                self.music_event = csv_read(self.main_dir, "musicevent.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
                     gamelongscript.convert_str_time(self.music_event)
@@ -307,7 +306,7 @@ class Battle:
         # ^ End music play
 
         try:  # get new map event for event log
-            mapevent = csv_read("eventlog.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 0)
+            mapevent = csv_read("eventlog.csv", [self.main_dir, "data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 0)
             gameui.Eventlog.mapevent = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list
@@ -331,11 +330,11 @@ class Battle:
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1  # Camera zoom
-        gamecamera.Camera.SCREENRECT = SCREENRECT
+        gamecamera.Camera.SCREENRECT = self.SCREENRECT
         self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
 
         if mapselected is not None:
-            imgs = load_images(["ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], loadorder=False)
+            imgs = load_images(self.main_dir, ["ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], loadorder=False)
             self.battlemap_base.drawimage(imgs[0])
             self.battlemap_feature.drawimage(imgs[1])
             self.battlemap_height.drawimage(imgs[2])
@@ -469,7 +468,7 @@ class Battle:
             (leaderlist[1].authority / 4) + (leaderlist[2].authority / 4) +
             (leaderlist[3].authority / 10))
         bigunitsize = len([slot for slot in self.unitbuildslot if slot.armyid == armyid and slot.name != "None"])
-        if bigunitsize > 20:  # army size larger than 20 will reduce main leader authority
+        if bigunitsize > 20:  # army size larger than 20 will reduce gamestart leader authority
             authority = int(leaderlist[0].authority +
                             (leaderlist[0].authority / 2 * (100 - bigunitsize) / 100) +
                             leaderlist[1].authority / 2 + leaderlist[2].authority / 2 +
@@ -798,8 +797,8 @@ class Battle:
 
             for unit in self.allunitlist:  # reset all unit state
                 unit.command(self.battle_mouse_pos[0], False, False, self.last_mouseover, None, othercommand=2)
-            self.gameui[2].rect = self.gameui[2].image.get_rect(bottomright=(SCREENRECT.width,
-                                                                             SCREENRECT.height))  # troop info card ui
+            self.gameui[2].rect = self.gameui[2].image.get_rect(bottomright=(self.SCREENRECT.width,
+                                                                             self.SCREENRECT.height))  # troop info card ui
             self.buttonui[0].rect = self.buttonui[0].image.get_rect(topleft=(self.gameui[2].rect.topleft[0],  # description button
                                                                              self.gameui[2].rect.topleft[1] + 120))
             self.buttonui[1].rect = self.buttonui[1].image.get_rect(topleft=(self.gameui[2].rect.topleft[0],  # stat button
@@ -897,7 +896,7 @@ class Battle:
 
     def rungame(self):
         # v Create Starting Values
-        self.mixervolume = SoundVolume
+        self.mixervolume = self.SoundVolume
         self.gamestate = 1  # battle mode
         self.current_unit_row = 0
         self.current_troop_row = 0
@@ -933,7 +932,7 @@ class Battle:
             self.showincard = None  # current sub-subunit showing in subunit card
 
             self.main.maketeamcoa([0], uiclass=self.battleui, oneteam=True,
-                                  team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.widthadjust) / 2),
+                                  team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.width_adjust) / 2),
                                                self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
 
             self.troop_scroll.changeimage(newrow=self.current_troop_row, logsize=len(self.troop_list))  # change troop scroll image
@@ -979,10 +978,10 @@ class Battle:
         self.before_selected = None  # Which unit is selected before
         self.splithappen = False  # Check if parentunit get split in that loop
         self.showtroopnumber = True  # for toggle troop number on/off
-        self.weatherscreenadjust = SCREENRECT.width / SCREENRECT.height  # for weather sprite spawn position
-        self.rightcorner = SCREENRECT.width - 5
-        self.bottomcorner = SCREENRECT.height - 5
-        self.centerscreen = [SCREENRECT.width / 2, SCREENRECT.height / 2]  # center position of the screen
+        self.weatherscreenadjust = self.SCREENRECT.width / self.SCREENRECT.height  # for weather sprite spawn position
+        self.rightcorner = self.SCREENRECT.width - 5
+        self.bottomcorner = self.SCREENRECT.height - 5
+        self.centerscreen = [self.SCREENRECT.width / 2, self.SCREENRECT.height / 2]  # center position of the screen
         self.battle_mouse_pos = [[0, 0],
                                  [0, 0]]  # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
         self.unitselector.current_row = 0
@@ -1263,15 +1262,15 @@ class Battle:
                     elif keypress == pygame.K_1:
                         self.textdrama.queue.append("Hello and Welcome to update video")
                     elif keypress == pygame.K_2:
-                        self.textdrama.queue.append("Showcase: Music queue system")
+                        self.textdrama.queue.append("Showcase: Just simple clarity update")
                     elif keypress == pygame.K_3:
-                        self.textdrama.queue.append("Music will be selected according to time schedule")
+                        self.textdrama.queue.append("Before")
                     elif keypress == pygame.K_4:
-                        self.textdrama.queue.append("Will make it more complex in later update")
+                        self.textdrama.queue.append("Where the hell is blue team, can only see red")
                     elif keypress == pygame.K_5:
-                        self.textdrama.queue.append("Will take a while for everything to work again")
+                        self.textdrama.queue.append("After")
                     elif keypress == pygame.K_6:
-                        self.textdrama.queue.append("Current special effect still need rework")
+                        self.textdrama.queue.append("Now much more clear")
                     elif keypress == pygame.K_n and self.last_selected is not None:
                         if self.last_selected.team == 1:
                             self.last_selected.switchfaction(self.team1unit, self.team2unit, self.team1poslist, self.enactment)
@@ -2005,7 +2004,7 @@ class Battle:
                                                         self.main.maketeamcoa([index], uiclass=self.battleui, oneteam=True,
                                                                               team1setpos=(
                                                                                   self.troop_listbox.rect.midleft[0] - int(
-                                                                                      (200 * self.widthadjust) / 2),
+                                                                                      (200 * self.width_adjust) / 2),
                                                                                   self.troop_listbox.rect.midleft[1]))  # change team coa
 
                                                         self.current_list_show = "troop"
@@ -2343,23 +2342,23 @@ class Battle:
                                              int(self.currentweather.spawnrate * self.dt * random.randint(0,
                                                                                                           10)))  # number of sprite to spawn at this time
                             for spawn in spawnnum:  # spawn each weather sprite
-                                truepos = (random.randint(10, SCREENRECT.width), 0)  # starting pos
-                                target = (truepos[0], SCREENRECT.height)  # final base_target pos
+                                truepos = (random.randint(10, self.SCREENRECT.width), 0)  # starting pos
+                                target = (truepos[0], self.SCREENRECT.height)  # final base_target pos
 
                                 if self.currentweather.spawnangle == 225:  # top right to bottom left movement
-                                    startpos = random.randint(10, SCREENRECT.width * 2)  # starting x pos that can be higher than screen width
+                                    startpos = random.randint(10, self.SCREENRECT.width * 2)  # starting x pos that can be higher than screen width
                                     truepos = (startpos, 0)
-                                    if startpos >= SCREENRECT.width:  # x higher than screen width will spawn on the right corner of screen but not at top
-                                        startpos = SCREENRECT.width  # revert x back to screen width
-                                        truepos = (startpos, random.randint(0, SCREENRECT.height))
+                                    if startpos >= self.SCREENRECT.width:  # x higher than screen width will spawn on the right corner of screen but not at top
+                                        startpos = self.SCREENRECT.width  # revert x back to screen width
+                                        truepos = (startpos, random.randint(0, self.SCREENRECT.height))
 
                                     if truepos[1] > 0:  # start position simulate from beyond top right of screen
-                                        target = (truepos[1] * self.weatherscreenadjust, SCREENRECT.height)
-                                    elif truepos[0] < SCREENRECT.width:  # start position inside screen width
+                                        target = (truepos[1] * self.weatherscreenadjust, self.SCREENRECT.height)
+                                    elif truepos[0] < self.SCREENRECT.width:  # start position inside screen width
                                         target = (0, truepos[0] / self.weatherscreenadjust)
 
                                 elif self.currentweather.spawnangle == 270:  # right to left movement
-                                    truepos = (SCREENRECT.width, random.randint(0, SCREENRECT.height))
+                                    truepos = (self.SCREENRECT.width, random.randint(0, self.SCREENRECT.height))
                                     target = (0, truepos[1])
 
                                 randompic = random.randint(0, len(self.weathermatterimgs[self.currentweather.weathertype]) - 1)
@@ -2531,7 +2530,7 @@ class Battle:
                     # ^ End update game time
 
                 elif self.gamestate == 0:  # Complete game pause when open either esc menu or enclycopedia
-                    if self.battle_menu.mode == 0:  # main esc menu
+                    if self.battle_menu.mode == 0:  # gamestart esc menu
                         for button in self.battle_menu_button:
                             if button.rect.collidepoint(self.mousepos):
                                 button.image = button.images[1]  # change button image to mouse over one
@@ -2552,11 +2551,11 @@ class Battle:
 
                                     elif button.text == "Option":  # open option menu
                                         self.battle_menu.changemode(1)  # change to option menu mode
-                                        self.battleui.remove(*self.battle_menu_button)  # remove main esc menu button
+                                        self.battleui.remove(*self.battle_menu_button)  # remove gamestart esc menu button
                                         self.battleui.add(*self.escoptionmenubutton, *self.escslidermenu, *self.escvaluebox)
                                         self.oldsetting = self.escslidermenu[0].value  # Save previous setting for in case of cancel
 
-                                    elif button.text == "End Battle":  # back to main menu
+                                    elif button.text == "End Battle":  # back to gamestart menu
                                         self.exitbattle()
                                         return  # end battle game loop
 
@@ -2577,27 +2576,27 @@ class Battle:
                                     if button.text == "Confirm":  # confirm button, save the setting and close option menu
                                         self.oldsetting = self.mixervolume  # save mixer volume
                                         pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                        main.editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
-                                                        config)  # save to config file
-                                        self.battle_menu.changemode(0)  # go back to main esc menu
+                                        editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
+                                                             self.config)  # save to config file
+                                        self.battle_menu.changemode(0)  # go back to gamestart esc menu
                                         self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
                                                              *self.escvaluebox)  # remove option menu sprite
-                                        self.battleui.add(*self.battle_menu_button)  # add main esc menu buttons back
+                                        self.battleui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
 
                                     elif button.text == "Apply":  # apply button, save the setting
                                         self.oldsetting = self.mixervolume  # save mixer volume
                                         pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                        main.editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
-                                                        config)  # save to config file
+                                        editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
+                                                             self.config)  # save to config file
 
                                     elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                                         self.mixervolume = self.oldsetting  # revert to old setting
                                         pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
                                         self.escslidermenu[0].update(self.mixervolume, self.escvaluebox[0], forcedvalue=True)  # update slider bar
-                                        self.battle_menu.changemode(0)  # go back to main esc menu
+                                        self.battle_menu.changemode(0)  # go back to gamestart esc menu
                                         self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
                                                              *self.escvaluebox)  # remove option menu sprite
-                                        self.battleui.add(*self.battle_menu_button)  # add main esc menu buttons back
+                                        self.battleui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
 
                             else:  # no button currently collided with mouse
                                 button.image = button.images[0]  # revert button image back to the idle one
@@ -2701,6 +2700,3 @@ class Battle:
             self.battleui.draw(self.screen)  # Draw the UI
             pygame.display.update()  # update game display, draw everything
             self.clock.tick(60)  # clock update even if game pause
-
-        pygame.time.wait(1000)  # wait a bit before closing
-        pygame.quit()

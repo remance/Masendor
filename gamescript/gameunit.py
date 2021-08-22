@@ -42,11 +42,9 @@ class Directionarrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
 
 
 class Troopnumber(pygame.sprite.Sprite):
-    def __init__(self, who):
-        import main
-        SCREENRECT = main.SCREENRECT
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
+    def __init__(self, main, who):
+        self.width_adjust = main.width_adjust
+        self.height_adjust = main.height_adjust
 
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -59,7 +57,7 @@ class Troopnumber(pygame.sprite.Sprite):
         self.number = self.who.troopnumber
         self.zoom = 0
 
-        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.height_adjust))
 
         self.image = self.render(str(self.number), self.font, self.textcolour)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -74,7 +72,7 @@ class Troopnumber(pygame.sprite.Sprite):
             zoom = (11 - self.zoom) / 2
             if zoom < 1:
                 zoom = 1
-            newfontsize = int(60 / zoom * self.heightadjust)
+            newfontsize = int(60 / zoom * self.height_adjust)
             self.font = pygame.font.SysFont("timesnewroman", newfontsize)
             self.image = self.render(str(self.number), self.font, self.textcolour)
             self.rect = self.image.get_rect(topleft=self.pos)
@@ -286,7 +284,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """Change position variable to new camera scale"""
         self.truenumber_pos = self.number_pos * (11 - self.zoom)
 
-    def setup_army(self, gamestart=True):
+    def setup_army(self, battlestart=True):
         """Grab stat from all subunit in the parentunit"""
         self.troopnumber = 0
         self.stamina = 0
@@ -339,7 +337,7 @@ class Unitarmy(pygame.sprite.Sprite):
             if len(allshootrange) > 0:
                 self.maxrange = max(allshootrange)  # Max shoot range of all subunit
                 self.minrange = min(allshootrange)  # Min shoot range of all subunit
-            if gamestart is False:  # Only do once when game start
+            if battlestart is False:  # Only do once when game start
                 self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
                     self.stamina * 0.50), round(self.stamina * 0.25)
                 self.ammolist = (round(self.ammo * 0.75), round(self.ammo * 0.50), round(self.ammo * 0.25), 0, -1)
@@ -503,7 +501,7 @@ class Unitarmy(pygame.sprite.Sprite):
         if self.authority > 0:
             bigarmysize = self.armysubunit > 0
             bigarmysize = bigarmysize.sum()
-            if bigarmysize > 20:  # army size larger than 20 will reduce main leader authority
+            if bigarmysize > 20:  # army size larger than 20 will reduce gamestart leader authority
                 self.authority = int((self.teamcommander.authority / 2) +
                                      (self.leader[0].authority / 2 * (100 - bigarmysize) / 100) + self.leader[1].authority / 2 + self.leader[
                                          2].authority / 2 +
@@ -889,7 +887,7 @@ class Unitarmy(pygame.sprite.Sprite):
     def processretreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)
         self.command_state = self.state  # command retreat
-        self.leader[0].authority -= self.auth_penalty  # retreat reduce main leader authority
+        self.leader[0].authority -= self.auth_penalty  # retreat reduce gamestart leader authority
         if self.charging:  # change order when attacking will cause authority penalty
             self.leader[0].authority -= self.auth_penalty
         self.authrecal()

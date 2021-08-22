@@ -410,7 +410,12 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End subunit block
 
         self.far_image = self.image.copy()
+        pygame.draw.circle(self.far_image, (0, 0, 0), (self.far_image.get_width() / 2, self.far_image.get_height() / 2),
+                           self.far_image.get_width() / 2, 4)
         self.far_selectedimage = self.selectedimage.copy()
+        pygame.draw.circle(self.far_selectedimage, (0, 0, 0), (self.far_selectedimage.get_width() / 2, self.far_selectedimage.get_height() / 2),
+                           self.far_selectedimage.get_width() / 2, 4)
+
         scalewidth = self.image.get_width() * 1 / self.maxzoom
         scaleheight = self.image.get_height() * 1 / self.maxzoom
         dim = pygame.Vector2(scalewidth, scaleheight)
@@ -434,7 +439,7 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End stamina circle
 
         # v weapon class icon in middle circle
-        if self.unitclass == 0:  # melee weapon image as main
+        if self.unitclass == 0:  # melee weapon image as gamestart
             image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.meleeweapon[0]][-3]]  # image on subunit sprite
         else:  # range weapon image
             image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.rangeweapon[0]][-3]]
@@ -631,7 +636,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.morale = self.base_morale
         self.authority = self.parentunit.authority  # parentunit total authoirty
-        self.commandbuff = self.parentunit.commandbuff[self.unit_type] * 100  # command buff from main leader according to this subunit subunit type
+        self.commandbuff = self.parentunit.commandbuff[self.unit_type] * 100  # command buff from gamestart leader according to this subunit subunit type
         self.discipline = self.base_discipline
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
@@ -1378,7 +1383,7 @@ class Subunit(pygame.sprite.Sprite):
                         if self.morale < 0:
                             self.morale = 0  # morale cannot be lower than 0
 
-                    if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing main leader can replenish morale
+                    if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing gamestart leader can replenish morale
                         self.base_morale += (dt * self.staminastatecal * self.moraleregen)  # Morale replenish based on stamina
 
                     if self.base_morale < 0:  # morale cannot be negative
