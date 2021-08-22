@@ -13,9 +13,6 @@ screenHeight = int(screen.height)
 config = configparser.ConfigParser()
 try:
     config.read_file(open("configuration.ini"))  # read config file
-    print(int(config["DEFAULT"]["ScreenHeight"]), int(config["DEFAULT"]["ScreenWidth"]),
-          int(config["DEFAULT"]["Fullscreen"]), float(config["DEFAULT"]["SoundVolume"]),
-            str(config["DEFAULT"]["playername"]))
 except Exception:  # Create config file if not found with the default
     config = configparser.ConfigParser()
     config["DEFAULT"] = {"screenwidth": screenWidth, "screenheight": screenHeight, "fullscreen": "0",
@@ -23,13 +20,11 @@ except Exception:  # Create config file if not found with the default
                          "voicevolume": "0.0", "maxfps": "60", "ruleset": "1"}
     with open("configuration.ini", "w") as cf:
         config.write(cf)
-    config.read_file(open("../configuration.ini"))
+    config.read_file(open("configuration.ini"))
     print(int(config["DEFAULT"]["ScreenHeight"]), int(config["DEFAULT"]["ScreenWidth"]),
           int(config["DEFAULT"]["Fullscreen"]), float(config["DEFAULT"]["SoundVolume"]),
           str(config["DEFAULT"]["playername"]))
-print(int(config["DEFAULT"]["ScreenHeight"]), int(config["DEFAULT"]["ScreenWidth"]),
-      int(config["DEFAULT"]["Fullscreen"]), float(config["DEFAULT"]["SoundVolume"]),
-        str(config["DEFAULT"]["playername"]))
+
 if __name__ == "__main__":
     try:  # for printing error log when error exception happen
         main_dir = os.path.split(os.path.abspath(__file__))[0]
