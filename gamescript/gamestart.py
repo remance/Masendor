@@ -1,16 +1,15 @@
+import csv
+import gc
 import glob
 import os.path
 import sys
-import gc
-import csv
 
 # import basic pygame modules
 import pygame
 import pygame.freetype
-from pygame.locals import *
-
 from gamescript import gamebattle, gameleader, gamemap, gamelongscript, gamelorebook, gameweather, gamedrama, \
-    gamefaction, gameunitstat, gameui, gameprepare, gamemenu, gameunit, gamesubunit, gamerangeattack, gamepopup, gameunitedit
+    gameui, gameprepare, gamemenu, gameunit, gamesubunit, gamerangeattack, gamepopup, gameunitedit
+from pygame.locals import *
 
 load_image = gamelongscript.load_image
 load_images = gamelongscript.load_images
@@ -36,14 +35,14 @@ class Mainmenu:
 
         self.main_dir = main_dir
 
-        #v Read config file
+        # v Read config file
         self.config = config
         self.ScreenHeight = int(self.config["DEFAULT"]["ScreenHeight"])
         self.ScreenWidth = int(self.config["DEFAULT"]["ScreenWidth"])
         self.FULLSCREEN = int(self.config["DEFAULT"]["Fullscreen"])
         self.Soundvolume = float(self.config["DEFAULT"]["SoundVolume"])
         self.Profilename = str(self.config["DEFAULT"]["playername"])
-        #^ End read config
+        # ^ End read config
 
         # v Set the display mode
         self.SCREENRECT = Rect(0, 0, self.ScreenWidth, self.ScreenHeight)
@@ -309,7 +308,8 @@ class Mainmenu:
         self.option_button = gameprepare.Menubutton(self, imagelist,
                                                     pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
                                                     text="Option")
-        self.quit_button = gameprepare.Menubutton(self, imagelist, pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height())),
+        self.quit_button = gameprepare.Menubutton(self, imagelist,
+                                                  pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height())),
                                                   text="Quit")
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button)
@@ -333,7 +333,8 @@ class Mainmenu:
                                             self.map_listbox.maxshowlist, layer=14)  # scroller bar for map list
 
         self.source_listbox = gameprepare.Sourcelistbox(self, (0, 0), imgs[1])  # source list ui box
-        self.map_optionbox = gameprepare.Mapoptionbox(self, (self.SCREENRECT.width, 0), imgs[1], 0)  # ui box for battle option during preparation screen
+        self.map_optionbox = gameprepare.Mapoptionbox(self, (self.SCREENRECT.width, 0), imgs[1],
+                                                      0)  # ui box for battle option during preparation screen
 
         self.tickbox_enactment = gameprepare.Tickbox(self, (self.map_optionbox.rect.bottomright[0] / 1.2, self.map_optionbox.rect.bottomright[1] / 4),
                                                      imgs[5], imgs[6], "enactment")
@@ -353,12 +354,14 @@ class Mainmenu:
 
         # v Create unit and subunit editor button in gamestart menu
 
-        self.unit_edit_button = gameprepare.Menubutton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
+        self.unit_edit_button = gameprepare.Menubutton(self, imagelist,
+                                                       (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
                                                        text="Army Editor")
         self.subunit_create_button = gameprepare.Menubutton(self, imagelist,
                                                             (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
                                                             text="Troop Creator")
-        self.editor_back_button = gameprepare.Menubutton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height - imagelist[0].get_height()),
+        self.editor_back_button = gameprepare.Menubutton(self, imagelist,
+                                                         (self.SCREENRECT.width / 2, self.SCREENRECT.height - imagelist[0].get_height()),
                                                          text="Back")
         self.editor_button = (self.unit_edit_button, self.subunit_create_button, self.editor_back_button)
         # ^ End subunit editor
@@ -395,7 +398,7 @@ class Mainmenu:
                                                                       "Temperate")  # start with temperate terrain
         self.feature_change_button = gameunitedit.Previewchangebutton(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height), boximg,
                                                                       "Plain")  # start with plain feature
-        self.weather_change_button = gameunitedit.Previewchangebutton(self, (self.SCREENRECT.width / 1.5,self.SCREENRECT.height), boximg,
+        self.weather_change_button = gameunitedit.Previewchangebutton(self, (self.SCREENRECT.width / 1.5, self.SCREENRECT.height), boximg,
                                                                       "Light Sunny")  # start with light sunny
 
         gameunitedit.Armybuildslot.squadwidth = self.squadwidth
@@ -442,7 +445,8 @@ class Mainmenu:
 
         # v Input box popup
         input_ui_img = load_image(self.main_dir, "inputui.png", "ui\\mainmenu_ui")
-        self.inputui = gameprepare.Inputui(self, input_ui_img, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user text input ui box popup
+        self.inputui = gameprepare.Inputui(self, input_ui_img,
+                                           (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user text input ui box popup
         self.input_ok_button = gameprepare.Menubutton(self, imagelist,
                                                       pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                            self.inputui.rect.midleft[1] + imagelist[0].get_height()),
@@ -456,7 +460,8 @@ class Mainmenu:
 
         self.inputui_pop = (self.inputui, self.input_box, self.input_ok_button, self.input_cancel_button)
 
-        self.confirmui = gameprepare.Inputui(self, input_ui_img, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user confirm input ui box popup
+        self.confirmui = gameprepare.Inputui(self, input_ui_img,
+                                             (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user confirm input ui box popup
         self.confirmui_pop = (self.confirmui, self.input_ok_button, self.input_cancel_button)
         # ^ End input box popup
 
@@ -489,7 +494,8 @@ class Mainmenu:
         img2 = load_image(self.main_dir, "scoll_button_normal.png", "ui\\mainmenu_ui")
         img3 = load_image(self.main_dir, "scoll_button_click.png", "ui\\mainmenu_ui")
         img4 = load_image(self.main_dir, "numbervalue_icon.jpg", "ui\\mainmenu_ui")
-        self.volumeslider = gameprepare.Slidermenu(barimage=img, buttonimage=[img2, img3], pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height / 3),
+        self.volumeslider = gameprepare.Slidermenu(barimage=img, buttonimage=[img2, img3],
+                                                   pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height / 3),
                                                    value=self.Soundvolume)
         self.valuebox = [gameprepare.Valuebox(img4, (self.volumeslider.rect.topright[0] * 1.1, self.volumeslider.rect.topright[1]), self.Soundvolume)]
         img = load_image(self.main_dir, "volume_icon.png", "ui\\mainmenu_ui")
@@ -567,7 +573,7 @@ class Mainmenu:
             else:
                 data = csv_read(self.main_dir, file, ["data", "ruleset", self.rulesetfolder.strip("/"), "map", maplist[self.current_map_select]])
         else:
-            data = csv_read(file, [self.main_dir,"data", "ruleset", self.rulesetfolder.strip("/"), "map/custom", maplist[self.current_map_select]])
+            data = csv_read(file, [self.main_dir, "data", "ruleset", self.rulesetfolder.strip("/"), "map/custom", maplist[self.current_map_select]])
         return data
 
     def maketeamcoa(self, data, uiclass, oneteam=False, team1setpos=None):
@@ -591,9 +597,11 @@ class Mainmenu:
             thismap.kill()
             del thismap
         if self.menu_state == "presetselect":
-            imgs = load_images(self.main_dir, ["ruleset", self.rulesetfolder.strip("/"), "map", mapfolderlist[self.current_map_select]], loadorder=False)
+            imgs = load_images(self.main_dir, ["ruleset", self.rulesetfolder.strip("/"), "map", mapfolderlist[self.current_map_select]],
+                               loadorder=False)
         else:
-            imgs = load_images(self.main_dir, ["ruleset", self.rulesetfolder.strip("/"), "map/custom", mapfolderlist[self.current_map_select]], loadorder=False)
+            imgs = load_images(self.main_dir, ["ruleset", self.rulesetfolder.strip("/"), "map/custom", mapfolderlist[self.current_map_select]],
+                               loadorder=False)
         self.mapshow.add(gameprepare.Mapshow(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 3), imgs[0], imgs[1]))
         self.mainui.add(self.mapshow)
         # ^ End map preview
@@ -955,9 +963,11 @@ class Mainmenu:
 
                         for index, team in enumerate(self.teamcoa):
                             if index == 0:
-                                self.armystat.add(gameprepare.Armystat(self, (team.rect.bottomleft[0], self.SCREENRECT.height / 1.5)))  # left army stat
+                                self.armystat.add(
+                                    gameprepare.Armystat(self, (team.rect.bottomleft[0], self.SCREENRECT.height / 1.5)))  # left army stat
                             else:
-                                self.armystat.add(gameprepare.Armystat(self, (team.rect.bottomright[0], self.SCREENRECT.height / 1.5)))  # right army stat
+                                self.armystat.add(
+                                    gameprepare.Armystat(self, (team.rect.bottomright[0], self.SCREENRECT.height / 1.5)))  # right army stat
 
                         self.changesource([self.sourcescaletext[self.mapsource], self.sourcetext[self.mapsource]],
                                           self.sourcescale[self.mapsource])

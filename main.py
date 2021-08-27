@@ -1,7 +1,8 @@
-import traceback
-import sys
-import os.path
 import configparser
+import os.path
+import sys
+import traceback
+
 import screeninfo
 from gamescript import gamestart
 

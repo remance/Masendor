@@ -267,7 +267,8 @@ class Battle:
 
         # v Load weather schedule
         try:
-            self.weather_event = csv_read(self.main_dir, "weather.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
+            self.weather_event = csv_read(self.main_dir, "weather.csv",
+                                          ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 1)
             self.weather_event = self.weather_event[1:]
             gamelongscript.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -284,7 +285,8 @@ class Battle:
             self.SONG_END = pygame.USEREVENT + 1
             self.musiclist = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
             try:
-                self.music_event = csv_read(self.main_dir, "musicevent.csv", ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
+                self.music_event = csv_read(self.main_dir, "musicevent.csv",
+                                            ["data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
                     gamelongscript.convert_str_time(self.music_event)
@@ -302,11 +304,12 @@ class Battle:
                     self.music_event = [[5]]  # TODO change later when has custom playlist
             except:  # any reading error will play random custom music instead
                 self.music_schedule = [self.weather_current]
-                self.music_event = [[5]]  #TODO change later when has custom playlist
+                self.music_event = [[5]]  # TODO change later when has custom playlist
         # ^ End music play
 
         try:  # get new map event for event log
-            mapevent = csv_read("eventlog.csv", [self.main_dir, "data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 0)
+            mapevent = csv_read("eventlog.csv",
+                                [self.main_dir, "data", "ruleset", self.rulesetfolder.strip("/"), "map", self.mapselected, self.source], 0)
             gameui.Eventlog.mapevent = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list
@@ -1987,7 +1990,7 @@ class Battle:
                                                                                 enumerate(self.leader_stat.leader_list.items())
                                                                                 if thisindex > 0 and (item[1][0] == "None" or
                                                                                                       (item[0] >= 10000 and item[1][8] in (
-                                                                                                      0, index)) or
+                                                                                                          0, index)) or
                                                                                                       item[0] in self.allfaction.faction_list[index][
                                                                                                           2])]
 
@@ -2366,9 +2369,9 @@ class Battle:
                                                                                 self.currentweather.speed,
                                                                                 self.weathermatterimgs[self.currentweather.weathertype][
                                                                                     randompic]))
-                        #^ End weather system
+                        # ^ End weather system
 
-                        #v Music System
+                        # v Music System
                         if len(self.music_schedule) > 0 and self.timenumber.timenum >= self.music_schedule[0]:
                             pygame.mixer.music.unload()
                             self.music_current = self.music_event[0].copy()
@@ -2377,7 +2380,7 @@ class Battle:
                             pygame.mixer.music.play(fade_ms=100)
                             self.music_schedule = self.music_schedule[1:]
                             self.music_event = self.music_event[1:]
-                        #^ End music system
+                        # ^ End music system
 
                         for unit in self.allunitlist:
                             unit.collide = False  # reset collide
@@ -2577,7 +2580,7 @@ class Battle:
                                         self.oldsetting = self.mixervolume  # save mixer volume
                                         pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
                                         editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
-                                                             self.config)  # save to config file
+                                                   self.config)  # save to config file
                                         self.battle_menu.changemode(0)  # go back to gamestart esc menu
                                         self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
                                                              *self.escvaluebox)  # remove option menu sprite
@@ -2587,7 +2590,7 @@ class Battle:
                                         self.oldsetting = self.mixervolume  # save mixer volume
                                         pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
                                         editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
-                                                             self.config)  # save to config file
+                                                   self.config)  # save to config file
 
                                     elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                                         self.mixervolume = self.oldsetting  # revert to old setting

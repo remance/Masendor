@@ -165,12 +165,12 @@ def load_game_data(game):
     game.weathermatterimgs = []
 
     for weather in ("0", "1", "2", "3"):  # Load weather matter sprite image
-        imgs = load_images(game.main_dir,["map", "weather", weather], loadorder=False)
+        imgs = load_images(game.main_dir, ["map", "weather", weather], loadorder=False)
         game.weathermatterimgs.append(imgs)
 
     game.weathereffectimgs = []
     for weather in ("0", "1", "2", "3", "4", "5", "6", "7"):  # Load weather effect sprite image
-        imgs = load_images(game.main_dir,["map", "weather", "effect", weather], loadorder=False)
+        imgs = load_images(game.main_dir, ["map", "weather", "effect", weather], loadorder=False)
         # imgs = []
         # for img in imgsold:
         #     img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
@@ -754,8 +754,9 @@ def unitsetup(gamebattle):
     teamcolour = gamebattle.teamcolour
     teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
 
-    with open(main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/" + gamebattle.source + "/unit_pos" + ".csv",
-              encoding="utf-8", mode="r") as unitfile:
+    with open(
+            main_dir + "/data/ruleset" + gamebattle.rulesetfolder + "/map/" + gamebattle.mapselected + "/" + gamebattle.source + "/unit_pos" + ".csv",
+            encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunitgameid = 1
         for row in rd:

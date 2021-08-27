@@ -188,7 +188,8 @@ class Lorebook(pygame.sprite.Sprite):
         listloop = [item for item in list(self.statdata.keys()) if type(item) != str]
         for index, item in enumerate(self.subsection_list):
             if index >= self.current_subsection_row:
-                listgroup.add(SubsectionName([self.width_adjust, self.height_adjust], (pos[0] + column, pos[1] + row), item, listloop[index]))  # add new subsection sprite to group
+                listgroup.add(SubsectionName([self.width_adjust, self.height_adjust], (pos[0] + column, pos[1] + row), item,
+                                             listloop[index]))  # add new subsection sprite to group
                 row += (30 * self.height_adjust)  # next row
                 if len(listgroup) > self.max_subsection_show:
                     break  # will not generate more than space allowed

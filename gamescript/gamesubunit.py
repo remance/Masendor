@@ -636,7 +636,8 @@ class Subunit(pygame.sprite.Sprite):
 
         self.morale = self.base_morale
         self.authority = self.parentunit.authority  # parentunit total authoirty
-        self.commandbuff = self.parentunit.commandbuff[self.unit_type] * 100  # command buff from gamestart leader according to this subunit subunit type
+        self.commandbuff = self.parentunit.commandbuff[
+                               self.unit_type] * 100  # command buff from gamestart leader according to this subunit subunit type
         self.discipline = self.base_discipline
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
