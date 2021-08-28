@@ -8,6 +8,8 @@ There is no main name for the game but rather the name will be based on a major 
 
 For video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
+For any suggestion or bugs report feel free to put them on repo issues, the channel's youtube video or write it here (no login needed): https://freesuggestionbox.com/pub/ybjkdfb
+
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
 ---------------
@@ -78,7 +80,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-0.6.2 - 0.6.5: custom battle, battle result screen, in-game custom sub-unit editor
+0.6.3 - 0.6.5: custom battle, in-game custom sub-unit editor
  
 0.6.6 and 0.6.7: random map generator, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 
