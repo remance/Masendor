@@ -1,5 +1,5 @@
 "traitid","name","authority_bonus","self_health_bonus","self_health_regen","atk_effect","def_melee_effect","def_range_effect","speed_effect","accuracy_effect","reload_effect","charge_effect","charge_def_effect","morale_bonus","discipline_bonus","critical_bonus","personality(Aggro, clever, careful)","description"
-1,"Immortal",,1000000,1000000,,,,,,,,,,,,"5,0,-10",
+1,"Immortal",,"inf","inf",,,,,,,,,,,,"5,0,-10",
 2,"Socially Inept",-50,,,,,,,,,,,,,,"-4,0,3",
 3,"Forgetful",,,,,,,,,,,,,,,"-2,-10,0",
 4,"Stutter",-20,,,,,,,,,,,,,,"-1,0,0",

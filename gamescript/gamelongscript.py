@@ -850,6 +850,8 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
         hitchance *= who.crit_effect  # modify with crit effect further
         if hitchance > 200:
             hitchance = 200
+    else:  # infinity number can cause nan value
+        hitchance = 200
 
     combatscore = round(hitchance / 100, 1)
     if combatscore == 0 and random.randint(0, 10) > 9:  # Final chence to not miss

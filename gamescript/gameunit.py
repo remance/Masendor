@@ -319,15 +319,15 @@ class Unitarmy(pygame.sprite.Sprite):
 
         # v calculate stat for parentunit related calculation
         if self.troopnumber > 0:
-            self.stamina = int(self.stamina / howmany)  # Average stamina of all subunit
-            self.morale = int(self.morale / howmany)  # Average moorale of all subunit
+            self.stamina = self.stamina / howmany  # Average stamina of all subunit
+            self.morale = self.morale / howmany  # Average moorale of all subunit
             self.speed = min(allspeed)  # use slowest subunit
             self.walkspeed, self.runspeed = self.speed / 20, self.speed / 15
             if self.state in (1, 3, 5):
-                self.rotatespeed = round(self.walkspeed * 50 / (len(self.armysubunit[0]) * len(
-                    self.armysubunit)))  # rotate speed is based on move speed and parentunit block size (not subunit total number)
+                self.rotatespeed = self.walkspeed * 50 / (len(self.armysubunit[0]) * len(
+                    self.armysubunit))  # rotate speed is based on move speed and parentunit block size (not subunit total number)
             else:
-                self.rotatespeed = round(self.runspeed * 50 / (len(self.armysubunit[0]) * len(self.armysubunit)))
+                self.rotatespeed = self.runspeed * 50 / (len(self.armysubunit[0]) * len(self.armysubunit))
 
             if self.rotatespeed > 20:
                 self.rotatespeed = 20  # state 10 melee combat rotate is auto placement
@@ -338,15 +338,16 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.maxrange = max(allshootrange)  # Max shoot range of all subunit
                 self.minrange = min(allshootrange)  # Min shoot range of all subunit
             if battlestart is False:  # Only do once when game start
-                self.maxstamina, self.stamina75, self.stamina50, self.stamina25, = self.stamina, round(self.stamina * 0.75), round(
-                    self.stamina * 0.50), round(self.stamina * 0.25)
-                self.ammolist = (round(self.ammo * 0.75), round(self.ammo * 0.50), round(self.ammo * 0.25), 0, -1)
+                self.maxstamina = self.stamina
                 self.last_health_state, self.last_stamina_state = 4, 4
                 self.maxmorale = self.morale
-                self.maxhealth, self.health75, self.health50, self.health25, = self.troopnumber, round(self.troopnumber * 0.75), round(
-                    self.troopnumber * 0.50), round(self.troopnumber * 0.25)
-            self.moralestate = round((self.morale * 100) / self.maxmorale)
-            self.staminastate = round((self.stamina * 100) / self.maxstamina)
+                self.maxhealth = self.troopnumber
+            self.moralestate = 100
+            self.staminastate = 100
+            if self.maxmorale != float("inf"):
+                self.moralestate = round((self.morale * 100) / self.maxmorale)
+            if self.maxstamina != float("inf"):
+                self.staminastate = round((self.stamina * 100) / self.maxstamina)
         # ^ End cal stat
 
     def setup_frontline(self):
@@ -495,19 +496,17 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def authrecal(self):
         """recalculate authority from all alive leaders"""
-        self.authority = int(
-            (self.leader[0].authority / 2) + (self.leader[1].authority / 4) + (self.leader[2].authority / 4) + (self.leader[3].authority / 10))
+        self.authority = (self.leader[0].authority / 2) + (self.leader[1].authority / 4) + \
+                         (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
         self.leader_social = self.leader[0].social
         if self.authority > 0:
             bigarmysize = self.armysubunit > 0
             bigarmysize = bigarmysize.sum()
             if bigarmysize > 20:  # army size larger than 20 will reduce gamestart leader authority
-                self.authority = int((self.teamcommander.authority / 2) +
-                                     (self.leader[0].authority / 2 * (100 - bigarmysize) / 100) + self.leader[1].authority / 2 + self.leader[
-                                         2].authority / 2 +
-                                     self.leader[3].authority / 4)
+                self.authority = (self.teamcommander.authority / 2) + (self.leader[0].authority / 2 * (100 - bigarmysize) / 100) + \
+                                 (self.leader[1].authority / 2) + (self.leader[2].authority / 2) + (self.leader[3].authority / 4)
             else:
-                self.authority = int(self.authority + (self.teamcommander.authority / 2))
+                self.authority = self.authority + (self.teamcommander.authority / 2)
 
     def startset(self, squadgroup):
         """Setup various variables at the start of battle or when new unit spawn/split"""
@@ -982,6 +981,8 @@ class Unitarmy(pygame.sprite.Sprite):
             subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen
             subunit.angle = self.angle
             subunit.rotate()
+
+        self.processcommand(self.base_pos, double_mouse_right, self.revert, self.base_target, 1)
 
     def delete(self, local=False):
         """delete reference when del is called"""

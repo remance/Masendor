@@ -235,7 +235,7 @@
 234,"Underground Hiding",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops can hide better in underground terrain."
 235,"Night Stalking",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,0,"These troops can hide better at night."
 236,"Ambush Expert",1,,,,,0,,,,,,0,,,0,0,0,0,,50,,,,,,,,,,,0,0,,,0,"These troops can hide in any terrain, nowhere is truly safe for the enemy."
-237,"Champion's Crest",1,,,,,10,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"These troops are immortal and cannot be killed by any means, not even magic can harm them."
+237,"Champion's Crest",1,,,,,10,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,
 238,"Battle Frenzy",1,,,,,0,,,,,,0,,,0,0,0,0,,,,,,,,,,,,,0,0,,,2,"KILL! These berserkers can go into frenzy state similar to orc wrath that is even crazier than normal berserk."
 239,"Immune To Silence",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
 240,"Immune To Blind",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,
@@ -316,7 +316,7 @@
 315,"Limb Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,2,"These troops will not lose soldier count from injury after battle."
 316,"Swift Swimmer",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,0,
 317,"Landlubber",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,0,
-318,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+318,"Immortal",1,,,,,,,,,,,,"inf",,,,,,,,,,,,,,,,,,,,,,,"These troops are immortal and cannot be killed by any means, not even magic can harm them."
 319,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 320,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 321,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

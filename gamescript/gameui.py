@@ -196,23 +196,25 @@ class Gameui(pygame.sprite.Sprite):
                 self.image.blit(usecolour[4], self.icon_rect)
 
                 self.image_original2 = self.image.copy()
-            if self.lastauth != who.authority or who.gameid != self.lastwho or splithappen:  # authority number change only when not same as last
+            authority = str(who.authority).split(".")[0]
+            if self.lastauth != authority or who.gameid != self.lastwho or splithappen:  # authority number change only when not same as last
                 self.image = self.image_original2.copy()
-                self.textsurface = self.font.render(str(who.authority), True, (0, 0, 0))
+                self.textsurface = self.font.render(authority, True, (0, 0, 0))
                 self.textrect = self.textsurface.get_rect(
                     center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
                 self.image.blit(self.textsurface, self.textrect)
-                self.lastauth = who.authority
+                self.lastauth = authority
 
         elif self.ui_type == "unitcard":
             position = 15  # starting row
             positionx = 45  # starting point of text
             self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")",
-                          str(int(who.stamina)) + ", " + self.subunit_state[who.state], int(who.morale),
-                          int(who.discipline), int(who.attack), int(who.meleedef), int(who.rangedef), int(who.armour), int(who.speed),
-                          int(who.accuracy), int(who.shootrange), who.magazine_left,
-                          str(int(who.reload_time)) + "/" + str(int(who.reload)) + ": " + str(who.ammo_now),
-                          int(who.charge), int(who.chargedef), who.mentaltext, int(who.temp_count)]
+                          str(who.stamina).split(".")[0] + ", " + self.subunit_state[who.state], str(who.morale).split(".")[0],
+                          str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.meleedef).split(".")[0],
+                          str(who.rangedef).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
+                          str(who.accuracy).split(".")[0], str(who.shootrange).split(".")[0], who.magazine_left,
+                          str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
+                          str(who.charge).split(".")[0], str(who.chargedef).split(".")[0], who.mentaltext, str(who.temp_count).split(".")[0]]
             self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
             self.description = who.description
             if type(self.description) == list:
@@ -263,18 +265,17 @@ class Gameui(pygame.sprite.Sprite):
                     # v Equipment text
                     textvalue = [
                         self.quality_text[who.meleeweapon[1]] + " " + str(weaponlist.weapon_list[who.meleeweapon[0]][0]) + ": D: " + str(who.dmg) +
-                        "R" + str(who.meleespeed) + ", P: " + str(int((1 - who.melee_penetrate) * 100)) + "%, W: "
+                        "R" + str(who.meleespeed) + ", P: " + str((1 - who.melee_penetrate) * 100).split(".")[0] + "%, W: "
                         + str(weaponlist.weapon_list[who.meleeweapon[0]][3]), self.quality_text[who.armourgear[1]] + " " +
-                        str(armourlist.armour_list[who.armourgear[0]][0]) + ": A: " + str(int(who.armour)) + ", W: " +
+                        str(armourlist.armour_list[who.armourgear[0]][0]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
                         str(armourlist.armour_list[who.armourgear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
-                        "Height:" + str(who.height), "Temperature:" + str(int(who.temp_count))]
+                        "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
 
                     if who.rangeweapon[0] != 1:  # only add range weapon if it is not none
-                        textvalue.insert(1,
-                                         self.quality_text[who.rangeweapon[1]] + " " + str(weaponlist.weapon_list[who.rangeweapon[0]][0] + ": D: "
-                                                                                           + str(who.rangedmg) + ", P: " + str(
-                                             int((1 - who.range_penetrate) * 100)) + "%, W: "
-                                                                                           + str(weaponlist.weapon_list[who.rangeweapon[0]][3])))
+                        textvalue.insert(1, self.quality_text[who.rangeweapon[1]] + " " +
+                                         str(weaponlist.weapon_list[who.rangeweapon[0]][0] + ": D: " + str(who.rangedmg) + ", P: " +
+                                             str((1 - who.range_penetrate) * 100).split(".")[0] + "%, W: " +
+                                             str(weaponlist.weapon_list[who.rangeweapon[0]][3])))
 
                     if "None" not in who.mount:  # if mount is not the None mount id 1
                         armourtext = "//" + who.mountarmour[0]

@@ -582,17 +582,18 @@ class Battle:
         """process user mouse input on unit icon, left click = select, right click = go to parentunit position on map"""
         self.clickany = True
         self.uiclick = True
-        for icon in self.uniticon:
-            if icon.rect.collidepoint(self.mousepos):
-                if mouseup:
-                    self.last_selected = icon.army
-                    self.last_selected.justselected = True
-                    self.last_selected.selected = True
+        if self.gamestate == 1 or (self.gamestate == 2 and self.unitbuildslot not in self.battleui):
+            for icon in self.uniticon:
+                if icon.rect.collidepoint(self.mousepos):
+                    if mouseup:
+                        self.last_selected = icon.army
+                        self.last_selected.justselected = True
+                        self.last_selected.selected = True
 
-                elif mouseright:
-                    self.basecamerapos = pygame.Vector2(icon.army.base_pos[0], icon.army.base_pos[1])
-                    self.camerapos = self.basecamerapos * self.camerascale
-                break
+                    elif mouseright:
+                        self.basecamerapos = pygame.Vector2(icon.army.base_pos[0], icon.army.base_pos[1])
+                        self.camerapos = self.basecamerapos * self.camerascale
+                    break
         return self.clickany
 
     def button_mouseover(self, mouseright):
