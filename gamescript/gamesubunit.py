@@ -22,16 +22,16 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     skill = stat[5]  # skill list according to the preset
     self.skill_cooldown = {}
     self.cost = stat[6]
-    self.base_attack = stat[8] + int(self.stat_list.grade_list[self.grade][1])  # base melee attack with grade bonus
-    self.base_meleedef = stat[9] + int(self.stat_list.grade_list[self.grade][2])  # base melee defence with grade bonus
-    self.base_rangedef = stat[10] + int(self.stat_list.grade_list[self.grade][2])  # base range defence with grade bonus
+    self.base_attack = stat[8] + self.stat_list.grade_list[self.grade][1]  # base melee attack with grade bonus
+    self.base_meleedef = stat[9] + self.stat_list.grade_list[self.grade][2]  # base melee defence with grade bonus
+    self.base_rangedef = stat[10] + self.stat_list.grade_list[self.grade][2]  # base range defence with grade bonus
     self.armourgear = stat[11]  # armour equipement
     self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
                        * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
-    self.base_accuracy = stat[12] + int(self.stat_list.grade_list[self.grade][4])
+    self.base_accuracy = stat[12] + self.stat_list.grade_list[self.grade][4]
     self.basesight = stat[13]  # base sight range
     self.magazine_left = stat[14]  # amount of ammunition
-    self.base_reload = stat[15] + int(self.stat_list.grade_list[self.grade][5])
+    self.base_reload = stat[15] + self.stat_list.grade_list[self.grade][5]
     self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
     self.base_charge = stat[16]
     self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
@@ -47,8 +47,8 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     # vv Weapon stat
     self.meleeweapon = stat[21]  # melee weapon equipment
     self.rangeweapon = stat[22]  # range weapon equipment
-    self.dmg = (int(self.weapon_list.weapon_list[self.meleeweapon[0]][1] * self.weapon_list.quality[self.meleeweapon[1]]),
-                int(self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[self.meleeweapon[1]]))  # dmg for melee
+    self.dmg = (self.weapon_list.weapon_list[self.meleeweapon[0]][1] * self.weapon_list.quality[self.meleeweapon[1]],
+                self.weapon_list.weapon_list[self.meleeweapon[0]][2] * self.weapon_list.quality[self.meleeweapon[1]])  # dmg for melee
     self.melee_penetrate = 1 - (self.weapon_list.weapon_list[self.meleeweapon[0]][3] * self.weapon_list.quality[
         self.meleeweapon[1]] / 100)  # the lower the number the less effectiveness of enemy armour
     if self.melee_penetrate > 1:
@@ -57,12 +57,12 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         self.melee_penetrate = 0  # melee melee_penetrate cannot be lower than 0
     self.meleespeed = self.weapon_list.weapon_list[self.meleeweapon[0]][6]
 
-    self.rangedmg = (int(self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]]),
-                     int(self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]]))  # dmg for range
+    self.rangedmg = (self.weapon_list.weapon_list[self.rangeweapon[0]][1] * self.weapon_list.quality[self.rangeweapon[1]],
+                     self.weapon_list.weapon_list[self.rangeweapon[0]][2] * self.weapon_list.quality[self.rangeweapon[1]])  # dmg for range
     self.range_penetrate = 1 - (self.weapon_list.weapon_list[self.rangeweapon[0]][3] * self.weapon_list.quality[self.rangeweapon[1]] / 100)
     self.magazine_size = self.weapon_list.weapon_list[self.rangeweapon[0]][7]  # can shoot how many time before have to reload
-    self.base_range = int(self.weapon_list.weapon_list[self.rangeweapon[0]][8] * self.weapon_list.quality[
-        self.rangeweapon[1]])  # base weapon range depend on weapon range stat and quality
+    self.base_range = self.weapon_list.weapon_list[self.rangeweapon[0]][8] * self.weapon_list.quality[
+        self.rangeweapon[1]]  # base weapon range depend on weapon range stat and quality
     self.arrowspeed = self.weapon_list.weapon_list[self.rangeweapon[0]][9]  # travel speed of range attack
     self.trait = self.trait + self.weapon_list.weapon_list[self.meleeweapon[0]][5]  # apply trait from range weapon
     self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][5]  # apply trait from melee weapon
@@ -72,10 +72,10 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         self.range_penetrate = 0  # range melee_penetrate cannot be lower than 0
     # ^^ End weapon stat
 
-    self.base_morale = int(stat[23] + int(self.stat_list.grade_list[self.grade][9]))  # morale with grade bonus
-    self.base_discipline = int(stat[24] + int(self.stat_list.grade_list[self.grade][10]))  # discilpline with grade bonus
-    self.mental = stat[25] + int(self.stat_list.grade_list[self.grade][11])  # mental resistance from morale dmg and mental status effect
-    self.troopnumber = int(stat[27] * unitscale[self.team - 1] * starthp / 100)  # number of starting troop, team -1 to become list index
+    self.base_morale = stat[23] + self.stat_list.grade_list[self.grade][9]  # morale with grade bonus
+    self.base_discipline = stat[24] + self.stat_list.grade_list[self.grade][10]  # discilpline with grade bonus
+    self.mental = stat[25] + self.stat_list.grade_list[self.grade][11]  # mental resistance from morale dmg and mental status effect
+    self.troopnumber = stat[27] * unitscale[self.team - 1] * starthp / 100  # number of starting troop, team -1 to become list index
     self.base_speed = 50  # All infantry has base speed at 50
     self.unit_type = stat[28] - 1  # 0 is melee infantry and 1 is range for command buff
     self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
@@ -102,7 +102,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         self.weight = self.weight / 2
 
     self.trait = self.trait + self.armour_list.armour_list[stat[11][0]][4]  # Apply armour trait to subunit
-    self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + int(self.stat_list.grade_list[self.grade][3])  # finalise base speed with weight and grade bonus
+    self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + self.stat_list.grade_list[self.grade][3]  # finalise base speed with weight and grade bonus
     self.description = stat[-1]  # subunit description for inspect ui
     # if self.hidden
 
@@ -256,8 +256,6 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
                                                                                    6] / 100)  # final reload speed from weapon and skill
 
     # vv Stat variable after receive modifier effect from various sources, used for activity and effect calculation
-    if self.base_morale > 200:  # starting morale cannot be higher than 200
-        self.base_morale = 200
     self.maxmorale = self.base_morale
     self.attack = self.base_attack
     self.meleedef = self.base_meleedef
@@ -277,7 +275,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         self.mental = 0
     elif self.mental > 200:  # cannot exceed 100
         self.mental = 200
-    self.mentaltext = int(self.mental - 100)
+    self.mentaltext = self.mental - 100
     self.mental = (200 - self.mental) / 100  # convert to percentage
 
     self.elem_melee = self.base_elem_melee
@@ -866,8 +864,8 @@ class Subunit(pygame.sprite.Sprite):
                     self.temp_fulldef = True
         # ^ End status effect
 
-        self.moralestate = (self.morale / self.maxmorale)  # for using as modifer to stat
-        if self.moralestate > 3:  # morale more than 300 give no more benefit
+        self.moralestate = self.morale / self.maxmorale  # for using as modifer to stat
+        if self.moralestate > 3 or math.isnan(self.moralestate):  # morale state more than 3 give no more benefit
             self.moralestate = 3
 
         self.staminastate = (self.stamina * 100) / self.maxstamina
@@ -1160,10 +1158,11 @@ class Subunit(pygame.sprite.Sprite):
                                 self.shootrange >= self.attack_pos.distance_to(self.base_pos):
                             self.state = 11  # can shoot if have magazine_left and in shoot range, enter range combat state
 
-                    elif self.magazine_left > 0 and self.parentunit.fireatwill == 0 and (self.state == 0 or (parentstate in (1, 2, 3, 4, 5, 6)
-                                                                                                             and self.shootmove)):  # Fire at will, auto pick closest enemy
+                    elif self.magazine_left > 0 and self.parentunit.fireatwill == 0 and \
+                            (self.state == 0 or (self.state not in (95, 96, 97, 98, 99) and
+                                                 parentstate in (1, 2, 3, 4, 5, 6) and self.shootmove)):  # Fire at will
                         if self.parentunit.near_target != {} and self.attack_target is None:
-                            self.find_shooting_target(parentstate)
+                            self.find_shooting_target(parentstate)  # shoot nearest target
 
                 if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
                     self.reload_time += dt
@@ -1275,7 +1274,7 @@ class Subunit(pygame.sprite.Sprite):
                     if (((self.parentunit.collide is False or self.frontline is False) or parentstate == 99)
                             or (parentstate == 10 and ((self.frontline or self.parentunit.attackmode == 2) and self.parentunit.attackmode != 1)
                                 or self.charge_momentum > 1)):
-                        nocolide_check = True  # TODO change charge and collide so unit can ignore collide stop if charge bypass def and chance to move
+                        nocolide_check = True
 
                     enemycollide_check = False  # for chance to move or charge through enemy
                     if len(collidelist) > 0:
@@ -1403,8 +1402,6 @@ class Subunit(pygame.sprite.Sprite):
 
                     elif self.base_morale > self.maxmorale:
                         self.base_morale -= dt  # gradually reduce morale that exceed the starting max amount
-                        if self.base_morale > 300:  # base morale cannot be higher than 300
-                            self.base_morale = 300
 
                     if self.state == 95:  # disobey state, morale gradually decrease until recover
                         self.base_morale -= dt * self.mental
@@ -1434,7 +1431,6 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.hpregen < 0:  # negative regen can kill
                         self.unit_health += self.hpregen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
                         remain = self.unit_health / self.troophealth
-                        print(remain)
                         if remain.is_integer() is False:  # always round up if there is decimal number
                             remain = int(remain) + 1
                         else:

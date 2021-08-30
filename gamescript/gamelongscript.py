@@ -862,7 +862,7 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
         leaderdmgbonus = who.leader.combat  # Get extra dmg from leader combat ability
 
     if dmgtype == 0:  # Melee dmg
-        dmg = random.randint(who.dmg[0], who.dmg[1])
+        dmg = random.uniform(who.dmg[0], who.dmg[1])
         if who.chargeskill in who.skill_effect:  # Include charge in dmg if attacking
             if who.ignore_chargedef is False:  # Ignore charge defense if have ignore trait
                 sidecal = battlesidecal[defside]
@@ -883,7 +883,7 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
                     chargedefcal = 0
                 dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
         elif who.chargeskill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
-            dmg += sum([random.randint(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
+            dmg += sum([random.uniform(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
 
         dmg = dmg * ((100 - (target.armour * who.melee_penetrate)) / 100) * combatscore
 

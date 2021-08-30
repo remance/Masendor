@@ -301,7 +301,7 @@ class Battle:
                     self.music_event = newlist
                 else:
                     self.music_schedule = [self.weather_current]
-                    self.music_event = [[5]]  # TODO change later when has custom playlist
+                    self.music_event = [[5]]
             except:  # any reading error will play random custom music instead
                 self.music_schedule = [self.weather_current]
                 self.music_event = [[5]]  # TODO change later when has custom playlist
@@ -2465,9 +2465,12 @@ class Battle:
                     # v Remove the subunit ui when click at empyty space
                     if mouse_up and self.clickany is False:  # not click at any parentunit
                         if self.last_selected is not None:  # any parentunit is selected
+                            print('test')
                             self.last_selected = None  # reset last_selected
                             self.before_selected = None  # reset before selected parentunit after remove last selected
                             self.removeunitui()
+                            if self.slotdisplay_button.event == 0:  # add back ui again for when unit editor ui displayed
+                                self.battleui.add(self.unitsetup_stuff, self.leadernow)
                     # ^ End remove
 
                     if self.ui_timer > 1:

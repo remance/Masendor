@@ -269,7 +269,6 @@ class Lorebook(pygame.sprite.Sprite):
                                     rolelist = {1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock", 5: "Support", 6: "Magic", 7: "Ambusher",
                                                 8: "Sniper", 9: "Recon"}
                                     role = []  # role is not type, it represent subunit classification from base stat to tell what it excel
-                                    print(type(stat[11][0]))
                                     basearmour = stat[11][1] + self.armour_stat[stat[11][0]][1]
                                     if basearmour >= 50 and stat[9] >= 50:
                                         role.append(rolelist[2])  # armour and melee defense (stat[9]), defensive role

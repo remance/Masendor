@@ -208,13 +208,14 @@ class Gameui(pygame.sprite.Sprite):
         elif self.ui_type == "unitcard":
             position = 15  # starting row
             positionx = 45  # starting point of text
-            self.value = [who.name, "{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxtroop) + ")",
-                          str(who.stamina).split(".")[0] + ", " + self.subunit_state[who.state], str(who.morale).split(".")[0],
+            self.value = [who.name, "{:,}".format(int(who.troopnumber)) + " (" + "{:,}".format(int(who.maxtroop)) + ")",
+                          str(who.stamina).split(".")[0] + ", " + str(self.subunit_state[who.state]), str(who.morale).split(".")[0],
                           str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.meleedef).split(".")[0],
                           str(who.rangedef).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
-                          str(who.accuracy).split(".")[0], str(who.shootrange).split(".")[0], who.magazine_left,
+                          str(who.accuracy).split(".")[0], str(who.shootrange).split(".")[0], str(who.magazine_left),
                           str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
-                          str(who.charge).split(".")[0], str(who.chargedef).split(".")[0], who.mentaltext, str(who.temp_count).split(".")[0]]
+                          str(who.charge).split(".")[0], str(who.chargedef).split(".")[0], str(who.mentaltext).split(".")[0],
+                          str(who.temp_count).split(".")[0]]
             self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
             self.description = who.description
             if type(self.description) == list:
@@ -245,7 +246,8 @@ class Gameui(pygame.sprite.Sprite):
                     #         text.pop(i)
                     newvalue, text = self.value[0:-1], self.front_text[1:]
                     for n, value in enumerate(newvalue[1:]):
-                        self.textsurface = self.font.render(text[n] + str(value), True, (0, 0, 0))
+                        value = value.replace("inf", "\u221e")
+                        self.textsurface = self.font.render(text[n] + value, True, (0, 0, 0))
                         self.textrect = self.textsurface.get_rect(
                             midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
                         self.image.blit(self.textsurface, self.textrect)
@@ -701,6 +703,7 @@ class Timer(pygame.sprite.Sprite):
     def startsetup(self, timestart):
         self.timer = timestart.total_seconds()
         self.oldtimer = self.timer
+        self.image = self.image_original.copy()
         self.timenum = timestart  # datetime.timedelta(seconds=self.timer)
         self.timersurface = self.font.render(str(self.timer), True, (0, 0, 0))
         self.timerrect = self.timersurface.get_rect(topleft=(5, 5))

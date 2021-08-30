@@ -89,7 +89,7 @@ class Unitstat:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "ImageID", "Grade", "Race", "Cost", "Upkeep", "Unit Type", "Size"]  # value int only
+            int_column = ["ID", "ImageID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Unit Type", "Size"]  # value int only
             list_column = ["Properties", "Abilities", "Armour", "Melee Weapon", "Range Weapon", "Mount", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
