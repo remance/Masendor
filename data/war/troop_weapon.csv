@@ -2,26 +2,26 @@
 1,"Unarmed",1,3,10,0,0,5,0,0,0,0,10,0,"To go into a battle unarmed is either bravely or lunacy. As it is extremely difficult to block other weapons with one body without receiving damage, unarmed usually has extremely low defense unless masterly trained. Nevertheless unarmed class has sufficiently higher speed and melee attack than other melee class. Their attack also consume less stamina."
 2,"Sword",4,7,17,10,0,3,0,0,0,,0,0,"Sword is the most balanced weapon one can have. Simple to use but still difficult to master. It is also good for both offense and defense. The only weakness is that it has somewhat lower armour penetration capability than mace and hammer. It is worth mentioning that historically sword is somewhat expensive and rare weapon that mostly used by the rich or professional army. But it is still possible for lowly commoner to possess low quality or salvaged sword."
 3,"Greatsword",16,30,35,20,23,1,0,0,0,,0,0,"With the length almost as long as the height of a fully grown man, a greatsword is a weapon of cultural importance to medieval warfare history in various region of the world. From a claymore wielding Scottish Highlander to an Odachi wielding Samurai, only the best-trained warrior can fight valiantly with a greatsword in his hands."
-4,"Shortsword",3,6,10,5,0,4,0,0,0,,0,0,"A simple weapon used throughout the history of mankind. Most effective in an organised infantry tight formation due to its short length. The most remarkable example is Roman Legionaries who use a gladius shortsword and a Scutum tower shield with tremendous effect."
-5,"Dagger",2,4,50,2,0,5,0,0,0,,0,0,"Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon."
-6,"Spear",5,9,10,8,23,2,0,0,0,,1,0,"Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long range, this make spear a good counter against cavalry class but usually have somewhat lower melee defense than other melee class."
+4,"Shortsword",3,6,11,5,0,4,0,0,0,,0,0,"A simple weapon used throughout the history of mankind. Most effective in an organised infantry tight formation due to its short length. The most remarkable example is Roman Legionaries who use a gladius shortsword and a Scutum tower shield with tremendous effect."
+5,"Dagger",2,4,55,2,0,5,0,0,0,,0,0,"Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon."
+6,"Spear",5,9,13,8,23,2,0,0,0,,1,0,"Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long range, this make spear a good counter against cavalry class but usually have somewhat lower melee defense than other melee class."
 7,"Club",3,8,35,14,0,2,0,0,0,,3,0,"A shabby club that is not suitable for professional warfare. Easy to obtain but also easy to break. Do not expect an extraordinary performance with this weapon."
 8,"Mace",5,6,50,18,0,2,0,0,0,,3,0,"Mace is a bludgeon type weapon that become popular due to the advancement of heavy armour that make bladed weaponry less effective. Some type of mace also have piercing or bladed compartments attached such as morning star or winged mace."
 9,"Great Mace",14,20,65,30,0,1,0,0,0,,3,0,
 10,"Flail",4,12,50,16,0,2,0,0,0,,4,0,"Flail is a mace with its head part attaching to chain. Although more difficult to use than mace, flail attack can be somewhat hard to predict and defend against. Its flexible swing means that the flail's head can land impact behind enemy's shield as well. "
-11,"Hammer",4,5,65,18,0,2,0,0,0,,5,0,"Hammer is a tool of blacksmith to shape up metal. Similar to mace, hammer is also good against armoured target where its impactful strikes can leave the unfortunate receiver with broken bones or concussion if aims for the head."
-12,"War Hammer",12,25,75,35,0,1,0,0,0,,5,0,
+11,"Hammer",4,5,60,18,0,2,0,0,0,,5,0,"Hammer is a tool of blacksmith to shape up metal. Similar to mace, hammer is also good against armoured target where its impactful strikes can leave the unfortunate receiver with broken bones or concussion if aims for the head."
+12,"War Hammer",12,25,70,35,0,1,0,0,0,,5,0,
 13,"Handaxe",6,14,30,15,0,2,0,0,0,,2,0,"A tree cutting tool converted into weapon of war. Axe is simple enough to use effectively after some practices. The weight distribution design allow the momentum of axe swing to be powerful enough to break wooden shield or even metal one. "
-14,"Greataxe",8,35,65,30,21,1,0,0,0,,2,0,"The might of a warrior can be symbolised by only this mightiest weapon. A greataxe requires a magnificent amount of strength just to pick it up. No mere man would be mad enough to wield it into battle, for only a few swings can tire him out for the whole day."
+14,"Greataxe",8,35,55,30,21,1,0,0,0,,2,0,"The might of a warrior can be symbolised by only this mightiest weapon. A greataxe requires a magnificent amount of strength just to pick it up. No mere man would be mad enough to wield it into battle, for only a few swings can tire him out for the whole day."
 15,"Halberd",11,29,60,35,23,1,0,0,0,,6,0,"Halberd is a combination of pole arm and axe. "
-16,"Pike",7,21,40,25,"22,23",1,0,0,0,,7,0,"Pike is the most simple answer to the domination of cavalry. Why go attack them when you can let them come die at your weapon tip with their own speed. Due to its extremely long rang, pike user become vulnerable against melee attack and also range attack due to the lack of shield and closed stationary formation."
-17,"Glaive",14,26,40,30,23,1,0,0,0,,8,0,"A more of romantic and elitist weapon than a weapon of war due to the high cost of production. A glaive is often seen holding by a skilled warrior or general more often than a common soldier. It is still a fearsome weapon that can cleave through a person body with ease."
+16,"Pike",7,21,35,25,"22,23",1,0,0,0,,7,0,"Pike is the most simple answer to the domination of cavalry. Why go attack them when you can let them come die at your weapon tip with their own speed. Due to its extremely long rang, pike user become vulnerable against melee attack and also range attack due to the lack of shield and closed stationary formation."
+17,"Glaive",14,26,30,30,23,1,0,0,0,,8,0,"A more of romantic and elitist weapon than a weapon of war due to the high cost of production. A glaive is often seen holding by a skilled warrior or general more often than a common soldier. It is still a fearsome weapon that can cleave through a person body with ease."
 18,"Whip",3,7,5,5,0,3,0,0,0,,9,0,"Not exactly a weapon for combat but rather a tool of command or sometimes duel. A sound of whip cracking can instil obedience to most slaves that they will even die for their masters if commanded. "
-19,"Quarterstaff",7,8,45,10,0,2,0,0,0,,20,0,
-20,"Sling",40,60,35,5,16,6,1,170,40,,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
+19,"Quarterstaff",7,8,35,10,0,2,0,0,0,,20,0,
+20,"Sling",40,60,30,5,16,6,1,170,40,,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage than other range class though, so makeup for this by attacking the enemy from behind or something."
 21,"Blowgun",35,48,10,3,0,5,1,40,50,,12,0,"A somewhat primitive weapon that seen its use in combat mainly in tribal and Native American warfare. Mostly effective against lightly armoured troops because of its low penetration power, a blowgun is still extremely light to carry around and very easy to use. The darts are typically coated with deadly poison to incapacitate a foe even if the projectile only graze the body."
-22,"Javelin",65,85,45,15,16,7,1,80,50,,13,0,
-23,"Throwing Axe",50,90,50,20,21,7,1,70,40,,14,0,
+22,"Javelin",65,85,40,15,16,7,1,80,50,,13,0,
+23,"Throwing Axe",50,90,45,20,21,7,1,70,40,,14,0,
 24,"Longbow",80,120,40,25,16,20,1,200,60,,15,0,"Longbow "
 25,"Shortbow",65,80,15,10,16,15,1,150,50,,16,0,"Bow is one of the most versatile range weapon available. The unit can switch between different arrow type to inflict the most effective result or status. Although, bow is not a weapon that is easy to use and even harder to master, this make bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
 26,"Greatbow",110,150,60,40,16,25,1,250,60,,17,0,"Sometimes bigger does not always mean better. A greatbow is almost impossible to wield, let alone shoot an enormous arrow from it. An arrow from a greatbow can penetrate a body of a man without armour easily and may even penetrate a simple wooden shield."
@@ -31,15 +31,29 @@
 30,"Arbalest",125,134,70,25,0,30,1,200,60,,19,0,
 31,"Stone",28,34,20,5,16,5,1,50,30,,21,0,"Nothing more simple than stick and stone to break some bones. Existed since the dawn of time as preferred range weapon, throwing stone can hurt someone without armor or even kill them instantly if hit in the head with strong enough force."
 32,"Composite Bow",75,95,25,15,16,15,1,170,50,,16,0,
-33,"Trebuchet",9000,10000,100,95,"16,222",100,"1","800",,,,0,
-34,"Catapult",4500,5000,100,70,"16,222",80,"1","500",,,,0,
-35,"Ballista",950,1000,100,60,"16,222",60,"1","400",80,,,0,
-36,"Scorpion",175,200,100,,"222",40,"1","300",80,,,0,
-37,"Onager",,,100,,"16,222",,"1",,,,,0,
-38,"Mangonel",,,100,,"16,222",,"1",,,,,0,
-39,"Hwacha",100,200,80,,"16,222",280,"10",,,,,0,
-40,"Mounted Crossbow",160,190,90,,"16,222",45,"1","200",70,,,0,
-41,"Light Cannon",,,100,50,"16,222",55,"1","600",,,,0,
-42,"Heavy Cannon",,,100,65,"16,222",65,"1","900",,,,0,
-43,"Giant Cannon",80000,100000,100,95,"16,222",600,"1","1000",,,,0,
-44,"Mortar",,,100,65,"16,222",60,"1","800",,,,0,
+33,"Matchlock Musket",,,,,,,,,,,,,
+34,"Arquebus",,,,,,,,,,,,,
+35,"Blunderbuss",,,,,,,,,,,,,
+36,"Flintlock Mjusket",,,,,,,,,,,,,
+37,,,,,,,,,,,,,,
+38,,,,,,,,,,,,,,
+39,,,,,,,,,,,,,,
+40,,,,,,,,,,,,,,
+41,"Flintlock Pistol",,,,,,,,,,,,,
+42,,,,,,,,,,,,,,
+43,,,,,,,,,,,,,,
+44,,,,,,,,,,,,,,
+45,,,,,,,,,,,,,,
+46,"Hand Cannon",,,,,,,,,,,,,
+47,"Trebuchet",9000,10000,2000,95,"16,222",100,"1","800",,,,0,
+48,"Catapult",4500,5000,1000,70,"16,222",80,"1","500",,,,0,
+49,"Ballista",950,1000,500,60,"16,222",60,"1","400",80,,,0,
+50,"Scorpion",175,200,400,,"222",40,"1","300",80,,,0,
+51,"Onager",,,1000,,"16,222",,"1",,,,,0,
+52,"Mangonel",,,1000,,"16,222",,"1",,,,,0,
+53,"Hwacha",100,200,90,,"16,222",280,"10",,,,,0,
+54,"Mounted Crossbow",160,190,90,,"16,222",45,"1","200",70,,,0,
+55,"Light Cannon",,,1000,50,"16,222",55,"1","600",,,,0,
+56,"Heavy Cannon",,,5000,65,"16,222",65,"1","900",,,,0,
+57,"Giant Cannon",80000,100000,10000,95,"16,222",600,"1","1000",,,,0,
+58,"Mortar",,,4000,65,"16,222",60,"1","800",,,,0,

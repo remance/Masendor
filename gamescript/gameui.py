@@ -126,7 +126,7 @@ class Gameui(pygame.sprite.Sprite):
             thisbutton.draw(self.image)
         position = 65
         if self.ui_type == "topbar":
-            self.value = ["{:,}".format(who.troopnumber) + " (" + "{:,}".format(who.maxhealth) + ")", who.staminastate, who.moralestate, who.state]
+            self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.staminastate, who.moralestate, who.state]
             if self.value[3] in self.options1:  # Check subunit state and blit name
                 self.value[3] = self.options1[self.value[3]]
             # if type(self.value[2]) != str:
@@ -208,7 +208,7 @@ class Gameui(pygame.sprite.Sprite):
         elif self.ui_type == "unitcard":
             position = 15  # starting row
             positionx = 45  # starting point of text
-            self.value = [who.name, "{:,}".format(int(who.troopnumber)) + " (" + "{:,}".format(int(who.maxtroop)) + ")",
+            self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.maxtroop)) + ")",
                           str(who.stamina).split(".")[0] + ", " + str(self.subunit_state[who.state]), str(who.morale).split(".")[0],
                           str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.meleedef).split(".")[0],
                           str(who.rangedef).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],

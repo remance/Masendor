@@ -426,7 +426,7 @@ class Armystat(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def addstat(self, troopnumber, leader):
-        """troopnumber need to be in list format as follows:[total,melee infantry, range infantry, cavalry, range cavalry]"""
+        """troop_number need to be in list format as follows:[total,melee infantry, range infantry, cavalry, range cavalry]"""
         self.image = self.image_original.copy()
 
         textsurface = self.font.render(str(leader), True, (0, 0, 0))

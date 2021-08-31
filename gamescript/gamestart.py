@@ -672,14 +672,14 @@ class Mainmenu:
         for index, team in enumerate(armylooplist):
             for unit in team:
                 if unit != 0:
-                    teamtotal[index] += int(self.gameunitstat.unit_list[unit][27] * scalevalue[index])
+                    teamtotal[index] += int(self.gameunitstat.troop_list[unit][27] * scalevalue[index])
                     trooptype = 0
-                    if self.gameunitstat.unit_list[unit][22] != [1, 0] \
-                            and self.gameunitstat.unit_list[unit][8] < self.gameunitstat.unit_list[unit][12]:  # range sub-unit
+                    if self.gameunitstat.troop_list[unit][22] != [1, 0] \
+                            and self.gameunitstat.troop_list[unit][8] < self.gameunitstat.troop_list[unit][12]:  # range sub-unit
                         trooptype += 1  # range weapon and accuracy higher than melee attack
-                    if self.gameunitstat.unit_list[unit][29] != [1, 0, 1]:  # cavalry
+                    if self.gameunitstat.troop_list[unit][29] != [1, 0, 1]:  # cavalry
                         trooptype += 2
-                    trooptypelist[index][trooptype] += int(self.gameunitstat.unit_list[unit][27] * scalevalue[index])
+                    trooptypelist[index][trooptype] += int(self.gameunitstat.troop_list[unit][27] * scalevalue[index])
             trooptypelist[index].append(len(armyteamlist[index]))
 
         armylooplist = ["{:,}".format(troop) + " Troops" for troop in teamtotal]

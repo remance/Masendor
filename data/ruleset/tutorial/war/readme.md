@@ -4,7 +4,7 @@ The unit_preset data structure is as follows;
 
 - Name should not be longer than 20 - 30 characters
 
-- ImageID is which weapon (melee or range)'s imageid sub-unit will used as its weapon icon
+- Type is which weapon (melee (0) or range (1))'s imageid sub-unit will used as its weapon icon
 
 - Grade is the training level of the sub-unit. Refer to data\war\unit_grade.csv for detailed data of the grade.
 

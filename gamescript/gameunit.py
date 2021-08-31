@@ -54,7 +54,7 @@ class Troopnumber(pygame.sprite.Sprite):
         if self.who.team == 2:
             self.textcolour = pygame.Color("red")
         self.pos = self.who.truenumber_pos
-        self.number = self.who.troopnumber
+        self.number = self.who.troop_number
         self.zoom = 0
 
         self.font = pygame.font.SysFont("timesnewroman", int(12 * self.height_adjust))
@@ -77,8 +77,8 @@ class Troopnumber(pygame.sprite.Sprite):
             self.image = self.render(str(self.number), self.font, self.textcolour)
             self.rect = self.image.get_rect(topleft=self.pos)
 
-        if self.number != self.who.troopnumber:  # new troop number
-            self.number = self.who.troopnumber
+        if self.number != self.who.troop_number:  # new troop number
+            self.number = self.who.troop_number
             self.image = self.render(str(self.number), self.font, self.textcolour)
             self.rect = self.image.get_rect(topleft=self.pos)
 
@@ -223,13 +223,13 @@ class Unitarmy(pygame.sprite.Sprite):
         # ^ End behaviour check
 
         # v setup default starting value
-        self.troopnumber = 0  # sum
+        self.troop_number = 0  # sum
         self.stamina = 0  # average from all subunit
         self.morale = 0  # average from all subunit
         self.ammo = 0  # total magazine_left left of the whole parentunit
         self.oldammo = 0  # previous number of magazine_left for magazine_left bar checking
-        self.minrange = 0  # minimum shoot range of all subunit inside this parentunit
-        self.maxrange = 0  # maximum shoot range of all subunit inside this parentunit
+        self.min_range = 0  # minimum shoot range of all subunit inside this parentunit
+        self.max_range = 0  # maximum shoot range of all subunit inside this parentunit
         self.use_min_range = 0  # use min or max range for walk/run (range) command
         self.skill_cond = 0  # skill condition for stamina reservation
         self.state = 0  # see gameui.py topbar for name of each state
@@ -286,7 +286,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
     def setup_army(self, battlestart=True):
         """Grab stat from all subunit in the parentunit"""
-        self.troopnumber = 0
+        self.troop_number = 0
         self.stamina = 0
         self.morale = 0
         allspeed = []  # list of subunit spped, use to get the slowest one
@@ -298,7 +298,7 @@ class Unitarmy(pygame.sprite.Sprite):
         notbroken = False
         for subunit in self.subunit_sprite:
             if subunit.state != 100:  # only get stat from alive subunit
-                self.troopnumber += subunit.troopnumber
+                self.troop_number += subunit.troop_number
                 self.stamina += subunit.stamina
                 self.morale += subunit.morale
                 allspeed.append(subunit.speed)
@@ -309,7 +309,7 @@ class Unitarmy(pygame.sprite.Sprite):
                 howmany += 1
                 if subunit.state != 99:  # check if unit completely broken
                     notbroken = True
-        self.troopnumber = int(self.troopnumber)  # convert to int to prevent float decimal
+        self.troop_number = int(self.troop_number)  # convert to int to prevent float decimal
 
         if notbroken is False:
             self.state = 99  # completely broken
@@ -318,7 +318,7 @@ class Unitarmy(pygame.sprite.Sprite):
         # ^ End grab subunit stat
 
         # v calculate stat for parentunit related calculation
-        if self.troopnumber > 0:
+        if self.troop_number > 0:
             self.stamina = self.stamina / howmany  # Average stamina of all subunit
             self.morale = self.morale / howmany  # Average moorale of all subunit
             self.speed = min(allspeed)  # use slowest subunit
@@ -335,19 +335,19 @@ class Unitarmy(pygame.sprite.Sprite):
                 self.rotatespeed = 1
 
             if len(allshootrange) > 0:
-                self.maxrange = max(allshootrange)  # Max shoot range of all subunit
-                self.minrange = min(allshootrange)  # Min shoot range of all subunit
+                self.max_range = max(allshootrange)  # Max shoot range of all subunit
+                self.min_range = min(allshootrange)  # Min shoot range of all subunit
             if battlestart is False:  # Only do once when game start
-                self.maxstamina = self.stamina
+                self.max_stamina = self.stamina
                 self.last_health_state, self.last_stamina_state = 4, 4
-                self.maxmorale = self.morale
-                self.maxhealth = self.troopnumber
+                self.max_morale = self.morale
+                self.max_health = self.troop_number
             self.moralestate = 100
             self.staminastate = 100
-            if self.maxmorale != float("inf"):
-                self.moralestate = round((self.morale * 100) / self.maxmorale)
-            if self.maxstamina != float("inf"):
-                self.staminastate = round((self.stamina * 100) / self.maxstamina)
+            if self.max_morale != float("inf"):
+                self.moralestate = round((self.morale * 100) / self.max_morale)
+            if self.max_stamina != float("inf"):
+                self.staminastate = round((self.stamina * 100) / self.max_stamina)
         # ^ End cal stat
 
     def setup_frontline(self):
@@ -512,7 +512,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """Setup various variables at the start of battle or when new unit spawn/split"""
         self.setup_army(False)
         self.setup_frontline()
-        self.oldarmyhealth, self.oldarmystamina = self.troopnumber, self.stamina
+        self.oldarmyhealth, self.oldarmystamina = self.troop_number, self.stamina
         self.spritearray = self.armysubunit
         self.leader_social = self.leader[0].social
 
@@ -596,7 +596,7 @@ class Unitarmy(pygame.sprite.Sprite):
 
             if dt > 0:  # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt
-                self.gamebattle.team_troopnumber[self.team] += self.troopnumber
+                self.gamebattle.team_troopnumber[self.team] += self.troop_number
                 if self.timer >= 1:
                     self.setup_army()
 
@@ -635,9 +635,9 @@ class Unitarmy(pygame.sprite.Sprite):
 
                 # v skirmishing
                 if self.hold == 1 and self.state not in (97, 98, 99):
-                    minrange = self.minrange  # run away from enemy that reach minimum range
+                    minrange = self.min_range  # run away from enemy that reach minimum range
                     if minrange < 50:
-                        minrange = 50  # for in case minrange is 0 (melee troop only)
+                        minrange = 50  # for in case min_range is 0 (melee troop only)
                     if list(self.near_target.values())[0].distance_to(self.base_pos) <= minrange:  # if there is any enemy in minimum range
                         self.state = 96  # retreating
                         basetarget = self.base_pos - ((list(self.near_target.values())[0] - self.base_pos) / 5)  # generate base_target to run away
@@ -782,9 +782,9 @@ class Unitarmy(pygame.sprite.Sprite):
                         self.processcommand(self.base_target, othercommand=1)  # reset command base_target state will become 0 idle
 
                 # v Perform range attack, can only enter range attack state after finishing rotate
-                shootrange = self.maxrange
+                shootrange = self.max_range
                 if self.use_min_range == 0:  # use minimum range to shoot
-                    shootrange = self.minrange
+                    shootrange = self.min_range
 
                 if self.state in (5, 6) and self.moverotate is False and (
                         (self.attack_target is not None and self.base_pos.distance_to(self.attack_target.base_pos) <= shootrange)

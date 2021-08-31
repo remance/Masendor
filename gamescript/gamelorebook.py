@@ -196,8 +196,6 @@ class Lorebook(pygame.sprite.Sprite):
 
     def pagedesign(self):
         """Lore book format position of the text"""
-        firstpagecol = 50
-        secondpagecol = 650
         stat = self.statdata[self.subsection]
         if self.section != 4:
             statheader = self.section_list[self.section][0]["ID"][1:-2]
@@ -217,13 +215,13 @@ class Lorebook(pygame.sprite.Sprite):
             self.image.blit(self.portrait, portraitrect)
 
         description = stat[-1]
-        descriptionsurface = pygame.Surface((int(300 * self.height_adjust), int(300 * self.width_adjust)), pygame.SRCALPHA)
+        descriptionsurface = pygame.Surface((int(300 * self.width_adjust), int(350 * self.height_adjust)), pygame.SRCALPHA)
         descriptionrect = descriptionsurface.get_rect(topleft=(int(180 * self.height_adjust), int(60 * self.width_adjust)))
         self.blit_text(descriptionsurface, description, (int(5 * self.height_adjust), int(5 * self.width_adjust)), self.font)
         self.image.blit(descriptionsurface, descriptionrect)
 
         if self.page == 0:
-            row = 350 * self.height_adjust
+            row = 400 * self.height_adjust
             col = 60 * self.width_adjust
 
             # game concept, history, faction sectionis is simply to processed and does not need specific column read
@@ -265,41 +263,24 @@ class Lorebook(pygame.sprite.Sprite):
                         if self.section != 4:  # equipment section need to be processed differently
                             createtext = statheader[index] + ": " + str(text)
                             if statheader[index] == "ImageID":
-                                if self.section == 3:  # Replace imageid to subunit role in troop section
-                                    rolelist = {1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock", 5: "Support", 6: "Magic", 7: "Ambusher",
+                                 # IMAGEID column in other section does not provide information, skip
+                                createtext = ""
+                                pass
+
+                            elif self.section == 3:
+                                if statheader[index] == "Role":  # Replace imageid to subunit role in troop section
+                                    rolelist = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock", 5: "Support", 6: "Magic", 7: "Ambusher",
                                                 8: "Sniper", 9: "Recon"}
-                                    role = []  # role is not type, it represent subunit classification from base stat to tell what it excel
-                                    basearmour = stat[11][1] + self.armour_stat[stat[11][0]][1]
-                                    if basearmour >= 50 and stat[9] >= 50:
-                                        role.append(rolelist[2])  # armour and melee defense (stat[9]), defensive role
-                                    if stat[8] >= 50:
-                                        role.append(rolelist[1])  # melee attack, offensive role
-
-                                    speed = 50  # Default speed not counting weight yet
-
-                                    mountstat = self.mount_stat[stat[29][0]]  # get mount stat
-                                    if stat[29][0] != 1:
-                                        speed = mountstat[2]  # replace speed from mount
-                                    weight = self.armour_stat[stat[11][0]][2] + self.weapon_stat[stat[21][0]][3] + \
-                                             self.weapon_stat[stat[22][0]][3] + self.mount_armour_stat[stat[29][2]][2]
-
-                                    speed = round((speed * ((100 - weight) / 100)))
-                                    if speed > 50 and basearmour < 30:
-                                        role.append(rolelist[3])  # skirmisher role
-                                    if stat[16] + mountstat[3] >= 60:
-                                        role.append(rolelist[4])  # charge (stat[16]) and mount charge bonus, shock role
-
+                                    role = [rolelist[item] for item in text]  # role is not type, it represent subunit classification from base stat to tell what it excel
                                     createtext = "Specilaised Role: "
                                     if len(role) == 0:
                                         createtext += "None, "
                                     for thisrole in role:
                                         createtext += thisrole + ", "
                                     createtext = createtext[0:-2]
-
-                                else:  # IMAGEID column in other section does not provide information, skip
+                                elif statheader[index] == "Type":
                                     createtext = ""
                                     pass
-
                             elif statheader[index] == "Properties":  # troop properties list
                                 traitlist = ""
                                 if text != [0]:
@@ -337,8 +318,8 @@ class Lorebook(pygame.sprite.Sprite):
 
                                 elif statheader[index] == "Armour":  # armour text with quality
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armour_stat[text[0]][
-                                        0] + ", Base Armour: " + str(basearmour)
+                                    createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armour_stat[text[0]][0] \
+                                                 # + ", Base Armour: " + str( self.armour_stat[text[0]][1])
 
                                 elif statheader[index] == "Unit Type":
                                     createtext = statheader[index] + ": " + self.unit_class_list[text][0]
@@ -358,7 +339,8 @@ class Lorebook(pygame.sprite.Sprite):
                                     if statheader[index] == "Charge Skill":
                                         if text in self.skillstat:  # only include skill if exist in ruleset
                                             abilitylist += self.skillstat[text][0]
-                                        createtext = statheader[index] + ": " + abilitylist + ", Base Speed: " + str(speed)  # add subunit speed after
+                                        createtext = statheader[index] + ": " + abilitylist
+                                                     #+ ", Base Speed: " + str(speed)  # add subunit speed after
                                     elif text != [0]:
                                         for thistext in text:
                                             if thistext in self.skillstat:  # only include skill in ruleset

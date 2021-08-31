@@ -41,6 +41,7 @@ class Weaponstat:
             list_column = ["Properties", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -67,6 +68,7 @@ class Armourstat:
             list_column = ["Properties", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -84,31 +86,32 @@ class Unitstat:
     def __init__(self, main_dir, ruleset, rulesetfolder):
         """Unit stat data read"""
         # v Unit stat dict
-        self.unit_list = {}
+        self.troop_list = {}
         with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\war" + "\\troop_preset.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "ImageID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Unit Type", "Size"]  # value int only
-            list_column = ["Properties", "Abilities", "Armour", "Melee Weapon", "Range Weapon", "Mount", "Ruleset"]  # value in list only
+            int_column = ["ID", "Type", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size"]  # value int only
+            list_column = ["Properties", "Abilities", "Armour", "Melee Weapon", "Range Weapon", "Mount", "Role", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                self.unit_list[row[0]] = row[1:]
+                self.troop_list[row[0]] = row[1:]
             unitfile.close()
         # ^ End subunit stat list
 
         # v Lore of the subunit dict
-        self.unit_lore = {}
+        self.troop_lore = {}
         with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\war" + "\\troop_lore.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
-                self.unit_lore[row[0]] = row[1:]
+                self.troop_lore[row[0]] = row[1:]
             unitfile.close()
         # ^ End subunit lore
 
@@ -126,6 +129,7 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            self.status_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -171,6 +175,7 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            self.grade_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     if run != 0:
@@ -195,6 +200,7 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            self.ability_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -224,6 +230,7 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            self.trait_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -241,7 +248,7 @@ class Unitstat:
 
         # v Unit role dict
         self.role = {}
-        with open(main_dir + "\\data\\war" + "\\troop_type.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\war" + "\\troop_class.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -261,6 +268,7 @@ class Unitstat:
             list_column = ["Properties", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.mount_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # ruleset list, make str with "," into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -284,6 +292,7 @@ class Unitstat:
             list_column = ["Properties"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.mount_grade_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     if run != 0:
@@ -303,6 +312,7 @@ class Unitstat:
             list_column = ["Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.mount_armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # ruleset list, make str with "," into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -342,6 +352,7 @@ class Leaderstat:
             int_column = ["ID", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class", "Forcedimageid",
                           "Faction"]  # value int only
             int_column = [index for index, item in enumerate(header) if item in int_column]
+            self.leader_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, int_column=int_column)
@@ -365,6 +376,9 @@ class Leaderstat:
         self.leader_class = {}
         with open(main_dir + "\\data\\leader" + "\\leader_class.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            self.leader_class_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():

@@ -167,23 +167,16 @@ class Armybuildslot(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         if self.troopid != troopindex:
             self.troopid = troopindex
-            self.create_troop_stat(self.stat_list.unit_list[troopindex].copy(), 100, 100, [1, 1])
+            self.create_troop_stat(self.stat_list.troop_list[troopindex].copy(), 100, 100, [1, 1])
 
         self.terrain = terrain
         self.feature = feature
         self.weather = weather
         if self.name != "None":
             # v subunit block team colour
-            if self.unit_type == 2:  # cavalry draw line on block
+            if self.subunit_type == 2:  # cavalry draw line on block
                 pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
             # ^ End subunit block team colour
-
-            # v armour circle colour (grey = light, gold = heavy)
-            image1 = self.images[1]
-            if self.base_armour <= 50: image1 = self.images[2]
-            image1rect = image1.get_rect(center=self.image.get_rect().center)
-            self.image.blit(image1, image1rect)
-            # ^ End armour colour
 
             # v health circle image setup
             healthimage = self.images[1]

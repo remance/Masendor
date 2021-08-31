@@ -723,40 +723,40 @@ class Battle:
     def filtertrooplist(self):
         """Filter troop list based on faction picked and type filter"""
         if self.factionpick != 0:
-            self.troop_list = [item[1][0] for item in self.gameunitstat.unit_list.items()
+            self.troop_list = [item[1][0] for item in self.gameunitstat.troop_list.items()
                                if item[1][0] == "None" or
                                item[0] in self.allfaction.faction_list[self.factionpick][1]]
             self.troop_index_list = [0] + self.allfaction.faction_list[self.factionpick][1]
 
         else:  # pick all faction
-            self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][1:]
+            self.troop_list = [item[0] for item in self.gameunitstat.troop_list.values()][1:]
             self.troop_index_list = list(range(0, len(self.troop_list)))
 
         for unit in self.troop_index_list[::-1]:
             if unit != 0:
                 if self.filtertroop[0] is False:  # filter out melee infantry
-                    if self.gameunitstat.unit_list[unit][8] > self.gameunitstat.unit_list[unit][12] and \
-                            self.gameunitstat.unit_list[unit][29] == [1, 0, 1]:
+                    if self.gameunitstat.troop_list[unit][8] > self.gameunitstat.troop_list[unit][12] and \
+                            self.gameunitstat.troop_list[unit][29] == [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
                 if self.filtertroop[1] is False:  # filter out range infantry
-                    if self.gameunitstat.unit_list[unit][22] != [1, 0] and \
-                            self.gameunitstat.unit_list[unit][8] < self.gameunitstat.unit_list[unit][12] and \
-                            self.gameunitstat.unit_list[unit][29] == [1, 0, 1]:
+                    if self.gameunitstat.troop_list[unit][22] != [1, 0] and \
+                            self.gameunitstat.troop_list[unit][8] < self.gameunitstat.troop_list[unit][12] and \
+                            self.gameunitstat.troop_list[unit][29] == [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
                 if self.filtertroop[2] is False:  # filter out melee cav
-                    if self.gameunitstat.unit_list[unit][8] > self.gameunitstat.unit_list[unit][12] and \
-                            self.gameunitstat.unit_list[unit][29] != [1, 0, 1]:
+                    if self.gameunitstat.troop_list[unit][8] > self.gameunitstat.troop_list[unit][12] and \
+                            self.gameunitstat.troop_list[unit][29] != [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
                 if self.filtertroop[3] is False:  # filter out range cav
-                    if self.gameunitstat.unit_list[unit][22] != [1, 0] and \
-                            self.gameunitstat.unit_list[unit][8] < self.gameunitstat.unit_list[unit][12] and \
-                            self.gameunitstat.unit_list[unit][29] != [1, 0, 1]:
+                    if self.gameunitstat.troop_list[unit][22] != [1, 0] and \
+                            self.gameunitstat.troop_list[unit][8] < self.gameunitstat.troop_list[unit][12] and \
+                            self.gameunitstat.troop_list[unit][29] != [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
@@ -889,7 +889,7 @@ class Battle:
 
             self.factionpick = 0
             self.filtertroop = [True, True, True, True]
-            self.troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][
+            self.troop_list = [item[0] for item in self.gameunitstat.troop_list.values()][
                               1:]  # reset troop filter back to all faction
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
@@ -913,7 +913,7 @@ class Battle:
         if self.mode == "uniteditor":
             self.gamestate = 2  # editor mode
 
-            self.full_troop_list = [item[0] for item in self.gameunitstat.unit_list.values()][1:]
+            self.full_troop_list = [item[0] for item in self.gameunitstat.troop_list.values()][1:]
 
             self.troop_list = self.full_troop_list  # generate troop name list
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
@@ -2465,7 +2465,6 @@ class Battle:
                     # v Remove the subunit ui when click at empyty space
                     if mouse_up and self.clickany is False:  # not click at any parentunit
                         if self.last_selected is not None:  # any parentunit is selected
-                            print('test')
                             self.last_selected = None  # reset last_selected
                             self.before_selected = None  # reset before selected parentunit after remove last selected
                             self.removeunitui()

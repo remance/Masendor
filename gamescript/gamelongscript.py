@@ -14,7 +14,8 @@ import pygame.freetype
 
 # Default game mechanic value
 
-battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier,
+battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier
+infinity = float("inf")
 
 letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
 numberboard = ("8", "7", "6", "5", "4", "3", "2", "1")  # same as above
@@ -336,8 +337,8 @@ def load_game_data(game):
     gamelorebook.Lorebook.history_lore = csv_read(game.main_dir, "history_lore.csv", ["data", "ruleset", game.rulesetfolder.strip("/"), "lore"])
 
     gamelorebook.Lorebook.faction_lore = game.allfaction.faction_list
-    gamelorebook.Lorebook.unit_stat = game.gameunitstat.unit_list
-    gamelorebook.Lorebook.unit_lore = game.gameunitstat.unit_lore
+    gamelorebook.Lorebook.unit_stat = game.gameunitstat.troop_list
+    gamelorebook.Lorebook.troop_lore = game.gameunitstat.troop_lore
     gamelorebook.Lorebook.armour_stat = game.allarmour.armour_list
     gamelorebook.Lorebook.weapon_stat = game.allweapon.weapon_list
     gamelorebook.Lorebook.mount_stat = game.gameunitstat.mount_list
@@ -857,54 +858,65 @@ def losscal(attacker, defender, hit, defense, dmgtype, defside=None):
     if combatscore == 0 and random.randint(0, 10) > 9:  # Final chence to not miss
         combatscore = 0.1
 
-    leaderdmgbonus = 0
-    if who.leader is not None:
-        leaderdmgbonus = who.leader.combat  # Get extra dmg from leader combat ability
+    if combatscore > 0:
+        leaderdmgbonus = 0
+        if who.leader is not None:
+            leaderdmgbonus = who.leader.combat  # Get extra dmg from leader combat ability
 
-    if dmgtype == 0:  # Melee dmg
-        dmg = random.uniform(who.dmg[0], who.dmg[1])
-        if who.chargeskill in who.skill_effect:  # Include charge in dmg if attacking
-            if who.ignore_chargedef is False:  # Ignore charge defense if have ignore trait
-                sidecal = battlesidecal[defside]
-                if target.fulldef or target.temp_fulldef:  # Defense all side
-                    sidecal = 1
-                dmg = dmg + ((who.charge - (target.chargedef * sidecal)) * 2)
-                if target.chargedef >= who.charge / 2:
-                    who.charge_momentum = 1  # charge get stopped by charge def
+        if dmgtype == 0:  # Melee dmg
+            dmg = random.uniform(who.dmg[0], who.dmg[1])
+            if who.chargeskill in who.skill_effect:  # Include charge in dmg if attacking
+                if who.ignore_chargedef is False:  # Ignore charge defense if have ignore trait
+                    sidecal = battlesidecal[defside]
+                    if target.fulldef or target.temp_fulldef:  # Defense all side
+                        sidecal = 1
+                    dmg = dmg + ((who.charge - (target.chargedef * sidecal)) * 2)
+                    if target.chargedef >= who.charge / 2:
+                        who.charge_momentum = 1  # charge get stopped by charge def
+                    else:
+                        who.charge_momentum -= target.chargedef / who.charge
                 else:
-                    who.charge_momentum -= target.chargedef / who.charge
-            else:
-                dmg = dmg + (who.charge * 2)
+                    dmg = dmg + (who.charge * 2)
 
-        if target.chargeskill in target.skill_effect:  # Also include chargedef in dmg if enemy charging
-            if target.ignore_chargedef is False:
-                chargedefcal = who.chargedef - target.charge
-                if chargedefcal < 0:
-                    chargedefcal = 0
-                dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
-        elif who.chargeskill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
-            dmg += sum([random.uniform(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
+            if target.chargeskill in target.skill_effect:  # Also include chargedef in dmg if enemy charging
+                if target.ignore_chargedef is False:
+                    chargedefcal = who.chargedef - target.charge
+                    if chargedefcal < 0:
+                        chargedefcal = 0
+                    dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
+            elif who.chargeskill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
+                dmg += sum([random.uniform(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
 
-        dmg = dmg * ((100 - (target.armour * who.melee_penetrate)) / 100) * combatscore
+            penetrate = who.melee_penetrate / target.armour
+            if penetrate > 1:
+                penetrate = 1
+            dmg = dmg * penetrate * combatscore
 
-    else:  # Range Damage
-        dmg = dmgtype.dmg * ((100 - (target.armour * dmgtype.penetrate)) / 100) * combatscore
+        else:  # Range Damage
+            penetrate = dmgtype.penetrate / target.armour
+            if penetrate > 1:
+                penetrate = 1
+            dmg = dmgtype.dmg * penetrate * combatscore
 
-    leaderdmg = dmg
-    unitdmg = (dmg * who.troopnumber) + leaderdmgbonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
-    if (who.anti_inf and target.unit_type in (1, 2)) or (who.anti_cav and target.unit_type in (4, 5, 6, 7)):  # Anti trait dmg bonus
-        unitdmg = unitdmg * 1.25
-    # if type == 0: # melee do less dmg per hit because the combat happen more frequently than range
-    #     unitdmg = unitdmg / 20
+        leaderdmg = dmg
+        unitdmg = (dmg * who.troop_number) + leaderdmgbonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
+        if (who.anti_inf and target.subunit_type in (1, 2)) or (who.anti_cav and target.subunit_type in (4, 5, 6, 7)):  # Anti trait dmg bonus
+            unitdmg = unitdmg * 1.25
+        # if type == 0: # melee do less dmg per hit because the combat happen more frequently than range
+        #     unitdmg = unitdmg / 20
 
-    moraledmg = dmg / 50
+        moraledmg = dmg / 50
 
-    # Damage cannot be negative (it would heal instead), same for morale and leader dmg
-    if unitdmg < 0:
+        # Damage cannot be negative (it would heal instead), same for morale and leader dmg
+        if unitdmg < 0:
+            unitdmg = 0
+        if leaderdmg < 0:
+            leaderdmg = 0
+        if moraledmg < 0:
+            moraledmg = 0
+    else:  # complete miss
         unitdmg = 0
-    if leaderdmg < 0:
         leaderdmg = 0
-    if moraledmg < 0:
         moraledmg = 0
 
     return unitdmg, moraledmg, leaderdmg
@@ -937,7 +949,10 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
         final_dmg = receiver.unit_health
 
     receiver.unit_health -= final_dmg
-    receiver.base_morale -= (final_moraledmg + attacker.bonus_morale_dmg) * receiver.mental
+    health_check = 0.1
+    if receiver.max_health != infinity:
+        health_check = 1 - (receiver.unit_health / receiver.max_health)
+    receiver.base_morale -= (final_moraledmg + attacker.bonus_morale_dmg) * receiver.mental * health_check
     receiver.stamina -= attacker.bonus_stamina_dmg
 
     # v Add red corner to indicate combat
