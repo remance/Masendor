@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 
 
-class Textdrama(pygame.sprite.Sprite):
+class TextDrama(pygame.sprite.Sprite):
     images = []
     SCREENRECT = None
 

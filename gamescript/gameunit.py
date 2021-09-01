@@ -8,7 +8,7 @@ from gamescript import gamelongscript
 from pygame.transform import scale
 
 
-class Directionarrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
+class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
         """Layer must be called before sprite_init"""
         self._layer = 4
@@ -41,7 +41,7 @@ class Directionarrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
             self.kill()
 
 
-class Troopnumber(pygame.sprite.Sprite):
+class TroopNumber(pygame.sprite.Sprite):
     def __init__(self, main, who):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -136,7 +136,7 @@ class Troopnumber(pygame.sprite.Sprite):
             del self.who
 
 
-class Unitarmy(pygame.sprite.Sprite):
+class Unit(pygame.sprite.Sprite):
     images = []
     status_list = None  # status effect list
     maxzoom = 10  # max zoom allow
@@ -151,7 +151,7 @@ class Unitarmy(pygame.sprite.Sprite):
         """Although parentunit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon = None  # for linking with army selection ui, got linked when icon created in gameui.Armyicon
+        self.icon = None  # for linking with army selection ui, got linked when icon created in gameui.ArmyIcon
         self.teamcommander = None  # commander leader
         self.startwhere = []
         self.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)

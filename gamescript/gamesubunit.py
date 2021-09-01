@@ -928,10 +928,9 @@ class Subunit(pygame.sprite.Sprite):
         if self.armour < 1:  # Armour cannot be lower than 1
             self.armour = 1
         if self.speed < 1:
+            self.speed = 1
             if 105 in self.status_effect:  # collapse state enforce 0 speed
                 self.speed = 0
-            else:
-                self.speed = 1
         if self.accuracy < 0:
             self.accuracy = 0
         if self.reload < 0:
@@ -1002,7 +1001,7 @@ class Subunit(pygame.sprite.Sprite):
 
         if self.state != 100:  # only run these when not dead
             # v Mouse collision detection
-            if self.gamebattle.gamestate == 1 or (self.gamebattle.gamestate == 2 and self.gamebattle.unitbuildslot not in self.gamebattle.battleui):
+            if self.gamebattle.gamestate == 1 or (self.gamebattle.gamestate == 2 and self.gamebattle.unit_build_slot not in self.gamebattle.battleui):
                 if self.rect.collidepoint(mousepos):
                     self.gamebattle.last_mouseover = self.parentunit  # last mouse over on this parentunit
                     if mouseup and self.gamebattle.uiclick is False:
@@ -1221,7 +1220,7 @@ class Subunit(pygame.sprite.Sprite):
                                 and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
                             # can shoot if reload finish and base_target existed and not dead. Non arcshot cannot shoot if forbidded
                             # TODO add line of sight for range attack
-                            gamerangeattack.Rangearrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot
+                            gamerangeattack.RangeArrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot
                             self.ammo_now -= 1  # use 1 magazine_left in magazine
                         elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target die when it about to shoot
                             self.parentunit.range_combat_check = False

@@ -4,7 +4,7 @@ import pygame
 import pygame.freetype
 
 
-class Uibutton(pygame.sprite.Sprite):
+class UIButton(pygame.sprite.Sprite):
     def __init__(self, x, y, image, event=None, newlayer=11):
         self._layer = newlayer
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -18,7 +18,7 @@ class Uibutton(pygame.sprite.Sprite):
     #     gamescreen.blit(self.image, self.rect)
 
 
-class Switchuibutton(pygame.sprite.Sprite):
+class SwitchButton(pygame.sprite.Sprite):
     def __init__(self, x, y, image):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -37,7 +37,7 @@ class Switchuibutton(pygame.sprite.Sprite):
             self.lastevent = self.event
 
 
-class Popupicon(pygame.sprite.Sprite):
+class PopupIcon(pygame.sprite.Sprite):
     def __init__(self, x, y, image, event, gameui, itemid=""):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -52,7 +52,7 @@ class Popupicon(pygame.sprite.Sprite):
     #     gamescreen.blit(self.image, self.rect)
 
 
-class Gameui(pygame.sprite.Sprite):
+class GameUI(pygame.sprite.Sprite):
     def __init__(self, x, y, image, icon, uitype, text="", textsize=16):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -296,7 +296,7 @@ class Gameui(pygame.sprite.Sprite):
         self.lastwho = who.gameid
 
 
-class Skillcardicon(pygame.sprite.Sprite):
+class SkillCardIcon(pygame.sprite.Sprite):
     cooldown = None
     activeskill = None
 
@@ -346,7 +346,7 @@ class Skillcardicon(pygame.sprite.Sprite):
                 self.image.blit(self.textsurface, self.textrect)
 
 
-class Effectcardicon(pygame.sprite.Sprite):
+class EffectCardIcon(pygame.sprite.Sprite):
 
     def __init__(self, image, pos, icontype, gameid=None):
         self._layer = 11
@@ -381,7 +381,7 @@ class FPScount(pygame.sprite.Sprite):
         self.image.blit(fps_text, self.textrect)
 
 
-class Selectedsquad(pygame.sprite.Sprite):
+class SelectedSquad(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, pos, layer=17):
@@ -449,7 +449,7 @@ class Minimap(pygame.sprite.Sprite):
                                                      self.cameraborder[0] * 10 / viewmode / 50, self.cameraborder[1] * 10 / viewmode / 50), 2)
 
 
-class Eventlog(pygame.sprite.Sprite):
+class EventLog(pygame.sprite.Sprite):
     max_row_show = 9  # maximum 9 text rows can appear at once
     logscroll = None  # Link from gamebattle after creation of both object
 
@@ -528,7 +528,7 @@ class Eventlog(pygame.sprite.Sprite):
         imagechange = False
         for mode in modelist:
             thislog = (self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[mode]  # log to edit
-            if len(textoutput) <= 45:  # Eventlog each row cannot have more than 45 characters including space
+            if len(textoutput) <= 45:  # EventLog each row cannot have more than 45 characters including space
                 thislog.append([who, textoutput])
             else:  # Cut the text log into multiple row if more than 45 char
                 cutspace = [index for index, letter in enumerate(textoutput) if letter == " "]
@@ -578,7 +578,7 @@ class Eventlog(pygame.sprite.Sprite):
             self.recreateimage()
 
 
-class Uiscroller(pygame.sprite.Sprite):
+class UIScroller(pygame.sprite.Sprite):
     def __init__(self, pos, uiheight, max_row_show, layer=11):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self)
@@ -631,7 +631,7 @@ class Uiscroller(pygame.sprite.Sprite):
         return self.currentrow
 
 
-class Armyselect(pygame.sprite.Sprite):
+class ArmySelect(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -644,7 +644,7 @@ class Armyselect(pygame.sprite.Sprite):
         self.logsize = 0
 
 
-class Armyicon(pygame.sprite.Sprite):
+class ArmyIcon(pygame.sprite.Sprite):
     def __init__(self, pos, army):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -725,7 +725,7 @@ class Timer(pygame.sprite.Sprite):
                 self.image.blit(self.timersurface, self.timerrect)
 
 
-class Timeui(pygame.sprite.Sprite):
+class TimeUI(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -735,7 +735,7 @@ class Timeui(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
-class Scaleui(pygame.sprite.Sprite):
+class ScaleUI(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -764,7 +764,7 @@ class Scaleui(pygame.sprite.Sprite):
             self.image.blit(team2text, team2textrect)
 
 
-class Speednumber(pygame.sprite.Sprite):
+class SpeedNumber(pygame.sprite.Sprite):
     def __init__(self, pos, speed, textsize=20):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -786,7 +786,7 @@ class Speednumber(pygame.sprite.Sprite):
         self.image.blit(self.timersurface, self.timerrect)
 
 
-class Inspectsubunit(pygame.sprite.Sprite):
+class InspectSubunit(pygame.sprite.Sprite):
     def __init__(self, pos):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self)
@@ -804,7 +804,7 @@ class Inspectsubunit(pygame.sprite.Sprite):
         self.who = None
 
 
-class Battledone(pygame.sprite.Sprite):
+class BattleDone(pygame.sprite.Sprite):
     def __init__(self, main, boximage, resultimage):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust

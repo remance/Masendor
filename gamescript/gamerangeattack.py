@@ -7,7 +7,7 @@ from gamescript import gamelongscript
 from pygame.transform import scale
 
 
-class Rangearrow(pygame.sprite.Sprite):
+class RangeArrow(pygame.sprite.Sprite):
     angle: float
     images = []
     gamemapheight = None
@@ -116,7 +116,7 @@ class Rangearrow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=self.pos)
         self.target = self.basetarget * viewmode
 
-    def rangedmgcal(self, who, target, targetside, sidepercent=(1, 0.3, 0.3, 0)):
+    def range_dmgcal(self, who, target, targetside, sidepercent=(1, 0.3, 0.3, 0)):
         """Calculate hitchance and defense chance, sidepercent is more punishing than melee attack"""
         wholuck = random.randint(-20, 20)  # luck of the attacker subunit
         targetluck = random.randint(-20, 20)  # luck of the defender subunit
@@ -148,7 +148,7 @@ class Rangearrow(pygame.sprite.Sprite):
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  # dmg on leader
             target.leader.health -= wholeaderdmg
 
-    def registerhit(self, subunit=None):
+    def register_hit(self, subunit=None):
         """Calculatte dmg when arrow reach base_target"""
         if subunit is not None:
             anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
@@ -159,7 +159,7 @@ class Rangearrow(pygame.sprite.Sprite):
             else:  # rear
                 self.side = 2
 
-            self.rangedmgcal(self.shooter, subunit, self.side)  # calculate dmg
+            self.range_dmgcal(self.shooter, subunit, self.side)  # calculate dmg
 
     def update(self, unitlist, dt, viewmode):
         move = self.basetarget - self.base_pos
@@ -191,12 +191,12 @@ class Rangearrow(pygame.sprite.Sprite):
             for subunit in pygame.sprite.spritecollide(self, unitlist, 0):
                 if subunit != self.shooter:  # and subunit.base_pos.distance_to(self.base_pos) < subunit.imageheight:
                     if self.arcshot is False:  # direct shot
-                        self.registerhit(subunit)
+                        self.register_hit(subunit)
                         self.kill()
                     else:
                         self.passwho = subunit
                     break
 
         else:  # reach base_target
-            self.registerhit(self.passwho)  # register hit whatever subunit the sprite land at
+            self.register_hit(self.passwho)  # register hit whatever subunit the sprite land at
             self.kill()  # remove sprite

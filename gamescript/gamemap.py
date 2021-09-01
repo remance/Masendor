@@ -38,7 +38,7 @@ featurecolour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuil
 feaurelist = ("Plain", "Barren", "PlantField", "Forest", "InlandWater", "Road", "UrbanBuilding", "Farm", "Pandemonium", "Mana", "Rot", "Wetground")
 
 
-class Basemap(pygame.sprite.Sprite):
+class BaseMap(pygame.sprite.Sprite):
     maxzoom = 10
 
     def __init__(self, scale):
@@ -84,7 +84,7 @@ class Basemap(pygame.sprite.Sprite):
     # def update(self, dt, pos, scale):
 
 
-class Mapfeature(pygame.sprite.Sprite):
+class FeatureMap(pygame.sprite.Sprite):
     maxzoom = 10
     main_dir = None
     featuremod = None
@@ -136,7 +136,7 @@ class Mapfeature(pygame.sprite.Sprite):
         return terrainindex, featureindex
 
 
-class Mapheight(pygame.sprite.Sprite):
+class HeightMap(pygame.sprite.Sprite):
     maxzoom = 10
 
     def __init__(self, scale):
@@ -176,7 +176,7 @@ class Mapheight(pygame.sprite.Sprite):
         return heightindex
 
 
-class Beautifulmap(pygame.sprite.Sprite):
+class BeautifulMap(pygame.sprite.Sprite):
     textureimages = []
     emptyimage = None
     loadtexturelist = None

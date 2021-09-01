@@ -9,7 +9,7 @@ terraincolour = gamemap.terraincolour
 featurecolour = gamemap.featurecolour
 
 
-class Inputui(pygame.sprite.Sprite):
+class InputUI(pygame.sprite.Sprite):
     def __init__(self, main, image, pos):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -34,7 +34,7 @@ class Inputui(pygame.sprite.Sprite):
         self.image.blit(self.textsurface, self.textrect)
 
 
-class Inputbox(pygame.sprite.Sprite):
+class InputBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, width, text="", clickinput=False):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -88,7 +88,7 @@ class Inputbox(pygame.sprite.Sprite):
                 self.image.blit(self.textsurface, self.textrect)
 
 
-class Profilebox(pygame.sprite.Sprite):
+class ProfileBox(pygame.sprite.Sprite):
     def __init__(self, main, image, pos, name):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -114,7 +114,7 @@ class Profilebox(pygame.sprite.Sprite):
         self.image.blit(self.textsurface, self.textrect)
 
 
-class Menubutton(pygame.sprite.Sprite):
+class MenuButton(pygame.sprite.Sprite):
     def __init__(self, main, images, pos, text="", size=16, layer=15):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -166,7 +166,7 @@ class Menubutton(pygame.sprite.Sprite):
         self.event = False
 
 
-class Menuicon(pygame.sprite.Sprite):
+class MenuIcon(pygame.sprite.Sprite):
     def __init__(self, images, pos, text="", imageresize=0):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
@@ -183,7 +183,7 @@ class Menuicon(pygame.sprite.Sprite):
         self.event = False
 
 
-class Slidermenu(pygame.sprite.Sprite):
+class SliderMenu(pygame.sprite.Sprite):
     def __init__(self, barimage, buttonimage, pos, value):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
@@ -219,7 +219,7 @@ class Slidermenu(pygame.sprite.Sprite):
         valuebox.update(self.value)
 
 
-class Valuebox(pygame.sprite.Sprite):
+class ValueBox(pygame.sprite.Sprite):
     def __init__(self, textimage, pos, value, textsize=16):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("timesnewroman", textsize)
@@ -239,7 +239,7 @@ class Valuebox(pygame.sprite.Sprite):
         self.image.blit(self.textsurface, self.textrect)
 
 
-class Maptitle(pygame.sprite.Sprite):
+class MapTitle(pygame.sprite.Sprite):
     def __init__(self, main, name, pos):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -263,7 +263,7 @@ class Maptitle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midtop=pos)
 
 
-class Mapdescription(pygame.sprite.Sprite):
+class MapDescription(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, main, pos, text):
@@ -308,7 +308,7 @@ class Mapdescription(pygame.sprite.Sprite):
             self.image = self.image_original.copy()
 
 
-class Sourcedescription(pygame.sprite.Sprite):
+class SourceDescription(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, main, pos, text):
@@ -353,7 +353,7 @@ class Sourcedescription(pygame.sprite.Sprite):
             self.image = self.image_original.copy()
 
 
-class Teamcoa(pygame.sprite.Sprite):
+class TeamCoa(pygame.sprite.Sprite):
     def __init__(self, main, pos, image, team, name):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -400,7 +400,7 @@ class Teamcoa(pygame.sprite.Sprite):
             self.image = self.notselectedimage
 
 
-class Armystat(pygame.sprite.Sprite):
+class ArmyStat(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, main, pos):
@@ -439,7 +439,7 @@ class Armystat(pygame.sprite.Sprite):
             self.image.blit(textsurface, textrect)
 
 
-class Listbox(pygame.sprite.Sprite):
+class ListBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, image, layer=14):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -454,7 +454,7 @@ class Listbox(pygame.sprite.Sprite):
         self.maxshowlist = int(self.image.get_height() / (self.listimageheight + (6 * self.height_adjust)))  # max number of map on list can be shown
 
 
-class Namelist(pygame.sprite.Sprite):
+class NameList(pygame.sprite.Sprite):
     def __init__(self, main, box, pos, name, textsize=16, layer=15):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -484,7 +484,7 @@ class Namelist(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class Tickbox(pygame.sprite.Sprite):
+class TickBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, image, tickimage, option):
         """option is in str text for identifying what kind of tickbox it is"""
         self.width_adjust = main.width_adjust
@@ -516,7 +516,7 @@ class Tickbox(pygame.sprite.Sprite):
             self.image = self.notickimage
 
 
-class Mapoptionbox(pygame.sprite.Sprite):
+class MapOptionBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, image, mode):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -551,7 +551,7 @@ class Mapoptionbox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topright=pos)
 
 
-class Sourcelistbox(pygame.sprite.Sprite):
+class SourceListBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, image):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -564,7 +564,7 @@ class Sourcelistbox(pygame.sprite.Sprite):
         self.maxshowlist = 5  # max number of map on list can be shown at once
 
 
-class Sourcename(pygame.sprite.Sprite):
+class SourceName(pygame.sprite.Sprite):
     def __init__(self, main, box, pos, name, textsize=16, layer=14):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -592,7 +592,7 @@ class Sourcename(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class Mapshow(pygame.sprite.Sprite):
+class MapShow(pygame.sprite.Sprite):
     def __init__(self, main, pos, basemap, featuremap):
         self.main_dir = main.main_dir
         self.width_adjust = main.width_adjust

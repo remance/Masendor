@@ -7,7 +7,7 @@ from gamescript import gamesubunit
 from pygame.transform import scale
 
 
-class Previewbox(pygame.sprite.Sprite):
+class PreviewBox(pygame.sprite.Sprite):
     main_dir = None
     effectimage = None
 
@@ -51,7 +51,7 @@ class Previewbox(pygame.sprite.Sprite):
         self.image.blit(textsurface, textrect)
 
 
-class Previewleader(pygame.sprite.Sprite):
+class PreviewLeader(pygame.sprite.Sprite):
     baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
 
     def __init__(self, leaderid, subunitpos, armyposition, leaderstat):
@@ -99,7 +99,7 @@ class Previewleader(pygame.sprite.Sprite):
             self.subunitpos = subunit.slotnumber
 
 
-class Selectedpresetborder(pygame.sprite.Sprite):
+class SelectedPresetBorder(pygame.sprite.Sprite):
     def __init__(self, width, height):
         self._layer = 16
         pygame.sprite.Sprite.__init__(self)
@@ -111,7 +111,7 @@ class Selectedpresetborder(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
-class Armybuildslot(pygame.sprite.Sprite):
+class Unitbuildslot(pygame.sprite.Sprite):
     squadwidth = 0  # subunit sprite width size get add from gamestart
     squadheight = 0  # subunit sprite height size get add from gamestart
     images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
@@ -261,7 +261,7 @@ class Warningmsg(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class Previewchangebutton(pygame.sprite.Sprite):
+class PreviewChangeButton(pygame.sprite.Sprite):
     def __init__(self, main, pos, image, text):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
@@ -288,7 +288,7 @@ class Previewchangebutton(pygame.sprite.Sprite):
         self.image.blit(self.textsurface, self.textrect)
 
 
-class Filterbox(pygame.sprite.Sprite):
+class FilterBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, image):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
