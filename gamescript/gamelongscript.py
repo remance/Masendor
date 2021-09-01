@@ -163,20 +163,20 @@ def load_game_data(game):
     for item in weatherlist:
         for strength in strengthlist:
             game.weather_list.append(strength + item)
-    game.weathermatterimgs = []
+    game.weather_matter_imgs = []
 
     for weather in ("0", "1", "2", "3"):  # Load weather matter sprite image
         imgs = load_images(game.main_dir, ["map", "weather", weather], loadorder=False)
-        game.weathermatterimgs.append(imgs)
+        game.weather_matter_imgs.append(imgs)
 
-    game.weathereffectimgs = []
+    game.weather_effect_imgs = []
     for weather in ("0", "1", "2", "3", "4", "5", "6", "7"):  # Load weather effect sprite image
         imgs = load_images(game.main_dir, ["map", "weather", "effect", weather], loadorder=False)
         # imgs = []
         # for img in imgsold:
         #     img = pygame.transform.scale(img, (SCREENRECT.width, SCREENRECT.height))
         #     imgs.append(img)
-        game.weathereffectimgs.append(imgs)
+        game.weather_effect_imgs.append(imgs)
 
     imgs = load_images(game.main_dir, ["map", "weather", "icon"], loadorder=False)  # Load weather icon
     gameweather.Weather.images = imgs
@@ -281,16 +281,16 @@ def load_game_data(game):
     imgs = load_images(game.main_dir, ["ui", "unit_ui", "armour"])
     game.allarmour = gameunitstat.Armourstat(main_dir, imgs, game.ruleset)  # Create armour class
 
-    game.statusimgs = load_images(game.main_dir, ["ui", "status_icon"], loadorder=False)
-    game.roleimgs = load_images(game.main_dir, ["ui", "role_icon"], loadorder=False)
-    game.traitimgs = load_images(game.main_dir, ["ui", "trait_icon"], loadorder=False)
-    game.skillimgs = load_images(game.main_dir, ["ui", "skill_icon"], loadorder=False)
+    game.status_imgs = load_images(game.main_dir, ["ui", "status_icon"], loadorder=False)
+    game.role_imgs = load_images(game.main_dir, ["ui", "role_icon"], loadorder=False)
+    game.trait_imgs = load_images(game.main_dir, ["ui", "trait_icon"], loadorder=False)
+    game.skill_imgs = load_images(game.main_dir, ["ui", "skill_icon"], loadorder=False)
 
-    cooldown = pygame.Surface((game.skillimgs[0].get_width(), game.skillimgs[0].get_height()), pygame.SRCALPHA)
+    cooldown = pygame.Surface((game.skill_imgs[0].get_width(), game.skill_imgs[0].get_height()), pygame.SRCALPHA)
     cooldown.fill((230, 70, 80, 200))  # red colour filter for skill cooldown timer
     gameui.SkillCardIcon.cooldown = cooldown
 
-    activeskill = pygame.Surface((game.skillimgs[0].get_width(), game.skillimgs[0].get_height()), pygame.SRCALPHA)
+    activeskill = pygame.Surface((game.skill_imgs[0].get_width(), game.skill_imgs[0].get_height()), pygame.SRCALPHA)
     activeskill.fill((170, 220, 77, 200))  # green colour filter for skill active timer
     gameui.SkillCardIcon.activeskill = activeskill
 
@@ -519,11 +519,11 @@ def load_game_data(game):
                       gameui.UIButton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
                       gameui.UIButton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
-    game.screenbuttonlist = game.buttonui[8:17]  # event log and time buttons
-    game.unitcardbutton = game.buttonui[0:4]
+    game.screen_button_list = game.buttonui[8:17]  # event log and time buttons
+    game.unitcard_button = game.buttonui[0:4]
     game.inspectbutton = game.buttonui[4]
     game.col_split_button = game.buttonui[5]  # parentunit split by column button
-    game.rowsplitbutton = game.buttonui[6]  # parentunit split by row button
+    game.row_split_button = game.buttonui[6]  # parentunit split by row button
 
     game.timebutton = game.buttonui[14:17]
     game.battleui.add(game.buttonui[8:17])
@@ -636,7 +636,7 @@ def trait_skill_blit(self):
         icon.kill()
 
     for trait in self.gameui[2].value2[0]:
-        self.skill_icon.add(gameui.SkillCardIcon(self.traitimgs[0], (position[0], position[1]), 0, gameid=trait))  # For now use placeholder image 0
+        self.skill_icon.add(gameui.SkillCardIcon(self.trait_imgs[0], (position[0], position[1]), 0, gameid=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -647,7 +647,7 @@ def trait_skill_blit(self):
     startrow = position[0]
 
     for skill in self.gameui[2].value2[1]:
-        self.skill_icon.add(gameui.SkillCardIcon(self.skillimgs[0], (position[0], position[1]), 1, gameid=skill))  # For now use placeholder image 0
+        self.skill_icon.add(gameui.SkillCardIcon(self.skill_imgs[0], (position[0], position[1]), 1, gameid=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -667,7 +667,7 @@ def effect_icon_blit(self):
         icon.kill()
 
     for status in self.gameui[2].value2[4]:
-        self.effect_icon.add(gameui.SkillCardIcon(self.statusimgs[0], (position[0], position[1]), 4, gameid=status))
+        self.effect_icon.add(gameui.SkillCardIcon(self.status_imgs[0], (position[0], position[1]), 4, gameid=status))
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
