@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-from gamescript import gamelongscript
+from gamescript import longscript
 
 
 class Lorebook(pygame.sprite.Sprite):
@@ -31,7 +31,7 @@ class Lorebook(pygame.sprite.Sprite):
     race_list = None
     statetext = None
 
-    def __init__(self, main, image, textsize=18):
+    def __init__(self, main, image, textsize=17):
         """ Lorebook section: 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill,
         7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark"""
         self.main_dir = main.main_dir
@@ -238,11 +238,13 @@ class Lorebook(pygame.sprite.Sprite):
                     # blit image instead of text
                     else:
                         if "FULLIMAGE:" in text:  # full image to whole two pages
-                            textsurface = gamelongscript.load_image(self.main_dir + text[10:])
+                            filename = text[10:].split("\\")[-1]
+                            textsurface = longscript.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
                             textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
                             textrect = descriptionsurface.get_rect(topleft=(0, 0))
                         else:
-                            textsurface = gamelongscript.load_image(self.main_dir + text[6:])
+                            filename = text[6:].split("\\")[-1]
+                            textsurface = longscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                             textrect = descriptionsurface.get_rect(topleft=(col, row))
                     self.image.blit(textsurface, textrect)
 
@@ -419,11 +421,15 @@ class Lorebook(pygame.sprite.Sprite):
                         # blit image
                         else:
                             if "FULLIMAGE:" in text:
-                                textsurface = gamelongscript.load_image(self.main_dir + text[10:])
+                                filename = text[10:].split("\\")[-1]
+                                textsurface = longscript.load_image(self.main_dir, filename , text[10:].replace(filename, ""))
                                 textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
                                 textrect = descriptionsurface.get_rect(topleft=(0, 0))
                             else:
-                                textsurface = gamelongscript.load_image(self.main_dir + text[6:])
+                                filename = text[6:].split("\\")[-1]
+                                print(self.main_dir)
+                                print(filename, text[6:].replace(filename, ""), text[6:])
+                                textsurface = longscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                                 textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.image.blit(textsurface, textrect)
 

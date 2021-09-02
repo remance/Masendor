@@ -3,10 +3,10 @@ import csv
 
 import pygame
 import pygame.freetype
-from gamescript import gamemap
+from gamescript import map
 
-terraincolour = gamemap.terraincolour
-featurecolour = gamemap.featurecolour
+terraincolour = map.terraincolour
+featurecolour = map.featurecolour
 
 
 class InputUI(pygame.sprite.Sprite):

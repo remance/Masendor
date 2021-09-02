@@ -1,0 +1,59 @@
+"ID","Name","Minimum Damage","Maximum Damage","Armour Penetration","Weight","Trait","Speed","Magazine","Range","Travel Speed","Cost","ImageID","Ruleset","Description"
+1,"Unarmed",1,3,10,0,0,5,0,0,0,0,10,0,"To go into a battle unarmed is either bravely or lunacy. As it is extremely difficult to block other weapons with one body without receiving damage, unarmed usually have extremely low defence unless masterly trained. Nevertheless, an unarmed attack has a sufficiently higher attack speed than most other melee weapons. And of course, the lack of additional weight makes an unarmed weapon ideal for maximising moving speed."
+2,"Sword",4,7,17,10,0,3,0,0,0,,0,0,"Sword is the most balanced weapon one can have. Simple to use but still difficult to master. It is also good for both offence and defence. The only weakness is that it has somewhat lower armour penetration capability than mace and hammer. It is worth mentioning that historically sword is a somewhat expensive and rare weapon that is mostly used by the rich or professional army. But it is still possible for a lowly commoner to possess a low quality or salvaged sword."
+3,"Greatsword",16,30,35,20,23,1,0,0,0,,0,0,"With the length almost as long as the height of a fully grown man, a greatsword is a weapon of cultural importance to medieval warfare history in various regions of the world. From a claymore wielding Scottish Highlander to an Odachi wielding Samurai, only the best-trained warrior can fight valiantly with a greatsword in his hands."
+4,"Shortsword",3,6,11,5,0,4,0,0,0,,0,0,"A simple weapon used throughout the history of mankind. Most effective in an organised infantry tight formation due to its short length. The most remarkable example is Roman Legionaries, who use a gladius shortsword and a Scutum tower shield with tremendous effect."
+5,"Dagger",2,4,55,2,0,5,0,0,0,,0,0,"Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon. It is one of the best weapons to penetrate the weak spot in heavy armour such as the armpits or groin area."
+6,"Spear",5,9,13,8,23,2,0,0,0,,1,0,"Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long length, this makes spear a good counter against cavalry class but usually have somewhat lower melee defence than other melee class."
+7,"Club",3,8,35,14,0,2,0,0,0,,3,0,"A shabby club that is not suitable for professional warfare. Easy to obtain but also easy to break. Do not expect an extraordinary performance with this weapon."
+8,"Mace",5,6,50,18,0,2,0,0,0,,3,0,"Mace is a bludgeon type weapon that became popular due to the advancement of heavy armour that makes bladed weaponry less effective. Some types of mace also have piercing or bladed compartments attached to the weapon's head such as morning star or winged mace."
+9,"Great Mace",14,20,65,30,0,1,0,0,0,,3,0,
+10,"Flail",4,12,50,16,0,2,0,0,0,,4,0,"Flail is a mace with its head part attaching to a link of chains to the handle. Although more difficult to use than mace, a flail's attack can be somewhat difficult to predict and defend against. Its flexible swing means that the flail's head can land impact behind the enemy's shield as well. "
+11,"Hammer",4,5,60,18,0,2,0,0,0,,5,0,"Hammer is a tool of the blacksmith to shape up metal. Similar to mace, the hammer is also good against an armoured target where its impactful strikes can leave the unfortunate receiver with broken bones or concussion if aims for the head."
+12,"War Hammer",12,25,70,35,0,1,0,0,0,,5,0,
+13,"Handaxe",6,14,30,15,0,2,0,0,0,,2,0,"A tree cutting tool converted into a weapon of war. Axe is simple enough to use effectively after some practice. The weight distribution design allows the momentum of axe swing to be powerful enough to break a wooden shield or even a metal one. "
+14,"Greataxe",8,35,55,30,21,1,0,0,0,,2,0,"The might of a warrior can be symbolised by only this mightiest weapon. A greataxe requires a magnificent amount of strength just to pick it up. No mere man would be mad enough to wield it into battle, for only a few swings can tire him out for the whole day."
+15,"Halberd",11,29,60,35,23,1,0,0,0,,6,0,"Halberd is a combination of pole arm and axe. "
+16,"Pike",7,21,35,25,"22,23",1,0,0,0,,7,0,"Pike is the most simple answer to the domination of cavalry. Why go attack them when you can let them come die at your weapon tip with their own speed. Due to its extremely long length, pike users become vulnerable against melee attacks and also ranged attacks due to the lack of shield and closed stationary formation."
+17,"Glaive",14,26,30,30,23,1,0,0,0,,8,0,"A more romantic and elitist weapon than a weapon of war due to the high cost of production. A glaive is often seen holding by a skilled warrior or general more often than a common soldier. It is still a fearsome weapon that can cleave through a person body with ease."
+18,"Whip",3,7,5,5,0,3,0,0,0,,9,0,"Not exactly a weapon for combat but rather a tool of command or sometimes duel. A sound of whip cracking can instil obedience to most slaves that they will even die for their masters if commanded. "
+19,"Quarterstaff",7,8,35,10,0,2,0,0,0,,20,0,"Quarterstaff is not a common weapon in warfare. It is a practical weapon for self-defence and a non-lethal weapon seen used by militia or religious troops. Skilled use of this weapon can still incapacitate a lightly armoured enemy with ease though."
+20,"Sling",40,60,30,5,16,6,1,170,60,,11,0,"Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also have decent armour penetration. It has lower damage outputs than other ranged weapons though, so make up for this by attacking the enemy from behind or something."
+21,"Blowgun",35,48,10,3,0,5,1,40,60,,12,0,"A somewhat primitive weapon that has seen its use in combat mainly in tribal and Native American warfare. Mostly effective against lightly armoured troops because of its low penetration power, a blowgun is still extremely light to carry around and very easy to use. The darts are typically coated with deadly poison to incapacitate a foe even if the projectile only graze the body."
+22,"Javelin",65,85,40,15,16,7,1,80,50,,13,0,
+23,"Throwing Axe",50,90,45,20,21,7,1,70,45,,14,0,
+24,"Longbow",80,120,40,25,16,15,1,200,70,,15,0,"Longbow "
+25,"Shortbow",65,80,15,10,16,10,1,150,60,,16,0,"Bow is one of the most versatile ranged weapons available. The unit can switch between different arrow types to inflict the most effective result or status. Although bow is not a weapon that is easy to use and even harder to master, this makes bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
+26,"Greatbow",110,150,60,40,16,25,1,250,75,,17,0,"Sometimes bigger does not always mean better. A greatbow is almost impossible to wield, let alone shoot an enormous arrow from it. An arrow from a greatbow can penetrate a body of a man without armour easily and may even penetrate a simple wooden shield."
+27,"Light Crossbow",65,70,30,20,0,20,1,120,60,,18,0,"The pinnacle of medieval warfare. Easier to use than bows that any peasant can use after few days of training to kill a knight that trains for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload and it is relatively useless in melee combat, so use it wisely. Light crossbow is much easier to reload and carry making it more suitable for skirmish tactic and medium armour targets."
+28,"Heavy Crossbow",90,100,50,40,0,25,1,150,70,,19,0,"Heavy crossbow can be regarded as the first-ever weapon that can effectively kill a knight. At short range, it can penetrate chainmail easily and may even injure a knight in his plate mail. Its large size makes it cumbersome to carry around and reload though."
+29,"Repeater Crossbow",54,62,10,25,0,25,5,100,60,,18,0,"The first automatic hand-held weapon in the history of warfare. Ineffective at long range but devastating at short range, especially against lightly armoured troops. A repeating crossbow is often seen as an unconventional weapon that has never seen use outside of Ancient China, but truly an ingenious piece of engineering nevertheless."
+30,"Arbalest",125,134,70,25,0,30,1,200,70,,19,0,
+31,"Stone",28,34,20,5,16,5,1,50,30,,21,0,"Nothing is more simple than a stick and stone to break some bones. Existed since the dawn of time as a preferred ranged weapon, throwing stones can hurt someone without armour or even kill them instantly if hit in the head with strong enough force."
+32,"Composite Bow",75,95,25,15,16,15,1,170,60,,16,0,
+33,"Matchlock Musket",150,200,80,35,,30,1,,200,,,0,
+34,"Arquebus",,,,,,,1,,200,,,0,
+35,"Blunderbuss",130,200,70,50,,,2,40,200,,,0,
+36,"Flintlock Musket",180,200,90,30,,20,1,,200,,,0,
+37,"Flintlock Pistol",100,115,75,10,,10,1,,200,,,,
+38,"Matchlock Pistol",90,110,50,10,,15,1,,,,,,
+39,,,,,,,,,,,,,,
+40,,,,,,,,,,,,,,
+41,,,,,,,,,,,,,,
+42,,,,,,,,,,,,,,
+43,,,,,,,,,,,,,,
+44,,,,,,,,,,,,,,
+45,,,,,,,,,,,,,,
+46,"Hand Cannon",,,,,,,,,,,,,
+47,"Trebuchet",9000,10000,2000,95,"16,222",100,"1","800",,,,0,
+48,"Catapult",4500,5000,1000,70,"16,222",80,"1","500",,,,0,
+49,"Ballista",950,1000,500,60,"16,222",60,"1","400",80,,,0,
+50,"Scorpion",175,200,400,,"222",40,"1","300",80,,,0,
+51,"Onager",,,1000,,"16,222",,"1",,,,,0,
+52,"Mangonel",,,1000,,"16,222",,"1",,,,,0,
+53,"Hwacha",100,200,90,,"16,222",280,"10",,,,,0,
+54,"Mounted Crossbow",160,190,90,,"16,222",45,"1","200",70,,,0,
+55,"Light Cannon",,,1000,50,"16,222",55,"1","600",,,,0,
+56,"Heavy Cannon",,,5000,65,"16,222",65,"1","900",,,,0,
+57,"Giant Cannon",80000,100000,10000,95,"16,222",600,"1","1000",,,,0,
+58,"Mortar",,,4000,65,"16,222",60,"1","800",,,,0,

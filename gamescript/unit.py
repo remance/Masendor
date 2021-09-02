@@ -4,7 +4,7 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import gamelongscript
+from gamescript import longscript
 from pygame.transform import scale
 
 
@@ -141,9 +141,9 @@ class Unit(pygame.sprite.Sprite):
     status_list = None  # status effect list
     maxzoom = 10  # max zoom allow
     gamebattle = None
-    rotationxy = gamelongscript.rotationxy
-    die = gamelongscript.die  # die script
-    setrotate = gamelongscript.setrotate
+    rotationxy = longscript.rotationxy
+    die = longscript.die  # die script
+    setrotate = longscript.setrotate
     formchangetimer = 10
     imgsize = None
 
@@ -232,7 +232,7 @@ class Unit(pygame.sprite.Sprite):
         self.max_range = 0  # maximum shoot range of all subunit inside this parentunit
         self.use_min_range = 0  # use min or max range for walk/run (range) command
         self.skill_cond = 0  # skill condition for stamina reservation
-        self.state = 0  # see gameui.py topbar for name of each state
+        self.state = 0  # see ui.py topbar for name of each state
         self.command_state = self.state
         self.deadchange = False  # for checking when subunit dead and run related code
         self.timer = random.random()
@@ -638,7 +638,8 @@ class Unit(pygame.sprite.Sprite):
                     minrange = self.min_range  # run away from enemy that reach minimum range
                     if minrange < 50:
                         minrange = 50  # for in case min_range is 0 (melee troop only)
-                    if list(self.near_target.values())[0].distance_to(self.base_pos) <= minrange:  # if there is any enemy in minimum range
+                    target_list = list(self.near_target.values())
+                    if len(target_list) > 0 and target_list[0].distance_to(self.base_pos) <= minrange:  # if there is any enemy in minimum range
                         self.state = 96  # retreating
                         basetarget = self.base_pos - ((list(self.near_target.values())[0] - self.base_pos) / 5)  # generate base_target to run away
 
@@ -764,7 +765,7 @@ class Unit(pygame.sprite.Sprite):
                         self.set_subunit_target(self.base_target)
                     else:
                         self.state = 0  # idle state
-                        self.command_state = self.state
+                        self.processcommand(self.base_target, othercommand=1)
                         self.rotateonly = False  # reset rotate only condition
                 # ^ End rotate function
 
@@ -809,7 +810,7 @@ class Unit(pygame.sprite.Sprite):
 
                 self.gamebattle.setup_uniticon()  # reset army icon (remove dead one)
                 self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
-                                                [0, 1])  # put destroyed event in war and army log
+                                                [0, 1])  # put destroyed event in troop and army log
 
                 self.kill()
                 for subunit in self.subunit_sprite:

@@ -463,8 +463,8 @@ class EventLog(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft=self.pos)
 
     def makenew(self):
-        self.mode = 0  # 0=war,1=army(subunit),2=leader,3=subunit(sub-subunit)
-        self.battle_log = []  # 0 war
+        self.mode = 0  # 0=troop,1=army(subunit),2=leader,3=subunit(sub-subunit)
+        self.battle_log = []  # 0 troop
         self.unit_log = []  # 1 army
         self.leader_log = []  # 2 leader
         self.subunit_log = []  # 3 subunit

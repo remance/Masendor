@@ -73,7 +73,7 @@ troop_weapon: list of all sub-units' weapons including artillery weapons. The da
 
 - Properties list that will be applied to the sub-unit with this grade
 
-- Reload time for range weapon, how long it take to reload in second at speed 1x
+- Speed is attack speed for melee weapon, how many times troop deal damage per attack. Reload time for range weapon, how long it take to reload in second at speed 1x
 
 - Magazine for range weapon, how many time the unit can shoot before having to reload. 1 magazine is equal to 1 ammo.
 

@@ -1,4 +1,4 @@
-"ID","Name","Speed Bonus","Charge Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Properties"
+"ID","Name","Speed Bonus","Charge Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Trait"
 0,"Untrained",-10,-60,100,100,-20,-40,5
 1,"Domestic",0,-30,105,120,-10,0,89
 2,"War",0,0,110,110,0,0,0

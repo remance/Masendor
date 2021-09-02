@@ -33,12 +33,12 @@ class Weaponstat:
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weapon_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_weapon.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_weapon.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Cost", "ImageID", "Speed"]  # value int only
-            list_column = ["Properties", "Ruleset"]  # value in list only
+            list_column = ["Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -60,12 +60,12 @@ class Armourstat:
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.armour_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_armour.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_armour.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Cost"]  # value int only
-            list_column = ["Properties", "Ruleset"]  # value in list only
+            list_column = ["Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.armour_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -87,12 +87,12 @@ class Unitstat:
         """Unit stat data read"""
         # v Unit stat dict
         self.troop_list = {}
-        with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\war" + "\\troop_preset.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\troop" + "\\troop_preset.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Type", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size"]  # value int only
-            list_column = ["Properties", "Abilities", "Armour", "Melee Weapon", "Range Weapon", "Mount", "Role", "Ruleset"]  # value in list only
+            list_column = ["Trait", "Skill", "Armour", "Melee Weapon", "Range Weapon", "Mount", "Role", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -105,7 +105,7 @@ class Unitstat:
 
         # v Lore of the subunit dict
         self.troop_lore = {}
-        with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\war" + "\\troop_lore.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\troop" + "\\troop_lore.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -117,7 +117,7 @@ class Unitstat:
 
         # v Unit status effect dict
         self.status_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_status.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_status.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -146,7 +146,7 @@ class Unitstat:
 
         # v Race dict
         self.race_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_race.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_race.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
@@ -163,13 +163,13 @@ class Unitstat:
 
         # v Unit grade dict
         self.grade_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_grade.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_grade.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             run = 0
             int_column = ["ID"]  # value int only
-            list_column = ["Properties"]  # value in list only
+            list_column = ["Trait"]  # value in list only
             mod_column = ["Melee Attack Effect", "Melee Defense Effect", "Range Defense Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect"]  # need to be calculate to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
@@ -186,8 +186,8 @@ class Unitstat:
         # ^ End subunit grade
 
         # v Unit skill dict
-        self.ability_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_ability.csv", encoding="utf-8", mode="r") as unitfile:
+        self.skill_list = {}
+        with open(main_dir + "\\data\\troop" + "\\troop_skill.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -200,7 +200,7 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            self.ability_list_header = {k: v for v, k in enumerate(header[1:])}
+            self.skill_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -210,20 +210,20 @@ class Unitstat:
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column, int_column=int_column)
-                    self.ability_list[row[0]] = row[1:]
+                    self.skill_list[row[0]] = row[1:]
                     run += 1
         unitfile.close()
         # ^ End subunit skill
 
-        # v Unit property dict
+        # v Unit trait dict
         self.trait_list = {}
-        with open(main_dir + "\\data\\war" + "\\troop_property.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_trait.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             run = 0
             int_column = ["ID", "Buff Range", "Race", "Cost"]  # value int only
-            list_column = ["Status", "Abilities", "Special Effect", "Enemy Status", "Ruleset"]  # value in list only
+            list_column = ["Status", "Special Effect", "Enemy Status", "Ruleset"]  # value in list only
             mod_column = ["Buff Modifier", "Melee Attack Effect", "Melee Defense Effect", "Range Defense Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Siege Effect", "Supply Effect", "Upkeep Effect"]  # need to be calculate to percentage
@@ -244,11 +244,11 @@ class Unitstat:
                     self.trait_list[row[0]] = row[1:]
                     run += 1
         unitfile.close()
-        # ^ End subunit property
+        # ^ End subunit trait
 
         # v Unit role dict
         self.role = {}
-        with open(main_dir + "\\data\\war" + "\\troop_class.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\troop_class.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -260,12 +260,12 @@ class Unitstat:
 
         # v Unit mount dict
         self.mount_list = {}
-        with open(main_dir + "\\data\\war" + "\\mount_preset.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\mount_preset.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Cost"]  # value int only
-            list_column = ["Properties", "Ruleset"]  # value in list only
+            list_column = ["Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.mount_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -283,13 +283,13 @@ class Unitstat:
 
         # v Mount grade dict
         self.mount_grade_list = {}
-        with open(main_dir + "\\data\\war" + "\\mount_grade.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\mount_grade.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             run = 0  # for avoiding header
             int_column = ["ID"]  # value int only
-            list_column = ["Properties"]  # value in list only
+            list_column = ["Trait"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.mount_grade_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -304,7 +304,7 @@ class Unitstat:
 
         # v Mount armour dict
         self.mount_armour_list = {}
-        with open(main_dir + "\\data\\war" + "\\mount_armour.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(main_dir + "\\data\\troop" + "\\mount_armour.csv", encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]

@@ -4,7 +4,7 @@ import sys
 import traceback
 
 import screeninfo
-from gamescript import gamestart
+from gamescript import start
 
 screen = screeninfo.get_monitors()[0]
 
@@ -29,7 +29,7 @@ except Exception:  # Create config file if not found with the default
 if __name__ == "__main__":
     try:  # for printing error log when error exception happen
         main_dir = os.path.split(os.path.abspath(__file__))[0]
-        runmenu = gamestart.Mainmenu(main_dir, config)
+        runmenu = start.Mainmenu(main_dir, config)
         runmenu.run()
     except Exception:  # Save error output to txt file
         traceback.print_exc()

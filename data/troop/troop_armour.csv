@@ -1,4 +1,4 @@
-"ID","Name","Armour","Weight","Cost","Properties","Ruleset","Description"
+"ID","Name","Armour","Weight","Cost","Trait","Ruleset","Description"
 1,"None",0,0,0,"199,200",0,
 2,"Padded Armour",30,20,1000,"0",0,
 3,"Leather Armour",25,14,900,"0",0,

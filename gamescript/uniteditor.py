@@ -3,7 +3,7 @@ import csv
 
 import pygame
 import pygame.freetype
-from gamescript import gamesubunit
+from gamescript import subunit
 from pygame.transform import scale
 
 
@@ -118,7 +118,7 @@ class Unitbuildslot(pygame.sprite.Sprite):
     weapon_list = None
     armourlist = None
     stat_list = None
-    create_troop_stat = gamesubunit.create_troop_stat
+    create_troop_stat = subunit.create_troop_stat
 
     def __init__(self, gameid, team, armyid, position, startpos, slotnumber, teamcolour):
         self.colour = teamcolour

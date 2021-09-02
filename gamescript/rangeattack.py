@@ -3,7 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript import gamelongscript
+from gamescript import longscript
 from pygame.transform import scale
 
 
@@ -117,7 +117,7 @@ class RangeArrow(pygame.sprite.Sprite):
         self.target = self.basetarget * viewmode
 
     def range_dmgcal(self, who, target, targetside, sidepercent=(1, 0.3, 0.3, 0)):
-        """Calculate hitchance and defense chance, sidepercent is more punishing than melee attack"""
+        """Calculate hitchance and defence chance, sidepercent is more punishing than melee attack"""
         wholuck = random.randint(-20, 20)  # luck of the attacker subunit
         targetluck = random.randint(-20, 20)  # luck of the defender subunit
 
@@ -128,18 +128,18 @@ class RangeArrow(pygame.sprite.Sprite):
         if whohit < 0:
             whohit = 0  # hitchance cannot be negative
 
-        targetdefense = float(target.rangedef * targetpercent) + targetluck  # calculate defense
-        if targetdefense < 0:
-            targetdefense = 0  # defense cannot be negative
+        targetdefence = float(target.rangedef * targetpercent) + targetluck  # calculate defence
+        if targetdefence < 0:
+            targetdefence = 0  # defence cannot be negative
 
-        whodmg, whomoraledmg, wholeaderdmg = gamelongscript.losscal(who, target, whohit, targetdefense, self)
+        whodmg, whomoraledmg, wholeaderdmg = longscript.losscal(who, target, whohit, targetdefence, self)
         target.unit_health -= whodmg
         target.base_morale -= whomoraledmg
 
         # v Add red corner to indicate dmg
-        if target.red_corner is False:
+        if target.red_border is False:
             target.imageblock.blit(target.images[11], target.corner_image_rect)
-            target.red_corner = True
+            target.red_border = True
         # ^ End red corner
 
         if who.elem_range not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic

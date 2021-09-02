@@ -1,4 +1,4 @@
-"ID","Name","Speed","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Properties","Ruleset","Description"
+"ID","Name","Speed","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Ruleset","Description"
 1,"None",0,0,0,0,0,0,0,
 2,"Friesian Horse",70,500,80,50,,0,0,
 3,"Mongolian Horse",50,300,40,100,,0,0,

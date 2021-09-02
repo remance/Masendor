@@ -7,22 +7,22 @@ import sys
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import gamesubunit, gameunit, gameui, gameleader, gamecamera, gamelongscript, gameweather, gameprepare, gamemap
+from gamescript import subunit, unit, ui, leader, camera, longscript, weather, prepare, map
 from pygame.locals import *
 from scipy.spatial import KDTree
 
-load_image = gamelongscript.load_image
-load_images = gamelongscript.load_images
-csv_read = gamelongscript.csv_read
-load_sound = gamelongscript.load_sound
-editconfig = gamelongscript.edit_config
+load_image = longscript.load_image
+load_images = longscript.load_images
+csv_read = longscript.csv_read
+load_sound = longscript.load_sound
+editconfig = longscript.edit_config
 
 
 class Battle:
-    splitunit = gamelongscript.splitunit
-    traitskillblit = gamelongscript.trait_skill_blit
-    effecticonblit = gamelongscript.effect_icon_blit
-    countdownskillicon = gamelongscript.countdown_skill_icon
+    splitunit = longscript.splitunit
+    traitskillblit = longscript.trait_skill_blit
+    effecticonblit = longscript.effect_icon_blit
+    countdownskillicon = longscript.countdown_skill_icon
 
     def __init__(self, main, winstyle):
         # v Get game object/variable from gamestart
@@ -174,7 +174,7 @@ class Battle:
         self.trait_imgs = main.trait_imgs
         self.skill_imgs = main.skill_imgs
 
-        self.gameunitstat = main.gameunitstat
+        self.troop_data = main.troop_data
         self.leader_stat = main.leader_stat
 
         self.statetext = main.statetext
@@ -229,10 +229,10 @@ class Battle:
         self.screen = pygame.display.set_mode(self.SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up game screen
 
         # v Assign default variable to some class
-        gameunit.Unit.gamebattle = self
-        gameunit.Unit.imgsize = (self.squadwidth, self.squadheight)
-        gamesubunit.Subunit.gamebattle = self
-        gameleader.Leader.gamebattle = self
+        unit.Unit.gamebattle = self
+        unit.Unit.imgsize = (self.squadwidth, self.squadheight)
+        subunit.Subunit.gamebattle = self
+        leader.Leader.gamebattle = self
         # ^ End assign default
 
         self.background = pygame.Surface(self.SCREENRECT.size)  # Create background image
@@ -270,7 +270,7 @@ class Battle:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
                                           ["data", "ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected, self.source], 1)
             self.weather_event = self.weather_event[1:]
-            gamelongscript.convert_str_time(self.weather_event)
+            longscript.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
             newtime = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
@@ -289,7 +289,7 @@ class Battle:
                                             ["data", "ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
-                    gamelongscript.convert_str_time(self.music_event)
+                    longscript.convert_str_time(self.music_event)
                     self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
                     newlist = []
                     for time in self.music_schedule:
@@ -310,7 +310,7 @@ class Battle:
         try:  # get new map event for event log
             mapevent = csv_read("eventlog.csv",
                                 [self.main_dir, "data", "ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected, self.source], 0)
-            gameui.EventLog.mapevent = mapevent
+            ui.EventLog.mapevent = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list
 
@@ -333,8 +333,8 @@ class Battle:
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camerascale = 1  # Camera zoom
-        gamecamera.Camera.SCREENRECT = self.SCREENRECT
-        self.camera = gamecamera.Camera(self.camerapos, self.camerascale)
+        camera.Camera.SCREENRECT = self.SCREENRECT
+        self.camera = camera.Camera(self.camerapos, self.camerascale)
 
         if mapselected is not None:
             imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected], loadorder=False)
@@ -372,7 +372,7 @@ class Battle:
             self.death_troopnumber = [0, 0, 0]
             self.flee_troopnumber = [0, 0, 0]
             self.capture_troopnumber = [0, 0, 0]
-            gamelongscript.unitsetup(self)
+            longscript.unitsetup(self)
         # ^ End start subunit sprite
 
     def save_preset(self):
@@ -513,7 +513,7 @@ class Battle:
 
         for index, unit in enumerate(unitlist):  # add unit icon for drawing according to appopriate current row
             if index >= currentindex:
-                self.uniticon.add(gameui.ArmyIcon((column, row), unit))
+                self.uniticon.add(ui.ArmyIcon((column, row), unit))
                 column += 40
                 if column > 250:
                     row += 50
@@ -558,7 +558,7 @@ class Battle:
         else:
             self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
 
-        self.main.setuplist(gameprepare.NameList, 0, newlist, self.popup_namegroup,
+        self.main.setuplist(prepare.NameList, 0, newlist, self.popup_namegroup,
                             self.popup_listbox, self.battleui, layer=19)
 
         self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
@@ -571,8 +571,8 @@ class Battle:
 
     def ui_mouseover(self):
         """mouse over ui that is not subunit card and unitbox (topbar and commandbar)"""
-        for ui in self.gameui:
-            if ui in self.battleui and ui.rect.collidepoint(self.mousepos):
+        for this_ui in self.gameui:
+            if this_ui in self.battleui and this_ui.rect.collidepoint(self.mousepos):
                 self.clickany = True
                 self.uiclick = True
                 break
@@ -645,8 +645,8 @@ class Battle:
 
     def removeunitui(self):
         self.gameui[2].option = 1  # reset subunit card option
-        for ui in self.gameui:
-            ui.kill()  # remove ui
+        for this_ui in self.gameui:
+            this_ui.kill()  # remove ui
         for button in self.buttonui[0:8]:
             button.kill()  # remove button
         for icon in self.skill_icon.sprites():
@@ -723,40 +723,40 @@ class Battle:
     def filtertrooplist(self):
         """Filter troop list based on faction picked and type filter"""
         if self.factionpick != 0:
-            self.troop_list = [item[1][0] for item in self.gameunitstat.troop_list.items()
+            self.troop_list = [item[1][0] for item in self.troop_data.troop_list.items()
                                if item[1][0] == "None" or
                                item[0] in self.allfaction.faction_list[self.factionpick][1]]
             self.troop_index_list = [0] + self.allfaction.faction_list[self.factionpick][1]
 
         else:  # pick all faction
-            self.troop_list = [item[0] for item in self.gameunitstat.troop_list.values()][1:]
+            self.troop_list = [item[0] for item in self.troop_data.troop_list.values()][1:]
             self.troop_index_list = list(range(0, len(self.troop_list)))
 
         for unit in self.troop_index_list[::-1]:
             if unit != 0:
                 if self.filtertroop[0] is False:  # filter out melee infantry
-                    if self.gameunitstat.troop_list[unit][8] > self.gameunitstat.troop_list[unit][12] and \
-                            self.gameunitstat.troop_list[unit][29] == [1, 0, 1]:
+                    if self.troop_data.troop_list[unit][8] > self.troop_data.troop_list[unit][12] and \
+                            self.troop_data.troop_list[unit][29] == [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
                 if self.filtertroop[1] is False:  # filter out range infantry
-                    if self.gameunitstat.troop_list[unit][22] != [1, 0] and \
-                            self.gameunitstat.troop_list[unit][8] < self.gameunitstat.troop_list[unit][12] and \
-                            self.gameunitstat.troop_list[unit][29] == [1, 0, 1]:
+                    if self.troop_data.troop_list[unit][22] != [1, 0] and \
+                            self.troop_data.troop_list[unit][8] < self.troop_data.troop_list[unit][12] and \
+                            self.troop_data.troop_list[unit][29] == [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
                 if self.filtertroop[2] is False:  # filter out melee cav
-                    if self.gameunitstat.troop_list[unit][8] > self.gameunitstat.troop_list[unit][12] and \
-                            self.gameunitstat.troop_list[unit][29] != [1, 0, 1]:
+                    if self.troop_data.troop_list[unit][8] > self.troop_data.troop_list[unit][12] and \
+                            self.troop_data.troop_list[unit][29] != [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
                 if self.filtertroop[3] is False:  # filter out range cav
-                    if self.gameunitstat.troop_list[unit][22] != [1, 0] and \
-                            self.gameunitstat.troop_list[unit][8] < self.gameunitstat.troop_list[unit][12] and \
-                            self.gameunitstat.troop_list[unit][29] != [1, 0, 1]:
+                    if self.troop_data.troop_list[unit][22] != [1, 0] and \
+                            self.troop_data.troop_list[unit][8] < self.troop_data.troop_list[unit][12] and \
+                            self.troop_data.troop_list[unit][29] != [1, 0, 1]:
                         self.troop_list.pop(self.troop_index_list.index(unit))
                         self.troop_index_list.remove(unit)
 
@@ -889,7 +889,7 @@ class Battle:
 
             self.factionpick = 0
             self.filtertroop = [True, True, True, True]
-            self.troop_list = [item[0] for item in self.gameunitstat.troop_list.values()][
+            self.troop_list = [item[0] for item in self.troop_data.troop_list.values()][
                               1:]  # reset troop filter back to all faction
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
@@ -913,16 +913,16 @@ class Battle:
         if self.mode == "uniteditor":
             self.gamestate = 2  # editor mode
 
-            self.full_troop_list = [item[0] for item in self.gameunitstat.troop_list.values()][1:]
+            self.full_troop_list = [item[0] for item in self.troop_data.troop_list.values()][1:]
 
             self.troop_list = self.full_troop_list  # generate troop name list
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
             self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][1:]  # generate leader name list
 
-            self.main.setuplist(gameprepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+            self.main.setuplist(prepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                 self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset army list
-            self.main.setuplist(gameprepare.NameList, self.current_troop_row, self.troop_list,
+            self.main.setuplist(prepare.NameList, self.current_troop_row, self.troop_list,
                                 self.troop_namegroup, self.troop_listbox, self.battleui)  # setup troop name list
 
             self.current_list_show = "troop"
@@ -932,7 +932,7 @@ class Battle:
             self.featureterrain = 0
             self.weathertype = 4
             self.weatherstrength = 0
-            self.currentweather = gameweather.Weather(self.timeui, self.weathertype, self.weatherstrength, self.allweather)
+            self.currentweather = weather.Weather(self.timeui, self.weathertype, self.weatherstrength, self.allweather)
             self.showincard = None  # current sub-subunit showing in subunit card
 
             self.main.maketeamcoa([0], uiclass=self.battleui, oneteam=True,
@@ -947,7 +947,7 @@ class Battle:
                     for border in self.uniteditborder:
                         border.kill()
                         del border
-                    self.uniteditborder.add(gameui.SelectedSquad(slot.inspposition))
+                    self.uniteditborder.add(ui.SelectedSquad(slot.inspposition))
                     self.battleui.add(*self.uniteditborder)
                 else:  # reset all other slot
                     slot.selected = False
@@ -1263,61 +1263,61 @@ class Battle:
                         self.last_selected.command(self.battle_mouse_pos[0], False, False, self.last_mouseover, None, othercommand=2)
 
                     # vv FOR DEVELOPMENT DELETE LATER
-                    elif keypress == pygame.K_1:
-                        self.textdrama.queue.append("Hello and Welcome to update video")
-                    elif keypress == pygame.K_2:
-                        self.textdrama.queue.append("Showcase: Just simple clarity update")
-                    elif keypress == pygame.K_3:
-                        self.textdrama.queue.append("Before")
-                    elif keypress == pygame.K_4:
-                        self.textdrama.queue.append("Where the hell is blue team, can only see red")
-                    elif keypress == pygame.K_5:
-                        self.textdrama.queue.append("After")
-                    elif keypress == pygame.K_6:
-                        self.textdrama.queue.append("Now much more clear")
-                    elif keypress == pygame.K_n and self.last_selected is not None:
-                        if self.last_selected.team == 1:
-                            self.last_selected.switchfaction(self.team1unit, self.team2unit, self.team1poslist, self.enactment)
-                        else:
-                            self.last_selected.switchfaction(self.team2unit, self.team1unit, self.team2poslist, self.enactment)
-                    elif keypress == pygame.K_l and self.last_selected is not None:
-                        for subunit in self.last_selected.subunit_sprite:
-                            subunit.base_morale = 0
-                    elif keypress == pygame.K_k and self.last_selected is not None:
-                        # for index, subunit in enumerate(self.last_selected.subunit_sprite):
-                        #     subunit.unit_health -= subunit.unit_health
-                        self.subunit_selected.who.unit_health -= self.subunit_selected.who.unit_health
-                    elif keypress == pygame.K_m and self.last_selected is not None:
-                        # self.last_selected.leader[0].health -= 1000
-                        self.subunit_selected.who.leader.health -= 1000
-                        # self.subunit_selected.who.base_morale -= 1000
-                        # self.subunit_selected.who.brokenlimit = 80
-                        # self.subunit_selected.who.state = 99
-                    elif keypress == pygame.K_COMMA and self.last_selected is not None:
-                        for index, subunit in enumerate(self.last_selected.subunit_sprite):
-                            subunit.stamina -= subunit.stamina
-                    # ^^ End For development test
+                    # elif keypress == pygame.K_1:
+                    #     self.textdrama.queue.append("Hello and Welcome to update video")
+                    # elif keypress == pygame.K_2:
+                    #     self.textdrama.queue.append("Showcase: Just simple clarity update")
+                    # elif keypress == pygame.K_3:
+                    #     self.textdrama.queue.append("Before")
+                    # elif keypress == pygame.K_4:
+                    #     self.textdrama.queue.append("Where the hell is blue team, can only see red")
+                    # elif keypress == pygame.K_5:
+                    #     self.textdrama.queue.append("After")
+                    # elif keypress == pygame.K_6:
+                    #     self.textdrama.queue.append("Now much more clear")
+                    # elif keypress == pygame.K_n and self.last_selected is not None:
+                    #     if self.last_selected.team == 1:
+                    #         self.last_selected.switchfaction(self.team1unit, self.team2unit, self.team1poslist, self.enactment)
+                    #     else:
+                    #         self.last_selected.switchfaction(self.team2unit, self.team1unit, self.team2poslist, self.enactment)
+                    # elif keypress == pygame.K_l and self.last_selected is not None:
+                    #     for subunit in self.last_selected.subunit_sprite:
+                    #         subunit.base_morale = 0
+                    # elif keypress == pygame.K_k and self.last_selected is not None:
+                    #     # for index, subunit in enumerate(self.last_selected.subunit_sprite):
+                    #     #     subunit.unit_health -= subunit.unit_health
+                    #     self.subunit_selected.who.unit_health -= self.subunit_selected.who.unit_health
+                    # elif keypress == pygame.K_m and self.last_selected is not None:
+                    #     # self.last_selected.leader[0].health -= 1000
+                    #     self.subunit_selected.who.leader.health -= 1000
+                    #     # self.subunit_selected.who.base_morale -= 1000
+                    #     # self.subunit_selected.who.brokenlimit = 80
+                    #     # self.subunit_selected.who.state = 99
+                    # elif keypress == pygame.K_COMMA and self.last_selected is not None:
+                    #     for index, subunit in enumerate(self.last_selected.subunit_sprite):
+                    #         subunit.stamina -= subunit.stamina
+                    #^^ End For development test
                     # ^ End register input
 
                     # v Camera movement
                     if keystate[K_s] or self.mousepos[1] >= self.bottomcorner:  # Camera move down
-                        self.basecamerapos[1] += 5 * (
+                        self.basecamerapos[1] += 4 * (
                                 11 - self.camerascale)  # need "11 -" for converting cameral scale so the further zoom camera move faster
                         self.camerapos[1] = self.basecamerapos[1] * self.camerascale  # resize camera pos
                         self.camerafix()
 
                     elif keystate[K_w] or self.mousepos[1] <= 5:  # Camera move up
-                        self.basecamerapos[1] -= 5 * (11 - self.camerascale)
+                        self.basecamerapos[1] -= 4 * (11 - self.camerascale)
                         self.camerapos[1] = self.basecamerapos[1] * self.camerascale
                         self.camerafix()
 
                     if keystate[K_a] or self.mousepos[0] <= 5:  # Camera move left
-                        self.basecamerapos[0] -= 5 * (11 - self.camerascale)
+                        self.basecamerapos[0] -= 4 * (11 - self.camerascale)
                         self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                         self.camerafix()
 
                     elif keystate[K_d] or self.mousepos[0] >= self.rightcorner:  # Camera move right
-                        self.basecamerapos[0] += 5 * (11 - self.camerascale)
+                        self.basecamerapos[0] += 4 * (11 - self.camerascale)
                         self.camerapos[0] = self.basecamerapos[0] * self.camerascale
                         self.camerafix()
 
@@ -1487,8 +1487,8 @@ class Battle:
 
                                         elif self.inspectui:  # Remove when click again and the ui already open
                                             self.battleui.remove(*self.inspectsubunit, self.subunitselectedborder)
-                                            for ui in self.gameui[2:4]:
-                                                ui.kill()
+                                            for this_ui in self.gameui[2:4]:
+                                                this_ui.kill()
                                             for button in self.unitcard_button:
                                                 button.kill()
                                             self.inspectui = False
@@ -1603,7 +1603,7 @@ class Battle:
                                             self.battleui.add(self.button_name_popup)
                                             if mouse_up and self.last_selected.state == 0:
                                                 for subunit in self.last_selected.subunit_sprite:
-                                                    subunit.status_effect[98] = self.gameunitstat.status_list[98].copy()
+                                                    subunit.status_effect[98] = self.troop_data.status_list[98].copy()
                                                     subunit.unit_health -= round(subunit.unit_health * 0.1)
                                     if self.leader_mouseover(mouse_right):
                                         self.battleui.remove(self.button_name_popup)
@@ -1831,21 +1831,21 @@ class Battle:
                                                     if self.popup_listbox.type == "terrain":
                                                         self.terrain_change_button.changetext(self.battlemap_base.terrainlist[index])
                                                         self.baseterrain = index
-                                                        self.editor_map_change(gamemap.terraincolour[self.baseterrain],
-                                                                               gamemap.featurecolour[self.featureterrain])
+                                                        self.editor_map_change(map.terraincolour[self.baseterrain],
+                                                                               map.featurecolour[self.featureterrain])
 
                                                     elif self.popup_listbox.type == "feature":
                                                         self.feature_change_button.changetext(self.battlemap_feature.featurelist[index])
                                                         self.featureterrain = index
-                                                        self.editor_map_change(gamemap.terraincolour[self.baseterrain],
-                                                                               gamemap.featurecolour[self.featureterrain])
+                                                        self.editor_map_change(map.terraincolour[self.baseterrain],
+                                                                               map.featurecolour[self.featureterrain])
 
                                                     elif self.popup_listbox.type == "weather":
                                                         self.weathertype = int(index / 3)
                                                         self.weatherstrength = index - (self.weathertype * 3)
                                                         self.weather_change_button.changetext(self.weather_list[index])
                                                         del self.currentweather
-                                                        self.currentweather = gameweather.Weather(self.timeui, self.weathertype + 1,
+                                                        self.currentweather = weather.Weather(self.timeui, self.weathertype + 1,
                                                                                                   self.weatherstrength, self.allweather)
 
                                                     for slot in self.unit_build_slot:  # reset all troop stat
@@ -1875,17 +1875,17 @@ class Battle:
                                             self.currentpopuprow = self.popup_listscroll.update(
                                                 self.mousepos)  # update the scroller and get new current subsection
                                             if self.popup_listbox.type == "terrain":
-                                                self.main.setuplist(gameprepare.NameList, self.currentpopuprow, self.battlemap_base.terrainlist,
+                                                self.main.setuplist(prepare.NameList, self.currentpopuprow, self.battlemap_base.terrainlist,
                                                                     self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "feature":
-                                                self.main.setuplist(gameprepare.NameList, self.currentpopuprow, self.battlemap_feature.featurelist,
+                                                self.main.setuplist(prepare.NameList, self.currentpopuprow, self.battlemap_feature.featurelist,
                                                                     self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "weather":
-                                                self.main.setuplist(gameprepare.NameList, self.currentpopuprow, self.weather_list,
+                                                self.main.setuplist(prepare.NameList, self.currentpopuprow, self.weather_list,
                                                                     self.popup_namegroup,
                                                                     self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "leader":
-                                                self.main.setuplist(gameprepare.NameList, self.currentpopuprow, self.leader_list,
+                                                self.main.setuplist(prepare.NameList, self.currentpopuprow, self.leader_list,
                                                                     self.popup_namegroup,
                                                                     self.popup_listbox, self.battleui, layer=19)
 
@@ -1897,17 +1897,17 @@ class Battle:
                                         self.current_troop_row = self.troop_scroll.update(
                                             self.mousepos)  # update the scroller and get new current subsection
                                         if self.current_list_show == "troop":
-                                            self.main.setuplist(gameprepare.NameList, self.current_troop_row, self.troop_list, self.troop_namegroup,
+                                            self.main.setuplist(prepare.NameList, self.current_troop_row, self.troop_list, self.troop_namegroup,
                                                                 self.troop_listbox, self.battleui)
                                         elif self.current_list_show == "faction":
-                                            self.main.setuplist(gameprepare.NameList, self.current_troop_row, self.faction_list, self.troop_namegroup,
+                                            self.main.setuplist(prepare.NameList, self.current_troop_row, self.faction_list, self.troop_namegroup,
                                                                 self.troop_listbox, self.battleui)
 
                                     elif self.unit_presetname_scroll.rect.collidepoint(self.mousepos):
                                         self.uiclick = True
                                         self.current_unit_row = self.unit_presetname_scroll.update(
                                             self.mousepos)  # update the scroller and get new current subsection
-                                        self.main.setuplist(gameprepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+                                        self.main.setuplist(prepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                                             self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset army list
 
                                     elif self.unit_build_slot in self.battleui:
@@ -1929,18 +1929,18 @@ class Battle:
                                                                 break
                                                             elif slotclick.selected is False:  # forward select, acceptable
                                                                 slotclick.selected = True
-                                                                self.uniteditborder.add(gameui.SelectedSquad(slotclick.inspposition, 5))
+                                                                self.uniteditborder.add(ui.SelectedSquad(slotclick.inspposition, 5))
                                                                 self.battleui.add(*self.uniteditborder)
                                                         elif firstone is not None and newslot.gameid > firstone and newslot.selected is False:  # select from first select to clicked
                                                             newslot.selected = True
-                                                            self.uniteditborder.add(gameui.SelectedSquad(newslot.inspposition, 5))
+                                                            self.uniteditborder.add(ui.SelectedSquad(newslot.inspposition, 5))
                                                             self.battleui.add(*self.uniteditborder)
 
                                             elif keystate[pygame.K_LCTRL] or keystate[
                                                 pygame.K_RCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
                                                 if slotclick.selected is False:
                                                     slotclick.selected = True
-                                                    self.uniteditborder.add(gameui.SelectedSquad(slotclick.inspposition, 5))
+                                                    self.uniteditborder.add(ui.SelectedSquad(slotclick.inspposition, 5))
                                                     self.battleui.add(*self.uniteditborder)
 
                                             elif keystate[pygame.K_LALT] or keystate[pygame.K_RALT]:
@@ -1959,7 +1959,7 @@ class Battle:
                                                 for newslot in self.unit_build_slot:
                                                     newslot.selected = False
                                                 slotclick.selected = True
-                                                self.uniteditborder.add(gameui.SelectedSquad(slotclick.inspposition, 5))
+                                                self.uniteditborder.add(ui.SelectedSquad(slotclick.inspposition, 5))
                                                 self.battleui.add(*self.uniteditborder)
 
                                                 if slotclick.name != "None":
@@ -1999,7 +1999,7 @@ class Battle:
                                                             self.leader_list = self.leader_list = [item[0] for item in
                                                                                                    self.leader_stat.leader_list.values()][1:]
 
-                                                        self.main.setuplist(gameprepare.NameList, self.current_troop_row, self.troop_list,
+                                                        self.main.setuplist(prepare.NameList, self.current_troop_row, self.troop_list,
                                                                             self.troop_namegroup,
                                                                             self.troop_listbox, self.battleui)  # setup troop name list
                                                         self.troop_scroll.changeimage(newrow=self.current_troop_row,
@@ -2114,7 +2114,7 @@ class Battle:
                                                         subunit_gameid = subunit_gameid + 1
                                                     for slot in self.unit_build_slot:  # just for grabing current selected team
                                                         currentpreset[self.unitpresetname] += (0, 100, 100, slot.team)
-                                                        gamelongscript.convertedit_unit(self,
+                                                        longscript.convertedit_unit(self,
                                                                                         (self.team0unit, self.team1unit, self.team2unit)[slot.team],
                                                                                         currentpreset[self.unitpresetname],
                                                                                         self.teamcolour[slot.team],
@@ -2156,7 +2156,7 @@ class Battle:
                                                         if self.current_list_show == "troop":
                                                             self.current_troop_row = 0
                                                             self.filtertrooplist()
-                                                            self.main.setuplist(gameprepare.NameList, self.current_troop_row, self.troop_list,
+                                                            self.main.setuplist(prepare.NameList, self.current_troop_row, self.troop_list,
                                                                                 self.troop_namegroup,
                                                                                 self.troop_listbox, self.battleui)  # setup troop name list
                                     elif self.terrain_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map terrain button
@@ -2203,7 +2203,7 @@ class Battle:
                                                 self.uiclick = True
                                                 if self.current_list_show == "troop":
                                                     self.current_troop_row = 0
-                                                    self.main.setuplist(gameprepare.NameList, self.current_troop_row, self.faction_list,
+                                                    self.main.setuplist(prepare.NameList, self.current_troop_row, self.faction_list,
                                                                         self.troop_namegroup,
                                                                         self.troop_listbox, self.battleui)
                                                     self.troop_scroll.changeimage(newrow=self.current_troop_row,
@@ -2325,12 +2325,12 @@ class Battle:
                         # v Weather system
                         if self.weather_current is not None and self.timenumber.timenum >= self.weather_current:
                             del self.currentweather
-                            weather = self.weather_event[0]
+                            this_weather = self.weather_event[0]
 
-                            if weather[0] != 0:
-                                self.currentweather = gameweather.Weather(self.timeui, weather[0], weather[2], self.allweather)
+                            if this_weather[0] != 0:
+                                self.currentweather = weather.Weather(self.timeui, this_weather[0], this_weather[2], self.allweather)
                             else:  # Random weather
-                                self.currentweather = gameweather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2),
+                                self.currentweather = weather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2),
                                                                           self.allweather)
                             self.weather_event.pop(0)
                             self.showmap.addeffect(self.battlemap_height,
@@ -2366,7 +2366,7 @@ class Battle:
                                     target = (0, truepos[1])
 
                                 randompic = random.randint(0, len(self.weather_matter_imgs[self.currentweather.weathertype]) - 1)
-                                self.weathermatter.add(gameweather.Mattersprite(truepos, target,
+                                self.weathermatter.add(weather.Mattersprite(truepos, target,
                                                                                 self.currentweather.speed,
                                                                                 self.weather_matter_imgs[self.currentweather.weathertype][
                                                                                     randompic]))
@@ -2663,7 +2663,7 @@ class Battle:
                             self.customunitpresetlist.update(currentpreset)
 
                             self.unitpresetname = self.input_box.text
-                            self.main.setuplist(gameprepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+                            self.main.setuplist(prepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                                 self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset unit list
                             for name in self.unitpreset_namegroup:  # loop to change selected border position to the last in preset list
                                 if name.name == self.unitpresetname:
@@ -2678,7 +2678,7 @@ class Battle:
                     elif self.textinputpopup[1] == "delete_preset":
                         del self.customunitpresetlist[self.unitpresetname]
                         self.unitpresetname = ""
-                        self.main.setuplist(gameprepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+                        self.main.setuplist(prepare.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                             self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset unit list
                         for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
                             self.presetselectborder.changepos(name.rect.topleft)

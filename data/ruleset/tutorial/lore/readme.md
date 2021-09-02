@@ -4,5 +4,5 @@ Stat file: Contain the name of the subsection, description and summary stat of t
 
 Lore file: As the name suggested, this file contain historical or lore context of the subsection. 
 
-It is possible to replace text paragraph with image using IMAGE:\data\ruleset\"subfolder name"\lore\image\imagefile
+It is possible to replace text paragraph with image using IMAGE:ruleset\"subfolder name"\lore\image\imagefile
 or FULLIMAGE: to draw image at the top left of the page with intend to draw over the whole two pages

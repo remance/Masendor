@@ -1,4 +1,4 @@
-"ID","Name","Special Effect","Status Conflict","Duration","Melee Attack Effect","Melee Defense Effect","Range Defense Effect","Armour Effect","Speed Effect","Accuracy Effect","Reload Effect","Charge Effect","Charge Defense Bonus","HP Regeneration buff","Stamina Regeneration Buff","Morale Bonus","Discipline Bonus","Sight Bonus","Hidden Bonus","Temperature Change","Ruleset","description"
+"ID","Name","Special Effect","Status Conflict","Duration","Melee Attack Effect","Melee Defence Effect","Range Defence Effect","Armour Effect","Speed Effect","Accuracy Effect","Reload Effect","Charge Effect","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Sight Bonus","Hidden Bonus","Temperature Change","Ruleset","description"
 1,"Fearless",,0,10,,,,,,,,,0,0,0,200,0,0,,0,0,"Being fearless is a beneficial trait in a place of life and dead in battle. Although fear allows person to survive longer to fight another day, so being fearless is more of a double-edge sword."
 2,"Fear",,"1,3",10,,,,,,,,,0,0,0,-30,0,0,,0,0,"There should be no fear in the machine of war. Fear makes even the obedient soldier refuse to follow the command after all."
 3,"Hope",,2,10,,,,,,,,,0,0,0,30,0,0,,0,0,"Optimism to survive and see the better days is good. Soldier always fight harder when there is hope."
@@ -29,7 +29,7 @@
 28,"Burn",,"29,93,101,102,104",10,,,,,,,,,0,-100,0,-10,0,0,0,50,0,"Dead by burning is not a good way to go. Try to drench yourselves as soon as possible."
 29,"Freeze",0,"28,92",30,40,60,60,,30,40,40,20,-30,-20,-10,-20,-20,,,0,0,"Frozen in place and time. Nothing to be done but wait."
 30,"Shock",,,30,50,50,50,,30,,50,20,-35,0,0,0,0,,,0,0,
-31,"Wet",,,30,,,,,80,,,80,0,0,0,0,0,,,-30,0,"Being wet can either be good or bad. Fire and burning become much less effective but air and water damage and effect become a dangerous threat."
+31,"Wet",,,30,,,,,80,,,80,0,0,0,0,0,,,-25,0,"Being wet can either be good or bad. Fire and burning become much less effective but air and water damage and effect become a dangerous threat."
 32,"Whistle Arrow",,50,30,80,80,80,,,80,80,,-15,0,0,-15,-15,,,0,0,
 33,"Drunk",,50,600,,80,60,,,,,,-35,0,0,30,-50,,,0,0,"Getting drunk in battle may not be the smartest thing to do, but It sure help raise the morale and fierceness of the troops."
 34,"Cripple",,,300,50,80,,,20,10,10,10,-60,0,0,0,0,,,0,0,"Cripple in body, but can the heart hold out? Only time will tell."
