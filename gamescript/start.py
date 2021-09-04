@@ -7,7 +7,8 @@ import sys
 # import basic pygame modules
 import pygame
 import pygame.freetype
-from gamescript.tactical import battle, leader, map, longscript, lorebook, weather, drama, \
+from gamescript import map, weather, lorebook, drama
+from gamescript.tactical import battle, leader, longscript, \
     battleui, prepare, menu, unit, subunit, rangeattack, popup, uniteditor
 from pygame.locals import *
 
@@ -58,9 +59,9 @@ class Mainmenu:
         self.ruleset = 1  # for now default historical ruleset only
         self.ruleset_folder =  str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
 
-        if not os.path.exists("../../profile"):  # make profile folder if not existed
-            os.makedirs("../../profile")
-            os.makedirs("../../profile/unitpreset")
+        if not os.path.exists("../profile"):  # make profile folder if not existed
+            os.makedirs("../profile")
+            os.makedirs("../profile/unitpreset")
         if not os.path.exists("profile/unitpreset/" + str(self.ruleset)):  # create unitpreset folder for ruleset
             os.makedirs("profile/unitpreset/" + str(self.ruleset))
         try:

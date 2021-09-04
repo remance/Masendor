@@ -4,7 +4,7 @@ import sys
 import traceback
 
 import screeninfo
-from gamescript.tactical import start
+from gamescript import start
 
 screen = screeninfo.get_monitors()[0]
 
@@ -22,9 +22,6 @@ except Exception:  # Create config file if not found with the default
     with open("configuration.ini", "w") as cf:
         config.write(cf)
     config.read_file(open("configuration.ini"))
-    print(int(config["DEFAULT"]["ScreenHeight"]), int(config["DEFAULT"]["ScreenWidth"]),
-          int(config["DEFAULT"]["Fullscreen"]), float(config["DEFAULT"]["SoundVolume"]),
-          str(config["DEFAULT"]["playername"]))
 
 if __name__ == "__main__":
     try:  # for printing error log when error exception happen

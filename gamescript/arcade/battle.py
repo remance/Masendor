@@ -9,7 +9,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 from gamescript import camera, map, weather
-from gamescript.tactical import subunit, unit, battleui, leader, longscript, prepare
+from gamescript.arcade import subunit, unit, battleui, leader, longscript, prepare
 from pygame.locals import *
 from scipy.spatial import KDTree
 

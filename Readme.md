@@ -86,7 +86,7 @@ Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(wit
 
 0.6.8 and 0.6.9: multiple unit selection/move, also add a border to a selected unit on army selector UI
 
-Ver 0.7 Future Visionary: Fog of War(maybe), queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
+Ver 0.7 Future Visionary: Arcade mode, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
 
 Ver 0.8 Authentic Attraction: In-game art, better-looking UI (All hand (and mouse) drawn except for historical image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
@@ -112,7 +112,7 @@ Ver 1.9: Naval battle
 
 Ver 2.0: Multiplayer battle
 
-Ver 2.1: Begin working on another ruleset setting and arcade mode
+Ver 2.1: Begin working on another ruleset setting
 
 Unforeseeable future: forced march (Moved here from 0.2.7 as this feature won't have much used until the game map become much larger than just a single battlefield), Queue command
 
