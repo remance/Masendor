@@ -4,7 +4,7 @@ import sys
 import traceback
 
 import screeninfo
-from gamescript import start
+from gamescript.tactical import start
 
 screen = screeninfo.get_monitors()[0]
 

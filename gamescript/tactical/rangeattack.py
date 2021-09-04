@@ -3,7 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript import longscript
+from gamescript.tactical import longscript
 from pygame.transform import scale
 
 

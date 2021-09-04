@@ -1,9 +1,9 @@
 import ast
 import csv
-
+import os
 import pygame
 import pygame.freetype
-from gamescript import map
+from gamescript.tactical import map
 
 terraincolour = map.terraincolour
 featurecolour = map.featurecolour
@@ -115,7 +115,7 @@ class ProfileBox(pygame.sprite.Sprite):
 
 
 class MenuButton(pygame.sprite.Sprite):
-    def __init__(self, main, images, pos, text="", size=16, layer=15):
+    def __init__(self, main, images, pos, menu_state="any", text="", size=16, layer=15):
         self.width_adjust = main.width_adjust
         self.height_adjust = main.height_adjust
 
@@ -140,16 +140,18 @@ class MenuButton(pygame.sprite.Sprite):
         self.image = self.images[0]
         self.rect = self.images[0].get_rect(center=self.pos)
         self.event = False
+        self.menu_state = menu_state
 
-    def update(self, mouse_pos, mouse_up, mouse_down):
-        self.mouse_over = False
-        self.image = self.images[0]
-        if self.rect.collidepoint(mouse_pos):
-            self.mouse_over = True
-            self.image = self.images[1]
-            if mouse_up:
-                self.event = True
-                self.image = self.images[2]
+    def update(self, mouse_pos, mouse_up, mouse_down, menu_state):
+        if self.menu_state == menu_state or self.menu_state == "any":
+            self.mouse_over = False
+            self.image = self.images[0]
+            if self.rect.collidepoint(mouse_pos):
+                self.mouse_over = True
+                self.image = self.images[1]
+                if mouse_up:
+                    self.event = True
+                    self.image = self.images[2]
 
     def changestate(self, text):
         if text != "":
@@ -618,7 +620,7 @@ class MapShow(pygame.sprite.Sprite):
         self.team1dot.blit(team1, rect)
 
         self.newcolourlist = {}
-        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):

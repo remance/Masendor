@@ -4,7 +4,7 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import longscript
+from gamescript.tactical import longscript
 from pygame.transform import scale
 
 
@@ -232,7 +232,7 @@ class Unit(pygame.sprite.Sprite):
         self.max_range = 0  # maximum shoot range of all subunit inside this parentunit
         self.use_min_range = 0  # use min or max range for walk/run (range) command
         self.skill_cond = 0  # skill condition for stamina reservation
-        self.state = 0  # see ui.py topbar for name of each state
+        self.state = 0  # see battleui.py topbar for name of each state
         self.command_state = self.state
         self.deadchange = False  # for checking when subunit dead and run related code
         self.timer = random.random()
@@ -756,10 +756,9 @@ class Unit(pygame.sprite.Sprite):
                             if self.angle < self.new_angle:
                                 self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     # ^^ End rotate tiny
-
                     self.set_subunit_target()  # generate new pos related to side
 
-                elif (self.moverotate and self.angle == self.new_angle) or abs(self.angle - self.new_angle) < 5:  # Finish
+                elif self.moverotate and abs(self.angle - self.new_angle) < 1:  # Finish
                     self.moverotate = False
                     if self.rotateonly is False:  # continue moving to base_target after finish rotate
                         self.set_subunit_target(self.base_target)

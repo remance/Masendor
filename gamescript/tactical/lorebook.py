@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-from gamescript import longscript
+from gamescript.tactical import longscript
 
 
 class Lorebook(pygame.sprite.Sprite):

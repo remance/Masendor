@@ -3,11 +3,12 @@ import datetime
 import glob
 import random
 import sys
+import os
 
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import subunit, unit, ui, leader, camera, longscript, weather, prepare, map
+from gamescript.tactical import subunit, unit, battleui, leader, camera, longscript, weather, prepare, map
 from pygame.locals import *
 from scipy.spatial import KDTree
 
@@ -251,10 +252,10 @@ class Battle:
         self.minimap.drawimage(self.showmap.trueimage, self.camera)
         self.showmap.changescale(self.camerascale)
 
-    def preparenewgame(self, ruleset, rulesetfolder, teamselected, enactment, mapselected, source, unitscale, mode):
+    def preparenewgame(self, ruleset, ruleset_folder, teamselected, enactment, mapselected, source, unitscale, mode):
 
         self.ruleset = ruleset  # current ruleset used
-        self.ruleset_folder = rulesetfolder  # the folder of rulseset used
+        self.ruleset_folder = ruleset_folder  # the folder of rulseset used
         self.mapselected = mapselected  # map folder name
         self.source = str(source)
         self.unitscale = unitscale
@@ -268,7 +269,7 @@ class Battle:
         # v Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                          ["data", "ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected, self.source], 1)
+                                          ["data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 1)
             self.weather_event = self.weather_event[1:]
             longscript.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -283,10 +284,10 @@ class Battle:
             pygame.mixer = None
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
-            self.musiclist = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
+            self.musiclist = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
             try:
                 self.music_event = csv_read(self.main_dir, "musicevent.csv",
-                                            ["data", "ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected], 1)
+                                            ["data", "ruleset", self.ruleset_folder, "map", self.mapselected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
                     longscript.convert_str_time(self.music_event)
@@ -309,8 +310,8 @@ class Battle:
 
         try:  # get new map event for event log
             mapevent = csv_read("eventlog.csv",
-                                [self.main_dir, "data", "ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected, self.source], 0)
-            ui.EventLog.mapevent = mapevent
+                                [self.main_dir, "data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 0)
+            battleui.EventLog.mapevent = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list
 
@@ -337,7 +338,7 @@ class Battle:
         self.camera = camera.Camera(self.camerapos, self.camerascale)
 
         if mapselected is not None:
-            imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder.strip("/"), "map", self.mapselected], loadorder=False)
+            imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], loadorder=False)
             self.battlemap_base.drawimage(imgs[0])
             self.battlemap_feature.drawimage(imgs[1])
             self.battlemap_height.drawimage(imgs[2])
@@ -376,7 +377,7 @@ class Battle:
         # ^ End start subunit sprite
 
     def save_preset(self):
-        with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w", encoding='utf-8', newline='') as csvfile:
+        with open(os.path.join("profile", "unitpreset", str(self.ruleset), "custom_unitpreset.csv"), "w", encoding='utf-8', newline='') as csvfile:
             filewriter = csv.writer(csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
             savelist = self.customunitpresetlist.copy()
             del savelist["New Preset"]
@@ -513,7 +514,7 @@ class Battle:
 
         for index, unit in enumerate(unitlist):  # add unit icon for drawing according to appopriate current row
             if index >= currentindex:
-                self.uniticon.add(ui.ArmyIcon((column, row), unit))
+                self.uniticon.add(battleui.ArmyIcon((column, row), unit))
                 column += 40
                 if column > 250:
                     row += 50
@@ -947,7 +948,7 @@ class Battle:
                     for border in self.uniteditborder:
                         border.kill()
                         del border
-                    self.uniteditborder.add(ui.SelectedSquad(slot.inspposition))
+                    self.uniteditborder.add(battleui.SelectedSquad(slot.inspposition))
                     self.battleui.add(*self.uniteditborder)
                 else:  # reset all other slot
                     slot.selected = False
@@ -1929,18 +1930,18 @@ class Battle:
                                                                 break
                                                             elif slotclick.selected is False:  # forward select, acceptable
                                                                 slotclick.selected = True
-                                                                self.uniteditborder.add(ui.SelectedSquad(slotclick.inspposition, 5))
+                                                                self.uniteditborder.add(battleui.SelectedSquad(slotclick.inspposition, 5))
                                                                 self.battleui.add(*self.uniteditborder)
                                                         elif firstone is not None and newslot.gameid > firstone and newslot.selected is False:  # select from first select to clicked
                                                             newslot.selected = True
-                                                            self.uniteditborder.add(ui.SelectedSquad(newslot.inspposition, 5))
+                                                            self.uniteditborder.add(battleui.SelectedSquad(newslot.inspposition, 5))
                                                             self.battleui.add(*self.uniteditborder)
 
                                             elif keystate[pygame.K_LCTRL] or keystate[
                                                 pygame.K_RCTRL]:  # add another selected sub-subunit with left ctrl + left mouse button
                                                 if slotclick.selected is False:
                                                     slotclick.selected = True
-                                                    self.uniteditborder.add(ui.SelectedSquad(slotclick.inspposition, 5))
+                                                    self.uniteditborder.add(battleui.SelectedSquad(slotclick.inspposition, 5))
                                                     self.battleui.add(*self.uniteditborder)
 
                                             elif keystate[pygame.K_LALT] or keystate[pygame.K_RALT]:
@@ -1959,7 +1960,7 @@ class Battle:
                                                 for newslot in self.unit_build_slot:
                                                     newslot.selected = False
                                                 slotclick.selected = True
-                                                self.uniteditborder.add(ui.SelectedSquad(slotclick.inspposition, 5))
+                                                self.uniteditborder.add(battleui.SelectedSquad(slotclick.inspposition, 5))
                                                 self.battleui.add(*self.uniteditborder)
 
                                                 if slotclick.name != "None":
@@ -2652,7 +2653,7 @@ class Battle:
 
             elif self.textinputpopup != (None, None):  # currently have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
-                    button.update(self.mousepos, mouse_up, mouse_leftdown)
+                    button.update(self.mousepos, mouse_up, mouse_leftdown, "any")
 
                 if self.input_ok_button.event:
                     self.input_ok_button.event = False

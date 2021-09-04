@@ -112,7 +112,7 @@ Ver 1.9: Naval battle
 
 Ver 2.0: Multiplayer battle
 
-Ver 2.1: Begin working on another ruleset setting
+Ver 2.1: Begin working on another ruleset setting and arcade mode
 
 Unforeseeable future: forced march (Moved here from 0.2.7 as this feature won't have much used until the game map become much larger than just a single battlefield), Queue command
 

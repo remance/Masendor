@@ -1,4 +1,5 @@
 import csv
+import os
 
 import pygame.freetype
 
@@ -10,7 +11,7 @@ class Factiondata:
     def __init__(self, option):
         """Unit stat data read"""
         self.faction_list = {}
-        with open(self.main_dir + "/data" + "/ruleset" + option + "/faction" + "/faction.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(self.main_dir, "data", "ruleset", option, "faction", "faction.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):

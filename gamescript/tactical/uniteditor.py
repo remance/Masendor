@@ -1,9 +1,10 @@
 import ast
 import csv
+import os
 
 import pygame
 import pygame.freetype
-from gamescript import subunit
+from gamescript.tactical import subunit
 from pygame.transform import scale
 
 
@@ -26,7 +27,7 @@ class PreviewBox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", int(24 * self.heightadjust))
 
         self.newcolourlist = {}
-        with open(self.main_dir + "/data/map" + "/colourchange.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(self.main_dir + os.path.join("data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):

@@ -1,5 +1,6 @@
 import csv
 import re
+import os
 
 """This file contains all class and function that read subunit/leader related data and save them into dict for ingame use"""
 
@@ -33,7 +34,7 @@ class Weaponstat:
         """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weapon_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_weapon.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -60,7 +61,7 @@ class Armourstat:
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.armour_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_armour.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_armour.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -87,7 +88,7 @@ class Unitstat:
         """Unit stat data read"""
         # v Unit stat dict
         self.troop_list = {}
-        with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\troop" + "\\troop_preset.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "ruleset", rulesetfolder, "troop", "troop_preset.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -105,7 +106,7 @@ class Unitstat:
 
         # v Lore of the subunit dict
         self.troop_lore = {}
-        with open(main_dir + "\\data\\ruleset" + rulesetfolder + "\\troop" + "\\troop_lore.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "ruleset", rulesetfolder, "troop", "troop_lore.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -117,7 +118,7 @@ class Unitstat:
 
         # v Unit status effect dict
         self.status_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_status.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_status.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -146,7 +147,7 @@ class Unitstat:
 
         # v Race dict
         self.race_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_race.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
@@ -163,7 +164,7 @@ class Unitstat:
 
         # v Unit grade dict
         self.grade_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_grade.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_grade.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -187,7 +188,7 @@ class Unitstat:
 
         # v Unit skill dict
         self.skill_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_skill.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_skill.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -217,7 +218,7 @@ class Unitstat:
 
         # v Unit trait dict
         self.trait_list = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_trait.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_trait.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -248,7 +249,7 @@ class Unitstat:
 
         # v Unit role dict
         self.role = {}
-        with open(main_dir + "\\data\\troop" + "\\troop_class.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "troop_class.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -260,7 +261,7 @@ class Unitstat:
 
         # v Unit mount dict
         self.mount_list = {}
-        with open(main_dir + "\\data\\troop" + "\\mount_preset.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "mount_preset.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -283,7 +284,7 @@ class Unitstat:
 
         # v Mount grade dict
         self.mount_grade_list = {}
-        with open(main_dir + "\\data\\troop" + "\\mount_grade.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "mount_grade.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -304,7 +305,7 @@ class Unitstat:
 
         # v Mount armour dict
         self.mount_armour_list = {}
-        with open(main_dir + "\\data\\troop" + "\\mount_armour.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "troop", "mount_armour.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -331,7 +332,7 @@ class Leaderstat:
         self.imgs = img
         self.imgorder = imgorder
         self.leader_list = {}
-        with open(main_dir + "\\data\\ruleset" + str(option) + "\\leader" + "\\leader.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "leader.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -345,7 +346,7 @@ class Leaderstat:
         unitfile.close()
 
         # v Add common leader to the leader list with gameid + 10000
-        with open(main_dir + "\\data\\ruleset" + str(option) + "\\leader" + "\\common_leader.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -362,7 +363,7 @@ class Leaderstat:
 
         # v Lore of the leader dict
         self.leader_lore = {}
-        with open(main_dir + "\\data\\ruleset" + str(option) + "\\leader" + "\\leader_lore.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "leader_lore.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -374,7 +375,7 @@ class Leaderstat:
 
         # v Leader class dict
         self.leader_class = {}
-        with open(main_dir + "\\data\\leader" + "\\leader_class.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(main_dir, "data", "leader", "leader_class.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]

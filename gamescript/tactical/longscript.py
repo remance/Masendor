@@ -30,7 +30,7 @@ for dd in numberboard:
 
 def make_bar_list(main, listtodo, menuimage):
     """Make a drop down bar list option button"""
-    from gamescript import prepare
+    from gamescript.tactical import prepare
     main_dir = main.main_dir
     barlist = []
     img = load_image(main_dir, "bar_normal.jpg", "ui\\mainmenu_ui")
@@ -44,9 +44,9 @@ def make_bar_list(main, listtodo, menuimage):
 
 
 def load_base_button(main_dir):
-    img = load_image(main_dir, "idle_button.png", "ui\\mainmenu_ui")
-    img2 = load_image(main_dir, "mouse_button.png", "ui\\mainmenu_ui")
-    img3 = load_image(main_dir, "click_button.png", "ui\\mainmenu_ui")
+    img = load_image(main_dir, "idle_button.png", ["ui", "mainmenu_ui"])
+    img2 = load_image(main_dir, "mouse_button.png", ["ui", "mainmenu_ui"])
+    img3 = load_image(main_dir, "click_button.png", ["ui", "mainmenu_ui"])
     return [img, img2, img3]
 
 
@@ -57,7 +57,12 @@ def text_objects(text, font):
 
 def load_image(main_dir, file, subfolder=""):
     """loads an image, prepares it for play"""
-    thisfile = os.path.join(main_dir, "data", subfolder, file)
+    newsubfolder = subfolder
+    if isinstance(newsubfolder, list):
+        newsubfolder = ""
+        for folder in subfolder:
+            newsubfolder = os.path.join(newsubfolder, folder)
+    thisfile = os.path.join(main_dir, "data", newsubfolder, file)
     surface = pygame.image.load(thisfile).convert_alpha()
     return surface
 
@@ -71,15 +76,15 @@ def load_images(main_dir, subfolder=None, loadorder=True, returnorder=False):
             dirpath = os.path.join(dirpath, folder)
 
     if loadorder:  # load in the order of load_order file
-        loadorderfile = open(dirpath + "/load_order.txt", "r")
+        loadorderfile = open(os.path.join(dirpath, "load_order.txt"), "r")
         loadorderfile = ast.literal_eval(loadorderfile.read())
         for file in loadorderfile:
-            imgs.append(load_image(main_dir, dirpath + "/" + file))
+            imgs.append(load_image(main_dir, file, dirpath))
     else:  # load every file
         loadorderfile = [f for f in os.listdir(dirpath) if f.endswith("." + "png")]  # read all file
         loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
         for file in loadorderfile:
-            imgs.append(load_image(main_dir, dirpath + "/" + file))
+            imgs.append(load_image(main_dir, file, dirpath))
 
     if returnorder is False:
         return imgs
@@ -96,12 +101,12 @@ def load_game_data(game):
     main_dir = game.main_dir
     SCREENRECT = game.SCREENRECT
     Soundvolume = game.Soundvolume
-    from gamescript import map, lorebook, weather, readstat, ui, faction, unit, \
+    from gamescript.tactical import map, lorebook, weather, readstat, battleui, faction, unit, \
         subunit, rangeattack, menu, popup, drama, uniteditor
 
     # v Craete feature terrain modifier
     game.featuremod = {}
-    with open(main_dir + "/data/map" + "/unit_terrainbonus.csv", encoding="utf-8", mode="r") as unitfile:
+    with open(os.path.join(main_dir, "data", "map", "unit_terrainbonus.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         run = 0  # for skipping the first row
         for row in rd:
@@ -157,7 +162,7 @@ def load_game_data(game):
     # v Faction class
     faction.Factiondata.main_dir = main_dir
     game.allfaction = faction.Factiondata(option=game.ruleset_folder)
-    imgsold = load_images(game.main_dir, ["ruleset", game.ruleset_folder.strip("/"), "faction", "coa"], loadorder=False)  # coa imagelist
+    imgsold = load_images(game.main_dir, ["ruleset", game.ruleset_folder, "faction", "coa"], loadorder=False)  # coa imagelist
     imgs = []
     for img in imgsold:
         imgs.append(img)
@@ -167,7 +172,7 @@ def load_game_data(game):
 
     # v create game map texture and their default variables
     game.featurelist = []
-    with open(main_dir + "/data/map" + "/unit_terrainbonus.csv", encoding="utf-8", mode="r") as unitfile:
+    with open(os.path.join(main_dir, "data", "map", "unit_terrainbonus.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             game.featurelist.append(row[1])  # get terrain feature combination name for folder
@@ -199,7 +204,7 @@ def load_game_data(game):
     # ^ End game map
 
     # v Load map list
-    mapfolder = Path(main_dir + "/data/ruleset/" + game.ruleset_folder + "/map")
+    mapfolder = Path(os.path.join(main_dir, "data", "ruleset", game.ruleset_folder, "map"))
     subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
 
     for index, filemap in enumerate(subdirectories):
@@ -212,7 +217,7 @@ def load_game_data(game):
 
     for filemap in subdirectories:
         game.mapfoldername.append(str(filemap).split("\\")[-1])
-        with open(str(filemap) + "/info.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(str(filemap), "info.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "name":
@@ -221,7 +226,7 @@ def load_game_data(game):
     # ^ End load map list
 
     # v Load custom map list
-    mapfolder = Path(main_dir + "/data/ruleset/" + game.ruleset_folder + "/map/custom/")
+    mapfolder =  Path(os.path.join(main_dir, "data", "ruleset", game.ruleset_folder, "map", "custom"))
     subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
 
     game.mapcustomlist = []
@@ -229,7 +234,7 @@ def load_game_data(game):
 
     for filemap in subdirectories:
         game.mapcustomfoldername.append(str(filemap).split("\\")[-1])
-        with open(str(filemap) + "/info.csv", encoding="utf-8", mode="r") as unitfile:
+        with open(os.path.join(str(filemap), "info.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "name":
@@ -260,11 +265,11 @@ def load_game_data(game):
 
     cooldown = pygame.Surface((game.skill_imgs[0].get_width(), game.skill_imgs[0].get_height()), pygame.SRCALPHA)
     cooldown.fill((230, 70, 80, 200))  # red colour filter for skill cooldown timer
-    ui.SkillCardIcon.cooldown = cooldown
+    battleui.SkillCardIcon.cooldown = cooldown
 
     activeskill = pygame.Surface((game.skill_imgs[0].get_width(), game.skill_imgs[0].get_height()), pygame.SRCALPHA)
     activeskill.fill((170, 220, 77, 200))  # green colour filter for skill active timer
-    ui.SkillCardIcon.activeskill = activeskill
+    battleui.SkillCardIcon.activeskill = activeskill
 
     game.troop_data = readstat.Unitstat(main_dir, game.ruleset, game.ruleset_folder)
 
@@ -346,7 +351,7 @@ def load_game_data(game):
     # ^ End subunit class
 
     # v create leader list
-    imgs, order = load_images(game.main_dir, ["ruleset", game.ruleset_folder.strip("/"), "leader", "portrait"], loadorder=False, returnorder=True)
+    imgs, order = load_images(game.main_dir, ["ruleset", game.ruleset_folder, "leader", "portrait"], loadorder=False, returnorder=True)
     game.leader_stat = readstat.Leaderstat(main_dir, imgs, order, option=game.ruleset_folder)
     # ^ End leader
 
@@ -361,10 +366,10 @@ def load_game_data(game):
     # ^ End game effect
 
     # v Encyclopedia related objects
-    lorebook.Lorebook.concept_stat = csv_read(game.main_dir, "concept_stat.csv", ["data", "ruleset", game.ruleset_folder.strip("/"), "lore"])
-    lorebook.Lorebook.concept_lore = csv_read(game.main_dir, "concept_lore.csv", ["data", "ruleset", game.ruleset_folder.strip("/"), "lore"])
-    lorebook.Lorebook.history_stat = csv_read(game.main_dir, "history_stat.csv", ["data", "ruleset", game.ruleset_folder.strip("/"), "lore"])
-    lorebook.Lorebook.history_lore = csv_read(game.main_dir, "history_lore.csv", ["data", "ruleset", game.ruleset_folder.strip("/"), "lore"])
+    lorebook.Lorebook.concept_stat = csv_read(game.main_dir, "concept_stat.csv", ["data", "ruleset", game.ruleset_folder, "lore"])
+    lorebook.Lorebook.concept_lore = csv_read(game.main_dir, "concept_lore.csv", ["data", "ruleset", game.ruleset_folder, "lore"])
+    lorebook.Lorebook.history_stat = csv_read(game.main_dir, "history_stat.csv", ["data", "ruleset", game.ruleset_folder, "lore"])
+    lorebook.Lorebook.history_lore = csv_read(game.main_dir, "history_lore.csv", ["data", "ruleset", game.ruleset_folder, "lore"])
 
     lorebook.Lorebook.faction_lore = game.allfaction.faction_list
     lorebook.Lorebook.unit_stat = game.troop_data.troop_list
@@ -399,49 +404,49 @@ def load_game_data(game):
         imgs[index] = pygame.transform.scale(img, (int(img.get_width() * game.width_adjust),
                                                    int(img.get_height() * game.height_adjust)))
     game.lorebuttonui = [
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[0], 0, 13),  # concept section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[1], 1, 13),  # history section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 3,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 3,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[2], 2, 13),  # faction section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 4,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 4,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[3], 3, 13),  # troop section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 5,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 5,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[4], 4, 13),  # troop equipment section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 6,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 6,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[5], 5, 13),  # troop status section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 7,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 7,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[6], 6, 13),  # troop skill section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 8,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 8,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[7], 7, 13),  # troop property section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 9,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 9,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                         imgs[8], 8, 13),  # leader section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13),  # terrain section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13),  # weather section button
-        ui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
+        battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
                         game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),  # close button
-        ui.UIButton(game.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), game.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
+        battleui.UIButton(game.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), game.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
                         imgs[13], 20, 24),  # previous page button
-        ui.UIButton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
+        battleui.UIButton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
                         imgs[14], 21, 24)]  # next page button
     game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
-    game.lorescroll = ui.UIScroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
+    game.lorescroll = battleui.UIScroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
                                         game.lorebook.max_subsection_show, layer=25)  # add subsection list scroller
     # ^ End encyclopedia objects
 
     # v Create gamebattle game ui objects
-    game.minimap = ui.Minimap((SCREENRECT.width, SCREENRECT.height))
+    game.minimap = battleui.Minimap((SCREENRECT.width, SCREENRECT.height))
 
     # Popup Ui
     imgs = load_images(game.main_dir, ["ui", "popup_ui", "terraincheck"], loadorder=False)
@@ -455,13 +460,13 @@ def load_game_data(game):
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
     # Army select list ui
-    game.unitselector = ui.ArmySelect((0, 0), topimage[30])
-    game.selectscroll = ui.UIScroller(game.unitselector.rect.topright, topimage[30].get_height(),
+    game.unitselector = battleui.ArmySelect((0, 0), topimage[30])
+    game.selectscroll = battleui.UIScroller(game.unitselector.rect.topright, topimage[30].get_height(),
                                           game.unitselector.max_row_show)  # scroller for unit select ui
 
     # Right top bar ui that show rough information of selected battalions
     game.gameui = [
-        ui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
+        battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                       icon=iconimage, uitype="topbar")]
     game.gameui[0].options1 = game.statetext
 
@@ -470,17 +475,17 @@ def load_game_data(game):
 
     # Left top command ui with leader and parentunit behavious button
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "commandbar_icon"])
-    game.gameui.append(ui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unitselector.image.get_height(),
+    game.gameui.append(battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unitselector.image.get_height(),
                                      image=topimage[1], icon=iconimage,
                                      uitype="commandbar"))
 
     # Subunit information card ui
     game.gameui.append(
-        ui.GameUI(x=SCREENRECT.width - topimage[2].get_size()[0] / 2, y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
+        battleui.GameUI(x=SCREENRECT.width - topimage[2].get_size()[0] / 2, y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
                       image=topimage[2], icon="", uitype="unitcard"))
     game.gameui[2].featurelist = game.featurelist  # add terrain feature list name to subunit card
 
-    game.gameui.append(ui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
+    game.gameui.append(battleui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
                                      image=topimage[5], icon="", uitype="unitbox"))  # inspect ui that show subnit in selected parentunit
     # v Subunit shown in inspect ui
     width, height = game.inspectuipos[0], game.inspectuipos[1]
@@ -489,7 +494,7 @@ def load_game_data(game):
     game.inspectsubunit = []
     for this_subunit in list(range(0, 64)):
         width += imgsize[0]
-        game.inspectsubunit.append(ui.InspectSubunit((width, height)))
+        game.inspectsubunit.append(battleui.InspectSubunit((width, height)))
         subunitnum += 1
         if subunitnum == 8:  # Reach the last subnit in the row, go to the next one
             width = game.inspectuipos[0]
@@ -498,56 +503,56 @@ def load_game_data(game):
     # ^ End subunit shown
 
     # Time bar ui
-    game.timeui = ui.TimeUI(game.unitselector.rect.topright, topimage[31])
-    game.timenumber = ui.Timer(game.timeui.rect.topleft)  # time number on time ui
-    game.speednumber = ui.SpeedNumber((game.timeui.rect.center[0] + 40, game.timeui.rect.center[1]),
+    game.timeui = battleui.TimeUI(game.unitselector.rect.topright, topimage[31])
+    game.timenumber = battleui.Timer(game.timeui.rect.topleft)  # time number on time ui
+    game.speednumber = battleui.SpeedNumber((game.timeui.rect.center[0] + 40, game.timeui.rect.center[1]),
                                           1)  # game speed number on the time ui
 
     image = pygame.Surface((topimage[31].get_width(), 15))
-    game.scaleui = ui.ScaleUI(game.timeui.rect.bottomleft, image)
+    game.scaleui = battleui.ScaleUI(game.timeui.rect.bottomleft, image)
 
     # Button related to subunit card and command
-    game.buttonui = [ui.UIButton(game.gameui[2].x - 152, game.gameui[2].y + 10, topimage[3], 0),  # subunit card description button
-                     ui.UIButton(game.gameui[2].x - 152, game.gameui[2].y - 70, topimage[4], 1),  # subunit card stat button
-                     ui.UIButton(game.gameui[2].x - 152, game.gameui[2].y - 30, topimage[7], 2),  # subunit card skill button
-                     ui.UIButton(game.gameui[2].x - 152, game.gameui[2].y + 50, topimage[22], 3),  # subunit card equipment button
-                     ui.UIButton(game.gameui[0].x - 206, game.gameui[0].y - 1, topimage[6], 1),  # unit inspect open/close button
-                     ui.UIButton(game.gameui[1].x - 115, game.gameui[1].y + 26, topimage[8], 0),  # split by middle coloumn button
-                     ui.UIButton(game.gameui[1].x - 115, game.gameui[1].y + 56, topimage[9], 1),  # split by middle row button
-                     ui.UIButton(game.gameui[1].x + 100, game.gameui[1].y + 56, topimage[14], 1)]  # decimation button
+    game.buttonui = [battleui.UIButton(game.gameui[2].x - 152, game.gameui[2].y + 10, topimage[3], 0),  # subunit card description button
+                     battleui.UIButton(game.gameui[2].x - 152, game.gameui[2].y - 70, topimage[4], 1),  # subunit card stat button
+                     battleui.UIButton(game.gameui[2].x - 152, game.gameui[2].y - 30, topimage[7], 2),  # subunit card skill button
+                     battleui.UIButton(game.gameui[2].x - 152, game.gameui[2].y + 50, topimage[22], 3),  # subunit card equipment button
+                     battleui.UIButton(game.gameui[0].x - 206, game.gameui[0].y - 1, topimage[6], 1),  # unit inspect open/close button
+                     battleui.UIButton(game.gameui[1].x - 115, game.gameui[1].y + 26, topimage[8], 0),  # split by middle coloumn button
+                     battleui.UIButton(game.gameui[1].x - 115, game.gameui[1].y + 56, topimage[9], 1),  # split by middle row button
+                     battleui.UIButton(game.gameui[1].x + 100, game.gameui[1].y + 56, topimage[14], 1)]  # decimation button
 
     # Behaviour button that once click switch to other mode for subunit behaviour
-    game.switch_button = [ui.SwitchButton(game.gameui[1].x - 40, game.gameui[1].y + 96, topimage[10:14]),  # skill condition button
-                          ui.SwitchButton(game.gameui[1].x - 80, game.gameui[1].y + 96, topimage[15:17]),  # fire at will button
-                          ui.SwitchButton(game.gameui[1].x, game.gameui[1].y + 96, topimage[17:20]),  # behaviour button
-                          ui.SwitchButton(game.gameui[1].x + 40, game.gameui[1].y + 96, topimage[20:22]),  # shoot range button
-                          ui.SwitchButton(game.gameui[1].x - 125, game.gameui[1].y + 96, topimage[35:38]),  # arcshot button
-                          ui.SwitchButton(game.gameui[1].x + 80, game.gameui[1].y + 96, topimage[38:40]),  # toggle run button
-                          ui.SwitchButton(game.gameui[1].x + 120, game.gameui[1].y + 96, topimage[40:43])]  # toggle melee mode
+    game.switch_button = [battleui.SwitchButton(game.gameui[1].x - 40, game.gameui[1].y + 96, topimage[10:14]),  # skill condition button
+                          battleui.SwitchButton(game.gameui[1].x - 80, game.gameui[1].y + 96, topimage[15:17]),  # fire at will button
+                          battleui.SwitchButton(game.gameui[1].x, game.gameui[1].y + 96, topimage[17:20]),  # behaviour button
+                          battleui.SwitchButton(game.gameui[1].x + 40, game.gameui[1].y + 96, topimage[20:22]),  # shoot range button
+                          battleui.SwitchButton(game.gameui[1].x - 125, game.gameui[1].y + 96, topimage[35:38]),  # arcshot button
+                          battleui.SwitchButton(game.gameui[1].x + 80, game.gameui[1].y + 96, topimage[38:40]),  # toggle run button
+                          battleui.SwitchButton(game.gameui[1].x + 120, game.gameui[1].y + 96, topimage[40:43])]  # toggle melee mode
 
-    game.eventlog = ui.EventLog(topimage[23], (0, SCREENRECT.height))
+    game.eventlog = battleui.EventLog(topimage[23], (0, SCREENRECT.height))
 
-    game.logscroll = ui.UIScroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.max_row_show)  # event log scroller
+    game.logscroll = battleui.UIScroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.max_row_show)  # event log scroller
     game.eventlog.logscroll = game.logscroll  # Link scroller to ui since it is easier to do here with the current order
     subunit.Subunit.eventlog = game.eventlog  # Assign eventlog to subunit class to broadcast event to the log
 
-    game.buttonui.append(ui.UIButton(game.eventlog.pos[0] + (topimage[24].get_width() / 2),
+    game.buttonui.append(battleui.UIButton(game.eventlog.pos[0] + (topimage[24].get_width() / 2),
                                          game.eventlog.pos[1] - game.eventlog.image.get_height() - (topimage[24].get_height() / 2), topimage[24],
                                          0))  # troop tab log button
 
-    game.buttonui += [ui.UIButton(game.buttonui[8].pos[0] + topimage[24].get_width(), game.buttonui[8].pos[1], topimage[25], 1),
+    game.buttonui += [battleui.UIButton(game.buttonui[8].pos[0] + topimage[24].get_width(), game.buttonui[8].pos[1], topimage[25], 1),
                       # army tab log button
-                      ui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 2), game.buttonui[8].pos[1], topimage[26], 2),
+                      battleui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 2), game.buttonui[8].pos[1], topimage[26], 2),
                       # leader tab log button
-                      ui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 3), game.buttonui[8].pos[1], topimage[27], 3),
+                      battleui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 3), game.buttonui[8].pos[1], topimage[27], 3),
                       # subunit tab log button
-                      ui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 5), game.buttonui[8].pos[1], topimage[28], 4),
+                      battleui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 5), game.buttonui[8].pos[1], topimage[28], 4),
                       # delete current tab log button
-                      ui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 6), game.buttonui[8].pos[1], topimage[29], 5),
+                      battleui.UIButton(game.buttonui[8].pos[0] + (topimage[24].get_width() * 6), game.buttonui[8].pos[1], topimage[29], 5),
                       # delete all log button
-                      ui.UIButton(game.timeui.rect.center[0] - 30, game.timeui.rect.center[1], topimage[32], 0),  # time pause button
-                      ui.UIButton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
-                      ui.UIButton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
+                      battleui.UIButton(game.timeui.rect.center[0] - 30, game.timeui.rect.center[1], topimage[32], 0),  # time pause button
+                      battleui.UIButton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
+                      battleui.UIButton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
     game.screen_button_list = game.buttonui[8:17]  # event log and time buttons
     game.unitcard_button = game.buttonui[0:4]
@@ -559,8 +564,8 @@ def load_game_data(game):
     game.battleui.add(game.buttonui[8:17])
     game.battleui.add(game.logscroll, game.selectscroll)
 
-    ui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
-    game.inspect_selected_border = ui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
+    battleui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
+    game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
     game.mainui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
     game.terraincheck = popup.TerrainPopup()  # popup box that show terrain information when right click on map
     game.button_name_popup = popup.OnelinePopup()  # popup box that show button name when mouse over
@@ -570,10 +575,10 @@ def load_game_data(game):
     drama.TextDrama.SCREENRECT = SCREENRECT
     game.textdrama = drama.TextDrama()  # messege at the top of screen that show up for important event
 
-    game.fpscount = ui.FPScount()  # FPS number counter
+    game.fpscount = battleui.FPScount()  # FPS number counter
 
-    game.battledone_box = ui.BattleDone(game, topimage[-3], topimage[-4])
-    game.gamedone_button = ui.UIButton(game.battledone_box.pos[0], game.battledone_box.boximage.get_height() * 0.8, topimage[-2], newlayer=19)
+    game.battledone_box = battleui.BattleDone(game, topimage[-3], topimage[-4])
+    game.gamedone_button = battleui.UIButton(game.battledone_box.pos[0], game.battledone_box.boximage.get_height() * 0.8, topimage[-2], newlayer=19)
     # ^ End game ui
 
     # v Esc menu related objects
@@ -612,11 +617,12 @@ def csv_read(maindir, file, subfolder=(), outputtype=0):
     if outputtype == 1:
         returnoutput = []
 
-    folderlist = ""
+    folder_dir = ""
     for folder in subfolder:
-        folderlist += "/" + folder
-    folderlist += "/" + file
-    with open(main_dir + folderlist, encoding="utf-8", mode="r") as unitfile:
+        folder_dir = os.path.join(folder_dir, folder)
+    folder_dir = os.path.join(folder_dir, file)
+    folder_dir = os.path.join(main_dir, folder_dir)
+    with open(folder_dir, encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
             for n, i in enumerate(row):
@@ -631,7 +637,7 @@ def csv_read(maindir, file, subfolder=(), outputtype=0):
 
 
 def load_sound(main_dir, file):
-    file = os.path.join(main_dir, "data/sound/", file)
+    file = os.path.join(main_dir, "data", "sound", file)
     sound = pygame.mixer.Sound(file)
     return sound
 
@@ -655,7 +661,7 @@ def convert_str_time(event):
 
 def trait_skill_blit(self):
     """For blitting skill and trait icon into subunit info ui"""
-    from gamescript import ui
+    from gamescript.tactical import ui
     SCREENRECT = self.SCREENRECT
 
     position = self.gameui[2].rect.topleft
@@ -666,7 +672,7 @@ def trait_skill_blit(self):
         icon.kill()
 
     for trait in self.gameui[2].value2[0]:
-        self.skill_icon.add(ui.SkillCardIcon(self.trait_imgs[0], (position[0], position[1]), 0, gameid=trait))  # For now use placeholder image 0
+        self.skill_icon.add(battleui.SkillCardIcon(self.trait_imgs[0], (position[0], position[1]), 0, gameid=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -677,7 +683,7 @@ def trait_skill_blit(self):
     startrow = position[0]
 
     for skill in self.gameui[2].value2[1]:
-        self.skill_icon.add(ui.SkillCardIcon(self.skill_imgs[0], (position[0], position[1]), 1, gameid=skill))  # For now use placeholder image 0
+        self.skill_icon.add(battleui.SkillCardIcon(self.skill_imgs[0], (position[0], position[1]), 1, gameid=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -686,7 +692,7 @@ def trait_skill_blit(self):
 
 def effect_icon_blit(self):
     """For blitting all status effect icon"""
-    from gamescript import ui
+    from gamescript.tactical import ui
     SCREENRECT = self.SCREENRECT
 
     position = self.gameui[2].rect.topleft
@@ -697,7 +703,7 @@ def effect_icon_blit(self):
         icon.kill()
 
     for status in self.gameui[2].value2[4]:
-        self.effect_icon.add(ui.SkillCardIcon(self.status_imgs[0], (position[0], position[1]), 4, gameid=status))
+        self.effect_icon.add(battleui.SkillCardIcon(self.status_imgs[0], (position[0], position[1]), 4, gameid=status))
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -727,7 +733,7 @@ def countdown_skill_icon(self):
 
 def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
     """Create batalion object into the battle and leader of the parentunit"""
-    from gamescript import unit, leader
+    from gamescript.tactical import unit, leader
     oldsubunitlist = subunitlist[~np.all(subunitlist == 0, axis=1)]  # remove whole empty column in subunit list
     subunitlist = oldsubunitlist[:, ~np.all(oldsubunitlist == 0, axis=0)]  # remove whole empty row in subunit list
     unit = unit.Unit(position, gameid, subunitlist, colour, control, coa, command, abs(360 - startangle), starthp, startstamina, team)
@@ -743,7 +749,7 @@ def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, cont
 def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
     """generate unit data into game object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
-    from gamescript import unit, subunit
+    from gamescript.tactical import unit, subunit
     this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                     colour, row[10] + row[11], gamebattle.leader_stat, control,
                     coa, command, row[13], row[14], row[15], row[16])
@@ -785,9 +791,8 @@ def unitsetup(gamebattle):
     teamcolour = gamebattle.teamcolour
     teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
 
-    with open(
-            main_dir + "/data/ruleset" + gamebattle.ruleset_folder + "/map/" + gamebattle.mapselected + "/" + gamebattle.source + "/unit_pos" + ".csv",
-            encoding="utf-8", mode="r") as unitfile:
+    with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
+                                      gamebattle.mapselected, gamebattle.source, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunitgameid = 1
         for row in rd:
@@ -1144,7 +1149,7 @@ def change_leader(self, event):
 
 
 def add_new_unit(gamebattle, who, addunitlist=True):
-    from gamescript import unit
+    from gamescript.tactical import unit
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
     foundcount = 0  # for subunit_sprite index
@@ -1221,7 +1226,7 @@ def move_leader_subunit(this_leader, oldarmysubunit, newarmysubunit, alreadypick
 
 def splitunit(battle, who, how):
     """split parentunit either by row or column into two seperate parentunit"""  # TODO check split when moving
-    from gamescript import unit, leader
+    from gamescript.tactical import unit, leader
 
     if how == 0:  # split by row
         newarmysubunit = np.array_split(who.armysubunit, 2)[1]
