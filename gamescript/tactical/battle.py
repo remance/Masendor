@@ -272,7 +272,7 @@ class Battle:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
                                           ["data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 1)
             self.weather_event = self.weather_event[1:]
-            longscript.convert_str_time(self.weather_event)
+            commonscript.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
             newtime = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
@@ -291,7 +291,7 @@ class Battle:
                                             ["data", "ruleset", self.ruleset_folder, "map", self.mapselected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
-                    longscript.convert_str_time(self.music_event)
+                    commonscript.convert_str_time(self.music_event)
                     self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
                     newlist = []
                     for time in self.music_schedule:

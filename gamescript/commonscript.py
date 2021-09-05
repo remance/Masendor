@@ -180,3 +180,20 @@ def countdown_skill_icon(self):
     #     if effect.id in self.gameui[2].value2[4]:
     #         cd = int(self.gameui[2].value2[4][effect.id][3])
     #     effect.iconchange(cd, 0)
+
+
+def rotationxy(self, origin, point, angle):
+    ox, oy = origin
+    px, py = point
+    x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+    y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+    return pygame.Vector2(x, y)
+
+def convert_str_time(event):
+    for index, item in enumerate(event):
+        newtime = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
+        newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
+        event[index] = [item[0], newtime]
+        if len(item) == 3:
+            event[index].append(item[2])
+

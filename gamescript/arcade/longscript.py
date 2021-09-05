@@ -9,7 +9,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 
-from gamescript import commonscript
+from gamescript import commonscript, popup
 
 load_image = commonscript.load_image
 load_images = commonscript.load_images
@@ -42,7 +42,7 @@ def load_game_data(game):
     Soundvolume = game.Soundvolume
     from gamescript import readstat, map, lorebook, weather, drama, battleui
     from gamescript.arcade import faction, unit, \
-        subunit, rangeattack, menu, popup, uniteditor
+        subunit, rangeattack, menu, uniteditor
 
     # v Craete feature terrain modifier
     game.featuremod = {}
@@ -240,7 +240,7 @@ def load_game_data(game):
     subunit.Subunit.skill_mana_cost = skill_header['Mana Cost']
     subunit.Subunit.skill_melee_attack = skill_header['Melee Attack Effect']
     subunit.Subunit.skill_melee_defence = skill_header['Melee Defence Effect']
-    subunit.Subunit.skill_range_defence = skill_header['Range Defence Effect']
+    subunit.Subunit.skill_range_defence = skill_header['Ranged Defence Effect']
     subunit.Subunit.skill_speed = skill_header['Speed Effect']
     subunit.Subunit.skill_accuracy = skill_header['Accuracy Effect']
     subunit.Subunit.skill_range = skill_header['Range Effect']
@@ -266,7 +266,7 @@ def load_game_data(game):
     subunit.Subunit.status_duration = status_header['Duration']
     subunit.Subunit.status_melee_attack = status_header['Melee Attack Effect']
     subunit.Subunit.status_melee_defence = status_header['Melee Defence Effect']
-    subunit.Subunit.status_range_defence = status_header['Range Defence Effect']
+    subunit.Subunit.status_range_defence = status_header['Ranged Defence Effect']
     subunit.Subunit.status_armour = status_header['Armour Effect']
     subunit.Subunit.status_speed = status_header['Speed Effect']
     subunit.Subunit.status_accuracy = status_header['Accuracy Effect']
@@ -549,16 +549,6 @@ def load_game_data(game):
     game.escvaluebox = [menu.Escvaluebox(sliderimage[3], (game.battle_menu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
     # ^ End esc menu objects
 
-# Other gamebattle gamescript
-
-def convert_str_time(event):
-    for index, item in enumerate(event):
-        newtime = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
-        newtime = datetime.timedelta(hours=newtime.hour, minutes=newtime.minute, seconds=newtime.second)
-        event[index] = [item[0], newtime]
-        if len(item) == 3:
-            event[index].append(item[2])
-
 
 # Battle Start related gamescript
 
@@ -662,7 +652,7 @@ def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
 
 # Battle related gamescript
 
-def setrotate(self, set_target=None):
+def setrotate(self, set_target=None, rotationlist=(-90, -120, -45, 0, 90, 45, 120, 180)):
     """set base_target and new angle for sprite rotation"""
     if set_target is None:  # For auto chase rotate
         myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
@@ -670,32 +660,10 @@ def setrotate(self, set_target=None):
         myradians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
     newangle = math.degrees(myradians)
 
-    # """upper left -"""
-    if -180 <= newangle <= -90:
-        newangle = -newangle - 90
+    newangle = min(rotationlist,
+          key = lambda x: abs(x-newangle))  # find closest
 
-    # """upper right +"""
-    elif -90 < newangle < 0:
-        newangle = (-newangle) - 90
-
-    # """lower right -"""
-    elif 0 <= newangle <= 90:
-        newangle = -(newangle + 90)
-
-    # """lower left +"""
-    elif 90 < newangle <= 180:
-        newangle = 270 - newangle
-
-    return round(newangle)
-
-
-def rotationxy(self, origin, point, angle):
-    ox, oy = origin
-    px, py = point
-    x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-    y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-    return pygame.Vector2(x, y)
-
+    return newangle
 
 def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
     """Calculate dmg, type 0 is melee attack and will use attacker subunit stat,

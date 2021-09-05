@@ -93,7 +93,7 @@ class Unitstat:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Type", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size"]  # value int only
-            list_column = ["Trait", "Skill", "Armour", "Melee Weapon", "Range Weapon", "Mount", "Role", "Ruleset"]  # value in list only
+            list_column = ["Trait", "Skill", "Armour", "Melee Weapon", "Ranged Weapon", "Mount", "Role", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -125,7 +125,7 @@ class Unitstat:
             run = 0
             int_column = ["ID", "Temperature Change"]  # value int only
             list_column = ["Special Effect", "Status Conflict", "Ruleset"]  # value in list only
-            mod_column = ["Melee Attack Effect", "Melee Defense Effect", "Range Defense Effect", "Armour Effect",
+            mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Armour Effect",
                           "Speed Effect", "Accuracy Effect", "Reload Effect", "Charge Effect"]  # need to be calculate to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
@@ -171,7 +171,7 @@ class Unitstat:
             run = 0
             int_column = ["ID"]  # value int only
             list_column = ["Trait"]  # value in list only
-            mod_column = ["Melee Attack Effect", "Melee Defense Effect", "Range Defense Effect",
+            mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect"]  # need to be calculate to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
@@ -195,7 +195,7 @@ class Unitstat:
             run = 0
             int_column = ["ID", "Type", "Area of Effect", "Element", "Cost"]  # value int only
             list_column = ["Status", "Restriction", "Condition", "Enemy Status", "Ruleset"]  # value in list only
-            mod_column = ["Melee Attack Effect", "Melee Defense Effect", "Range Defense Effect", "Speed Effect",
+            mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Damage Effect"]  # need to be calculate to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
@@ -225,7 +225,7 @@ class Unitstat:
             run = 0
             int_column = ["ID", "Buff Range", "Race", "Cost"]  # value int only
             list_column = ["Status", "Special Effect", "Enemy Status", "Ruleset"]  # value in list only
-            mod_column = ["Buff Modifier", "Melee Attack Effect", "Melee Defense Effect", "Range Defense Effect",
+            mod_column = ["Buff Modifier", "Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Siege Effect", "Supply Effect", "Upkeep Effect"]  # need to be calculate to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
@@ -338,7 +338,9 @@ class Leaderstat:
             header = rd[0]
             int_column = ["ID", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
                           "Forcedimageid", "Faction"]  # value int only
+            list_column = ["Melee Weapon","Ranged Weapon","Armour","Skill","Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
             for row in rd:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, int_column=int_column)
@@ -352,7 +354,9 @@ class Leaderstat:
             header = rd[0]
             int_column = ["ID", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class", "Forcedimageid",
                           "Faction"]  # value int only
+            list_column = ["Melee Weapon", "Ranged Weapon", "Armour", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
             self.leader_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):

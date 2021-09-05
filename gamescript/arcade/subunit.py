@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
+from gamescript import commonscript
 from gamescript.tactical import rangeattack, longscript
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -12,14 +13,17 @@ from pygame.transform import scale
 
 infinity = float("inf")
 
-def create_troop_stat(self, stat, starthp, unitscale):
-    stat_header = self.stat_list.troop_list_header
-    weapon_header = self.weapon_list.weapon_list_header
-    armour_header = self.armour_list.armour_list_header
-    mount_header = self.stat_list.mount_list_header
-    mount_grade_header = self.stat_list.mount_grade_list_header
-    trait_header = self.stat_list.trait_list_header
-    self.grade_header = self.stat_list.grade_list_header
+def create_troop_stat(self, stat, starthp, type):
+    if type == "troop":
+        stat_header = self.stat_list.troop_list_header
+        weapon_header = self.weapon_list.weapon_list_header
+        armour_header = self.armour_list.armour_list_header
+        mount_header = self.stat_list.mount_list_header
+        mount_grade_header = self.stat_list.mount_grade_list_header
+        trait_header = self.stat_list.trait_list_header
+        self.grade_header = self.stat_list.grade_list_header
+    elif type == "leader":
+        stat_header = self.stat_list.leader_list_header
 
     self.name = stat[0]  # name according to the preset
     self.unitclass = stat[stat_header["Type"]]  # used to determine whether to use melee or range weapon as icon
@@ -35,7 +39,7 @@ def create_troop_stat(self, stat, starthp, unitscale):
                        gradestat[self.grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
     self.base_meleedef = stat[stat_header["Melee Defence"]] + \
                          gradestat[self.grade_header["Defence Bonus"]]  # base melee defence with grade bonus
-    self.base_rangedef = stat[stat_header["Range Defence"]] + \
+    self.base_rangedef = stat[stat_header["Ranged Defence"]] + \
                          gradestat[self.grade_header["Defence Bonus"]]  # base range defence with grade bonus
     self.armourgear = stat[stat_header["Armour"]]  # armour equipement
     self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
@@ -56,7 +60,7 @@ def create_troop_stat(self, stat, starthp, unitscale):
 
     # vv Weapon stat
     self.meleeweapon = stat[stat_header["Melee Weapon"]]  # melee weapon equipment
-    self.rangeweapon = stat[stat_header["Range Weapon"]]  # range weapon equipment
+    self.rangeweapon = stat[stat_header["Ranged Weapon"]]  # range weapon equipment
     self.dmg = (self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Minimum Damage"]] * self.weapon_list.quality[self.meleeweapon[1]],
                 self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Maximum Damage"]] * self.weapon_list.quality[self.meleeweapon[1]])
     self.melee_penetrate = self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Armour Penetration"]] * self.weapon_list.quality[
@@ -175,7 +179,7 @@ def create_troop_stat(self, stat, starthp, unitscale):
         for trait in self.trait.values():  # add trait modifier to base stat
             self.base_attack *= trait[trait_header['Melee Attack Effect']]
             self.base_meleedef *= trait[trait_header['Melee Defence Effect']]
-            self.base_rangedef *= trait[trait_header['Range Defence Effect']]
+            self.base_rangedef *= trait[trait_header['Ranged Defence Effect']]
             self.base_armour += trait[trait_header['Armour Bonus']]
             self.base_speed *= trait[trait_header['Speed Effect']]
             self.base_accuracy *= trait[trait_header['Accuracy Effect']]
@@ -277,6 +281,7 @@ def create_troop_stat(self, stat, starthp, unitscale):
     self.elem_melee = self.base_elem_melee
     self.elem_range = self.base_elem_range
 
+    self.troop_health = self.troop_health * starthp / 100
     self.max_health = self.troop_health # health percentage
     self.health75 = self.troop_health * 0.75
     self.health50 = self.troop_health * 0.5
@@ -309,9 +314,8 @@ class Subunit(pygame.sprite.Sprite):
     weapon_list = None
     armour_list = None
     stat_list = None
-    rotationxy = longscript.rotationxy
+    rotationxy = commonscript.rotationxy
     setrotate = longscript.setrotate
-    change_leader = longscript.change_leader
     create_troop_stat = create_troop_stat
     zoom = 4
 

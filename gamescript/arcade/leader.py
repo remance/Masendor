@@ -14,7 +14,6 @@ class Leader(pygame.sprite.Sprite):
         stat = leaderstat.leader_list[leaderid]
         self.leaderid = leaderid  # Different than game id, leaderid is only used as reference to the data
         self.name = stat[0]
-        self.health = stat[1]
         self.authority = stat[2]
         self.meleecommand = stat[3]
         self.rangecommand = stat[4]

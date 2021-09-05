@@ -9,7 +9,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 
-from gamescript import commonscript
+from gamescript import commonscript, popup
 
 load_image = commonscript.load_image
 load_images = commonscript.load_images
@@ -42,7 +42,7 @@ def load_game_data(game):
     Soundvolume = game.Soundvolume
     from gamescript import readstat, map, lorebook, weather, drama, battleui
     from gamescript.tactical import faction, unit, \
-        subunit, rangeattack, menu, popup, uniteditor
+        subunit, rangeattack, menu, uniteditor
 
     # v Craete feature terrain modifier
     game.featuremod = {}
@@ -240,7 +240,7 @@ def load_game_data(game):
     subunit.Subunit.skill_mana_cost = skill_header['Mana Cost']
     subunit.Subunit.skill_melee_attack = skill_header['Melee Attack Effect']
     subunit.Subunit.skill_melee_defence = skill_header['Melee Defence Effect']
-    subunit.Subunit.skill_range_defence = skill_header['Range Defence Effect']
+    subunit.Subunit.skill_range_defence = skill_header['Ranged Defence Effect']
     subunit.Subunit.skill_speed = skill_header['Speed Effect']
     subunit.Subunit.skill_accuracy = skill_header['Accuracy Effect']
     subunit.Subunit.skill_range = skill_header['Range Effect']
@@ -266,7 +266,7 @@ def load_game_data(game):
     subunit.Subunit.status_duration = status_header['Duration']
     subunit.Subunit.status_melee_attack = status_header['Melee Attack Effect']
     subunit.Subunit.status_melee_defence = status_header['Melee Defence Effect']
-    subunit.Subunit.status_range_defence = status_header['Range Defence Effect']
+    subunit.Subunit.status_range_defence = status_header['Ranged Defence Effect']
     subunit.Subunit.status_armour = status_header['Armour Effect']
     subunit.Subunit.status_speed = status_header['Speed Effect']
     subunit.Subunit.status_accuracy = status_header['Accuracy Effect']
@@ -686,14 +686,6 @@ def setrotate(self, set_target=None):
         newangle = 270 - newangle
 
     return round(newangle)
-
-
-def rotationxy(self, origin, point, angle):
-    ox, oy = origin
-    px, py = point
-    x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-    y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-    return pygame.Vector2(x, y)
 
 
 def losscal(attacker, defender, hit, defence, dmgtype, defside=None):

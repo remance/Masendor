@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
+from gamescript import commonscript
 from gamescript.tactical import rangeattack, longscript
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -35,7 +36,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
                        gradestat[grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
     self.base_meleedef = stat[stat_header["Melee Defence"]] + \
                          gradestat[grade_header["Defence Bonus"]]  # base melee defence with grade bonus
-    self.base_rangedef = stat[stat_header["Range Defence"]] + \
+    self.base_rangedef = stat[stat_header["Ranged Defence"]] + \
                          gradestat[grade_header["Defence Bonus"]]  # base range defence with grade bonus
     self.armourgear = stat[stat_header["Armour"]]  # armour equipement
     self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
@@ -58,7 +59,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
 
     # vv Weapon stat
     self.meleeweapon = stat[stat_header["Melee Weapon"]]  # melee weapon equipment
-    self.rangeweapon = stat[stat_header["Range Weapon"]]  # range weapon equipment
+    self.rangeweapon = stat[stat_header["Ranged Weapon"]]  # range weapon equipment
     self.dmg = (self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Minimum Damage"]] * self.weapon_list.quality[self.meleeweapon[1]],
                 self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Maximum Damage"]] * self.weapon_list.quality[self.meleeweapon[1]])
     self.melee_penetrate = self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Armour Penetration"]] * self.weapon_list.quality[
@@ -183,7 +184,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         for trait in self.trait.values():  # add trait modifier to base stat
             self.base_attack *= trait[trait_header['Melee Attack Effect']]
             self.base_meleedef *= trait[trait_header['Melee Defence Effect']]
-            self.base_rangedef *= trait[trait_header['Range Defence Effect']]
+            self.base_rangedef *= trait[trait_header['Ranged Defence Effect']]
             self.base_armour += trait[trait_header['Armour Bonus']]
             self.base_speed *= trait[trait_header['Speed Effect']]
             self.base_accuracy *= trait[trait_header['Accuracy Effect']]
@@ -332,7 +333,7 @@ class Subunit(pygame.sprite.Sprite):
     weapon_list = None
     armour_list = None
     stat_list = None
-    rotationxy = longscript.rotationxy
+    rotationxy = commonscript.rotationxy
     setrotate = longscript.setrotate
     change_leader = longscript.change_leader
     maxzoom = 10  # max zoom allow

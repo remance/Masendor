@@ -7,7 +7,7 @@ import sys
 # import basic pygame modules
 import pygame
 import pygame.freetype
-from gamescript import map, weather, lorebook, drama, battleui, commonscript
+from gamescript import map, weather, lorebook, drama, battleui, commonscript, popup
 
 from pygame.locals import *
 
@@ -42,13 +42,13 @@ class Mainmenu:
 
         # v Set the display mode
         self.genre = "tactical"
-        global battle, leader, longscript, prepare, menu, unit, subunit, rangeattack, popup, uniteditor
+        global battle, leader, longscript, prepare, menu, unit, subunit, rangeattack, uniteditor
         if self.genre == "tactical":
             from gamescript.tactical import battle, leader, longscript, \
-                prepare, menu, unit, subunit, rangeattack, popup, uniteditor
+                prepare, menu, unit, subunit, rangeattack, uniteditor
         elif self.genre == "arcade":
             from gamescript.arcade import battle, leader, longscript, \
-                prepare, menu, unit, subunit, rangeattack, popup, uniteditor
+                prepare, menu, unit, subunit, rangeattack, uniteditor
         self.SCREENRECT = Rect(0, 0, self.ScreenWidth, self.ScreenHeight)
         self.width_adjust = self.SCREENRECT.width / 1366
         self.height_adjust = self.SCREENRECT.height / 768

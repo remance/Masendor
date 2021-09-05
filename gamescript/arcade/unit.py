@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
+from gamescript import commonscript
 from gamescript.arcade import longscript
 from pygame.transform import scale
 
@@ -141,7 +142,7 @@ class Unit(pygame.sprite.Sprite):
     status_list = None  # status effect list
     maxzoom = 10  # max zoom allow
     gamebattle = None
-    rotationxy = longscript.rotationxy
+    rotationxy = commonscript.rotationxy
     die = longscript.die  # die script
     setrotate = longscript.setrotate
     formchangetimer = 10
