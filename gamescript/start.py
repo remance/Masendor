@@ -7,28 +7,24 @@ import sys
 # import basic pygame modules
 import pygame
 import pygame.freetype
-from gamescript import map, weather, lorebook, drama
-from gamescript.tactical import battle, leader, longscript, \
-    battleui, prepare, menu, unit, subunit, rangeattack, popup, uniteditor
+from gamescript import map, weather, lorebook, drama, battleui, commonscript
+
 from pygame.locals import *
 
-load_image = longscript.load_image
-load_images = longscript.load_images
-csv_read = longscript.csv_read
-load_sound = longscript.load_sound
-edit_config = longscript.edit_config
-make_bar_list = longscript.make_bar_list
-load_base_button = longscript.load_base_button
-text_objects = longscript.text_objects
+load_image = commonscript.load_image
+load_images = commonscript.load_images
+csv_read = commonscript.csv_read
+load_sound = commonscript.load_sound
+edit_config = commonscript.edit_config
+make_bar_list = commonscript.make_bar_list
+load_base_button = commonscript.load_base_button
+text_objects = commonscript.text_objects
 
 
 class Mainmenu:
     leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                      "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
     teamcolour = ((255, 255, 255), (144, 167, 255), (255, 114, 114))  # team colour, Neutral, 1, 2
-    trait_skill_blit = longscript.trait_skill_blit
-    effect_icon_blit = longscript.effect_icon_blit
-    countdown_skill_icon = longscript.countdown_skill_icon
 
     def __init__(self, main_dir, config):
         pygame.init()  # Initialize pygame
@@ -45,6 +41,14 @@ class Mainmenu:
         # ^ End read config
 
         # v Set the display mode
+        self.genre = "tactical"
+        global battle, leader, longscript, prepare, menu, unit, subunit, rangeattack, popup, uniteditor
+        if self.genre == "tactical":
+            from gamescript.tactical import battle, leader, longscript, \
+                prepare, menu, unit, subunit, rangeattack, popup, uniteditor
+        elif self.genre == "arcade":
+            from gamescript.arcade import battle, leader, longscript, \
+                prepare, menu, unit, subunit, rangeattack, popup, uniteditor
         self.SCREENRECT = Rect(0, 0, self.ScreenWidth, self.ScreenHeight)
         self.width_adjust = self.SCREENRECT.width / 1366
         self.height_adjust = self.SCREENRECT.height / 768
@@ -800,6 +804,7 @@ class Mainmenu:
                             keypress = event.key
 
                 if event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "mainmenu"):
+                    self.quit_button.event = False
                     self.textinputpopup = ("confirm_input", "quit")
                     self.confirmui.changeinstruction("Quit Game?")
                     self.mainui.add(*self.confirmui_pop)
@@ -811,7 +816,7 @@ class Mainmenu:
 
             if self.textinputpopup[0] is not None:  # currently have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
-                    button.update(self.mousepos, mouse_up, mouse_down)
+                    button.update(self.mousepos, mouse_up, mouse_down, "any")
 
                 if self.input_ok_button.event:
                     self.input_ok_button.event = False

@@ -8,24 +8,23 @@ import os
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import camera, map, weather
-from gamescript.arcade import subunit, unit, battleui, leader, longscript, prepare
+from gamescript import camera, map, weather, battleui, commonscript
+from gamescript.arcade import subunit, unit, leader, longscript, prepare
 from pygame.locals import *
 from scipy.spatial import KDTree
 
-load_image = longscript.load_image
-load_images = longscript.load_images
-csv_read = longscript.csv_read
-load_sound = longscript.load_sound
-editconfig = longscript.edit_config
+load_image = commonscript.load_image
+load_images = commonscript.load_images
+csv_read = commonscript.csv_read
+load_sound = commonscript.load_sound
+editconfig = commonscript.edit_config
+splitunit = commonscript.splitunit
 
 
 class Battle:
-    splitunit = longscript.splitunit
-    traitskillblit = longscript.trait_skill_blit
-    effecticonblit = longscript.effect_icon_blit
-    countdownskillicon = longscript.countdown_skill_icon
-
+    traitskillblit = commonscript.trait_skill_blit
+    effecticonblit = commonscript.effect_icon_blit
+    countdownskillicon = commonscript.countdown_skill_icon
     def __init__(self, main, winstyle):
         # v Get game object/variable from gamestart
         self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for game battle
@@ -334,9 +333,9 @@ class Battle:
         # v Create the battle map
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
-        self.camerascale = 1  # Camera zoom
         camera.Camera.SCREENRECT = self.SCREENRECT
         self.camera = camera.Camera(self.camerapos, self.camerascale)
+        self.showmap.changescale(self.camerascale)
 
         if mapselected is not None:
             imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], loadorder=False)
@@ -354,8 +353,6 @@ class Battle:
         # ^ End create battle map
 
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
-
-        self.enactment = enactment  # enactment mod, control both team
 
         self.team0poslist = {}  # team 0 parentunit position
         self.team1poslist = {}  # team 1 parentunit position
@@ -487,60 +484,6 @@ class Battle:
             self.gameui[1].valueinput(who=self.showincard)
         # ^ End cal authority
 
-    def setup_uniticon(self):
-        """Setup unit selection list in unit selector ui top left of screen"""
-        row = 30
-        startcolumn = 25
-        column = startcolumn
-        unitlist = self.team1unit
-        if self.playerteam == 2:
-            unitlist = self.team2unit
-        if self.enactment:  # include another team unit icon as well in enactment mode
-            unitlist = self.allunitlist
-        currentindex = int(self.unitselector.current_row * self.unitselector.max_column_show)  # the first index of current row
-        self.unitselector.logsize = len(unitlist) / self.unitselector.max_column_show
-
-        if self.unitselector.logsize.is_integer() is False:
-            self.unitselector.logsize = int(self.unitselector.logsize) + 1
-
-        if self.unitselector.current_row > self.unitselector.logsize - 1:
-            self.unitselector.current_row = self.unitselector.logsize - 1
-            currentindex = int(self.unitselector.current_row * self.unitselector.max_column_show)
-            self.selectscroll.changeimage(newrow=self.unitselector.current_row)
-
-        if len(self.uniticon) > 0:  # Remove all old icon first before making new list
-            for icon in self.uniticon:
-                icon.kill()
-                del icon
-
-        for index, unit in enumerate(unitlist):  # add unit icon for drawing according to appopriate current row
-            if index >= currentindex:
-                self.uniticon.add(battleui.ArmyIcon((column, row), unit))
-                column += 40
-                if column > 250:
-                    row += 50
-                    column = startcolumn
-                if row > 100:
-                    break  # do not draw for the third row
-        self.selectscroll.changeimage(logsize=self.unitselector.logsize)
-
-    def checksplit(self, whoinput):
-        """Check if unit can be splitted, if not remove splitting button"""
-        # v split by middle collumn
-        if np.array_split(whoinput.armysubunit, 2, axis=1)[0].size >= 10 and np.array_split(whoinput.armysubunit, 2, axis=1)[1].size >= 10 and \
-                whoinput.leader[1].name != "None":  # can only split if both parentunit size will be larger than 10 and second leader exist
-            self.battleui.add(self.col_split_button)
-        elif self.col_split_button in self.battleui:
-            self.col_split_button.kill()
-        # ^ End col
-
-        # v split by middle row
-        if np.array_split(whoinput.armysubunit, 2)[0].size >= 10 and np.array_split(whoinput.armysubunit, 2)[1].size >= 10 and \
-                whoinput.leader[1].name != "None":
-            self.battleui.add(self.row_split_button)
-        elif self.row_split_button in self.battleui:
-            self.row_split_button.kill()
-
     def popout_lorebook(self, section, gameid):
         """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
         self.gamestate = 0
@@ -578,24 +521,6 @@ class Battle:
                 self.clickany = True
                 self.uiclick = True
                 break
-        return self.clickany
-
-    def uniticon_mouseover(self, mouseup, mouseright):
-        """process user mouse input on unit icon, left click = select, right click = go to parentunit position on map"""
-        self.clickany = True
-        self.uiclick = True
-        if self.gamestate == 1 or (self.gamestate == 2 and self.unit_build_slot not in self.battleui):
-            for icon in self.uniticon:
-                if icon.rect.collidepoint(self.mousepos):
-                    if mouseup:
-                        self.last_selected = icon.army
-                        self.last_selected.justselected = True
-                        self.last_selected.selected = True
-
-                    elif mouseright:
-                        self.basecamerapos = pygame.Vector2(icon.army.base_pos[0], icon.army.base_pos[1])
-                        self.camerapos = self.basecamerapos * self.camerascale
-                    break
         return self.clickany
 
     def button_mouseover(self, mouseright):
@@ -644,23 +569,6 @@ class Battle:
                     self.popout_lorebook(section, icon.gameid)
                 break
         return effectmouseover
-
-    def removeunitui(self):
-        self.gameui[2].option = 1  # reset subunit card option
-        for this_ui in self.gameui:
-            this_ui.kill()  # remove ui
-        for button in self.buttonui[0:8]:
-            button.kill()  # remove button
-        for icon in self.skill_icon.sprites():
-            icon.kill()  # remove skill and trait icon
-        for icon in self.effect_icon.sprites():
-            icon.kill()  # remove effect icon
-        self.battleui.remove(*self.switch_button, *self.inspectsubunit)  # remove change behaviour button and inspect ui subunit
-        self.inspectui = False  # inspect ui close
-        self.battleui.remove(*self.leadernow)  # remove leader image from command ui
-        self.subunit_selected = None  # reset subunit selected
-        self.battleui.remove(self.subunitselectedborder)  # remove subunit selected border sprite
-        self.leadernow = []  # clear leader list in command ui
 
     def camerafix(self):
         if self.basecamerapos[0] > 999:  # camera cannot go further than 999 x
@@ -1187,28 +1095,6 @@ class Battle:
                                                                               self.current_troop_row, self.faction_list,
                                                                               self.troop_namegroup, self.battleui)
 
-                        elif self.mapscaledelay == 0:  # Scrolling in game map to zoom
-                            if mouse_scrollup:
-                                self.camerascale += 1
-                                if self.camerascale > 10:
-                                    self.camerascale = 10
-                                else:
-                                    self.camerapos[0] = self.basecamerapos[0] * self.camerascale
-                                    self.camerapos[1] = self.basecamerapos[1] * self.camerascale
-                                    self.showmap.changescale(self.camerascale)
-                                    if self.gamestate == 1:  # only have delay in battle mode
-                                        self.mapscaledelay = 0.001
-
-                            elif mouse_scrolldown:
-                                self.camerascale -= 1
-                                if self.camerascale < 1:
-                                    self.camerascale = 1
-                                else:
-                                    self.camerapos[0] = self.basecamerapos[0] * self.camerascale
-                                    self.camerapos[1] = self.basecamerapos[1] * self.camerascale
-                                    self.showmap.changescale(self.camerascale)
-                                    if self.gamestate == 1:  # only have delay in battle mode
-                                        self.mapscaledelay = 0.001
                     # ^ End mouse scroll input
 
                     # keyboard input
@@ -1219,35 +1105,12 @@ class Battle:
                         else:  # Currently in height mode
                             self.mapviewmode = 0
                             self.showmap.changemode(self.mapviewmode)
-                        self.showmap.changescale(self.camerascale)
-
-                    elif keypress == pygame.K_o:  # Speed Pause/unpause Button
-                        if self.showtroopnumber:
-                            self.showtroopnumber = False
-                            self.effect_updater.remove(*self.troop_number_sprite)
-                            self.battlecamera.remove(*self.troop_number_sprite)
-                        else:  # speed currently pause
-                            self.showtroopnumber = True
-                            self.effect_updater.add(*self.troop_number_sprite)
-                            self.battlecamera.add(*self.troop_number_sprite)
 
                     elif keypress == pygame.K_p:  # Speed Pause/unpause Button
                         if self.gamespeed >= 0.5:  #
                             self.gamespeed = 0  # pause game speed
                         else:  # speed currently pause
                             self.gamespeed = 1  # unpause game and set to speed 1
-                        self.speednumber.speedupdate(self.gamespeed)
-
-                    elif keypress == pygame.K_KP_MINUS:  # reduce game speed
-                        newindex = self.gamespeedset.index(self.gamespeed) - 1
-                        if newindex >= 0:  # cannot reduce game speed than what is available
-                            self.gamespeed = self.gamespeedset[newindex]
-                        self.speednumber.speedupdate(self.gamespeed)
-
-                    elif keypress == pygame.K_KP_PLUS:  # increase game speed
-                        newindex = self.gamespeedset.index(self.gamespeed) + 1
-                        if newindex < len(self.gamespeedset):  # cannot increase game speed than what is available
-                            self.gamespeed = self.gamespeedset[newindex]
                         self.speednumber.speedupdate(self.gamespeed)
 
                     elif keypress == pygame.K_PAGEUP:  # Go to top of event log

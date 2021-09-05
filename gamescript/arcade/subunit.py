@@ -12,48 +12,46 @@ from pygame.transform import scale
 
 infinity = float("inf")
 
-def create_troop_stat(self, stat, starthp, startstamina, unitscale):
+def create_troop_stat(self, stat, starthp, unitscale):
     stat_header = self.stat_list.troop_list_header
     weapon_header = self.weapon_list.weapon_list_header
     armour_header = self.armour_list.armour_list_header
-    grade_header = self.stat_list.grade_list_header
     mount_header = self.stat_list.mount_list_header
     mount_grade_header = self.stat_list.mount_grade_list_header
     trait_header = self.stat_list.trait_list_header
+    self.grade_header = self.stat_list.grade_list_header
 
     self.name = stat[0]  # name according to the preset
     self.unitclass = stat[stat_header["Type"]]  # used to determine whether to use melee or range weapon as icon
     self.grade = stat[stat_header["Grade"]]  # training level/class grade
     self.race = stat[stat_header["Race"]]  # creature race
     self.trait = stat[stat_header["Trait"]]  # trait list from preset
-    self.trait = self.trait + self.stat_list.grade_list[self.grade][grade_header["Trait"]]  # add trait from grade
+    self.trait = self.trait + self.stat_list.grade_list[self.grade][self.grade_header["Trait"]]  # add trait from grade
     skill = stat[stat_header["Skill"]]  # skill list according to the preset
     self.skill_cooldown = {}
     self.cost = stat[stat_header["Cost"]]
     gradestat = self.stat_list.grade_list[self.grade]
     self.base_attack = stat[stat_header["Melee Attack"]] + \
-                       gradestat[grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
+                       gradestat[self.grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
     self.base_meleedef = stat[stat_header["Melee Defence"]] + \
-                         gradestat[grade_header["Defence Bonus"]]  # base melee defence with grade bonus
+                         gradestat[self.grade_header["Defence Bonus"]]  # base melee defence with grade bonus
     self.base_rangedef = stat[stat_header["Range Defence"]] + \
-                         gradestat[grade_header["Defence Bonus"]]  # base range defence with grade bonus
+                         gradestat[self.grade_header["Defence Bonus"]]  # base range defence with grade bonus
     self.armourgear = stat[stat_header["Armour"]]  # armour equipement
     self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
                        * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
-    self.base_accuracy = stat[stat_header["Accuracy"]] + gradestat[grade_header["Accuracy Bonus"]]
+    self.base_accuracy = stat[stat_header["Accuracy"]] + gradestat[self.grade_header["Accuracy Bonus"]]
     self.basesight = stat[stat_header["Sight"]]  # base sight range
     self.magazine_left = stat[stat_header["Ammunition"]]  # amount of ammunition
-    self.base_reload = stat[stat_header["Reload"]] + gradestat[grade_header["Reload Bonus"]]
+    self.base_reload = stat[stat_header["Reload"]] + gradestat[self.grade_header["Reload Bonus"]]
     self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
     self.base_charge = stat[stat_header["Charge"]]
     self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
-    self.chargeskill = stat[stat_header["Charge Skill"]]  # For easier reference to check what charge skill this subunit has
     self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
     skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
     self.skill = {x: self.stat_list.skill_list[x].copy() for x in skill if
                   x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
-    self.troop_health = stat[stat_header["Health"]] * gradestat[grade_header["Health Effect"]]  # Health of each troop
-    self.stamina = stat[stat_header["Stamina"]] * gradestat[grade_header["Stamina Effect"]] * (startstamina / 100)  # starting stamina with grade
+    self.troop_health = stat[stat_header["Health"]] * gradestat[self.grade_header["Health Effect"]]  # Health of each troop
     self.mana = stat[stat_header["Mana"]]  # Resource for magic skill
 
     # vv Weapon stat
@@ -81,10 +79,8 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][weapon_header["Trait"]]  # apply trait from melee weapon
     # ^^ End weapon stat
 
-    self.base_morale = stat[stat_header["Morale"]] + gradestat[grade_header["Morale Bonus"]]  # morale with grade bonus
-    self.base_discipline = stat[stat_header["Discipline"]] + gradestat[grade_header["Discipline Bonus"]]  # discilpline with grade bonus
-    self.mental = stat[stat_header["Mental"]] + gradestat[grade_header["Mental Bonus"]]  # mental resistance from morale dmg and mental status effect
-    self.troop_number = stat[stat_header["Troop"]] * unitscale[self.team - 1] * starthp / 100  # number of starting troop, team -1 to become list index
+    self.base_morale = stat[stat_header["Morale"]] + gradestat[self.grade_header["Morale Bonus"]]  # morale with grade bonus
+    self.mental = stat[stat_header["Mental"]] + gradestat[self.grade_header["Mental Bonus"]]  # mental resistance from morale dmg and mental status effect
     self.base_speed = 50  # All infantry has base speed at 50
     self.subunit_type = stat[stat_header["Troop Class"]] - 1  # 0 is melee infantry and 1 is range for command buff
     self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
@@ -102,8 +98,6 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
         self.base_charge += (self.mount[mount_header['Charge Bonus']] +
                              self.mountgrade[mount_grade_header['Charge Bonus']])  # Add charge power of mount to troop
         self.base_morale += self.mountgrade[mount_grade_header['Morale Bonus']]
-        self.base_discipline += self.mountgrade[mount_grade_header['Discipline Bonus']]
-        self.stamina += self.mount[mount_header['Stamina Bonus']]
         self.trait = self.trait + self.mount[mount_header['Trait']]  # Apply mount trait to subunit
         self.subunit_type = 2  # If subunit has mount, count as cav for command buff
         self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
@@ -119,7 +113,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     # ^ End weight cal
 
     self.trait = self.trait + self.armour_list.armour_list[self.armourgear[0]][weapon_header["Trait"]]  # Apply armour trait to subunit
-    self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
+    self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[self.grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
     self.description = stat[-1]  # subunit description for inspect ui
     # if self.hidden
 
@@ -145,10 +139,8 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.flankbonus = 1  # Combat bonus when flanking
     self.base_auth_penalty = 0.1  # penalty to authority when bad event happen
     self.bonus_morale_dmg = 0  # extra morale dmg
-    self.bonus_stamina_dmg = 0  # extra stamina dmg
     self.auth_penalty = 0.1  # authority penalty for certain activities/order
     self.base_hpregen = 0  # hp regeneration modifier, will not resurrect dead troop by default
-    self.base_staminaregen = 2  # stamina regeneration modifier
     self.moraleregen = 2  # morale regeneration modifier
     self.status_effect = {}  # list of current status effect
     self.skill_effect = {}  # list of activate skill effect
@@ -192,9 +184,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
             self.base_charge *= trait[trait_header['Charge Effect']]
             self.base_chargedef += trait[trait_header['Charge Defence Bonus']]
             self.base_hpregen += trait[trait_header['HP Regeneration Bonus']]
-            self.base_staminaregen += trait[trait_header['Stamina Regeneration Bonus']]
             self.base_morale += trait[trait_header['Morale Bonus']]
-            self.base_discipline += trait[trait_header['Discipline Bonus']]
             self.crit_effect += trait[trait_header['Critical Bonus']]
             fire_res += (trait[trait_header['Fire Resistance']] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
             water_res += (trait[trait_header['Water Resistance']] / 100)
@@ -221,7 +211,6 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
             self.base_charge *= (random.randint(70, 120) / 100)
             self.base_chargedef *= (random.randint(70, 120) / 100)
             self.base_morale += random.randint(-15, 10)
-            self.base_discipline += random.randint(-20, 0)
             self.mental += random.randint(-20, 10)
 
         # v Change trait variable
@@ -257,14 +246,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
 
     # self.loyalty
     self.elem_res = (fire_res, water_res, air_res, earth_res, poison_res)  # list of elemental resistance
-    self.max_stamina = self.stamina
-    self.stamina75 = self.stamina * 0.75
-    self.stamina50 = self.stamina * 0.5
-    self.stamina25 = self.stamina * 0.25
-    self.stamina5 = self.stamina * 0.05
-    self.unit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
     self.last_health_state = 4  # state start at full
-    self.last_stamina_state = 4
 
     self.base_reload = self.weapon_list.weapon_list[self.rangeweapon[0]][weapon_header["Speed"]] + \
                        ((50 - self.base_reload) *
@@ -280,7 +262,6 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.accuracy = self.base_accuracy
     self.reload = self.base_reload
     self.morale = self.base_morale
-    self.discipline = self.base_discipline
     self.shootrange = self.base_range
     self.charge = self.base_charge
     self.chargedef = self.base_chargedef
@@ -296,16 +277,13 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.elem_melee = self.base_elem_melee
     self.elem_range = self.base_elem_range
 
-    self.max_health = self.unit_health # health percentage
-    self.health75 = self.unit_health * 0.75
-    self.health50 = self.unit_health * 0.5
-    self.health25 = self.unit_health * 0.25
+    self.max_health = self.troop_health # health percentage
+    self.health75 = self.troop_health * 0.75
+    self.health50 = self.troop_health * 0.5
+    self.health25 = self.troop_health * 0.25
 
-    self.oldlasthealth, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
-    self.maxtroop = self.troop_number  # max number of troop at the start
+    self.oldlasthealth = self.troop_health  # save previous health in previous update
     self.moralestate = self.base_morale / self.max_morale  # turn into percentage
-    self.staminastate = (self.stamina * 100) / self.max_stamina  # turn into percentage
-    self.staminastate_cal = self.staminastate / 100  # for using as modifer on stat
 
     self.crit_effect = 1  # default critical effect
     self.front_dmg_effect = 1  # default frontal dmg
@@ -316,7 +294,6 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
 
     self.auth_penalty = self.base_auth_penalty
     self.hpregen = self.base_hpregen
-    self.staminaregen = self.base_staminaregen
     self.inflictstatus = self.base_inflictstatus
     self.elem_melee = self.base_elem_melee
     self.elem_range = self.base_elem_range
@@ -335,16 +312,15 @@ class Subunit(pygame.sprite.Sprite):
     rotationxy = longscript.rotationxy
     setrotate = longscript.setrotate
     change_leader = longscript.change_leader
-    maxzoom = 10  # max zoom allow
     create_troop_stat = create_troop_stat
+    zoom = 4
 
-    def __init__(self, unitid, gameid, parentunit, position, starthp, startstamina, unitscale):
+    def __init__(self, unitid, gameid, parentunit, position, starthp, leader):
         """Although subunit in code, this is referred as sub-subunit ingame"""
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = None
-        self.leader = None  # Leader in the sub-subunit if there is one, got add in leader gamestart
-        self.board_pos = None  # Used for event log position of subunit (Assigned in gamebattle subunit setup)
+        self.leader = leader
         self.walk = False  # currently walking
         self.run = False  # currently running
         self.frontline = False  # on front line of unit or not
@@ -378,14 +354,11 @@ class Subunit(pygame.sprite.Sprite):
         self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position (allsidepos and subunit)
         self.parent_angle = self.parentunit.angle  # angle subunit will face when not moving or
 
-        self.red_border = False  # red corner to indicate taking dmg in inspect ui
         self.state = 0  # Current subunit state, similar to parentunit state
         self.timer = random.random()  # may need to use random.random()
         self.movetimer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing nearest enemy
         self.ammo_now = 0
-        self.zoom = 1
-        self.lastzoom = 10
         self.skill_cond = 0
         self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
         # TODO fix broken state retreat not work?
@@ -396,8 +369,8 @@ class Subunit(pygame.sprite.Sprite):
         # v Setup troop stat
         stat = self.stat_list.troop_list[self.troopid].copy()
 
-        self.create_troop_stat(stat, starthp, startstamina, unitscale)
-        self.gamebattle.start_troopnumber[self.team] += self.troop_number  # add troop number to counter how many troop join battle
+        self.create_troop_stat(stat, starthp)
+        self.gamebattle.start_troopnumber[self.team] += 1  # add troop number to counter how many troop join battle
         # ^ End setup stat
 
         # v Subunit image block
@@ -433,8 +406,8 @@ class Subunit(pygame.sprite.Sprite):
         pygame.draw.circle(self.far_selectedimage, (0, 0, 0), (self.far_selectedimage.get_width() / 2, self.far_selectedimage.get_height() / 2),
                            self.far_selectedimage.get_width() / 2, 4)
 
-        scalewidth = self.image.get_width() * 1 / self.maxzoom
-        scaleheight = self.image.get_height() * 1 / self.maxzoom
+        scalewidth = self.image.get_width()
+        scaleheight = self.image.get_height()
         dim = pygame.Vector2(scalewidth, scaleheight)
         self.far_image = pygame.transform.scale(self.far_image, (int(dim[0]), int(dim[1])))
         self.far_selectedimage = pygame.transform.scale(self.far_selectedimage, (int(dim[0]), int(dim[1])))
@@ -446,14 +419,6 @@ class Subunit(pygame.sprite.Sprite):
         self.image.blit(self.healthimage, self.health_image_rect)
         self.imageblock.blit(self.healthimage, self.health_imageblock_rect)
         # ^ End health circle
-
-        # v stamina circle image setup
-        self.staminaimage = self.images[6]
-        self.stamina_image_rect = self.staminaimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
-        self.stamina_imageblock_rect = self.staminaimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
-        self.image.blit(self.staminaimage, self.stamina_image_rect)
-        self.imageblock.blit(self.staminaimage, self.stamina_imageblock_rect)
-        # ^ End stamina circle
 
         # v weapon class icon in middle circle
         if self.unitclass == 0:  # melee weapon image as gamestart
@@ -471,8 +436,6 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End weapon icon
 
         self.image_original = self.image.copy()  # original for rotate
-        self.image_original2 = self.image.copy()  # original2 for saving original notclicked
-        self.image_original3 = self.image.copy()  # original3 for saving original zoom level
 
         # v position related
         self.unitposition = (position[0] / 10, position[1] / 10)  # position in parentunit sprite
@@ -482,12 +445,12 @@ class Subunit(pygame.sprite.Sprite):
         self.base_pos = pygame.Vector2(battaliontopleft[0] + self.unitposition[0],
                                        battaliontopleft[1] + self.unitposition[1])  # true position of subunit in map
         self.last_pos = self.base_pos
+        self.pos = self.base_pos * self.zoom  # pos is for showing on screen
 
         self.movement_queue = []
         self.combat_move_queue = []
         self.base_target = self.base_pos  # base_target to move
         self.command_target = self.base_pos  # actual base_target outside of combat
-        self.pos = self.base_pos * self.zoom  # pos is for showing on screen
 
         self.imageheight = (image.get_height() - 1) / 20  # get real half height of circle sprite
 
@@ -502,31 +465,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=self.pos)
 
-    def zoomscale(self):
-        """camera zoom change and rescale the sprite and position scale"""
-        if self.zoom != 1:
-            self.image_original = self.image_original3.copy()  # reset image for new scale
-            scalewidth = self.image_original.get_width() * self.zoom / self.maxzoom
-            scaleheight = self.image_original.get_height() * self.zoom / self.maxzoom
-            dim = pygame.Vector2(scalewidth, scaleheight)
-            self.image = pygame.transform.scale(self.image_original, (int(dim[0]), int(dim[1])))
-
-            if self.parentunit.selected and self.state != 100:
-                self.selectedimage_original = pygame.transform.scale(self.selectedimage_original2, (int(dim[0]), int(dim[1])))
-        else:
-            self.image_original = self.far_image.copy()
-            self.image = self.image_original.copy()
-            if self.parentunit.selected and self.state != 100:
-                self.selectedimage_original = self.far_selectedimage.copy()
-        self.image_original = self.image.copy()
-        self.image_original2 = self.image.copy()
-        self.change_pos_scale()
-        self.rotate()
-
-    def change_pos_scale(self):
-        """Change position variable to new camera scale"""
-        self.pos = self.base_pos * self.zoom
-        self.rect = self.image.get_rect(center=self.pos)
 
     def useskill(self, whichskill):
         if whichskill == 0:  # charge skill need to seperate since charge power will be used only for charge skill
@@ -537,21 +475,9 @@ class Subunit(pygame.sprite.Sprite):
             skillstat = self.skill[whichskill].copy()  # get skill stat
             self.skill_effect[whichskill] = skillstat  # add stat to skill effect
             self.skill_cooldown[whichskill] = skillstat[4]  # add skill cooldown
-        self.stamina -= skillstat[9]
         # self.skill_cooldown[whichskill] =
 
     # def receiveskill(self,whichskill):
-
-    def check_skill_condition(self):
-        """Check which skill can be used, cooldown, condition state, discipline, stamina are checked. charge skill is excepted from this check"""
-        if self.skill_cond == 1 and self.staminastate < 50:  # reserve 50% stamina, don't use any skill
-            self.available_skill = []
-        elif self.skill_cond == 2 and self.staminastate < 25:  # reserve 25% stamina, don't use any skill
-            self.available_skill = []
-        else:  # check all skill
-            self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
-                                    and self.state in self.skill[skill][6] and self.discipline >= self.skill[skill][8]
-                                    and self.stamina > self.skill[skill][9] and skill != self.chargeskill]
 
     def find_nearby_subunit(self):
         """Find nearby friendly squads in the same parentunit for applying buff"""
@@ -637,25 +563,18 @@ class Subunit(pygame.sprite.Sprite):
         return closetarget
 
     def statusupdate(self, thisweather=None):
-        """calculate stat from stamina, morale state, skill, status, terrain"""
+        """calculate stat morale state, skill, status, terrain"""
 
         if self.red_border and self.parentunit.selected:  # have red border (taking dmg) on inspect ui, reset image
             self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
             self.red_border = False
 
-        # v reset stat to default and apply morale, stamina, command buff to stat
-        if self.max_stamina > 100:
-            self.max_stamina = self.max_stamina - (self.timer * 0.05)  # Max stamina gradually decrease over time - (self.timer * 0.05)
-            self.stamina75 = self.max_stamina * 0.75
-            self.stamina50 = self.max_stamina * 0.5
-            self.stamina25 = self.max_stamina * 0.25
-            self.stamina5 = self.max_stamina * 0.05
+        # v reset stat to default
 
         self.morale = self.base_morale
         self.authority = self.parentunit.authority  # parentunit total authoirty
         self.commandbuff = self.parentunit.commandbuff[
                                self.subunit_type] * 100  # command buff from gamestart leader according to this subunit subunit type
-        self.discipline = self.base_discipline
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
         self.rangedef = self.base_rangedef
@@ -670,12 +589,10 @@ class Subunit(pygame.sprite.Sprite):
         self.front_dmg_effect = 1  # default frontal dmg
         self.side_dmg_effect = 1  # default side dmg
 
-        self.corner_atk = False  # cannot attack corner enemy by default
         self.temp_fulldef = False
 
         self.auth_penalty = self.base_auth_penalty
         self.hpregen = self.base_hpregen
-        self.staminaregen = self.base_staminaregen
         self.inflictstatus = self.base_inflictstatus
         self.elem_melee = self.base_elem_melee
         self.elem_range = self.base_elem_range
@@ -705,9 +622,7 @@ class Subunit(pygame.sprite.Sprite):
             self.charge += weather.charge_buff
             self.chargedef += weather.chargedef_buff
             self.hpregen += weather.hpregen_buff
-            self.staminaregen += weather.staminaregen_buff
             self.morale += (weather.morale_buff * self.mental)
-            self.discipline += weather.discipline_buff
             if weather.elem[0] != 0:  # Weather can cause elemental effect such as wet
                 self.elem_count[weather.elem[0]] += (weather.elem[1] * (100 - self.elem_res[weather.elem[0]]) / 100)
             weathertemperature = weather.temperature
@@ -731,7 +646,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.rangedef += map_feature_mod[7]  # range defence bonus from terrain bonus
         self.accuracy -= (map_feature_mod[7] / 2)  # range def bonus block subunit sight as well so less accuracy
-        self.discipline += map_feature_mod[9]  # discipline defence bonus from terrain bonus
 
         if map_feature_mod[11] != [0]:  # Some terrain feature can also cause status effect such as swimming in water
             if 1 in map_feature_mod[11]:  # Shallow water type terrain
@@ -739,7 +653,7 @@ class Subunit(pygame.sprite.Sprite):
             if 5 in map_feature_mod[11]:  # Deep water type terrain
                 self.status_effect[93] = self.status_list[93].copy()  # drench
 
-                if self.weight > 60 or self.stamina <= 0:  # weight too much or tired will cause drowning
+                if self.weight > 60:  # weight too much or tired will cause drowning
                     self.status_effect[102] = self.status_list[102].copy()  # Drowning
 
                 elif self.weight > 30:  # Medium weight subunit has trouble travel through water and will sink and progressively lose troops
@@ -776,9 +690,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.charge = self.charge * calstatus[self.skill_charge]
                 self.chargedef = self.chargedef + calstatus[self.skill_charge_defence]
                 self.hpregen += calstatus[self.skill_hp_regen]
-                self.staminaregen += calstatus[self.skill_stamina_regen]
                 self.morale = self.morale + (calstatus[self.skill_morale] * self.mental)
-                self.discipline = self.discipline + calstatus[self.skill_discipline]
                 # self.sight += calstatus[self.skill_sight]
                 # self.hidden += calstatus[self.skill_hide]
                 self.crit_effect = self.crit_effect * calstatus[self.skill_critical]
@@ -797,7 +709,6 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End apply status to
 
                 self.bonus_morale_dmg += calstatus[self.skill_moraledmg]
-                self.bonus_stamina_dmg += calstatus[self.skill_staminadmg]
                 if calstatus[self.skill_enemy_status] != [0]:  # Apply inflict status effect to enemy from skill to inflict list
                     for effect in calstatus[self.skill_enemy_status]:
                         if effect != 0:
@@ -822,9 +733,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.charge = self.charge * calstatus[self.status_charge]
                 self.chargedef += calstatus[self.status_charge_defence]
                 self.hpregen += calstatus[self.status_hp_regen]
-                self.staminaregen += calstatus[self.status_stamina_regen]
                 self.morale = self.morale + (calstatus[self.status_morale] * self.mental)
-                self.discipline += calstatus[self.status_discipline]
                 # self.sight += calstatus[self.status_sight]
                 # self.hidden += calstatus[self.status_hide]
                 tempreach += calstatus[self.status_temperature]
@@ -881,44 +790,19 @@ class Subunit(pygame.sprite.Sprite):
         if self.moralestate > 3 or math.isnan(self.moralestate):  # morale state more than 3 give no more benefit
             self.moralestate = 3
 
-        self.staminastate = (self.stamina * 100) / self.max_stamina
-        self.staminastatecal = 1
-        if self.stamina != infinity:
-            self.staminastatecal = self.staminastate / 100  # for using as modifer to stat
-
-        self.discipline = (self.discipline * self.moralestate * self.staminastatecal) + self.parentunit.leader_social[
-            self.grade + 1] + (self.authority / 10)  # use morale, stamina, leader social vs grade and authority
-        self.attack = (self.attack * (self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+        self.attack = (self.attack * (self.moralestate + 0.1)) + self.commandbuff  # use morale and command buff
         self.meleedef = (self.meleedef * (
-                self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
-        self.rangedef = (self.rangedef * (self.moralestate + 0.1)) * self.staminastatecal + (
-                self.commandbuff / 2)  # use morale, stamina and half command buff
-        self.accuracy = self.accuracy * self.staminastatecal + self.commandbuff  # use stamina and command buff
-        self.reload = self.reload * (2 - self.staminastatecal)  # the less stamina, the higher reload time
-        self.chargedef = (self.chargedef * (
-                self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+                self.moralestate + 0.1)) + self.commandbuff  # use morale and command buff
+        self.rangedef = (self.rangedef * (self.moralestate + 0.1)) + (
+                self.commandbuff / 2)  # use morale and half command buff
+        self.accuracy = self.accuracy + self.commandbuff  # use command buff
+        self.chargedef = (self.chargedef * (self.moralestate + 0.1)) + self.commandbuff  # use morale and command buff
         heightdiff = (self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
-        self.speed = self.speed * self.staminastatecal * heightdiff  # use stamina
+        self.speed = self.speed * heightdiff
         self.charge = (self.charge + self.speed) * (
-                self.moralestate + 0.1) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
+                self.moralestate + 0.1) + self.commandbuff  # use morale and command buff
 
-        fullmergelen = len(self.fullmerge) + 1
-        if fullmergelen > 1:  # reduce discipline if there are overlap sub-unit
-            self.discipline = self.discipline / fullmergelen
-
-        # v Rounding up, add discipline to stat and forbid negative int stat
-        # self.discipline = self.discipline
-        disciplinecal = self.discipline / 200
-        self.attack = self.attack + (self.attack * disciplinecal)
-        self.meleedef = self.meleedef + (self.meleedef * disciplinecal)
-        self.rangedef = self.rangedef + (self.rangedef * disciplinecal)
-        # self.armour = self.armour
-        self.speed = self.speed + (self.speed * disciplinecal / 2)
-        # self.accuracy = self.accuracy
-        # self.reload = self.reload
-        self.chargedef = self.chargedef + (self.chargedef * disciplinecal)
-        self.charge = self.charge + (self.charge * disciplinecal)
-
+        # v Rounding up and forbid negative int stat
         if self.magazine_left == 0 and self.ammo_now == 0:
             self.shootrange = 0
         if self.attack < 0:  # seem like using if 0 is faster than max(0,)
@@ -941,13 +825,7 @@ class Subunit(pygame.sprite.Sprite):
             self.charge = 0
         if self.chargedef < 0:
             self.chargedef = 0
-        if self.discipline < 0:
-            self.discipline = 0
         # ^ End rounding up
-
-        self.rotatespeed = self.parentunit.rotatespeed * 2  # rotate speed for subunit only use for self rotate not subunit rotate related
-        if self.state in (0, 99):
-            self.rotatespeed = self.speed
 
         # v cooldown, active and effect timer function
         self.skill_cooldown = {key: val - self.timer for key, val in self.skill_cooldown.items()}  # cooldown decrease overtime
@@ -983,24 +861,15 @@ class Subunit(pygame.sprite.Sprite):
         self.posrange = (range(int(max(0, self.base_pos[0] - (self.imageheight - 1))), int(min(1000, self.base_pos[0] + self.imageheight))),
                          range(int(max(0, self.base_pos[1] - (self.imageheight - 1))), int(min(1000, self.base_pos[1] + self.imageheight))))
 
-    def gamestart(self, zoom):
+    def gamestart(self):
         """run once when game start or subunit just get created"""
-        self.zoom = zoom
-        self.make_front_pos()
         self.make_pos_range()
-        self.zoomscale()
         self.find_nearby_subunit()
         self.statusupdate()
         self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)
         self.height = self.gamemapheight.getheight(self.base_pos)
 
-    def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
-        if self.lastzoom != zoom:  # camera zoom is changed
-            self.lastzoom = zoom
-            self.zoomchange = True
-            self.zoom = zoom  # save scale
-            self.zoomscale()  # update parentunit sprite according to new scale
-
+    def update(self, weather, newdt, combattimer, mousepos, mouseup):
         if self.state != 100:  # only run these when not dead
             # v Mouse collision detection
             if self.gamebattle.gamestate == 1 or (self.gamebattle.gamestate == 2 and self.gamebattle.unit_build_slot not in self.gamebattle.battleui):
@@ -1032,35 +901,8 @@ class Subunit(pygame.sprite.Sprite):
                     if 9 in self.status_effect:  # fight to the death
                         self.state = 10
 
-                self.attack_target = self.parentunit.attack_target
-                self.attack_pos = self.parentunit.base_attack_pos
-
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.statusupdate(weather)
-                    self.available_skill = []
-
-                    if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
-                        self.check_skill_condition()
-
-                    if self.state in (4, 13) and parentstate != 10 and self.attacking and self.parentunit.moverotate is False and \
-                            self.base_pos.distance_to(self.base_target) < 50:  # charge skill only when running to melee
-
-                        self.charge_momentum += self.timer * (self.speed / 50)
-                        if self.charge_momentum >= 5:
-                            self.useskill(0)  # Use charge skill
-                            self.parentunit.charging = True
-                            self.charge_momentum = 5
-
-                    elif self.charge_momentum > 1:  # reset charge momentum if charge skill not active
-                        self.charge_momentum -= self.timer * (self.speed / 50)
-                        if self.charge_momentum <= 1:
-                            self.parentunit.charging = False
-                            self.charge_momentum = 1
-
-                    skillchance = random.randint(0, 10)  # random chance to use random available skill
-                    if len(self.available_skill) > 0 and skillchance >= 6:
-                        self.useskill(self.available_skill[random.randint(0, len(self.available_skill) - 1)])
-                    self.timer -= 1
 
                 # if parentstate not in (96,97,98,99) and self.state != 99:
                 collidelist = []
@@ -1136,13 +978,6 @@ class Subunit(pygame.sprite.Sprite):
                                     self.state = 0
 
                     elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
-                        self.melee_target = None
-                        self.close_target = None
-                        if self in self.gamebattle.combatpathqueue:
-                            self.gamebattle.combatpathqueue.remove(self)
-
-                        self.attack_target = None
-                        self.base_target = self.command_target
                         self.new_angle = self.parentunit.angle
                         self.state = 0
 
@@ -1180,7 +1015,6 @@ class Subunit(pygame.sprite.Sprite):
                         self.ammo_now = self.magazine_size
                         self.magazine_left -= 1
                         self.reload_time = 0
-                    self.stamina = self.stamina - (dt * 2)  # use stamina while reloading
                 # ^ End range attack function
 
                 # v Combat action related
@@ -1196,7 +1030,6 @@ class Subunit(pygame.sprite.Sprite):
                             else:  # rear
                                 hitside = 2
                             self.dmgcal(subunit, 0, hitside, self.gamebattle.troop_data.status_list, combattimer)
-                            self.stamina = self.stamina - (combattimer * 5)
 
                     elif self.state in (11, 12, 13):  # range combat
                         if type(self.attack_target) == int:  # For fire at will, which attacktarget is int
@@ -1222,7 +1055,7 @@ class Subunit(pygame.sprite.Sprite):
                                 and (self.arcshot or (self.arcshot is False and self.parentunit.shoothow != 1)):
                             # can shoot if reload finish and base_target existed and not dead. Non arcshot cannot shoot if forbidded
                             # TODO add line of sight for range attack
-                            rangeattack.RangeArrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange, self.zoom)  # Shoot
+                            rangeattack.RangeArrow(self, self.base_pos.distance_to(self.attack_pos), self.shootrange)  # Shoot
                             self.ammo_now -= 1  # use 1 magazine_left in magazine
                         elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target die when it about to shoot
                             self.parentunit.range_combat_check = False
@@ -1240,33 +1073,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 # v Rotate Function
                 if self.angle != self.new_angle:
-                    self.rotatecal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
-                    self.rotatecheck = 360 - self.rotatecal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
-                    self.radians_angle = math.radians(360 - self.angle)  # for allside rotate
-                    if self.angle < 0:  # negative angle (rotate to left side)
-                        self.radians_angle = math.radians(-self.angle)
-
-                    rotatetiny = self.rotatespeed * dt  # rotate little by little according to time
-                    if self.new_angle > self.angle:  # rotate to angle more than the current one
-                        if self.rotatecal > 180:  # rotate with the smallest angle direction
-                            self.angle -= rotatetiny
-                            self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0:
-                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-                        else:
-                            self.angle += rotatetiny
-                            if self.angle > self.new_angle:
-                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-                    elif self.new_angle < self.angle:  # rotate to angle less than the current one
-                        if self.rotatecal > 180:  # rotate with the smallest angle direction
-                            self.angle += rotatetiny
-                            self.rotatecheck -= rotatetiny
-                            if self.rotatecheck <= 0:
-                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-                        else:
-                            self.angle -= rotatetiny
-                            if self.angle < self.new_angle:
-                                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+                    self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     self.rotate()  # rotate sprite to new angle
                     self.make_front_pos()  # generate new pos related to side
                     self.front_height = self.gamemapheight.getheight(self.front_pos)
@@ -1295,7 +1102,7 @@ class Subunit(pygame.sprite.Sprite):
                         elif self.chargeskill in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
                             enemycollide_check = False
 
-                    if self.stamina > 0 and nocolide_check and enemycollide_check is False and \
+                    if nocolide_check and enemycollide_check is False and \
                             len(self.same_front) == 0 and len(self.friend_front) == 0:
                         if self.chargeskill in self.skill_effect and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
@@ -1308,13 +1115,10 @@ class Subunit(pygame.sprite.Sprite):
                         if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                             move.normalize_ip()
 
-                            if parentstate in (1, 3, 5, 7):  # walking
+                            if self.leader.run is False:  # walking
                                 speed = self.parentunit.walkspeed  # use walk speed
                                 self.walk = True
-                            elif parentstate in (10, 99):  # run with its own speed instead of uniformed run
-                                speed = self.speed / 15  # use its own speed when broken
-                                self.run = True
-                            else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
+                            else:  # running
                                 speed = self.parentunit.runspeed  # use run speed
                                 self.run = True
                             if self.chargeskill in self.skill_effect:  # speed gradually decrease with momentum during charge
@@ -1332,16 +1136,11 @@ class Subunit(pygame.sprite.Sprite):
                                     self.base_pos = newpos
                                     self.pos = self.base_pos * self.zoom
                                     self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
-                                    if self.stamina != infinity:
-                                        if self.walk:
-                                            self.stamina = self.stamina - (dt * 2)
-                                        elif self.run:
-                                            self.stamina = self.stamina - (dt * 5)
 
                                 else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                                     move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                                     self.base_pos += move  # adjust base position according to movement
-                                    self.pos = self.base_pos * self.zoom
+                                    self.pos = self.base_pos
                                     self.rect.center = self.pos  # no need to do list
                                 if len(self.combat_move_queue) > 0 and self.base_pos.distance_to(
                                         pygame.Vector2(self.combat_move_queue[0])) < 0.1:  # reach the current queue point, remove from queue
@@ -1359,15 +1158,6 @@ class Subunit(pygame.sprite.Sprite):
                                 if self.unit_leader and newmove_length > 0:
                                     if self.parentunit.moverotate is False:
                                         self.parentunit.base_pos += move
-                                    frontpos = (self.parentunit.base_pos[0],
-                                                (self.parentunit.base_pos[1] - self.parentunit.base_height_box))  # find front position
-                                    self.parentunit.front_pos = self.rotationxy(self.parentunit.base_pos, frontpos, self.parentunit.radians_angle)
-
-                                    numberpos = (self.parentunit.base_pos[0] - self.parentunit.base_width_box,
-                                                 (self.parentunit.base_pos[1] + self.parentunit.base_height_box))
-                                    self.parentunit.number_pos = self.rotationxy(self.parentunit.base_pos, numberpos, self.parentunit.radians_angle)
-                                    self.parentunit.truenumber_pos = self.parentunit.number_pos * (
-                                            11 - self.parentunit.zoom)  # find new position for troop number text
 
                         else:  # Stopping subunit when reach base_target
                             self.state = 0  # idle
@@ -1403,7 +1193,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.morale = 0  # morale cannot be lower than 0
 
                         if self.state not in (95, 99) and parentstate not in (10, 99):  # If not missing gamestart leader can replenish morale
-                            self.base_morale += (dt * self.staminastatecal * self.moraleregen)  # Morale replenish based on stamina
+                            self.base_morale += (dt * self.moraleregen)  # Morale replenish
 
                         if self.base_morale < 0:  # morale cannot be negative
                             self.base_morale = 0
@@ -1416,125 +1206,58 @@ class Subunit(pygame.sprite.Sprite):
 
                     elif self.state == 98:
                         if parentstate not in (98, 99):
-                            self.unit_health -= (dt * 100)  # Unit begin to desert if retreating but parentunit not retreat/broken
+                            self.troop_health -= (dt * 100)  # Unit begin to desert if retreating but parentunit not retreat/broken
                             if self.moralestate > 0.2:
                                 self.state = 0  # Reset state to 0 when exit retreat state
                 # ^ End morale check
 
-                # v Hp and stamina regen
-                if self.stamina != infinity:
-                    if self.stamina < self.max_stamina:
-                        if self.stamina <= 0:  # Collapse and cannot act
-                            self.stamina = 0
-                            self.status_effect[105] = self.status_list[105].copy()  # receive collapse status
-                        self.stamina = self.stamina + (dt * self.staminaregen)  # regen
-                    else:  # stamina cannot exceed the max stamina
-                        self.stamina = self.max_stamina
-                if self.unit_health != infinity:
-                    if self.hpregen > 0 and self.unit_health % self.troop_health != 0:  # hp regen cannot ressurect troop only heal to max hp
-                        alivehp = self.troop_number * self.troop_health  # max hp possible for the number of alive subunit
-                        self.unit_health += self.hpregen * dt  # regen hp back based on time and regen stat
-                        if self.unit_health > alivehp:
-                            self.unit_health = alivehp  # Cannot exceed health of alive subunit (exceed mean resurrection)
+                # v Hp regen
+                if self.troop_health != infinity:
+                    if self.hpregen > 0 and self.troop_health % self.troop_health != 0:  # hp regen cannot ressurect troop only heal to max hp
+                        self.troop_health += self.hpregen * dt  # regen hp back based on time and regen stat
                     elif self.hpregen < 0:  # negative regen can kill
-                        self.unit_health += self.hpregen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
-                        remain = self.unit_health / self.troop_health
-                        if remain.is_integer() is False:  # always round up if there is decimal number
-                            remain = int(remain) + 1
+                        self.troop += self.hpregen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
+                        wound = random.randint(0, 1)  # chance to be wounded instead of dead
+                        if wound == 1:
+                            self.gamebattle.wound_troopnumber[self.team] += 1
                         else:
-                            remain = int(remain)
-                        wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
-                        self.gamebattle.death_troopnumber[self.team] += self.troop_number - remain - wound
-                        self.gamebattle.wound_troopnumber[self.team] += wound
-                        self.troop_number = remain  # Recal number of troop again in case some die from negative regen
+                            self.gamebattle.death_troopnumber[self.team] += 1
 
-                    if self.unit_health < 0:
-                        self.unit_health = 0  # can't have negative hp
-                    elif self.unit_health > self.max_health:
-                        self.unit_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
+                    if self.troop_health > self.max_health:
+                        self.troop_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
+                    elif self.troop_health <= 0:  # enter dead state
+                        self.troop_health = 0
+                        self.state = 100  # enter dead state
+                        self.last_health_state = 0
+                        self.skill_cooldown = {}  # remove all cooldown
+                        self.skill_effect = {}  # remove all skill effects
 
-                    if self.oldlasthealth != self.unit_health:
-                        remain = self.unit_health / self.troop_health
-                        if remain.is_integer() is False:  # always round up if there is decimal number
-                            remain = int(remain) + 1
+                        self.parentunit.deadchange = True
+
+                        if self in self.gamebattle.battlecamera:
+                            self.gamebattle.battlecamera.change_layer(sprite=self, new_layer=1)
+                        self.gamebattle.allsubunitlist.remove(self)
+                        self.parentunit.subunit_sprite.remove(self)
+
+                        wound = random.randint(0, 1)  # chance to be wounded instead of dead
+                        if wound == 1:
+                            self.gamebattle.wound_troopnumber[self.team] += 1
                         else:
-                            remain = int(remain)
-                        wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
-                        self.gamebattle.death_troopnumber[self.team] += self.troop_number - remain - wound
-                        if self.state in (98, 99) and len(self.enemy_front) + len(self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
-                            self.gamebattle.capture_troopnumber[self.team] += wound
-                        else:
-                            self.gamebattle.wound_troopnumber[self.team] += wound
-                        self.troop_number = remain  # Recal number of troop again in case some die from negative regen
+                            self.gamebattle.death_troopnumber[self.team] += 1
 
-                        # v Health bar
-                        healthlist = (self.health75, self.health50, self.health25, 0)
-                        for index, health in enumerate(healthlist):
-                            if self.unit_health > health:
-                                if self.last_health_state != abs(4 - index):
-                                    self.image_original3.blit(self.images[index + 1], self.health_image_rect)
-                                    self.imageblock_original.blit(self.images[index + 1], self.health_imageblock_rect)
-                                    self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
-                                    self.last_health_state = abs(4 - index)
-                                    self.zoomscale()
+                        for subunit in self.parentunit.armysubunit.flat:  # remove from index array
+                            if subunit == self.gameid:
+                                self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.gameid, 0, self.parentunit.armysubunit)
                                 break
-                        # ^ End Health bar
 
-                        self.oldlasthealth = self.unit_health
-
-                # v Stamina bar
-                if self.old_last_stamina != self.stamina:
-                    staminalist = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
-                    for index, stamina in enumerate(staminalist):
-                        if self.stamina >= stamina:
-                            if self.last_stamina_state != abs(4 - index):
-                                # if index != 3:
-                                self.image_original3.blit(self.images[index + 6], self.stamina_image_rect)
-                                self.zoomscale()
-                                self.imageblock_original.blit(self.images[index + 6], self.stamina_imageblock_rect)
-                                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
-                                self.last_stamina_state = abs(4 - index)
-                            break
-
-                    self.old_last_stamina = self.stamina
-                # ^ End stamina bar
+                    self.oldlasthealth = self.troop_health
 
             if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
-                self.gamebattle.flee_troopnumber[self.team] += self.troop_number  # add number of troop retreat from battle
-                self.troop_number = 0
+                self.gamebattle.flee_troopnumber[self.team] += 1  # add number of troop retreat from battle
                 self.gamebattle.battlecamera.remove(self)
 
-            if self.troop_number <= 0:  # enter dead state
-                self.state = 100  # enter dead state
-                self.image_original3.blit(self.images[5], self.health_image_rect)  # blit white hp bar
-                self.imageblock_original.blit(self.images[5], self.health_imageblock_rect)
-                self.zoomscale()
-                self.last_health_state = 0
-                self.skill_cooldown = {}  # remove all cooldown
-                self.skill_effect = {}  # remove all skill effects
-
-                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
-                self.red_border = True  # to prevent red border appear when dead
-
-                self.parentunit.deadchange = True
-
-                if self in self.gamebattle.battlecamera:
-                    self.gamebattle.battlecamera.change_layer(sprite=self, new_layer=1)
-                self.gamebattle.allsubunitlist.remove(self)
-                self.parentunit.subunit_sprite.remove(self)
-
-                for subunit in self.parentunit.armysubunit.flat:  # remove from index array
-                    if subunit == self.gameid:
-                        self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.gameid, 0, self.parentunit.armysubunit)
-                        break
-
-                self.change_leader("die")
-
-                self.gamebattle.eventlog.addlog([0, str(self.board_pos) + " " + str(self.name)
-                                                 + " in " + self.parentunit.leader[0].name
-                                                 + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []
@@ -1546,9 +1269,6 @@ class Subunit(pygame.sprite.Sprite):
     def rotate(self):
         """rotate subunit image may use when subunit can change direction independently from parentunit"""
         self.image = pygame.transform.rotate(self.image_original, self.angle)
-        if self.parentunit.selected and self.state != 100:
-            self.selectedimage = pygame.transform.rotate(self.selectedimage_original, self.angle)
-            self.image.blit(self.selectedimage, self.selectedimagerect)
         self.rect = self.image.get_rect(center=self.pos)
 
     def combat_pathfind(self):

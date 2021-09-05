@@ -8,23 +8,23 @@ import os
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import camera, map, weather
-from gamescript.tactical import subunit, unit, battleui, leader, longscript, prepare
+from gamescript import camera, map, weather, battleui, commonscript
+from gamescript.tactical import subunit, unit, leader, longscript, prepare
 from pygame.locals import *
 from scipy.spatial import KDTree
 
-load_image = longscript.load_image
-load_images = longscript.load_images
-csv_read = longscript.csv_read
-load_sound = longscript.load_sound
-editconfig = longscript.edit_config
+load_image = commonscript.load_image
+load_images = commonscript.load_images
+csv_read = commonscript.csv_read
+load_sound = commonscript.load_sound
+editconfig = commonscript.edit_config
 
 
 class Battle:
     splitunit = longscript.splitunit
-    traitskillblit = longscript.trait_skill_blit
-    effecticonblit = longscript.effect_icon_blit
-    countdownskillicon = longscript.countdown_skill_icon
+    traitskillblit = commonscript.trait_skill_blit
+    effecticonblit = commonscript.effect_icon_blit
+    countdownskillicon = commonscript.countdown_skill_icon
 
     def __init__(self, main, winstyle):
         # v Get game object/variable from gamestart
