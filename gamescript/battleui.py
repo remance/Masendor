@@ -88,7 +88,7 @@ class GameUI(pygame.sprite.Sprite):
             self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]]  # team 2 black chess head
             self.lastauth = 0
 
-        elif self.ui_type == "unitcard":  # setup variable for subunit card ui
+        elif self.ui_type == "troopcard":  # setup variable for subunit card ui
             self.fonthead = pygame.font.SysFont("curlz", textsize + 4)
             self.fonthead.set_italic(True)
             self.fontlong = pygame.font.SysFont("helvetica", textsize - 2)
@@ -205,7 +205,7 @@ class GameUI(pygame.sprite.Sprite):
                 self.image.blit(self.textsurface, self.textrect)
                 self.lastauth = authority
 
-        elif self.ui_type == "unitcard":
+        elif self.ui_type == "troopcard":
             position = 15  # starting row
             positionx = 45  # starting point of text
             self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.maxtroop)) + ")",

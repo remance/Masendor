@@ -7,7 +7,7 @@ import sys
 # import basic pygame modules
 import pygame
 import pygame.freetype
-from gamescript import map, weather, lorebook, drama, battleui, commonscript, popup
+from gamescript import map, weather, lorebook, drama, battleui, commonscript, popup, menu
 
 from pygame.locals import *
 
@@ -42,13 +42,13 @@ class Mainmenu:
 
         # v Set the display mode
         self.genre = "tactical"
-        global battle, leader, longscript, prepare, menu, unit, subunit, rangeattack, uniteditor
+        global battle, leader, longscript, unit, subunit, rangeattack, uniteditor
         if self.genre == "tactical":
             from gamescript.tactical import battle, leader, longscript, \
-                prepare, menu, unit, subunit, rangeattack, uniteditor
+                unit, subunit, rangeattack, uniteditor
         elif self.genre == "arcade":
             from gamescript.arcade import battle, leader, longscript, \
-                prepare, menu, unit, subunit, rangeattack, uniteditor
+                unit, subunit, rangeattack, uniteditor
         self.SCREENRECT = Rect(0, 0, self.ScreenWidth, self.ScreenHeight)
         self.width_adjust = self.SCREENRECT.width / 1366
         self.height_adjust = self.SCREENRECT.height / 768
@@ -204,23 +204,23 @@ class Mainmenu:
 
         # v Assign default groups
         # gamestart menu containers
-        prepare.MenuButton.containers = self.menu_button
-        prepare.MenuIcon.containers = self.menuicon
-        prepare.SliderMenu.containers = self.menuslider
-        prepare.ValueBox.containers = self.valuebox
+        menu.MenuButton.containers = self.menu_button
+        menu.MenuIcon.containers = self.menuicon
+        menu.SliderMenu.containers = self.menuslider, self.slidermenu
+        menu.ValueBox.containers = self.valuebox
 
-        prepare.ListBox.containers = self.map_listbox, self.troop_listbox, self.popup_listbox
-        prepare.NameList.containers = self.map_namegroup
-        prepare.MapShow.containers = self.mapshow
-        prepare.TeamCoa.containers = self.teamcoa
-        prepare.MapTitle.containers = self.maptitle
-        prepare.MapDescription.containers = self.mapdescription
-        prepare.SourceDescription.containers = self.sourcedescription
-        prepare.ArmyStat.containers = self.armystat
+        menu.ListBox.containers = self.map_listbox, self.troop_listbox, self.popup_listbox
+        menu.NameList.containers = self.map_namegroup
+        menu.MapShow.containers = self.mapshow
+        menu.TeamCoa.containers = self.teamcoa
+        menu.MapTitle.containers = self.maptitle
+        menu.MapDescription.containers = self.mapdescription
+        menu.SourceDescription.containers = self.sourcedescription
+        menu.ArmyStat.containers = self.armystat
 
-        prepare.SourceName.containers = self.source_namegroup, self.mainui
+        menu.SourceName.containers = self.source_namegroup, self.mainui
 
-        prepare.TickBox.containers = self.tickbox
+        menu.TickBox.containers = self.tickbox
 
         lorebook.SubsectionList.containers = self.lorenamelist
         lorebook.SubsectionName.containers = self.subsection_name, self.mainui, self.battleui
@@ -273,13 +273,12 @@ class Mainmenu:
 
         menu.Escbox.containers = self.battle_menu
         menu.Escbutton.containers = self.battle_menu_button, self.escoption_menu_button
-        menu.Escslider.containers = self.slidermenu
-        menu.Escvaluebox.containers = self.valuebox
 
         weather.Mattersprite.containers = self.weathermatter, self.battleui, self.weather_updater
         weather.Specialeffect.containers = self.weathereffect, self.battleui, self.weather_updater
         # ^ End assign
 
+        commonscript.load_game_data(self)  # load common data
         longscript.load_game_data(self)  # obtain game stat data and create lore book object
 
         self.clock = pygame.time.Clock()
@@ -297,22 +296,22 @@ class Mainmenu:
         for index, image in enumerate(imagelist):
             imagelist[index] = pygame.transform.scale(image, (int(image.get_width() * self.width_adjust),
                                                               int(image.get_height() * self.height_adjust)))
-        self.preset_map_button = prepare.MenuButton(self, imagelist,
+        self.preset_map_button = menu.MenuButton(self, imagelist,
                                                         pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 8.5)),
                                                         menu_state="mainmenu", text="Preset Map")
-        self.custom_map_button = prepare.MenuButton(self, imagelist,
+        self.custom_map_button = menu.MenuButton(self, imagelist,
                                                         pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 7)),
                                                         menu_state="mainmenu", text="Custom Map")
-        self.game_edit_button = prepare.MenuButton(self, imagelist,
+        self.game_edit_button = menu.MenuButton(self, imagelist,
                                                        pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 5.5)),
                                                        menu_state="mainmenu", text="Unit Editor")
-        self.lore_button = prepare.MenuButton(self, imagelist,
+        self.lore_button = menu.MenuButton(self, imagelist,
                                                   pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
                                                   menu_state="mainmenu", text="Encyclopedia")
-        self.option_button = prepare.MenuButton(self, imagelist,
+        self.option_button = menu.MenuButton(self, imagelist,
                                                     pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
                                                     menu_state="mainmenu", text="Option")
-        self.quit_button = prepare.MenuButton(self, imagelist,
+        self.quit_button = menu.MenuButton(self, imagelist,
                                                   pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height())),
                                                   menu_state="mainmenu", text="Quit")
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
@@ -321,34 +320,34 @@ class Mainmenu:
 
         # v Create battle map menu button
         bottomheight = self.SCREENRECT.height - imagelist[0].get_height()
-        self.select_button = prepare.MenuButton(self, imagelist, pos=(self.SCREENRECT.width - imagelist[0].get_width(), bottomheight),
+        self.select_button = menu.MenuButton(self, imagelist, pos=(self.SCREENRECT.width - imagelist[0].get_width(), bottomheight),
                                                     text="Select")
-        self.start_button = prepare.MenuButton(self, imagelist, pos=(self.SCREENRECT.width - imagelist[0].get_width(), bottomheight),
+        self.start_button = menu.MenuButton(self, imagelist, pos=(self.SCREENRECT.width - imagelist[0].get_width(), bottomheight),
                                                    text="Start")
-        self.map_back_button = prepare.MenuButton(self, imagelist,
+        self.map_back_button = menu.MenuButton(self, imagelist,
                                                       pos=(self.SCREENRECT.width - (self.SCREENRECT.width - imagelist[0].get_width()), bottomheight),
                                                       text="Back")
         self.map_select_button = (self.select_button, self.map_back_button)
         self.battle_setup_button = (self.start_button, self.map_back_button)
 
         imgs = load_images(self.main_dir, ["ui", "mapselect_ui"], loadorder=False)
-        self.map_listbox = prepare.ListBox(self, (self.SCREENRECT.width / 25, self.SCREENRECT.height / 20), imgs[0])
+        self.map_listbox = menu.ListBox(self, (self.SCREENRECT.width / 25, self.SCREENRECT.height / 20), imgs[0])
         self.map_scroll = battleui.UIScroller(self.map_listbox.rect.topright, self.map_listbox.image.get_height(),
                                             self.map_listbox.maxshowlist, layer=14)  # scroller bar for map list
 
-        self.source_listbox = prepare.SourceListBox(self, (0, 0), imgs[1])  # source list ui box
-        self.map_optionbox = prepare.MapOptionBox(self, (self.SCREENRECT.width, 0), imgs[1],
+        self.source_listbox = menu.SourceListBox(self, (0, 0), imgs[1])  # source list ui box
+        self.map_optionbox = menu.MapOptionBox(self, (self.SCREENRECT.width, 0), imgs[1],
                                                       0)  # ui box for battle option during preparation screen
 
-        self.tickbox_enactment = prepare.TickBox(self, (self.map_optionbox.rect.bottomright[0] / 1.2, self.map_optionbox.rect.bottomright[1] / 4),
+        self.tickbox_enactment = menu.TickBox(self, (self.map_optionbox.rect.bottomright[0] / 1.2, self.map_optionbox.rect.bottomright[1] / 4),
                                                      imgs[5], imgs[6], "enactment")
         self.tickbox.add(self.tickbox_enactment)
         if self.enactment:
             self.tickbox_enactment.changetick(True)
 
-        prepare.MapDescription.image = imgs[2]
-        prepare.SourceDescription.image = imgs[3]
-        prepare.ArmyStat.image = imgs[4]
+        menu.MapDescription.image = imgs[2]
+        menu.SourceDescription.image = imgs[3]
+        menu.ArmyStat.image = imgs[4]
 
         self.current_map_row = 0
         self.current_map_select = 0
@@ -358,13 +357,13 @@ class Mainmenu:
 
         # v Create unit and subunit editor button in gamestart menu
 
-        self.unit_edit_button = prepare.MenuButton(self, imagelist,
+        self.unit_edit_button = menu.MenuButton(self, imagelist,
                                                        (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
                                                        text="Army Editor")
-        self.subunit_create_button = prepare.MenuButton(self, imagelist,
+        self.subunit_create_button = menu.MenuButton(self, imagelist,
                                                             (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
                                                             text="Troop Creator")
-        self.editor_back_button = prepare.MenuButton(self, imagelist,
+        self.editor_back_button = menu.MenuButton(self, imagelist,
                                                          (self.SCREENRECT.width / 2, self.SCREENRECT.height - imagelist[0].get_height()),
                                                          text="Back")
         self.editor_button = (self.unit_edit_button, self.subunit_create_button, self.editor_back_button)
@@ -372,26 +371,26 @@ class Mainmenu:
 
         # v Army editor ui and button
         boximg = load_image(self.main_dir, "unit_presetbox.png", "ui\\mainmenu_ui").convert()
-        self.unit_listbox = prepare.ListBox(self, (0, self.SCREENRECT.height / 2.2), boximg)  # box for showing unit preset list
+        self.unit_listbox = menu.ListBox(self, (0, self.SCREENRECT.height / 2.2), boximg)  # box for showing unit preset list
         self.unit_presetname_scroll = battleui.UIScroller(self.unit_listbox.rect.topright, self.unit_listbox.image.get_height(),
                                                         self.unit_listbox.maxshowlist, layer=14)  # preset name scroll
         self.presetselectborder = uniteditor.SelectedPresetBorder(self.unit_listbox.image.get_width() - int(15 * self.width_adjust),
                                                                     int(25 * self.height_adjust))
 
-        self.troop_listbox = prepare.ListBox(self, (self.SCREENRECT.width / 1.19, 0), imgs[0])
+        self.troop_listbox = menu.ListBox(self, (self.SCREENRECT.width / 1.19, 0), imgs[0])
 
         self.troop_scroll = battleui.UIScroller(self.troop_listbox.rect.topright, self.troop_listbox.image.get_height(),
                                               self.troop_listbox.maxshowlist, layer=14)
 
-        self.unit_delete_button = prepare.MenuButton(self, imagelist,
+        self.unit_delete_button = menu.MenuButton(self, imagelist,
                                                          pos=(imagelist[0].get_width() / 2, bottomheight),
                                                          text="Delete")
-        self.unit_save_button = prepare.MenuButton(self, imagelist,
+        self.unit_save_button = menu.MenuButton(self, imagelist,
                                                        pos=((self.SCREENRECT.width - (self.SCREENRECT.width - (imagelist[0].get_width() * 1.7))),
                                                             bottomheight),
                                                        text="Save")
 
-        self.popup_listbox = prepare.ListBox(self, (0, 0), boximg, 15)  # popup listbox need to be in higher layer
+        self.popup_listbox = menu.ListBox(self, (0, 0), boximg, 15)  # popup listbox need to be in higher layer
         self.popup_listscroll = battleui.UIScroller(self.popup_listbox.rect.topright,
                                                   self.popup_listbox.image.get_height(),
                                                   self.popup_listbox.maxshowlist,
@@ -432,13 +431,13 @@ class Mainmenu:
         self.test_button = battleui.SwitchButton(self.scaleui.rect.bottomleft[0] + 55, self.scaleui.rect.bottomleft[1] + 25, [img1, img2])
         img1 = load_image(self.main_dir, "tick_box_no.png", "ui\\mainmenu_ui").convert()  # start test button in editor
         img2 = load_image(self.main_dir, "tick_box_yes.png", "ui\\mainmenu_ui").convert()  # stop test button
-        self.tickbox_filter = [prepare.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 8),
+        self.tickbox_filter = [menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 8),
                                                    img1, img2, "meleeinf"),
-                               prepare.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 1.7),
+                               menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 1.7),
                                                    img1, img2, "rangeinf"),
-                               prepare.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 8),
+                               menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 8),
                                                    img1, img2, "meleecav"),
-                               prepare.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 1.7),
+                               menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 1.7),
                                                    img1, img2, "rangecav")
                                ]
         for box in self.tickbox_filter:  # default start filter with all shown
@@ -449,22 +448,22 @@ class Mainmenu:
 
         # v Input box popup
         input_ui_img = load_image(self.main_dir, "inputui.png", "ui\\mainmenu_ui")
-        self.inputui = prepare.InputUI(self, input_ui_img,
+        self.inputui = menu.InputUI(self, input_ui_img,
                                            (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user text input ui box popup
-        self.input_ok_button = prepare.MenuButton(self, imagelist,
+        self.input_ok_button = menu.MenuButton(self, imagelist,
                                                       pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                            self.inputui.rect.midleft[1] + imagelist[0].get_height()),
                                                       text="Confirm", layer=31)
-        self.input_cancel_button = prepare.MenuButton(self, imagelist,
+        self.input_cancel_button = menu.MenuButton(self, imagelist,
                                                           pos=(self.inputui.rect.midright[0] - imagelist[0].get_width(),
                                                                self.inputui.rect.midright[1] + imagelist[0].get_height()),
                                                           text="Cancel", layer=31)
         self.input_button = (self.input_ok_button, self.input_cancel_button)
-        self.input_box = prepare.InputBox(self, self.inputui.rect.center, self.inputui.image.get_width())  # user text input box
+        self.input_box = menu.InputBox(self, self.inputui.rect.center, self.inputui.image.get_width())  # user text input box
 
         self.inputui_pop = (self.inputui, self.input_box, self.input_ok_button, self.input_cancel_button)
 
-        self.confirmui = prepare.InputUI(self, input_ui_img,
+        self.confirmui = menu.InputUI(self, input_ui_img,
                                              (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user confirm input ui box popup
         self.confirmui_pop = (self.confirmui, self.input_ok_button, self.input_cancel_button)
         # ^ End input box popup
@@ -472,24 +471,24 @@ class Mainmenu:
         # v profile box
         self.profile_name = self.Profilename
         img = load_image(self.main_dir, "profile_box.png", "ui\\mainmenu_ui")
-        self.profile_box = prepare.ProfileBox(self, img, (self.ScreenWidth, 0),
+        self.profile_box = menu.ProfileBox(self, img, (self.ScreenWidth, 0),
                                                   self.profile_name)  # profile name box at top right of screen at gamestart menu screen
         # ^ End profile box
 
         # v Create option menu button and icon
-        self.back_button = prepare.MenuButton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 1.2), text="BACK")
+        self.back_button = menu.MenuButton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 1.2), text="BACK")
 
         # Resolution changing bar that fold out the list when clicked
         img = load_image(self.main_dir, "scroll_normal.jpg", "ui\\mainmenu_ui")
         img2 = img
         img3 = load_image(self.main_dir, "scroll_click.jpg", "ui\\mainmenu_ui")
         imagelist = [img, img2, img3]
-        self.resolution_scroll = prepare.MenuButton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2.3),
+        self.resolution_scroll = menu.MenuButton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2.3),
                                                         text=str(self.ScreenWidth) + " x " + str(self.ScreenHeight), size=16)
         resolutionlist = ["1920 x 1080", "1600 x 900", "1366 x 768", "1280 x 720", "1024 x 768"]
         self.resolutionbar = make_bar_list(self, listtodo=resolutionlist, menuimage=self.resolution_scroll)
         img = load_image(self.main_dir, "resolution_icon.png", "ui\\mainmenu_ui")
-        self.resolutionicon = prepare.MenuIcon([img], (self.resolution_scroll.pos[0] - (self.resolution_scroll.pos[0] / 4.5),
+        self.resolutionicon = menu.MenuIcon([img], (self.resolution_scroll.pos[0] - (self.resolution_scroll.pos[0] / 4.5),
                                                            self.resolution_scroll.pos[1]), imageresize=50)
         # End resolution
 
@@ -498,12 +497,12 @@ class Mainmenu:
         img2 = load_image(self.main_dir, "scoll_button_normal.png", "ui\\mainmenu_ui")
         img3 = load_image(self.main_dir, "scoll_button_click.png", "ui\\mainmenu_ui")
         img4 = load_image(self.main_dir, "numbervalue_icon.jpg", "ui\\mainmenu_ui")
-        self.volumeslider = prepare.SliderMenu(barimage=img, buttonimage=[img2, img3],
+        self.volumeslider = menu.SliderMenu(barimage=img, buttonimage=[img2, img3],
                                                    pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height / 3),
                                                    value=self.Soundvolume)
-        self.valuebox = [prepare.ValueBox(img4, (self.volumeslider.rect.topright[0] * 1.1, self.volumeslider.rect.topright[1]), self.Soundvolume)]
+        self.valuebox = [menu.ValueBox(img4, (self.volumeslider.rect.topright[0] * 1.1, self.volumeslider.rect.topright[1]), self.Soundvolume)]
         img = load_image(self.main_dir, "volume_icon.png", "ui\\mainmenu_ui")
-        self.volumeicon = prepare.MenuIcon([img], (self.volumeslider.pos[0] - (self.volumeslider.pos[0] / 4.5), self.volumeslider.pos[1]),
+        self.volumeicon = menu.MenuIcon([img], (self.volumeslider.pos[0] - (self.volumeslider.pos[0] / 4.5), self.volumeslider.pos[1]),
                                                imageresize=50)
         # End volume change
 
@@ -611,11 +610,11 @@ class Mainmenu:
         if team1setpos is None:
             team1setpos = (self.SCREENRECT.width / 2 - (300 * self.width_adjust), self.SCREENRECT.height / 3)
         # position = self.mapshow[0].get_rect()
-        self.teamcoa.add(prepare.TeamCoa(self, team1setpos, self.coa[data[0]],
+        self.teamcoa.add(menu.TeamCoa(self, team1setpos, self.coa[data[0]],
                                              1, self.allfaction.faction_list[data[0]][0]))  # team 1
 
         if oneteam is False:
-            self.teamcoa.add(prepare.TeamCoa(self, (self.SCREENRECT.width / 2 + (300 * self.width_adjust), self.SCREENRECT.height / 3),
+            self.teamcoa.add(menu.TeamCoa(self, (self.SCREENRECT.width / 2 + (300 * self.width_adjust), self.SCREENRECT.height / 3),
                                                  self.coa[data[1]], 2, self.allfaction.faction_list[data[1]][0]))  # team 2
         uiclass.add(self.teamcoa)
 
@@ -630,7 +629,7 @@ class Mainmenu:
         else:
             imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map/custom", mapfolderlist[self.current_map_select]],
                                loadorder=False)
-        self.mapshow.add(prepare.MapShow(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 3), imgs[0], imgs[1]))
+        self.mapshow.add(menu.MapShow(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 3), imgs[0], imgs[1]))
         self.mainui.add(self.mapshow)
         # ^ End map preview
 
@@ -638,7 +637,7 @@ class Mainmenu:
         for name in self.maptitle:
             name.kill()
             del name
-        self.maptitle.add(prepare.MapTitle(self, maplist[self.current_map_select], (self.SCREENRECT.width / 2, 0)))
+        self.maptitle.add(menu.MapTitle(self, maplist[self.current_map_select], (self.SCREENRECT.width / 2, 0)))
         self.mainui.add(self.maptitle)
         # ^ End map title
 
@@ -648,7 +647,7 @@ class Mainmenu:
         for desc in self.mapdescription:
             desc.kill()
             del desc
-        self.mapdescription.add(prepare.MapDescription(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 1.3), description))
+        self.mapdescription.add(menu.MapDescription(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 1.3), description))
         self.mainui.add(self.mapdescription)
         # ^ End map description
 
@@ -659,7 +658,7 @@ class Mainmenu:
         for desc in self.sourcedescription:
             desc.kill()
             del desc
-        self.sourcedescription.add(prepare.SourceDescription(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 1.3), descriptiontext))
+        self.sourcedescription.add(menu.SourceDescription(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 1.3), descriptiontext))
         self.mainui.add(self.sourcedescription)
 
         openfolder = self.mapfoldername
@@ -722,13 +721,13 @@ class Mainmenu:
             if currentrow < 0:
                 currentrow = 0
             else:
-                self.setuplist(prepare.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
+                self.setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
                 scroll.changeimage(newrow=currentrow, logsize=len(namelist))
 
         elif mouse_scrolldown:
             currentrow += 1
             if currentrow + listbox.maxshowlist - 1 < len(namelist):
-                self.setuplist(prepare.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
+                self.setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
                 scroll.changeimage(newrow=currentrow, logsize=len(namelist))
             else:
                 currentrow -= 1
@@ -857,7 +856,7 @@ class Mainmenu:
                         self.mainui.remove(*self.menu_button, self.profile_box)
                         self.menu_button.remove(*self.menu_button)
 
-                        self.setuplist(prepare.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                        self.setuplist(menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
                                        self.mainui)
                         self.makemap(self.mapfoldername, self.maplist)
 
@@ -871,7 +870,7 @@ class Mainmenu:
                         self.mainui.remove(*self.menu_button, self.profile_box)
                         self.menu_button.remove(*self.menu_button)
 
-                        self.setuplist(prepare.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
+                        self.setuplist(menu.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
                                        self.mainui)
                         self.makemap(self.mapcustomfoldername, self.mapcustomlist)
 
@@ -930,7 +929,7 @@ class Mainmenu:
                         if self.map_scroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                             self.current_map_row = self.map_scroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
-                            self.setuplist(prepare.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                            self.setuplist(menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
                                            self.mainui)
 
                     if self.map_listbox.rect.collidepoint(self.mousepos):
@@ -984,7 +983,7 @@ class Mainmenu:
                             self.sourcescale = [""]
                             self.sourcetext = [""]
 
-                        self.setuplist(prepare.SourceName, self.current_source_row, self.sourcenamelist, self.source_namegroup,
+                        self.setuplist(menu.SourceName, self.current_source_row, self.sourcenamelist, self.source_namegroup,
                                        self.source_listbox, self.mainui)
 
                         self.sourcescroll = battleui.UIScroller(self.source_listbox.rect.topright, self.source_listbox.image.get_height(),
@@ -993,10 +992,10 @@ class Mainmenu:
                         for index, team in enumerate(self.teamcoa):
                             if index == 0:
                                 self.armystat.add(
-                                    prepare.ArmyStat(self, (team.rect.bottomleft[0], self.SCREENRECT.height / 1.5)))  # left army stat
+                                    menu.ArmyStat(self, (team.rect.bottomleft[0], self.SCREENRECT.height / 1.5)))  # left army stat
                             else:
                                 self.armystat.add(
-                                    prepare.ArmyStat(self, (team.rect.bottomright[0], self.SCREENRECT.height / 1.5)))  # right army stat
+                                    menu.ArmyStat(self, (team.rect.bottomright[0], self.SCREENRECT.height / 1.5)))  # right army stat
 
                         self.changesource([self.sourcescaletext[self.mapsource], self.sourcetext[self.mapsource]],
                                           self.sourcescale[self.mapsource])
@@ -1038,7 +1037,7 @@ class Mainmenu:
                         if self.sourcescroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                             self.current_source_row = self.sourcescroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
-                            self.setuplist(prepare.NameList, self.current_source_row, self.sourcelist, self.source_namegroup,
+                            self.setuplist(menu.NameList, self.current_source_row, self.sourcelist, self.source_namegroup,
                                            self.source_listbox, self.mainui)
                     if self.source_listbox.rect.collidepoint(self.mousepos):
                         self.current_source_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.sourcescroll, self.source_listbox,
@@ -1067,10 +1066,10 @@ class Mainmenu:
                                 del stuff
 
                         if self.menu_state == "presetselect":  # regenerate map name list
-                            self.setuplist(prepare.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                            self.setuplist(menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
                                            self.mainui)
                         else:
-                            self.setuplist(prepare.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
+                            self.setuplist(menu.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
                                            self.mainui)
 
                         self.menu_button.add(*self.map_select_button)

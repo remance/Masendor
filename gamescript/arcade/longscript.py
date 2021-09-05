@@ -40,9 +40,9 @@ def load_game_data(game):
     main_dir = game.main_dir
     SCREENRECT = game.SCREENRECT
     Soundvolume = game.Soundvolume
-    from gamescript import readstat, map, lorebook, weather, drama, battleui
+    from gamescript import readstat, map, lorebook, weather, drama, battleui, menu
     from gamescript.arcade import faction, unit, \
-        subunit, rangeattack, menu, uniteditor
+        subunit, rangeattack, uniteditor
 
     # v Craete feature terrain modifier
     game.featuremod = {}
@@ -495,12 +495,12 @@ def load_game_data(game):
                       battleui.UIButton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
 
     game.screen_button_list = game.buttonui[8:17]  # event log and time buttons
-    game.unitcard_button = game.buttonui[0:4]
-    game.inspectbutton = game.buttonui[4]
+    game.troopcard_button = game.buttonui[0:4]
+    game.inspect_button = game.buttonui[4]
     game.col_split_button = game.buttonui[5]  # parentunit split by column button
     game.row_split_button = game.buttonui[6]  # parentunit split by row button
 
-    game.timebutton = game.buttonui[14:17]
+    game.time_button = game.buttonui[14:17]
     game.battleui.add(game.buttonui[8:17])
     game.battleui.add(game.logscroll, game.selectscroll)
 
