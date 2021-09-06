@@ -4,9 +4,7 @@ import os
 
 import pygame
 import pygame.freetype
-from gamescript.arcade import subunit
 from pygame.transform import scale
-
 
 class PreviewBox(pygame.sprite.Sprite):
     main_dir = None
@@ -119,7 +117,7 @@ class Unitbuildslot(pygame.sprite.Sprite):
     weapon_list = None
     armourlist = None
     stat_list = None
-    create_troop_stat = subunit.create_troop_stat
+    genre = None
 
     def __init__(self, gameid, team, armyid, position, startpos, slotnumber, teamcolour):
         self.colour = teamcolour

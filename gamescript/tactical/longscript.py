@@ -33,16 +33,13 @@ for dd in numberboard:
 # Data Loading gamescript
 
 def load_game_data(game):
-    """Load various game data and encyclopedia object"""
+    """Load various game data"""
     import csv
     from pathlib import Path
 
-    main_dir = game.main_dir
     SCREENRECT = game.SCREENRECT
-    Soundvolume = game.Soundvolume
-    from gamescript import readstat, map, lorebook, weather, drama, battleui, faction, menu
-    from gamescript.tactical import unit, \
-        subunit, rangeattack, uniteditor
+    from gamescript import readstat, map, lorebook, weather, drama, battleui, faction, menu, uniteditor
+    from gamescript.tactical import unit, subunit, rangeattack
 
     unit.Unit.status_list = game.troop_data.status_list
     rangeattack.RangeArrow.gamemapheight = game.battlemap_height
@@ -154,23 +151,6 @@ def load_game_data(game):
     game.buttonui.add(game.row_split_button)
 
     game.decimation_button = battleui.UIButton(game.command_ui.x + 100, game.command_ui.y + 56, topimage[14], 1)
-
-    game.trooplog_button = battleui.UIButton(game.eventlog.pos[0] + (topimage[24].get_width() / 2), game.eventlog.pos[1] -
-                                             game.eventlog.image.get_height() - (topimage[24].get_height() / 2), topimage[24],0)  # troop tab log
-
-    game.eventlog_button = [battleui.UIButton(game.trooplog_button.pos[0] + topimage[24].get_width(), game.trooplog_button.pos[1], topimage[25], 1),
-                      # army tab log button
-                      battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 2), game.trooplog_button.pos[1], topimage[26], 2),
-                      # leader tab log button
-                      battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 3), game.trooplog_button.pos[1], topimage[27], 3),
-                      # subunit tab log button
-                      battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 5), game.trooplog_button.pos[1], topimage[28], 4),
-                      # delete current tab log button
-                      battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 6), game.trooplog_button.pos[1], topimage[29], 5)]
-                      # delete all log button
-
-    game.eventlog_button = [game.trooplog_button] + game.eventlog_button
-    game.buttonui.add(game.eventlog_button)
 
     # Time bar ui
     game.timeui = battleui.TimeUI(game.unitselector.rect.topright, topimage[31])
@@ -297,7 +277,7 @@ def unitsetup(gamebattle):
     teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
-                                      gamebattle.mapselected, gamebattle.source, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
+                                      gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunitgameid = 1
         for row in rd:

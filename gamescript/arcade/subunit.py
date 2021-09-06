@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 import numpy as np
 import pygame
@@ -52,7 +53,6 @@ def create_troop_stat(self, stat, starthp, type):
     self.base_charge = stat[stat_header["Charge"]]
     self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
     self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
-    skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
     self.skill = {x: self.stat_list.skill_list[x].copy() for x in skill if
                   x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
     self.troop_health = stat[stat_header["Health"]] * gradestat[self.grade_header["Health Effect"]]  # Health of each troop
@@ -363,9 +363,7 @@ class Subunit(pygame.sprite.Sprite):
         self.movetimer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing nearest enemy
         self.ammo_now = 0
-        self.skill_cond = 0
-        self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
-        # TODO fix broken state retreat not work?
+        self.current_animation = "idle"
 
         self.getfeature = self.gamemapfeature.getfeature
         self.getheight = self.gamemapheight.getheight
@@ -1318,6 +1316,25 @@ class Subunit(pygame.sprite.Sprite):
         # print(self.combat_move_queue)
         # print(self.base_pos, self.close_target.base_pos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
         # ^ End path finding
+
+    def animation(self):
+        """Credit to cenk"""
+        self.event
+        self.frames = frms
+        self.speed_ms = spd_ms / 1000
+        self.start_frame = 0
+        self.end_frame = len(self.frames) - 1
+        self.first_time = time.time()
+        self.show_frame = 0
+
+    def blit(self, pen, crd):
+        if time.time() - self.first_time >= self.speed_ms:
+            self.show_frame = self.show_frame + 1
+            self.first_time = time.time()
+        if self.show_frame > self.end_frame:
+            self.show_frame = self.start_frame
+        # pen mean to window and is abbreivation of "pencere"
+        pen.blit(self.frames[self.show_frame], crd)
 
     def delete(self, local=False):
         """delete reference when del is called"""

@@ -409,11 +409,11 @@ class Unit(pygame.sprite.Sprite):
 
         for index, whofrontline in enumerate(whoarray):
             newwhofrontline = whofrontline.copy()
-            dead = np.where((newwhofrontline == 0) | (newwhofrontline == 1))  # replace the dead in frontline with other subunit in the same column
+            dead = np.where((newwhofrontline == 0))  # replace the dead in frontline with other subunit in the same column
             for deadsquad in dead[0]:
                 run = 0
                 while gotanother:
-                    if fullwhoarray[index][run, deadsquad] not in (0, 1):
+                    if fullwhoarray[index][run, deadsquad] != 0:
                         newwhofrontline[deadsquad] = fullwhoarray[index][run, deadsquad]
                         gotanother = False
                     else:

@@ -25,11 +25,16 @@ class Battle:
     traitskillblit = commonscript.trait_skill_blit
     effecticonblit = commonscript.effect_icon_blit
     countdownskillicon = commonscript.countdown_skill_icon
+    kill_effect_icon = commonscript.kill_effect_icon
+    popout_lorebook = commonscript.popout_lorebook
+    popuplist_newopen = commonscript.popuplist_newopen
+    setuplist = commonscript.setuplist
 
     def __init__(self, main, winstyle):
         # v Get game object/variable from gamestart
         self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for game battle
         self.main = main
+        self.genre = main.genre
         self.config = main.config
         self.SoundVolume = main.Soundvolume
         self.SCREENRECT = main.SCREENRECT
@@ -546,44 +551,6 @@ class Battle:
         elif self.row_split_button in self.battleui:
             self.battleui.remove(self.row_split_button)
 
-    def kill_effect_icon(self):
-        for icon in self.skill_icon.sprites():
-            icon.kill()
-            del icon
-        for icon in self.effect_icon.sprites():
-            icon.kill()
-            del icon
-
-    def popout_lorebook(self, section, gameid):
-        """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
-        self.gamestate = 0
-        self.battle_menu.mode = 2
-        self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll, *self.lorebuttonui)
-
-        self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
-        self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
-        self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
-
-    def popuplist_newopen(self, newrect, newlist, uitype):
-        """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
-        self.currentpopuprow = 0
-
-        if uitype == "leader":
-            self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=newrect)
-        else:
-            self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
-
-        self.main.setuplist(menu.NameList, 0, newlist, self.popup_namegroup,
-                            self.popup_listbox, self.battleui, layer=19)
-
-        self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
-        self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
-        self.popup_listscroll.changeimage(newrow=0, logsize=len(newlist))
-
-        self.battleui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
-
-        self.popup_listbox.type = uitype
-
     def ui_mouseover(self):
         """mouse over ui that is not subunit card and unitbox (topbar and commandbar)"""
         for this_ui in self.gameui:
@@ -926,9 +893,9 @@ class Battle:
 
             self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][1:]  # generate leader name list
 
-            self.main.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+            self.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                 self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset army list
-            self.main.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
+            self.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
                                 self.troop_namegroup, self.troop_listbox, self.battleui)  # setup troop name list
 
             self.current_list_show = "troop"
@@ -1225,7 +1192,7 @@ class Battle:
                             self.showmap.changemode(self.mapviewmode)
                         self.showmap.changescale(self.camerascale)
 
-                    elif keypress == pygame.K_o:  # Speed Pause/unpause Button
+                    elif keypress == pygame.K_o:  # Toggle unit number
                         if self.showtroopnumber:
                             self.showtroopnumber = False
                             self.effect_updater.remove(*self.troop_number_sprite)
@@ -1869,17 +1836,17 @@ class Battle:
                                             self.currentpopuprow = self.popup_listscroll.update(
                                                 self.mousepos)  # update the scroller and get new current subsection
                                             if self.popup_listbox.type == "terrain":
-                                                self.main.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_base.terrainlist,
+                                                self.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_base.terrainlist,
                                                                     self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "feature":
-                                                self.main.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_feature.featurelist,
+                                                self.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_feature.featurelist,
                                                                     self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "weather":
-                                                self.main.setuplist(menu.NameList, self.currentpopuprow, self.weather_list,
+                                                self.setuplist(menu.NameList, self.currentpopuprow, self.weather_list,
                                                                     self.popup_namegroup,
                                                                     self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "leader":
-                                                self.main.setuplist(menu.NameList, self.currentpopuprow, self.leader_list,
+                                                self.setuplist(menu.NameList, self.currentpopuprow, self.leader_list,
                                                                     self.popup_namegroup,
                                                                     self.popup_listbox, self.battleui, layer=19)
 
@@ -1891,17 +1858,17 @@ class Battle:
                                         self.current_troop_row = self.troop_scroll.update(
                                             self.mousepos)  # update the scroller and get new current subsection
                                         if self.current_list_show == "troop":
-                                            self.main.setuplist(menu.NameList, self.current_troop_row, self.troop_list, self.troop_namegroup,
+                                            self.setuplist(menu.NameList, self.current_troop_row, self.troop_list, self.troop_namegroup,
                                                                 self.troop_listbox, self.battleui)
                                         elif self.current_list_show == "faction":
-                                            self.main.setuplist(menu.NameList, self.current_troop_row, self.faction_list, self.troop_namegroup,
+                                            self.setuplist(menu.NameList, self.current_troop_row, self.faction_list, self.troop_namegroup,
                                                                 self.troop_listbox, self.battleui)
 
                                     elif self.unit_presetname_scroll.rect.collidepoint(self.mousepos):
                                         self.uiclick = True
                                         self.current_unit_row = self.unit_presetname_scroll.update(
                                             self.mousepos)  # update the scroller and get new current subsection
-                                        self.main.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+                                        self.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                                             self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset army list
 
                                     elif self.unit_build_slot in self.battleui:
@@ -1993,7 +1960,7 @@ class Battle:
                                                             self.leader_list = self.leader_list = [item[0] for item in
                                                                                                    self.leader_stat.leader_list.values()][1:]
 
-                                                        self.main.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
+                                                        self.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
                                                                             self.troop_namegroup,
                                                                             self.troop_listbox, self.battleui)  # setup troop name list
                                                         self.troop_scroll.changeimage(newrow=self.current_troop_row,
@@ -2152,7 +2119,7 @@ class Battle:
                                                         if self.current_list_show == "troop":
                                                             self.current_troop_row = 0
                                                             self.filtertrooplist()
-                                                            self.main.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
+                                                            self.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
                                                                                 self.troop_namegroup,
                                                                                 self.troop_listbox, self.battleui)  # setup troop name list
                                     elif self.terrain_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map terrain button
@@ -2199,7 +2166,7 @@ class Battle:
                                                 self.uiclick = True
                                                 if self.current_list_show == "troop":
                                                     self.current_troop_row = 0
-                                                    self.main.setuplist(menu.NameList, self.current_troop_row, self.faction_list,
+                                                    self.setuplist(menu.NameList, self.current_troop_row, self.faction_list,
                                                                         self.troop_namegroup,
                                                                         self.troop_listbox, self.battleui)
                                                     self.troop_scroll.changeimage(newrow=self.current_troop_row,
@@ -2654,7 +2621,7 @@ class Battle:
                             self.customunitpresetlist.update(currentpreset)
 
                             self.unitpresetname = self.input_box.text
-                            self.main.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+                            self.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                                 self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset unit list
                             for name in self.unitpreset_namegroup:  # loop to change selected border position to the last in preset list
                                 if name.name == self.unitpresetname:
@@ -2669,7 +2636,7 @@ class Battle:
                     elif self.textinputpopup[1] == "delete_preset":
                         del self.customunitpresetlist[self.unitpresetname]
                         self.unitpresetname = ""
-                        self.main.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
+                        self.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                             self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset unit list
                         for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
                             self.presetselectborder.changepos(name.rect.topleft)

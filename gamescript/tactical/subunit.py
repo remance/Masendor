@@ -389,7 +389,6 @@ class Subunit(pygame.sprite.Sprite):
         self.lastzoom = 10
         self.skill_cond = 0
         self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
-        # TODO fix broken state retreat not work?
 
         self.getfeature = self.gamemapfeature.getfeature
         self.getheight = self.gamemapheight.getheight
@@ -1030,8 +1029,6 @@ class Subunit(pygame.sprite.Sprite):
                     self.attacking = False
                 if self.state not in (95, 97, 98, 99) and parentstate in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99):
                     self.state = parentstate  # Enforce parentunit state to subunit when moving and breaking
-                    if 9 in self.status_effect:  # fight to the death
-                        self.state = 10
 
                 self.attack_target = self.parentunit.attack_target
                 self.attack_pos = self.parentunit.base_attack_pos
@@ -1076,7 +1073,6 @@ class Subunit(pygame.sprite.Sprite):
                                 self.new_angle = self.setrotate(self.melee_target.base_pos)
                         else:  # no way to retreat, Fight to the death
                             if self.enemy_front != [] and self.enemy_side != []:  # if both front and any side got attacked
-                                self.state = 10
                                 if 9 not in self.status_effect:
                                     self.status_effect[9] = self.status_list[9].copy()  # fight to the death status
                         if parentstate not in (10, 96, 98, 99):
@@ -1290,14 +1286,17 @@ class Subunit(pygame.sprite.Sprite):
                     enemycollide_check = False  # for chance to move or charge through enemy
                     if len(collidelist) > 0:
                         enemycollide_check = True
-                        if self.state in (96, 98, 99):  # chance to escape
-                            if random.randint(0, len(collidelist) + 2) < 2:
-                                enemycollide_check = False
+                        if self.state in (96, 98, 99):  # escape
+                            enemycollide_check = False
+                            nocolide_check = True  # bypass collide
                         elif self.chargeskill in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
                             enemycollide_check = False
 
+                    if self.state in (96, 98, 99):
+                        print(self.gameid)
+
                     if self.stamina > 0 and nocolide_check and enemycollide_check is False and \
-                            len(self.same_front) == 0 and len(self.friend_front) == 0:
+                            (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
                         if self.chargeskill in self.skill_effect and self.base_pos == self.base_target and parentstate == 10:
                             new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                             self.base_target = self.base_target + new_target

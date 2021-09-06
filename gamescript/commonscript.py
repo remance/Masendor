@@ -10,15 +10,14 @@ import numpy as np
 import pygame
 import pygame.freetype
 
+from gamescript import readstat, map, lorebook, weather, drama, battleui, menu, faction, popup
+from pathlib import Path
+
 def load_game_data(game):
     """Load various game data and encyclopedia object"""
-    import csv
-    from pathlib import Path
-
     main_dir = game.main_dir
     SCREENRECT = game.SCREENRECT
     Soundvolume = game.Soundvolume
-    from gamescript import readstat, map, lorebook, weather, drama, battleui, menu, faction, popup
 
     # v Craete feature terrain modifier
     game.featuremod = {}
@@ -118,6 +117,14 @@ def load_game_data(game):
     map.BeautifulMap.loadtexturelist = loadtexturefolder
     map.BeautifulMap.emptyimage = emptyimage
     # ^ End game map
+
+    # v Load genre list
+    genrefolder = Path(os.path.join(main_dir, "gamescript"))
+    subdirectories = [x for x in genrefolder.iterdir() if x.is_dir()]
+    subdirectories = [str(foldername).split("\\")[-1].capitalize() for foldername in subdirectories]
+    subdirectories.remove("__pycache__")
+    game.genrelist = subdirectories  # map name list for map selection list
+    # ^ End genre list
 
     # v Load map list
     mapfolder = Path(os.path.join(main_dir, "data", "ruleset", game.ruleset_folder, "map"))
@@ -286,9 +293,25 @@ def load_game_data(game):
     drama.TextDrama.images = imgs
 
     topimage = load_images(game.main_dir, ["ui", "battle_ui"])
-    iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
     game.eventlog = battleui.EventLog(topimage[23], (0, SCREENRECT.height))
+    game.trooplog_button = battleui.UIButton(game.eventlog.pos[0] + (topimage[24].get_width() / 2), game.eventlog.pos[1] -
+                                             game.eventlog.image.get_height() - (topimage[24].get_height() / 2), topimage[24], 0)  # troop tab log
+
+    game.eventlog_button = [
+        battleui.UIButton(game.trooplog_button.pos[0] + topimage[24].get_width(), game.trooplog_button.pos[1], topimage[25], 1),
+        # army tab log button
+        battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 2), game.trooplog_button.pos[1], topimage[26], 2),
+        # leader tab log button
+        battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 3), game.trooplog_button.pos[1], topimage[27], 3),
+        # subunit tab log button
+        battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 5), game.trooplog_button.pos[1], topimage[28], 4),
+        # delete current tab log button
+        battleui.UIButton(game.trooplog_button.pos[0] + (topimage[24].get_width() * 6), game.trooplog_button.pos[1], topimage[29], 5)]
+    # delete all log button
+
+    game.eventlog_button = [game.trooplog_button] + game.eventlog_button
+    game.buttonui.add(game.eventlog_button)
 
     game.logscroll = battleui.UIScroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.max_row_show)  # event log scroller
     game.eventlog.logscroll = game.logscroll  # Link scroller to ui since it is easier to do here with the current order
@@ -351,7 +374,6 @@ def load_game_data(game):
 
 def make_bar_list(main, listtodo, menuimage):
     """Make a drop down bar list option button"""
-    from gamescript import menu
     main_dir = main.main_dir
     barlist = []
     img = load_image(main_dir, "bar_normal.jpg", "ui\\mainmenu_ui")
@@ -452,7 +474,6 @@ def edit_config(section, option, value, filename, config):
 
 def trait_skill_blit(self):
     """For blitting skill and trait icon into subunit info ui"""
-    from gamescript import battleui
     SCREENRECT = self.SCREENRECT
 
     position = self.troopcard_ui.rect.topleft
@@ -483,7 +504,6 @@ def trait_skill_blit(self):
 
 def effect_icon_blit(self):
     """For blitting all status effect icon"""
-    from gamescript import battleui
     SCREENRECT = self.SCREENRECT
 
     position = self.troopcard_ui.rect.topleft
@@ -534,3 +554,67 @@ def convert_str_time(event):
         if len(item) == 3:
             event[index].append(item[2])
 
+def kill_effect_icon(self):
+    for icon in self.skill_icon.sprites():
+        icon.kill()
+        del icon
+    for icon in self.effect_icon.sprites():
+        icon.kill()
+        del icon
+
+def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
+    """generate list of subsection of the left side of encyclopedia"""
+    widthadjust = self.width_adjust
+    heightadjust = self.height_adjust
+    row = 5 * heightadjust
+    column = 5 * widthadjust
+    pos = box.rect.topleft
+    if currentrow > len(showlist) - box.maxshowlist:
+        currentrow = len(showlist) - box.maxshowlist
+
+    if len(itemgroup) > 0:  # remove previous sprite in the group before generate new one
+        for stuff in itemgroup:
+            stuff.kill()
+            del stuff
+
+    for index, item in enumerate(showlist):
+        if index >= currentrow:
+            itemgroup.add(itemclass(self, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
+            row += (30 * heightadjust)  # next row
+            if len(itemgroup) > box.maxshowlist:
+                break  # will not generate more than space allowed
+
+        uiclass.add(*itemgroup)
+
+def popout_lorebook(self, section, gameid):
+    """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
+    self.gamestate = 0
+    self.battle_menu.mode = 2
+    self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll, *self.lorebuttonui)
+
+    self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
+    self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
+    self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+
+def popuplist_newopen(self, newrect, newlist, uitype):
+    """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
+    self.currentpopuprow = 0
+
+    if uitype == "leader" or uitype == "genre":
+        self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=newrect)
+    else:
+        self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
+
+    self.setuplist(menu.NameList, 0, newlist, self.popup_namegroup,
+                        self.popup_listbox, self.battleui, layer=19)
+
+    self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
+    self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
+    self.popup_listscroll.changeimage(newrow=0, logsize=len(newlist))
+
+    if uitype == "genre":
+        self.mainui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)
+    else:
+        self.battleui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
+
+    self.popup_listbox.type = uitype

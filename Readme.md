@@ -80,13 +80,13 @@ This function is going to be a headache to write and research. But hopefully, it
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-0.6.3 - 0.6.5: custom battle, in-game custom sub-unit editor
+0.6.3 - 0.6.5: Arcade mode, custom battle
  
 0.6.6 and 0.6.7: random map generator, True AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 
 0.6.8 and 0.6.9: multiple unit selection/move, also add a border to a selected unit on army selector UI
 
-Ver 0.7 Future Visionary: Arcade mode, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
+Ver 0.7 Future Visionary: in-game custom sub-unit editor, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
 
 Ver 0.8 Authentic Attraction: In-game art, better-looking UI (All hand (and mouse) drawn except for historical image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
