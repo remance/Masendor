@@ -323,7 +323,6 @@ class Battle:
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         camera.Camera.SCREENRECT = self.SCREENRECT
         self.camera = camera.Camera(self.camerapos, self.camerascale)
-        self.showmap.changescale(self.camerascale)
 
         if mapselected is not None:
             imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], loadorder=False)
@@ -336,6 +335,7 @@ class Battle:
             except Exception:
                 placenamemap = None
             self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, placenamemap, self, False)
+            self.showmap.changescale(self.camerascale)
         else:  # for unit editor mode, create empty temperate glass map
             self.editor_map_change((166, 255, 107), (181, 230, 29))
         # ^ End create battle map

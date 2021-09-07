@@ -20,7 +20,7 @@ class Leader(pygame.sprite.Sprite):
         self.rangecommand = stat[leader_header["Range Command"]]
         self.cavcommand = stat[leader_header["Cavalry Command"]]
         self.combat = stat[leader_header["Combat"]] * 2
-        self.social = stat[leader_header["Social"]]
+        self.social = leaderstat.leader_class[stat[leader_header["Social Class"]]]
         self.description = stat[-1]
 
         # self.trait = stat
