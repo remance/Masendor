@@ -6,23 +6,23 @@ class Leader(pygame.sprite.Sprite):
     gamebattle = None
     gone_event_text = {96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}
 
-    def __init__(self, leaderid, position, armyposition, unit, leaderstat, player):
+    def __init__(self, leaderid, unit, leaderstat):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.player = player
+        self.player = False
         self.morale = 100
         stat = leaderstat.leader_list[leaderid]
+        leader_header = leaderstat.leader_list_header
         self.leaderid = leaderid  # Different than game id, leaderid is only used as reference to the data
         self.name = stat[0]
-        self.authority = stat[2]
-        self.meleecommand = stat[3]
-        self.rangecommand = stat[4]
-        self.cavcommand = stat[5]
-        self.combat = stat[6] * 10
-        self.social = leaderstat.leader_class[stat[7]]
+        self.authority = stat[leader_header["Authority"]]
+        self.meleecommand = stat[leader_header["Melee Command"]]
+        self.rangecommand = stat[leader_header["Range Command"]]
+        self.cavcommand = stat[leader_header["Cavalry Command"]]
+        self.combat = stat[leader_header["Combat"]] * 2
+        self.social = stat[leader_header["Social"]]
         self.description = stat[-1]
 
-        self.subunitpos = position  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
         # self.skill = stat
         self.state = 0  ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
@@ -96,7 +96,6 @@ class Leader(pygame.sprite.Sprite):
         self.subunit.leader = self  ## put in leader to subunit with the set pos
         self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or gamestart leader move ot other subunit
         # self.parentunit.leadersubunit - self.parentunit.base_pos
-        self.subunit.unit_leader = True
 
         squadpenal = int(
             (self.subunitpos / len(self.parentunit.armysubunit[0])) * 10)  # Authority get reduced the further leader stay in the back line

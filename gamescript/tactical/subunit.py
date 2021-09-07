@@ -42,14 +42,12 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
                        * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
     self.base_accuracy = stat[stat_header["Accuracy"]] + gradestat[grade_header["Accuracy Bonus"]]
-    self.basesight = stat[stat_header["Sight"]]  # base sight range
+    self.base_sight = stat[stat_header["Sight"]]  # base sight range
     self.magazine_left = stat[stat_header["Ammunition"]]  # amount of ammunition
     self.base_reload = stat[stat_header["Reload"]] + gradestat[grade_header["Reload Bonus"]]
-    self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
     self.base_charge = stat[stat_header["Charge"]]
     self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
     self.chargeskill = stat[stat_header["Charge Skill"]]  # For easier reference to check what charge skill this subunit has
-    self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
     skill = [self.chargeskill] + skill  # Add charge skill as first item in the list
     self.skill = {x: self.stat_list.skill_list[x].copy() for x in skill if
                   x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
@@ -339,7 +337,7 @@ class Subunit(pygame.sprite.Sprite):
     maxzoom = 10  # max zoom allow
     create_troop_stat = create_troop_stat
 
-    def __init__(self, unitid, gameid, parentunit, position, starthp, startstamina, unitscale):
+    def __init__(self, troopid, gameid, parentunit, position, starthp, startstamina, unitscale):
         """Although subunit in code, this is referred as sub-subunit ingame"""
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -353,6 +351,7 @@ class Subunit(pygame.sprite.Sprite):
         self.attack_target = None
         self.melee_target = None  # current target of melee combat
         self.close_target = None  # clost target to move to in melee
+        self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
         self.parentunit = parentunit  # reference to the parent battlion of this subunit
 
         self.enemy_front = []  # list of front collide sprite
@@ -372,7 +371,7 @@ class Subunit(pygame.sprite.Sprite):
         self.status_list = self.parentunit.status_list
 
         self.gameid = gameid  # ID of this
-        self.troopid = int(unitid)  # ID of preset used for this subunit
+        self.troopid = int(troopid)  # ID of preset used for this subunit
 
         self.angle = self.parentunit.angle
         self.new_angle = self.parentunit.angle
@@ -385,6 +384,7 @@ class Subunit(pygame.sprite.Sprite):
         self.movetimer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing nearest enemy
         self.ammo_now = 0
+        self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
         self.zoom = 1
         self.lastzoom = 10
         self.skill_cond = 0
@@ -1291,9 +1291,6 @@ class Subunit(pygame.sprite.Sprite):
                             nocolide_check = True  # bypass collide
                         elif self.chargeskill in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
                             enemycollide_check = False
-
-                    if self.state in (96, 98, 99):
-                        print(self.gameid)
 
                     if self.stamina > 0 and nocolide_check and enemycollide_check is False and \
                             (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):

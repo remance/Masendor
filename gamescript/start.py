@@ -53,7 +53,7 @@ class Mainmenu:
 
             config["DEFAULT"] = {"screenwidth": screenWidth, "screenheight": screenHeight, "fullscreen": "0",
                                  "playername": "Noname", "soundvolume": "100.0", "musicvolume": "0.0",
-                                 "voicevolume": "0.0", "maxfps": "60", "ruleset": "1", "genre": genrefolder[0]}
+                                 "voicevolume": "0.0", "maxfps": "60", "ruleset": "1", "genre": genrefolder[-1]}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
             config.read_file(open("configuration.ini"))

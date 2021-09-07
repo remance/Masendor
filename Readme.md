@@ -80,7 +80,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-0.6.3 - 0.6.5: Arcade mode, custom battle
+0.6.3 - 0.6.5: Arcade mode with function to accept different game mode, custom battle
  
 0.6.6 and 0.6.7: random map generator, True AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 

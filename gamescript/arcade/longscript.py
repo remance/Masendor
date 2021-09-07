@@ -135,7 +135,7 @@ def load_game_data(game):
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
     # Time bar ui
-    game.timeui = battleui.TimeUI(game.unitselector.rect.topright, topimage[31])
+    game.timeui = battleui.TimeUI((game.ScreenWidth - topimage[31].get_width(), 0), topimage[31])
     game.timenumber = battleui.Timer(game.timeui.rect.topleft)  # time number on time ui
 
     image = pygame.Surface((topimage[31].get_width(), 15))
@@ -150,13 +150,13 @@ def load_game_data(game):
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
     game.buttonui.add(game.inspect_button)
 
-    game.battleui.add(game.logscroll, game.selectscroll)
+    game.battleui.add(game.logscroll)
     # ^ End game ui
 
 # Battle Start related gamescript
 
 
-def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
+def add_unit(subunitlist, position, gameid, colour, unitleader, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
     """Create batalion object into the battle and leader of the parentunit"""
     from gamescript.arcade import unit, leader
     oldsubunitlist = subunitlist[~np.all(subunitlist == 0, axis=1)]  # remove whole empty column in subunit list
@@ -164,10 +164,7 @@ def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, cont
     unit = unit.Unit(position, gameid, subunitlist, colour, control, coa, command, abs(360 - startangle), starthp, startstamina, team)
 
     # add leader
-    unit.leader = [leader.Leader(leaderlist[0], leaderlist[4], 0, unit, leaderstat),
-                   leader.Leader(leaderlist[1], leaderlist[5], 1, unit, leaderstat),
-                   leader.Leader(leaderlist[2], leaderlist[6], 2, unit, leaderstat),
-                   leader.Leader(leaderlist[3], leaderlist[7], 3, unit, leaderstat)]
+    unit.leader = leader.Leader(unitleader, unit, leaderstat)
     return unit
 
 
@@ -175,9 +172,9 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
     """generate unit data into game object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript.arcade import unit, subunit
-    this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                    colour, row[10] + row[11], gamebattle.leader_stat, control,
-                    coa, command, row[13], row[14], row[15], row[16])
+    this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5]]), (row[6][0], row[6][1]), row[0],
+                    colour, row[7], gamebattle.leader_stat, control,
+                    coa, command, row[8], row[9], row[10], row[11])
     whicharmy.add(this_unit)
     armysubunitindex = 0  # armysubunitindex is list index for subunit list in a specific army
 
@@ -187,9 +184,8 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
     for subunitnum in np.nditer(this_unit.armysubunit, op_flags=["readwrite"], order="C"):
         if subunitnum != 0:
             addsubunit = subunit.Subunit(subunitnum, subunitgameid, this_unit, this_unit.subunit_position_list[armysubunitindex],
-                                             this_unit.starthp, this_unit.startstamina, gamebattle.unitscale)
+                                             this_unit.starthp, this_unit.startstamina)
             gamebattle.subunit.add(addsubunit)
-            addsubunit.board_pos = boardpos[armysubunitindex]
             subunitnum[...] = subunitgameid
             this_unit.subunit_sprite_array[row][column] = addsubunit
             this_unit.subunit_sprite.append(addsubunit)
@@ -202,7 +198,6 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
             column = 0
             row += 1
         armysubunitindex += 1
-    gamebattle.troop_number_sprite.add(unit.TroopNumber(gamebattle, this_unit))  # create troop number text sprite
 
     return subunitgameid
 

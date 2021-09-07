@@ -43,99 +43,8 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
 
 
 class TroopNumber(pygame.sprite.Sprite):
-    def __init__(self, main, who):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
-
-        self._layer = 6
-        pygame.sprite.Sprite.__init__(self, self.containers)
-
-        self.who = who
-        self.textcolour = pygame.Color("blue")
-        if self.who.team == 2:
-            self.textcolour = pygame.Color("red")
-        self.pos = self.who.truenumber_pos
-        self.number = self.who.troop_number
-        self.zoom = 0
-
-        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.height_adjust))
-
-        self.image = self.render(str(self.number), self.font, self.textcolour)
-        self.rect = self.image.get_rect(topleft=self.pos)
-
-    def update(self, *args, **kwargs) -> None:
-        if self.pos != self.who.truenumber_pos:  # new position
-            self.pos = self.who.truenumber_pos
-            self.rect = self.image.get_rect(topleft=self.pos)
-
-        if self.zoom != args[2]:  # zoom argument
-            self.zoom = int(args[2])
-            zoom = (11 - self.zoom) / 2
-            if zoom < 1:
-                zoom = 1
-            newfontsize = int(60 / zoom * self.height_adjust)
-            self.font = pygame.font.SysFont("timesnewroman", newfontsize)
-            self.image = self.render(str(self.number), self.font, self.textcolour)
-            self.rect = self.image.get_rect(topleft=self.pos)
-
-        if self.number != self.who.troop_number:  # new troop number
-            self.number = self.who.troop_number
-            self.image = self.render(str(self.number), self.font, self.textcolour)
-            self.rect = self.image.get_rect(topleft=self.pos)
-
-        if self.who.state == 100:
-            self.kill()
-            self.delete()
-
-    def circlepoints(self, r):
-        """Calculate text point to add background"""
-        circle_cache = {}
-        r = int(round(r))
-        if r in circle_cache:
-            return circle_cache[r]
-        x, y, e = r, 0, 1 - r
-        circle_cache[r] = points = []
-        while x >= y:
-            points.append((x, y))
-            y += 1
-            if e < 0:
-                e += 2 * y - 1
-            else:
-                x -= 1
-                e += 2 * (y - x) - 1
-        points += [(y, x) for x, y in points if x > y]
-        points += [(-x, y) for x, y in points if x]
-        points += [(x, -y) for x, y in points if y]
-        points.sort()
-        return points
-
-    def render(self, text, font, gfcolor=pygame.Color("black"), ocolor=(255, 255, 255), opx=2):
-        """Render text with background border"""
-        textsurface = font.render(text, True, gfcolor).convert_alpha()
-        w = textsurface.get_width() + 2 * opx
-        h = font.get_height()
-
-        osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
-        osurf.fill((0, 0, 0, 0))
-
-        surf = osurf.copy()
-
-        osurf.blit(font.render(text, True, ocolor).convert_alpha(), (0, 0))
-
-        for dx, dy in self.circlepoints(opx):
-            surf.blit(osurf, (dx + opx, dy + opx))
-
-        surf.blit(textsurface, (opx, opx))
-
-        return surf
-
-    def delete(self, local=False):
-        """delete reference when del is called"""
-        if local:
-            print(locals())
-        else:
-            del self.who
-
+    def __init__(self):
+        pass
 
 class Unit(pygame.sprite.Sprite):
     images = []
@@ -191,6 +100,7 @@ class Unit(pygame.sprite.Sprite):
         self.retreat_way = None
         self.collide = False  # for checking if subunit collide if yes stop moving
         self.got_killed = False  # for checking if die() was performed when subunit die yet
+        self.combat_timer = 0  # For checking if unit in combat or not for walk pass
         # ^ End behaviour check
 
         # v setup default starting value

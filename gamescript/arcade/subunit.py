@@ -27,36 +27,83 @@ def create_troop_stat(self, stat, starthp, type):
         stat_header = self.stat_list.leader_list_header
 
     self.name = stat[0]  # name according to the preset
-    self.unitclass = stat[stat_header["Type"]]  # used to determine whether to use melee or range weapon as icon
-    self.grade = stat[stat_header["Grade"]]  # training level/class grade
-    self.race = stat[stat_header["Race"]]  # creature race
-    self.trait = stat[stat_header["Trait"]]  # trait list from preset
-    self.trait = self.trait + self.stat_list.grade_list[self.grade][self.grade_header["Trait"]]  # add trait from grade
     skill = stat[stat_header["Skill"]]  # skill list according to the preset
-    self.skill_cooldown = {}
-    self.cost = stat[stat_header["Cost"]]
-    gradestat = self.stat_list.grade_list[self.grade]
-    self.base_attack = stat[stat_header["Melee Attack"]] + \
-                       gradestat[self.grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
-    self.base_meleedef = stat[stat_header["Melee Defence"]] + \
-                         gradestat[self.grade_header["Defence Bonus"]]  # base melee defence with grade bonus
-    self.base_rangedef = stat[stat_header["Ranged Defence"]] + \
-                         gradestat[self.grade_header["Defence Bonus"]]  # base range defence with grade bonus
+    self.skill = {x: self.stat_list.skill_list[x].copy() for x in skill if
+                  x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
+    self.trait = stat[stat_header["Trait"]]  # trait list from preset
+    self.troop_health = stat[stat_header["Health"]]
+
     self.armourgear = stat[stat_header["Armour"]]  # armour equipement
     self.base_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
                        * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
-    self.base_accuracy = stat[stat_header["Accuracy"]] + gradestat[self.grade_header["Accuracy Bonus"]]
-    self.basesight = stat[stat_header["Sight"]]  # base sight range
-    self.magazine_left = stat[stat_header["Ammunition"]]  # amount of ammunition
-    self.base_reload = stat[stat_header["Reload"]] + gradestat[self.grade_header["Reload Bonus"]]
-    self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
-    self.base_charge = stat[stat_header["Charge"]]
+    self.trait += self.armour_list.armour_list[self.armourgear[0]][weapon_header["Trait"]]  # Apply armour trait to subunit
+    self.skill_cooldown = {}
+
+    self.base_speed = 50  # All infantry has base speed at 50
+    self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
+    self.authority = self.leader.authority  # default start at 100
+
+    # vv Mount stat
+    self.subunit_type = 1
+    self.mount = self.stat_list.mount_list[stat[stat_header["Mount"]][0]]  # mount this subunit use
+    self.mountgrade = self.stat_list.mount_grade_list[stat[stat_header["Mount"]][1]]
+    self.mountarmour = self.stat_list.mount_armour_list[stat[stat_header["Mount"]][2]]
     self.base_chargedef = 50  # All infantry subunit has default 50 charge defence
-    self.attacking = False  # For checking if parentunit in attacking state or not for using charge skill
-    self.skill = {x: self.stat_list.skill_list[x].copy() for x in skill if
-                  x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
-    self.troop_health = stat[stat_header["Health"]] * gradestat[self.grade_header["Health Effect"]]  # Health of each troop
-    self.mana = stat[stat_header["Mana"]]  # Resource for magic skill
+    if stat[stat_header["Mount"]][0] != 1:  # have mount, add mount stat with its grade to subunit stat
+        self.base_chargedef = 25  # charge defence only 25 for cav
+        self.base_speed = (self.mount[mount_header['Speed']] + self.mountgrade[mount_grade_header['Speed Bonus']])  # use mount base speed instead
+        self.trait = self.trait + self.mount[mount_header['Trait']]  # Apply mount trait to subunit
+        self.subunit_type = 2  # If subunit has mount, count as cav for command buff
+        self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
+    # ^^ End mount stat
+
+    if self.leader is False:  # normal troop only
+        self.grade = stat[stat_header["Grade"]]  # training level/class grade
+        self.race = stat[stat_header["Race"]]  # creature race
+        self.trait = self.trait + self.stat_list.grade_list[self.grade][self.grade_header["Trait"]]  # add trait from grade
+        self.cost = stat[stat_header["Cost"]]
+        gradestat = self.stat_list.grade_list[self.grade]
+        self.base_attack = stat[stat_header["Melee Attack"]] + \
+                           gradestat[self.grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
+        self.base_meleedef = stat[stat_header["Melee Defence"]] + \
+                             gradestat[self.grade_header["Defence Bonus"]]  # base melee defence with grade bonus
+        self.base_rangedef = stat[stat_header["Ranged Defence"]] + \
+                             gradestat[self.grade_header["Defence Bonus"]]  # base range defence with grade bonus
+        self.base_accuracy = stat[stat_header["Accuracy"]] + gradestat[self.grade_header["Accuracy Bonus"]]
+        self.base_sight = stat[stat_header["Sight"]]  # base sight range
+        self.magazine_left = stat[stat_header["Ammunition"]]  # amount of ammunition
+        self.base_reload = stat[stat_header["Reload"]] + gradestat[self.grade_header["Reload Bonus"]]
+        self.base_charge = stat[stat_header["Charge"]]
+        self.troop_health = self.troop_health * gradestat[self.grade_header["Health Effect"]]  # Health of each troop
+        self.base_morale = stat[stat_header["Morale"]] + gradestat[self.grade_header["Morale Bonus"]]  # morale with grade bonus
+        self.mental = stat[stat_header["Mental"]] + gradestat[
+            self.grade_header["Mental Bonus"]]  # mental resistance from morale dmg and mental status effect
+
+        if self.subunit_type != 2:
+            self.subunit_type = stat[stat_header["Troop Class"]] - 1  # 0 is melee infantry and 1 is range for command buff
+
+    else:  # leader subunit only
+        self.base_sight = 50
+        commandstat = self.leader.meleecommand
+        if self.subunit_type == 2:
+            commandstat = self.leader.cavcommand
+        self.base_attack = stat[stat_header["Combat"]] * commandstat # base melee attack with command bonus
+        self.base_meleedef = stat[stat_header["Melee Defence"]] * commandstat  # base melee defence with command bonus
+        self.base_rangedef = stat[stat_header["Ranged Defence"]] * commandstat  # base range defence with command bonus
+        self.base_charge = stat[stat_header["Combat"]] * commandstat
+        self.base_accuracy =  stat[stat_header["Combat"]] * self.leader.rangecommand
+        self.base_reload =  stat[stat_header["Combat"]] * self.leader.rangecommand
+
+        self.base_morale = 100
+        self.mental = 100
+
+    if stat[stat_header["Mount"]][0] != 1:  # have mount, add mount stat with its grade to subunit stat
+        self.troop_health += (self.mount[mount_header['Health Bonus']] * self.mountgrade[mount_grade_header['Health Effect']]) + \
+                             self.mountarmour[1]  # Add mount health to the troop health
+        self.base_charge += (self.mount[mount_header['Charge Bonus']] +
+                             self.mountgrade[mount_grade_header['Charge Bonus']])  # Add charge power of mount to troop
+        self.base_morale += self.mountgrade[mount_grade_header['Morale Bonus']]
+
 
     # vv Weapon stat
     self.meleeweapon = stat[stat_header["Melee Weapon"]]  # melee weapon equipment
@@ -83,30 +130,6 @@ def create_troop_stat(self, stat, starthp, type):
     self.trait = self.trait + self.weapon_list.weapon_list[self.rangeweapon[0]][weapon_header["Trait"]]  # apply trait from melee weapon
     # ^^ End weapon stat
 
-    self.base_morale = stat[stat_header["Morale"]] + gradestat[self.grade_header["Morale Bonus"]]  # morale with grade bonus
-    self.mental = stat[stat_header["Mental"]] + gradestat[self.grade_header["Mental Bonus"]]  # mental resistance from morale dmg and mental status effect
-    self.base_speed = 50  # All infantry has base speed at 50
-    self.subunit_type = stat[stat_header["Troop Class"]] - 1  # 0 is melee infantry and 1 is range for command buff
-    self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
-    self.authority = 100  # default start at 100
-
-    # vv Mount stat
-    self.mount = self.stat_list.mount_list[stat[stat_header["Mount"]][0]]  # mount this subunit use
-    self.mountgrade = self.stat_list.mount_grade_list[stat[stat_header["Mount"]][1]]
-    self.mountarmour = self.stat_list.mount_armour_list[stat[stat_header["Mount"]][2]]
-    if stat[stat_header["Mount"]][0] != 1:  # have mount, add mount stat with its grade to subunit stat
-        self.base_chargedef = 25  # charge defence only 25 for cav
-        self.base_speed = (self.mount[mount_header['Speed']] + self.mountgrade[mount_grade_header['Speed Bonus']])  # use mount base speed instead
-        self.troop_health += (self.mount[mount_header['Health Bonus']] * self.mountgrade[mount_grade_header['Health Effect']]) + \
-                             self.mountarmour[1]  # Add mount health to the troop health
-        self.base_charge += (self.mount[mount_header['Charge Bonus']] +
-                             self.mountgrade[mount_grade_header['Charge Bonus']])  # Add charge power of mount to troop
-        self.base_morale += self.mountgrade[mount_grade_header['Morale Bonus']]
-        self.trait = self.trait + self.mount[mount_header['Trait']]  # Apply mount trait to subunit
-        self.subunit_type = 2  # If subunit has mount, count as cav for command buff
-        self.featuremod = 4  # the starting column in unit_terrainbonus of cavalry
-    # ^^ End mount stat
-
     # v Weight calculation
     self.weight = self.weapon_list.weapon_list[self.meleeweapon[0]][weapon_header["Weight"]] + \
                   self.weapon_list.weapon_list[self.rangeweapon[0]][weapon_header["Weight"]] + \
@@ -116,7 +139,6 @@ def create_troop_stat(self, stat, starthp, type):
         self.weight = self.weight / 2
     # ^ End weight cal
 
-    self.trait = self.trait + self.armour_list.armour_list[self.armourgear[0]][weapon_header["Trait"]]  # Apply armour trait to subunit
     self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[self.grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
     self.description = stat[-1]  # subunit description for inspect ui
     # if self.hidden
@@ -283,9 +305,6 @@ def create_troop_stat(self, stat, starthp, type):
 
     self.troop_health = self.troop_health * starthp / 100
     self.max_health = self.troop_health # health percentage
-    self.health75 = self.troop_health * 0.75
-    self.health50 = self.troop_health * 0.5
-    self.health25 = self.troop_health * 0.25
 
     self.oldlasthealth = self.troop_health  # save previous health in previous update
     self.moralestate = self.base_morale / self.max_morale  # turn into percentage
@@ -319,12 +338,12 @@ class Subunit(pygame.sprite.Sprite):
     create_troop_stat = create_troop_stat
     zoom = 4
 
-    def __init__(self, unitid, gameid, parentunit, position, starthp, leader):
+    def __init__(self, troopid, gameid, parentunit, position, starthp):
         """Although subunit in code, this is referred as sub-subunit ingame"""
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.wholastselect = None
-        self.leader = leader
+        self.leader = False
         self.walk = False  # currently walking
         self.run = False  # currently running
         self.frontline = False  # on front line of unit or not
@@ -351,7 +370,10 @@ class Subunit(pygame.sprite.Sprite):
         self.status_list = self.parentunit.status_list
 
         self.gameid = gameid  # ID of this
-        self.troopid = int(unitid)  # ID of preset used for this subunit
+        self.troopid = troopid
+        if self.troopid == "h":  # leader subunit
+            self.troopid = self.parentunit.leader.gameid
+            self.leader = self.parentunit.leader
 
         self.angle = self.parentunit.angle
         self.new_angle = self.parentunit.angle
@@ -363,13 +385,14 @@ class Subunit(pygame.sprite.Sprite):
         self.movetimer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing nearest enemy
         self.ammo_now = 0
+        self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
         self.current_animation = "idle"
 
         self.getfeature = self.gamemapfeature.getfeature
         self.getheight = self.gamemapheight.getheight
 
         # v Setup troop stat
-        stat = self.stat_list.troop_list[self.troopid].copy()
+        stat = self.stat_list.leader_list[self.troopid].copy()
 
         self.create_troop_stat(stat, starthp)
         self.gamebattle.start_troopnumber[self.team] += 1  # add troop number to counter how many troop join battle
@@ -401,13 +424,6 @@ class Subunit(pygame.sprite.Sprite):
         self.selectedimagerect = self.selectedimage.get_rect(topleft=(0, 0))
         # ^ End subunit block
 
-        self.far_image = self.image.copy()
-        pygame.draw.circle(self.far_image, (0, 0, 0), (self.far_image.get_width() / 2, self.far_image.get_height() / 2),
-                           self.far_image.get_width() / 2, 4)
-        self.far_selectedimage = self.selectedimage.copy()
-        pygame.draw.circle(self.far_selectedimage, (0, 0, 0), (self.far_selectedimage.get_width() / 2, self.far_selectedimage.get_height() / 2),
-                           self.far_selectedimage.get_width() / 2, 4)
-
         scalewidth = self.image.get_width()
         scaleheight = self.image.get_height()
         dim = pygame.Vector2(scalewidth, scaleheight)
@@ -423,10 +439,8 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End health circle
 
         # v weapon class icon in middle circle
-        if self.unitclass == 0:  # melee weapon image as gamestart
-            image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.meleeweapon[0]][-3]]  # image on subunit sprite
-        else:  # range weapon image
-            image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.rangeweapon[0]][-3]]
+        image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.meleeweapon[0]][-3]]  # image on subunit sprite
+
         image1rect = image1.get_rect(center=self.image.get_rect().center)
         self.image.blit(image1, image1rect)
 
@@ -575,8 +589,10 @@ class Subunit(pygame.sprite.Sprite):
 
         self.morale = self.base_morale
         self.authority = self.parentunit.authority  # parentunit total authoirty
-        self.commandbuff = self.parentunit.commandbuff[
-                               self.subunit_type] * 100  # command buff from gamestart leader according to this subunit subunit type
+        self.commandbuff = 1
+        if self.leader is False:   # command buff from leader according to this subunit subunit type
+            self.commandbuff = self.parentunit.commandbuff[
+                               self.subunit_type] * 100
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
         self.rangedef = self.base_rangedef
@@ -1117,7 +1133,7 @@ class Subunit(pygame.sprite.Sprite):
                         if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                             move.normalize_ip()
 
-                            if self.leader.run is False:  # walking
+                            if self.parentunit.leader.run is False:  # walking
                                 speed = self.parentunit.walkspeed  # use walk speed
                                 self.walk = True
                             else:  # running

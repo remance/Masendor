@@ -336,14 +336,14 @@ class Leaderstat:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
+            int_column = ["ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
                           "Forcedimageid", "Faction"]  # value int only
-            list_column = ["Melee Weapon","Ranged Weapon","Armour","Skill","Trait"]
+            list_column = ["Melee Weapon","Ranged Weapon","Armour", "Mount","Skill","Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             for row in rd:
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, int_column=int_column)
+                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.leader_list[row[0]] = row[1:]
         unitfile.close()
 
@@ -352,15 +352,15 @@ class Leaderstat:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class", "Forcedimageid",
+            int_column = ["ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class", "Forcedimageid",
                           "Faction"]  # value int only
-            list_column = ["Melee Weapon", "Ranged Weapon", "Armour", "Skill", "Trait"]
+            list_column = ["Melee Weapon", "Ranged Weapon", "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.leader_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, int_column=int_column)
+                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.leader_list[row[0]] = row[1:]
         unitfile.close()
         # ^ End common leader
