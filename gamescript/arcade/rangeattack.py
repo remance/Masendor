@@ -24,7 +24,7 @@ class RangeArrow(pygame.sprite.Sprite):
             self.arcshot = True  # arc shot will go pass parentunit to land at final base_target
         self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
-        self.dmg = random.randint(self.shooter.rangedmg[0], self.shooter.rangedmg[1])
+        self.dmg = random.randint(self.shooter.range_dmg[0], self.shooter.range_dmg[1])
         self.penetrate = self.shooter.range_penetrate
         if self.shooter.state in (12, 13) and self.shooter.agileaim is False:
             self.accuracy -= 10  # accuracy penalty for shoot while moving
@@ -136,7 +136,7 @@ class RangeArrow(pygame.sprite.Sprite):
         target.unit_health -= whodmg
         target.base_morale -= whomoraledmg
 
-        # v Add red corner to indicate dmg
+        # v Add red corner to indicate melee_dmg
         if target.red_border is False:
             target.imageblock.blit(target.images[11], target.corner_image_rect)
             target.red_border = True
@@ -145,11 +145,11 @@ class RangeArrow(pygame.sprite.Sprite):
         if who.elem_range not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
             target.elem_count[who.elem_range - 1] += round(whodmg * (100 - target.elem_res[who.elem_range - 1] / 100))
 
-        if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  # dmg on leader
+        if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  # melee_dmg on leader
             target.leader.health -= wholeaderdmg
 
     def register_hit(self, subunit=None):
-        """Calculatte dmg when arrow reach base_target"""
+        """Calculatte melee_dmg when arrow reach base_target"""
         if subunit is not None:
             anglecheck = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
             if anglecheck >= 135:  # front
@@ -159,7 +159,7 @@ class RangeArrow(pygame.sprite.Sprite):
             else:  # rear
                 self.side = 2
 
-            self.range_dmgcal(self.shooter, subunit, self.side)  # calculate dmg
+            self.range_dmgcal(self.shooter, subunit, self.side)  # calculate melee_dmg
 
     def update(self, unitlist, dt, viewmode):
         move = self.basetarget - self.base_pos
@@ -181,7 +181,7 @@ class RangeArrow(pygame.sprite.Sprite):
                 self.pos = self.base_pos * viewmode
                 self.rect.center = self.pos
 
-            self.dmg -= 0.05  # dmg and penetration power drop the longer arrow travel
+            self.dmg -= 0.05  # melee_dmg and penetration power drop the longer arrow travel
             self.penetrate -= 0.002
             if self.dmg < 1:
                 self.dmg = 1

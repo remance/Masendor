@@ -314,9 +314,6 @@ class Lorebook(pygame.sprite.Sprite):
                                 elif "Weapon" in statheader[index]:  # weapon text with quality
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
                                     createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.weapon_stat[text[0]][0]
-                                    if statheader[index] == "Range Weapon" and text[0] == 1:  # no need to create range weapon text for None
-                                        createtext = ""
-                                        pass
 
                                 elif statheader[index] == "Armour":  # armour text with quality
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")

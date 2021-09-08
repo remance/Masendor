@@ -72,10 +72,11 @@ class PreviewLeader(pygame.sprite.Sprite):
         self.leaderid = leaderid  # leaderid is only used as reference to the leader data
 
         stat = leaderstat.leader_list[leaderid]
+        leader_header = leaderstat.leader_list_header
 
         self.name = stat[0]
         self.authority = stat[2]
-        self.social = leaderstat.leader_class[stat[7]]
+        self.social = leaderstat.leader_class[stat[leader_header["Social Class"]]]
         self.description = stat[-1]
 
         try:  # Put leader image into leader slot
@@ -190,10 +191,7 @@ class Unitbuildslot(pygame.sprite.Sprite):
             # ^ End stamina circle
 
             # v weapon class icon in middle circle
-            if self.unitclass == 0:
-                image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.meleeweapon[0]][-3]]
-            else:
-                image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.rangeweapon[0]][-3]]
+            image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)
             # ^ End weapon icon

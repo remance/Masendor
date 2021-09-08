@@ -31,15 +31,15 @@ def stat_convert(row, n, i, mod_column=[], list_column=[], int_column=[]):
 
 class Weaponstat:
     def __init__(self, main_dir, img, ruleset):
-        """Weapon has dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
+        """Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.imgs = img
         self.weapon_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "Cost", "ImageID", "Speed"]  # value int only
-            list_column = ["Trait", "Ruleset"]  # value in list only
+            int_column = ["ID", "Cost", "ImageID", "Speed", "Hand"]  # value int only
+            list_column = ["Skill","Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -92,8 +92,9 @@ class Unitstat:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "Type", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size"]  # value int only
-            list_column = ["Trait", "Skill", "Armour", "Melee Weapon", "Ranged Weapon", "Mount", "Role", "Ruleset"]  # value in list only
+            int_column = ["ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size"]  # value int only
+            list_column = ["Trait", "Skill", "Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon", "Secondary Sub Weapon",
+                           "Mount", "Role", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -193,7 +194,7 @@ class Unitstat:
             rd = [row for row in rd]
             header = rd[0]
             run = 0
-            int_column = ["ID", "Type", "Area of Effect", "Element", "Cost"]  # value int only
+            int_column = ["ID", "Troop Type", "Type", "Area of Effect", "Element", "Cost"]  # value int only
             list_column = ["Status", "Restriction", "Condition", "Enemy Status", "Ruleset"]  # value in list only
             mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
@@ -223,7 +224,7 @@ class Unitstat:
             rd = [row for row in rd]
             header = rd[0]
             run = 0
-            int_column = ["ID", "Buff Range", "Race", "Cost"]  # value int only
+            int_column = ["ID", "Buff Range", "Race", "Cost", "Element"]  # value int only
             list_column = ["Status", "Special Effect", "Enemy Status", "Ruleset"]  # value in list only
             mod_column = ["Buff Modifier", "Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
@@ -338,7 +339,8 @@ class Leaderstat:
             header = rd[0]
             int_column = ["ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
                           "Forcedimageid", "Faction"]  # value int only
-            list_column = ["Melee Weapon","Ranged Weapon","Armour", "Mount","Skill","Trait"]
+            list_column = ["Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon", "Secondary Sub Weapon",
+                           "Armour", "Mount","Skill","Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             for row in rd:
@@ -354,7 +356,8 @@ class Leaderstat:
             header = rd[0]
             int_column = ["ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class", "Forcedimageid",
                           "Faction"]  # value int only
-            list_column = ["Melee Weapon", "Ranged Weapon", "Armour", "Mount", "Skill", "Trait"]
+            list_column = ["Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon", "Secondary Sub Weapon",
+                             "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.leader_list_header = {k: v for v, k in enumerate(header[1:])}

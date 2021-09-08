@@ -4,7 +4,9 @@ Note that the effect to sub-unit stat can be classified into 2 types: Effect (e.
 
 Implement_record: This file is not used in game but for record keeping which effect I still haven't implement
 
-troop_ability: list of all sub-units' abilities. The data structure of ability is as follows;
+troop_skill: list of all sub-units' abilities. The data structure of ability is as follows;
+
+- Troop Type (0=any, 1=infantry, 2=cavalry) indicate which type of troop can use this skill
 
 - Skill Type (0=melee, 1=range, 2=charge) this will affect which damage and elemental effect the skill will boost| Area of Effect (1=self and frontal enemy damage,2=Direct Nearby only, 3=Nearby including corner, 4=whole unit) this also affect the enemy status infliction| Duration of skill in second 
 
@@ -38,7 +40,7 @@ troop_armour: list of all sub-units' armours. The data structure of armour is as
 
 - Purchase "Cost", not yet implemented
 
-- Properties list that will be applied to the sub-unit that wear this armour
+- Trait list that will be applied to the sub-unit that wear this armour
 
 - List of Ruleset id that armour is available
 
@@ -46,7 +48,7 @@ troop_grade: list of all sub-units' grades, which represent the training level o
 
 - Stat Effect and bonus modifier as mentioned above
 
-- Properties list that will be applied to the sub-unit with this grade
+- Trait list that will be applied to the sub-unit with this grade
 
 troop_item: Not yet implemented 
 
@@ -71,7 +73,9 @@ troop_weapon: list of all sub-units' weapons including artillery weapons. The da
 
 - Weight of the weapon that will affect speed of the sub-unit (0 to 100)
 
-- Properties list that will be applied to the sub-unit with this grade
+- Skill list that will be applied to the sub-unit
+
+- Trait list that will be applied to the sub-unit
 
 - Speed is attack speed for melee weapon, how many times troop deal damage per attack. Reload time for range weapon, how long it take to reload in second at speed 1x
 

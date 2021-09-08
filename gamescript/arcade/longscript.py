@@ -59,6 +59,7 @@ def load_game_data(game):
     status_header = game.troop_data.status_list_header
 
     # v Get index of effect column for skill and status
+    subunit.Subunit.skill_trooptype = skill_header['Troop Type']
     subunit.Subunit.skill_type = skill_header['Type']
     subunit.Subunit.skill_aoe = skill_header['Area of Effect']
     subunit.Subunit.skill_duration = skill_header['Duration']
@@ -116,6 +117,7 @@ def load_game_data(game):
     uniteditor.Unitbuildslot.weapon_list = game.allweapon
     uniteditor.Unitbuildslot.armour_list = game.allarmour
     uniteditor.Unitbuildslot.stat_list = game.troop_data
+    uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
 
     game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
     # ^ End subunit class
@@ -264,7 +266,7 @@ def setrotate(self, set_target=None, rotationlist=(-90, -120, -45, 0, 90, 45, 12
     return newangle
 
 def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
-    """Calculate dmg, type 0 is melee attack and will use attacker subunit stat,
+    """Calculate melee_dmg, type 0 is melee attack and will use attacker subunit stat,
     type that is not 0 will use the type object stat instead (mostly used for range attack)"""
     who = attacker
     target = defender
@@ -294,11 +296,11 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
     if combatscore > 0:
         leaderdmgbonus = 0
         if who.leader is not None:
-            leaderdmgbonus = who.leader.combat  # Get extra dmg from leader combat stat
+            leaderdmgbonus = who.leader.combat  # Get extra melee_dmg from leader combat stat
 
-        if dmgtype == 0:  # Melee dmg
-            dmg = random.uniform(who.dmg[0], who.dmg[1])
-            if who.chargeskill in who.skill_effect:  # Include charge in dmg if attacking
+        if dmgtype == 0:  # Melee melee_dmg
+            dmg = random.uniform(who.melee_dmg[0], who.melee_dmg[1])
+            if who.chargeskill in who.skill_effect:  # Include charge in melee_dmg if attacking
                 if who.ignore_chargedef is False:  # Ignore charge defence if have ignore trait
                     sidecal = battlesidecal[defside]
                     if target.fulldef or target.temp_fulldef:  # defence all side
@@ -312,14 +314,14 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
                     dmg = dmg + (who.charge * 2)
                     who.charge_momentum -= 1 / who.charge
 
-            if target.chargeskill in target.skill_effect:  # Also include chargedef in dmg if enemy charging
+            if target.chargeskill in target.skill_effect:  # Also include chargedef in melee_dmg if enemy charging
                 if target.ignore_chargedef is False:
                     chargedefcal = who.chargedef - target.charge
                     if chargedefcal < 0:
                         chargedefcal = 0
-                    dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
+                    dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional melee_dmg
             elif who.chargeskill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
-                dmg += sum([random.uniform(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
+                dmg += sum([random.uniform(who.melee_dmg[0], who.melee_dmg[1]) for x in range(who.meleespeed)])
 
             penetrate = who.melee_penetrate / target.armour
             if penetrate > 1:
@@ -330,18 +332,18 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
             penetrate = dmgtype.penetrate / target.armour
             if penetrate > 1:
                 penetrate = 1
-            dmg = dmgtype.dmg * penetrate * combatscore
+            dmg = dmgtype.melee_dmg * penetrate * combatscore
 
         leaderdmg = dmg
-        unitdmg = (dmg * who.troop_number) + leaderdmgbonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
-        if (who.anti_inf and target.subunit_type in (1, 2)) or (who.anti_cav and target.subunit_type in (4, 5, 6, 7)):  # Anti trait dmg bonus
+        unitdmg = (dmg * who.troop_number) + leaderdmgbonus  # melee_dmg on subunit is melee_dmg multiply by troop number with addition from leader combat
+        if (who.anti_inf and target.subunit_type in (1, 2)) or (who.anti_cav and target.subunit_type in (4, 5, 6, 7)):  # Anti trait melee_dmg bonus
             unitdmg = unitdmg * 1.25
-        # if type == 0: # melee do less dmg per hit because the combat happen more frequently than range
+        # if type == 0: # melee do less melee_dmg per hit because the combat happen more frequently than range
         #     unitdmg = unitdmg / 20
 
         moraledmg = dmg / 50
 
-        # Damage cannot be negative (it would heal instead), same for morale and leader dmg
+        # Damage cannot be negative (it would heal instead), same for morale and leader melee_dmg
         if unitdmg < 0:
             unitdmg = 0
         if leaderdmg < 0:
@@ -379,7 +381,7 @@ def applystatustoenemy(statuslist, inflictstatus, receiver, attackerside, receiv
 def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermod):
     final_dmg = round(dmg * dmgeffect * timermod)
     final_moraledmg = round(moraledmg * dmgeffect * timermod)
-    if final_dmg > receiver.unit_health:  # dmg cannot be higher than remaining health
+    if final_dmg > receiver.unit_health:  # melee_dmg cannot be higher than remaining health
         final_dmg = receiver.unit_health
 
     receiver.unit_health -= final_dmg
@@ -398,9 +400,9 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
     if attacker.elem_melee not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
         receiver.elem_count[attacker.elem_melee - 1] += round(final_dmg * (100 - receiver.elem_res[attacker.elem_melee - 1] / 100))
 
-    attacker.base_morale += round((final_moraledmg / 5))  # recover some morale when deal morale dmg to enemy
+    attacker.base_morale += round((final_moraledmg / 5))  # recover some morale when deal morale melee_dmg to enemy
 
-    if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 9:  # dmg on subunit leader, only 10% chance
+    if receiver.leader is not None and receiver.leader.health > 0 and random.randint(0, 10) > 9:  # melee_dmg on subunit leader, only 10% chance
         finalleaderdmg = round(leaderdmg - (leaderdmg * receiver.leader.combat / 101) * timermod)
         if finalleaderdmg > receiver.leader.health:
             finalleaderdmg = receiver.leader.health
@@ -426,7 +428,7 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
 
     if attackerside != 0 and whopercent != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
         whopercent = battlesidecal[attackerside] + (attacker.discipline / 300)
-        dmgeffect = attacker.side_dmg_effect  # use side dmg effect as some skill boost only front dmg
+        dmgeffect = attacker.side_dmg_effect  # use side melee_dmg effect as some skill boost only front melee_dmg
         if whopercent > 1:
             whopercent = 1
 
@@ -446,12 +448,12 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
             target.flanker and attackerside in (1, 3)):  # Apply only for attacker
         targetdefence = 0
 
-    whodmg, whomoraledmg, wholeaderdmg = losscal(attacker, target, whohit, targetdefence, 0, targetside)  # get dmg by attacker
-    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, attacker, targethit, whodefence, 0, attackerside)  # get dmg by defender
+    whodmg, whomoraledmg, wholeaderdmg = losscal(attacker, target, whohit, targetdefence, 0, targetside)  # get melee_dmg by attacker
+    targetdmg, targetmoraledmg, targetleaderdmg = losscal(target, attacker, targethit, whodefence, 0, attackerside)  # get melee_dmg by defender
 
     timermod = combattimer / 0.5  # Since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
-    complexdmg(attacker, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)  # Inflict dmg to defender
-    complexdmg(target, attacker, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod)  # Inflict dmg to attacker
+    complexdmg(attacker, target, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)  # Inflict melee_dmg to defender
+    complexdmg(target, attacker, targetdmg, targetmoraledmg, targetleaderdmg, targetdmgeffect, timermod)  # Inflict melee_dmg to attacker
 
     # v Attack corner (side) of self with aoe attack
     if attacker.corner_atk:
@@ -493,7 +495,7 @@ def die(who, battle, moralehit=True):
         for thisarmy in enemygroup:  # get bonus authority to the another army
             thisarmy.authority += 5
 
-        for thisarmy in group:  # morale dmg to every subunit in army when allied parentunit destroyed
+        for thisarmy in group:  # morale melee_dmg to every subunit in army when allied parentunit destroyed
             for this_subunit in thisarmy.subunit_sprite:
                 this_subunit.base_morale -= 20
 

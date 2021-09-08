@@ -59,6 +59,7 @@ def load_game_data(game):
     status_header = game.troop_data.status_list_header
 
     # v Get index of effect column for skill and status
+    subunit.Subunit.skill_trooptype = skill_header['Troop Type']
     subunit.Subunit.skill_type = skill_header['Type']
     subunit.Subunit.skill_aoe = skill_header['Area of Effect']
     subunit.Subunit.skill_duration = skill_header['Duration']
@@ -116,6 +117,7 @@ def load_game_data(game):
     uniteditor.Unitbuildslot.weapon_list = game.allweapon
     uniteditor.Unitbuildslot.armour_list = game.allarmour
     uniteditor.Unitbuildslot.stat_list = game.troop_data
+    uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
 
     game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
     # ^ End subunit class
@@ -375,9 +377,9 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
         if who.leader is not None:
             leaderdmgbonus = who.leader.combat  # Get extra dmg from leader combat stat
 
-        if dmgtype == 0:  # Melee dmg
-            dmg = random.uniform(who.dmg[0], who.dmg[1])
-            if who.chargeskill in who.skill_effect:  # Include charge in dmg if attacking
+        if dmgtype == 0:  # Melee melee_dmg
+            dmg = random.uniform(who.melee_dmg[0], who.melee_dmg[1])
+            if who.chargeskill in who.skill_effect:  # Include charge in melee_dmg if attacking
                 if who.ignore_chargedef is False:  # Ignore charge defence if have ignore trait
                     sidecal = battlesidecal[defside]
                     if target.fulldef or target.temp_fulldef:  # defence all side
@@ -391,14 +393,14 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
                     dmg = dmg + (who.charge * 2)
                     who.charge_momentum -= 1 / who.charge
 
-            if target.chargeskill in target.skill_effect:  # Also include chargedef in dmg if enemy charging
+            if target.chargeskill in target.skill_effect:  # Also include chargedef in melee_dmg if enemy charging
                 if target.ignore_chargedef is False:
                     chargedefcal = who.chargedef - target.charge
                     if chargedefcal < 0:
                         chargedefcal = 0
-                    dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional dmg
+                    dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional melee_dmg
             elif who.chargeskill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
-                dmg += sum([random.uniform(who.dmg[0], who.dmg[1]) for x in range(who.meleespeed)])
+                dmg += sum([random.uniform(who.melee_dmg[0], who.melee_dmg[1]) for x in range(who.meleespeed)])
 
             penetrate = who.melee_penetrate / target.armour
             if penetrate > 1:
@@ -415,8 +417,6 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
         unitdmg = (dmg * who.troop_number) + leaderdmgbonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
         if (who.anti_inf and target.subunit_type in (1, 2)) or (who.anti_cav and target.subunit_type in (4, 5, 6, 7)):  # Anti trait dmg bonus
             unitdmg = unitdmg * 1.25
-        # if type == 0: # melee do less dmg per hit because the combat happen more frequently than range
-        #     unitdmg = unitdmg / 20
 
         moraledmg = dmg / 50
 
