@@ -113,8 +113,8 @@ class SelectedPresetBorder(pygame.sprite.Sprite):
 
 
 class Unitbuildslot(pygame.sprite.Sprite):
-    squadwidth = 0  # subunit sprite width size get add from gamestart
-    squadheight = 0  # subunit sprite height size get add from gamestart
+    sprite_width = 0  # subunit sprite width size get add from gamestart
+    sprite_height = 0  # subunit sprite height size get add from gamestart
     images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
     weapon_list = None
     armourlist = None
@@ -154,9 +154,9 @@ class Unitbuildslot(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.inspposition)
 
     def changeteam(self, changetroop):
-        self.image = pygame.Surface((self.squadwidth, self.squadheight), pygame.SRCALPHA)
+        self.image = pygame.Surface((self.sprite_width, self.sprite_height), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.squadwidth - 2, self.squadheight - 2))
+        whiteimage = pygame.Surface((self.sprite_width - 2, self.sprite_height - 2))
         whiteimage.fill(self.colour[self.team])
         whiterect = whiteimage.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(whiteimage, whiterect)

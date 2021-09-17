@@ -588,10 +588,10 @@ class Mainmenu:
             self.genre = genre.lower()
         global battle, leader, longscript, unit, subunit, rangeattack, uniteditor
         if self.genre == "tactical":
+            from gamescript.tactical import battle, leader, longscript, unit, subunit, rangeattack
             longscript.load_game_data(self)  # obtain game stat data and create lore book object
         elif self.genre == "arcade":
-            from gamescript.arcade import leader, longscript, \
-                subunit, rangeattack
+            from gamescript.arcade import battle, leader, longscript, unit, subunit, rangeattack
             longscript.load_game_data(self)
         uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
         self.genre_change_box.changetext(self.genre.capitalize())
