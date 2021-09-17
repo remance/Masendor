@@ -1,15 +1,12 @@
 import csv
-import datetime
 import math
 import os
 import random
-import re
 
 import numpy as np
 import pygame
 import pygame.freetype
-
-from gamescript import commonscript, popup
+from gamescript import commonscript
 
 load_image = commonscript.load_image
 load_images = commonscript.load_images
@@ -34,12 +31,10 @@ for dd in numberboard:
 
 def load_game_data(game):
     """Load various game data"""
-    import csv
-    from pathlib import Path
 
     main_dir = game.main_dir
     SCREENRECT = game.SCREENRECT
-    from gamescript import readstat, map, lorebook, weather, drama, battleui, menu, uniteditor, faction
+    from gamescript import battleui, uniteditor
     from gamescript.arcade import unit, subunit, rangeattack
 
     unit.Unit.status_list = game.troop_data.status_list
@@ -119,7 +114,7 @@ def load_game_data(game):
     uniteditor.Unitbuildslot.stat_list = game.troop_data
     uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
 
-    game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
+    game.sprite_width, game.sprite_height = 100, 100  # size of subnit image per slot
     # ^ End subunit class
 
     # v Game Effect related class
@@ -155,6 +150,7 @@ def load_game_data(game):
     game.battleui.add(game.logscroll)
     # ^ End game ui
 
+
 # Battle Start related gamescript
 
 
@@ -173,10 +169,10 @@ def add_unit(subunitlist, position, gameid, colour, unitleader, leaderstat, cont
 def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
     """generate unit data into game object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
-    from gamescript.arcade import unit, subunit
+    from gamescript.arcade import subunit
     this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5]]), (row[6][0], row[6][1]), row[0],
-                    colour, row[7], gamebattle.leader_stat, control,
-                    coa, command, row[8], row[9], row[10], row[11])
+                         colour, row[7], gamebattle.leader_stat, control,
+                         coa, command, row[8], row[9], row[10], row[11])
     whicharmy.add(this_unit)
     armysubunitindex = 0  # armysubunitindex is list index for subunit list in a specific army
 
@@ -186,7 +182,7 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
     for subunitnum in np.nditer(this_unit.armysubunit, op_flags=["readwrite"], order="C"):
         if subunitnum != 0:
             addsubunit = subunit.Subunit(subunitnum, subunitgameid, this_unit, this_unit.subunit_position_list[armysubunitindex],
-                                             this_unit.starthp, this_unit.startstamina)
+                                         this_unit.starthp, this_unit.startstamina)
             gamebattle.subunit.add(addsubunit)
             subunitnum[...] = subunitgameid
             this_unit.subunit_sprite_array[row][column] = addsubunit
@@ -214,7 +210,7 @@ def unitsetup(gamebattle):
     teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
-                                      gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
+                           gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunitgameid = 1
         for row in rd:
@@ -261,9 +257,10 @@ def setrotate(self, set_target=None, rotationlist=(-90, -120, -45, 0, 90, 45, 12
     newangle = math.degrees(myradians)
 
     newangle = min(rotationlist,
-          key = lambda x: abs(x-newangle))  # find closest
+                   key=lambda x: abs(x - newangle))  # find closest
 
     return newangle
+
 
 def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
     """Calculate melee_dmg, type 0 is melee attack and will use attacker subunit stat,
@@ -335,7 +332,8 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
             dmg = dmgtype.melee_dmg * penetrate * combatscore
 
         leaderdmg = dmg
-        unitdmg = (dmg * who.troop_number) + leaderdmgbonus  # melee_dmg on subunit is melee_dmg multiply by troop number with addition from leader combat
+        unitdmg = (
+                              dmg * who.troop_number) + leaderdmgbonus  # melee_dmg on subunit is melee_dmg multiply by troop number with addition from leader combat
         if (who.anti_inf and target.subunit_type in (1, 2)) or (who.anti_cav and target.subunit_type in (4, 5, 6, 7)):  # Anti trait melee_dmg bonus
             unitdmg = unitdmg * 1.25
         # if type == 0: # melee do less melee_dmg per hit because the combat happen more frequently than range
@@ -462,7 +460,8 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
             listloop = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearbysubunit
         for this_subunit in listloop:
             if this_subunit != 0 and this_subunit.state != 100:
-                targethit, targetdefence = float(attacker.attack * targetpercent) + targetluck, float(this_subunit.meleedef * targetpercent) + targetluck
+                targethit, targetdefence = float(attacker.attack * targetpercent) + targetluck, float(
+                    this_subunit.meleedef * targetpercent) + targetluck
                 whodmg, whomoraledmg = losscal(attacker, this_subunit, whohit, targetdefence, 0)
                 complexdmg(attacker, this_subunit, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
     # ^ End attack corner
@@ -535,6 +534,7 @@ def move_leader_subunit(this_leader, oldarmysubunit, newarmysubunit, alreadypick
     newarmysubunit[newrow][newplace] = this_leader.subunit.gameid
     newposition = (newplace, newrow)
     return oldarmysubunit, newarmysubunit, newposition
+
 
 # Other scripts
 

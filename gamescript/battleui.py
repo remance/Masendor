@@ -265,10 +265,11 @@ class GameUI(pygame.sprite.Sprite):
                     # ^ End terrain text
 
                     # v Equipment text
-                    textvalue = [self.quality_text[who.primary_main_weapon[1]] + " " + str(weaponlist.weapon_list[who.primary_main_weapon[0]][0]) + " / " +
-                                 self.quality_text[who.primary_sub_weapon[1]] + " " + str(weaponlist.weapon_list[who.primary_sub_weapon[0]][0]),
-                                 self.quality_text[who.secondary_main_weapon[1]] + " " + str(weaponlist.weapon_list[who.secondary_main_weapon[0]][0]) + " / " +
-                                 self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weaponlist.weapon_list[who.secondary_sub_weapon[0]][0])]
+                    textvalue = [
+                        self.quality_text[who.primary_main_weapon[1]] + " " + str(weaponlist.weapon_list[who.primary_main_weapon[0]][0]) + " / " +
+                        self.quality_text[who.primary_sub_weapon[1]] + " " + str(weaponlist.weapon_list[who.primary_sub_weapon[0]][0]),
+                        self.quality_text[who.secondary_main_weapon[1]] + " " + str(weaponlist.weapon_list[who.secondary_main_weapon[0]][0]) + " / " +
+                        self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weaponlist.weapon_list[who.secondary_sub_weapon[0]][0])]
 
                     textvalue += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.meleespeed).split(".")[0] +
                                   ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
@@ -276,8 +277,8 @@ class GameUI(pygame.sprite.Sprite):
                                   ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
 
                     textvalue += [str(armourlist.armour_list[who.armourgear[0]][0]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
-                        str(armourlist.armour_list[who.armourgear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
-                        "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
+                                  str(armourlist.armour_list[who.armourgear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                                  "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
 
                     if "None" not in who.mount:  # if mount is not the None mount id 1
                         armourtext = "//" + who.mountarmour[0]

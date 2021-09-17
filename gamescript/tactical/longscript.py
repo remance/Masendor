@@ -1,15 +1,12 @@
 import csv
-import datetime
 import math
 import os
 import random
-import re
 
 import numpy as np
 import pygame
 import pygame.freetype
-
-from gamescript import commonscript, popup
+from gamescript import commonscript
 
 load_image = commonscript.load_image
 load_images = commonscript.load_images
@@ -34,11 +31,9 @@ for dd in numberboard:
 
 def load_game_data(game):
     """Load various game data"""
-    import csv
-    from pathlib import Path
 
     SCREENRECT = game.SCREENRECT
-    from gamescript import readstat, map, lorebook, weather, drama, battleui, faction, menu, uniteditor
+    from gamescript import battleui, uniteditor
     from gamescript.tactical import unit, subunit, rangeattack
 
     unit.Unit.status_list = game.troop_data.status_list
@@ -53,7 +48,6 @@ def load_game_data(game):
     subunit.Subunit.armour_list = game.allarmour
     subunit.Subunit.stat_list = game.troop_data
     subunit.Subunit.eventlog = game.eventlog  # Assign eventlog to subunit class to broadcast event to the log
-
 
     skill_header = game.troop_data.skill_list_header
     status_header = game.troop_data.status_list_header
@@ -119,7 +113,7 @@ def load_game_data(game):
     uniteditor.Unitbuildslot.stat_list = game.troop_data
     uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
 
-    game.squadwidth, game.squadheight = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
+    game.sprite_width, game.sprite_height = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
     # ^ End subunit class
 
     # v Game Effect related class
@@ -137,18 +131,18 @@ def load_game_data(game):
     # Army select list ui
     game.unitselector = battleui.ArmySelect((0, 0), topimage[30])
     game.selectscroll = battleui.UIScroller(game.unitselector.rect.topright, topimage[30].get_height(),
-                                          game.unitselector.max_row_show)  # scroller for unit select ui
+                                            game.unitselector.max_row_show)  # scroller for unit select ui
 
     game.command_ui = battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unitselector.image.get_height(),
-                                     image=topimage[1], icon=iconimage,
-                                     uitype="commandbar")  # Left top command ui with leader and parentunit behavious button
+                                      image=topimage[1], icon=iconimage,
+                                      uitype="commandbar")  # Left top command ui with leader and parentunit behavious button
     game.gameui.add(game.command_ui)
 
     # Load all image of ui and icon from folder
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
     game.col_split_button = battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 26, topimage[8], 0)  # parentunit split by column button
-    game.row_split_button =  battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 56, topimage[9], 1)  # parentunit split by row button
+    game.row_split_button = battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 56, topimage[9], 1)  # parentunit split by row button
     game.buttonui.add(game.col_split_button)
     game.buttonui.add(game.row_split_button)
 
@@ -170,21 +164,21 @@ def load_game_data(game):
 
     # Right top bar ui that show rough information of selected battalions
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
-                      icon=iconimage, uitype="topbar")
+                                       icon=iconimage, uitype="topbar")
     game.gameui.add(game.unitstat_ui)
     game.unitstat_ui.options1 = game.statetext
 
-    game.inspectuipos = [game.unitstat_ui.rect.bottomleft[0] - game.squadwidth / 1.25,
-                         game.unitstat_ui.rect.bottomleft[1] - game.squadheight / 3]
+    game.inspectuipos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
+                         game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]
 
     # Subunit information card ui
     game.inspect_ui = battleui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
-                                     image=topimage[5], icon="", uitype="unitbox")  # inspect ui that show subnit in selected parentunit
+                                      image=topimage[5], icon="", uitype="unitbox")  # inspect ui that show subnit in selected parentunit
     game.gameui.add(game.inspect_ui)
     # v Subunit shown in inspect ui
     width, height = game.inspectuipos[0], game.inspectuipos[1]
     subunitnum = 0  # Number of subnit based on the position in row and column
-    imgsize = (game.squadwidth, game.squadheight)
+    imgsize = (game.sprite_width, game.sprite_height)
     game.inspectsubunit = []
     for this_subunit in list(range(0, 64)):
         width += imgsize[0]
@@ -216,6 +210,7 @@ def load_game_data(game):
 
     # ^ End game ui
 
+
 # Battle Start related gamescript
 
 def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
@@ -238,8 +233,8 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript.tactical import unit, subunit
     this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
-                    colour, row[10] + row[11], gamebattle.leader_stat, control,
-                    coa, command, row[13], row[14], row[15], row[16])
+                         colour, row[10] + row[11], gamebattle.leader_stat, control,
+                         coa, command, row[13], row[14], row[15], row[16])
     whicharmy.add(this_unit)
     armysubunitindex = 0  # armysubunitindex is list index for subunit list in a specific army
 
@@ -249,7 +244,7 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
     for subunitnum in np.nditer(this_unit.armysubunit, op_flags=["readwrite"], order="C"):
         if subunitnum != 0:
             addsubunit = subunit.Subunit(subunitnum, subunitgameid, this_unit, this_unit.subunit_position_list[armysubunitindex],
-                                             this_unit.starthp, this_unit.startstamina, gamebattle.unitscale)
+                                         this_unit.starthp, this_unit.startstamina, gamebattle.unitscale)
             gamebattle.subunit.add(addsubunit)
             addsubunit.board_pos = boardpos[armysubunitindex]
             subunitnum[...] = subunitgameid
@@ -279,7 +274,7 @@ def unitsetup(gamebattle):
     teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
-                                      gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
+                           gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunitgameid = 1
         for row in rd:
@@ -539,7 +534,8 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
             listloop = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearbysubunit
         for this_subunit in listloop:
             if this_subunit != 0 and this_subunit.state != 100:
-                targethit, targetdefence = float(attacker.attack * targetpercent) + targetluck, float(this_subunit.meleedef * targetpercent) + targetluck
+                targethit, targetdefence = float(attacker.attack * targetpercent) + targetluck, float(
+                    this_subunit.meleedef * targetpercent) + targetluck
                 whodmg, whomoraledmg = losscal(attacker, this_subunit, whohit, targetdefence, 0)
                 complexdmg(attacker, this_subunit, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
     # ^ End attack corner
@@ -755,7 +751,8 @@ def splitunit(battle, who, how):
             subunitnum = 0
 
     # v Sort so the new leader subunit position match what set before
-    subunitsprite = [this_subunit for this_subunit in who.subunit_sprite if this_subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
+    subunitsprite = [this_subunit for this_subunit in who.subunit_sprite if
+                     this_subunit.gameid in newarmysubunit.flat]  # new list of sprite not sorted yet
     new_subunit_sprite = []
     for thisid in newarmysubunit.flat:
         for this_subunit in subunitsprite:
@@ -775,12 +772,12 @@ def splitunit(battle, who, how):
         width, height = 0, 0
         subunitnum = 0
         for this_subunit in sprite:
-            width += battle.squadwidth
+            width += battle.sprite_width
 
             if subunitnum >= len(who.armysubunit[0]):
                 width = 0
-                width += battle.squadwidth
-                height += battle.squadheight
+                width += battle.sprite_width
+                height += battle.sprite_height
                 subunitnum = 0
 
             this_subunit.inspposition = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
@@ -810,7 +807,7 @@ def splitunit(battle, who, how):
     newgameid = battle.allunitlist[-1].gameid + 1
 
     newunit = unit.Unit(startposition=newpos, gameid=newgameid, squadlist=newarmysubunit, colour=who.colour,
-                            control=who.control, coa=who.coa, commander=False, startangle=who.angle, team=who.team)
+                        control=who.control, coa=who.coa, commander=False, startangle=who.angle, team=who.team)
 
     whosearmy.add(newunit)
     newunit.teamcommander = teamcommander

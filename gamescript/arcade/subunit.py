@@ -5,20 +5,18 @@ import time
 import numpy as np
 import pygame
 import pygame.freetype
+from PIL import Image, ImageFilter
 from gamescript import commonscript
 from gamescript.tactical import rangeattack, longscript
-from pathfinding.core.diagonal_movement import DiagonalMovement
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
 infinity = float("inf")
 
-def create_troop_stat(self, stat, starthp, type):
 
-    if type == "troop":
+def create_troop_stat(self, stat, starthp, troop_type):
+    if troop_type == "troop":
         stat_header = self.stat_list.troop_list_header
-    elif type == "leader":
+    elif troop_type == "leader":
         stat_header = self.stat_list.leader_list_header
 
     weapon_header = self.weapon_list.weapon_list_header
@@ -31,14 +29,14 @@ def create_troop_stat(self, stat, starthp, type):
     self.name = stat[0]  # name according to the preset
     skill = stat[stat_header["Skill"]]  # skill list according to the preset
     self.troop_skill = {x: self.stat_list.skill_list[x].copy() for x in skill if
-                  x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
+                        x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
     self.skill = self.troop_skill  # saving troop skill for when swap weapon
     self.base_trait = stat[stat_header["Trait"]]  # trait list from preset
     self.troop_health = stat[stat_header["Health"]]
 
     self.armourgear = stat[stat_header["Armour"]]  # armour equipement
     self.prime_armour = self.armour_list.armour_list[self.armourgear[0]][1] \
-                       * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
+                        * self.armour_list.quality[self.armourgear[1]]  # armour stat is calculate from based armour * quality
     self.skill_cooldown = {}
 
     self.prime_speed = 50  # All infantry has prime speed at 50
@@ -66,11 +64,11 @@ def create_troop_stat(self, stat, starthp, type):
         self.cost = stat[stat_header["Cost"]]
         gradestat = self.stat_list.grade_list[self.grade]
         self.prime_attack = stat[stat_header["Melee Attack"]] + \
-                           gradestat[grade_header["Melee Attack Bonus"]]  # prime melee attack with grade bonus
+                            gradestat[grade_header["Melee Attack Bonus"]]  # prime melee attack with grade bonus
         self.prime_meleedef = stat[stat_header["Melee Defence"]] + \
-                             gradestat[grade_header["Defence Bonus"]]  # prime melee defence with grade bonus
+                              gradestat[grade_header["Defence Bonus"]]  # prime melee defence with grade bonus
         self.prime_rangedef = stat[stat_header["Ranged Defence"]] + \
-                             gradestat[grade_header["Defence Bonus"]]  # prime range defence with grade bonus
+                              gradestat[grade_header["Defence Bonus"]]  # prime range defence with grade bonus
         self.prime_accuracy = stat[stat_header["Accuracy"]] + gradestat[grade_header["Accuracy Bonus"]]
         self.base_sight = stat[stat_header["Sight"]]  # prime sight range
         self.magazine_left = stat[stat_header["Ammunition"]]  # amount of ammunition
@@ -90,12 +88,12 @@ def create_troop_stat(self, stat, starthp, type):
         commandstat = self.leader.meleecommand
         if self.subunit_type == 2:
             commandstat = self.leader.cavcommand
-        self.prime_attack = stat[stat_header["Combat"]] * commandstat # prime melee attack with command bonus
+        self.prime_attack = stat[stat_header["Combat"]] * commandstat  # prime melee attack with command bonus
         self.prime_meleedef = stat[stat_header["Melee Defence"]] * commandstat  # prime melee defence with command bonus
         self.prime_rangedef = stat[stat_header["Ranged Defence"]] * commandstat  # prime range defence with command bonus
         self.prime_charge = stat[stat_header["Combat"]] * commandstat
-        self.prime_accuracy =  stat[stat_header["Combat"]] * self.leader.rangecommand
-        self.prime_reload =  stat[stat_header["Combat"]] * self.leader.rangecommand
+        self.prime_accuracy = stat[stat_header["Combat"]] * self.leader.rangecommand
+        self.prime_reload = stat[stat_header["Combat"]] * self.leader.rangecommand
 
         self.prime_morale = 100
         self.prime_discipline = 100
@@ -105,9 +103,11 @@ def create_troop_stat(self, stat, starthp, type):
         self.troop_health += (self.mount[mount_header['Health Bonus']] * self.mountgrade[mount_grade_header['Health Effect']]) + \
                              self.mountarmour[1]  # Add mount health to the troop health
         self.prime_charge += (self.mount[mount_header['Charge Bonus']] +
-                             self.mountgrade[mount_grade_header['Charge Bonus']])  # Add charge power of mount to troop
+                              self.mountgrade[mount_grade_header['Charge Bonus']])  # Add charge power of mount to troop
         self.prime_morale += self.mountgrade[mount_grade_header['Morale Bonus']]
         self.prime_discipline += self.mountgrade[mount_grade_header['Discipline Bonus']]
+
+    self.size = stat[stat_header["Size"]]
 
     self.description = stat[-1]  # subunit description for inspect ui
     # if self.hidden
@@ -166,7 +166,7 @@ def create_troop_stat(self, stat, starthp, type):
 
     if len(self.base_trait) > 0:
         self.base_trait = {x: self.stat_list.trait_list[x] for x in self.trait if
-                      x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+                           x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
         for trait in self.base_trait.values():  # add trait modifier to prime stat
             self.prime_attack *= trait[trait_header['Melee Attack Effect']]
             self.prime_meleedef *= trait[trait_header['Melee Defence Effect']]
@@ -213,7 +213,7 @@ def create_troop_stat(self, stat, starthp, type):
 
     # vv Weapon stat
     self.primary_weapon = [stat[stat_header["Primary Main Weapon"]], stat[stat_header["Secondary Main Weapon"]]]
-    self.secondary_weapon = [stat[stat_header["Primary Sub Weapon"]], stat[stat_header["Secondary Sub Weapon"]] ]
+    self.secondary_weapon = [stat[stat_header["Primary Sub Weapon"]], stat[stat_header["Secondary Sub Weapon"]]]
     self.melee_weapon = []
     self.range_weapon = []
     if self.weapon_list.weapon_list[self.primary_weapon[0]][weapon_header["Range"]] > 0:  # ranged weapon if range more than 0
@@ -244,7 +244,8 @@ def create_troop_stat(self, stat, starthp, type):
         self.weight = self.weight / 2
     # ^ End weight cal
 
-    self.prime_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
+    self.prime_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[
+        grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
 
     # self.loyalty
     self.last_health_state = 4  # state start at full
@@ -265,9 +266,8 @@ def create_troop_stat(self, stat, starthp, type):
     self.chargedef = self.base_chargedef
     # ^^ End stat for status effect
 
-
     self.troop_health = self.troop_health * starthp / 100
-    self.max_health = self.troop_health # health percentage
+    self.max_health = self.troop_health  # health percentage
 
     self.oldlasthealth = self.troop_health  # save previous health in previous update
     self.moralestate = self.base_morale / self.max_morale  # turn into percentage
@@ -331,7 +331,9 @@ class Subunit(pygame.sprite.Sprite):
 
         self.gameid = gameid  # ID of this
         self.troopid = troopid
+        troop_type = "troop"
         if self.troopid == "h":  # leader subunit
+            troop_type = "leader"
             self.troopid = self.parentunit.leader.gameid
             self.leader = self.parentunit.leader
 
@@ -354,35 +356,18 @@ class Subunit(pygame.sprite.Sprite):
         # v Setup troop stat
         stat = self.stat_list.leader_list[self.troopid].copy()
 
-        self.create_troop_stat(stat, starthp)
+        self.create_troop_stat(stat, starthp, troop_type)
         self.gamebattle.start_troopnumber[self.team] += 1  # add troop number to counter how many troop join battle
         # ^ End setup stat
 
-        # v Subunit image block
+        # v Subunit sprite
         image = self.images[0].copy()  # Subunit block blue colour for team1 for shown in inspect ui
         if self.team == 2:
             image = self.images[13].copy()  # red colour
 
         self.image = pygame.Surface((image.get_width() + 10, image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
         pygame.draw.circle(self.image, self.parentunit.colour, (self.image.get_width() / 2, self.image.get_height() / 2), image.get_width() / 2)
-
-        if self.subunit_type == 2:  # cavalry draw line on block
-            pygame.draw.line(image, (0, 0, 0), (0, 0), (image.get_width(), image.get_height()), 2)
-            radian = 45 * 0.0174532925  # top left
-            start = (
-                self.image.get_width() / 3 * math.cos(radian), self.image.get_width() / 3 * math.sin(radian))  # draw line from 45 degree in circle
-            radian = 225 * 0.0174532925  # bottom right
-            end = (self.image.get_width() * -math.cos(radian), self.image.get_width() * -math.sin(radian))  # drow line to 225 degree in circle
-            pygame.draw.line(self.image, (0, 0, 0), start, end, 2)
-
-        self.imageblock = image.copy()  # image shown in inspect ui as square instead of circle
-
-        self.selectedimage = pygame.Surface((image.get_width(), image.get_height()), pygame.SRCALPHA)
-        pygame.draw.circle(self.selectedimage, (255, 255, 255, 150), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2)
-        pygame.draw.circle(self.selectedimage, (0, 0, 0, 255), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2, 1)
-        self.selectedimage_original, self.selectedimage_original2 = self.selectedimage.copy(), self.selectedimage.copy()
-        self.selectedimagerect = self.selectedimage.get_rect(topleft=(0, 0))
-        # ^ End subunit block
+        # ^ End subunit sprite
 
         scalewidth = self.image.get_width()
         scaleheight = self.image.get_height()
@@ -390,26 +375,23 @@ class Subunit(pygame.sprite.Sprite):
         self.far_image = pygame.transform.scale(self.far_image, (int(dim[0]), int(dim[1])))
         self.far_selectedimage = pygame.transform.scale(self.far_selectedimage, (int(dim[0]), int(dim[1])))
 
-        # v health circle image setup
-        self.healthimage = self.images[1]
-        self.health_image_rect = self.healthimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
-        self.health_imageblock_rect = self.healthimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
-        self.image.blit(self.healthimage, self.health_image_rect)
-        self.imageblock.blit(self.healthimage, self.health_imageblock_rect)
-        # ^ End health circle
-
-        # v weapon class icon in middle circle
-        image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.primary_weapon[0][0]][-3]]  # image on subunit sprite
-
-        image1rect = image1.get_rect(center=self.image.get_rect().center)
-        self.image.blit(image1, image1rect)
-
-        image1rect = image1.get_rect(center=self.imageblock.get_rect().center)
-        self.imageblock.blit(image1, image1rect)
-        self.imageblock_original = self.imageblock.copy()
-
-        self.corner_image_rect = self.images[11].get_rect(center=self.imageblock.get_rect().center)  # red corner when take melee_dmg shown in image block
-        # ^ End weapon icon
+        self.sprite_size = self.size * 55  # default size of generic body sprite for collision calculation TODO grab size from race
+        if troop_type == "leader":  # check custom sprite size
+            data = pygame.image.tostring(self.image, "RGBa")  # convert image to string data for filtering effect
+            img = Image.frombytes("RGBa", (100, 100), data)  # use PIL to get image data
+            image_data = np.asarray(img)
+            image_data_bw = image_data[:,:,3]
+            non_empty_columns = np.where(image_data_bw.max(axis=0) > 0)[0]
+            non_empty_rows = np.where(image_data_bw.max(axis=1) > 0)[0]
+            cropBox = (min(non_empty_rows), max(non_empty_rows),
+                       min(non_empty_columns), max(non_empty_columns))
+            image_data_new = image_data[cropBox[0]:cropBox[
+                                                       1] + 1, cropBox[2]:cropBox[3] + 1, :]
+            img = Image.fromarray(image_data_new)
+            img = img.tobytes()
+            img = pygame.image.fromstring(img, (1000, 1000), "RGBa")  # convert image back to a pygame surface
+            self.sprite_size = int(img.get_width() * img.get_height() / 2)  # size of unique leader body sprite
+            del img
 
         self.image_original = self.image.copy()  # original for rotate
 
@@ -423,8 +405,7 @@ class Subunit(pygame.sprite.Sprite):
         self.last_pos = self.base_pos
         self.pos = self.base_pos * self.zoom  # pos is for showing on screen
 
-        self.movement_queue = []
-        self.combat_move_queue = []
+        self.skill_queue = []
         self.base_target = self.base_pos  # base_target to move
         self.command_target = self.base_pos  # actual base_target outside of combat
 
@@ -441,16 +422,14 @@ class Subunit(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=self.pos)
 
-
     def useskill(self, whichskill):
         skill = self.skill[whichskill].copy()  # get skill stat
         if skill not in self.skill_cooldown.keys() and \
-            self.state in self.skill[skill][self.skill_condition] and \
-            self.discipline >= self.skill[skill][self.skill_discipline_req] and \
-            self.stamina > self.skill[skill][self.skill_stamina_cost]:
-
-                self.skill_effect[whichskill] = skill  # add stat to skill effect
-                self.skill_cooldown[whichskill] = skill[self.skill_cd]  # add skill cooldown
+                self.state in self.skill[skill][self.skill_condition] and \
+                self.discipline >= self.skill[skill][self.skill_discipline_req] and \
+                self.stamina > self.skill[skill][self.skill_stamina_cost]:
+            self.skill_effect[whichskill] = skill  # add stat to skill effect
+            self.skill_cooldown[whichskill] = skill[self.skill_cd]  # add skill cooldown
         # animation_queue
 
     def find_nearby_subunit(self):
@@ -549,9 +528,9 @@ class Subunit(pygame.sprite.Sprite):
         self.authority = self.parentunit.authority  # parentunit total authoirty
         self.discipline = self.base_discipline
         self.commandbuff = 1
-        if self.leader is False:   # command buff from leader according to this subunit subunit type
+        if self.leader is False:  # command buff from leader according to this subunit subunit type
             self.commandbuff = self.parentunit.commandbuff[
-                               self.subunit_type] * 100
+                                   self.subunit_type] * 100
         self.attack = self.base_attack
         self.meleedef = self.base_meleedef
         self.rangedef = self.base_rangedef
@@ -665,7 +644,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.speed = self.speed * calstatus[self.skill_speed]
                 self.accuracy = self.accuracy * calstatus[self.skill_accuracy]
                 self.shootrange = self.shootrange * calstatus[self.skill_range]
-                self.reload = self.reload / calstatus[self.skill_reload]  # different than other modifier the higher mod reduce reload time (decrease stat)
+                self.reload = self.reload / calstatus[
+                    self.skill_reload]  # different than other modifier the higher mod reduce reload time (decrease stat)
                 self.charge = self.charge * calstatus[self.skill_charge]
                 self.chargedef = self.chargedef + calstatus[self.skill_charge_defence]
                 self.hpregen += calstatus[self.skill_hp_regen]
@@ -1221,7 +1201,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.gamebattle.flee_troopnumber[self.team] += 1  # add number of troop retreat from battle
                 self.gamebattle.battlecamera.remove(self)
 
-
             self.enemy_front = []  # reset collide
             self.enemy_side = []
             self.friend_front = []
@@ -1261,14 +1240,14 @@ class Subunit(pygame.sprite.Sprite):
             self.main_weapon_speed = self.weapon_list.weapon_list[self.equiped_weapon[0][0]][weapon_header["Speed"]]
             self.sub_weapon_speed = self.weapon_list.weapon_list[self.equiped_weapon[1][1]][weapon_header["Speed"]]
 
-            self.main_weapon_magazine_size = self.weapon_list.weapon_list[self.equiped_weapon[0][0]][weapon_header["Magazine"]]  # shoot how many before reload
+            self.main_weapon_magazine_size = self.weapon_list.weapon_list[self.equiped_weapon[0][0]][
+                weapon_header["Magazine"]]  # shoot how many before reload
             self.sub_weapon_magazine_size = self.weapon_list.weapon_list[self.equiped_weapon[1][0]][weapon_header["Magazine"]]
 
             self.main_weapon_base_range = self.weapon_list.weapon_list[self.equiped_weapon[0][0]][weapon_header["Range"]] * \
                                           self.weapon_list.quality[self.equiped_weapon[0][1]]  # weapon range depend on weapon range stat and quality
             self.sub_weapon_base_range = self.weapon_list.weapon_list[self.equiped_weapon[1][0]][weapon_header["Range"]] * \
-                                          self.weapon_list.quality[self.equiped_weapon[1][1]]  # weapon range depend on weapon range stat and quality
-
+                                         self.weapon_list.quality[self.equiped_weapon[1][1]]  # weapon range depend on weapon range stat and quality
 
             self.main_weapon_arrowspeed = self.weapon_list.weapon_list[self.equiped_weapon[0][0]][weapon_header["Travel Speed"]]
             self.sub_weapon_arrowspeed = self.weapon_list.weapon_list[self.equiped_weapon[1][0]][weapon_header["Travel Speed"]]
@@ -1304,7 +1283,7 @@ class Subunit(pygame.sprite.Sprite):
 
             if len(self.trait) > 0:
                 self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
-                                    x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+                              x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
                 for trait in self.trait.values():  # add trait modifier to base stat
                     self.base_attack *= trait[trait_header['Melee Attack Effect']]
                     self.base_meleedef *= trait[trait_header['Melee Defence Effect']]
@@ -1334,12 +1313,12 @@ class Subunit(pygame.sprite.Sprite):
                             self.base_inflictstatus[effect] = trait[trait_header['Buff Range']]
 
                 self.weapon1_trait = {x: self.stat_list.trait_list[x] for x in self.weapon1_trait if
-                                    x in self.stat_list.trait_list}
+                                      x in self.stat_list.trait_list}
                 for trait in self.weapon1_trait:
                     if trait[trait_header['Element']] != 0:  # melee elemental effect
                         self.base_elem_main = trait[trait_header['Element']]
                 self.weapon2_trait = {x: self.stat_list.trait_list[x] for x in self.weapon2_trait if
-                                    x in self.stat_list.trait_list}
+                                      x in self.stat_list.trait_list}
                 for trait in self.weapon2_trait:
                     if trait[trait_header['Element']] != 0:  # melee elemental effect
                         self.base_elem_sub = trait[trait_header['Element']]
@@ -1421,4 +1400,3 @@ class Subunit(pygame.sprite.Sprite):
             del self.attack_target
             del self.melee_target
             del self.close_target
-

@@ -13,6 +13,7 @@ from pygame.transform import scale
 
 infinity = float("inf")
 
+
 def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     stat_header = self.stat_list.troop_list_header
     weapon_header = self.weapon_list.weapon_list_header
@@ -73,18 +74,18 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     for index, weapon in enumerate([self.primary_main_weapon, self.primary_sub_weapon, self.secondary_main_weapon, self.secondary_sub_weapon]):
         if self.weapon_list.weapon_list[weapon[0]][weapon_header["Range"]] == 0:  # melee weapon if range 0
             self.melee_dmg[0] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Minimum Damage"]] * \
-                                  self.weapon_list.quality[weapon[1]] / (index + 1)
+                                 self.weapon_list.quality[weapon[1]] / (index + 1)
             self.melee_dmg[1] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Maximum Damage"]] * \
-                                  self.weapon_list.quality[weapon[1]] / (index + 1)
+                                 self.weapon_list.quality[weapon[1]] / (index + 1)
 
             self.melee_penetrate += self.weapon_list.weapon_list[weapon[0]][weapon_header["Armour Penetration"]] * \
                                     self.weapon_list.quality[weapon[1]] / (index + 1)
             self.meleespeed += self.weapon_list.weapon_list[weapon[0]][weapon_header["Speed"]] / (index + 1)
         else:
             self.range_dmg[0] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Minimum Damage"]] * \
-                                  self.weapon_list.quality[weapon[1]]
+                                 self.weapon_list.quality[weapon[1]]
             self.range_dmg[1] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Maximum Damage"]] * \
-                                  self.weapon_list.quality[weapon[1]]
+                                 self.weapon_list.quality[weapon[1]]
 
             self.range_penetrate += self.weapon_list.weapon_list[weapon[0]][weapon_header["Armour Penetration"]] * \
                                     self.weapon_list.quality[weapon[1]] / (index + 1)
@@ -93,6 +94,8 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
             weapon_reload += self.weapon_list.weapon_list[weapon[0]][weapon_header["Speed"]] * (index + 1)
             base_range.append(self.weapon_list.weapon_list[weapon[0]][weapon_header["Range"]] * self.weapon_list.quality[weapon[1]])
             arrowspeed.append(self.weapon_list.weapon_list[weapon[0]][weapon_header["Travel Speed"]])  # travel speed of range attack
+        self.base_meleedef += self.weapon_list.weapon_list[weapon[0]][weapon_header["Defense"]] / (index + 1)
+        self.base_rangedef += self.weapon_list.weapon_list[weapon[0]][weapon_header["Defense"]] / (index + 1)
         self.skill += self.weapon_list.weapon_list[weapon[0]][weapon_header['Skill']]
         self.trait += self.weapon_list.weapon_list[weapon[0]][weapon_header['Trait']]
 
@@ -119,8 +122,10 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
 
     self.base_morale = stat[stat_header["Morale"]] + gradestat[grade_header["Morale Bonus"]]  # morale with grade bonus
     self.base_discipline = stat[stat_header["Discipline"]] + gradestat[grade_header["Discipline Bonus"]]  # discilpline with grade bonus
-    self.mental = stat[stat_header["Mental"]] + gradestat[grade_header["Mental Bonus"]]  # mental resistance from morale melee_dmg and mental status effect
-    self.troop_number = stat[stat_header["Troop"]] * unitscale[self.team - 1] * starthp / 100  # number of starting troop, team -1 to become list index
+    self.mental = stat[stat_header["Mental"]] + gradestat[
+        grade_header["Mental Bonus"]]  # mental resistance from morale melee_dmg and mental status effect
+    self.troop_number = stat[stat_header["Troop"]] * unitscale[
+        self.team - 1] * starthp / 100  # number of starting troop, team -1 to become list index
     self.base_speed = 50  # All infantry has base speed at 50
     self.subunit_type = stat[stat_header["Troop Class"]] - 1  # 0 is melee infantry and 1 is range for command buff
     self.featuremod = 1  # the starting column in unit_terrainbonus of infantry
@@ -147,13 +152,15 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
 
     # v Weight calculation
     self.weight += self.armour_list.armour_list[self.armourgear[0]][armour_header["Weight"]] + \
-                  self.mountarmour[2]  # Weight from both melee and range weapon and armour
+                   self.mountarmour[2]  # Weight from both melee and range weapon and armour
     if self.subunit_type == 2:  # cavalry has half weight penalty
         self.weight = self.weight / 2
     # ^ End weight cal
 
-    self.trait += self.armour_list.armour_list[self.armourgear[0]][armour_header["Trait"]] # Apply armour trait to subunit
-    self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
+    self.trait += self.armour_list.armour_list[self.armourgear[0]][armour_header["Trait"]]  # Apply armour trait to subunit
+    self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + gradestat[
+        grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
+    self.size = stat[stat_header["Size"]]
     self.description = stat[-1]  # subunit description for inspect ui
     # if self.hidden
 
@@ -333,7 +340,7 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     self.mentaltext = self.mental - 100
     self.mental = (200 - self.mental) / 100  # convert to percentage
 
-    self.max_health = self.unit_health # health percentage
+    self.max_health = self.unit_health  # health percentage
     self.health75 = self.unit_health * 0.75
     self.health50 = self.unit_health * 0.5
     self.health25 = self.unit_health * 0.25
@@ -497,7 +504,8 @@ class Subunit(pygame.sprite.Sprite):
         self.imageblock.blit(image1, image1rect)
         self.imageblock_original = self.imageblock.copy()
 
-        self.corner_image_rect = self.images[11].get_rect(center=self.imageblock.get_rect().center)  # red corner when take melee_dmg shown in image block
+        self.corner_image_rect = self.images[11].get_rect(
+            center=self.imageblock.get_rect().center)  # red corner when take melee_dmg shown in image block
         # ^ End weapon icon
 
         self.image_original = self.image.copy()  # original for rotate
@@ -580,7 +588,8 @@ class Subunit(pygame.sprite.Sprite):
             self.available_skill = []
         else:  # check all skill
             self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
-                                    and self.state in self.skill[skill][self.skill_condition] and self.discipline >= self.skill[skill][self.skill_discipline_req]
+                                    and self.state in self.skill[skill][self.skill_condition] and self.discipline >= self.skill[skill][
+                                        self.skill_discipline_req]
                                     and self.stamina > self.skill[skill][self.skill_stamina_cost] and skill != self.chargeskill]
 
     def find_nearby_subunit(self):
@@ -802,7 +811,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.speed = self.speed * calstatus[self.skill_speed]
                 self.accuracy = self.accuracy * calstatus[self.skill_accuracy]
                 self.shootrange = self.shootrange * calstatus[self.skill_range]
-                self.reload = self.reload / calstatus[self.skill_reload]  # different than other modifier the higher mod reduce reload time (decrease stat)
+                self.reload = self.reload / calstatus[
+                    self.skill_reload]  # different than other modifier the higher mod reduce reload time (decrease stat)
                 self.charge = self.charge * calstatus[self.skill_charge]
                 self.chargedef = self.chargedef + calstatus[self.skill_charge_defence]
                 self.hpregen += calstatus[self.skill_hp_regen]
@@ -1487,7 +1497,8 @@ class Subunit(pygame.sprite.Sprite):
                             remain = int(remain)
                         wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
                         self.gamebattle.death_troopnumber[self.team] += self.troop_number - remain - wound
-                        if self.state in (98, 99) and len(self.enemy_front) + len(self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
+                        if self.state in (98, 99) and len(self.enemy_front) + len(
+                                self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
                             self.gamebattle.capture_troopnumber[self.team] += wound
                         else:
                             self.gamebattle.wound_troopnumber[self.team] += wound

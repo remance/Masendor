@@ -1,8 +1,9 @@
 import csv
-import re
 import os
+import re
 
 """This file contains all class and function that read subunit/leader related data and save them into dict for ingame use"""
+
 
 def stat_convert(row, n, i, mod_column=[], list_column=[], int_column=[]):
     if mod_column != [] and n in mod_column:
@@ -29,6 +30,7 @@ def stat_convert(row, n, i, mod_column=[], list_column=[], int_column=[]):
             row[n] = float(i)
     return row
 
+
 class Weaponstat:
     def __init__(self, main_dir, img, ruleset):
         """Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
@@ -39,7 +41,7 @@ class Weaponstat:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Cost", "ImageID", "Speed", "Hand"]  # value int only
-            list_column = ["Skill","Trait", "Ruleset"]  # value in list only
+            list_column = ["Skill", "Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
@@ -340,7 +342,7 @@ class Leaderstat:
             int_column = ["ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
                           "Forcedimageid", "Faction"]  # value int only
             list_column = ["Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon", "Secondary Sub Weapon",
-                           "Armour", "Mount","Skill","Trait"]
+                           "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             for row in rd:
@@ -357,7 +359,7 @@ class Leaderstat:
             int_column = ["ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class", "Forcedimageid",
                           "Faction"]  # value int only
             list_column = ["Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon", "Secondary Sub Weapon",
-                             "Armour", "Mount", "Skill", "Trait"]
+                           "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.leader_list_header = {k: v for v, k in enumerate(header[1:])}

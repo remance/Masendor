@@ -1,14 +1,15 @@
 import ast
 import csv
 import os
-import pygame.freetype
-from gamescript import map
 
 import pygame
 import pygame.freetype
+import pygame.freetype
+from gamescript import map
 
 terraincolour = map.terraincolour
 featurecolour = map.featurecolour
+
 
 class Escbox(pygame.sprite.Sprite):
     images = []

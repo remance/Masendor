@@ -1,7 +1,7 @@
 import ast
 import csv
-import random
 import os
+import random
 
 import pygame
 import pygame.freetype

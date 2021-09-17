@@ -3,15 +3,13 @@ import csv
 import datetime
 import math
 import os
-import random
 import re
+from pathlib import Path
 
-import numpy as np
 import pygame
 import pygame.freetype
-
 from gamescript import readstat, map, lorebook, weather, drama, battleui, menu, faction, popup
-from pathlib import Path
+
 
 def load_game_data(game):
     """Load various game data and encyclopedia object"""
@@ -149,7 +147,7 @@ def load_game_data(game):
     # ^ End load map list
 
     # v Load custom map list
-    mapfolder =  Path(os.path.join(main_dir, "data", "ruleset", game.ruleset_folder, "map", "custom"))
+    mapfolder = Path(os.path.join(main_dir, "data", "ruleset", game.ruleset_folder, "map", "custom"))
     subdirectories = [x for x in mapfolder.iterdir() if x.is_dir()]
 
     game.mapcustomlist = []
@@ -201,7 +199,6 @@ def load_game_data(game):
     game.leader_stat = readstat.Leaderstat(main_dir, imgs, order, option=game.ruleset_folder)
     # ^ End leader
 
-
     # v Encyclopedia related objects
     lorebook.Lorebook.concept_stat = csv_read(game.main_dir, "concept_stat.csv", ["data", "ruleset", game.ruleset_folder, "lore"])
     lorebook.Lorebook.concept_lore = csv_read(game.main_dir, "concept_lore.csv", ["data", "ruleset", game.ruleset_folder, "lore"])
@@ -242,44 +239,44 @@ def load_game_data(game):
                                                    int(img.get_height() * game.height_adjust)))
     game.lorebuttonui = [
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[0], 0, 13),  # concept section button
+                          imgs[0], 0, 13),  # concept section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[1], 1, 13),  # history section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[1], 1, 13),  # history section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 3,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[2], 2, 13),  # faction section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[2], 2, 13),  # faction section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 4,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[3], 3, 13),  # troop section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[3], 3, 13),  # troop section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 5,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[4], 4, 13),  # troop equipment section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[4], 4, 13),  # troop equipment section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 6,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[5], 5, 13),  # troop status section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[5], 5, 13),  # troop status section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 7,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[6], 6, 13),  # troop skill section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[6], 6, 13),  # troop skill section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 8,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[7], 7, 13),  # troop property section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[7], 7, 13),  # troop property section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 9,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
-                        imgs[8], 8, 13),  # leader section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
+                          imgs[8], 8, 13),  # leader section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 10,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13),  # terrain section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[9], 9, 13),  # terrain section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 11,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13),  # weather section button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[10], 10, 13),  # weather section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 13,
-                        game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),  # close button
+                          game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2), imgs[12], 19, 13),  # close button
         battleui.UIButton(game.lorebook.rect.bottomleft[0] + (imgs[13].get_width()), game.lorebook.rect.bottomleft[1] - imgs[13].get_height(),
-                        imgs[13], 20, 24),  # previous page button
+                          imgs[13], 20, 24),  # previous page button
         battleui.UIButton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
-                        imgs[14], 21, 24)]  # next page button
+                          imgs[14], 21, 24)]  # next page button
     game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
     game.lorescroll = battleui.UIScroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
-                                        game.lorebook.max_subsection_show, layer=25)  # add subsection list scroller
+                                          game.lorebook.max_subsection_show, layer=25)  # add subsection list scroller
     # ^ End encyclopedia objects
 
     # v Create gamebattle game ui objects
@@ -316,13 +313,15 @@ def load_game_data(game):
     game.logscroll = battleui.UIScroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.max_row_show)  # event log scroller
     game.eventlog.logscroll = game.logscroll  # Link scroller to ui since it is easier to do here with the current order
 
-    game.troopcard_ui = battleui.GameUI(x=SCREENRECT.width - topimage[2].get_size()[0] / 2, y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
+    game.troopcard_ui = battleui.GameUI(x=SCREENRECT.width - topimage[2].get_size()[0] / 2,
+                                        y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
                                         image=topimage[2], icon="", uitype="troopcard")
     game.gameui.add(game.troopcard_ui)
     game.troopcard_ui.featurelist = game.featurelist  # add terrain feature list name to subunit card
 
     # Button related to subunit card and command
-    game.troopcard_button = [battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y + 10, topimage[3], 0),  # subunit card description button
+    game.troopcard_button = [battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y + 10, topimage[3], 0),
+                             # subunit card description button
                              battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y - 70, topimage[4], 1),  # subunit card stat button
                              battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y - 30, topimage[7], 2),  # subunit card skill button
                              battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y + 50, topimage[22], 3)]  # subunit card equipment button
@@ -341,7 +340,6 @@ def load_game_data(game):
 
     game.battledone_box = battleui.BattleDone(game, topimage[-3], topimage[-4])
     game.gamedone_button = battleui.UIButton(game.battledone_box.pos[0], game.battledone_box.boximage.get_height() * 0.8, topimage[-2], newlayer=19)
-
 
     # v Esc menu related objects
     imgs = load_images(game.main_dir, ["ui", "battlemenu_ui"], loadorder=False)
@@ -367,7 +365,7 @@ def load_game_data(game):
 
     sliderimage = load_images(game.main_dir, ["ui", "battlemenu_ui", "slider"], loadorder=False)
     game.escslidermenu = [menu.SliderMenu(sliderimage[0], sliderimage[1:3],
-                                             (menurectcenter0 * 1.1, menurectcenter1), Soundvolume, 0)]
+                                          (menurectcenter0 * 1.1, menurectcenter1), Soundvolume, 0)]
     game.escvaluebox = [menu.ValueBox(sliderimage[3], (game.battle_menu.rect.topright[0] * 1.2, menurectcenter1), Soundvolume)]
     # ^ End esc menu objects
 
@@ -435,6 +433,7 @@ def load_images(main_dir, subfolder=None, loadorder=True, returnorder=False):
         loadorderfile = [int(name.replace(".png", "")) for name in loadorderfile]
         return imgs, loadorderfile
 
+
 def csv_read(maindir, file, subfolder=(), outputtype=0):
     """output type 0 = dict, 1 = list"""
     main_dir = maindir
@@ -472,6 +471,7 @@ def edit_config(section, option, value, filename, config):
     with open(filename, "w") as configfile:
         config.write(configfile)
 
+
 def trait_skill_blit(self):
     """For blitting skill and trait icon into subunit info ui"""
     SCREENRECT = self.SCREENRECT
@@ -484,7 +484,8 @@ def trait_skill_blit(self):
         icon.kill()
 
     for trait in self.troopcard_ui.value2[0]:
-        self.skill_icon.add(battleui.SkillCardIcon(self.trait_imgs[0], (position[0], position[1]), 0, gameid=trait))  # For now use placeholder image 0
+        self.skill_icon.add(
+            battleui.SkillCardIcon(self.trait_imgs[0], (position[0], position[1]), 0, gameid=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -495,7 +496,8 @@ def trait_skill_blit(self):
     startrow = position[0]
 
     for skill in self.troopcard_ui.value2[1]:
-        self.skill_icon.add(battleui.SkillCardIcon(self.skill_imgs[0], (position[0], position[1]), 1, gameid=skill))  # For now use placeholder image 0
+        self.skill_icon.add(
+            battleui.SkillCardIcon(self.skill_imgs[0], (position[0], position[1]), 1, gameid=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= SCREENRECT.width:
             position[1] += 30
@@ -546,6 +548,7 @@ def rotationxy(self, origin, point, angle):
     y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
     return pygame.Vector2(x, y)
 
+
 def convert_str_time(event):
     for index, item in enumerate(event):
         newtime = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
@@ -554,6 +557,7 @@ def convert_str_time(event):
         if len(item) == 3:
             event[index].append(item[2])
 
+
 def kill_effect_icon(self):
     for icon in self.skill_icon.sprites():
         icon.kill()
@@ -561,6 +565,7 @@ def kill_effect_icon(self):
     for icon in self.effect_icon.sprites():
         icon.kill()
         del icon
+
 
 def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
     """generate list of subsection of the left side of encyclopedia"""
@@ -586,6 +591,7 @@ def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, la
 
         uiclass.add(*itemgroup)
 
+
 def popout_lorebook(self, section, gameid):
     """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
     self.gamestate = 0
@@ -595,6 +601,7 @@ def popout_lorebook(self, section, gameid):
     self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
     self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
     self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+
 
 def popuplist_newopen(self, newrect, newlist, uitype):
     """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
@@ -606,7 +613,7 @@ def popuplist_newopen(self, newrect, newlist, uitype):
         self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
 
     self.setuplist(menu.NameList, 0, newlist, self.popup_namegroup,
-                        self.popup_listbox, self.battleui, layer=19)
+                   self.popup_listbox, self.battleui, layer=19)
 
     self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
     self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #

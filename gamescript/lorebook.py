@@ -265,15 +265,17 @@ class Lorebook(pygame.sprite.Sprite):
                         if self.section != 4:  # equipment section need to be processed differently
                             createtext = statheader[index] + ": " + str(text)
                             if statheader[index] == "ImageID":
-                                 # IMAGEID column in other section does not provide information, skip
+                                # IMAGEID column in other section does not provide information, skip
                                 createtext = ""
                                 pass
 
                             elif self.section == 3:
                                 if statheader[index] == "Role":  # Replace imageid to subunit role in troop section
-                                    rolelist = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock", 5: "Support", 6: "Magic", 7: "Ambusher",
+                                    rolelist = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock", 5: "Support", 6: "Magic",
+                                                7: "Ambusher",
                                                 8: "Sniper", 9: "Recon"}
-                                    role = [rolelist[item] for item in text]  # role is not type, it represent subunit classification from base stat to tell what it excel
+                                    role = [rolelist[item] for item in
+                                            text]  # role is not type, it represent subunit classification from base stat to tell what it excel
                                     createtext = "Specilaised Role: "
                                     if len(role) == 0:
                                         createtext += "None, "
@@ -318,7 +320,7 @@ class Lorebook(pygame.sprite.Sprite):
                                 elif statheader[index] == "Armour":  # armour text with quality
                                     qualitytext = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
                                     createtext = statheader[index] + ": " + qualitytext[text[1]] + " " + self.armour_stat[text[0]][0] \
-                                                 # + ", Base Armour: " + str( self.armour_stat[text[0]][1])
+                                        # + ", Base Armour: " + str( self.armour_stat[text[0]][1])
 
                                 elif statheader[index] == "Unit Type":
                                     createtext = statheader[index] + ": " + self.unit_class_list[text][0]
@@ -339,7 +341,7 @@ class Lorebook(pygame.sprite.Sprite):
                                         if text in self.skillstat:  # only include skill if exist in ruleset
                                             abilitylist += self.skillstat[text][0]
                                         createtext = statheader[index] + ": " + abilitylist
-                                                     #+ ", Base Speed: " + str(speed)  # add subunit speed after
+                                        # + ", Base Speed: " + str(speed)  # add subunit speed after
                                     elif text != [0]:
                                         for thistext in text:
                                             if thistext in self.skillstat:  # only include skill in ruleset
@@ -419,7 +421,7 @@ class Lorebook(pygame.sprite.Sprite):
                         else:
                             if "FULLIMAGE:" in text:
                                 filename = text[10:].split("\\")[-1]
-                                textsurface = longscript.load_image(self.main_dir, filename , text[10:].replace(filename, ""))
+                                textsurface = longscript.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
                                 textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
                                 textrect = descriptionsurface.get_rect(topleft=(0, 0))
                             else:

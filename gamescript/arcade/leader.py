@@ -40,7 +40,7 @@ class Leader(pygame.sprite.Sprite):
             self.fullimage.blit(textimage, textrect)
 
         self.image = pygame.transform.scale(self.fullimage, (50, 50))
-        self.rect = self.image.get_rect(center=(250,250))
+        self.rect = self.image.get_rect(center=(250, 250))
         self.image_original = self.image.copy()
 
         self.badmorale = (20, 30)  ## other position morale lost
@@ -54,7 +54,7 @@ class Leader(pygame.sprite.Sprite):
         if self.state == 99:  # wounded inflict less morale penalty
             thisbadmorale = self.badmorale[1]
 
-        for subunit in self.parentunit.subunit_sprite: # TODO maybe complete broken instead
+        for subunit in self.parentunit.subunit_sprite:  # TODO maybe complete broken instead
             subunit.base_morale -= (thisbadmorale * subunit.mental)  # decrease all subunit morale when leader die depending on position
             subunit.moraleregen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 

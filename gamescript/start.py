@@ -23,6 +23,7 @@ make_bar_list = commonscript.make_bar_list
 load_base_button = commonscript.load_base_button
 text_objects = commonscript.text_objects
 
+
 class Mainmenu:
     leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                      "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
@@ -80,7 +81,7 @@ class Mainmenu:
         # ^ End set display
 
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
-        self.ruleset_folder =  str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
+        self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
 
         if not os.path.exists("../profile"):  # make profile folder if not existed
             os.makedirs("../profile")
@@ -295,7 +296,7 @@ class Mainmenu:
         # v genre related stuff
         boximg = load_image(self.main_dir, "genre_box.png", "ui\\mainmenu_ui")
         self.genre_change_box = uniteditor.PreviewChangeButton(self, (boximg.get_width() / 2 * self.width_adjust,
-                                                              boximg.get_height() * self.height_adjust), boximg, self.genre.capitalize())
+                                                                      boximg.get_height() * self.height_adjust), boximg, self.genre.capitalize())
         self.change_genre(self.genre)
         # ^ End genre
 
@@ -316,23 +317,23 @@ class Mainmenu:
             imagelist[index] = pygame.transform.scale(image, (int(image.get_width() * self.width_adjust),
                                                               int(image.get_height() * self.height_adjust)))
         self.preset_map_button = menu.MenuButton(self, imagelist,
-                                                        pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 8.5)),
-                                                        menu_state="mainmenu", text="Preset Map")
+                                                 pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 8.5)),
+                                                 menu_state="mainmenu", text="Preset Map")
         self.custom_map_button = menu.MenuButton(self, imagelist,
-                                                        pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 7)),
-                                                        menu_state="mainmenu", text="Custom Map")
+                                                 pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 7)),
+                                                 menu_state="mainmenu", text="Custom Map")
         self.game_edit_button = menu.MenuButton(self, imagelist,
-                                                       pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 5.5)),
-                                                       menu_state="mainmenu", text="Unit Editor")
+                                                pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 5.5)),
+                                                menu_state="mainmenu", text="Unit Editor")
         self.lore_button = menu.MenuButton(self, imagelist,
-                                                  pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
-                                                  menu_state="mainmenu", text="Encyclopedia")
+                                           pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
+                                           menu_state="mainmenu", text="Encyclopedia")
         self.option_button = menu.MenuButton(self, imagelist,
-                                                    pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
-                                                    menu_state="mainmenu", text="Option")
+                                             pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
+                                             menu_state="mainmenu", text="Option")
         self.quit_button = menu.MenuButton(self, imagelist,
-                                                  pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height())),
-                                                  menu_state="mainmenu", text="Quit")
+                                           pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height())),
+                                           menu_state="mainmenu", text="Quit")
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button)
         # ^ End gamestart menu button
@@ -340,26 +341,26 @@ class Mainmenu:
         # v Create battle map menu button
         bottomheight = self.SCREENRECT.height - imagelist[0].get_height()
         self.select_button = menu.MenuButton(self, imagelist, pos=(self.SCREENRECT.width - imagelist[0].get_width(), bottomheight),
-                                                    text="Select")
+                                             text="Select")
         self.start_button = menu.MenuButton(self, imagelist, pos=(self.SCREENRECT.width - imagelist[0].get_width(), bottomheight),
-                                                   text="Start")
+                                            text="Start")
         self.map_back_button = menu.MenuButton(self, imagelist,
-                                                      pos=(self.SCREENRECT.width - (self.SCREENRECT.width - imagelist[0].get_width()), bottomheight),
-                                                      text="Back")
+                                               pos=(self.SCREENRECT.width - (self.SCREENRECT.width - imagelist[0].get_width()), bottomheight),
+                                               text="Back")
         self.map_select_button = (self.select_button, self.map_back_button)
         self.battle_setup_button = (self.start_button, self.map_back_button)
 
         imgs = load_images(self.main_dir, ["ui", "mapselect_ui"], loadorder=False)
         self.map_listbox = menu.ListBox(self, (self.SCREENRECT.width / 25, self.SCREENRECT.height / 20), imgs[0])
         self.map_scroll = battleui.UIScroller(self.map_listbox.rect.topright, self.map_listbox.image.get_height(),
-                                            self.map_listbox.maxshowlist, layer=14)  # scroller bar for map list
+                                              self.map_listbox.maxshowlist, layer=14)  # scroller bar for map list
 
         self.source_listbox = menu.SourceListBox(self, (0, 0), imgs[1])  # source list ui box
         self.map_optionbox = menu.MapOptionBox(self, (self.SCREENRECT.width, 0), imgs[1],
-                                                      0)  # ui box for battle option during preparation screen
+                                               0)  # ui box for battle option during preparation screen
 
         self.tickbox_enactment = menu.TickBox(self, (self.map_optionbox.rect.bottomright[0] / 1.2, self.map_optionbox.rect.bottomright[1] / 4),
-                                                     imgs[5], imgs[6], "enactment")
+                                              imgs[5], imgs[6], "enactment")
         self.tickbox.add(self.tickbox_enactment)
         if self.enactment:
             self.tickbox_enactment.changetick(True)
@@ -377,14 +378,14 @@ class Mainmenu:
         # v Create unit and subunit editor button in gamestart menu
 
         self.unit_edit_button = menu.MenuButton(self, imagelist,
-                                                       (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
-                                                       text="Army Editor")
+                                                (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 4)),
+                                                text="Army Editor")
         self.subunit_create_button = menu.MenuButton(self, imagelist,
-                                                            (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
-                                                            text="Troop Creator")
+                                                     (self.SCREENRECT.width / 2, self.SCREENRECT.height - (imagelist[0].get_height() * 2.5)),
+                                                     text="Troop Creator")
         self.editor_back_button = menu.MenuButton(self, imagelist,
-                                                         (self.SCREENRECT.width / 2, self.SCREENRECT.height - imagelist[0].get_height()),
-                                                         text="Back")
+                                                  (self.SCREENRECT.width / 2, self.SCREENRECT.height - imagelist[0].get_height()),
+                                                  text="Back")
         self.editor_button = (self.unit_edit_button, self.subunit_create_button, self.editor_back_button)
         # ^ End subunit editor
 
@@ -392,41 +393,41 @@ class Mainmenu:
         boximg = load_image(self.main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
         self.unit_listbox = menu.ListBox(self, (0, self.SCREENRECT.height / 2.2), boximg)  # box for showing unit preset list
         self.unit_presetname_scroll = battleui.UIScroller(self.unit_listbox.rect.topright, self.unit_listbox.image.get_height(),
-                                                        self.unit_listbox.maxshowlist, layer=14)  # preset name scroll
+                                                          self.unit_listbox.maxshowlist, layer=14)  # preset name scroll
         self.presetselectborder = uniteditor.SelectedPresetBorder(self.unit_listbox.image.get_width() - int(15 * self.width_adjust),
-                                                                    int(25 * self.height_adjust))
+                                                                  int(25 * self.height_adjust))
 
         self.troop_listbox = menu.ListBox(self, (self.SCREENRECT.width / 1.19, 0), imgs[0])
 
         self.troop_scroll = battleui.UIScroller(self.troop_listbox.rect.topright, self.troop_listbox.image.get_height(),
-                                              self.troop_listbox.maxshowlist, layer=14)
+                                                self.troop_listbox.maxshowlist, layer=14)
 
         self.unit_delete_button = menu.MenuButton(self, imagelist,
-                                                         pos=(imagelist[0].get_width() / 2, bottomheight),
-                                                         text="Delete")
+                                                  pos=(imagelist[0].get_width() / 2, bottomheight),
+                                                  text="Delete")
         self.unit_save_button = menu.MenuButton(self, imagelist,
-                                                       pos=((self.SCREENRECT.width - (self.SCREENRECT.width - (imagelist[0].get_width() * 1.7))),
-                                                            bottomheight),
-                                                       text="Save")
+                                                pos=((self.SCREENRECT.width - (self.SCREENRECT.width - (imagelist[0].get_width() * 1.7))),
+                                                     bottomheight),
+                                                text="Save")
 
         self.popup_listbox = menu.ListBox(self, (0, 0), boximg, 15)  # popup listbox need to be in higher layer
         self.popup_listscroll = battleui.UIScroller(self.popup_listbox.rect.topright,
-                                                  self.popup_listbox.image.get_height(),
-                                                  self.popup_listbox.maxshowlist,
-                                                  layer=14)
+                                                    self.popup_listbox.image.get_height(),
+                                                    self.popup_listbox.maxshowlist,
+                                                    layer=14)
 
         boximg = load_image(self.main_dir, "mapchange.png", "ui\\mainmenu_ui")
         self.terrain_change_button = uniteditor.PreviewChangeButton(self, (self.SCREENRECT.width / 3, self.SCREENRECT.height), boximg,
-                                                                      "Temperate")  # start with temperate terrain
+                                                                    "Temperate")  # start with temperate terrain
         self.feature_change_button = uniteditor.PreviewChangeButton(self, (self.SCREENRECT.width / 2, self.SCREENRECT.height), boximg,
-                                                                      "Plain")  # start with plain feature
+                                                                    "Plain")  # start with plain feature
         self.weather_change_button = uniteditor.PreviewChangeButton(self, (self.SCREENRECT.width / 1.5, self.SCREENRECT.height), boximg,
-                                                                      "Light Sunny")  # start with light sunny
+                                                                    "Light Sunny")  # start with light sunny
 
-        uniteditor.Unitbuildslot.squadwidth = self.squadwidth
-        uniteditor.Unitbuildslot.squadheight = self.squadheight
-        startpos = [(self.SCREENRECT.width / 2) - (self.squadwidth * 5),
-                    (self.SCREENRECT.height / 2) - (self.squadheight * 4)]
+        uniteditor.Unitbuildslot.sprite_width = self.sprite_width  # sprite_width and height generated in mode (e.g. tactical) file longscript.py
+        uniteditor.Unitbuildslot.sprite_height = self.sprite_height
+        startpos = [(self.SCREENRECT.width / 2) - (self.sprite_width * 5),
+                    (self.SCREENRECT.height / 2) - (self.sprite_height * 4)]
         self.makeunitslot(0, 1, 0, range(0, 64), startpos)  # make player custom unit slot
 
         self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0, self.leader_stat),
@@ -451,13 +452,13 @@ class Mainmenu:
         img1 = load_image(self.main_dir, "tick_box_no.png", "ui\\mainmenu_ui")  # start test button in editor
         img2 = load_image(self.main_dir, "tick_box_yes.png", "ui\\mainmenu_ui")  # stop test button
         self.tickbox_filter = [menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 8),
-                                                   img1, img2, "meleeinf"),
+                                            img1, img2, "meleeinf"),
                                menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.26, self.filterbox.rect.bottomright[1] / 1.7),
-                                                   img1, img2, "rangeinf"),
+                                            img1, img2, "rangeinf"),
                                menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 8),
-                                                   img1, img2, "meleecav"),
+                                            img1, img2, "meleecav"),
                                menu.TickBox(self, (self.filterbox.rect.bottomright[0] / 1.11, self.filterbox.rect.bottomright[1] / 1.7),
-                                                   img1, img2, "rangecav")
+                                            img1, img2, "rangecav")
                                ]
         for box in self.tickbox_filter:  # default start filter with all shown
             box.changetick(True)
@@ -468,22 +469,22 @@ class Mainmenu:
         # v Input box popup
         input_ui_img = load_image(self.main_dir, "inputui.png", "ui\\mainmenu_ui")
         self.inputui = menu.InputUI(self, input_ui_img,
-                                           (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user text input ui box popup
+                                    (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user text input ui box popup
         self.input_ok_button = menu.MenuButton(self, imagelist,
-                                                      pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
-                                                           self.inputui.rect.midleft[1] + imagelist[0].get_height()),
-                                                      text="Confirm", layer=31)
+                                               pos=(self.inputui.rect.midleft[0] + imagelist[0].get_width(),
+                                                    self.inputui.rect.midleft[1] + imagelist[0].get_height()),
+                                               text="Confirm", layer=31)
         self.input_cancel_button = menu.MenuButton(self, imagelist,
-                                                          pos=(self.inputui.rect.midright[0] - imagelist[0].get_width(),
-                                                               self.inputui.rect.midright[1] + imagelist[0].get_height()),
-                                                          text="Cancel", layer=31)
+                                                   pos=(self.inputui.rect.midright[0] - imagelist[0].get_width(),
+                                                        self.inputui.rect.midright[1] + imagelist[0].get_height()),
+                                                   text="Cancel", layer=31)
         self.input_button = (self.input_ok_button, self.input_cancel_button)
         self.input_box = menu.InputBox(self, self.inputui.rect.center, self.inputui.image.get_width())  # user text input box
 
         self.inputui_pop = (self.inputui, self.input_box, self.input_ok_button, self.input_cancel_button)
 
         self.confirmui = menu.InputUI(self, input_ui_img,
-                                             (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user confirm input ui box popup
+                                      (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2))  # user confirm input ui box popup
         self.confirmui_pop = (self.confirmui, self.input_ok_button, self.input_cancel_button)
         # ^ End input box popup
 
@@ -491,7 +492,7 @@ class Mainmenu:
         self.profile_name = self.Profilename
         img = load_image(self.main_dir, "profile_box.png", "ui\\mainmenu_ui")
         self.profile_box = menu.ProfileBox(self, img, (self.ScreenWidth, 0),
-                                                  self.profile_name)  # profile name box at top right of screen at gamestart menu screen
+                                           self.profile_name)  # profile name box at top right of screen at gamestart menu screen
         # ^ End profile box
 
         # v Create option menu button and icon
@@ -503,12 +504,12 @@ class Mainmenu:
         img3 = load_image(self.main_dir, "scroll_click.jpg", "ui\\mainmenu_ui")
         imagelist = [img, img2, img3]
         self.resolution_scroll = menu.MenuButton(self, imagelist, (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2.3),
-                                                        text=str(self.ScreenWidth) + " x " + str(self.ScreenHeight), size=16)
+                                                 text=str(self.ScreenWidth) + " x " + str(self.ScreenHeight), size=16)
         resolutionlist = ["1920 x 1080", "1600 x 900", "1366 x 768", "1280 x 720", "1024 x 768"]
         self.resolutionbar = make_bar_list(self, listtodo=resolutionlist, menuimage=self.resolution_scroll)
         img = load_image(self.main_dir, "resolution_icon.png", "ui\\mainmenu_ui")
         self.resolutionicon = menu.MenuIcon([img], (self.resolution_scroll.pos[0] - (self.resolution_scroll.pos[0] / 4.5),
-                                                           self.resolution_scroll.pos[1]), imageresize=50)
+                                                    self.resolution_scroll.pos[1]), imageresize=50)
         # End resolution
 
         # Volume change scroller bar
@@ -517,12 +518,12 @@ class Mainmenu:
         img3 = load_image(self.main_dir, "scoll_button_click.png", "ui\\mainmenu_ui")
         img4 = load_image(self.main_dir, "numbervalue_icon.jpg", "ui\\mainmenu_ui")
         self.volumeslider = menu.SliderMenu(barimage=img, buttonimage=[img2, img3],
-                                                   pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height / 3),
-                                                   value=self.Soundvolume)
+                                            pos=(self.SCREENRECT.width / 2, self.SCREENRECT.height / 3),
+                                            value=self.Soundvolume)
         self.valuebox = [menu.ValueBox(img4, (self.volumeslider.rect.topright[0] * 1.1, self.volumeslider.rect.topright[1]), self.Soundvolume)]
         img = load_image(self.main_dir, "volume_icon.png", "ui\\mainmenu_ui")
         self.volumeicon = menu.MenuIcon([img], (self.volumeslider.pos[0] - (self.volumeslider.pos[0] / 4.5), self.volumeslider.pos[1]),
-                                               imageresize=50)
+                                        imageresize=50)
         # End volume change
 
         self.optioniconlist = (self.resolutionicon, self.volumeicon)
@@ -587,12 +588,10 @@ class Mainmenu:
             self.genre = genre.lower()
         global battle, leader, longscript, unit, subunit, rangeattack, uniteditor
         if self.genre == "tactical":
-            from gamescript.tactical import battle, leader, longscript, \
-                unit, subunit, rangeattack
             longscript.load_game_data(self)  # obtain game stat data and create lore book object
         elif self.genre == "arcade":
-            from gamescript.arcade import battle, leader, longscript, \
-                unit, subunit, rangeattack
+            from gamescript.arcade import leader, longscript, \
+                subunit, rangeattack
             longscript.load_game_data(self)
         uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
         self.genre_change_box.changetext(self.genre.capitalize())
@@ -637,11 +636,11 @@ class Mainmenu:
             team1setpos = (self.SCREENRECT.width / 2 - (300 * self.width_adjust), self.SCREENRECT.height / 3)
         # position = self.mapshow[0].get_rect()
         self.teamcoa.add(menu.TeamCoa(self, team1setpos, self.coa[data[0]],
-                                             1, self.allfaction.faction_list[data[0]][0]))  # team 1
+                                      1, self.allfaction.faction_list[data[0]][0]))  # team 1
 
         if oneteam is False:
             self.teamcoa.add(menu.TeamCoa(self, (self.SCREENRECT.width / 2 + (300 * self.width_adjust), self.SCREENRECT.height / 3),
-                                                 self.coa[data[1]], 2, self.allfaction.faction_list[data[1]][0]))  # team 2
+                                          self.coa[data[1]], 2, self.allfaction.faction_list[data[1]][0]))  # team 2
         uiclass.add(self.teamcoa)
 
     def makemap(self, mapfolderlist, maplist):
@@ -764,14 +763,14 @@ class Mainmenu:
         slotnum = 0  # Number of subunit based on the position in row and column
         for subunit in rangetorun:  # generate player unit slot for filling troop into preview unit
             if columnonly is False:
-                width += self.squadwidth
+                width += self.sprite_width
                 self.unit_build_slot.add(uniteditor.Unitbuildslot(gameid, team, unitid, (width, height), startpos, slotnum, self.teamcolour))
                 slotnum += 1
                 if slotnum % 8 == 0:  # Pass the last subunit in the row, go to the next one
                     width = 0
-                    height += self.squadheight
+                    height += self.sprite_height
             else:
-                height += self.squadheight
+                height += self.sprite_height
                 self.unit_build_slot.add(uniteditor.Unitbuildslot(gameid, team, unitid, (width, height), startpos, slotnum, self.teamcolour))
                 slotnum += 1
             gameid += 1
@@ -962,7 +961,7 @@ class Mainmenu:
                             self.currentpopuprow = self.popup_listscroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
                             self.setuplist(menu.NameList, self.currentpopuprow, self.genrelist,
-                                                self.popup_namegroup, self.popup_listbox, self.mainui)
+                                           self.popup_namegroup, self.popup_listbox, self.mainui)
 
                         # else:
                         #     self.mainui.remove(self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
@@ -1040,7 +1039,7 @@ class Mainmenu:
                                        self.source_listbox, self.mainui)
 
                         self.sourcescroll = battleui.UIScroller(self.source_listbox.rect.topright, self.source_listbox.image.get_height(),
-                                                              self.source_listbox.maxshowlist, layer=16)  # scroller bar for source list
+                                                                self.source_listbox.maxshowlist, layer=16)  # scroller bar for source list
 
                         for index, team in enumerate(self.teamcoa):
                             if index == 0:

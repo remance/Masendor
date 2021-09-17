@@ -46,6 +46,7 @@ class TroopNumber(pygame.sprite.Sprite):
     def __init__(self):
         pass
 
+
 class Unit(pygame.sprite.Sprite):
     images = []
     status_list = None  # status effect list
@@ -146,7 +147,6 @@ class Unit(pygame.sprite.Sprite):
                 height += self.imgsize[1]
                 subunitnum = 0
         # ^ End subunit position list
-
 
     def setup_army(self, battlestart=True):
         """Grab stat from all subunit in the parentunit"""
