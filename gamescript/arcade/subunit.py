@@ -1370,7 +1370,7 @@ class Subunit(pygame.sprite.Sprite):
                 if skill_troop_cond != 0 or (self.subunit_type == 2 and skill_troop_cond != 2) or (self.subunit_type != 2 and skill_troop_cond == 2):
                     self.skill.pop(skill)
 
-    def animation(self):
+    def animation(self, frms, spd_ms):
         """Credit to cenk"""
         self.event
         self.frames = frms

@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-from gamescript.tactical import longscript
+from gamescript import commonscript
 
 
 class Lorebook(pygame.sprite.Sprite):
@@ -239,12 +239,12 @@ class Lorebook(pygame.sprite.Sprite):
                     else:
                         if "FULLIMAGE:" in text:  # full image to whole two pages
                             filename = text[10:].split("\\")[-1]
-                            textsurface = longscript.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
+                            textsurface = commonscript.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
                             textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
                             textrect = descriptionsurface.get_rect(topleft=(0, 0))
                         else:
                             filename = text[6:].split("\\")[-1]
-                            textsurface = longscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
+                            textsurface = commonscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                             textrect = descriptionsurface.get_rect(topleft=(col, row))
                     self.image.blit(textsurface, textrect)
 
@@ -421,14 +421,14 @@ class Lorebook(pygame.sprite.Sprite):
                         else:
                             if "FULLIMAGE:" in text:
                                 filename = text[10:].split("\\")[-1]
-                                textsurface = longscript.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
+                                textsurface = commonscript.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
                                 textsurface = pygame.transform.scale(textsurface, (self.image.get_width(), self.image.get_height()))
                                 textrect = descriptionsurface.get_rect(topleft=(0, 0))
                             else:
                                 filename = text[6:].split("\\")[-1]
                                 print(self.main_dir)
                                 print(filename, text[6:].replace(filename, ""), text[6:])
-                                textsurface = longscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
+                                textsurface = commonscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                                 textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.image.blit(textsurface, textrect)
 
