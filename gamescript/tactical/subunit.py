@@ -12,7 +12,7 @@ from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
 infinity = float("inf")
-
+rotationxy = commonscript.rotationxy
 
 def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     stat_header = self.stat_list.troop_list_header
@@ -372,7 +372,6 @@ class Subunit(pygame.sprite.Sprite):
     weapon_list = None
     armour_list = None
     stat_list = None
-    rotationxy = commonscript.rotationxy
     setrotate = longscript.setrotate
     change_leader = longscript.change_leader
     maxzoom = 10  # max zoom allow
@@ -530,7 +529,7 @@ class Subunit(pygame.sprite.Sprite):
         self.imageheight = (image.get_height() - 1) / 20  # get real half height of circle sprite
 
         self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))  # generate front side position
-        self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
+        self.front_pos = rotationxy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
 
         self.attack_pos = self.parentunit.base_attack_pos
         self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)  # get new terrain and feature at each subunit position
@@ -1015,7 +1014,7 @@ class Subunit(pygame.sprite.Sprite):
         """create new pos for front side of sprite"""
         self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))
 
-        self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)
+        self.front_pos = rotationxy(self.base_pos, self.front_pos, self.radians_angle)
 
     def make_pos_range(self):
         """create range of sprite pos for pathfinding"""
@@ -1397,11 +1396,11 @@ class Subunit(pygame.sprite.Sprite):
                                         self.parentunit.base_pos += move
                                     frontpos = (self.parentunit.base_pos[0],
                                                 (self.parentunit.base_pos[1] - self.parentunit.base_height_box))  # find front position
-                                    self.parentunit.front_pos = self.rotationxy(self.parentunit.base_pos, frontpos, self.parentunit.radians_angle)
+                                    self.parentunit.front_pos = rotationxy(self.parentunit.base_pos, frontpos, self.parentunit.radians_angle)
 
                                     numberpos = (self.parentunit.base_pos[0] - self.parentunit.base_width_box,
                                                  (self.parentunit.base_pos[1] + self.parentunit.base_height_box))
-                                    self.parentunit.number_pos = self.rotationxy(self.parentunit.base_pos, numberpos, self.parentunit.radians_angle)
+                                    self.parentunit.number_pos = rotationxy(self.parentunit.base_pos, numberpos, self.parentunit.radians_angle)
                                     self.parentunit.truenumber_pos = self.parentunit.number_pos * (
                                             11 - self.parentunit.zoom)  # find new position for troop number text
 

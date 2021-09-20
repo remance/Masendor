@@ -541,7 +541,7 @@ def countdown_skill_icon(self):
     #     effect.iconchange(cd, 0)
 
 
-def rotationxy(self, origin, point, angle):
+def rotationxy(origin, point, angle):
     ox, oy = origin
     px, py = point
     x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)

@@ -12,6 +12,7 @@ from pygame.transform import scale
 
 infinity = float("inf")
 
+rotationxy = commonscript.rotationxy
 
 def create_troop_stat(self, stat, starthp, troop_type):
     if troop_type == "troop":
@@ -293,7 +294,6 @@ class Subunit(pygame.sprite.Sprite):
     armour_list = None
     stat_list = None
 
-    rotationxy = commonscript.rotationxy
     setrotate = longscript.setrotate
     create_troop_stat = create_troop_stat
     zoom = 4
@@ -412,7 +412,7 @@ class Subunit(pygame.sprite.Sprite):
         self.imageheight = (image.get_height() - 1) / 20  # get real half height of circle sprite
 
         self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))  # generate front side position
-        self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
+        self.front_pos = rotationxy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
 
         self.attack_pos = self.parentunit.base_attack_pos
         self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)  # get new terrain and feature at each subunit position
@@ -833,7 +833,7 @@ class Subunit(pygame.sprite.Sprite):
         """create new pos for front side of sprite"""
         self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.imageheight))
 
-        self.front_pos = self.rotationxy(self.base_pos, self.front_pos, self.radians_angle)
+        self.front_pos = rotationxy(self.base_pos, self.front_pos, self.radians_angle)
 
     def make_pos_range(self):
         """create range of sprite pos for pathfinding"""

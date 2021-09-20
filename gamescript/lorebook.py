@@ -41,7 +41,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("timesnewroman", int(textsize * self.height_adjust))
+        self.font = pygame.font.SysFont("helvetica", int(textsize * self.height_adjust))
         self.fontheader = pygame.font.SysFont("oldenglishtext", int(40 * self.height_adjust))
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.width_adjust),
                                                     int(image.get_height() * self.height_adjust)))
@@ -221,7 +221,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.image.blit(descriptionsurface, descriptionrect)
 
         if self.page == 0:
-            row = 400 * self.height_adjust
+            row = 350 * self.height_adjust
             col = 60 * self.width_adjust
 
             # game concept, history, faction sectionis is simply to processed and does not need specific column read
@@ -426,8 +426,6 @@ class Lorebook(pygame.sprite.Sprite):
                                 textrect = descriptionsurface.get_rect(topleft=(0, 0))
                             else:
                                 filename = text[6:].split("\\")[-1]
-                                print(self.main_dir)
-                                print(filename, text[6:].replace(filename, ""), text[6:])
                                 textsurface = commonscript.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                                 textrect = descriptionsurface.get_rect(topleft=(col, row))
                         self.image.blit(textsurface, textrect)
