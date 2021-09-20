@@ -1,6 +1,6 @@
-![alt text](https://github.com/remance/preview/blob/master/pygamelogo.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/pygamelogo.gif?raw=true)
 
-![alt text](https://github.com/remance/preview/blob/master/preview.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/preview.gif?raw=true)
 
 # Educational and historical wargame simulation made with Pygame. 
 
@@ -28,7 +28,7 @@ Also, the game is now optimised based on the pygame 2.0.1 module (much faster th
 
 # Key features so far
 
-The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/preview/blob/master/gamestate.png?raw=true)
+The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/preview/blob/main/gamestate.png?raw=true)
 
 Meaning: The update is going well and steady.
 
@@ -38,26 +38,26 @@ Have you ever find it weird that most historical games follow only a specific ve
 For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.
 Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the army composition, size, even formation and possibly more. 
 
-![alt text](https://github.com/remance/preview/blob/master/source.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/source.gif?raw=true)
 
 ## Army is led by more than just a king
 
 So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people
 that participated in the battle.
 
-![alt text](https://github.com/remance/preview/blob/master/leader.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/leader.gif?raw=true)
 
 ## Complex troop statistic system
 
 A lot of simplified soldier statistics yet complexly interchange together that affect combat capability in various ways.
 
-![alt text](https://github.com/remance/preview/blob/master/troop.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/troop.gif?raw=true)
 
 ## Custom unit creator
 
 Bored of a simple line formation and want to try making weird unit formation? There is a custom unit editor that provides a complete freedom unit design. The custom units can be used in custom battles.
 
-![alt text](https://github.com/remance/preview/blob/master/custom.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/custom.gif?raw=true)
 
 ## Extremely easy map creation
 
@@ -70,7 +70,7 @@ Video demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
 
 This game's encyclopedia will have more information than just from the Wikipedia website as long as they can be found that is. 
 
-![alt text](https://github.com/remance/preview/blob/master/lore.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/lore.gif?raw=true)
 
 This function is going to be a headache to write and research. But hopefully, it will provide useful and interesting historical information to players.
 
