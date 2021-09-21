@@ -22,7 +22,7 @@ edit_config = commonscript.edit_config
 make_bar_list = commonscript.make_bar_list
 load_base_button = commonscript.load_base_button
 text_objects = commonscript.text_objects
-
+version_name = "Dream Decision"
 
 class Mainmenu:
     leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
@@ -531,7 +531,6 @@ class Mainmenu:
         self.optionmenu_slider = self.volumeslider
         # ^ End option menu button
 
-        pygame.display.set_caption("Dream Decision")  # set the game name on program border/tab
         pygame.mouse.set_visible(1)  # set mouse as visible
 
         # v Music player
@@ -561,6 +560,7 @@ class Mainmenu:
         if introoption:
             intro = True
         timer = 0
+        # The record is truthful, unbiased, correct and approved by appointed certified historians.
         # quote = ["Those attacker fail to learn from the mistakes of their predecessors are destined to repeat them. George Santayana",
         # "It is more important to outhink your enemy, than to outfight him, Sun Tzu"]
         while intro:
@@ -596,6 +596,8 @@ class Mainmenu:
         uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
         self.genre_change_box.changetext(self.genre.capitalize())
         edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
+
+        pygame.display.set_caption(version_name + " " + self.genre.capitalize())  # set the game name on program border/tab
 
         # v Background image
         try:

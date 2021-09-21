@@ -7,7 +7,7 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter
 from gamescript import commonscript
-from gamescript.tactical import rangeattack, longscript
+from gamescript.arcade import rangeattack, longscript
 from pygame.transform import scale
 
 infinity = float("inf")

@@ -1,8 +1,8 @@
 "name","red","green","blue"
-"white",77,40,21
-"yellow",57,47,23
-"black",15,12,9
-"brown",33,24,13
-"tan",49,34,20
-"amber",73,39,20
-"lightbrown",64,37,22
+"white","default","default","default"
+"yellow",237,225,140
+"black",66,57,45
+"brown",121,83,53
+"tan",195,132,52
+"amber",130,65,50
+"lightbrown",229,187,132
