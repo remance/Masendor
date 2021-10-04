@@ -16,6 +16,8 @@
 "l_arm_low","l_wrist","4,10"
 "l_hand","l_wrist","4,0"
 "r_leg","r_hip","4,0"
+"r_leg","r_knee","4,14"
 "r_foot","r_knee","6,4"
 "l_leg","l_hip","4.5,0"
+"l_leg","l_knee","4,14"
 "l_foot","l_knee","6,4"

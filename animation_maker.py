@@ -23,6 +23,7 @@ default_sprite_size = (150, 150)
 
 screen_size = (1000, 1000)
 
+pygame.init()
 pen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Animation Maker")  # set the game name on program border/tab
 pygame.mouse.set_visible(1)  # set mouse as visible
@@ -125,31 +126,91 @@ class Showroom(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.size)
         self.image.fill((255,255,255))
         self.rect = self.image.get_rect(center=(screen_size[0] / 2, screen_size[1] / 2))
+        self.grid = True
         
-    def update(self, mouse_pos):
+    def update(self):
         self.image.fill((255, 255, 255))
+        if self.grid:
+            grid_width = self.image.get_width() / 10
+            grid_height = self.image.get_height() / 10
+            for loop in range(1, 10):
+                pygame.draw.line(self.image, (0,0,0), (grid_width * loop,0), (grid_width * loop, self.image.get_height()))
+                pygame.draw.line(self.image, (0, 0, 0), (0, grid_height * loop), (self.image.get_width(), grid_height * loop))
 
 class Filmstrip(pygame.sprite.Sprite):
+    """animation sprite filmstrip, always no more than 10 per animation"""
     image_original = None
     def __init__(self, pos):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.image = self.image_original.copy()
+        self.image = self.image_original.copy()  # original no sprite
+        self.image_original2 = self.image_original.copy()  # after add sprite but before adding selected corner
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.image_scale = (self.image.get_width() / 100, self.image.get_height() / 120)
+        self.blitimage = None
+        self.strip_rect = None
+
+    def update(self):
+        self.image = self.image_original2.copy()
+
+    def selected(self, select=False):
+        self.image = self.image_original2.copy()
+        if select:
+            pygame.draw.rect(self.image, (150, 200, 100), (0,0,self.image.get_width(),self.image.get_height()), 15)
+            # self.add_strip(self.blitimage)
+
+    def add_strip(self, image=None):
+        self.image = self.image_original.copy()
+        if image is not None:
+            self.blitimage = pygame.transform.scale(image.copy(), (int(100 * self.image_scale[0]), int(100 * self.image_scale[1])))
+            self.strip_rect = self.blitimage.get_rect(center=(self.image.get_width()/2, self.image.get_height()/2))
+            self.image.blit(self.blitimage, self.strip_rect)
+        self.image_original2 = self.image.copy()
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, text):
+    """Normal button"""
+    def __init__(self, text, image, pos, fontsize=20):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", int(fontsize * screen_size[1] / 1000))
+        self.image = image.copy()
         self.text = text
+        textsurface = self.font.render(str(text), 1, (0, 0, 0))
+        textrect = textsurface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
+        self.image.blit(textsurface, textrect)
+        self.rect = self.image.get_rect(center=pos)
 
+
+class SwitchButton(pygame.sprite.Sprite):
+    """Button that switch text/option"""
+    def __init__(self, text_list, image, pos, fontsize=20):
+        self._layer = 5
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", int(fontsize * screen_size[1] / 1000))
+        self.current_option = 0
+        self.image_original = image
+        self.image = self.image_original.copy()
+        self.text_list = text_list
+        self.change_text(self.text_list[self.current_option])
+        self.rect = self.image.get_rect(center=pos)
+
+    def change_option(self, option):
+        if self.current_option != option:
+            self.current_option = option
+            self.image = self.image_original.copy()
+            self.change_text(self.text_list[self.current_option])
+
+    def change_text(self, text):
+        textsurface = self.font.render(str(text), 1, (0, 0, 0))
+        textrect = textsurface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
+        self.image.blit(textsurface, textrect)
 
 class Bodyhelper(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, pos):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        pass
+        self.rect = self.image.get_rect(center=pos)
 
 class SideChoose:
     def __init__(self):
@@ -159,34 +220,9 @@ class Skeleton:
     def __init__(self):
         self.animation_list = []
         self.side = 0
-        self.p1_head = None
-        self.p1_body = None
-        self.p1_r_arm_up = None
-        self.p1_r_arm_low = None
-        self.p1_r_hand = None
-        self.p1_l_arm_up = None
-        self.p1_l_arm_low = None
-        self.p1_l_hand = None
-        self.p1_r_leg = None
-        self.p1_r_foot = None
-        self.p1_l_leg = None
-        self.p1_l_foot = None
-        self.p1_main_weapon = None
-        self.p1_sub_weapon = None
-        self.p2_head = None
-        self.p2_body = None
-        self.p2_r_arm_up = None
-        self.p2_r_arm_low = None
-        self.p2_r_hand = None
-        self.p2_l_arm_up = None
-        self.p2_l_arm_low = None
-        self.p2_l_hand = None
-        self.p2_r_leg = None
-        self.p2_r_foot = None
-        self.p2_l_leg = None
-        self.p2_l_foot = None
-        self.p2_main_weapon = None
-        self.p2_sub_weapon = None
+        self.p1_eyebrow = list(gen_body_sprite_pool["side"]["eyebrow"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["eyebrow"]) - 1)]
+        self.p1_eye = list(gen_body_sprite_pool["side"]["eye"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["eye"]) - 1)]
+        self.p1_mouth = list(gen_body_sprite_pool["side"]["mouth"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["mouth"]) - 1)]
 
         self.rect_part_list = {"p1_r_arm_up" : None, "p1_r_arm_low" : None, "self.p1_r_hand" : None, "p1_l_arm_up" : None,
                                "p1_l_arm_low" : None, "p1_l_hand" : None, "p1_r_leg" : None, "p1_r_foot" : None,
@@ -195,10 +231,13 @@ class Skeleton:
                                "p2_r_hand" : None, "p2_l_arm_up" : None, "p2_l_arm_low" : None, "p2_l_hand" : None,
                                "p2_r_leg" : None, "p2_r_foot" : None, "p2_l_leg" : None, "p2_l_foot" : None,
                                "p2_main_weapon" : None, "p2_sub_weapon" : None}
+        self.part_selected = None
+        self.generate_animation("Default")
+        self.default = self.sprite_part.copy()
 
-    def generate_animation(self):
+    def generate_animation(self, name):
         #  sprite animation generation
-        animation_list = [generic_animation_pool['Default']]  # , generic_animation_pool['Run']
+        animation_list = [generic_animation_pool[name]]  # , generic_animation_pool['Run']
         for animation in animation_list:
             for pose in animation:
                 # TODO change later when have p2
@@ -231,11 +270,11 @@ class Skeleton:
         skin_colour = skin_colour_list[skin]
         hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         face = [gen_body_sprite_pool[bodypart_list[0][0]]["head"][bodypart_list[0][1]].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]]["eye"][list(gen_body_sprite_pool[bodypart_list[0][0]]["eye"].keys())[random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["eye"]) - 1)]].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]]["eyebrow"][list(gen_body_sprite_pool[bodypart_list[0][0]]["eyebrow"].keys())[random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["eyebrow"]) - 1)]].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]]["mouth"][list(gen_body_sprite_pool[bodypart_list[0][0]]["mouth"].keys())[random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["mouth"]) - 1)]].copy()]
-        if skin != "white":
-            face[0] = self.apply_colour(face[0], skin_colour)
+                gen_body_sprite_pool[bodypart_list[0][0]]["eye"][self.p1_eye].copy(),
+                gen_body_sprite_pool[bodypart_list[0][0]]["eyebrow"][self.p1_eyebrow].copy(),
+                gen_body_sprite_pool[bodypart_list[0][0]]["mouth"][self.p1_mouth].copy()]
+        # if skin != "white":
+        #     face[0] = self.apply_colour(face[0], skin_colour)
         face[1] = self.apply_colour(face[1], [random.randint(0,255), random.randint(0,255), random.randint(0,255)])
         face[2] = self.apply_colour(face[2], hair_colour)
         face[3] = self.apply_colour(face[3], hair_colour)
@@ -264,9 +303,9 @@ class Skeleton:
                              "p1_r_foot": gen_body_sprite_pool[bodypart_list[9][0]]["foot"][bodypart_list[9][1]].copy(),
                              "p1_l_leg": gen_body_sprite_pool[bodypart_list[10][0]]["leg"][bodypart_list[10][1]].copy(),
                              "p1_l_foot": gen_body_sprite_pool[bodypart_list[11][0]]["foot"][bodypart_list[11][1]].copy()}
-        if skin != "white":
-            for part in list(self.sprite_image.keys())[1:]:
-                self.sprite_image[part] = self.apply_colour(self.sprite_image[part], skin_colour)
+        # if skin != "white":
+        #     for part in list(self.sprite_image.keys())[1:]:
+        #         self.sprite_image[part] = self.apply_colour(self.sprite_image[part], skin_colour)
 
         main_joint_pos_list = {}
         for part_index, part in enumerate(part_name_header):
@@ -277,10 +316,18 @@ class Skeleton:
         return main_joint_pos_list
 
     def click_part(self, mouse_pos):
-        for rect in self.rect_part_list:
+        self.part_selected = None
+        for index, rect in enumerate(self.rect_part_list):
             thisrect = self.rect_part_list[rect]
             if thisrect is not None and thisrect.collidepoint(mouse_pos):
+                self.part_selected = index
                 break
+
+    def move_part(self, mouse_pos, current_frame):
+        self.part_selected
+
+    def rotate_part(self, mouse_pos, current_frame):
+        self.part_selected
 
     def apply_colour(self, image, colour):
         size = (image.get_width(), image.get_height())
@@ -352,24 +399,30 @@ class Animation:
         self.current_frame = 0
         self.loop = loop
 
-    def play(self, pen, crd):
+    def play(self, showroom, position):
         if time.time() - self.first_time >= self.speed_ms:
             self.show_frame += 1
             self.first_time = time.time()
         if self.show_frame > self.end_frame:
             self.show_frame = self.start_frame
-        # pen mean to window and is abbreivation of "pencere"
-        pen.blit(self.frames[self.show_frame], crd)
+        showroom.blit(self.frames[self.show_frame], position)
+
+# start animation maker
+clock = pygame.time.Clock()
 
 ui = pygame.sprite.LayeredUpdates()
 
-test = Skeleton()
+skeleton = Skeleton()
 image = pygame.transform.scale(load_image(main_dir, "film.png", ["animation_maker_ui"]),
                                (int(100 * screen_size[1] / 1000), int(100 * screen_size[1] / 1000)))
 Filmstrip.image_original = image
 filmstrips = pygame.sprite.Group()
 
+Button.containers = ui
+SwitchButton.containers = ui
+Bodyhelper.containers = ui
 Filmstrip.containers = ui, filmstrips
+
 filmstrip_list = [Filmstrip((0, 50 * screen_size[1] / 500)),Filmstrip((image.get_width(), 50 * screen_size[1] / 500)),
                Filmstrip((image.get_width() * 2, 50 * screen_size[1] / 500)), Filmstrip((image.get_width() * 3, 50 * screen_size[1] / 500)),
                Filmstrip((image.get_width() * 4, 50 * screen_size[1] / 500)), Filmstrip((image.get_width() * 5, 50 * screen_size[1] / 500)),
@@ -377,12 +430,42 @@ filmstrip_list = [Filmstrip((0, 50 * screen_size[1] / 500)),Filmstrip((image.get
                Filmstrip((image.get_width() * 8, 50 * screen_size[1] / 500)),Filmstrip((image.get_width() * 9, 50 * screen_size[1] / 500))]
 
 filmstrips.add(*filmstrip_list)
+
+# p1_body_helper = Bodyhelper()
+# p2_body_helper = Bodyhelper()
+# effect_helper = Bodyhelper()
+
+image = load_image(main_dir, "button.png", ["animation_maker_ui"])
+image = pygame.transform.scale(image,  (int(image.get_width() * screen_size[1] / 1000),
+                                        int(image.get_height() * screen_size[1] / 1000)))
+
+# copy_button = Button("Copy",image, (100,200))
+# paste_button = Button("Paste",image, (100,200))
+# default_button = Button("Default",image, (100,200))
+# clear_button = Button("Clear",image, (100,200))
+
+# flip_vert_button = Button("Flip Vert",image, (100,200))
+# flip_hori_button = Button("Flip Hori",image, (100,200))
+# reset_button = Button("Reset",image, (100,200))
+
+new_button = Button("New",image, (image.get_width() / 2, image.get_height()/2))
+save_button = Button("Save",image, (image.get_width() * 2, image.get_height()/2))
+delete_button = Button("Delete",image, (image.get_width() * 10, image.get_height()/2))
+
+
+play_animation_button = SwitchButton(["Play", "Stop"], image,
+                                     (screen_size[1]/2, filmstrip_list[0].rect.midbottom[1] + (image.get_height()/2)))
+# loop_button = SwitchButton(["Loop:Yes", "Loop:No"],image, (100,200))
+
 showroom = Showroom((150 * screen_size[0] / 500, 150 * screen_size[1] / 500))
-# frms[0].fill((255,0,0))#red frame
-# frms[1].fill((0,255,0))#green frame
-# this is actual class
+
 runtime = 0
+mousetimer = 0
+play_animation = False
+current_frame = 0
+
 while True:
+    dt = clock.get_time() / 1000
     mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
     mouse_up = False  # left click
     mouse_leftdown = False  # hold left click
@@ -391,25 +474,98 @@ while True:
     double_mouse_right = False  # double right click
     mouse_scrolldown = False
     mouse_scrollup = False
-    if runtime == 0:
-        test.animation_list = []
-        test.generate_animation()
-        frms = [pygame.transform.smoothscale(image, showroom.size) for image in test.animation_list]
-        anim = Animation(frms, 1000, True)
-    runtime += 1
-    if runtime >= 300:
-        runtime = 0
-    for i in pygame.event.get():
-        if i.type == pygame.QUIT:
+    mouse_wheel = True
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
             pygame.quit()
-    showroom.update(mouse_pos)
-    if showroom.rect.collidepoint(mouse_pos):
-        mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500,
-                                   (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500)
-        test.click_part(mouse_pos)
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:  # left click
+                mouse_up = True
+            if event.button == 2:  # left click
+                print('test')
+                mouse_wheel = True
+            elif event.button == 3:  # Right Click
+                mouse_right = True
+                if mousetimer == 0:
+                    mousetimer = 0.001  # Start timer after first mouse click
+                elif mousetimer < 0.3:  # if click again within 0.3 second for it to be considered double click
+                    double_mouse_right = True  # double right click
+                    mousetimer = 0
+            elif event.button == 4:  # Mouse scroll up
+                mouse_scrollup = True
+                rowchange = -1
+            elif event.button == 5:  # Mouse scroll down
+                mouse_scrolldown = True
+                rowchange = 1
+
+        # elif event.type == pygame.KEYDOWN:
+        #     if self.textinputpopup[0] == "text_input":  # event update to input box
+        #         self.input_box.userinput(event)
+        #     else:
+        #         keypress = event.key
+
+        if pygame.mouse.get_pressed()[0]:  # Hold left click
+            mouse_leftdown = True
+        elif pygame.mouse.get_pressed()[2]:  # Hold left click
+            mouse_rightdown = True
+
+    if mousetimer != 0:  # player click mouse once before
+        mousetimer += dt  # increase timer for mouse click using real time
+        if mousetimer >= 0.3:  # time pass 0.3 second no longer count as double click
+            mousetimer = 0
+
+    if mouse_up:
+        if play_animation_button.rect.collidepoint(mouse_pos):
+            if play_animation_button.current_option == 0:  #  start playing animation
+                play_animation_button.change_option(1)
+                play_animation = True
+            else:  # stop animation
+                play_animation_button.change_option(0)
+                play_animation = False
+        else:
+            for strip_index, strip in enumerate(filmstrips):
+                if strip.rect.collidepoint(mouse_pos):
+                    current_frame = strip_index
+                    break
+
+    if runtime == 0:
+        runtime = 0.1
+        skeleton.animation_list = []
+        skeleton.generate_animation('Default')
+        frames = [pygame.transform.smoothscale(image, showroom.size) for image in skeleton.animation_list]
+        for frame_index in range(0, 10):
+            try:
+                filmstrip_list[frame_index].add_strip(frames[frame_index])
+            except IndexError:
+                filmstrip_list[frame_index].add_strip()
+        anim = Animation(frames, 1000, True)
+
+    showroom.update()
+    ui.update()
+
+    if play_animation:
+        runtime += dt
+        if runtime >= 1:
+            runtime = 0
+    else:
+        if showroom.rect.collidepoint(mouse_pos):
+            mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500,
+                                       (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500)
+            if mouse_up:
+                skeleton.click_part(mouse_pos)
+            if mouse_wheel:
+                skeleton.move_part(mouse_pos, current_frame)
+            elif mouse_right:
+                skeleton.rotate_part(mouse_pos, current_frame)
+
+    for strip_index, strip in enumerate(filmstrips):
+        if strip_index == current_frame:
+            strip.selected(True)
+            break
 
     pen.fill((0, 0, 0))
     ui.draw(pen)
     anim.play(showroom.image, (0, 0))
     pen.blit(showroom.image, showroom.rect)
     pygame.display.update()
+    clock.tick(60)
