@@ -25,6 +25,13 @@ Check the requirements.txt file for dependency requirements if running with the 
 Also, the game is now optimised based on the pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
 
 ---------------
+# Latest Update
+
+![alt text](https://github.com/remance/preview/blob/main/latest.gif?raw=true)
+
+Animation maker for arcade mode.
+
+---------------
 
 # Key features so far
 
