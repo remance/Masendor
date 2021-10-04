@@ -219,31 +219,31 @@ class SideChoose:
 class Skeleton:
     def __init__(self):
         self.animation_list = []
+        self.animation_part_list = []
         self.side = 0
+
         self.p1_eyebrow = list(gen_body_sprite_pool["side"]["eyebrow"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["eyebrow"]) - 1)]
         self.p1_eye = list(gen_body_sprite_pool["side"]["eye"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["eye"]) - 1)]
         self.p1_mouth = list(gen_body_sprite_pool["side"]["mouth"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["mouth"]) - 1)]
 
-        self.rect_part_list = {"p1_r_arm_up" : None, "p1_r_arm_low" : None, "self.p1_r_hand" : None, "p1_l_arm_up" : None,
-                               "p1_l_arm_low" : None, "p1_l_hand" : None, "p1_r_leg" : None, "p1_r_foot" : None,
+        self.rect_part_list = {"p1_head" : None, "p1_body" : None, "p1_r_arm_up" : None, "p1_r_arm_low" : None, "self.p1_r_hand" : None,
+                               "p1_l_arm_up" : None, "p1_l_arm_low" : None, "p1_l_hand" : None, "p1_r_leg" : None, "p1_r_foot" : None,
                                "p1_l_leg" : None, "p1_l_foot" : None, "p1_main_weapon" : None, "p1_sub_weapon" : None,
                                "p2_head" : None, "p2_body" : None, "p2_r_arm_up" : None, "p2_r_arm_low" : None,
                                "p2_r_hand" : None, "p2_l_arm_up" : None, "p2_l_arm_low" : None, "p2_l_hand" : None,
                                "p2_r_leg" : None, "p2_r_foot" : None, "p2_l_leg" : None, "p2_l_foot" : None,
                                "p2_main_weapon" : None, "p2_sub_weapon" : None}
         self.part_selected = None
-        self.generate_animation("Default")
+        self.read_animation("Default")
         self.default = self.sprite_part.copy()
 
-    def generate_animation(self, name):
+    def read_animation(self, name):
         #  sprite animation generation
         animation_list = [generic_animation_pool[name]]  # , generic_animation_pool['Run']
+        self.animation_part_list = []
         for animation in animation_list:
             for pose in animation:
                 # TODO change later when have p2
-                pose_layer_list = {k: v[-1] for k, v in pose.items() if k != "property" and v != 0 and v[-1] != 0}
-                pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
-
                 link_list = {}
                 bodypart_list = []
                 for part in pose:
@@ -256,26 +256,37 @@ class Skeleton:
                 self.sprite_part = {}
                 for part in part_name_header:
                     if pose[part] != [0] and "weapon" not in part:
-                        self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][4], pose[part][5]]
+                        self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][4],
+                                                  pose[part][5], pose[part][-1]]
 
-                image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
-                for index, layer in enumerate(pose_layer_list):
-                    if "weapon" not in layer:
-                        part = self.sprite_part[layer]
-                    image = self.part_to_sprite(image, part[0], index, part[1], part[2], part[3], part[4])
+                pose_layer_list = {k: v[-1] for k, v in self.sprite_part.items()}
+                pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
+
+                self.animation_part_list.append(self.sprite_part)
+                image = self.create_animation_film(pose_layer_list)
                 self.animation_list.append(image)
+
+    def create_animation_film(self, pose_layer_list):
+        image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
+        for index, layer in enumerate(pose_layer_list):
+            if "weapon" not in layer:
+                part = self.sprite_part[layer]
+            image = self.part_to_sprite(image, part[0], list(self.sprite_part.keys()).index(layer),
+                                        part[1], part[2], part[3], part[4])
+        return image
 
     def generate_body(self, bodypart_list):
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
         hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+
         face = [gen_body_sprite_pool[bodypart_list[0][0]]["head"][bodypart_list[0][1]].copy(),
                 gen_body_sprite_pool[bodypart_list[0][0]]["eye"][self.p1_eye].copy(),
                 gen_body_sprite_pool[bodypart_list[0][0]]["eyebrow"][self.p1_eyebrow].copy(),
                 gen_body_sprite_pool[bodypart_list[0][0]]["mouth"][self.p1_mouth].copy()]
         # if skin != "white":
         #     face[0] = self.apply_colour(face[0], skin_colour)
-        face[1] = self.apply_colour(face[1], [random.randint(0,255), random.randint(0,255), random.randint(0,255)])
+        # face[1] = self.apply_colour(face[1], [random.randint(0,255), random.randint(0,255), random.randint(0,255)])
         face[2] = self.apply_colour(face[2], hair_colour)
         face[3] = self.apply_colour(face[3], hair_colour)
 
@@ -323,11 +334,40 @@ class Skeleton:
                 self.part_selected = index
                 break
 
-    def move_part(self, mouse_pos, current_frame):
-        self.part_selected
+    def edit_part(self, mouse_pos, current_frame, edit_type):
+        part_index = list(self.animation_part_list[current_frame].keys())[self.part_selected]
+        if edit_type == "move":
+            self.animation_part_list[current_frame][part_index][2] = mouse_pos
+        elif edit_type == "rotate":
+            base_pos = self.animation_part_list[current_frame][part_index][2]
+            myradians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
+            newangle = math.degrees(myradians)
 
-    def rotate_part(self, mouse_pos, current_frame):
-        self.part_selected
+            # """upper left -"""
+            if -180 <= newangle <= -90:
+                newangle = -newangle - 90
+
+            # """upper right +"""
+            elif -90 < newangle < 0:
+                newangle = (-newangle) - 90
+
+            # """lower right -"""
+            elif 0 <= newangle <= 90:
+                newangle = -(newangle + 90)
+
+            # """lower left +"""
+            elif 90 < newangle <= 180:
+                newangle = 270 - newangle
+
+            self.animation_part_list[current_frame][part_index][3] = newangle
+        elif edit_type == "flip":
+            pass
+
+        self.sprite_part = self.animation_part_list[current_frame]
+        pose_layer_list = {k: v[-1] for k, v in self.sprite_part.items()}
+        pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
+        image = self.create_animation_film(pose_layer_list)
+        self.animation_list[current_frame] = image
 
     def apply_colour(self, image, colour):
         size = (image.get_width(), image.get_height())
@@ -396,16 +436,25 @@ class Animation:
         self.end_frame = len(self.frames) - 1
         self.first_time = time.time()
         self.show_frame = 0
-        self.current_frame = 0
         self.loop = loop
 
-    def play(self, showroom, position):
+    def play(self, showroom, position, dt):
         if time.time() - self.first_time >= self.speed_ms:
-            self.show_frame += 1
+            self.show_frame += dt
             self.first_time = time.time()
         if self.show_frame > self.end_frame:
             self.show_frame = self.start_frame
         showroom.blit(self.frames[self.show_frame], position)
+
+def reload_animation():
+    frames = [pygame.transform.smoothscale(image, showroom.size) for image in skeleton.animation_list]
+    for frame_index in range(0, 10):
+        try:
+            filmstrip_list[frame_index].add_strip(frames[frame_index])
+        except IndexError:
+            filmstrip_list[frame_index].add_strip()
+    anim = Animation(frames, 1000, True)
+    return anim
 
 # start animation maker
 clock = pygame.time.Clock()
@@ -464,8 +513,13 @@ mousetimer = 0
 play_animation = False
 current_frame = 0
 
+skeleton.animation_list = []
+skeleton.read_animation('Default')
+anim = reload_animation()
+
 while True:
     dt = clock.get_time() / 1000
+    uidt = dt
     mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
     mouse_up = False  # left click
     mouse_leftdown = False  # hold left click
@@ -474,7 +528,8 @@ while True:
     double_mouse_right = False  # double right click
     mouse_scrolldown = False
     mouse_scrollup = False
-    mouse_wheel = True
+    mouse_wheel = False  # mouse wheel click
+    mouse_wheeldown = False  # hold mouse wheel click
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -482,7 +537,6 @@ while True:
             if event.button == 1:  # left click
                 mouse_up = True
             if event.button == 2:  # left click
-                print('test')
                 mouse_wheel = True
             elif event.button == 3:  # Right Click
                 mouse_right = True
@@ -506,11 +560,13 @@ while True:
 
         if pygame.mouse.get_pressed()[0]:  # Hold left click
             mouse_leftdown = True
+        elif pygame.mouse.get_pressed()[1]:  # Hold left click
+            mouse_wheeldown = True
         elif pygame.mouse.get_pressed()[2]:  # Hold left click
             mouse_rightdown = True
 
     if mousetimer != 0:  # player click mouse once before
-        mousetimer += dt  # increase timer for mouse click using real time
+        mousetimer += uidt  # increase timer for mouse click using real time
         if mousetimer >= 0.3:  # time pass 0.3 second no longer count as double click
             mousetimer = 0
 
@@ -526,37 +582,22 @@ while True:
             for strip_index, strip in enumerate(filmstrips):
                 if strip.rect.collidepoint(mouse_pos):
                     current_frame = strip_index
+                    anim.show_frame = current_frame
                     break
 
-    if runtime == 0:
-        runtime = 0.1
-        skeleton.animation_list = []
-        skeleton.generate_animation('Default')
-        frames = [pygame.transform.smoothscale(image, showroom.size) for image in skeleton.animation_list]
-        for frame_index in range(0, 10):
-            try:
-                filmstrip_list[frame_index].add_strip(frames[frame_index])
-            except IndexError:
-                filmstrip_list[frame_index].add_strip()
-        anim = Animation(frames, 1000, True)
+    # change animation
+    # skeleton.animation_list = []
+    # skeleton.generate_animation('Default')
+    # frames = [pygame.transform.smoothscale(image, showroom.size) for image in skeleton.animation_list]
+    # for frame_index in range(0, 10):
+    #     try:
+    #         filmstrip_list[frame_index].add_strip(frames[frame_index])
+    #     except IndexError:
+    #         filmstrip_list[frame_index].add_strip()
+    # anim = Animation(frames, 1000, True)
 
     showroom.update()
     ui.update()
-
-    if play_animation:
-        runtime += dt
-        if runtime >= 1:
-            runtime = 0
-    else:
-        if showroom.rect.collidepoint(mouse_pos):
-            mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500,
-                                       (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500)
-            if mouse_up:
-                skeleton.click_part(mouse_pos)
-            if mouse_wheel:
-                skeleton.move_part(mouse_pos, current_frame)
-            elif mouse_right:
-                skeleton.rotate_part(mouse_pos, current_frame)
 
     for strip_index, strip in enumerate(filmstrips):
         if strip_index == current_frame:
@@ -565,7 +606,25 @@ while True:
 
     pen.fill((0, 0, 0))
     ui.draw(pen)
-    anim.play(showroom.image, (0, 0))
+
+    if play_animation:
+        current_frame = anim.show_frame
+    else:
+        dt = 0
+        if showroom.rect.collidepoint(mouse_pos):
+            mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500,
+                                       (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500)
+            if mouse_up:
+                skeleton.click_part(mouse_pos)
+            if mouse_wheel or mouse_wheeldown:
+                skeleton.edit_part(mouse_pos, current_frame, "rotate")
+                anim = reload_animation()
+            elif mouse_right or mouse_rightdown:
+                skeleton.edit_part(mouse_pos, current_frame, "move")
+                anim = reload_animation()
+
+    anim.play(showroom.image, (0, 0), dt)
+
     pen.blit(showroom.image, showroom.rect)
     pygame.display.update()
     clock.tick(60)
