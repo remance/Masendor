@@ -15,7 +15,7 @@ def stat_convert(row, n, i, mod_column=[], list_column=[], int_column=[]):
     elif list_column != [] and n in list_column:
         if "," in i:
             if "." in i:
-                row[n] = [float(item) for item in row[n].split(",")]
+                row[n] = [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in row[n].split(",")]
             else:
                 row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
         elif i.isdigit():
