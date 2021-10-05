@@ -531,7 +531,7 @@ class Mainmenu:
         self.optionmenu_slider = self.volumeslider
         # ^ End option menu button
 
-        pygame.mouse.set_visible(1)  # set mouse as visible
+        pygame.mouse.set_visible(True)  # set mouse as visible
 
         # v Music player
         if pygame.mixer:
