@@ -29,6 +29,7 @@ pen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Animation Maker")  # set the game name on program border/tab
 pygame.mouse.set_visible(True)  # set mouse as visible
 
+direction_list = ("front", "side", "back", "cornerup", "cornerdown")
 
 def load_textures(main_dir, subfolder=None):
     """loads all body sprite part image"""
@@ -45,9 +46,29 @@ def load_textures(main_dir, subfolder=None):
 
     return imgs
 
+race_list = []
+race_acro = []
+with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as unitfile:
+    rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+    for row in rd:
+        if "," in row[-2]:  # make str with , into list
+            thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+        else:
+            thisruleset = [row[-2]]
+
+        for n, i in enumerate(row):
+            if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
+                row[n] = float(i)
+        race_list.append(row[1].lower())
+        race_acro.append(row[3])
+unitfile.close()
+
+race_list = race_list[2:]  # remove header and any race
+race_acro = race_acro[2:]
+race_accept = ["human"]  # for now accept only human race
 
 generic_animation_pool = []
-for direction in ["front", "side", "back", "cornerup", "cornerdown"]:
+for direction in direction_list:
     with open(os.path.join(main_dir, "data", "arcade", "animation", "generic", direction, "animation.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
@@ -76,26 +97,28 @@ for direction in ["front", "side", "back", "cornerup", "cornerdown"]:
     unitfile.close()
 
 skel_joint_list = []
-for direction in ["front", "side", "back", "cornerup", "cornerdown"]:
-    with open(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "human", direction, "skeleton_link.csv"), encoding="utf-8",
-              mode="r") as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        header = rd[0]
-        list_column = ["Position"]  # value in list only
-        list_column = [index for index, item in enumerate(header) if item in list_column]
-        joint_list = {}
-        for row_index, row in enumerate(rd):
-            if row_index > 0:
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, list_column=list_column)
-                    key = row[0].split("/")[0]
-                if key in joint_list:
-                    joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
-                else:
-                    joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
-        skel_joint_list.append(joint_list)
-    unitfile.close()
+for race in race_list:
+    if race in race_accept:
+        for direction in direction_list:
+            with open(os.path.join(main_dir, "data", "arcade", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
+                      mode="r") as unitfile:
+                rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+                rd = [row for row in rd]
+                header = rd[0]
+                list_column = ["Position"]  # value in list only
+                list_column = [index for index, item in enumerate(header) if item in list_column]
+                joint_list = {}
+                for row_index, row in enumerate(rd):
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, list_column=list_column)
+                            key = row[0].split("/")[0]
+                        if key in joint_list:
+                            joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
+                        else:
+                            joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
+                skel_joint_list.append(joint_list)
+            unitfile.close()
 
 with open(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
           mode="r") as unitfile:
@@ -113,14 +136,16 @@ with open(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "skin_co
             skin_colour_list[key] = row[1:]
 
 gen_body_sprite_pool = {}
-for direction in ["front", "side", "back", "cornerup", "cornerdown"]:
-    gen_body_sprite_pool[direction] = {}
-    partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "human", direction))
-    subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
-    for folder in subdirectories:
-        imgs = load_textures(main_dir, folder)
-        gen_body_sprite_pool[direction][folder[-1]] = imgs
-
+for race in race_list:
+    if race in race_accept:
+        gen_body_sprite_pool[race] = {}
+        for direction in direction_list:
+            gen_body_sprite_pool[race][direction] = {}
+            partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "human", direction))
+            subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
+            for folder in subdirectories:
+                imgs = load_textures(main_dir, folder)
+                gen_body_sprite_pool[race][direction][folder[-1]] = imgs
 
 class Showroom(pygame.sprite.Sprite):
     def __init__(self, size):
@@ -187,12 +212,22 @@ class Button(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(fontsize * screen_scale[1]))
         self.image = image.copy()
+        self.image_original = self.image.copy()
         self.text = text
+        self.pos = pos
         textsurface = self.font.render(str(text), 1, (0, 0, 0))
         textrect = textsurface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
         self.image.blit(textsurface, textrect)
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
+    def change_text(self, text):
+        if text != self.text:
+            self.image = self.image_original.copy()
+            self.text = text
+            textsurface = self.font.render(self.text.capitalize(), 1, (0, 0, 0))
+            textrect = textsurface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
+            self.image.blit(textsurface, textrect)
+            self.rect = self.image.get_rect(center=self.pos)
 
 class SwitchButton(pygame.sprite.Sprite):
     """Button that switch text/option"""
@@ -225,12 +260,12 @@ class Bodyhelper(pygame.sprite.Sprite):
     def __init__(self, size, pos, type, part_images):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font_size = int(14 * screen_scale[1])
-        self.font = pygame.font.SysFont("helvetica", self.font_size)
+        self.fontsize = int(14 * screen_scale[1])
+        self.font = pygame.font.SysFont("helvetica", self.fontsize)
         self.size = size
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
         self.image.fill((255,255,255))
-        pygame.draw.rect(self.image, (100,150,150), (0, 0, self.image.get_width(), self.image.get_height()), 15)
+        pygame.draw.rect(self.image, (100,150,150), (0, 0, self.image.get_width(), self.image.get_height()), 3)
         self.image_original = self.image.copy()
         self.rect = self.image.get_rect(center=pos)
         self.type = type
@@ -306,24 +341,25 @@ class Bodyhelper(pygame.sprite.Sprite):
 
     def add_stat(self):
         for index, part in enumerate(self.rect_part_list.keys()):
-            if part in self.stat1:
+            if self.stat2 is not None and part in self.stat1:
                 stat = self.stat1[part] + self.stat2[part]
-                stat.pop(2)
-                stat.pop(2)
+                stat.pop(3)
+                stat.pop(3)
+                stat[0] = race_acro[race_list.index(stat[0])]
                 newchange = ["S", "F", "B", "CU", "CD"]
                 for index, change in enumerate(["side", "front", "back", "cornerup", "cornerdown"]):
-                    if stat[0] == index:
-                        stat[0] = newchange[index]
+                    if stat[1] == index:
+                        stat[1] = newchange[index]
                 for index, change in enumerate(["F", "FH", "FV", "FHV"]):
-                    if stat[4] == index:
-                        stat[4] = change
-                stat[1] = str(stat[1])
-                stat[2] = str([stat[2][0], stat[2][1]])
-                stat[3] = str(round(stat[3], 1))
-                stat[5] = "L:" + str(int(stat[5]))
+                    if stat[5] == index:
+                        stat[5] = change
+                stat[2] = str(stat[2])
+                stat[3] = str([stat[3][0], stat[3][1]])
+                stat[4] = str(round(stat[4], 1))
+                stat[6] = "L:" + str(int(stat[6]))
 
-                stat1 = stat[0:2]  # first line with name
-                stat1.append(stat[-1])  # move layer number to name line
+                stat1 = stat[0:3]  # first line with name
+                stat1.append(stat[-1])
                 stat1 = str(stat1).replace("'", "")
                 stat1 = stat1[1:-1]
                 textcolour = (0, 0, 0)
@@ -331,26 +367,28 @@ class Bodyhelper(pygame.sprite.Sprite):
                     textcolour = (20, 90, 20)
                 textsurface1 = self.font.render(stat1, 1, textcolour)
 
-                stat2 = stat[2:-1]  # second line with stat
+                stat2 = stat[3:-1]  # second line with stat
                 stat2 = str(stat2).replace("'", "")
                 stat2 = stat2[1:-1]
                 textsurface2 = self.font.render(stat2, 1, textcolour)
+                shiftx = 50 * screen_scale[0]
                 if "body" in part:
                     headname = "p1_head"
                     if "p2" in part:
                         headname = "p2_head"
-                    textrect1 = textsurface1.get_rect(midleft=(self.part_pos[headname][0] + 50, self.part_pos[headname][1] - 5))
-                    textrect2 = textsurface2.get_rect(midleft=(self.part_pos[headname][0] + 50, self.part_pos[headname][1] - 5 + self.font_size + 2))
+                    textrect1 = textsurface1.get_rect(midleft=(self.part_pos[headname][0] + shiftx, self.part_pos[headname][1] - 5))
+                    textrect2 = textsurface2.get_rect(midleft=(self.part_pos[headname][0] + shiftx, self.part_pos[headname][1] - 5 + self.fontsize + 2))
                 elif "head" in part:
-                    textrect1 = textsurface1.get_rect(midright=(self.part_pos[part][0] - 50, self.part_pos[part][1] - 10))
-                    textrect2 = textsurface2.get_rect(midright=(self.part_pos[part][0] - 50, self.part_pos[part][1] - 10 + self.font_size + 2))
+                    textrect1 = textsurface1.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 10))
+                    textrect2 = textsurface2.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 10 + self.fontsize + 2))
                 else:
+                    shiftx = 14 * screen_scale[0]
                     if self.part_pos[part][0] > self.image.get_width() / 2:
-                        textrect1 = textsurface1.get_rect(midleft=(self.part_pos[part][0] + 20, self.part_pos[part][1] - 15))
-                        textrect2 = textsurface2.get_rect(midleft=(self.part_pos[part][0] + 20, self.part_pos[part][1] - 15 + self.font_size + 2))
+                        textrect1 = textsurface1.get_rect(midleft=(self.part_pos[part][0] + shiftx, self.part_pos[part][1] - 15))
+                        textrect2 = textsurface2.get_rect(midleft=(self.part_pos[part][0] + shiftx, self.part_pos[part][1] - 15 + self.fontsize + 2))
                     else:
-                        textrect1 = textsurface1.get_rect(midright=(self.part_pos[part][0] - 20, self.part_pos[part][1] - 15))
-                        textrect2 = textsurface2.get_rect(midright=(self.part_pos[part][0] - 20, self.part_pos[part][1] - 15 + self.font_size + 2))
+                        textrect1 = textsurface1.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 15))
+                        textrect2 = textsurface2.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 15 + self.fontsize + 2))
                 self.image.blit(textsurface1, textrect1)
                 self.image.blit(textsurface2, textrect2)
             # else:
@@ -364,16 +402,35 @@ class SideChoose:
         pass
 
 
+class NameBox(pygame.sprite.Sprite):
+    def __init__(self, size, pos):
+        self._layer = 6
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.fontsize = int(24 * screen_scale[1])
+        self.font = pygame.font.SysFont("helvetica", int(self.fontsize * screen_scale[1]))
+        self.size = size
+        self.image = pygame.Surface(self.size)
+        self.image.fill((255, 255, 255))
+        pygame.draw.rect(self.image, (150, 200, 0), (0, 0, self.image.get_width(), self.image.get_height()), 2)
+        self.image_original = self.image.copy()
+        self.pos = pos
+        self.rect = self.image.get_rect(midtop=self.pos)
+        self.text = None
+
+    def change_name(self, text):
+        if text != self.text:
+            self.image = self.image_original.copy()
+            self.text = text
+            textsurface = self.font.render(self.text, 1, (0, 0, 0))
+            textrect = textsurface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
+            self.image.blit(textsurface, textrect)
+
+
 class Skeleton:
     def __init__(self):
         self.animation_list = []
         self.animation_part_list = []
         self.side = 1  # 0 = front, 1 = side, 2 = back, 3 = cornerup, 4 = cornerdown
-
-        #  select face use side direction to search for part name
-        self.p1_eyebrow = list(gen_body_sprite_pool["side"]["eyebrow"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["eyebrow"]) - 1)]
-        self.p1_eye = list(gen_body_sprite_pool["side"]["eye"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["eye"]) - 1)]
-        self.p1_mouth = list(gen_body_sprite_pool["side"]["mouth"].keys())[random.randint(0, len(gen_body_sprite_pool["side"]["mouth"]) - 1)]
 
         self.rect_part_list = {"p1_head": None, "p1_body": None, "p1_r_arm_up": None, "p1_r_arm_low": None, "p1_r_hand": None,
                                "p1_l_arm_up": None, "p1_l_arm_low": None, "p1_l_hand": None, "p1_r_leg": None, "p1_r_foot": None,
@@ -383,8 +440,14 @@ class Skeleton:
                                "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
                                "p2_main_weapon": None, "p2_sub_weapon": None}
         self.part_selected = None
-        self.read_animation("Default")
+        self.p1_eyebrow = None
+        self.p1_eye = None
+        self.p1_mouth = None
+        self.read_animation(list(animation_pool.keys())[0])
+
+        #  select face use side direction to search for part name
         self.default = {key: value[:] for key, value in self.sprite_part.items()}
+
 
     def read_animation(self, name):
         #  sprite animation generation
@@ -398,7 +461,7 @@ class Skeleton:
                 for part in pose:
                     if pose[part] != [0] and part != "property":
                         link_list[part] = self.make_link_pos(pose, part)
-                        bodypart_list.append([pose[part][0], pose[part][1]])
+                        bodypart_list.append([pose[part][0], pose[part][1], pose[part][2]])
 
                 main_joint_pos_list = self.generate_body(bodypart_list)
 
@@ -406,9 +469,9 @@ class Skeleton:
                 self.part_name = {}
                 for part in part_name_header:
                     if pose[part] != [0] and "weapon" not in part:
-                        self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][4],
-                                                  pose[part][5], pose[part][-1]]
-                        self.part_name[part] = [pose[part][0], pose[part][1]]
+                        self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
+                                                  pose[part][6], pose[part][-1]]
+                        self.part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
                 pose_layer_list = {k: v[-1] for k, v in self.sprite_part.items()}
                 pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
 
@@ -432,11 +495,18 @@ class Skeleton:
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
         hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        if self.p1_eye is None:
+            self.p1_eyebrow = list(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eyebrow"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eyebrow"]) - 1)]
+            self.p1_eye = list(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eye"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eye"]) - 1)]
+            self.p1_mouth = list(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["mouth"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["mouth"]) - 1)]
 
-        face = [gen_body_sprite_pool[bodypart_list[0][0]]["head"][bodypart_list[0][1]].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]]["eye"][self.p1_eye].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]]["eyebrow"][self.p1_eyebrow].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]]["mouth"][self.p1_mouth].copy()]
+        face = [gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["head"][bodypart_list[0][2]].copy(),
+                gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["eye"][self.p1_eye].copy(),
+                gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["eyebrow"][self.p1_eyebrow].copy(),
+                gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["mouth"][self.p1_mouth].copy()]
         # if skin != "white":
         #     face[0] = self.apply_colour(face[0], skin_colour)
         # face[1] = self.apply_colour(face[1], [random.randint(0,255), random.randint(0,255), random.randint(0,255)])
@@ -456,17 +526,17 @@ class Skeleton:
                     face[0].blit(item, rect)
 
         self.sprite_image = {"p1_head": head_sprite_surface,
-                             "p1_body": gen_body_sprite_pool[bodypart_list[1][0]]["body"][bodypart_list[1][1]].copy(),
-                             "p1_r_arm_up": gen_body_sprite_pool[bodypart_list[2][0]]["arm_up"][bodypart_list[2][1]].copy(),
-                             "p1_r_arm_low": gen_body_sprite_pool[bodypart_list[3][0]]["arm_low"][bodypart_list[3][1]].copy(),
-                             "p1_r_hand": gen_body_sprite_pool[bodypart_list[4][0]]["hand"][bodypart_list[4][1]].copy(),
-                             "p1_l_arm_up": gen_body_sprite_pool[bodypart_list[5][0]]["arm_up"][bodypart_list[5][1]].copy(),
-                             "p1_l_arm_low": gen_body_sprite_pool[bodypart_list[6][0]]["arm_low"][bodypart_list[6][1]].copy(),
-                             "p1_l_hand": gen_body_sprite_pool[bodypart_list[7][0]]["hand"][bodypart_list[7][1]].copy(),
-                             "p1_r_leg": gen_body_sprite_pool[bodypart_list[8][0]]["leg"][bodypart_list[8][1]].copy(),
-                             "p1_r_foot": gen_body_sprite_pool[bodypart_list[9][0]]["foot"][bodypart_list[9][1]].copy(),
-                             "p1_l_leg": gen_body_sprite_pool[bodypart_list[10][0]]["leg"][bodypart_list[10][1]].copy(),
-                             "p1_l_foot": gen_body_sprite_pool[bodypart_list[11][0]]["foot"][bodypart_list[11][1]].copy()}
+                             "p1_body": gen_body_sprite_pool[bodypart_list[1][0]][bodypart_list[1][1]]["body"][bodypart_list[1][2]].copy(),
+                             "p1_r_arm_up": gen_body_sprite_pool[bodypart_list[2][0]][bodypart_list[2][1]]["arm_up"][bodypart_list[2][2]].copy(),
+                             "p1_r_arm_low": gen_body_sprite_pool[bodypart_list[3][0]][bodypart_list[3][1]]["arm_low"][bodypart_list[3][2]].copy(),
+                             "p1_r_hand": gen_body_sprite_pool[bodypart_list[4][0]][bodypart_list[4][1]]["hand"][bodypart_list[4][2]].copy(),
+                             "p1_l_arm_up": gen_body_sprite_pool[bodypart_list[5][0]][bodypart_list[5][1]]["arm_up"][bodypart_list[5][2]].copy(),
+                             "p1_l_arm_low": gen_body_sprite_pool[bodypart_list[6][0]][bodypart_list[6][1]]["arm_low"][bodypart_list[6][2]].copy(),
+                             "p1_l_hand": gen_body_sprite_pool[bodypart_list[7][0]][bodypart_list[7][1]]["hand"][bodypart_list[7][2]].copy(),
+                             "p1_r_leg": gen_body_sprite_pool[bodypart_list[8][0]][bodypart_list[8][1]]["leg"][bodypart_list[8][2]].copy(),
+                             "p1_r_foot": gen_body_sprite_pool[bodypart_list[9][0]][bodypart_list[9][1]]["foot"][bodypart_list[9][2]].copy(),
+                             "p1_l_leg": gen_body_sprite_pool[bodypart_list[10][0]][bodypart_list[10][1]]["leg"][bodypart_list[10][2]].copy(),
+                             "p1_l_foot": gen_body_sprite_pool[bodypart_list[11][0]][bodypart_list[11][1]]["foot"][bodypart_list[11][2]].copy()}
         # if skin != "white":
         #     for part in list(self.sprite_image.keys())[1:]:
         #         self.sprite_image[part] = self.apply_colour(self.sprite_image[part], skin_colour)
@@ -528,7 +598,30 @@ class Skeleton:
             elif "flip" in edit_type:
                 if self.part_selected is not None:
                     part_index = keylist[self.part_selected]
-                    self.animation_part_list[current_frame][part_index][4] = int(edit_type[-1])
+                    flip_type = int(edit_type[-1])
+                    current_flip = self.animation_part_list[current_frame][part_index][4]
+                    if current_flip == 0:  # current no flip
+                        self.animation_part_list[current_frame][part_index][4] = flip_type
+                    elif current_flip == 1:  # current hori flip
+                        if flip_type == 1:
+                            self.animation_part_list[current_frame][part_index][4] = 0
+                        else:
+                            self.animation_part_list[current_frame][part_index][4] = 3
+                    elif current_flip == 2: # current vert flip
+                        if flip_type == 1:
+                            self.animation_part_list[current_frame][part_index][4] = 3
+                        else:
+                            self.animation_part_list[current_frame][part_index][4] = 0
+                    elif current_flip == 3:  # current both hori and vert flip
+                        if flip_type == 1:
+                            self.animation_part_list[current_frame][part_index][4] = 2
+                        else:
+                            self.animation_part_list[current_frame][part_index][4] = 1
+            elif "reset" in edit_type:
+                if self.part_selected is not None:
+                    part_index = keylist[self.part_selected]
+                    self.animation_part_list[current_frame][part_index][3] = 0
+                    self.animation_part_list[current_frame][part_index][4] = 0
 
         if edit_type == "default":  # reset to default
             self.animation_part_list[current_frame] = {key: value[:] for key, value in self.default.items()}
@@ -552,6 +645,7 @@ class Skeleton:
             pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
             surface = self.create_animation_film(pose_layer_list)
         else:
+            self.sprite_part = None
             surface = self.create_animation_film(None, empty=True)
         self.animation_list[current_frame] = surface
 
@@ -571,7 +665,7 @@ class Skeleton:
         return surface
 
     def make_link_pos(self, pose, index):
-        part_link = [pose[index][2], pose[index][3]]
+        part_link = [pose[index][3], pose[index][4]]
         return part_link
 
     def part_to_sprite(self, surface, part, part_index, main_joint_pos, target, angle, flip):
@@ -681,6 +775,7 @@ SwitchButton.containers = ui
 Bodyhelper.containers = ui
 Joint.containers = ui
 Filmstrip.containers = ui, filmstrips
+NameBox.containers = ui
 
 filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_width(), 42 * screen_scale[1])),
                   Filmstrip((image.get_width() * 2, 42 * screen_scale[1])), Filmstrip((image.get_width() * 3, 42 * screen_scale[1])),
@@ -705,10 +800,17 @@ image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
 
 new_button = Button("New", image, (image.get_width() / 2, image.get_height() / 2))
 save_button = Button("Save", image, (image.get_width() * 2, image.get_height() / 2))
-delete_button = Button("Delete", image, (image.get_width() * 10, image.get_height() / 2))
+direction_button = Button("", image, (image.get_width() * 3.7, image.get_height() / 2))
+duplicate_button = Button("Duplicate", image, (image.get_width() * 11, image.get_height() / 2))
+delete_button = Button("Delete", image, (image.get_width() * 13, image.get_height() / 2))
 
 play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+joint_button = SwitchButton(["Joint:OFF","Joint:ON"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
+                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+grid_button = SwitchButton(["Grid:OFF","Grid:ON"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
+                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+
 copy_button = Button("Copy", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
                                      filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 paste_button = Button("Paste", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
@@ -722,10 +824,23 @@ activate_button = Button("Enable", image, (play_animation_button.pos[0] - play_a
 deactivate_button = Button("Disable", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 5,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
-# flip_vert_button = Button("Flip Vert",image, (100,200))
-# flip_hori_button = Button("Flip Hori",image, (100,200))
-# reset_button = Button("Reset",image, (100,200))
+reset_button = Button("Reset",image, (screen_size[0] / 1.5, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
+flip_hori_button = Button("Flip H",image, (reset_button.pos[0] - reset_button.image.get_width(),
+                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+flip_vert_button = Button("Flip V",image, (reset_button.pos[0] + reset_button.image.get_width(),
+                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+race_part_button = Button("", image, (reset_button.image.get_width() / 2,
+                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_button.image.get_width(),
+                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+# lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
+#                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+
+
+animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
+part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
+                                           reset_button.rect.midtop[1]))
 # loop_button = SwitchButton(["Loop:Yes", "Loop:No"],image, (100,200))
 
 showroom = Showroom((150 * screen_size[0] / 500, 150 * screen_size[1] / 500))
@@ -738,8 +853,12 @@ copy_frame = None
 deactivate_list = [False] * 10
 
 skeleton.animation_list = []
-skeleton.read_animation('Default')
-anim = Animation(1000, True)
+animation_name = list(animation_pool.keys())[0]
+direction = 1
+direction_button.change_text(direction_list[direction])
+skeleton.read_animation(animation_name)
+animation_selector.change_name(animation_name)
+anim = Animation(500, True)
 reload_animation(anim)
 
 while True:
@@ -814,10 +933,22 @@ while True:
             else:  # stop animation
                 play_animation_button.change_option(0)
                 play_animation = False
+        elif grid_button.rect.collidepoint(mouse_pos):
+            if grid_button.current_option == 0:  # start playing animation
+                grid_button.change_option(1)
+                showroom.grid = False
+            else:  # stop animation
+                grid_button.change_option(0)
+                showroom.grid = True
+        elif joint_button.rect.collidepoint(mouse_pos):
+            if joint_button.current_option == 0:  # start playing animation
+                joint_button.change_option(1)
+            else:  # stop animation
+                joint_button.change_option(0)
 
     # change animation
     # skeleton.animation_list = []
-    # skeleton.generate_animation('Default')
+    # skeleton.generate_animation("Default")
     # frames = [pygame.transform.smoothscale(image, showroom.size) for image in skeleton.animation_list]
     # for frame_index in range(0, 10):
     #     try:
@@ -855,7 +986,6 @@ while True:
                 skeleton.edit_part(mouse_pos, current_frame, "change")
                 reload_animation(anim)
         elif mouse_up and activate_button.rect.collidepoint(mouse_pos):
-            pass
             for strip_index, strip in enumerate(filmstrips):
                 if strip_index == current_frame:
                     strip.activate = True
@@ -867,6 +997,15 @@ while True:
                     strip.activate = False
                     deactivate_list[strip_index] = True
                     break
+        elif mouse_up and flip_hori_button.rect.collidepoint(mouse_pos):
+            skeleton.edit_part(mouse_pos, current_frame, "flip1")
+            reload_animation(anim)
+        elif mouse_up and flip_vert_button.rect.collidepoint(mouse_pos):
+            skeleton.edit_part(mouse_pos, current_frame, "flip2")
+            reload_animation(anim)
+        elif mouse_up and reset_button.rect.collidepoint(mouse_pos):
+            skeleton.edit_part(mouse_pos, current_frame, "reset")
+            reload_animation(anim)
         elif mouse_up:  # click on sprite in list
             for strip_index, strip in enumerate(filmstrips):
                 if strip.rect.collidepoint(mouse_pos):
@@ -878,15 +1017,20 @@ while True:
                         helper.select(mouse_pos, part=False)
                     break
 
-            change_part = False
+            helper_click = False
             for index, helper in enumerate(helperlist):
-                helper.select(mouse_pos, part=False)
-                if helper.rect.collidepoint(mouse_pos) or change_part:
-                    mouse_pos = pygame.Vector2((mouse_pos[0] - helper.rect.topleft[0]) / screen_size[0] * 1000,
-                                               (mouse_pos[1] - helper.rect.topleft[1]) / screen_size[1] * 1000)
-                    helper.select(mouse_pos)
-                    if helper.part_selected is not None:
-                        skeleton.click_part(mouse_pos, helper.part_selected)
+                if helper.rect.collidepoint(mouse_pos):
+                    helper_click = True
+                    break
+            if helper_click:  # to avoid removing selected part when click other stuff
+                for index, helper in enumerate(helperlist):
+                    helper.select(mouse_pos, part=False)
+                    if helper.rect.collidepoint(mouse_pos):
+                        mouse_pos = pygame.Vector2((mouse_pos[0] - helper.rect.topleft[0]) / screen_size[0] * 1000,
+                                                   (mouse_pos[1] - helper.rect.topleft[1]) / screen_size[1] * 1000)
+                        helper.select(mouse_pos)
+                        if helper.part_selected is not None:
+                            skeleton.click_part(mouse_pos, helper.part_selected)
 
         if showroom.rect.collidepoint(mouse_pos):
             mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500,
@@ -903,6 +1047,16 @@ while True:
             elif mouse_right or mouse_rightdown:
                 skeleton.edit_part(mouse_pos, current_frame, "move")
                 reload_animation(anim)
+
+        if skeleton.part_selected is not None and list(skeleton.rect_part_list.keys())[skeleton.part_selected] in list(skeleton.sprite_part.keys()):
+            nametext = skeleton.part_name[list(skeleton.rect_part_list.keys())[skeleton.part_selected]]
+            race_part_button.change_text(nametext[0])
+            direction_part_button.change_text(nametext[1])
+            part_selector.change_name(nametext[2])
+        else:
+            race_part_button.change_text("")
+            direction_part_button.change_text("")
+            part_selector.change_name("")
 
     anim.play(showroom.image, (0, 0), dt, deactivate_list)
 

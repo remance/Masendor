@@ -1,20 +1,27 @@
-"ID","Name","Size","Ruleset","Description"
-0,"Any",0,0,"For condition check purpose."
-1,"Human",1,0,
-2,"Elf",1,2,
-3,"Dwarf",0.7,2,
-4,"Orc",1.2,2,
-5,"Goblin",0.5,2,
-6,"Halfling",0.5,2,
-7,"Gremlin",0.5,2,"A small and stubby humanoid race without a magic conduit. Their greed and distrust are of legendary proportion. Their distrust among themselves is only overshadowed by distrust toward being of other races. These negative personality traits caused them to remain in primitive tribal society level for a much longer time than other civilisations. This is until when Arkeid the Civil Bringer invented the Machine of Trust. They are now a juggernaut of the economic powerhouse that will pursue profit and product over everything else."
-8,"Giant",5,2,"A gigantic humanoid race capable of moving a mountain, or so the legend say."
-9,"Centaur",1.5,2,
-10,"Beastman",1,2,
-11,"Lizardman",1,2,
-12,"Fairy",,2,
-13,"Demon",,2,
-14,"Gnome",,2,
-15,"Dragon",5,2,
-16,"Undead",,2,
-17,"Minotaur",1.4,2,
-18,"Djinn",,2,
+"ID","Name","Size","Acronym","Ruleset","Description"
+0,"Any",0,"A",0,"For condition check purpose."
+1,"Human",1,"H",0,
+2,"Elf",1,"E",2,
+3,"Dwarf",0.7,"DW",2,
+4,"Orc",1.2,"O",2,
+5,"Goblin",0.5,"G",2,
+6,"Halfling",0.5,"HL",2,
+7,"Gremlin",0.5,"GL",2,"A small and stubby humanoid race without a magic conduit. Their greed and distrust are of legendary proportion. Their distrust among themselves is only overshadowed by distrust toward being of other races. These negative personality traits caused them to remain in primitive tribal society level for a much longer time than other civilisations. This is until when Arkeid the Civil Bringer invented the Machine of Trust. They are now a juggernaut of the economic powerhouse that will pursue profit and product over everything else."
+8,"Giant",5,"GT",2,"A gigantic humanoid race capable of moving a mountain, or so the legend say."
+9,"Centaur",1.5,"C",2,
+10,"Beastman",1,"BM",2,
+11,"Lizardman",1,"LM",2,
+12,"Fairy",,"F",2,
+13,"Demon",,"D",2,
+14,"Gnome",,"GN",2,
+15,"Dragon",5,"DG",2,
+16,"Undead",,"UD",2,
+17,"Minotaur",1.4,"MT",2,
+18,"Djinn",,"DJ",2,
+19,"Horse",,"HS",,
+20,"Camel",,"CM",,
+21,"Elephant",,"EP",,
+22,,,,,
+23,,,,,
+24,,,,,
+25,,,,,
