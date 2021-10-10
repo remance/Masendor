@@ -73,9 +73,9 @@ for direction in direction_list:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         part_name_header = rd[0]
-        list_column = ["p1_head", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
+        list_column = ["p1_head", "p1_face", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
                        "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot",
-                       "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
+                       "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
                        "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
                        "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2"]  # value in list only
         list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
@@ -440,9 +440,15 @@ class Skeleton:
                                "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
                                "p2_main_weapon": None, "p2_sub_weapon": None}
         self.part_selected = None
-        self.p1_eyebrow = None
-        self.p1_eye = None
-        self.p1_mouth = None
+        self.race = "human"
+        self.p1_eyebrow = list(gen_body_sprite_pool[self.race]["side"]["eyebrow"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["eyebrow"]) - 1)]
+        self.p1_eye = list(gen_body_sprite_pool[self.race]["side"]["eye"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["eye"]) - 1)]
+        self.p1_mouth = list(gen_body_sprite_pool[self.race]["side"]["mouth"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["mouth"]) - 1)]
+        self.p1_beard = list(gen_body_sprite_pool[self.race]["side"]["beard"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["beard"]) - 1)]
         self.read_animation(list(animation_pool.keys())[0])
 
         #  select face use side direction to search for part name
@@ -457,18 +463,23 @@ class Skeleton:
             for pose in animation:
                 # TODO change later when have p2
                 link_list = {}
-                bodypart_list = []
+                bodypart_list = {}
                 for part in pose:
                     if pose[part] != [0] and part != "property":
-                        link_list[part] = self.make_link_pos(pose, part)
-                        bodypart_list.append([pose[part][0], pose[part][1], pose[part][2]])
+                        if "eye" not in part and "mouth" not in part:
+                            link_list[part] = self.make_link_pos(pose, part)
+                            bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
+                        elif pose[part] != 0:
+                            bodypart_list[part] = pose[part]
 
                 main_joint_pos_list = self.generate_body(bodypart_list)
 
                 self.sprite_part = {}
                 self.part_name = {}
+
+                exceptlist = ["weapon", "eye", "mouth"]
                 for part in part_name_header:
-                    if pose[part] != [0] and "weapon" not in part:
+                    if pose[part] != [0] and any(ext in part for ext in exceptlist) is False:
                         self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
                                                   pose[part][6], pose[part][-1]]
                         self.part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
@@ -491,52 +502,52 @@ class Skeleton:
                                             part[1], part[2], part[3], part[4])
         return image
 
+    def select_part(self, race, side, part, part_check, part_default):
+        """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
+        if part_check == 1:
+            surface = gen_body_sprite_pool[race][side][part][part_default].copy()
+        else:
+            surface = gen_body_sprite_pool[part_check[0]][part_check[1]][part][part_check[2]].copy()
+        return surface
+
     def generate_body(self, bodypart_list):
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
         hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        if self.p1_eye is None:
-            self.p1_eyebrow = list(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eyebrow"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eyebrow"]) - 1)]
-            self.p1_eye = list(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eye"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["eye"]) - 1)]
-            self.p1_mouth = list(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["mouth"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[bodypart_list[0][0]]["side"]["mouth"]) - 1)]
+        self.eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        p1_head_race = bodypart_list["p1_head"][0]
+        p1_head_side = bodypart_list["p1_head"][1]
+        p1_face = [gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy(),
+                   gen_body_sprite_pool[p1_head_race][p1_head_side]["eyebrow"][self.p1_eyebrow].copy(),
+                   self.select_part(p1_head_race, p1_head_side, "eye", bodypart_list["p1_eye"], self.p1_eye),
+                   gen_body_sprite_pool[p1_head_race][p1_head_side]["beard"][self.p1_beard].copy(),
+                   self.select_part(p1_head_race, p1_head_side, "mouth", bodypart_list["p1_mouth"], self.p1_mouth)]
 
-        face = [gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["head"][bodypart_list[0][2]].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["eye"][self.p1_eye].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["eyebrow"][self.p1_eyebrow].copy(),
-                gen_body_sprite_pool[bodypart_list[0][0]][bodypart_list[0][1]]["mouth"][self.p1_mouth].copy()]
         # if skin != "white":
         #     face[0] = self.apply_colour(face[0], skin_colour)
-        # face[1] = self.apply_colour(face[1], [random.randint(0,255), random.randint(0,255), random.randint(0,255)])
-        face[2] = self.apply_colour(face[2], hair_colour)
-        face[3] = self.apply_colour(face[3], hair_colour)
+        p1_face[1] = self.apply_colour(p1_face[1], hair_colour)
+        p1_face[3] = self.apply_colour(p1_face[3], hair_colour)
+        p1_face[2] = self.apply_colour(p1_face[2], self.eye_colour)
 
-        for index, item in enumerate(face):
-            if index > 0:
-                if index == 3:
-                    head_sprite_surface = pygame.Surface((item.get_width(), item.get_height()), pygame.SRCALPHA)
-                    head_rect = face[0].get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
-                    head_sprite_surface.blit(face[0], head_rect)
-                    head_rect = item.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
-                    head_sprite_surface.blit(item, head_rect)
-                else:
-                    rect = item.get_rect(topleft=(0, 0))
-                    face[0].blit(item, rect)
+        head_sprite_surface = pygame.Surface((p1_face[3].get_width(), p1_face[3].get_height()), pygame.SRCALPHA)
+        head_rect = p1_face[0].get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
+        head_sprite_surface.blit(p1_face[0], head_rect)
 
-        self.sprite_image = {"p1_head": head_sprite_surface,
-                             "p1_body": gen_body_sprite_pool[bodypart_list[1][0]][bodypart_list[1][1]]["body"][bodypart_list[1][2]].copy(),
-                             "p1_r_arm_up": gen_body_sprite_pool[bodypart_list[2][0]][bodypart_list[2][1]]["arm_up"][bodypart_list[2][2]].copy(),
-                             "p1_r_arm_low": gen_body_sprite_pool[bodypart_list[3][0]][bodypart_list[3][1]]["arm_low"][bodypart_list[3][2]].copy(),
-                             "p1_r_hand": gen_body_sprite_pool[bodypart_list[4][0]][bodypart_list[4][1]]["hand"][bodypart_list[4][2]].copy(),
-                             "p1_l_arm_up": gen_body_sprite_pool[bodypart_list[5][0]][bodypart_list[5][1]]["arm_up"][bodypart_list[5][2]].copy(),
-                             "p1_l_arm_low": gen_body_sprite_pool[bodypart_list[6][0]][bodypart_list[6][1]]["arm_low"][bodypart_list[6][2]].copy(),
-                             "p1_l_hand": gen_body_sprite_pool[bodypart_list[7][0]][bodypart_list[7][1]]["hand"][bodypart_list[7][2]].copy(),
-                             "p1_r_leg": gen_body_sprite_pool[bodypart_list[8][0]][bodypart_list[8][1]]["leg"][bodypart_list[8][2]].copy(),
-                             "p1_r_foot": gen_body_sprite_pool[bodypart_list[9][0]][bodypart_list[9][1]]["foot"][bodypart_list[9][2]].copy(),
-                             "p1_l_leg": gen_body_sprite_pool[bodypart_list[10][0]][bodypart_list[10][1]]["leg"][bodypart_list[10][2]].copy(),
-                             "p1_l_foot": gen_body_sprite_pool[bodypart_list[11][0]][bodypart_list[11][1]]["foot"][bodypart_list[11][2]].copy()}
+        for index, item in enumerate(p1_face[1:]):
+            rect = item.get_rect(topleft=(0, 0))
+            head_sprite_surface.blit(item, rect)
+
+        self.sprite_image = {}
+        exceptlist = ["weapon", "eye", "mouth", "head"]
+        for stuff in bodypart_list:
+            if any(ext in stuff for ext in exceptlist) is False:
+                partname = stuff[3:]  # remove p1_ or p2_ to get part name
+                if "r_" in partname[0:2] or "l_" in partname[0:2]:
+                    partname = partname[2:]  # remove side
+                self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][partname][bodypart_list[stuff][2]].copy()
+            elif "head" in stuff:
+                self.sprite_image[stuff] = head_sprite_surface
+
         # if skin != "white":
         #     for part in list(self.sprite_image.keys())[1:]:
         #         self.sprite_image[part] = self.apply_colour(self.sprite_image[part], skin_colour)
