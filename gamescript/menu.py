@@ -90,8 +90,11 @@ class SliderMenu(pygame.sprite.Sprite):
 
 class InputUI(pygame.sprite.Sprite):
     def __init__(self, main, image, pos):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
+        self.width_adjust = 1
+        self.height_adjust = 1
+        if main is not None:
+            self.width_adjust = main.width_adjust
+            self.height_adjust = main.height_adjust
 
         self._layer = 30
         pygame.sprite.Sprite.__init__(self)
@@ -115,8 +118,11 @@ class InputUI(pygame.sprite.Sprite):
 
 class InputBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, width, text="", clickinput=False):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
+        self.width_adjust = 1
+        self.height_adjust = 1
+        if main is not None:
+            self.width_adjust = main.width_adjust
+            self.height_adjust = main.height_adjust
 
         pygame.sprite.Sprite.__init__(self)
         self._layer = 31
@@ -195,8 +201,11 @@ class ProfileBox(pygame.sprite.Sprite):
 
 class MenuButton(pygame.sprite.Sprite):
     def __init__(self, main, images, pos, menu_state="any", text="", size=16, layer=15):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
+        self.width_adjust = 1
+        self.height_adjust = 1
+        if main is not None:
+            self.width_adjust = main.width_adjust
+            self.height_adjust = main.height_adjust
 
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -486,14 +495,18 @@ class ArmyStat(pygame.sprite.Sprite):
 
 class ListBox(pygame.sprite.Sprite):
     def __init__(self, main, pos, image, layer=14):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
+        self.width_adjust = 1
+        self.height_adjust = 1
+        if main is not None:
+            self.width_adjust = main.width_adjust
+            self.height_adjust = main.height_adjust
 
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.width_adjust),
                                                     int(image.get_height() * self.height_adjust)))
-        self.rect = self.image.get_rect(topleft=pos)
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
 
         self.listimageheight = int(25 * self.height_adjust)
         self.maxshowlist = int(self.image.get_height() / (self.listimageheight + (6 * self.height_adjust)))  # max number of map on list can be shown
@@ -501,8 +514,11 @@ class ListBox(pygame.sprite.Sprite):
 
 class NameList(pygame.sprite.Sprite):
     def __init__(self, main, box, pos, name, textsize=16, layer=15):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
+        self.width_adjust = 1
+        self.height_adjust = 1
+        if main is not None:
+            self.width_adjust = main.width_adjust
+            self.height_adjust = main.height_adjust
 
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)

@@ -619,17 +619,19 @@ class UIScroller(pygame.sprite.Sprite):
 
     def update(self, mouse_pos):
         """User input update"""
-        self.mouse_value = (mouse_pos[1] - self.pos[
-            1]) * 100 / self.uiheight  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
-        if self.mouse_value > 100:
-            self.mouse_value = 100
-        if self.mouse_value < 0:
-            self.mouse_value = 0
-        newrow = int(self.logsize * self.mouse_value / 100)
-        if self.logsize > self.max_row_show and newrow > self.logsize - self.max_row_show:
-            newrow = self.logsize - self.max_row_show
-        self.changeimage(newrow)
-        return self.currentrow
+        if mouse_pos is not None:
+            self.mouse_value = (mouse_pos[1] - self.pos[
+                1]) * 100 / self.uiheight  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
+            if self.mouse_value > 100:
+                self.mouse_value = 100
+            if self.mouse_value < 0:
+                self.mouse_value = 0
+            newrow = int(self.logsize * self.mouse_value / 100)
+            if self.logsize > self.max_row_show and newrow > self.logsize - self.max_row_show:
+                newrow = self.logsize - self.max_row_show
+            if self.logsize > self.max_row_show:  # only change scroll position in list longer than max length
+                self.changeimage(newrow)
+            return self.currentrow
 
 
 class ArmySelect(pygame.sprite.Sprite):
