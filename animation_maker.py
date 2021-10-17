@@ -32,7 +32,7 @@ pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
-def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
+def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=4):
     """generate list of subsection of the left side of encyclopedia"""
     widthadjust = screen_scale[0]
     heightadjust = screen_scale[1]
@@ -56,7 +56,7 @@ def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15
 
         uiclass.add(*itemgroup)
 
-def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=15):
+def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=3):
     if mouse_scrollup:
         currentrow -= 1
         if currentrow < 0:
@@ -230,6 +230,7 @@ for weapon in weapon_list:
 class Showroom(pygame.sprite.Sprite):
     def __init__(self, size):
         """White space for showing off sprite and animation"""
+        self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.size = (int(size[0]), int(size[1]))
         self.image = pygame.Surface(self.size)
@@ -237,7 +238,7 @@ class Showroom(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(screen_size[0] / 2, screen_size[1] / 2))
         self.grid = True
 
-    def update(self):
+    def update(self, *args):
         self.image.fill((255, 255, 255))
         if self.grid:
             grid_width = self.image.get_width() / 10
@@ -613,8 +614,6 @@ class Skeleton:
 
     def create_animation_film(self, pose_layer_list, empty=False):
         image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
-        print(self.not_show)
-        print(pose_layer_list)
         for key, value in self.rect_part_list.items():  # reset rect list
             self.rect_part_list[key] = None
         if empty is False:
@@ -818,6 +817,23 @@ class Skeleton:
                     except KeyError:  # change side and not found part with same name
                         self.part_name[part_index][2] = ""
                         self.not_show.append(part_index)
+
+        elif "part" in edit_type:
+            if self.part_selected != []:
+                part = self.part_selected[-1]
+                part_index = keylist[part]
+                if part_index in self.not_show:
+                    self.not_show.remove(part_index)
+                partchange = edit_type[5:]
+                self.bodypart_list[current_frame][part_index][2] = partchange
+                self.part_name[part_index][2] = partchange
+                main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+            # try:
+            #     part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selectpart].keys())
+            # except KeyError:  # look at weapon next
+            #     selectpart = skeleton.weapon[currentpart]
+            #     part_list = list(gen_weapon_sprite_pool[selectpart][direction_part_button.text].keys())
 
         if self.animation_part_list[current_frame] != {}:
             self.sprite_part = self.animation_part_list[current_frame]
@@ -1060,6 +1076,7 @@ part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width
 # loop_button = SwitchButton(["Loop:Yes", "Loop:No"],image, (100,200))
 
 showroom = Showroom((150 * screen_size[0] / 500, 150 * screen_size[1] / 500))
+ui.add(showroom)
 
 runtime = 0
 mousetimer = 0
@@ -1155,7 +1172,6 @@ while True:
                 skeleton.edit_part(mouse_pos, current_frame, "delete")
         elif keypress[pygame.K_PAGEUP]:
             keypress_delay = 0.1
-            print('test')
             if skeleton.part_selected != []:
                 skeleton.edit_part(mouse_pos, current_frame, "layerup")
         elif keypress[pygame.K_PAGEDOWN]:
@@ -1183,6 +1199,8 @@ while True:
                             direction_part_button.change_text(name.name)
                             if skeleton.part_selected != []:
                                 skeleton.edit_part(mouse_pos, current_frame, "direction_" + name.name)
+                        elif popup_listbox.action == "part_select":
+                            skeleton.edit_part(mouse_pos, current_frame, "part_" + name.name)
                         for thisname in popup_namegroup:  # remove name list
                             thisname.kill()
                             del thisname
@@ -1228,8 +1246,8 @@ while True:
     #         filmstrip_list[frame_index].add_strip()
     # anim = Animation(frames, 1000, True)
 
-    showroom.update()
     ui.update(None)
+    anim.play(showroom.image, (0, 0), dt, deactivate_list)
 
     for strip_index, strip in enumerate(filmstrips):
         if strip_index == current_frame:
@@ -1276,6 +1294,19 @@ while True:
                 popuplist_newopen("animation_side", direction_button.rect.bottomleft, direction_list, "top")
             elif mouse_up and direction_part_button.rect.collidepoint(mouse_pos):
                 popuplist_newopen("part_side", direction_part_button.rect.topleft, direction_list, "bottom")
+            elif mouse_up and part_selector.rect.collidepoint(mouse_pos):
+                if direction_part_button.text != "" and race_part_button.text != "":
+                    currentpart = list(skeleton.animation_part_list[current_frame].keys())[skeleton.part_selected[-1]]
+                    try:
+                        if "p1" in currentpart or "p2" in currentpart:
+                            selectpart = currentpart[3:]
+                        if selectpart[0:2] == "r_" or selectpart[0:2] == "l_":
+                            selectpart = selectpart[2:]
+                        part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selectpart].keys())
+                    except KeyError:  # look at weapon next
+                        selectpart = skeleton.weapon[currentpart]
+                        part_list = list(gen_weapon_sprite_pool[selectpart][direction_part_button.text].keys())
+                    popuplist_newopen("part_select", part_selector.rect.topleft, part_list, "bottom")
             elif mouse_up and part_selector.rect.collidepoint(mouse_pos):
                 if skeleton.part_selected != []:
                     pass
@@ -1340,8 +1371,5 @@ while True:
             direction_part_button.change_text("")
             part_selector.change_name("")
 
-    anim.play(showroom.image, (0, 0), dt, deactivate_list)
-
-    pen.blit(showroom.image, showroom.rect)
     pygame.display.update()
     clock.tick(60)
