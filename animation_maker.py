@@ -726,69 +726,71 @@ class Skeleton:
             for part in self.part_selected:
                 if part < len(keylist):  # can't edit part that not exist
                     part_index = keylist[part]
-                    if edit_type == "move":
-                        self.animation_part_list[current_frame][part_index][2] = mouse_pos
+                    if self.animation_part_list[current_frame][part_index] is not None and \
+                            len(self.animation_part_list[current_frame][part_index]) > 3:
+                        if edit_type == "move":
+                            self.animation_part_list[current_frame][part_index][2] = mouse_pos
 
-                    elif edit_type == "rotate":
-                        base_pos = self.animation_part_list[current_frame][part_index][2]
-                        myradians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
-                        newangle = math.degrees(myradians)
-                        # """upper left -"""
-                        if -180 <= newangle <= -90:
-                            newangle = -newangle - 90
+                        elif edit_type == "rotate":
+                            base_pos = self.animation_part_list[current_frame][part_index][2]
+                            myradians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
+                            newangle = math.degrees(myradians)
+                            # """upper left -"""
+                            if -180 <= newangle <= -90:
+                                newangle = -newangle - 90
 
-                        # """upper right +"""
-                        elif -90 < newangle < 0:
-                            newangle = (-newangle) - 90
+                            # """upper right +"""
+                            elif -90 < newangle < 0:
+                                newangle = (-newangle) - 90
 
-                        # """lower right -"""
-                        elif 0 <= newangle <= 90:
-                            newangle = -(newangle + 90)
+                            # """lower right -"""
+                            elif 0 <= newangle <= 90:
+                                newangle = -(newangle + 90)
 
-                        # """lower left +"""
-                        elif 90 < newangle <= 180:
-                            newangle = 270 - newangle
+                            # """lower left +"""
+                            elif 90 < newangle <= 180:
+                                newangle = 270 - newangle
 
-                        self.animation_part_list[current_frame][part_index][3] = newangle
+                            self.animation_part_list[current_frame][part_index][3] = newangle
 
-                    elif "flip" in edit_type:
-                        flip_type = int(edit_type[-1])
-                        current_flip = self.animation_part_list[current_frame][part_index][4]
-                        if current_flip == 0:  # current no flip
-                            self.animation_part_list[current_frame][part_index][4] = flip_type
-                        elif current_flip == 1:  # current hori flip
-                            if flip_type == 1:
-                                self.animation_part_list[current_frame][part_index][4] = 0
+                        elif "flip" in edit_type:
+                            flip_type = int(edit_type[-1])
+                            current_flip = self.animation_part_list[current_frame][part_index][4]
+                            if current_flip == 0:  # current no flip
+                                self.animation_part_list[current_frame][part_index][4] = flip_type
+                            elif current_flip == 1:  # current hori flip
+                                if flip_type == 1:
+                                    self.animation_part_list[current_frame][part_index][4] = 0
+                                else:
+                                    self.animation_part_list[current_frame][part_index][4] = 3
+                            elif current_flip == 2: # current vert flip
+                                if flip_type == 1:
+                                    self.animation_part_list[current_frame][part_index][4] = 3
+                                else:
+                                    self.animation_part_list[current_frame][part_index][4] = 0
+                            elif current_flip == 3:  # current both hori and vert flip
+                                if flip_type == 1:
+                                    self.animation_part_list[current_frame][part_index][4] = 2
+                                else:
+                                    self.animation_part_list[current_frame][part_index][4] = 1
+
+                        elif "reset" in edit_type:
+                            self.animation_part_list[current_frame][part_index][3] = 0
+                            self.animation_part_list[current_frame][part_index][4] = 0
+
+                        elif "delete" in edit_type:
+                            if part_index in self.not_show:
+                                self.not_show.remove(part_index)
                             else:
-                                self.animation_part_list[current_frame][part_index][4] = 3
-                        elif current_flip == 2: # current vert flip
-                            if flip_type == 1:
-                                self.animation_part_list[current_frame][part_index][4] = 3
-                            else:
-                                self.animation_part_list[current_frame][part_index][4] = 0
-                        elif current_flip == 3:  # current both hori and vert flip
-                            if flip_type == 1:
-                                self.animation_part_list[current_frame][part_index][4] = 2
-                            else:
-                                self.animation_part_list[current_frame][part_index][4] = 1
+                                self.not_show.append(part_index)
 
-                    elif "reset" in edit_type:
-                        self.animation_part_list[current_frame][part_index][3] = 0
-                        self.animation_part_list[current_frame][part_index][4] = 0
-
-                    elif "delete" in edit_type:
-                        if part_index in self.not_show:
-                            self.not_show.remove(part_index)
-                        else:
-                            self.not_show.append(part_index)
-
-                    elif "layer" in edit_type:
-                        if "up" in edit_type:
-                            self.animation_part_list[current_frame][part_index][-1] += 1
-                        elif "down" in edit_type:
-                            self.animation_part_list[current_frame][part_index][-1] -= 1
-                            if self.animation_part_list[current_frame][part_index][-1] == 0:
-                                self.animation_part_list[current_frame][part_index][-1] = 1
+                        elif "layer" in edit_type:
+                            if "up" in edit_type:
+                                self.animation_part_list[current_frame][part_index][-1] += 1
+                            elif "down" in edit_type:
+                                self.animation_part_list[current_frame][part_index][-1] -= 1
+                                if self.animation_part_list[current_frame][part_index][-1] == 0:
+                                    self.animation_part_list[current_frame][part_index][-1] = 1
 
         if edit_type == "default":  # reset to default
             self.animation_part_list[current_frame] = {key: value for key, value in self.default.items()}
