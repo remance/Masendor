@@ -617,7 +617,7 @@ class UIScroller(pygame.sprite.Sprite):
             self.currentrow = newrow
             self.newimagecreate()
 
-    def update(self, mouse_pos):
+    def update(self, mouse_pos, *args):
         """User input update"""
         if mouse_pos is not None:
             self.mouse_value = (mouse_pos[1] - self.pos[
