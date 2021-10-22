@@ -411,35 +411,36 @@ class Bodyhelper(pygame.sprite.Sprite):
             self.image.blit(newimage, rect)
             self.rect_part_list[thiskey] = rect
 
-    def select(self, mouse_pos, shift_press, part=None):
-        if part is not None:
-            if part is False:
+    def select(self, check_mouse_pos, shift_press, specific_part=None):
+        if specific_part is not None:
+            if specific_part is False:
                 self.part_selected = []
-            elif part in list(self.part_pos.keys()):
+            elif specific_part in list(self.part_pos.keys()):
                 if shift_press:
-                    self.part_selected.append(part)
+                    self.part_selected.append(specific_part)
                 else:
-                    self.part_selected = [part]
+                    self.part_selected = [specific_part]
             self.blit_part()
         else:
             click_any = False
-            for index, rect in enumerate(self.rect_part_list):
-                thisrect = self.rect_part_list[rect]
-                if thisrect is not None and thisrect.collidepoint(mouse_pos):
-                    click_any = True
-                    if shift_press:
-                        self.part_selected.append(list(self.part_pos.keys())[index])
-                    else:
-                        self.part_selected = [list(self.part_pos.keys())[index]]
-                        break
-            if click_any is False and shift_press is False:
+            if check_mouse_pos is not None:
+                for index, rect in enumerate(self.rect_part_list):
+                    thisrect = self.rect_part_list[rect]
+                    if thisrect is not None and thisrect.collidepoint(check_mouse_pos):
+                        click_any = True
+                        if shift_press:
+                            self.part_selected.append(list(self.part_pos.keys())[index])
+                        else:
+                            self.part_selected = [list(self.part_pos.keys())[index]]
+                            break
+            elif check_mouse_pos is None or (click_any is False and shift_press is False):
                 self.part_selected = []
             self.blit_part()
         self.add_stat()
 
     def add_stat(self):
         for index, part in enumerate(self.rect_part_list.keys()):
-            if self.stat2 is not None and self.stat2[part] is not None:
+            if self.stat2 is not None and part in self.stat2 and self.stat2[part] is not None:
                 stat = self.stat1[part] + self.stat2[part]
                 if len(stat) > 3:
                     stat.pop(3)
@@ -550,36 +551,46 @@ class Skeleton:
                                "p2_main_weapon": None, "p2_sub_weapon": None}
         self.part_selected = []
         self.not_show = []
-        self.race = "human"
+        self.p1_race = "human"
+        self.p2_race = "human"
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
         self.hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.weapon = {"p1_main_weapon":"sword", "p1_sub_weapon":None, "p2_main_weapon":None, "p1_sub_weapon":None}
         self.empty_sprite_part = [0,pygame.Vector2(0, 0), [50, 50],0,0,0]
+        self.randomface()
 
-        self.p1_eyebrow = list(gen_body_sprite_pool[self.race]["side"]["eyebrow"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["eyebrow"]) - 1)]
-        self.p1_eye = list(gen_body_sprite_pool[self.race]["side"]["eye"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["eye"]) - 1)]
-        self.p1_mouth = list(gen_body_sprite_pool[self.race]["side"]["mouth"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["mouth"]) - 1)]
-        self.p1_beard = list(gen_body_sprite_pool[self.race]["side"]["beard"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.race]["side"]["beard"]) - 1)]
         self.read_animation(list(animation_pool.keys())[0])
 
-        #  select face use side direction to search for part name
-        self.default = {key: value for key, value in self.sprite_part.items()}
+    def randomface(self):  # todo change when add option to change face
+        self.p1_eyebrow = list(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"]) - 1)]
+        self.p1_eye = list(gen_body_sprite_pool[self.p1_race]["side"]["eye"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eye"]) - 1)]
+        self.p1_mouth = list(gen_body_sprite_pool[self.p1_race]["side"]["mouth"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["mouth"]) - 1)]
+        self.p1_beard = list(gen_body_sprite_pool[self.p1_race]["side"]["beard"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["beard"]) - 1)]
+        self.p2_eyebrow = list(gen_body_sprite_pool[self.p2_race]["side"]["eyebrow"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["eyebrow"]) - 1)]
+        self.p2_eye = list(gen_body_sprite_pool[self.p2_race]["side"]["eye"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eye"]) - 1)]
+        self.p2_mouth = list(gen_body_sprite_pool[self.p2_race]["side"]["mouth"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["mouth"]) - 1)]
+        self.p2_beard = list(gen_body_sprite_pool[self.p2_race]["side"]["beard"].keys())[
+            random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["beard"]) - 1)]
 
     def read_animation(self, name):
         #  sprite animation generation
         animation_list = [generic_animation_pool[self.side][name]]
         self.animation_part_list = []
-        self.bodypart_list = []
+        self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
         for animation in animation_list:
-            for pose in animation:
+            for index, pose in enumerate(animation):
                 link_list = {key: None for key in self.rect_part_list.keys()}
                 bodypart_list = {key: None for key in self.rect_part_list.keys()}
+                bodypart_list.update({"p1_eye": None, "p1_mouth": None, "p2_eye": None, "p2_mouth": None})
                 for part in pose:
                     if pose[part] != [0] and part != "property":
                         if "eye" not in part and "mouth" not in part:
@@ -592,7 +603,9 @@ class Skeleton:
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
                         elif pose[part] != 0:
                             bodypart_list[part] = pose[part]
-                self.bodypart_list.append(bodypart_list)
+                        else:
+                            bodypart_list[part] = 1.0
+                self.bodypart_list[index] = bodypart_list
                 main_joint_pos_list = self.generate_body(bodypart_list)
 
                 self.sprite_part = {key: None for key in self.rect_part_list.keys()}
@@ -615,6 +628,9 @@ class Skeleton:
                 self.animation_part_list.append(self.sprite_part)
                 image = self.create_animation_film(pose_layer_list)
                 self.animation_list.append(image)
+        self.default_sprite_part = {key: value for key, value in self.animation_part_list[0].items()}
+        self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
+        self.default_part_name = {key: value for key, value in self.part_name.items()}
 
     def create_animation_film(self, pose_layer_list, empty=False):
         image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
@@ -640,15 +656,15 @@ class Skeleton:
         return surface
 
     def generate_body(self, bodypart_list):
-        p1_head_race = bodypart_list["p1_head"][0]
-        p1_head_side = bodypart_list["p1_head"][1]
-        head_sprite_surface = None
+        p1_head_sprite_surface = None
         try:
+            p1_head_race = bodypart_list["p1_head"][0]
+            p1_head_side = bodypart_list["p1_head"][1]
             p1_head = gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy()
 
-            head_sprite_surface = pygame.Surface((p1_head.get_width(), p1_head.get_height()), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
-            head_sprite_surface.blit(p1_head, head_rect)
+            p1_head_sprite_surface = pygame.Surface((p1_head.get_width(), p1_head.get_height()), pygame.SRCALPHA)
+            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
+            p1_head_sprite_surface.blit(p1_head, head_rect)
             p1_face = [gen_body_sprite_pool[p1_head_race][p1_head_side]["eyebrow"][self.p1_eyebrow].copy(),
                        self.select_part(p1_head_race, p1_head_side, "eye", bodypart_list["p1_eye"], self.p1_eye),
                        gen_body_sprite_pool[p1_head_race][p1_head_side]["beard"][self.p1_beard].copy(),
@@ -660,14 +676,45 @@ class Skeleton:
             p1_face[2] = self.apply_colour(p1_face[2], self.hair_colour)
             p1_face[1] = self.apply_colour(p1_face[1], self.eye_colour)
 
-            head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
-            head_sprite_surface.blit(p1_head, head_rect)
+            p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
+            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
+            p1_head_sprite_surface.blit(p1_head, head_rect)
 
             for index, item in enumerate(p1_face):
                 rect = item.get_rect(topleft=(0, 0))
-                head_sprite_surface.blit(item, rect)
+                p1_head_sprite_surface.blit(item, rect)
         except KeyError:  # some head direction show no face
+            pass
+        except TypeError:  # empty
+            pass
+
+        p2_head_sprite_surface = None
+        try:
+            p2_head_race = bodypart_list["p2_head"][0]
+            p2_head_side = bodypart_list["p2_head"][1]
+            p2_head = gen_body_sprite_pool[p2_head_race][p2_head_side]["head"][bodypart_list["p2_head"][2]].copy()
+            p2_head_sprite_surface = pygame.Surface((p2_head.get_width(), p2_head.get_height()), pygame.SRCALPHA)
+            head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
+            p2_head_sprite_surface.blit(p2_head, head_rect)
+            p2_face = [gen_body_sprite_pool[p2_head_race][p2_head_side]["eyebrow"][self.p2_eyebrow].copy(),
+                       self.select_part(p2_head_race, p2_head_side, "eye", bodypart_list["p2_eye"], self.p2_eye),
+                       gen_body_sprite_pool[p2_head_race][p2_head_side]["beard"][self.p2_beard].copy(),
+                       self.select_part(p2_head_race, p2_head_side, "mouth", bodypart_list["p2_mouth"], self.p2_mouth)]
+            # if skin != "white":
+            #     face[0] = self.apply_colour(face[0], skin_colour)
+            p2_face[0] = self.apply_colour(p2_face[0], self.hair_colour)
+            p2_face[2] = self.apply_colour(p2_face[2], self.hair_colour)
+            p2_face[1] = self.apply_colour(p2_face[1], self.eye_colour)
+            p2_head_sprite_surface = pygame.Surface((p2_face[2].get_width(), p2_face[2].get_height()), pygame.SRCALPHA)
+            head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
+            p2_head_sprite_surface.blit(p2_head, head_rect)
+
+            for index, item in enumerate(p2_face):
+                rect = item.get_rect(topleft=(0, 0))
+                p2_head_sprite_surface.blit(item, rect)
+        except KeyError:  # some head direction show no face
+            pass
+        except TypeError:  # empty
             pass
 
         self.sprite_image = {key: None for key in self.rect_part_list.keys()}
@@ -685,7 +732,10 @@ class Skeleton:
                         if partname is not None and bodypart_list[stuff][2]:
                             self.sprite_image[stuff] = gen_weapon_sprite_pool[partname][bodypart_list[stuff][1]][bodypart_list[stuff][2]].copy()
                 elif "head" in stuff:
-                    self.sprite_image[stuff] = head_sprite_surface
+                    if "p1" in stuff:
+                        self.sprite_image[stuff] = p1_head_sprite_surface
+                    else:
+                        self.sprite_image[stuff] = p2_head_sprite_surface
 
         # if skin != "white":
         #     for part in list(self.sprite_image.keys())[1:]:
@@ -702,6 +752,8 @@ class Skeleton:
     def click_part(self, mouse_pos, shift_press, part=None):
         if part is None:
             click_part = False
+            if shift_press is False:
+                self.part_selected = []
             for index, rect in enumerate(self.rect_part_list):
                 thisrect = self.rect_part_list[rect]
                 if thisrect is not None and thisrect.collidepoint(mouse_pos):
@@ -722,7 +774,86 @@ class Skeleton:
 
     def edit_part(self, mouse_pos, current_frame, edit_type):
         keylist = list(self.rect_part_list.keys())
-        if self.part_selected != []:
+        if edit_type == "default":  # reset to default
+            self.animation_part_list[current_frame] = {key: value for key, value in self.default_sprite_part.items()}
+            self.bodypart_list[current_frame] = {key: value for key, value in self.default_body_part.items()}
+            self.part_name = {key: value for key, value in self.default_part_name.items()}
+            self.part_selected = []
+            race_part_button.change_text("")
+            direction_part_button.change_text("")
+            part_selector.change_name("")
+
+
+        elif edit_type == "clear":  # clear whole strip
+            self.animation_part_list[current_frame] = {}
+            self.part_selected = []
+
+        elif edit_type == "change":  # change strip
+            self.part_selected = []
+            if current_frame > len(self.animation_part_list) - 1:
+                while current_frame > len(self.animation_part_list) - 1:
+                    self.animation_part_list.append({})
+                    self.animation_list.append(None)
+                    surface = self.create_animation_film(None, empty=True)
+                    self.animation_list[-1] = surface
+
+        elif "direction" in edit_type:
+            if self.part_selected != []:
+                for part in self.part_selected:
+                    try:
+                        part_index = keylist[part]
+                        sidechange = edit_type.split("_")[1]
+                        self.bodypart_list[current_frame][part_index][1] = sidechange
+                        self.part_name[part_index][1] = sidechange
+                        main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                        self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+                    except IndexError:
+                        pass
+                    except KeyError:  # change side and not found part with same name
+                        self.part_name[part_index][2] = ""
+                        if part_index not in self.not_show:
+                            self.not_show.append(part_index)
+
+        elif "part" in edit_type:
+            if self.part_selected != []:
+                part = self.part_selected[-1]
+                part_index = keylist[part]
+                partchange = edit_type[5:]
+                self.bodypart_list[current_frame][part_index][2] = partchange
+                self.part_name[part_index][2] = partchange
+                main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                if self.animation_part_list[current_frame][part_index] == []:
+                    self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
+                    self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
+                self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+                if part_index in self.not_show:
+                    self.not_show.remove(part_index)
+
+        elif "race" in edit_type:
+            if self.part_selected != []:
+                part = self.part_selected[-1]
+                part_index = keylist[part]
+                if part_index in self.not_show:
+                    self.not_show.remove(part_index)
+                partchange = edit_type[5:]
+                if self.bodypart_list[current_frame][part_index] is None:
+                    self.bodypart_list[current_frame][part_index] = [0,0,0]
+                    # self.animation_part_list[current_frame][part_index] = []
+                    self.part_name[part_index] = ["","",""]
+                    self.animation_part_list[current_frame][part_index] = []
+                self.bodypart_list[current_frame][part_index][0] = partchange
+                self.part_name[part_index][0] = partchange
+                try:
+                    main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                    self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+                except IndexError:
+                    pass
+                except KeyError:  # change side and not found part with same name
+                    self.part_name[part_index][2] = ""
+                    if part_index not in self.not_show:
+                        self.not_show.append(part_index)
+
+        elif self.part_selected != []:
             for part in self.part_selected:
                 if part < len(keylist):  # can't edit part that not exist
                     part_index = keylist[part]
@@ -792,82 +923,6 @@ class Skeleton:
                                 if self.animation_part_list[current_frame][part_index][-1] == 0:
                                     self.animation_part_list[current_frame][part_index][-1] = 1
 
-        if edit_type == "default":  # reset to default
-            self.animation_part_list[current_frame] = {key: value for key, value in self.default.items()}
-            self.part_selected = []
-
-        elif edit_type == "clear":  # clear whole strip
-            self.animation_part_list[current_frame] = {}
-            self.part_selected = []
-
-        elif edit_type == "change":  # change strip
-            self.part_selected = []
-            if current_frame > len(self.animation_part_list) - 1:
-                while current_frame > len(self.animation_part_list) - 1:
-                    self.animation_part_list.append({})
-                    self.animation_list.append(None)
-                    surface = self.create_animation_film(None, empty=True)
-                    self.animation_list[-1] = surface
-
-        elif "direction" in edit_type:
-            if self.part_selected != []:
-                for part in self.part_selected:
-                    try:
-                        part_index = keylist[part]
-                        sidechange = edit_type.split("_")[1]
-                        self.bodypart_list[current_frame][part_index][1] = sidechange
-                        self.part_name[part_index][1] = sidechange
-                        main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-                        self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
-                    except IndexError:
-                        pass
-                    except KeyError:  # change side and not found part with same name
-                        self.part_name[part_index][2] = ""
-                        self.not_show.append(part_index)
-
-        elif "part" in edit_type:
-            if self.part_selected != []:
-                part = self.part_selected[-1]
-                part_index = keylist[part]
-                if part_index in self.not_show:
-                    self.not_show.remove(part_index)
-                partchange = edit_type[5:]
-                self.bodypart_list[current_frame][part_index][2] = partchange
-                self.part_name[part_index][2] = partchange
-                main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-                if self.animation_part_list[current_frame][part_index] == []:
-                    self.animation_part_list[current_frame][part_index] = self.empty_sprite_part
-                    self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
-                self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
-
-        elif "race" in edit_type:
-            if self.part_selected != []:
-                part = self.part_selected[-1]
-                part_index = keylist[part]
-                if part_index in self.not_show:
-                    self.not_show.remove(part_index)
-                partchange = edit_type[5:]
-                if self.bodypart_list[current_frame][part_index] is None:
-                    self.bodypart_list[current_frame][part_index] = [0,0,0]
-                    # self.animation_part_list[current_frame][part_index] = []
-                    self.part_name[part_index] = ["","",""]
-                    self.animation_part_list[current_frame][part_index] = []
-                self.bodypart_list[current_frame][part_index][0] = partchange
-                self.part_name[part_index][0] = partchange
-                try:
-                    main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-                    self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
-                except IndexError:
-                    pass
-                except KeyError:  # change side and not found part with same name
-                    self.part_name[part_index][2] = ""
-                    self.not_show.append(part_index)
-
-            # try:
-            #     part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selectpart].keys())
-            # except KeyError:  # look at weapon next
-            #     selectpart = skeleton.weapon[currentpart]
-            #     part_list = list(gen_weapon_sprite_pool[selectpart][direction_part_button.text].keys())
         if self.animation_part_list[current_frame] != {}:
             self.sprite_part = self.animation_part_list[current_frame]
             pose_layer_list = {k: v[-1] for k, v in self.sprite_part.items() if v is not None and v != []}
@@ -977,6 +1032,8 @@ def reload_animation(animation):
         except IndexError:
             filmstrip_list[frame_index].add_strip()
     animation.reload(frames)
+    print(skeleton.part_name)
+    print(skeleton.sprite_part)
     for helper in helperlist:
         helper.stat1 = skeleton.part_name
         helper.stat2 = skeleton.sprite_part
@@ -985,7 +1042,7 @@ def reload_animation(animation):
                 part = list(skeleton.rect_part_list.keys())[part]
                 helper.select((0, 0), True, part)
         else:
-            helper.select((0, 0), shift_press, None)
+            helper.select(None, shift_press)
 # start animation maker
 clock = pygame.time.Clock()
 
@@ -1295,10 +1352,10 @@ while True:
                     elif default_button.rect.collidepoint(mouse_pos):
                         skeleton.edit_part(mouse_pos, current_frame, "default")
                     elif copy_press or (mouse_up and copy_button.rect.collidepoint(mouse_pos)):
-                        copy_frame = {key: value[:] for key, value in skeleton.animation_part_list[current_frame].items()}
+                        copy_frame = {key: value for key, value in skeleton.animation_part_list[current_frame].items()}
                     elif paste_press or (mouse_up and paste_button.rect.collidepoint(mouse_pos)):
                         if copy_frame is not None:
-                            skeleton.animation_part_list[current_frame] = {key: value[:] for key, value in copy_frame.items()}
+                            skeleton.animation_part_list[current_frame] = {key: value for key, value in copy_frame.items()}
                             skeleton.edit_part(mouse_pos, current_frame, "change")
                     elif activate_button.rect.collidepoint(mouse_pos):
                         for strip_index, strip in enumerate(filmstrips):
@@ -1351,12 +1408,13 @@ while True:
 
                     else:  # click on sprite in list
                         for strip_index, strip in enumerate(filmstrips):
-                            if strip.rect.collidepoint(mouse_pos):
+                            if strip.rect.collidepoint(mouse_pos) and current_frame != strip_index:
                                 current_frame = strip_index
                                 anim.show_frame = current_frame
+                                skeleton.part_selected = []
                                 skeleton.edit_part(mouse_pos, current_frame, "change")
                                 for index, helper in enumerate(helperlist):
-                                    helper.select(mouse_pos, False)
+                                    helper.select(None, False)
                                 break
 
                         helper_click = False
@@ -1372,7 +1430,7 @@ while True:
                                 skeleton.part_selected = []  # clear old list first
                                 for index, helper in enumerate(helperlist):
                                     if helper != helper_click:
-                                        helper.select((0, 0), shift_press)
+                                        helper.select(None, shift_press)
                             if helper_click.part_selected != []:
                                 for part in helper_click.part_selected:
                                     skeleton.click_part(mouse_pos, True, part)
@@ -1382,7 +1440,6 @@ while True:
                                                (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500)
                     if mouse_up:
                         skeleton.click_part(mouse_pos, shift_press)
-
                         for index, helper in enumerate(helperlist):
                             if shift_press is False:  # reset all first if no shift select
                                 helper.select(mouse_pos, shift_press)
@@ -1390,26 +1447,29 @@ while True:
                                 for part in skeleton.part_selected:
                                     if list(skeleton.rect_part_list.keys())[part] in helper.rect_part_list:
                                         helper.select(mouse_pos, shift_press, list(skeleton.rect_part_list.keys())[part])
+                                    else:
+                                        helper.select(None, shift_press)
                             else:
-                                helper.select(mouse_pos, shift_press, part=False)
+                                helper.select(None, shift_press)
                     if mouse_wheel or mouse_wheeldown:
                         skeleton.edit_part(mouse_pos, current_frame, "rotate")
                     elif mouse_right or mouse_rightdown:
                         skeleton.edit_part(mouse_pos, current_frame, "move")
 
             if skeleton.part_selected != []:
-                for part in skeleton.part_selected:
-                    if list(skeleton.rect_part_list.keys())[part] in list(skeleton.sprite_part.keys()):
-                        nametext = skeleton.part_name[list(skeleton.rect_part_list.keys())[part]]
-                        if nametext is None:
-                            nametext = ["","",""]
-                        race_part_button.change_text(nametext[0])
-                        direction_part_button.change_text(nametext[1])
-                        part_selector.change_name(nametext[2])
-                    else:
-                        race_part_button.change_text("")
-                        direction_part_button.change_text("")
-                        part_selector.change_name("")
+                part = skeleton.part_selected[-1]
+                if skeleton.sprite_part is not None and \
+                        list(skeleton.rect_part_list.keys())[part] in list(skeleton.sprite_part.keys()):
+                    nametext = skeleton.part_name[list(skeleton.rect_part_list.keys())[part]]
+                    if nametext is None:
+                        nametext = ["","",""]
+                    race_part_button.change_text(nametext[0])
+                    direction_part_button.change_text(nametext[1])
+                    part_selector.change_name(nametext[2])
+                else:
+                    race_part_button.change_text("")
+                    direction_part_button.change_text("")
+                    part_selector.change_name("")
             else:
                 race_part_button.change_text("")
                 direction_part_button.change_text("")
