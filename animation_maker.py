@@ -555,8 +555,10 @@ class Skeleton:
         self.p2_race = "human"
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
-        self.hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        self.p1_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        self.p1_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.weapon = {"p1_main_weapon":"sword", "p1_sub_weapon":None, "p2_main_weapon":None, "p2_sub_weapon":None}
         self.empty_sprite_part = [0,pygame.Vector2(0, 0), [50, 50],0,0,0]
         self.randomface()
@@ -630,7 +632,6 @@ class Skeleton:
                 self.part_name_list[index] = part_name
                 image = self.create_animation_film(pose_layer_list)
                 self.animation_list.append(image)
-        print(self.part_name_list)
         self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
         self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
         self.default_part_name = {key: value for key, value in self.part_name_list[0].items()}
@@ -675,9 +676,9 @@ class Skeleton:
 
             # if skin != "white":
             #     face[0] = self.apply_colour(face[0], skin_colour)
-            p1_face[0] = self.apply_colour(p1_face[0], self.hair_colour)
-            p1_face[2] = self.apply_colour(p1_face[2], self.hair_colour)
-            p1_face[1] = self.apply_colour(p1_face[1], self.eye_colour)
+            p1_face[0] = self.apply_colour(p1_face[0], self.p1_hair_colour)
+            p1_face[2] = self.apply_colour(p1_face[2], self.p1_hair_colour)
+            p1_face[1] = self.apply_colour(p1_face[1], self.p1_eye_colour)
 
             p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
             head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
@@ -705,9 +706,9 @@ class Skeleton:
                        self.select_part(p2_head_race, p2_head_side, "mouth", bodypart_list["p2_mouth"], self.p2_mouth)]
             # if skin != "white":
             #     face[0] = self.apply_colour(face[0], skin_colour)
-            p2_face[0] = self.apply_colour(p2_face[0], self.hair_colour)
-            p2_face[2] = self.apply_colour(p2_face[2], self.hair_colour)
-            p2_face[1] = self.apply_colour(p2_face[1], self.eye_colour)
+            p2_face[0] = self.apply_colour(p2_face[0], self.p2_hair_colour)
+            p2_face[2] = self.apply_colour(p2_face[2], self.p2_hair_colour)
+            p2_face[1] = self.apply_colour(p2_face[1], self.p2_eye_colour)
             p2_head_sprite_surface = pygame.Surface((p2_face[2].get_width(), p2_face[2].get_height()), pygame.SRCALPHA)
             head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
             p2_head_sprite_surface.blit(p2_head, head_rect)
@@ -762,9 +763,10 @@ class Skeleton:
                 if thisrect is not None and thisrect.collidepoint(mouse_pos):
                     click_part = True
                     if shift_press:
-                        self.part_selected.append(index)
+                        if index not in self.part_selected:
+                            self.part_selected.append(index)
                         break
-                    else:
+                    elif shift_press is False:
                         self.part_selected = [index]
                         break
             if click_part is False:
@@ -787,7 +789,10 @@ class Skeleton:
             part_selector.change_name("")
 
         elif edit_type == "clear":  # clear whole strip
-            self.animation_part_list[current_frame] = {}
+            for part in self.part_name_list[current_frame]:
+                self.bodypart_list[current_frame][part] = None
+                self.part_name_list[current_frame][part] = ["", "", ""]
+                self.animation_part_list[current_frame][part] = []
             self.part_selected = []
 
         elif edit_type == "change":  # change strip
@@ -825,7 +830,6 @@ class Skeleton:
                 partchange = edit_type[5:]
                 self.bodypart_list[current_frame][part_index][2] = partchange
                 self.part_name_list[current_frame][part_index][2] = partchange
-                print(self.weapon)
                 main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
                 if self.animation_part_list[current_frame][part_index] == []:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
@@ -834,8 +838,6 @@ class Skeleton:
                     else:
                         self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
                 self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
-                print(self.sprite_image)
-                print(self.animation_part_list[current_frame][part_index])
                 if part_index in self.not_show:
                     self.not_show.remove(part_index)
 
@@ -853,6 +855,7 @@ class Skeleton:
                     # self.animation_part_list[current_frame][part_index] = []
                     self.part_name_list[current_frame][part_index] = ["","",""]
                     self.animation_part_list[current_frame][part_index] = []
+                print(self.bodypart_list[current_frame][part_index])
                 self.bodypart_list[current_frame][part_index][0] = partchange
                 self.part_name_list[current_frame][part_index][0] = partchange
                 try:
