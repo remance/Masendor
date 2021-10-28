@@ -8,6 +8,7 @@ from gamescript import commonscript
 from gamescript.tactical import longscript
 from pygame.transform import scale
 
+rotationxy = commonscript.rotationxy
 
 class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
@@ -142,7 +143,6 @@ class Unit(pygame.sprite.Sprite):
     status_list = None  # status effect list
     maxzoom = 10  # max zoom allow
     gamebattle = None
-    rotationxy = commonscript.rotationxy
     die = longscript.die  # die script
     setrotate = longscript.setrotate
     formchangetimer = 10
@@ -183,13 +183,13 @@ class Unit(pygame.sprite.Sprite):
         self.new_angle = self.angle
         self.radians_angle = math.radians(360 - startangle)  # radians for apply angle to position (allsidepos and subunit)
         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
-        self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
+        self.front_pos = rotationxy(self.base_pos, frontpos, self.radians_angle)
         self.movement_queue = []
         self.base_target = self.front_pos
         self.command_target = self.front_pos
         numberpos = (self.base_pos[0] - self.base_width_box,
                      (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.number_pos = self.rotationxy(self.base_pos, numberpos, self.radians_angle)
+        self.number_pos = rotationxy(self.base_pos, numberpos, self.radians_angle)
         self.change_pos_scale()
 
         # v Setup default beheviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
@@ -384,7 +384,7 @@ class Unit(pygame.sprite.Sprite):
 
                         numberpos = (self.base_pos[0] - self.base_width_box,
                                      (self.base_pos[1] + self.base_height_box))  # find position for number text
-                        self.number_pos = self.rotationxy(self.base_pos, numberpos, self.radians_angle)
+                        self.number_pos = rotationxy(self.base_pos, numberpos, self.radians_angle)
                         self.change_pos_scale()
 
                         oldwidthbox = oldwidthbox - self.base_width_box
@@ -397,11 +397,11 @@ class Unit(pygame.sprite.Sprite):
                             newpos = (self.base_pos[0] - oldwidthbox, self.base_pos[1])
                         else:  # rear
                             newpos = (self.base_pos[0], self.base_pos[1] - oldheightbox)
-                        self.base_pos = self.rotationxy(self.base_pos, newpos, self.radians_angle)
+                        self.base_pos = rotationxy(self.base_pos, newpos, self.radians_angle)
                         self.last_base_pos = self.base_pos
 
                         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
-                        self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
+                        self.front_pos = rotationxy(self.base_pos, frontpos, self.radians_angle)
                     stoploop = False
         # ^ End check completely empty row
 
@@ -474,10 +474,10 @@ class Unit(pygame.sprite.Sprite):
                     newtarget = unit_topleft + subunit.unitposition
                     if resetpath:
                         subunit.command_target.append(pygame.Vector2(
-                            self.rotationxy(self.base_pos, newtarget, self.radians_angle)))
+                            rotationxy(self.base_pos, newtarget, self.radians_angle)))
                     else:
                         subunit.command_target = pygame.Vector2(
-                            self.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                            rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
                         subunit.new_angle = self.new_angle
 
         else:  # moving unit to specific target position
@@ -490,10 +490,10 @@ class Unit(pygame.sprite.Sprite):
                     newtarget = unit_topleft + subunit.unitposition
                     if resetpath:
                         subunit.command_target.append(pygame.Vector2(
-                            self.rotationxy(target, newtarget, self.radians_angle)))
+                            rotationxy(target, newtarget, self.radians_angle)))
                     else:
                         subunit.command_target = pygame.Vector2(
-                            self.rotationxy(target, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                            rotationxy(target, newtarget, self.radians_angle))  # rotate according to sprite current rotation
 
     def authrecal(self):
         """recalculate authority from all alive leaders"""
@@ -538,7 +538,7 @@ class Unit(pygame.sprite.Sprite):
                                            self.base_pos[1] - self.base_height_box)
         for subunit in self.subunit_sprite:  # generate start position of each subunit
             subunit.base_pos = parentunittopleft + subunit.unitposition
-            subunit.base_pos = pygame.Vector2(self.rotationxy(self.base_pos, subunit.base_pos, self.radians_angle))
+            subunit.base_pos = pygame.Vector2(rotationxy(self.base_pos, subunit.base_pos, self.radians_angle))
             subunit.pos = subunit.base_pos * subunit.zoom
             subunit.rect.center = subunit.pos
             subunit.base_target = subunit.base_pos
@@ -709,7 +709,7 @@ class Unit(pygame.sprite.Sprite):
                             self.retreat_way = (self.base_pos[0] + self.base_width_box, self.base_pos[1])  # find position to retreat
                         else:  # rear
                             self.retreat_way = (self.base_pos[0], (self.base_pos[1] + self.base_height_box))  # find rear position to retreat
-                        self.retreat_way = [self.rotationxy(self.base_pos, self.retreat_way, self.radians_angle), thisindex]
+                        self.retreat_way = [rotationxy(self.base_pos, self.retreat_way, self.radians_angle), thisindex]
                         basetarget = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
 
                         self.processretreat(basetarget)
@@ -963,10 +963,10 @@ class Unit(pygame.sprite.Sprite):
                 self.radians_angle = math.radians(-self.angle)
 
         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
-        self.front_pos = self.rotationxy(self.base_pos, frontpos, self.radians_angle)
+        self.front_pos = rotationxy(self.base_pos, frontpos, self.radians_angle)
         numberpos = (self.base_pos[0] - self.base_width_box,
                      (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.number_pos = self.rotationxy(self.base_pos, numberpos, self.radians_angle)
+        self.number_pos = rotationxy(self.base_pos, numberpos, self.radians_angle)
         self.change_pos_scale()
 
         self.base_target = self.base_pos
@@ -978,7 +978,7 @@ class Unit(pygame.sprite.Sprite):
         for subunit in self.subunit_sprite:  # generate position of each subunit
             newtarget = unit_topleft + subunit.unitposition
             subunit.base_pos = pygame.Vector2(
-                subunit.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
             subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen
             subunit.angle = self.angle
             subunit.rotate()
