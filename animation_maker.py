@@ -564,6 +564,9 @@ class Skeleton:
         self.randomface()
 
         self.read_animation(list(animation_pool.keys())[0])
+        self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
+        self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
+        self.default_part_name = {key: value for key, value in self.part_name_list[0].items()}
 
     def randomface(self):  # todo change when add option to change face
         self.p1_eyebrow = list(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"].keys())[
@@ -584,9 +587,10 @@ class Skeleton:
             random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["beard"]) - 1)]
 
     def read_animation(self, name):
-        #  sprite animation generation
+        #  sprite animation generation from data
         animation_list = [generic_animation_pool[self.side][name]]
         self.animation_part_list = []
+        self.animation_list = []
         self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
         self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
         for animation in animation_list:
@@ -632,9 +636,6 @@ class Skeleton:
                 self.part_name_list[index] = part_name
                 image = self.create_animation_film(pose_layer_list)
                 self.animation_list.append(image)
-        self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
-        self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
-        self.default_part_name = {key: value for key, value in self.part_name_list[0].items()}
 
     def create_animation_film(self, pose_layer_list, empty=False):
         image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
@@ -868,6 +869,12 @@ class Skeleton:
                     if part_index not in self.not_show:
                         self.not_show.append(part_index)
 
+        elif "new" in edit_type:
+            self.animation_part_list = []
+            self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
+            self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
+            self.part_selected = []
+
         elif self.part_selected != []:
             for part in self.part_selected:
                 if part < len(keylist):  # can't edit part that not exist
@@ -938,7 +945,7 @@ class Skeleton:
                                 if self.animation_part_list[current_frame][part_index][-1] == 0:
                                     self.animation_part_list[current_frame][part_index][-1] = 1
 
-        if self.animation_part_list[current_frame] != {}:
+        if len(self.animation_part_list) > 0 and self.animation_part_list[current_frame] != {}:
             self.sprite_part = self.animation_part_list[current_frame]
             pose_layer_list = {k: v[-1] for k, v in self.sprite_part.items() if v is not None and v != []}
             pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
@@ -1313,6 +1320,13 @@ while True:
                                 skeleton.edit_part(mouse_pos, current_frame, "part_" + name.name)
                             elif popup_listbox.action == "race_select":
                                 skeleton.edit_part(mouse_pos, current_frame, "race_" + name.name)
+                            elif popup_listbox.action == "animation_select":
+                                current_frame = 0
+                                anim.show_frame = current_frame
+                                skeleton.read_animation(name.name)
+                                animation_name = name.name
+                                animation_selector.change_name(animation_name)
+                                reload_animation(anim)
                             for thisname in popup_namegroup:  # remove name list
                                 thisname.kill()
                                 del thisname
@@ -1428,6 +1442,9 @@ while True:
                         textinputpopup = ("text_input", "new_animation")
                         inputui.changeinstruction("New Animation Name:")
                         ui.add(inputui_pop)
+                    elif animation_selector.rect.collidepoint(mouse_pos):
+                        popuplist_newopen("animation_select", animation_selector.rect.bottomleft,
+                                          [item for item in generic_animation_pool[direction]], "top")
 
                     else:  # click on sprite in list
                         for strip_index, strip in enumerate(filmstrips):
@@ -1498,11 +1515,16 @@ while True:
                 direction_part_button.change_text("")
                 part_selector.change_name("")
     else:
+        dt=0
         if input_ok_button.event:
             input_ok_button.event = False
 
             if textinputpopup[1] == "new_animation":
                 animation_name = input_box.text
+                animation_selector.change_name(animation_name)
+                current_frame = 0
+                skeleton.edit_part(mouse_pos, current_frame, "new")
+                print(skeleton.animation_part_list)
 
             elif textinputpopup[1] == "quit":
                 pygame.time.wait(1000)
