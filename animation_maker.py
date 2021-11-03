@@ -882,7 +882,13 @@ class Skeleton:
                     if self.animation_part_list[current_frame][part_index] is not None and \
                             len(self.animation_part_list[current_frame][part_index]) > 3:
                         if edit_type == "move":
-                            self.animation_part_list[current_frame][part_index][2] = mouse_pos
+                            new_point = mouse_pos
+                            if point_edit == 1:  # use joint
+                                part_image = self.sprite_image[part_index]
+                                center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
+                                pos_different = center - self.sprite_part[part_index][1]  # find distance between image center and connect point main_joint_pos
+                                new_point = new_point + pos_different
+                            self.animation_part_list[current_frame][part_index][2] = new_point
 
                         elif edit_type == "rotate":
                             base_pos = self.animation_part_list[current_frame][part_index][2]
@@ -988,7 +994,8 @@ class Skeleton:
         if main_joint_pos == "center":
             main_joint_pos = (part.get_width() / 2, part.get_height() / 2)
         pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
-        new_center = target - pos_different  # find new center point
+        # main_joint_pos = main_joint_pos + pos_different
+        new_center = target #- pos_different  # find new center point
         if angle != 0:
             radians_angle = math.radians(360 - angle)
             new_center = rotationxy(target, new_center, radians_angle)  # find new center point with rotation
@@ -1129,6 +1136,8 @@ paste_button = Button("Paste", image, (play_animation_button.pos[0] + play_anima
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+pointedit_button = SwitchButton(["Center","Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
+                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 3,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 activate_button = Button("Enable", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 4,
@@ -1199,6 +1208,7 @@ copy_stat = None
 deactivate_list = [False] * 10
 currentpopuprow = 0
 keypress_delay = 0
+point_edit = 0
 textinputpopup = (None, None)
 
 skeleton.animation_list = []
@@ -1327,6 +1337,13 @@ while True:
                                 animation_name = name.name
                                 animation_selector.change_name(animation_name)
                                 reload_animation(anim)
+                            elif popup_listbox.action == "animation_side":
+                                direction_button.change_text(name.name)
+                                current_frame = 0
+                                anim.show_frame = current_frame
+                                skeleton.side = direction_list.index(name.name)
+                                skeleton.read_animation(animation_name)
+                                reload_animation(anim)
                             for thisname in popup_namegroup:  # remove name list
                                 thisname.kill()
                                 del thisname
@@ -1342,35 +1359,30 @@ while True:
 
             if popup_click is False:
                 if play_animation_button.rect.collidepoint(mouse_pos):
-                    if play_animation_button.current_option == 0:  # start playing animation
-                        play_animation_button.change_option(1)
+                    if play_animation_button.current_option == 0:
+                        play_animation_button.change_option(1)  # start playing animation
                         play_animation = True
-                    else:  # stop animation
-                        play_animation_button.change_option(0)
+                    else:
+                        play_animation_button.change_option(0)  # stop animation
                         play_animation = False
                 elif grid_button.rect.collidepoint(mouse_pos):
-                    if grid_button.current_option == 0:  # start playing animation
+                    if grid_button.current_option == 0:  # remove grid
                         grid_button.change_option(1)
                         showroom.grid = False
-                    else:  # stop animation
+                    else:
                         grid_button.change_option(0)
                         showroom.grid = True
+                elif pointedit_button.rect.collidepoint(mouse_pos):
+                    if pointedit_button.current_option == 0:
+                        pointedit_button.change_option(1)  # use center point for edit
+                    else:
+                        pointedit_button.change_option(0)  # use joint point for edit
+                    point_edit = pointedit_button.current_option
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # start playing animation
                         joint_button.change_option(1)
                     else:  # stop animation
                         joint_button.change_option(0)
-
-        # change animation
-        # skeleton.animation_list = []
-        # skeleton.generate_animation("Default")
-        # frames = [pygame.transform.smoothscale(image, showroom.size) for image in skeleton.animation_list]
-        # for frame_index in range(0, 10):
-        #     try:
-        #         filmstrip_list[frame_index].add_strip(frames[frame_index])
-        #     except IndexError:
-        #         filmstrip_list[frame_index].add_strip()
-        # anim = Animation(frames, 1000, True)
 
         if play_animation:
             current_frame = int(anim.show_frame)

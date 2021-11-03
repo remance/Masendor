@@ -41,9 +41,13 @@ Meaning: The update is going well and steady.
 
 ## History is told by the victor, but sometimes the words of the loser do not fade away
 
+> 14th October 1066 AD, Duke William of Normandy’s force arrived at Telham Hill early in the morning, while Harold Godwinson’s force was already positioned at Senlac Ridge. It is believed that Harold intent to ambush William's army at their camp and was surprised by William's arrival at Telham Hill.
+
+> 14th October 1066 AD, King Harold Godwinson intercepted William the Bastard’s force at Senlac Ridge, Hastings. The rightful king of England refused to cover in a castle before the pretender and bravely marched his army to crush the enemy head-on.
+
 Have you ever find it weird that most historical games follow only a specific version of the story? Even a single battle may have more than one side of the story.
 For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.
-Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the army composition, size, even formation and possibly more. 
+Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the story tone, army composition, size, even formation and possibly more. 
 
 ![alt text](https://github.com/remance/preview/blob/main/source.gif?raw=true)
 
