@@ -641,6 +641,8 @@ class Skeleton:
         image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
         for key, value in self.rect_part_list.items():  # reset rect list
             self.rect_part_list[key] = None
+        for joint in joints:  # remove all joint first
+            joint.kill()
         if empty is False:
             for index, layer in enumerate(pose_layer_list):
                 if layer not in self.not_show:
@@ -648,6 +650,18 @@ class Skeleton:
                     try:
                         image = self.part_to_sprite(image, part[0], list(self.sprite_part.keys()).index(layer),
                                                     part[1], part[2], part[3], part[4])
+                        namecheck = layer
+                        if "p1" in namecheck or "p2" in namecheck:
+                            namecheck = namecheck[3:]  # remove p1_
+                        if namecheck in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
+                            for index, item in enumerate(skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][namecheck]):
+                                joint_type = 0  # main
+                                if index > 0:
+                                    joint_type = 1
+                                joint_pos = list(item.values())[0]
+                                pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
+                                       part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
+                                Joint(joint_type, layer, namecheck, pos, part[3])
                     except IndexError:
                         pass
         return image
@@ -749,7 +763,7 @@ class Skeleton:
         main_joint_pos_list = {}
         for part_index, part in enumerate(part_name_header):
             for part_link in skel_joint_list[self.side]:
-                if part_link in part:  # match part name, p1_head = head in part link #TODO change this when have p2
+                if part_link in part:  # match part name, p1_head = head in part link
                     main_joint_pos_list[part] = list(skel_joint_list[self.side][part_link][0].values())[0]
                     break
         return main_joint_pos_list
@@ -778,7 +792,7 @@ class Skeleton:
             else:
                 self.part_selected = [list(self.rect_part_list.keys()).index(part)]
 
-    def edit_part(self, mouse_pos, current_frame, edit_type):
+    def edit_part(self, mouse_pos, edit_type):
         keylist = list(self.rect_part_list.keys())
         if edit_type == "default":  # reset to default
             self.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in self.default_sprite_part.items()}
@@ -856,7 +870,6 @@ class Skeleton:
                     # self.animation_part_list[current_frame][part_index] = []
                     self.part_name_list[current_frame][part_index] = ["","",""]
                     self.animation_part_list[current_frame][part_index] = []
-                print(self.bodypart_list[current_frame][part_index])
                 self.bodypart_list[current_frame][part_index][0] = partchange
                 self.part_name_list[current_frame][part_index][0] = partchange
                 try:
@@ -1016,16 +1029,16 @@ class Skeleton:
 
 
 class Joint(pygame.sprite.Sprite):
-    def __init__(self, image):
+    images = None
+    def __init__(self, joint_type, name, part, pos, angle):
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos
-        self.image_original = image.copy()
-
-    def move(self, angle, pos):
-        self.pos = pos
-        self.image = self.image_original.copy()
+        self.joint_type = joint_type
+        self.part = part
+        self.name = name
+        self.pos = (pos[0] * showroom_scale_mul[0], pos[1] * showroom_scale_mul[1])
+        self.image = self.images[self.joint_type].copy()
         self.image = pygame.transform.rotate(self.image, angle)  # rotate part sprite
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
 
 class Animation:
@@ -1052,7 +1065,11 @@ class Animation:
                 self.first_time = time.time()
             if self.show_frame > self.end_frame:
                 self.show_frame = self.start_frame
+
         surface.blit(self.frames[int(self.show_frame)], position)
+        if dt == 0:
+            for joint in joints:
+                surface.blit(joint.image, joint.rect)
 
 
 def reload_animation(animation):
@@ -1075,26 +1092,51 @@ def reload_animation(animation):
 # start animation maker
 clock = pygame.time.Clock()
 
+runtime = 0
+mousetimer = 0
+play_animation = False
+current_frame = 0
+copy_frame = None
+copy_name = None
+copy_stat = None
+deactivate_list = [False] * 10
+currentpopuprow = 0
+keypress_delay = 0
+point_edit = 0
+textinputpopup = (None, None)
+
 ui = pygame.sprite.LayeredUpdates()
 fakegroup = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
 
-skeleton = Skeleton()
+showroom_scale = ((150 * screen_size[0] / 500, 150 * screen_size[1] / 500))
+showroom_scale_mul = (showroom_scale[0] / 150, showroom_scale[1] / 150)
+showroom = Showroom(showroom_scale)
+ui.add(showroom)
+
+Joint.images = [pygame.transform.scale(load_image(main_dir, "mainjoint.png", ["animation_maker_ui"]),
+                               (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
+                pygame.transform.scale(load_image(main_dir, "subjoint.png", ["animation_maker_ui"]),
+                                       (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
+joints = pygame.sprite.Group()
+
 image = pygame.transform.scale(load_image(main_dir, "film.png", ["animation_maker_ui"]),
                                (int(100 * screen_scale[0]), int(100 * screen_scale[1])))
 
 Filmstrip.image_original = image
 filmstrips = pygame.sprite.Group()
+
 Button.containers = ui
 SwitchButton.containers = ui
 Bodyhelper.containers = ui
-Joint.containers = ui
+Joint.containers = joints
 Filmstrip.containers = ui, filmstrips
 NameBox.containers = ui
 menu.MenuButton.containers = fakegroup
 menu.NameList.containers = ui
-
 popup_listbox = pygame.sprite.Group()
 popup_namegroup = pygame.sprite.Group()
+
+skeleton = Skeleton()
 
 filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_width(), 42 * screen_scale[1])),
                   Filmstrip((image.get_width() * 2, 42 * screen_scale[1])), Filmstrip((image.get_width() * 3, 42 * screen_scale[1])),
@@ -1195,22 +1237,6 @@ part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width
                                            reset_button.rect.midtop[1]))
 # loop_button = SwitchButton(["Loop:Yes", "Loop:No"],image, (100,200))
 
-showroom = Showroom((150 * screen_size[0] / 500, 150 * screen_size[1] / 500))
-ui.add(showroom)
-
-runtime = 0
-mousetimer = 0
-play_animation = False
-current_frame = 0
-copy_frame = None
-copy_name = None
-copy_stat = None
-deactivate_list = [False] * 10
-currentpopuprow = 0
-keypress_delay = 0
-point_edit = 0
-textinputpopup = (None, None)
-
 skeleton.animation_list = []
 animation_name = list(animation_pool.keys())[0]
 direction = 1
@@ -1296,15 +1322,15 @@ while True:
             elif keypress[pygame.K_DELETE]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
-                    skeleton.edit_part(mouse_pos, current_frame, "delete")
+                    skeleton.edit_part(mouse_pos, "delete")
             elif keypress[pygame.K_PAGEUP]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
-                    skeleton.edit_part(mouse_pos, current_frame, "layerup")
+                    skeleton.edit_part(mouse_pos, "layerup")
             elif keypress[pygame.K_PAGEDOWN]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
-                    skeleton.edit_part(mouse_pos, current_frame, "layerdown")
+                    skeleton.edit_part(mouse_pos, "layerdown")
 
         if mousetimer != 0:  # player click mouse once before
             mousetimer += uidt  # increase timer for mouse click using real time
@@ -1325,11 +1351,11 @@ while True:
                             if popup_listbox.action == "part_side":
                                 direction_part_button.change_text(name.name)
                                 if skeleton.part_selected != []:
-                                    skeleton.edit_part(mouse_pos, current_frame, "direction_" + name.name)
+                                    skeleton.edit_part(mouse_pos, "direction_" + name.name)
                             elif popup_listbox.action == "part_select":
-                                skeleton.edit_part(mouse_pos, current_frame, "part_" + name.name)
+                                skeleton.edit_part(mouse_pos, "part_" + name.name)
                             elif popup_listbox.action == "race_select":
-                                skeleton.edit_part(mouse_pos, current_frame, "race_" + name.name)
+                                skeleton.edit_part(mouse_pos, "race_" + name.name)
                             elif popup_listbox.action == "animation_select":
                                 current_frame = 0
                                 anim.show_frame = current_frame
@@ -1379,10 +1405,12 @@ while True:
                         pointedit_button.change_option(0)  # use joint point for edit
                     point_edit = pointedit_button.current_option
                 elif joint_button.rect.collidepoint(mouse_pos):
-                    if joint_button.current_option == 0:  # start playing animation
+                    if joint_button.current_option == 0:  # remove joint sprite
                         joint_button.change_option(1)
+                        ui.remove(*joints)
                     else:  # stop animation
                         joint_button.change_option(0)
+                        ui.add(*joints)
 
         if play_animation:
             current_frame = int(anim.show_frame)
@@ -1391,9 +1419,9 @@ while True:
             if popup_click is False:
                 if mouse_up:
                     if clear_button.rect.collidepoint(mouse_pos):
-                        skeleton.edit_part(mouse_pos, current_frame, "clear")
+                        skeleton.edit_part(mouse_pos, "clear")
                     elif default_button.rect.collidepoint(mouse_pos):
-                        skeleton.edit_part(mouse_pos, current_frame, "default")
+                        skeleton.edit_part(mouse_pos, "default")
                     elif copy_press or (mouse_up and copy_button.rect.collidepoint(mouse_pos)):
                         copy_frame = {key: (value[:] if value is not None else value) for key, value in
                                       skeleton.animation_part_list[current_frame].items()}
@@ -1405,7 +1433,7 @@ while True:
                                                                            copy_frame.items()}
                             skeleton.part_name_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
                                                                            copy_name.items()}
-                            skeleton.edit_part(mouse_pos, current_frame, "change")
+                            skeleton.edit_part(mouse_pos, "change")
                     elif activate_button.rect.collidepoint(mouse_pos):
                         for strip_index, strip in enumerate(filmstrips):
                             if strip_index == current_frame:
@@ -1419,11 +1447,11 @@ while True:
                                 deactivate_list[strip_index] = True
                                 break
                     elif flip_hori_button.rect.collidepoint(mouse_pos):
-                        skeleton.edit_part(mouse_pos, current_frame, "flip1")
+                        skeleton.edit_part(mouse_pos, "flip1")
                     elif flip_vert_button.rect.collidepoint(mouse_pos):
-                        skeleton.edit_part(mouse_pos, current_frame, "flip2")
+                        skeleton.edit_part(mouse_pos, "flip2")
                     elif reset_button.rect.collidepoint(mouse_pos):
-                        skeleton.edit_part(mouse_pos, current_frame, "reset")
+                        skeleton.edit_part(mouse_pos, "reset")
                     elif direction_button.rect.collidepoint(mouse_pos):
                         popuplist_newopen("animation_side", direction_button.rect.bottomleft, direction_list, "top")
                     elif direction_part_button.rect.collidepoint(mouse_pos):
@@ -1464,7 +1492,7 @@ while True:
                                 current_frame = strip_index
                                 anim.show_frame = current_frame
                                 skeleton.part_selected = []
-                                skeleton.edit_part(mouse_pos, current_frame, "change")
+                                skeleton.edit_part(mouse_pos, "change")
                                 for index, helper in enumerate(helperlist):
                                     helper.select(None, False)
                                 break
@@ -1504,9 +1532,9 @@ while True:
                             else:
                                 helper.select(None, shift_press)
                     if mouse_wheel or mouse_wheeldown:
-                        skeleton.edit_part(mouse_pos, current_frame, "rotate")
+                        skeleton.edit_part(mouse_pos, "rotate")
                     elif mouse_right or mouse_rightdown:
-                        skeleton.edit_part(mouse_pos, current_frame, "move")
+                        skeleton.edit_part(mouse_pos, "move")
 
             if skeleton.part_selected != []:
                 part = skeleton.part_selected[-1]
@@ -1535,8 +1563,7 @@ while True:
                 animation_name = input_box.text
                 animation_selector.change_name(animation_name)
                 current_frame = 0
-                skeleton.edit_part(mouse_pos, current_frame, "new")
-                print(skeleton.animation_part_list)
+                skeleton.edit_part(mouse_pos, "new")
 
             elif textinputpopup[1] == "quit":
                 pygame.time.wait(1000)
