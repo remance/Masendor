@@ -32,6 +32,8 @@ pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
+#TODO animation save, delete function, eye/mouth assign, effect, special part, unique, frame properties, lock?
+
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=4):
     """generate list of subsection of the left side of encyclopedia"""
     widthadjust = screen_scale[0]
@@ -1067,7 +1069,7 @@ class Animation:
                 self.show_frame = self.start_frame
 
         surface.blit(self.frames[int(self.show_frame)], position)
-        if dt == 0:
+        if dt == 0 and show_joint:
             for joint in joints:
                 surface.blit(joint.image, joint.rect)
 
@@ -1095,6 +1097,7 @@ clock = pygame.time.Clock()
 runtime = 0
 mousetimer = 0
 play_animation = False
+show_joint = True
 current_frame = 0
 copy_frame = None
 copy_name = None
@@ -1407,10 +1410,10 @@ while True:
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # remove joint sprite
                         joint_button.change_option(1)
-                        ui.remove(*joints)
+                        show_joint = False
                     else:  # stop animation
                         joint_button.change_option(0)
-                        ui.add(*joints)
+                        show_joint = True
 
         if play_animation:
             current_frame = int(anim.show_frame)
