@@ -619,7 +619,7 @@ class UIScroller(pygame.sprite.Sprite):
 
     def update(self, mouse_pos, *args):
         """User input update"""
-        if mouse_pos is not None:
+        if (args is False or (args and args[0] and self.rect.collidepoint(mouse_pos))) and mouse_pos is not None:
             self.mouse_value = (mouse_pos[1] - self.pos[
                 1]) * 100 / self.uiheight  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
             if self.mouse_value > 100:

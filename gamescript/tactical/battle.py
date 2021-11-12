@@ -572,6 +572,12 @@ class Battle:
                         self.last_selected.justselected = True
                         self.last_selected.selected = True
 
+                        if self.before_selected is None:  # add back the pop up ui so it get shown when click subunit with none selected before
+                            self.battleui.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
+                            self.battleui.add(self.inspect_button)  # add inspection ui open/close button
+
+                            self.addbehaviourui(self.last_selected)
+
                     elif mouseright:
                         self.basecamerapos = pygame.Vector2(icon.army.base_pos[0], icon.army.base_pos[1])
                         self.camerapos = self.basecamerapos * self.camerascale
@@ -2178,7 +2184,6 @@ class Battle:
                     if self.last_selected is not None:
                         if self.gamestate == 1 and self.last_selected.state != 100:
                             if self.before_selected is None:  # add back the pop up ui so it get shown when click subunit with none selected before
-                                self.gameui = self.popgameui
                                 self.battleui.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
                                 self.battleui.add(self.inspect_button)  # add inspection ui open/close button
 

@@ -34,8 +34,9 @@ direction_list = ("front", "side", "back", "sideup", "sidedown")
 
 #TODO animation save, delete function, eye/mouth assign, effect, special part, unique, frame properties, lock?
 
-def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=4):
-    """generate list of subsection of the left side of encyclopedia"""
+def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
+    """generate list of list item"""
+    print('test')
     widthadjust = screen_scale[0]
     heightadjust = screen_scale[1]
     row = 5 * heightadjust
@@ -58,7 +59,7 @@ def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=4)
 
         uiclass.add(*itemgroup)
 
-def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=3):
+def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=19):
     if mouse_scrollup:
         currentrow -= 1
         if currentrow < 0:
@@ -74,6 +75,7 @@ def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, na
             scroll.changeimage(newrow=currentrow, logsize=len(namelist))
         else:
             currentrow -= 1
+    print(listbox._layer, layer)
     return currentrow
 
 def popuplist_newopen(action, newrect, newlist, uitype):
@@ -90,10 +92,8 @@ def popuplist_newopen(action, newrect, newlist, uitype):
                    popup_listbox, ui, layer=19)
 
     popup_listscroll.pos = popup_listbox.rect.topright  # change position variable
-    popup_listscroll.rect = popup_listscroll.image.get_rect(topleft=popup_listbox.rect.topright)  #
+    popup_listscroll.rect = popup_listscroll.image.get_rect(topleft=popup_listbox.rect.topright)
     popup_listscroll.changeimage(newrow=0, logsize=len(newlist))
-
-
     ui.add(popup_listbox, *popup_namegroup, popup_listscroll)
 
     popup_listbox.type = uitype
@@ -215,17 +215,15 @@ for race in race_list:
                 gen_body_sprite_pool[race][direction][folder[-1]] = imgs
 
 gen_weapon_sprite_pool = {}
-weapon_list = ["sword"]
-for weapon in weapon_list:
-    for direction in direction_list:
-        partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon", direction))
-        subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
-        for folder in subdirectories:
-            if folder[-1] not in gen_weapon_sprite_pool:
-                gen_weapon_sprite_pool[folder[-1]] = {}
-            gen_weapon_sprite_pool[folder[-1]][direction] = {}
-            imgs = load_textures(main_dir, folder)
-            gen_weapon_sprite_pool[folder[-1]][direction] = imgs
+for direction in direction_list:
+    partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon", direction))
+    subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
+    for folder in subdirectories:
+        if folder[-1] not in gen_weapon_sprite_pool:
+            gen_weapon_sprite_pool[folder[-1]] = {}
+        gen_weapon_sprite_pool[folder[-1]][direction] = {}
+        imgs = load_textures(main_dir, folder)
+        gen_weapon_sprite_pool[folder[-1]][direction] = imgs
 
 
 class Showroom(pygame.sprite.Sprite):
@@ -1290,14 +1288,12 @@ while True:
                     mousetimer = 0
             elif event.button == 4:  # Mouse scroll up
                 mouse_scrollup = True
-                rowchange = -1
-                if popup_listscroll.rect.collidepoint(mouse_pos):
+                if popup_listbox.rect.collidepoint(mouse_pos):
                     currentpopuprow = listscroll(mouse_scrollup, mouse_scrolldown, popup_listscroll, popup_listbox,
                                                  currentpopuprow, popup_listbox.namelist, popup_namegroup, ui)
             elif event.button == 5:  # Mouse scroll down
                 mouse_scrolldown = True
-                rowchange = 1
-                if popup_listscroll.rect.collidepoint(mouse_pos):
+                if popup_listbox.rect.collidepoint(mouse_pos):
                     currentpopuprow = listscroll(mouse_scrollup, mouse_scrolldown, popup_listscroll, popup_listbox,
                                                  currentpopuprow, popup_listbox.namelist, popup_namegroup, ui)
         elif event.type == pygame.KEYDOWN:
@@ -1377,10 +1373,15 @@ while True:
                                 thisname.kill()
                                 del thisname
                             ui.remove(popup_listbox, popup_listscroll)
+                            currentpopuprow = 0  # reset row
                 elif popup_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     popup_click = True
-                    currentpopuprow = popup_listscroll.update(mouse_pos)  # update the scroller and get new current subsection
-                else:  # click other stuff
+                    newrow = popup_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
+                    if newrow is not None:
+                        currentpopuprow = newrow
+                        setuplist(menu.NameList, currentpopuprow, popup_listbox.namelist, popup_namegroup,
+                                  popup_listbox, ui, layer=19)
+                else:  # click other stuffs
                     for thisname in popup_namegroup:  # remove name list
                         thisname.kill()
                         del thisname
