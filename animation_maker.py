@@ -36,7 +36,6 @@ direction_list = ("front", "side", "back", "sideup", "sidedown")
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
     """generate list of list item"""
-    print('test')
     widthadjust = screen_scale[0]
     heightadjust = screen_scale[1]
     row = 5 * heightadjust
@@ -75,7 +74,6 @@ def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, na
             scroll.changeimage(newrow=currentrow, logsize=len(namelist))
         else:
             currentrow -= 1
-    print(listbox._layer, layer)
     return currentrow
 
 def popuplist_newopen(action, newrect, newlist, uitype):
@@ -814,7 +812,7 @@ class Skeleton:
             self.part_selected = []
             if current_frame > len(self.animation_part_list) - 1:
                 while current_frame > len(self.animation_part_list) - 1:
-                    self.animation_part_list.append({})
+                    self.animation_part_list.append({key: None for key in self.rect_part_list.keys()})
                     self.animation_list.append(None)
                     surface = self.create_animation_film(None, empty=True)
                     self.animation_list[-1] = surface
@@ -882,7 +880,7 @@ class Skeleton:
                     if part_index not in self.not_show:
                         self.not_show.append(part_index)
 
-        elif "new" in edit_type:
+        elif "new" in edit_type:  # new animation
             self.animation_part_list = []
             self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
             self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
@@ -1427,12 +1425,16 @@ while True:
                     elif default_button.rect.collidepoint(mouse_pos):
                         skeleton.edit_part(mouse_pos, "default")
                     elif copy_press or (mouse_up and copy_button.rect.collidepoint(mouse_pos)):
+                        copy_part = {key: (value[:] if type(value) == list else value) for key, value in
+                                      skeleton.bodypart_list[current_frame].items()}
                         copy_frame = {key: (value[:] if value is not None else value) for key, value in
                                       skeleton.animation_part_list[current_frame].items()}
                         copy_name = {key: (value[:] if value is not None else value) for key, value in
                                       skeleton.part_name_list[current_frame].items()}
                     elif paste_press or (mouse_up and paste_button.rect.collidepoint(mouse_pos)):
                         if copy_frame is not None:
+                            skeleton.bodypart_list[current_frame] = {key: (value[:] if type(value) == list else value) for key, value in
+                                                                           copy_part.items()}
                             skeleton.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
                                                                            copy_frame.items()}
                             skeleton.part_name_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
