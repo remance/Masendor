@@ -32,7 +32,7 @@ pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
-#TODO animation save, delete function, eye/mouth assign, effect, special part, unique, frame properties, lock?
+#TODO animation save, delete function, eye/mouth assign, copy part, effect, special part, unique, frame properties, png export, lock?
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
     """generate list of list item"""
@@ -51,7 +51,7 @@ def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1)
 
     for index, item in enumerate(showlist):
         if index >= currentrow:
-            itemgroup.add(itemclass(None, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
+            itemgroup.add(itemclass(screen_scale, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
             row += (30 * heightadjust)  # next row
             if len(itemgroup) > box.maxshowlist:
                 break  # will not generate more than space allowed
@@ -500,9 +500,9 @@ class Bodyhelper(pygame.sprite.Sprite):
                 self.image.blit(textsurface1, textrect1)
                 self.image.blit(textsurface2, textrect2)
             # else:
-            #     textsurface = self.font.render("None", 1, (0, 0, 0))
-            #     textrect = textsurface.get_rect(midleft=self.part_pos[part])
-            #     self.image.blit(textsurface, textrect)
+            #     text_surface = self.font.render("None", 1, (0, 0, 0))
+            #     text_rect = text_surface.get_rect(midleft=self.part_pos[part])
+            #     self.image.blit(text_surface, text_rect)
 
 
 class SideChoose:
@@ -1200,31 +1200,31 @@ direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_b
 #                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
 input_ui_img = load_image(main_dir, "inputui.png", "ui\\mainmenu_ui")
-inputui = menu.InputUI(None, input_ui_img,
+inputui = menu.InputUI(screen_scale, input_ui_img,
                             (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
 imagelist = load_base_button(main_dir)
 
-input_ok_button = menu.MenuButton(None, imagelist, pos=(inputui.rect.midleft[0] + imagelist[0].get_width(),
+input_ok_button = menu.MenuButton(screen_scale, imagelist, pos=(inputui.rect.midleft[0] + imagelist[0].get_width(),
                                                   inputui.rect.midleft[1] + imagelist[0].get_height()),
                                   text="Confirm", layer=31)
-input_cancel_button = menu.MenuButton(None, imagelist,
+input_cancel_button = menu.MenuButton(screen_scale, imagelist,
                                            pos=(inputui.rect.midright[0] - imagelist[0].get_width(),
                                                 inputui.rect.midright[1] + imagelist[0].get_height()),
                                            text="Cancel", layer=31)
 input_button = (input_ok_button, input_cancel_button)
-input_box = menu.InputBox(None, inputui.rect.center, inputui.image.get_width())  # user text input box
+input_box = menu.InputBox(screen_scale, inputui.rect.center, inputui.image.get_width())  # user text input box
 
 inputui_pop = (inputui, input_box, input_ok_button, input_cancel_button)
 
-confirmui = menu.InputUI(None, input_ui_img,
+confirmui = menu.InputUI(screen_scale, input_ui_img,
                               (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirmui_pop = (confirmui, input_ok_button, input_cancel_button)
 
 boximg = load_image(main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
 
 menu.ListBox.containers = popup_listbox
-popup_listbox = menu.ListBox(None, (0, 0), boximg, 15)  # popup listbox need to be in higher layer
+popup_listbox = menu.ListBox(screen_scale, (0, 0), boximg, 15)  # popup listbox need to be in higher layer
 popup_listscroll = battleui.UIScroller(popup_listbox.rect.topright,
                                             popup_listbox.image.get_height(),
                                             popup_listbox.maxshowlist,

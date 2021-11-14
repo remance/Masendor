@@ -44,13 +44,11 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
 
 
 class TroopNumber(pygame.sprite.Sprite):
-    def __init__(self, main, who):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
-
+    def __init__(self, screen_scale, who):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
 
+        self.screen_scale = screen_scale
         self.who = who
         self.textcolour = pygame.Color("blue")
         if self.who.team == 2:
@@ -59,7 +57,7 @@ class TroopNumber(pygame.sprite.Sprite):
         self.number = self.who.troop_number
         self.zoom = 0
 
-        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.height_adjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.screen_scale[1]))
 
         self.image = self.render(str(self.number), self.font, self.textcolour)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -74,7 +72,7 @@ class TroopNumber(pygame.sprite.Sprite):
             zoom = (11 - self.zoom) / 2
             if zoom < 1:
                 zoom = 1
-            newfontsize = int(60 / zoom * self.height_adjust)
+            newfontsize = int(60 / zoom * self.screen_scale[1])
             self.font = pygame.font.SysFont("timesnewroman", newfontsize)
             self.image = self.render(str(self.number), self.font, self.textcolour)
             self.rect = self.image.get_rect(topleft=self.pos)

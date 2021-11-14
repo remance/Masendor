@@ -15,12 +15,12 @@ class TerrainPopup(pygame.sprite.Sprite):
                                                              int(self.images[0].get_height() * self.scaleadjust)))
         self.font = pygame.font.SysFont("helvetica", int(16 * self.scaleadjust))
         self.heightfont = pygame.font.SysFont("helvetica", int(12 * self.scaleadjust))
-        self.imgpos = ((24 * self.scaleadjust, 34 * self.scaleadjust), (24 * self.scaleadjust, 53 * self.scaleadjust),  # inf speed, inf atk
-                       (24 * self.scaleadjust, 70 * self.scaleadjust), (58 * self.scaleadjust, 34 * self.scaleadjust),  # inf def, cav speed
-                       (58 * self.scaleadjust, 53 * self.scaleadjust), (58 * self.scaleadjust, 70 * self.scaleadjust),  # cav atk, cav def
-                       (90 * self.scaleadjust, 34 * self.scaleadjust), (90 * self.scaleadjust, 53 * self.scaleadjust))  # range def, discipline
-        self.modlist = (1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
-        self.bonuslist = (40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
+        self.img_pos = ((24 * self.scaleadjust, 34 * self.scaleadjust), (24 * self.scaleadjust, 53 * self.scaleadjust),  # inf speed, inf atk
+                        (24 * self.scaleadjust, 70 * self.scaleadjust), (58 * self.scaleadjust, 34 * self.scaleadjust),  # inf def, cav speed
+                        (58 * self.scaleadjust, 53 * self.scaleadjust), (58 * self.scaleadjust, 70 * self.scaleadjust),  # cav atk, cav def
+                        (90 * self.scaleadjust, 34 * self.scaleadjust), (90 * self.scaleadjust, 53 * self.scaleadjust))  # range def, discipline
+        self.mod_list = (1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
+        self.bonus_list = (40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
 
         self.image_original = self.image.copy()
 
@@ -30,49 +30,49 @@ class TerrainPopup(pygame.sprite.Sprite):
         self.pos = pos  # position to draw the image on screen
 
         # v Terrain feature name
-        self.textsurface = self.font.render(feature[0], True, (0, 0, 0))
-        self.textrect = self.textsurface.get_rect(topleft=(5, 5))
-        self.image.blit(self.textsurface, self.textrect)
+        text_surface = self.font.render(feature[0], True, (0, 0, 0))
+        text_rect = text_surface.get_rect(topleft=(5, 5))
+        self.image.blit(text_surface, text_rect)
         # ^ End terrain feature
 
         # v Height number
-        self.textsurface = self.heightfont.render(str(height), True, (0, 0, 0))
-        self.textrect = self.textsurface.get_rect(topleft=(self.image.get_width() - (self.image.get_width() / 5), 5))
-        self.image.blit(self.textsurface, self.textrect)
+        text_surface = self.heightfont.render(str(height), True, (0, 0, 0))
+        text_rect = text_surface.get_rect(topleft=(self.image.get_width() - (self.image.get_width() / 5), 5))
+        self.image.blit(text_surface, text_rect)
         # End height
 
-        for index, imgpos in enumerate(self.imgpos[0:6]):  # text for each stat modifier
+        for index, imgpos in enumerate(self.img_pos[0:6]):  # text for each stat modifier
             if feature[index + 1] == 1:  # draw circle if modifier is 1 (no effect to stat)
-                self.imagerect = self.images[7].get_rect(center=imgpos)  # images[7] is circle icon image
-                self.image.blit(self.images[7], self.imagerect)
+                imagerect = self.images[7].get_rect(center=imgpos)  # images[7] is circle icon image
+                self.image.blit(self.images[7], imagerect)
             else:  # upper or lower (^v) arrow icon to indicate modifier level
-                for modindex, mod in enumerate(self.modlist):  # loop to find ^v arrow icon for the modifier
+                for modindex, mod in enumerate(self.mod_list):  # loop to find ^v arrow icon for the modifier
                     if feature[index + 1] >= mod:  # draw appropiate icon if modifier is higher than the number of list item
-                        self.imagerect = self.images[modindex + 1].get_rect(center=imgpos)
-                        self.image.blit(self.images[modindex + 1], self.imagerect)
+                        imagerect = self.images[modindex + 1].get_rect(center=imgpos)
+                        self.image.blit(self.images[modindex + 1], imagerect)
                         break  # found arrow image to blit end loop
 
         # v range def modifier for both infantry and cavalry
         if feature[7] == 0:  # no bonus, draw circle
-            self.imagerect = self.images[7].get_rect(center=self.imgpos[6])
-            self.image.blit(self.images[7], self.imagerect)
+            imagerect = self.images[7].get_rect(center=self.img_pos[6])
+            self.image.blit(self.images[7], imagerect)
         else:
-            for modindex, mod in enumerate(self.bonuslist):
+            for modindex, mod in enumerate(self.bonus_list):
                 if feature[7] >= mod:
-                    self.imagerect = self.images[modindex + 1].get_rect(center=self.imgpos[6])
-                    self.image.blit(self.images[modindex + 1], self.imagerect)
+                    imagerect = self.images[modindex + 1].get_rect(center=self.img_pos[6])
+                    self.image.blit(self.images[modindex + 1], imagerect)
                     break
         # ^ End range def modifier
 
         # v discipline modifier for both infantry and cavalry
         if feature[9] == 0:
-            self.imagerect = self.images[7].get_rect(center=self.imgpos[7])
-            self.image.blit(self.images[7], self.imagerect)
+            imagerect = self.images[7].get_rect(center=self.img_pos[7])
+            self.image.blit(self.images[7], imagerect)
         else:
-            for modindex, mod in enumerate(self.bonuslist):
+            for modindex, mod in enumerate(self.bonus_list):
                 if feature[9] >= mod:
-                    self.imagerect = self.images[modindex + 1].get_rect(center=self.imgpos[7])
-                    self.image.blit(self.images[modindex + 1], self.imagerect)
+                    imagerect = self.images[modindex + 1].get_rect(center=self.img_pos[7])
+                    self.image.blit(self.images[modindex + 1], imagerect)
                     break
         # ^ End discipline modifier
 
@@ -92,12 +92,12 @@ class OnelinePopup(pygame.sprite.Sprite):
         if self.pos != pos or self.textinput != textinput:
             self.textinput = textinput
             self.pos = pos
-            textsurface = self.font.render(self.textinput, True, (0, 0, 0))  # text input font surface
-            textrect = textsurface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
-            self.image = pygame.Surface((textrect.width + 6, textrect.height + 6))  # black border
-            image = pygame.Surface((textrect.width + 2, textrect.height + 2))  # white Box
+            text_surface = self.font.render(self.textinput, True, (0, 0, 0))  # text input font surface
+            text_rect = text_surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
+            self.image = pygame.Surface((text_rect.width + 6, text_rect.height + 6))  # black border
+            image = pygame.Surface((text_rect.width + 2, text_rect.height + 2))  # white Box
             image.fill((255, 255, 255))
-            image.blit(textsurface, textrect)  # blit text into white box
+            image.blit(text_surface, text_rect)  # blit text into white box
             rect = self.image.get_rect(topleft=(2, 2))  # white box image position at (2,2) on black border image
             self.image.blit(image, rect)  # blit white box into black border image to create text box image
             self.rect = self.image.get_rect(bottomleft=self.pos)
@@ -116,17 +116,17 @@ class EffecticonPopup(pygame.sprite.Sprite):
         if self.pos != pos or self.textinput != textinput:
             self.textinput = textinput
             self.pos = pos
-            namesurface = self.headfont.render(self.textinput[0], True, (0, 0, 0))  # name font surface
-            namerect = namesurface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
-            # textsurface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
-            # textrect = textsurface.get_rect(topleft=(1, textrect.height + 1))
-            self.image = pygame.Surface((namerect.width + 6, namerect.height + 6))  # black border
-            image = pygame.Surface((namerect.width + 2, namerect.height + 2))  # white Box for text
-            # self.image = pygame.Surface((namerect.width + 6, textrect.height + namerect.height + 6)) ## Black border
-            # image = pygame.Surface((namerect.width + 2, textrect.height + namerect.height + 2)) ## White Box for text
+            name_surface = self.headfont.render(self.textinput[0], True, (0, 0, 0))  # name font surface
+            name_rect = name_surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
+            # text_surface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
+            # text_rect = text_surface.get_rect(topleft=(1, text_rect.height + 1))
+            self.image = pygame.Surface((name_rect.width + 6, name_rect.height + 6))  # black border
+            image = pygame.Surface((name_rect.width + 2, name_rect.height + 2))  # white Box for text
+            # self.image = pygame.Surface((namerect.width + 6, text_rect.height + namerect.height + 6)) ## Black border
+            # image = pygame.Surface((namerect.width + 2, text_rect.height + namerect.height + 2)) ## White Box for text
             image.fill((255, 255, 255))
-            image.blit(namesurface, namerect)  # blit text into white box
-            # image.blit(textsurface, textrect)
+            image.blit(name_surface, name_rect)  # blit text into white box
+            # image.blit(text_surface, text_rect)
             rect = self.image.get_rect(topleft=(2, 2))  # white box image position at (2,2) on black border image
             self.image.blit(image, rect)  # blit white box into black border image to create text box image
             self.rect = self.image.get_rect(bottomleft=self.pos)

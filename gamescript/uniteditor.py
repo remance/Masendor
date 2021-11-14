@@ -207,16 +207,14 @@ class Warningmsg(pygame.sprite.Sprite):
 
     # outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
 
-    def __init__(self, main, pos):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
-
+    def __init__(self, screen_scale, pos):
         self._layer = 18
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("timesnewroman", int(20 * self.height_adjust))
+        self.screen_scale = screen_scale
+        self.font = pygame.font.SysFont("timesnewroman", int(20 * self.screen_scale[1]))
         self.rowcount = 0
         self.warninglog = []
-        self.fixwidth = int(230 * self.height_adjust)
+        self.fixwidth = int(230 * screen_scale[1])
         self.pos = pos
 
     def warning(self, warnlist):
@@ -244,9 +242,9 @@ class Warningmsg(pygame.sprite.Sprite):
             else:
                 self.warninglog.append(warnitem)
 
-        self.image = pygame.Surface((self.fixwidth, int(22 * self.height_adjust) * self.rowcount))
+        self.image = pygame.Surface((self.fixwidth, int(22 * self.screen_scale[1]) * self.rowcount))
         self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.height_adjust) * self.rowcount) - 2))
+        whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.screen_scale[1]) * self.rowcount) - 2))
         whiteimage.fill((255, 255, 255))
         whiteimage_rect = whiteimage.get_rect(topleft=(1, 1))
         self.image.blit(whiteimage, whiteimage_rect)
@@ -260,13 +258,10 @@ class Warningmsg(pygame.sprite.Sprite):
 
 
 class PreviewChangeButton(pygame.sprite.Sprite):
-    def __init__(self, main, pos, image, text):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
-
+    def __init__(self, screen_scale, pos, image, text):
         self._layer = 13
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("timesnewroman", int(30 * self.height_adjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(30 * screen_scale[1]))
 
         self.image = image.copy()
         self.image_original = self.image.copy()
@@ -287,12 +282,9 @@ class PreviewChangeButton(pygame.sprite.Sprite):
 
 
 class FilterBox(pygame.sprite.Sprite):
-    def __init__(self, main, pos, image):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
-
+    def __init__(self, screen_scale, pos, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = pygame.transform.scale(image, (int(image.get_width() * self.width_adjust),
-                                                    int(image.get_height() * self.height_adjust)))
+        self.image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[0]),
+                                                    int(image.get_height() * screen_scale[1])))
         self.rect = self.image.get_rect(topleft=pos)

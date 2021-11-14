@@ -132,7 +132,7 @@ def load_game_data(game):
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
     # Time bar ui
-    game.timeui = battleui.TimeUI((game.ScreenWidth - topimage[31].get_width(), 0), topimage[31])
+    game.timeui = battleui.TimeUI((game.screen_width - topimage[31].get_width(), 0), topimage[31])
     game.timenumber = battleui.Timer(game.timeui.rect.topleft)  # time number on time ui
 
     image = pygame.Surface((topimage[31].get_width(), 15))

@@ -7,7 +7,7 @@ import sys
 
 import pygame
 import pygame.freetype
-from gamescript import camera, map, weather, battleui, commonscript, menu
+from gamescript import camera, map, weather, battleui, commonscript, menu, escmenu
 from gamescript.arcade import subunit, unit, leader, longscript
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -28,6 +28,7 @@ class Battle:
     popuplist_newopen = commonscript.popuplist_newopen
     setuplist = commonscript.setuplist
     camerascale = 4
+    escmenu_process = escmenu.escmenu_process
 
     def __init__(self, main, winstyle):
         # v Get game object/variable from gamestart
@@ -835,7 +836,7 @@ class Battle:
         pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
 
         while True:  # game running
-            self.fpscount.fpsshow(self.clock)
+            self.fpscount.fps_show(self.clock)
             keypress = None
             self.mousepos = pygame.mouse.get_pos()  # current mouse pos based on screen
             mouse_up = False  # left click
@@ -899,54 +900,7 @@ class Battle:
                 if esc_press:  # open/close menu
                     if self.gamestate in (1, 2):  # in battle
                         self.gamestate = 0  # open munu
-                        self.battleui.add(self.battle_menu)  # add menu to drawer
-                        self.battleui.add(*self.battle_menu_button)  # add menu button to
-
-                    elif self.gamestate == 0:  # in menu
-                        if self.battle_menu.mode in (0, 1):  # in menu or option
-                            if self.battle_menu.mode == 1:  # option menu
-                                self.mixervolume = self.oldsetting
-                                pygame.mixer.music.set_volume(self.mixervolume)
-                                self.escslidermenu[0].update(self.mixervolume, self.escvaluebox[0], forcedvalue=True)
-                                self.battle_menu.changemode(0)
-
-                            self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escoptionmenubutton,
-                                                 *self.escslidermenu, *self.escvaluebox)
-                            self.gamestate = self.previous_gamestate
-
-                        elif self.battle_menu.mode == 2:  # encyclopedia
-                            self.battleui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll, self.lorenamelist)
-
-                            for name in self.subsection_name:
-                                name.kill()
-                                del name
-                            self.battle_menu.changemode(0)
-
-                            if self.battle_menu not in self.battleui:
-                                self.gamestate = self.previous_gamestate
-                    elif self.gamestate == 3:
-                        self.exitbattle()
-                        return  # end battle game loop
-
-                elif mouse_scrollup:  # Mouse scroll up
-                    if self.gamestate == 0 and self.battle_menu.mode == 2:  # Scrolling at lore book subsection list
-                        if self.lorenamelist.rect.collidepoint(self.mousepos):
-                            self.lorebook.current_subsection_row -= 1
-                            if self.lorebook.current_subsection_row < 0:
-                                self.lorebook.current_subsection_row = 0
-                            else:
-                                self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)
-                                self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
-
-                elif mouse_scrolldown:  # Mouse scroll down
-                    if self.gamestate == 0 and self.battle_menu.mode == 2:  # Scrolling at lore book subsection list
-                        if self.lorenamelist.rect.collidepoint(self.mousepos):
-                            self.lorebook.current_subsection_row += 1
-                            if self.lorebook.current_subsection_row + self.lorebook.max_subsection_show - 1 < self.lorebook.logsize:
-                                self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)
-                                self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
-                            else:
-                                self.lorebook.current_subsection_row -= 1
+                        self.battleui.add(self.battle_menu, *self.battle_menu_button)  # add menu and its buttons to drawer
 
                 if self.gamestate in (1, 2):  # game in battle state
                     # v register user input during gameplay
@@ -2030,119 +1984,9 @@ class Battle:
                     # ^ End update game time
 
                 elif self.gamestate == 0:  # Complete game pause when open either esc menu or enclycopedia
-                    if self.battle_menu.mode == 0:  # gamestart esc menu
-                        for button in self.battle_menu_button:
-                            if button.rect.collidepoint(self.mousepos):
-                                button.image = button.images[1]  # change button image to mouse over one
-                                if mouse_up:  # click on button
-                                    button.image = button.images[2]  # change button image to clicked one
-                                    if button.text == "Resume":  # resume game
-                                        self.gamestate = self.previous_gamestate  # resume battle gameplay state
-                                        self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
-                                                             *self.escvaluebox)  # remove menu sprite
-
-                                    elif button.text == "Encyclopedia":  # open encyclopedia
-                                        self.battle_menu.mode = 2  # change to enclycopedia mode
-                                        self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll,
-                                                          *self.lorebuttonui)  # add sprite related to encyclopedia
-                                        self.lorebook.change_section(0, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton,
-                                                                     self.battleui)
-                                        # self.lorebook.setupsubsectionlist(self.lorenamelist, listgroup)
-
-                                    elif button.text == "Option":  # open option menu
-                                        self.battle_menu.changemode(1)  # change to option menu mode
-                                        self.battleui.remove(*self.battle_menu_button)  # remove gamestart esc menu button
-                                        self.battleui.add(*self.escoptionmenubutton, *self.escslidermenu, *self.escvaluebox)
-                                        self.oldsetting = self.escslidermenu[0].value  # Save previous setting for in case of cancel
-
-                                    elif button.text == "End Battle":  # back to gamestart menu
-                                        self.exitbattle()
-                                        return  # end battle game loop
-
-                                    elif button.text == "Desktop":  # quit game
-                                        self.textinputpopup = ("confirm_input", "quit")
-                                        self.confirmui.changeinstruction("Quit Game?")
-                                        self.battleui.add(*self.confirmui_pop)
-                                    break  # found clicked button, break loop
-                            else:
-                                button.image = button.images[0]
-
-                    elif self.battle_menu.mode == 1:  # option menu
-                        for button in self.escoptionmenubutton:  # check if any button get collided with mouse or clicked
-                            if button.rect.collidepoint(self.mousepos):
-                                button.image = button.images[1]  # change button image to mouse over one
-                                if mouse_up:  # click on button
-                                    button.image = button.images[2]  # change button image to clicked one
-                                    if button.text == "Confirm":  # confirm button, save the setting and close option menu
-                                        self.oldsetting = self.mixervolume  # save mixer volume
-                                        pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                        editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
-                                                   self.config)  # save to config file
-                                        self.battle_menu.changemode(0)  # go back to gamestart esc menu
-                                        self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
-                                                             *self.escvaluebox)  # remove option menu sprite
-                                        self.battleui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
-
-                                    elif button.text == "Apply":  # apply button, save the setting
-                                        self.oldsetting = self.mixervolume  # save mixer volume
-                                        pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                        editconfig("DEFAULT", "SoundVolume", str(slider.value), "configuration.ini",
-                                                   self.config)  # save to config file
-
-                                    elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
-                                        self.mixervolume = self.oldsetting  # revert to old setting
-                                        pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
-                                        self.escslidermenu[0].update(self.mixervolume, self.escvaluebox[0], forcedvalue=True)  # update slider bar
-                                        self.battle_menu.changemode(0)  # go back to gamestart esc menu
-                                        self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
-                                                             *self.escvaluebox)  # remove option menu sprite
-                                        self.battleui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
-
-                            else:  # no button currently collided with mouse
-                                button.image = button.images[0]  # revert button image back to the idle one
-
-                        for slider in self.escslidermenu:
-                            if slider.rect.collidepoint(self.mousepos) and (mouse_leftdown or mouse_up):  # mouse click on slider bar
-                                slider.update(self.mousepos, self.escvaluebox[0])  # update slider button based on mouse value
-                                self.mixervolume = float(slider.value / 100)  # for now only music volume slider exist
-
-                    elif self.battle_menu.mode == 2:  # Encyclopedia mode
-                        if mouse_up or mouse_leftdown:  # mouse down (hold click) only for subsection listscroller
-                            if mouse_up:
-                                for button in self.lorebuttonui:
-                                    if button in self.battleui and button.rect.collidepoint(self.mousepos):  # click button
-                                        if button.event in range(0, 11):  # section button
-                                            self.lorebook.change_section(button.event, self.lorenamelist, self.subsection_name, self.lorescroll,
-                                                                         self.pagebutton, self.battleui)  # change to section of that button
-                                        elif button.event == 19:  # Close button
-                                            self.battleui.remove(self.lorebook, *self.lorebuttonui, self.lorescroll,
-                                                                 self.lorenamelist)  # remove enclycopedia related sprites
-                                            for name in self.subsection_name:  # remove subsection name
-                                                name.kill()
-                                                del name
-                                            self.battle_menu.changemode(0)  # change menu back to default 0
-                                            if self.battle_menu not in self.battleui:  # in case open encyclopedia via right click on icon or other way
-                                                self.gamestate = self.previous_gamestate  # resume gameplay
-                                        elif button.event == 20:  # Previous page button
-                                            self.lorebook.change_page(self.lorebook.page - 1, self.pagebutton, self.battleui)  # go back 1 page
-                                        elif button.event == 21:  # Next page button
-                                            self.lorebook.change_page(self.lorebook.page + 1, self.pagebutton, self.battleui)  # go forward 1 page
-                                        break  # found clicked button, break loop
-
-                                for name in self.subsection_name:  # too lazy to include break for button found to avoid subsection loop since not much optimisation is needed here
-                                    if name.rect.collidepoint(self.mousepos):  # click on subsection name
-                                        self.lorebook.change_subsection(name.subsection, self.pagebutton, self.battleui)  # change subsection
-                                        break  # found clicked subsection, break loop
-
-                            if self.lorescroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
-                                self.lorebook.current_subsection_row = self.lorescroll.update(
-                                    self.mousepos)  # update the scroller and get new current subsection
-                                self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)  # update subsection name list
-
-                elif self.gamestate == 3:
-                    if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
-                        self.exitbattle()
-                        return  # end battle game loop
+                    command = self.escmenu_process(mouse_up, mouse_leftdown, esc_press, mouse_scrollup, mouse_scrolldown, self.battleui)
+                    if command == "end_battle":
+                        return
 
             elif self.textinputpopup != (None, None):  # currently have input text pop up on screen, stop everything else until done
                 for button in self.input_button:

@@ -230,13 +230,13 @@ def load_game_data(game):
     lorebook.Lorebook.statetext = game.statetext
 
     imgs = load_images(game.main_dir, ["ui", "lorebook_ui"], loadorder=False)
-    game.lorebook = lorebook.Lorebook(game, imgs[0])  # encyclopedia sprite
-    game.lorenamelist = lorebook.SubsectionList(game, game.lorebook.rect.topleft, imgs[1])
+    game.lorebook = lorebook.Lorebook(game.main_dir, game.screen_scale, game.SCREENRECT, imgs[0])  # encyclopedia sprite
+    game.lorenamelist = lorebook.SubsectionList(game.screen_scale, game.lorebook.rect.topleft, imgs[1])
 
     imgs = load_images(game.main_dir, ["ui", "lorebook_ui", "button"], loadorder=False)
     for index, img in enumerate(imgs):
-        imgs[index] = pygame.transform.scale(img, (int(img.get_width() * game.width_adjust),
-                                                   int(img.get_height() * game.height_adjust)))
+        imgs[index] = pygame.transform.scale(img, (int(img.get_width() * game.screen_scale[0]),
+                                                   int(img.get_height() * game.screen_scale[1])))
     game.lorebuttonui = [
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                           imgs[0], 0, 13),  # concept section button
@@ -338,7 +338,7 @@ def load_game_data(game):
 
     game.fpscount = battleui.FPScount()  # FPS number counter
 
-    game.battledone_box = battleui.BattleDone(game, topimage[-3], topimage[-4])
+    game.battledone_box = battleui.BattleDone(game.screen_scale, (game.screen_width / 2, game.screen_height / 2), topimage[-3], topimage[-4])
     game.gamedone_button = battleui.UIButton(game.battledone_box.pos[0], game.battledone_box.boximage.get_height() * 0.8, topimage[-2], newlayer=19)
 
     # v Esc menu related objects
@@ -370,16 +370,15 @@ def load_game_data(game):
     # ^ End esc menu objects
 
 
-def make_bar_list(main, listtodo, menuimage):
+def make_bar_list(main_dir, screen_scale, listtodo, menuimage):
     """Make a drop down bar list option button"""
-    main_dir = main.main_dir
     barlist = []
     img = load_image(main_dir, "bar_normal.jpg", "ui\\mainmenu_ui")
     img2 = load_image(main_dir, "bar_mouse.jpg", "ui\\mainmenu_ui")
     img3 = img2
     for index, bar in enumerate(listtodo):
         barimage = (img.copy(), img2.copy(), img3.copy())
-        bar = menu.MenuButton(main, images=barimage, pos=(menuimage.pos[0], menuimage.pos[1] + img.get_height() * (index + 1)), text=bar)
+        bar = menu.MenuButton(screen_scale, images=barimage, pos=(menuimage.pos[0], menuimage.pos[1] + img.get_height() * (index + 1)), text=bar)
         barlist.append(bar)
     return barlist
 
@@ -567,12 +566,10 @@ def kill_effect_icon(self):
         del icon
 
 
-def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
+def setuplist(screen_scale, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
     """generate list of subsection of the left side of encyclopedia"""
-    widthadjust = self.width_adjust
-    heightadjust = self.height_adjust
-    row = 5 * heightadjust
-    column = 5 * widthadjust
+    row = 5 * screen_scale[1]
+    column = 5 * screen_scale[0]
     pos = box.rect.topleft
     if currentrow > len(showlist) - box.maxshowlist:
         currentrow = len(showlist) - box.maxshowlist
@@ -584,8 +581,8 @@ def setuplist(self, itemclass, currentrow, showlist, itemgroup, box, uiclass, la
 
     for index, item in enumerate(showlist):
         if index >= currentrow:
-            itemgroup.add(itemclass(self, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
-            row += (30 * heightadjust)  # next row
+            itemgroup.add(itemclass(screen_scale, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
+            row += (30 * screen_scale[1])  # next row
             if len(itemgroup) > box.maxshowlist:
                 break  # will not generate more than space allowed
 
@@ -612,7 +609,7 @@ def popuplist_newopen(self, newrect, newlist, uitype):
     else:
         self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
 
-    self.setuplist(menu.NameList, 0, newlist, self.popup_namegroup,
+    setuplist(self.screen_scale, menu.NameList, 0, newlist, self.popup_namegroup,
                    self.popup_listbox, self.battleui, layer=19)
 
     self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable

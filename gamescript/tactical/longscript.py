@@ -259,7 +259,7 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
             column = 0
             row += 1
         armysubunitindex += 1
-    gamebattle.troop_number_sprite.add(unit.TroopNumber(gamebattle, this_unit))  # create troop number text sprite
+    gamebattle.troop_number_sprite.add(unit.TroopNumber(gamebattle.screen_scale, this_unit))  # create troop number text sprite
 
     return subunitgameid
 
@@ -661,7 +661,7 @@ def add_new_unit(gamebattle, who, addunitlist=True):
         gamebattle.allunitlist.append(who)
         gamebattle.allunitindex.append(who.gameid)
 
-    numberspite = unit.TroopNumber(gamebattle, who)
+    numberspite = unit.TroopNumber(gamebattle.screen_scale, who)
     gamebattle.troop_number_sprite.add(numberspite)
 
 

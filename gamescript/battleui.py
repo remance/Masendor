@@ -144,10 +144,10 @@ class GameUI(pygame.sprite.Sprite):
             if self.value != self.last_value or splithappen:  # only blit new text when value change or subunit split
                 self.image = self.image_original.copy()
                 for value in self.value:  # blit value text
-                    self.textsurface = self.font.render(str(value), True, (0, 0, 0))
-                    self.textrect = self.textsurface.get_rect(
+                    text_surface = self.font.render(str(value), True, (0, 0, 0))
+                    text_rect = text_surface.get_rect(
                         center=(self.image.get_rect()[0] + position, self.image.get_rect()[1] + 25))
-                    self.image.blit(self.textsurface, self.textrect)
+                    self.image.blit(text_surface, text_rect)
                     if position >= 200:
                         position += 50
                     else:
@@ -199,10 +199,10 @@ class GameUI(pygame.sprite.Sprite):
             authority = str(who.authority).split(".")[0]
             if self.lastauth != authority or who.gameid != self.lastwho or splithappen:  # authority number change only when not same as last
                 self.image = self.image_original2.copy()
-                self.textsurface = self.font.render(authority, True, (0, 0, 0))
-                self.textrect = self.textsurface.get_rect(
+                text_surface = self.font.render(authority, True, (0, 0, 0))
+                text_rect = text_surface.get_rect(
                     center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
-                self.image.blit(self.textsurface, self.textrect)
+                self.image.blit(text_surface, text_rect)
                 self.lastauth = authority
 
         elif self.ui_type == "troopcard":
@@ -229,10 +229,10 @@ class GameUI(pygame.sprite.Sprite):
                     leadertext = "/" + str(who.leader.name)
                     if who.leader.state in self.leader_state_text:
                         leadertext += " " + "(" + self.leader_state_text[who.leader.state] + ")"
-                self.textsurface = self.fonthead.render(self.name + leadertext, True, (0, 0, 0))  # subunit and leader name at the top
-                self.textrect = self.textsurface.get_rect(
+                text_surface = self.fonthead.render(self.name + leadertext, True, (0, 0, 0))  # subunit and leader name at the top
+                text_rect = text_surface.get_rect(
                     midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
-                self.image.blit(self.textsurface, self.textrect)
+                self.image.blit(text_surface, text_rect)
                 row += 1
                 position += 20
                 if self.option == 1:  # stat card
@@ -247,10 +247,10 @@ class GameUI(pygame.sprite.Sprite):
                     newvalue, text = self.value[0:-1], self.front_text[1:]
                     for n, value in enumerate(newvalue[1:]):
                         value = value.replace("inf", "\u221e")
-                        self.textsurface = self.font.render(text[n] + value, True, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
+                        text_surface = self.font.render(text[n] + value, True, (0, 0, 0))
+                        text_rect = text_surface.get_rect(
                             midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
+                        self.image.blit(text_surface, text_rect)
                         position += 20
                         row += 1
                         if row == 9:
@@ -288,10 +288,10 @@ class GameUI(pygame.sprite.Sprite):
                     # ^ End equipment text
 
                     for text in textvalue:
-                        self.textsurface = self.font.render(str(text), 1, (0, 0, 0))
-                        self.textrect = self.textsurface.get_rect(
+                        text_surface = self.font.render(str(text), 1, (0, 0, 0))
+                        text_rect = text_surface.get_rect(
                             midleft=(self.image.get_rect()[0] + positionx, self.image.get_rect()[1] + position))
-                        self.image.blit(self.textsurface, self.textrect)
+                        self.image.blit(text_surface, text_rect)
                         position += 20
                 self.last_value = self.value
         self.lastwho = who.gameid
@@ -330,9 +330,9 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 outputnumber = str(self.active_check)
                 if self.active_check >= 1000:
                     outputnumber = self.numberchange(outputnumber)
-                self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))  # timer number
-                self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-                self.image.blit(self.textsurface, self.textrect)
+                text_surface = self.font.render(outputnumber, 1, (0, 0, 0))  # timer number
+                text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+                self.image.blit(text_surface, text_rect)
 
         elif cooldown != self.cooldown_check and self.active_check == 0:  # Cooldown only get blit when skill is not active
             self.cooldown_check = cooldown
@@ -342,9 +342,9 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 outputnumber = str(self.cooldown_check)
                 if self.cooldown_check >= 1000:  # change thousand number into k (1k,2k)
                     outputnumber = self.numberchange(outputnumber)
-                self.textsurface = self.font.render(outputnumber, 1, (0, 0, 0))
-                self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-                self.image.blit(self.textsurface, self.textrect)
+                text_surface = self.font.render(outputnumber, 1, (0, 0, 0))
+                text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+                self.image.blit(text_surface, text_rect)
 
 
 class EffectCardIcon(pygame.sprite.Sprite):
@@ -372,14 +372,15 @@ class FPScount(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(30, 110))
         fps = "60"
         fps_text = self.font.render(fps, True, pygame.Color("blue"))
-        self.textrect = fps_text.get_rect(center=(25, 25))
+        self.text_rect = fps_text.get_rect(center=(25, 25))
 
-    def fpsshow(self, clock):
+    def fps_show(self, clock):
         """Update current fps"""
         self.image = self.image_original.copy()
         fps = str(int(clock.get_fps()))
         fps_text = self.font.render(fps, True, pygame.Color("blue"))
-        self.image.blit(fps_text, self.textrect)
+        text_rect = fps_text.get_rect(center=(25, 25))
+        self.image.blit(fps_text, self.text_rect)
 
 
 class SelectedSquad(pygame.sprite.Sprite):
@@ -403,19 +404,19 @@ class Minimap(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
 
-        self.team2dot = pygame.Surface((8, 8))  # dot for team2 subunit
-        self.team2dot.fill((0, 0, 0))  # black corner
-        self.team1dot = pygame.Surface((8, 8))  # dot for team1 subunit
-        self.team1dot.fill((0, 0, 0))  # black corner
+        self.team2_dot = pygame.Surface((8, 8))  # dot for team2 subunit
+        self.team2_dot.fill((0, 0, 0))  # black corner
+        self.team1_dot = pygame.Surface((8, 8))  # dot for team1 subunit
+        self.team1_dot.fill((0, 0, 0))  # black corner
         team2 = pygame.Surface((6, 6))  # size 6x6
         team2.fill((255, 0, 0))  # red rect
         team1 = pygame.Surface((6, 6))
         team1.fill((0, 0, 255))  # blue rect
-        rect = self.team2dot.get_rect(topleft=(1, 1))
-        self.team2dot.blit(team2, rect)
-        self.team1dot.blit(team1, rect)
-        self.team1pos = []
-        self.team2pos = []
+        rect = self.team2_dot.get_rect(topleft=(1, 1))
+        self.team2_dot.blit(team2, rect)
+        self.team1_dot.blit(team1, rect)
+        self.team1_pos = []
+        self.team2_pos = []
 
         self.lastscale = 10
 
@@ -432,20 +433,20 @@ class Minimap(pygame.sprite.Sprite):
 
     def update(self, viewmode, camerapos, team1poslist, team2poslist):
         """update parentunit dot on map"""
-        if self.team1pos != team1poslist.values() or self.team2pos != team2poslist.values() or \
+        if self.team1_pos != team1poslist.values() or self.team2_pos != team2poslist.values() or \
                 self.camerapos != camerapos or self.lastscale != viewmode:
-            self.team1pos = team1poslist.values()
-            self.team2pos = team2poslist.values()
+            self.team1_pos = team1poslist.values()
+            self.team2_pos = team2poslist.values()
             self.camerapos = camerapos
             self.image = self.image_original.copy()
             for team1 in team1poslist.values():
                 scaledpos = team1 / 5
-                rect = self.team1dot.get_rect(center=scaledpos)
-                self.image.blit(self.team1dot, rect)
+                rect = self.team1_dot.get_rect(center=scaledpos)
+                self.image.blit(self.team1_dot, rect)
             for team2 in team2poslist.values():
                 scaledpos = team2 / 5
-                rect = self.team2dot.get_rect(center=scaledpos)
-                self.image.blit(self.team2dot, rect)
+                rect = self.team2_dot.get_rect(center=scaledpos)
+                self.image.blit(self.team2_dot, rect)
             pygame.draw.rect(self.image, (0, 0, 0), (camerapos[1][0] / 5 / viewmode, camerapos[1][1] / 5 / viewmode,
                                                      self.cameraborder[0] * 10 / viewmode / 50, self.cameraborder[1] * 10 / viewmode / 50), 2)
 
@@ -519,9 +520,9 @@ class EventLog(pygame.sprite.Sprite):
         for index, text in enumerate(thislog[self.current_start_row:]):
             if index == self.max_row_show:
                 break
-            textsurface = self.font.render(text[1], True, (0, 0, 0))
-            textrect = textsurface.get_rect(topleft=(40, row))
-            self.image.blit(textsurface, textrect)
+            text_surface = self.font.render(text[1], True, (0, 0, 0))
+            text_rect = text_surface.get_rect(topleft=(40, row))
+            self.image.blit(text_surface, text_rect)
             row += 20  # Whitespace between text row
 
     def logtextprocess(self, who, modelist, textoutput):
@@ -808,62 +809,55 @@ class InspectSubunit(pygame.sprite.Sprite):
 
 
 class BattleDone(pygame.sprite.Sprite):
-    def __init__(self, main, boximage, resultimage):
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
-        self.screenwidth = main.ScreenWidth
-        self.screenheight = main.ScreenHeight
-
+    def __init__(self, screen_scale, pos, boximage, resultimage):
         self._layer = 18
         pygame.sprite.Sprite.__init__(self)
+        self.screen_scale = screen_scale
         self.boximage = boximage
         self.resultimage = resultimage
-        self.font = pygame.font.SysFont("oldenglishtext", int(self.height_adjust * 36))
-        self.textfont = pygame.font.SysFont("timesnewroman", int(self.height_adjust * 24))
-        self.pos = (self.screenwidth / 2, 0)
+        self.font = pygame.font.SysFont("oldenglishtext", int(self.screen_scale[1] * 36))
+        self.textfont = pygame.font.SysFont("timesnewroman", int(self.screen_scale[1] * 24))
+        self.pos = pos
         self.image = self.boximage.copy()
-        self.rect = self.image.get_rect(midtop=self.pos)
+        self.rect = self.image.get_rect(center=self.pos)
         self.winner = None
 
     def popout(self, winner):
         self.winner = winner
         self.image = self.boximage.copy()
-        textsurface = self.font.render(self.winner, True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) + 3))
-        self.image.blit(textsurface, textrect)
+        text_surface = self.font.render(self.winner, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 36) + 3))
+        self.image.blit(text_surface, text_rect)
         if self.winner != "Draw":
-            textsurface = self.font.render("Victory", True, (0, 0, 0))
-            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) * 2))
-            self.image.blit(textsurface, textrect)
-        self.pos = (self.screenwidth / 2, 0)
-        self.rect = self.image.get_rect(midtop=self.pos)
+            text_surface = self.font.render("Victory", True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 36) * 2))
+            self.image.blit(text_surface, text_rect)
+        self.rect = self.image.get_rect(center=self.pos)
 
     def showresult(self, teamcoa1, teamcoa2, stat):
         self.image = self.resultimage.copy()
-        textsurface = self.font.render(self.winner, True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) + 3))
-        self.image.blit(textsurface, textrect)
+        text_surface = self.font.render(self.winner, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) + 3))
+        self.image.blit(text_surface, text_rect)
         if self.winner != "Draw":
-            textsurface = self.font.render("Victory", True, (0, 0, 0))
-            textrect = textsurface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) * 2))
-            self.image.blit(textsurface, textrect)
+            text_surface = self.font.render("Victory", True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) * 2))
+            self.image.blit(text_surface, text_rect)
         coa1rect = teamcoa1.get_rect(center=(self.image.get_width() / 3, int(self.height_adjust * 36) * 5))
         coa2rect = teamcoa2.get_rect(center=(self.image.get_width() / 1.5, int(self.height_adjust * 36) * 5))
         self.image.blit(teamcoa1, coa1rect)
         self.image.blit(teamcoa2, coa2rect)
-        self.pos = (self.screenwidth / 2, self.screenheight / 2)
         self.rect = self.image.get_rect(center=self.pos)
-        coa1rect.midbottom
         teamcoarect = (coa1rect, coa2rect)
         textheader = ("Total Troop: ", "Remaining: ", "Injured: ", "Death: ", "Flee: ", "Captured: ")
         for index, team in enumerate([1, 2]):
             rownumber = 1
             for statindex, thisstat in enumerate(stat):
                 if statindex == 1:
-                    textsurface = self.font.render(textheader[statindex] + str(thisstat[team] - 1), True, (0, 0, 0))
+                    text_surface = self.font.render(textheader[statindex] + str(thisstat[team] - 1), True, (0, 0, 0))
                 else:
-                    textsurface = self.font.render(textheader[statindex] + str(thisstat[team]), True, (0, 0, 0))
-                textrect = textsurface.get_rect(center=(teamcoarect[index].midbottom[0],
+                    text_surface = self.font.render(textheader[statindex] + str(thisstat[team]), True, (0, 0, 0))
+                text_rect = text_surface.get_rect(center=(teamcoarect[index].midbottom[0],
                                                         teamcoarect[index].midbottom[1] + (int(self.height_adjust * 25) * rownumber)))
-                self.image.blit(textsurface, textrect)
+                self.image.blit(text_surface, text_rect)
                 rownumber += 1
