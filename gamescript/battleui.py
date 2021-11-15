@@ -3,6 +3,7 @@ import datetime
 import pygame
 import pygame.freetype
 
+from gamescript import map
 
 class UIButton(pygame.sprite.Sprite):
     def __init__(self, x, y, image, event=None, newlayer=11):
@@ -54,6 +55,15 @@ class PopupIcon(pygame.sprite.Sprite):
 
 class GameUI(pygame.sprite.Sprite):
     def __init__(self, x, y, image, icon, uitype, text="", textsize=16):
+        from gamescript import start
+        self.unit_state_text = start.unit_state_text
+        self.morale_state_text = start.morale_state_text
+        self.stamina_state_text = start.stamina_state_text
+        self.subunit_state_text = start.subunit_state_text
+        self.quality_text = start.quality_text
+        self.leader_state_text = start.leader_state_text
+        self.terrain_list = map.terrain_list
+
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", textsize)
@@ -74,11 +84,6 @@ class GameUI(pygame.sprite.Sprite):
                     topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
                 self.image.blit(ic, self.icon_rect)
                 position += 90
-            self.options2 = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
-                             14: "Inspired", 15: "Fervent"}  # parentunit morale state name
-            self.options3 = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
-                             7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}  # parentunit stamina state name
 
         elif self.ui_type == "commandbar":  # setup variable for command bar ui
             self.icon_rect = self.icon[6].get_rect(
@@ -95,12 +100,6 @@ class GameUI(pygame.sprite.Sprite):
             self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                                "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
                                "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
-            self.subunit_state = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)", 10: "Melee", 11: "Shoot",
-                                  12: "Walk (S)", 13: "Run (S)", 95: "Disobey", 96: "Flee", 97: "Rest", 98: "Flee", 99: "Broken", 100: "Dead"}
-            self.quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # item quality name
-            self.leader_state_text = {96: "Flee", 97: "POW", 98: "MIA", 99: "WIA", 100: "KIA"}  # leader state name
-            self.terrain_list = ["Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "Shallow water",
-                                 "Deep water"]  # terrain climate name
         self.image_original = self.image.copy()
 
     def longtext(self, surface, text, pos, font, color=pygame.Color("black")):
@@ -127,19 +126,19 @@ class GameUI(pygame.sprite.Sprite):
         position = 65
         if self.ui_type == "topbar":
             self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.staminastate, who.moralestate, who.state]
-            if self.value[3] in self.options1:  # Check subunit state and blit name
-                self.value[3] = self.options1[self.value[3]]
+            if self.value[3] in self.unit_state_text:  # Check subunit state and blit name
+                self.value[3] = self.unit_state_text[self.value[3]]
             # if type(self.value[2]) != str:
 
             self.value[2] = round(self.value[2] / 10)  # morale state
-            if self.value[2] in self.options2:  # Check if morale state in the list and blit the name
-                self.value[2] = self.options2[self.value[2]]
+            if self.value[2] in self.morale_state_text:  # Check if morale state in the list and blit the name
+                self.value[2] = self.morale_state_text[self.value[2]]
             elif self.value[2] > 15:  # if morale somehow too high use the highest morale state one
-                self.value[2] = self.options2[15]
+                self.value[2] = self.morale_state_text[15]
 
             self.value[1] = round(self.value[1] / 10)  # stamina state
-            if self.value[1] in self.options3:  # Check if stamina state and blit the name
-                self.value[1] = self.options3[self.value[1]]
+            if self.value[1] in self.stamina_state_text:  # Check if stamina state and blit the name
+                self.value[1] = self.stamina_state_text[self.value[1]]
 
             if self.value != self.last_value or splithappen:  # only blit new text when value change or subunit split
                 self.image = self.image_original.copy()
@@ -209,7 +208,7 @@ class GameUI(pygame.sprite.Sprite):
             position = 15  # starting row
             positionx = 45  # starting point of text
             self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.maxtroop)) + ")",
-                          str(who.stamina).split(".")[0] + ", " + str(self.subunit_state[who.state]), str(who.morale).split(".")[0],
+                          str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
                           str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.meleedef).split(".")[0],
                           str(who.rangedef).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
                           str(who.accuracy).split(".")[0], str(who.shootrange).split(".")[0], str(who.magazine_left),

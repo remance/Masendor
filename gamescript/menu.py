@@ -7,8 +7,8 @@ import pygame.freetype
 import pygame.freetype
 from gamescript import map
 
-terraincolour = map.terraincolour
-featurecolour = map.featurecolour
+terraincolour = map.terrain_colour
+featurecolour = map.feature_colour
 
 
 class Escbox(pygame.sprite.Sprite):

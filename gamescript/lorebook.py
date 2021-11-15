@@ -494,6 +494,7 @@ class SubsectionName(pygame.sprite.Sprite):
 #         self.text += newcharacter
 
 def lorebook_process(self, uidraw, mouse_up, mouse_down, mouse_scrollup, mouse_scrolldown):
+    """Lorebook user interaction"""
     command = None
     if mouse_up or mouse_down:  # mouse down (hold click) only for subsection listscroller
         if mouse_up:

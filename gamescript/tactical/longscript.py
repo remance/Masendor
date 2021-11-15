@@ -166,7 +166,7 @@ def load_game_data(game):
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                                        icon=iconimage, uitype="topbar")
     game.gameui.add(game.unitstat_ui)
-    game.unitstat_ui.options1 = game.statetext
+    game.unitstat_ui.unit_state_text = game.statetext
 
     game.inspectuipos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
                          game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]

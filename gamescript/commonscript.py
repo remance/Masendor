@@ -163,10 +163,6 @@ def load_game_data(game):
         unitfile.close()
     # ^ End load custom map list
 
-    game.statetext = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)",
-                      7: "Walk (F)", 8: "Run (F)", 10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
-                      69: "Partying", 95: "Disobey", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
-
     # v create subunit related class
     imgsold = load_images(game.main_dir, ["ui", "unit_ui", "weapon"])
     imgs = []

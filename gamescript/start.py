@@ -25,6 +25,26 @@ text_objects = commonscript.text_objects
 setuplist = commonscript.setuplist
 version_name = "Dream Decision"
 
+# Will keep leader, subunit, unit and other state as magic number since changing them take too much space, see below for refencing
+
+unit_state_text = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)",
+                  7: "Walk (F)", 8: "Run (F)", 10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
+                  69: "Partying", 95: "Disobey", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
+
+subunit_state_text = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)", 10: "Melee", 11: "Shoot",
+                                  12: "Walk (S)", 13: "Run (S)", 95: "Disobey", 96: "Flee", 97: "Rest", 98: "Flee", 99: "Broken", 100: "Dead"}
+
+leader_state_text = {96: "Flee", 97: "POW", 98: "MIA", 99: "WIA", 100: "KIA"}
+
+morale_state_text = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
+                             6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated", 13: "Ecstatic",
+                             14: "Inspired", 15: "Fervent"}  # parentunit morale state name
+
+stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded", 6: "Moderate",
+                 7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}  # parentunit stamina state name
+
+quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # item quality name
+
 class Mainmenu:
     leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                      "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
@@ -104,6 +124,14 @@ class Mainmenu:
         # if not os.path.exists("\customunit"): # make custom subunit folder if not existed
 
         self.enactment = True
+        self.statetext = unit_state_text
+        battleui.GameUI
+        subunit_state_text
+        unit_state_text
+        leader_state_text
+        morale_state_text
+        stamina_state_text
+
         self.mapsource = 0  # current selected map source
         self.teamselected = 1
         self.currentpopuprow = 0

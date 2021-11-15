@@ -1088,7 +1088,7 @@ class Battle:
                             if self.popup_listbox.type == "terrain":
                                 self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
                                                                             self.popup_listbox,
-                                                                            self.currentpopuprow, self.battlemap_base.terrainlist,
+                                                                            self.currentpopuprow, self.battlemap_base.terrain_list,
                                                                             self.popup_namegroup, self.battleui)
                             elif self.popup_listbox.type == "feature":
                                 self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
@@ -1751,16 +1751,16 @@ class Battle:
                                             for index, name in enumerate(self.popup_namegroup):
                                                 if name.rect.collidepoint(self.mousepos) and mouse_up:  # click on name in list
                                                     if self.popup_listbox.type == "terrain":
-                                                        self.terrain_change_button.changetext(self.battlemap_base.terrainlist[index])
+                                                        self.terrain_change_button.changetext(self.battlemap_base.terrain_list[index])
                                                         self.baseterrain = index
-                                                        self.editor_map_change(map.terraincolour[self.baseterrain],
-                                                                               map.featurecolour[self.featureterrain])
+                                                        self.editor_map_change(map.terrain_colour[self.baseterrain],
+                                                                               map.feature_colour[self.featureterrain])
 
                                                     elif self.popup_listbox.type == "feature":
                                                         self.feature_change_button.changetext(self.battlemap_feature.featurelist[index])
                                                         self.featureterrain = index
-                                                        self.editor_map_change(map.terraincolour[self.baseterrain],
-                                                                               map.featurecolour[self.featureterrain])
+                                                        self.editor_map_change(map.terrain_colour[self.baseterrain],
+                                                                               map.feature_colour[self.featureterrain])
 
                                                     elif self.popup_listbox.type == "weather":
                                                         self.weathertype = int(index / 3)
@@ -1797,8 +1797,8 @@ class Battle:
                                             self.currentpopuprow = self.popup_listscroll.update(
                                                 self.mousepos)  # update the scroller and get new current subsection
                                             if self.popup_listbox.type == "terrain":
-                                                setuplist(self.screen_scale, menu.NameList, self.currentpopuprow, self.battlemap_base.terrainlist,
-                                                               self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
+                                                setuplist(self.screen_scale, menu.NameList, self.currentpopuprow, self.battlemap_base.terrain_list,
+                                                          self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "feature":
                                                 setuplist(self.screen_scale, menu.NameList, self.currentpopuprow, self.battlemap_feature.featurelist,
                                                                self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
@@ -2085,7 +2085,7 @@ class Battle:
                                                                            self.troop_listbox, self.battleui)  # setup troop name list
                                     elif self.terrain_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map terrain button
                                         self.uiclick = True
-                                        self.popuplist_newopen(self.terrain_change_button.rect.midtop, self.battlemap_base.terrainlist, "terrain")
+                                        self.popuplist_newopen(self.terrain_change_button.rect.midtop, self.battlemap_base.terrain_list, "terrain")
 
                                     elif self.feature_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map feature button
                                         self.uiclick = True

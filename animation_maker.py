@@ -892,7 +892,7 @@ class Skeleton:
                     part_index = keylist[part]
                     if self.animation_part_list[current_frame][part_index] is not None and \
                             len(self.animation_part_list[current_frame][part_index]) > 3:
-                        if edit_type == "move":
+                        if edit_type == "place":  # mouse place
                             new_point = mouse_pos
                             if point_edit == 1:  # use joint
                                 part_image = self.sprite_image[part_index]
@@ -901,7 +901,27 @@ class Skeleton:
                                 new_point = new_point + pos_different
                             self.animation_part_list[current_frame][part_index][2] = new_point
 
-                        elif edit_type == "rotate":
+                        elif "move" in edit_type:  # keyboard move
+                            new_point = self.animation_part_list[current_frame][part_index][2]
+                            if "w" in edit_type:
+                                new_point[1] = new_point[1] - 0.5
+                            elif "s" in edit_type:
+                                new_point[1] = new_point[1] + 0.5
+                            elif "a" in edit_type:
+                                new_point[0] = new_point[0] - 0.5
+                            elif "d" in edit_type:
+                                new_point[0] = new_point[0] + 0.5
+                            self.animation_part_list[current_frame][part_index][2] = new_point
+
+                        elif "tilt" in edit_type:  # keyboard rotate
+                            new_angle = self.animation_part_list[current_frame][part_index][3]
+                            if "q" in edit_type:
+                                new_angle = new_angle - 0.5
+                            elif "e" in edit_type:
+                                new_angle = new_angle + 0.5
+                            self.animation_part_list[current_frame][part_index][3] = new_angle
+
+                        elif edit_type == "rotate":  # mouse rotate
                             base_pos = self.animation_part_list[current_frame][part_index][2]
                             myradians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
                             newangle = math.degrees(myradians)
@@ -1316,6 +1336,18 @@ while True:
                     paste_press = True
             elif keypress[pygame.K_LSHIFT] or keypress[pygame.K_RSHIFT]:
                 shift_press = True
+            elif keypress[pygame.K_w]:
+                skeleton.edit_part(mouse_pos, "movew")
+            elif keypress[pygame.K_s]:
+                skeleton.edit_part(mouse_pos, "moves")
+            elif keypress[pygame.K_a]:
+                skeleton.edit_part(mouse_pos, "movea")
+            elif keypress[pygame.K_d]:
+                skeleton.edit_part(mouse_pos, "moved")
+            elif keypress[pygame.K_q]:
+                skeleton.edit_part(mouse_pos, "tiltq")
+            elif keypress[pygame.K_e]:
+                skeleton.edit_part(mouse_pos, "tilte")
             elif keypress[pygame.K_DELETE]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
@@ -1540,7 +1572,7 @@ while True:
                     if mouse_wheel or mouse_wheeldown:
                         skeleton.edit_part(mouse_pos, "rotate")
                     elif mouse_right or mouse_rightdown:
-                        skeleton.edit_part(mouse_pos, "move")
+                        skeleton.edit_part(mouse_pos, "place")
 
             if skeleton.part_selected != []:
                 part = skeleton.part_selected[-1]

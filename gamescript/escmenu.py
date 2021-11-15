@@ -5,7 +5,20 @@ editconfig = commonscript.edit_config
 
 lorebook_process = lorebook.lorebook_process
 
-def escmenu_process(self, mouse_up, mouse_leftdown, esc_press, mouse_scrollup, mouse_scrolldown, uidraw):
+def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool, mouse_scrollup: bool,
+                    mouse_scrolldown: bool, uidraw: pygame.sprite.LayeredUpdates):
+    """
+    ESC menu user interaction
+    :param self: game process object, battle
+    :param mouse_up: mouse left click release
+    :param mouse_leftdown: mouse hold left click
+    :param esc_press: esc button
+    :param mouse_scrollup: mouse wheel scroll up
+    :param mouse_scrolldown: mouse wheel scroll down
+    :param uidraw: ui drawer object
+    :return: special command that process in battle loop
+    """
+
     command = None
 
     if esc_press and self.battle_menu.mode in (0, 1):  # in menu or option

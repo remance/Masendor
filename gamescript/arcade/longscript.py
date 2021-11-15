@@ -142,7 +142,7 @@ def load_game_data(game):
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                                        icon=iconimage, uitype="topbar")
     game.gameui.add(game.unitstat_ui)
-    game.unitstat_ui.options1 = game.statetext
+    game.unitstat_ui.unit_state_text = game.statetext
 
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
     game.buttonui.add(game.inspect_button)
