@@ -8,12 +8,10 @@ layer value is similar to pygame layer, the higher value get drew first and lowe
 
 List of animation frame properties:
 "movable": animation can be performed when moving and moving can be initiate during animation
-"uninterupt": animation can not be interupt by anything else (normally can be interupted like when take damage)
-"cancelable": can be cancel with other animation input
+"uninteruptable": animation can not be interupt by anything else (normally can be interupted like when take damage)
+"cancelable": can be cancel with other animation input beside forced animation
 "invincible": can not be damaged during animation
 "revert": run animation in revert frame
-
-List of animation frame properties:
 "hold": frame can be hold with input, weapon do damage during hold (e.g., spearwall)
 "power": similar to hold but start power version and deal no damage
 "block": similar to hold but use full defence from the weapon and deal no damage
@@ -21,7 +19,7 @@ List of animation frame properties:
 "turret": not sure how it will work yet but for when sprite can face other direction while walking in other direction 
 "effect_": add special image effect (not animation effect) like blur, need effect name after and related input value "effect_" (e.g., effect_blur50)
 
-List of animation effect propertiers:
+List of animation effect propertiers:  # only need to be put in at the first frame row.  
 "aoe": effect deal further aoe damage outside of sprite effect in distance, need distance number after "aoe" (e.g.,aoe10)
 "dmgsprite": whole sprite can cause damage instead of a single point
 "externaleffect": effect use its own external animation frame instead of the frame assigned in animation sprite, accept only the first frame for starting the effect animation 

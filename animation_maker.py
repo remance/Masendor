@@ -31,9 +31,11 @@ pygame.display.set_caption("Animation Maker")  # set the game name on program bo
 pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
+# frame_property_list = ("moveable","uninteruptable","cancelable","invincible","revert","hold","power",
+#                        "block","parry","turret","effect_blur","effect_")
+# animation_property_list = ("aoe","dmgsprite","externaleffect","duration","nodmg","interuptrevert")
 
-
-# TODO animation save, delete function, eye/mouth assign, copy part, effect, special part, unique, frame properties, png export, lock?
+# TODO animation save, delete function, eye/mouth assign, effect, special part, unique, frame properties, lock?
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
     """generate list of list item"""
@@ -162,7 +164,7 @@ for direction in direction_list:
                 else:
                     animation_pool[key] = [{part_name_header[item_index]: item for item_index, item in enumerate(row)}]
         generic_animation_pool.append(animation_pool)
-        part_name_header = [item for item in part_name_header if item not in ("effect", "property")]
+        part_name_header = [item for item in part_name_header if item != "effect" and "property" not in item]
     unitfile.close()
 
 skel_joint_list = []
@@ -602,7 +604,7 @@ class Skeleton:
                 bodypart_list = {key: None for key in self.rect_part_list.keys()}
                 bodypart_list.update({"p1_eye": None, "p1_mouth": None, "p2_eye": None, "p2_mouth": None})
                 for part in pose:
-                    if pose[part] != [0] and part != "property":
+                    if pose[part] != [0] and "property" not in part:
                         if "eye" not in part and "mouth" not in part:
                             if "weapon" in part:
                                 if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
@@ -1201,7 +1203,8 @@ new_button = Button("New", image, (image.get_width() / 2, image.get_height() / 2
 save_button = Button("Save", image, (image.get_width() * 2, image.get_height() / 2))
 direction_button = Button("", image, (image.get_width() * 3.7, image.get_height() / 2))
 duplicate_button = Button("Duplicate", image, (image.get_width() * 11, image.get_height() / 2))
-delete_button = Button("Delete", image, (image.get_width() * 13, image.get_height() / 2))
+export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1.5), image.get_height() / 2))
+delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2))
 
 play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
@@ -1505,6 +1508,9 @@ while True:
                                 strip.activate = False
                                 deactivate_list[strip_index] = True
                                 break
+                    elif export_button.rect.collidepoint(mouse_pos):
+                        for index, frame in enumerate(anim.frames):
+                            pygame.image.save(frame, animation_name + "_" + str(index) + ".png")
                     elif flip_hori_button.rect.collidepoint(mouse_pos):
                         skeleton.edit_part(mouse_pos, "flip1")
                     elif flip_vert_button.rect.collidepoint(mouse_pos):
