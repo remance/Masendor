@@ -32,7 +32,8 @@ pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
-#TODO animation save, delete function, eye/mouth assign, copy part, effect, special part, unique, frame properties, png export, lock?
+
+# TODO animation save, delete function, eye/mouth assign, copy part, effect, special part, unique, frame properties, png export, lock?
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
     """generate list of list item"""
@@ -58,6 +59,7 @@ def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1)
 
         uiclass.add(*itemgroup)
 
+
 def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=19):
     if mouse_scrollup:
         currentrow -= 1
@@ -76,6 +78,7 @@ def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, na
             currentrow -= 1
     return currentrow
 
+
 def popuplist_newopen(action, newrect, newlist, uitype):
     """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
     currentpopuprow = 0
@@ -87,7 +90,7 @@ def popuplist_newopen(action, newrect, newlist, uitype):
     popup_listbox.namelist = newlist
     popup_listbox.action = action
     setuplist(menu.NameList, 0, newlist, popup_namegroup,
-                   popup_listbox, ui, layer=19)
+              popup_listbox, ui, layer=19)
 
     popup_listscroll.pos = popup_listbox.rect.topright  # change position variable
     popup_listscroll.rect = popup_listscroll.image.get_rect(topleft=popup_listbox.rect.topright)
@@ -111,6 +114,7 @@ def load_textures(main_dir, subfolder=None):
         imgs[file.split(".")[0]] = load_image(main_dir, file, dirpath)
 
     return imgs
+
 
 race_list = []
 race_acro = []
@@ -308,6 +312,7 @@ class Button(pygame.sprite.Sprite):
             self.image.blit(textsurface, textrect)
             self.rect = self.image.get_rect(center=self.pos)
 
+
 class SwitchButton(pygame.sprite.Sprite):
     """Button that switch text/option"""
 
@@ -344,8 +349,8 @@ class Bodyhelper(pygame.sprite.Sprite):
         self.boxfont = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
         self.size = size
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
-        self.image.fill((255,255,255))
-        pygame.draw.rect(self.image, (100,150,150), (0, 0, self.image.get_width(), self.image.get_height()), 3)
+        self.image.fill((255, 255, 255))
+        pygame.draw.rect(self.image, (100, 150, 150), (0, 0, self.image.get_width(), self.image.get_height()), 3)
         self.image_original = self.image.copy()  # for original before add part and click
         self.rect = self.image.get_rect(center=pos)
         self.type = type
@@ -368,18 +373,18 @@ class Bodyhelper(pygame.sprite.Sprite):
                                    "p1_l_arm_up": None, "p1_l_arm_low": None, "p1_l_hand": None, "p1_r_leg": None, "p1_r_foot": None,
                                    "p1_l_leg": None, "p1_l_foot": None, "p1_main_weapon": None, "p1_sub_weapon": None}
             self.part_pos = {"p1_head": (185, 85), "p1_body": (185, 148), "p1_r_arm_up": (155, 126), "p1_r_arm_low": (155, 156),
-                        "p1_r_hand": (155, 187), "p1_l_arm_up": (215, 126), "p1_l_arm_low": (215, 156), "p1_l_hand": (215, 187),
-                        "p1_r_leg": (170, 216), "p1_r_foot": (170, 246), "p1_l_leg": (200, 216), "p1_l_foot": (200, 246),
-                        "p1_main_weapon": (165, 30), "p1_sub_weapon": (205, 30)}
+                             "p1_r_hand": (155, 187), "p1_l_arm_up": (215, 126), "p1_l_arm_low": (215, 156), "p1_l_hand": (215, 187),
+                             "p1_r_leg": (170, 216), "p1_r_foot": (170, 246), "p1_l_leg": (200, 216), "p1_l_foot": (200, 246),
+                             "p1_main_weapon": (165, 30), "p1_sub_weapon": (205, 30)}
         elif self.type == "p2":
             self.rect_part_list = {"p2_head": None, "p2_body": None, "p2_r_arm_up": None, "p2_r_arm_low": None,
                                    "p2_r_hand": None, "p2_l_arm_up": None, "p2_l_arm_low": None, "p2_l_hand": None,
                                    "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
                                    "p2_main_weapon": None, "p2_sub_weapon": None}
             self.part_pos = {"p2_head": (185, 85), "p2_body": (185, 148), "p2_r_arm_up": (155, 126), "p2_r_arm_low": (155, 156),
-                        "p2_r_hand": (155, 187), "p2_l_arm_up": (215, 126), "p2_l_arm_low": (215, 156), "p2_l_hand": (215, 187),
-                        "p2_r_leg": (170, 216), "p2_r_foot": (170, 246), "p2_l_leg": (200, 216), "p2_l_foot": (200, 246),
-                        "p2_main_weapon": (155, 30), "p2_sub_weapon": (215, 30)}
+                             "p2_r_hand": (155, 187), "p2_l_arm_up": (215, 126), "p2_l_arm_low": (215, 156), "p2_l_hand": (215, 187),
+                             "p2_r_leg": (170, 216), "p2_r_foot": (170, 246), "p2_l_leg": (200, 216), "p2_l_foot": (200, 246),
+                             "p2_main_weapon": (155, 30), "p2_sub_weapon": (215, 30)}
         else:
             self.rect_part_list = {"effect1": None, "effect2": None, "dmg_effect1": None, "dmg_effect2": None}
             self.part_pos = {"effect1": None, "effect2": None, "dmg_effect1": None, "dmg_effect2": None}
@@ -475,7 +480,6 @@ class Bodyhelper(pygame.sprite.Sprite):
                     textcolour = (20, 90, 20)
                 textsurface1 = self.font.render(stat1, 1, textcolour)
 
-
                 textsurface2 = self.font.render(stat2, 1, textcolour)
                 shiftx = 50 * screen_scale[0]
                 if "body" in part:
@@ -483,7 +487,8 @@ class Bodyhelper(pygame.sprite.Sprite):
                     if "p2" in part:
                         headname = "p2_head"
                     textrect1 = textsurface1.get_rect(midleft=(self.part_pos[headname][0] + shiftx, self.part_pos[headname][1] - 5))
-                    textrect2 = textsurface2.get_rect(midleft=(self.part_pos[headname][0] + shiftx, self.part_pos[headname][1] - 5 + self.fontsize + 2))
+                    textrect2 = textsurface2.get_rect(
+                        midleft=(self.part_pos[headname][0] + shiftx, self.part_pos[headname][1] - 5 + self.fontsize + 2))
                 elif "head" in part:
                     textrect1 = textsurface1.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 10))
                     textrect2 = textsurface2.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 10 + self.fontsize + 2))
@@ -557,8 +562,8 @@ class Skeleton:
         self.p1_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.weapon = {"p1_main_weapon":"sword", "p1_sub_weapon":None, "p2_main_weapon":None, "p2_sub_weapon":None}
-        self.empty_sprite_part = [0,pygame.Vector2(0, 0), [50, 50],0,0,0]
+        self.weapon = {"p1_main_weapon": "sword", "p1_sub_weapon": None, "p2_main_weapon": None, "p2_sub_weapon": None}
+        self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0]
         self.randomface()
 
         self.read_animation(list(animation_pool.keys())[0])
@@ -652,7 +657,8 @@ class Skeleton:
                         if "p1" in namecheck or "p2" in namecheck:
                             namecheck = namecheck[3:]  # remove p1_
                         if namecheck in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
-                            for index, item in enumerate(skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][namecheck]):
+                            for index, item in enumerate(
+                                    skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][namecheck]):
                                 joint_type = 0  # main
                                 if index > 0:
                                     joint_type = 1
@@ -743,7 +749,8 @@ class Skeleton:
                         partname = stuff[3:]  # remove p1_ or p2_ to get part name
                         if "r_" in partname[0:2] or "l_" in partname[0:2]:
                             partname = partname[2:]  # remove side
-                        self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][partname][bodypart_list[stuff][2]].copy()
+                        self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][partname][
+                            bodypart_list[stuff][2]].copy()
                     else:
                         partname = self.weapon[stuff]
                         if partname is not None and bodypart_list[stuff][2]:
@@ -793,7 +800,8 @@ class Skeleton:
     def edit_part(self, mouse_pos, edit_type):
         keylist = list(self.rect_part_list.keys())
         if edit_type == "default":  # reset to default
-            self.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in self.default_sprite_part.items()}
+            self.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
+                                                       self.default_sprite_part.items()}
             self.bodypart_list[current_frame] = {key: value for key, value in self.default_body_part.items()}
             self.part_name_list[current_frame] = {key: value for key, value in self.default_part_name.items()}
             self.part_selected = []
@@ -816,6 +824,12 @@ class Skeleton:
                     self.animation_list.append(None)
                     surface = self.create_animation_film(None, empty=True)
                     self.animation_list[-1] = surface
+
+        elif edit_type == "paste":  # paste copy part
+            for part in copy_part.keys():
+                self.bodypart_list[current_frame][part] = copy_part[part].copy()
+                self.animation_part_list[current_frame][part] = copy_animation[part].copy()
+                self.part_name_list[current_frame][part] = copy_name[part].copy()
 
         elif "direction" in edit_type:
             if self.part_selected != []:
@@ -864,9 +878,9 @@ class Skeleton:
                 if "weapon" in part_index:
                     self.weapon[part_index] = partchange
                 if self.bodypart_list[current_frame][part_index] is None:
-                    self.bodypart_list[current_frame][part_index] = [0,0,0]
+                    self.bodypart_list[current_frame][part_index] = [0, 0, 0]
                     # self.animation_part_list[current_frame][part_index] = []
-                    self.part_name_list[current_frame][part_index] = ["","",""]
+                    self.part_name_list[current_frame][part_index] = ["", "", ""]
                     self.animation_part_list[current_frame][part_index] = []
                 self.bodypart_list[current_frame][part_index][0] = partchange
                 self.part_name_list[current_frame][part_index][0] = partchange
@@ -897,7 +911,8 @@ class Skeleton:
                             if point_edit == 1:  # use joint
                                 part_image = self.sprite_image[part_index]
                                 center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
-                                pos_different = center - self.sprite_part[part_index][1]  # find distance between image center and connect point main_joint_pos
+                                pos_different = center - self.sprite_part[part_index][
+                                    1]  # find distance between image center and connect point main_joint_pos
                                 new_point = new_point + pos_different
                             self.animation_part_list[current_frame][part_index][2] = new_point
 
@@ -953,7 +968,7 @@ class Skeleton:
                                     self.animation_part_list[current_frame][part_index][4] = 0
                                 else:
                                     self.animation_part_list[current_frame][part_index][4] = 3
-                            elif current_flip == 2: # current vert flip
+                            elif current_flip == 2:  # current vert flip
                                 if flip_type == 1:
                                     self.animation_part_list[current_frame][part_index][4] = 3
                                 else:
@@ -1026,7 +1041,7 @@ class Skeleton:
             main_joint_pos = (part.get_width() / 2, part.get_height() / 2)
         pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
         # main_joint_pos = main_joint_pos + pos_different
-        new_center = target #- pos_different  # find new center point
+        new_center = target  # - pos_different  # find new center point
         if angle != 0:
             radians_angle = math.radians(360 - angle)
             new_center = rotationxy(target, new_center, radians_angle)  # find new center point with rotation
@@ -1048,6 +1063,7 @@ class Skeleton:
 
 class Joint(pygame.sprite.Sprite):
     images = None
+
     def __init__(self, joint_type, name, part, pos, angle):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.joint_type = joint_type
@@ -1107,6 +1123,8 @@ def reload_animation(animation):
                 helper.select((0, 0), True, part)
         else:
             helper.select(None, shift_press)
+
+
 # start animation maker
 clock = pygame.time.Clock()
 
@@ -1115,8 +1133,9 @@ mousetimer = 0
 play_animation = False
 show_joint = True
 current_frame = 0
-copy_frame = None
-copy_name = None
+copy_animation_frame = None
+copy_part = None
+copy_name_frame = None
 copy_stat = None
 deactivate_list = [False] * 10
 currentpopuprow = 0
@@ -1133,7 +1152,7 @@ showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
 Joint.images = [pygame.transform.scale(load_image(main_dir, "mainjoint.png", ["animation_maker_ui"]),
-                               (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
+                                       (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
                 pygame.transform.scale(load_image(main_dir, "subjoint.png", ["animation_maker_ui"]),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
 joints = pygame.sprite.Group()
@@ -1160,7 +1179,7 @@ skeleton = Skeleton()
 filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_width(), 42 * screen_scale[1])),
                   Filmstrip((image.get_width() * 2, 42 * screen_scale[1])), Filmstrip((image.get_width() * 3, 42 * screen_scale[1])),
                   Filmstrip((image.get_width() * 4, 42 * screen_scale[1])), Filmstrip((image.get_width() * 5, 42 * screen_scale[1])),
-                  Filmstrip((image.get_width() * 6, 42 *screen_scale[1])), Filmstrip((image.get_width() * 7, 42 * screen_scale[1])),
+                  Filmstrip((image.get_width() * 6, 42 * screen_scale[1])), Filmstrip((image.get_width() * 7, 42 * screen_scale[1])),
                   Filmstrip((image.get_width() * 8, 42 * screen_scale[1])), Filmstrip((image.get_width() * 9, 42 * screen_scale[1]))]
 
 filmstrips.add(*filmstrip_list)
@@ -1186,10 +1205,10 @@ delete_button = Button("Delete", image, (image.get_width() * 13, image.get_heigh
 
 play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-joint_button = SwitchButton(["Joint:ON","Joint:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
-                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-grid_button = SwitchButton(["Grid:ON","Grid:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
-                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+joint_button = SwitchButton(["Joint:ON", "Joint:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
+                                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+grid_button = SwitchButton(["Grid:ON", "Grid:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
+                                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
 copy_button = Button("Copy", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
                                      filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
@@ -1197,23 +1216,27 @@ paste_button = Button("Paste", image, (play_animation_button.pos[0] + play_anima
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-pointedit_button = SwitchButton(["Center","Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
-                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+pointedit_button = SwitchButton(["Center", "Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
+                                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 3,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 activate_button = Button("Enable", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 4,
-                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 deactivate_button = Button("Disable", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 5,
-                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+                                              filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
-reset_button = Button("Reset",image, (screen_size[0] / 1.5, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+reset_button = Button("Reset", image, (screen_size[0] / 1.5, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-flip_hori_button = Button("Flip H",image, (reset_button.pos[0] - reset_button.image.get_width(),
-                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-flip_vert_button = Button("Flip V",image, (reset_button.pos[0] + reset_button.image.get_width(),
-                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+flip_hori_button = Button("Flip H", image, (reset_button.pos[0] - reset_button.image.get_width(),
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + reset_button.image.get_width(),
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+part_copy_button = Button("Copy", image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+part_paste_button = Button("Paste", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 race_part_button = Button("", image, (reset_button.image.get_width() / 2,
-                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                      p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_button.image.get_width(),
                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
@@ -1221,24 +1244,24 @@ direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_b
 
 input_ui_img = load_image(main_dir, "inputui.png", "ui\\mainmenu_ui")
 inputui = menu.InputUI(screen_scale, input_ui_img,
-                            (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
+                       (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
 imagelist = load_base_button(main_dir)
 
 input_ok_button = menu.MenuButton(screen_scale, imagelist, pos=(inputui.rect.midleft[0] + imagelist[0].get_width(),
-                                                  inputui.rect.midleft[1] + imagelist[0].get_height()),
+                                                                inputui.rect.midleft[1] + imagelist[0].get_height()),
                                   text="Confirm", layer=31)
 input_cancel_button = menu.MenuButton(screen_scale, imagelist,
-                                           pos=(inputui.rect.midright[0] - imagelist[0].get_width(),
-                                                inputui.rect.midright[1] + imagelist[0].get_height()),
-                                           text="Cancel", layer=31)
+                                      pos=(inputui.rect.midright[0] - imagelist[0].get_width(),
+                                           inputui.rect.midright[1] + imagelist[0].get_height()),
+                                      text="Cancel", layer=31)
 input_button = (input_ok_button, input_cancel_button)
 input_box = menu.InputBox(screen_scale, inputui.rect.center, inputui.image.get_width())  # user text input box
 
 inputui_pop = (inputui, input_box, input_ok_button, input_cancel_button)
 
 confirmui = menu.InputUI(screen_scale, input_ui_img,
-                              (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
+                         (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirmui_pop = (confirmui, input_ok_button, input_cancel_button)
 
 boximg = load_image(main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
@@ -1246,14 +1269,13 @@ boximg = load_image(main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
 menu.ListBox.containers = popup_listbox
 popup_listbox = menu.ListBox(screen_scale, (0, 0), boximg, 15)  # popup listbox need to be in higher layer
 popup_listscroll = battleui.UIScroller(popup_listbox.rect.topright,
-                                            popup_listbox.image.get_height(),
-                                            popup_listbox.maxshowlist,
-                                            layer=14)
-
+                                       popup_listbox.image.get_height(),
+                                       popup_listbox.maxshowlist,
+                                       layer=14)
 
 animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
 part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
-                                           reset_button.rect.midtop[1]))
+                                                    reset_button.rect.midtop[1]))
 # loop_button = SwitchButton(["Loop:Yes", "Loop:No"],image, (100,200))
 
 skeleton.animation_list = []
@@ -1281,6 +1303,8 @@ while True:
     mouse_wheeldown = False  # hold mouse wheel click
     copy_press = False
     paste_press = False
+    part_copy_press = False
+    part_paste_press = False
     del_press = False
     shift_press = False
     popup_click = False
@@ -1334,6 +1358,11 @@ while True:
                     copy_press = True
                 elif keypress[pygame.K_v]:  # paste frame
                     paste_press = True
+            elif keypress[pygame.K_LALT] or keypress[pygame.K_RALT]:
+                if keypress[pygame.K_c]:  # copy part
+                    part_copy_press = True
+                elif keypress[pygame.K_v]:  # paste part
+                    part_paste_press = True
             elif keypress[pygame.K_LSHIFT] or keypress[pygame.K_RSHIFT]:
                 shift_press = True
             elif keypress[pygame.K_w]:
@@ -1456,22 +1485,14 @@ while True:
                         skeleton.edit_part(mouse_pos, "clear")
                     elif default_button.rect.collidepoint(mouse_pos):
                         skeleton.edit_part(mouse_pos, "default")
-                    elif copy_press or (mouse_up and copy_button.rect.collidepoint(mouse_pos)):
-                        copy_part = {key: (value[:] if type(value) == list else value) for key, value in
-                                      skeleton.bodypart_list[current_frame].items()}
-                        copy_frame = {key: (value[:] if value is not None else value) for key, value in
-                                      skeleton.animation_part_list[current_frame].items()}
-                        copy_name = {key: (value[:] if value is not None else value) for key, value in
-                                      skeleton.part_name_list[current_frame].items()}
-                    elif paste_press or (mouse_up and paste_button.rect.collidepoint(mouse_pos)):
-                        if copy_frame is not None:
-                            skeleton.bodypart_list[current_frame] = {key: (value[:] if type(value) == list else value) for key, value in
-                                                                           copy_part.items()}
-                            skeleton.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
-                                                                           copy_frame.items()}
-                            skeleton.part_name_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
-                                                                           copy_name.items()}
-                            skeleton.edit_part(mouse_pos, "change")
+                    elif copy_button.rect.collidepoint(mouse_pos):
+                        copy_press = True
+                    elif paste_button.rect.collidepoint(mouse_pos):
+                        paste_press = True
+                    elif part_copy_button.rect.collidepoint(mouse_pos):
+                        part_copy_press = True
+                    elif part_paste_button.rect.collidepoint(mouse_pos):
+                        part_paste_press = True
                     elif activate_button.rect.collidepoint(mouse_pos):
                         for strip_index, strip in enumerate(filmstrips):
                             if strip_index == current_frame:
@@ -1553,6 +1574,42 @@ while True:
                                 for part in helper_click.part_selected:
                                     skeleton.click_part(mouse_pos, True, part)
 
+                if copy_press:
+                    copy_part_frame = {key: (value[:] if type(value) == list else value) for key, value in
+                                       skeleton.bodypart_list[current_frame].items()}
+                    copy_animation_frame = {key: (value[:] if value is not None else value) for key, value in
+                                            skeleton.animation_part_list[current_frame].items()}
+                    copy_name_frame = {key: (value[:] if value is not None else value) for key, value in
+                                       skeleton.part_name_list[current_frame].items()}
+
+                elif paste_press:
+                    if copy_animation_frame is not None:
+                        skeleton.bodypart_list[current_frame] = {key: (value[:] if type(value) == list else value) for key, value in
+                                                                 copy_part_frame.items()}
+                        skeleton.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
+                                                                       copy_animation_frame.items()}
+                        skeleton.part_name_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
+                                                                  copy_name_frame.items()}
+                        skeleton.edit_part(mouse_pos, "change")
+
+                elif part_copy_press:
+                    if skeleton.part_selected != []:
+                        copy_part = {key: (value[:] if type(value) == list else value) for key, value in
+                                     skeleton.bodypart_list[current_frame].items()}
+                        copy_animation = {key: (value[:] if value is not None else value) for key, value in
+                                                skeleton.animation_part_list[current_frame].items()}
+                        copy_name = {key: (value[:] if value is not None else value) for key, value in
+                                           skeleton.part_name_list[current_frame].items()}
+
+                        # keep only selected one
+                        copy_part = {item: copy_part[item] for index, item in enumerate(copy_part.keys()) if index in skeleton.part_selected}
+                        copy_animation = {item: copy_animation[item] for index, item in enumerate(copy_animation.keys()) if index in skeleton.part_selected}
+                        copy_name = {item: copy_name[item] for index, item in enumerate(copy_name.keys()) if index in skeleton.part_selected}
+
+                elif part_paste_press:
+                    if copy_part is not None:
+                        skeleton.edit_part(mouse_pos, "paste")
+
                 if showroom.rect.collidepoint(mouse_pos):
                     mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500,
                                                (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500)
@@ -1580,7 +1637,7 @@ while True:
                         list(skeleton.rect_part_list.keys())[part] in list(skeleton.sprite_part.keys()):
                     nametext = skeleton.part_name_list[current_frame][list(skeleton.rect_part_list.keys())[part]]
                     if nametext is None:
-                        nametext = ["","",""]
+                        nametext = ["", "", ""]
                     race_part_button.change_text(nametext[0])
                     direction_part_button.change_text(nametext[1])
                     part_selector.change_name(nametext[2])
@@ -1593,7 +1650,7 @@ while True:
                 direction_part_button.change_text("")
                 part_selector.change_name("")
     else:
-        dt=0
+        dt = 0
         if input_ok_button.event:
             input_ok_button.event = False
 
