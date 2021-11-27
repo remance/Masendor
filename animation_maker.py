@@ -35,7 +35,7 @@ direction_list = ("front", "side", "back", "sideup", "sidedown")
 #                        "block","parry","turret","effect_blur","effect_")
 # animation_property_list = ("aoe","dmgsprite","externaleffect","duration","nodmg","interuptrevert")
 
-# TODO animation save, delete function, eye/mouth assign, effect, special part, unique, frame properties, lock?
+# TODO animation save, delete function, effect, special part, unique, frame properties, lock?
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
     """generate list of list item"""
@@ -567,6 +567,10 @@ class Skeleton:
         self.weapon = {"p1_main_weapon": "sword", "p1_sub_weapon": None, "p2_main_weapon": None, "p2_sub_weapon": None}
         self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0]
         self.randomface()
+        self.p1_any_eye = self.p1_eye
+        self.p1_any_mouth = self.p1_mouth
+        self.p2_any_eye = self.p2_eye
+        self.p2_any_mouth = self.p2_mouth
 
         self.read_animation(list(animation_pool.keys())[0])
         self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
@@ -851,6 +855,32 @@ class Skeleton:
                         self.part_name_list[current_frame][part_index][2] = ""
                         if part_index not in self.not_show:
                             self.not_show.append(part_index)
+
+        elif "eye" in edit_type:
+            if "Any" in edit_type:
+                if "p1" in edit_type:
+                    self.p1_eye = self.p1_any_eye
+                elif "p2" in edit_type:
+                    self.p2_eye = self.p2_any_eye
+            else:
+                if "p1" in edit_type:
+                    self.p1_eye = edit_type[7:]
+                elif "p2" in edit_type:
+                    self.p2_eye = edit_type[7:]
+            main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+
+        elif "mouth" in edit_type:
+            if "Any" in edit_type:
+                if "p1" in edit_type:
+                    self.p1_mouth = self.p1_any_mouth
+                elif "p2" in edit_type:
+                    self.p2_mouth = self.p2_any_mouth
+            else:
+                if "p1" in edit_type:
+                    self.p1_eye = edit_type[10:]
+                elif "p2" in edit_type:
+                    self.p2_eye = edit_type[10:]
+            main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
 
         elif "part" in edit_type:
             if self.part_selected != []:
@@ -1242,6 +1272,18 @@ race_part_button = Button("", image, (reset_button.image.get_width() / 2,
                                       p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_button.image.get_width(),
                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p1_eye_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
+p1_eye_selector.change_name("P1 Eye: Any")
+p1_mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                        p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
+p1_mouth_selector.change_name("P1 Mouth: Any")
+p2_eye_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
+                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
+p2_eye_selector.change_name("P2 Eye: Any")
+p2_mouth_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
+                                                        p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
+p2_mouth_selector.change_name("P2 Mouth: Any")
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
@@ -1417,6 +1459,22 @@ while True:
                                 skeleton.edit_part(mouse_pos, "part_" + name.name)
                             elif popup_listbox.action == "race_select":
                                 skeleton.edit_part(mouse_pos, "race_" + name.name)
+                            elif "eye" in popup_listbox.action:
+                                skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
+                                if "p1" in popup_listbox.action:
+                                    p1_eye_selector.change_name("P1 Eye: " + name.name)
+                                elif "p2" in popup_listbox.action:
+                                    p2_eye_selector.change_name("P2 Eye: " + name.name)
+                                skeleton.read_animation(animation_name)
+                                reload_animation(anim)
+                            elif "mouth" in popup_listbox.action:
+                                skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
+                                if "p1" in popup_listbox.action:
+                                    p1_mouth_selector.change_name("P1 Mouth: " + name.name)
+                                elif "p2" in popup_listbox.action:
+                                    p2_mouth_selector.change_name("P2 Mouth: " + name.name)
+                                skeleton.read_animation(animation_name)
+                                reload_animation(anim)
                             elif popup_listbox.action == "animation_select":
                                 current_frame = 0
                                 anim.show_frame = current_frame
@@ -1535,6 +1593,18 @@ while True:
                                 selectpart = race_part_button.text
                                 part_list = list(gen_weapon_sprite_pool[selectpart][direction_part_button.text].keys())
                             popuplist_newopen("part_select", part_selector.rect.topleft, part_list, "bottom")
+                    elif p1_eye_selector.rect.collidepoint(mouse_pos):
+                        part_list = ["Any"] + list(gen_body_sprite_pool[skeleton.p1_race][direction_list[skeleton.side]]["eye"].keys())
+                        popuplist_newopen("p1_eye_select", p1_eye_selector.rect.topleft, part_list, "bottom")
+                    elif p1_mouth_selector.rect.collidepoint(mouse_pos):
+                        part_list = ["Any"] + list(gen_body_sprite_pool[skeleton.p1_race][direction_list[skeleton.side]]["mouth"].keys())
+                        popuplist_newopen("p1_mouth_select", p1_mouth_selector.rect.topleft, part_list, "bottom")
+                    elif p2_eye_selector.rect.collidepoint(mouse_pos):
+                        part_list = ["Any"] + list(gen_body_sprite_pool[skeleton.p2_race][direction_list[skeleton.side]]["eye"].keys())
+                        popuplist_newopen("p2_eye_select", (p2_eye_selector.rect.topleft[0] - (45 * screen_scale[0]), p2_eye_selector.rect.topleft[1]), part_list, "bottom")
+                    elif p2_mouth_selector.rect.collidepoint(mouse_pos):
+                        part_list = ["Any"] + list(gen_body_sprite_pool[skeleton.p2_race][direction_list[skeleton.side]]["mouth"].keys())
+                        popuplist_newopen("p2_mouth_select", (p2_mouth_selector.rect.topleft[0] - (45 * screen_scale[0]), p2_mouth_selector.rect.topleft[1]), part_list, "bottom")
                     elif race_part_button.rect.collidepoint(mouse_pos):
                         if skeleton.part_selected != []:
                             currentpart = list(skeleton.rect_part_list.keys())[skeleton.part_selected[-1]]
