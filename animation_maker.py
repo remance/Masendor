@@ -791,6 +791,7 @@ class Skeleton:
                     if shift_press:
                         if index not in self.part_selected:
                             self.part_selected.append(index)
+                            self.part_selected = list(set(self.part_selected))
                         break
                     elif shift_press is False:
                         self.part_selected = [index]
@@ -800,6 +801,7 @@ class Skeleton:
         else:
             if shift_press:
                 self.part_selected.append(list(self.rect_part_list.keys()).index(part))
+                self.part_selected = list(set(self.part_selected))
             else:
                 self.part_selected = [list(self.rect_part_list.keys()).index(part)]
 
@@ -1258,15 +1260,21 @@ activate_button = Button("Enable", image, (play_animation_button.pos[0] - play_a
 deactivate_button = Button("Disable", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 5,
                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
-reset_button = Button("Reset", image, (screen_size[0] / 1.5, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+reset_button = Button("Reset", image, (screen_size[0] / 2.1, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-flip_hori_button = Button("Flip H", image, (reset_button.pos[0] - reset_button.image.get_width(),
+flip_hori_button = Button("Flip H", image, (reset_button.pos[0] + reset_button.image.get_width(),
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + reset_button.image.get_width(),
+flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + (reset_button.image.get_width() * 2),
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-part_copy_button = Button("Copy", image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
+part_copy_button = Button("Copy", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-part_paste_button = Button("Paste", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
+part_paste_button = Button("Paste", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p1_all_button = Button("P1 All", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p2_all_button = Button("P2 All", image, (reset_button.pos[0] + reset_button.image.get_width() * 6,
+                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+all_button = Button("All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 race_part_button = Button("", image, (reset_button.image.get_width() / 2,
                                       p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
@@ -1554,6 +1562,39 @@ while True:
                         part_copy_press = True
                     elif part_paste_button.rect.collidepoint(mouse_pos):
                         part_paste_press = True
+                    elif p1_all_button.rect.collidepoint(mouse_pos):
+                        if shift_press is False:
+                            skeleton.part_selected = []
+                        for index, part in enumerate(list(skeleton.rect_part_list.keys())):
+                            if "p1" in part:
+                                skeleton.click_part(mouse_pos, True, part)
+                        for index, helper in enumerate(helperlist):
+                            helper.select(mouse_pos, shift_press)
+                            for part in skeleton.part_selected:
+                                if list(skeleton.rect_part_list.keys())[part] in helper.rect_part_list:
+                                    helper.select(mouse_pos, True, list(skeleton.rect_part_list.keys())[part])
+                                else:
+                                    helper.select(None, shift_press)
+                    elif p2_all_button.rect.collidepoint(mouse_pos):
+                        if shift_press is False:
+                            skeleton.part_selected = []
+                        for part in list(skeleton.rect_part_list.keys()):
+                            if "p2" in part:
+                                skeleton.click_part(mouse_pos, True, part)
+                        for index, helper in enumerate(helperlist):
+                            helper.select(mouse_pos, shift_press)
+                            for part in skeleton.part_selected:
+                                if list(skeleton.rect_part_list.keys())[part] in helper.rect_part_list:
+                                    helper.select(mouse_pos, True, list(skeleton.rect_part_list.keys())[part])
+                                else:
+                                    helper.select(None, shift_press)
+                    elif all_button.rect.collidepoint(mouse_pos):
+                        for part in list(skeleton.rect_part_list.keys()):
+                            skeleton.click_part(mouse_pos, True, part)
+                        for index, helper in enumerate(helperlist):
+                            for part in skeleton.part_selected:
+                                if list(skeleton.rect_part_list.keys())[part] in helper.rect_part_list:
+                                    helper.select(mouse_pos, True, list(skeleton.rect_part_list.keys())[part])
                     elif activate_button.rect.collidepoint(mouse_pos):
                         for strip_index, strip in enumerate(filmstrips):
                             if strip_index == current_frame:
@@ -1621,7 +1662,7 @@ while True:
                         popuplist_newopen("animation_select", animation_selector.rect.bottomleft,
                                           [item for item in generic_animation_pool[direction]], "top")
 
-                    else:  # click on sprite in list
+                    else:  # click on other stuff
                         for strip_index, strip in enumerate(filmstrips):
                             if strip.rect.collidepoint(mouse_pos) and current_frame != strip_index:
                                 current_frame = strip_index

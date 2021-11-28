@@ -105,7 +105,7 @@ Ver 0.9 Gaze of New Life: AI and pathfinding (The most challenging step unless c
 
 Ver 1 Pax Paradisum: historical battle simulation game, Battle of Waterloo, Battle of Dunsinane, Battle of Yijing, Battle of Jengland
 
-Ver 1 - 1.5: More art, sound effects and in-game music (May need to use royalty-free music since I have no experience in music) + Ingame Encyclopedia at main menu + more historical battles
+Ver 1 - 1.5: More art, sound effects and in-game music (May need to use royalty-free music but will see) + Ingame Encyclopedia at main menu + more historical battles
 
 Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather, unit mode
 
