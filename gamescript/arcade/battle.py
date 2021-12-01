@@ -27,7 +27,7 @@ class Battle:
     popout_lorebook = commonscript.popout_lorebook
     popuplist_newopen = commonscript.popuplist_newopen
     setuplist = commonscript.setuplist
-    camerascale = 4
+    camerascale = 5
     escmenu_process = escmenu.escmenu_process
 
     def __init__(self, main, winstyle):

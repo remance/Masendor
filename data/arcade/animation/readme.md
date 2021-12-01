@@ -1,6 +1,6 @@
 Animation
 
-direction name, filename, base position x, base position y, angle, flip (0=none,1=hori,2=verti,3=both), layer
+direction name, filename, base position x, base position y, angle, flip (0=none,1=hori,2=verti,3=both), layer, scale (1 for default)
 
 The position is based on the default side before any rotation (face right for side, corner up and corner down).
 
