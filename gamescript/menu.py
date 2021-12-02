@@ -486,23 +486,36 @@ class NameList(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((box.image.get_width() - int(15 * screen_scale[0]), int(25 * screen_scale[1])))  # black corner
         self.image.fill((0, 0, 0))
+        self.selected_image = self.image.copy()
+        self.selected = False
 
         # v White body square
         smallimage = pygame.Surface((box.image.get_width() - int(17 * screen_scale[0]), int(23 * screen_scale[1])))
         smallimage.fill((255, 255, 255))
         smallrect = smallimage.get_rect(topleft=(int(1 * screen_scale[0]), int(1 * screen_scale[1])))
         self.image.blit(smallimage, smallrect)
+        smallimage.fill((255, 255, 128))
+        self.selected_image.blit(smallimage, smallrect)
         # ^ End white body
 
-        # v Map name text
+        # v name text
         text_surface = self.font.render(self.name, True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(int(3 * screen_scale[0]), self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
-        # ^ End map name
+        self.selected_image.blit(text_surface, text_rect)
+        # ^ End name
+        self.not_selected_image = self.image.copy()
 
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
+    def select(self):
+        if self.selected:
+            self.selected = False
+            self.image = self.not_selected_image.copy()
+        else:
+            self.selected = True
+            self.image = self.selected_image.copy()
 
 class TickBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image, tickimage, option):

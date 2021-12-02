@@ -31,13 +31,13 @@ pygame.display.set_caption("Animation Maker")  # set the game name on program bo
 pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
-# frame_property_list = ("moveable","uninteruptable","cancelable","invincible","revert","hold","power",
-#                        "block","parry","turret","effect_blur","effect_")
-# animation_property_list = ("aoe","dmgsprite","externaleffect","duration","nodmg","interuptrevert")
+frame_property_list = ["moveable","uninteruptable","cancelable","invincible","revert","hold","power",
+                       "block","parry","turret"]
+anim_property_list = ["aoe", "dmgsprite", "externaleffect", "nodmg", "interuptrevert"]
 
 # TODO animation save, delete function, effect, special part, unique, frame properties, size, lock?
 
-def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1):
+def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1, removeold=True, oldlist=None):
     """generate list of list item"""
     widthadjust = screen_scale[0]
     heightadjust = screen_scale[1]
@@ -47,34 +47,39 @@ def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1)
     if currentrow > len(showlist) - box.maxshowlist:
         currentrow = len(showlist) - box.maxshowlist
 
-    if len(itemgroup) > 0:  # remove previous sprite in the group before generate new one
+    if len(itemgroup) > 0 and removeold:  # remove previous sprite in the group before generate new one
         for stuff in itemgroup:
             stuff.kill()
             del stuff
-
+    addrow = 0
     for index, item in enumerate(showlist):
         if index >= currentrow:
             itemgroup.add(itemclass(screen_scale, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
             row += (30 * heightadjust)  # next row
-            if len(itemgroup) > box.maxshowlist:
+            addrow += 1
+            if addrow > box.maxshowlist:
                 break  # will not generate more than space allowed
 
         uiclass.add(*itemgroup)
+    if oldlist is not None:
+        for item in itemgroup:
+            if item.name in oldlist:
+                item.select()
 
 
-def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=19):
+def listscroll(mouse_scrollup, mouse_scrolldown, scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=19, oldlist=None):
     if mouse_scrollup:
         currentrow -= 1
         if currentrow < 0:
             currentrow = 0
         else:
-            setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
+            setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer, oldlist=oldlist)
             scroll.changeimage(newrow=currentrow, logsize=len(namelist))
 
     elif mouse_scrolldown:
         currentrow += 1
         if currentrow + listbox.maxshowlist - 1 < len(namelist):
-            setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
+            setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer, oldlist=oldlist)
             scroll.changeimage(newrow=currentrow, logsize=len(namelist))
         else:
             currentrow -= 1
@@ -1216,6 +1221,8 @@ menu.MenuButton.containers = fakegroup
 menu.NameList.containers = ui
 popup_listbox = pygame.sprite.Group()
 popup_namegroup = pygame.sprite.Group()
+anim_prop_namegroup = pygame.sprite.Group()
+frame_prop_namegroup = pygame.sprite.Group()
 
 skeleton = Skeleton()
 
@@ -1265,10 +1272,6 @@ pointedit_button = SwitchButton(["Center", "Joint"], image, (play_animation_butt
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 3,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 activate_button = SwitchButton(["Enable", "Disable"], image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 4,
-                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-frame_property_button = Button("Fr. Prop.", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 5,
-                                              filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-animation_property_button = Button("An. Prop.", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 6,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
 reset_button = Button("Reset", image, (screen_size[0] / 2.1, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
@@ -1336,6 +1339,31 @@ popup_listscroll = battleui.UIScroller(popup_listbox.rect.topright,
                                        popup_listbox.image.get_height(),
                                        popup_listbox.maxshowlist,
                                        layer=14)
+anim_prop_listbox = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
+                                                (reset_button.image.get_height() * 1.5)), boximg, 8)
+anim_prop_listbox.namelist = anim_property_list + ["Custom"]
+frame_prop_listbox = menu.ListBox(screen_scale, (screen_size[0] - boximg.get_width(), filmstrip_list[0].rect.midbottom[1] +
+                                                (reset_button.image.get_height() * 1.5)), boximg, 8)
+frame_prop_listbox.namelist = [ frame_property_list + ["Custom"] for _ in range(10) ]
+anim_prop_listscroll = battleui.UIScroller(anim_prop_listbox.rect.topright,
+                                       anim_prop_listbox.image.get_height(),
+                                       anim_prop_listbox.maxshowlist,
+                                       layer=10)
+frame_prop_listscroll = battleui.UIScroller(frame_prop_listbox.rect.topright,
+                                       frame_prop_listbox.image.get_height(),
+                                       frame_prop_listbox.maxshowlist,
+                                       layer=10)
+current_anim_row = 0
+current_frame_row = 0
+frame_property_select = [ [] for _ in range(10) ]
+anim_property_select = []
+setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+          anim_prop_listbox, ui, layer=9, removeold=False)
+setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+          frame_prop_listbox, ui, layer=9, removeold=False)
+anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
+frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
+ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_listscroll, frame_prop_listscroll)
 
 animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
 part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
@@ -1392,20 +1420,28 @@ while True:
                 elif mousetimer < 0.3:  # if click again within 0.3 second for it to be considered double click
                     double_mouse_right = True  # double right click
                     mousetimer = 0
-            elif event.button == 4:  # Mouse scroll up
-                mouse_scrollup = True
-                if popup_listbox.rect.collidepoint(mouse_pos):
+            elif event.button == 4 or event.button == 5:
+                if event.button == 4:  # Mouse scroll up
+                    mouse_scrollup = True
+                else:  # Mouse scroll down
+                    mouse_scrolldown = True
+                if popup_listbox in ui and popup_listbox.rect.collidepoint(mouse_pos):
                     currentpopuprow = listscroll(mouse_scrollup, mouse_scrolldown, popup_listscroll, popup_listbox,
                                                  currentpopuprow, popup_listbox.namelist, popup_namegroup, ui)
                 elif skeleton.part_selected != [] and showroom.rect.collidepoint(mouse_pos):
-                    skeleton.edit_part(mouse_pos, "scale_up")
-            elif event.button == 5:  # Mouse scroll down
-                mouse_scrolldown = True
-                if popup_listbox.rect.collidepoint(mouse_pos):
-                    currentpopuprow = listscroll(mouse_scrollup, mouse_scrolldown, popup_listscroll, popup_listbox,
-                                                 currentpopuprow, popup_listbox.namelist, popup_namegroup, ui)
-                elif skeleton.part_selected != [] and showroom.rect.collidepoint(mouse_pos):
-                    skeleton.edit_part(mouse_pos, "scale_down")
+                    if event.button == 4:  # Mouse scroll up
+                        skeleton.edit_part(mouse_pos, "scale_up")
+                    else:  # Mouse scroll down
+                        skeleton.edit_part(mouse_pos, "scale_down")
+                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or anim_prop_listscroll.rect.collidepoint(mouse_pos):
+                    current_anim_row = listscroll(mouse_scrollup, mouse_scrolldown, anim_prop_listscroll, anim_prop_listbox,
+                                                  current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup, ui,
+                                                  oldlist=anim_property_select)
+                elif frame_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_listscroll.rect.collidepoint(mouse_pos):
+                    current_frame_row = listscroll(mouse_scrollup, mouse_scrolldown, frame_prop_listscroll, frame_prop_listbox,
+                                                 current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup, ui,
+                                                   oldlist=frame_property_select[current_frame])
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 input_esc = True
@@ -1558,6 +1594,44 @@ while True:
                     else:  # stop animation
                         joint_button.change_option(0)
                         show_joint = True
+                elif anim_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                    newrow = anim_prop_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
+                    if newrow is not None:
+                        current_anim_row = newrow
+                        setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                                  anim_prop_listbox, ui, layer=9, oldlist=anim_property_list)
+                elif frame_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                    newrow = frame_prop_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
+                    if newrow is not None:
+                        current_frame_row = newrow
+                        setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                  frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+                elif anim_prop_listbox.rect.collidepoint(mouse_pos):
+                    for index, name in enumerate(anim_prop_namegroup):  # change leader with the new selected one
+                        if name.rect.collidepoint(mouse_pos):
+                            if name.name == "Custom":
+                                textinputpopup = ("text_input", "new_anim_prop")
+                                inputui.changeinstruction("Custom Anim Prop:")
+                                ui.add(inputui_pop)
+                            else:
+                                name.select()
+                                if name.selected:
+                                    anim_property_select.append(name.name)
+                                else:
+                                    anim_property_select.remove(name.name)
+                elif frame_prop_listbox.rect.collidepoint(mouse_pos):
+                    for index, name in enumerate(frame_prop_namegroup):  # change leader with the new selected one
+                        if name.rect.collidepoint(mouse_pos):
+                            if name.name == "Custom":
+                                textinputpopup = ("text_input", "new_frame_prop")
+                                inputui.changeinstruction("Custom Frame Prop:")
+                                ui.add(inputui_pop)
+                            else:
+                                name.select()
+                                if name.selected:
+                                    frame_property_select[current_frame].append(name.name)
+                                else:
+                                    frame_property_select[current_frame].remove(name.name)
 
         if play_animation:
             current_frame = int(anim.show_frame)
@@ -1707,6 +1781,9 @@ while True:
                                 anim.show_frame = current_frame
                                 skeleton.part_selected = []
                                 skeleton.edit_part(mouse_pos, "change")
+                                current_frame_row = 0
+                                setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                          frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])  # change frame property list
                                 for index, helper in enumerate(helperlist):
                                     helper.select(None, False)
                                 if strip.activate:
@@ -1818,7 +1895,18 @@ while True:
                 animation_selector.change_name(animation_name)
                 current_frame = 0
                 skeleton.edit_part(mouse_pos, "new")
-
+            elif textinputpopup[1] == "new_anim_prop":
+                anim_prop_listbox.namelist[-1] = input_box.text
+                anim_prop_listbox.namelist.append("Custom")
+                anim_property_select.append(input_box.text)
+                setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                          anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
+            elif textinputpopup[1] == "new_frame_prop":
+                frame_prop_listbox.namelist[current_frame][-1] = input_box.text
+                frame_prop_listbox.namelist[current_frame].append("Custom")
+                frame_property_select[current_frame].append(input_box.text)
+                setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                          frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
             elif textinputpopup[1] == "quit":
                 pygame.time.wait(1000)
                 if pygame.mixer:
