@@ -23,6 +23,8 @@ def stat_convert(row, n, i, mod_column=[], list_column=[], int_column=[]):
                 row[n] = [float(i)]
             else:
                 row[n] = [int(i)]
+        else:
+            row[n] = [i]
 
     elif int_column != [] and n in int_column:
         if i != "" and re.search("[a-zA-Z]", i) is None:

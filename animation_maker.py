@@ -35,7 +35,7 @@ frame_property_list = ["moveable","uninteruptable","cancelable","invincible","re
                        "block","parry","turret"]
 anim_property_list = ["aoe", "dmgsprite", "externaleffect", "nodmg", "interuptrevert"]
 
-# TODO animation save, delete function, effect, special part, unique, frame properties, size, lock?
+# TODO animation save, delete function, effect, special part, unique, size, lock?
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1, removeold=True, oldlist=None):
     """generate list of list item"""
@@ -154,7 +154,8 @@ for direction in direction_list:
                        "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot",
                        "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
                        "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
-                       "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2"]  # value in list only
+                       "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2",
+                       "frame_property","animation_property"]  # value in list only
         list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
         part_name_header = part_name_header[1:]  # keep only part name for list ref later
         animation_pool = {}
@@ -623,6 +624,15 @@ class Skeleton:
                             bodypart_list[part] = pose[part]
                         else:
                             bodypart_list[part] = 1.0
+                    elif "property" in part and pose[part] != [""]:
+                        if "animation" in part:
+                            for stuff in pose[part]:
+                                anim_prop_listbox.namelist.insert(-1, stuff)
+                                anim_property_select.append(stuff)
+                        elif "frame" in part and pose[part] != 0:
+                            for stuff in pose[part]:
+                                frame_prop_listbox.namelist[index].insert(-1, stuff)
+                                frame_property_select[index].append(stuff)
                 self.bodypart_list[index] = bodypart_list
                 main_joint_pos_list = self.generate_body(bodypart_list)
 
@@ -1194,8 +1204,8 @@ textinputpopup = (None, None)
 ui = pygame.sprite.LayeredUpdates()
 fakegroup = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
 
-showroom_scale = ((150 * screen_size[0] / 500, 150 * screen_size[1] / 500))
-showroom_scale_mul = (showroom_scale[0] / 150, showroom_scale[1] / 150)
+showroom_scale = ((default_sprite_size[0] * screen_size[0] / 500, default_sprite_size[1] * screen_size[1] / 500))
+showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale[1] / default_sprite_size[1])
 showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
@@ -1223,8 +1233,6 @@ popup_listbox = pygame.sprite.Group()
 popup_namegroup = pygame.sprite.Group()
 anim_prop_namegroup = pygame.sprite.Group()
 frame_prop_namegroup = pygame.sprite.Group()
-
-skeleton = Skeleton()
 
 filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_width(), 42 * screen_scale[1])),
                   Filmstrip((image.get_width() * 2, 42 * screen_scale[1])), Filmstrip((image.get_width() * 3, 42 * screen_scale[1])),
@@ -1368,8 +1376,8 @@ ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_listscroll, frame_prop_l
 animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
 part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
                                                     reset_button.rect.midtop[1]))
-# loop_button = SwitchButton(["Loop:Yes", "Loop:No"],image, (100,200))
 
+skeleton = Skeleton()
 skeleton.animation_list = []
 animation_name = list(animation_pool.keys())[0]
 direction = 1
@@ -1535,12 +1543,25 @@ while True:
                                 skeleton.read_animation(animation_name)
                                 reload_animation(anim)
                             elif popup_listbox.action == "animation_select":
-                                current_frame = 0
-                                anim.show_frame = current_frame
-                                skeleton.read_animation(name.name)
-                                animation_name = name.name
-                                animation_selector.change_name(animation_name)
-                                reload_animation(anim)
+                                if animation_name != name.name:
+                                    current_frame = 0
+                                    anim.show_frame = current_frame
+                                    anim_prop_listbox.namelist = anim_property_list + ["Custom"]
+                                    anim_property_select = []
+                                    frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
+                                    frame_property_select = [[] for _ in range(10)]
+                                    current_anim_row = 0
+                                    current_frame_row = 0
+                                    skeleton.read_animation(name.name)
+                                    animation_name = name.name
+                                    animation_selector.change_name(animation_name)
+                                    reload_animation(anim)
+                                    setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                                              anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
+                                    setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                              frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+                                    anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
+                                    frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
                             elif popup_listbox.action == "animation_side":
                                 direction_button.change_text(name.name)
                                 current_frame = 0
@@ -1896,14 +1917,12 @@ while True:
                 current_frame = 0
                 skeleton.edit_part(mouse_pos, "new")
             elif textinputpopup[1] == "new_anim_prop":
-                anim_prop_listbox.namelist[-1] = input_box.text
-                anim_prop_listbox.namelist.append("Custom")
+                anim_prop_listbox.namelist.insert(-1, input_box.text)
                 anim_property_select.append(input_box.text)
                 setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                           anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
             elif textinputpopup[1] == "new_frame_prop":
-                frame_prop_listbox.namelist[current_frame][-1] = input_box.text
-                frame_prop_listbox.namelist[current_frame].append("Custom")
+                frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
                 frame_property_select[current_frame].append(input_box.text)
                 setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                           frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
