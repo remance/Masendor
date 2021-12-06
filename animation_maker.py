@@ -20,7 +20,7 @@ setrotate = longscript.setrotate
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
-default_sprite_size = (150, 150)
+default_sprite_size = (200, 200)
 
 screen_size = (1000, 1000)
 screen_scale = (screen_size[0] / 1000, screen_size[1] / 1000)
@@ -35,7 +35,7 @@ frame_property_list = ["moveable","uninteruptable","cancelable","invincible","re
                        "block","parry","turret"]
 anim_property_list = ["aoe", "dmgsprite", "externaleffect", "nodmg", "interuptrevert"]
 
-# TODO animation save, delete function, effect, special part, unique, size, lock?
+# TODO animation save, delete function, special part, unique, size, lock?
 
 def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1, removeold=True, oldlist=None):
     """generate list of list item"""
@@ -155,7 +155,7 @@ for direction in direction_list:
                        "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
                        "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
                        "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2",
-                       "frame_property","animation_property"]  # value in list only
+                       "frame_property", "animation_property", "special_1", "special_2", "special_3", "special_4", "special_5"]  # value in list only
         list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
         part_name_header = part_name_header[1:]  # keep only part name for list ref later
         animation_pool = {}
@@ -225,16 +225,30 @@ for race in race_list:
                 gen_body_sprite_pool[race][direction][folder[-1]] = imgs
 
 gen_weapon_sprite_pool = {}
-for direction in direction_list:
-    partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon", direction))
-    subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
-    for folder in subdirectories:
-        if folder[-1] not in gen_weapon_sprite_pool:
-            gen_weapon_sprite_pool[folder[-1]] = {}
-        gen_weapon_sprite_pool[folder[-1]][direction] = {}
-        imgs = load_textures(main_dir, folder)
-        gen_weapon_sprite_pool[folder[-1]][direction] = imgs
+partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon"))
+subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
+for folder in subdirectories:
+    gen_weapon_sprite_pool[folder[-1]] = {}
+    partsubfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon", folder[-1]))
+    subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in partsubfolder.iterdir() if x.is_dir()]
+    for subfolder in subsubdirectories:
+        for direction in direction_list:
+            imgs = load_textures(main_dir, ["arcade", "sprite", "generic", "weapon", folder[-1], subfolder[-1] , direction])
+            if direction not in gen_weapon_sprite_pool[folder[-1]]:
+                gen_weapon_sprite_pool[folder[-1]][direction] = imgs
+            else:
+                gen_weapon_sprite_pool[folder[-1]][direction].update(imgs)
 
+effect_sprite_pool = {}
+partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "effect"))
+subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
+for folder in subdirectories:
+    effect_sprite_pool[folder[-1]] = {}
+    partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "effect", folder[-1]))
+    subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
+    for subfolder in subsubdirectories:
+        imgs = load_textures(main_dir, subfolder)
+        effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
 
 class Showroom(pygame.sprite.Sprite):
     def __init__(self, size):
@@ -244,7 +258,7 @@ class Showroom(pygame.sprite.Sprite):
         self.size = (int(size[0]), int(size[1]))
         self.image = pygame.Surface(self.size)
         self.image.fill((255, 255, 255))
-        self.rect = self.image.get_rect(center=(screen_size[0] / 2, screen_size[1] / 2))
+        self.rect = self.image.get_rect(center=(screen_size[0] / 2, screen_size[1] / 2.2))
         self.grid = True
 
     def update(self, *args):
@@ -352,9 +366,8 @@ class Bodyhelper(pygame.sprite.Sprite):
     def __init__(self, size, pos, type, part_images):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.fontsize = int(14 * screen_scale[1])
+        self.fontsize = int(12 * screen_scale[1])
         self.font = pygame.font.SysFont("helvetica", self.fontsize)
-        self.boxfont = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
         self.size = size
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
         self.image.fill((255, 255, 255))
@@ -362,11 +375,22 @@ class Bodyhelper(pygame.sprite.Sprite):
         self.image_original = self.image.copy()  # for original before add part and click
         self.rect = self.image.get_rect(center=pos)
         self.type = type
+        self.part_images_original = [image.copy() for image in part_images]
         if self.type in ("p1", "p2"):
-            self.part_images_original = [image.copy() for image in part_images]
+            self.boxfont = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
             empytybox = self.part_images_original[-1]
             self.part_images_original = self.part_images_original[:-1]
             for boxpart in ("W1", "W2"):
+                textsurface = self.boxfont.render(boxpart, 1, (0, 0, 0))
+                textrect = textsurface.get_rect(center=(empytybox.get_width() / 2, empytybox.get_height() / 2))
+                newbox = empytybox.copy()
+                newbox.blit(textsurface, textrect)
+                self.part_images_original.append(newbox)
+        else:
+            self.boxfont = pygame.font.SysFont("helvetica", int(18 * screen_scale[1]))
+            empytybox = self.part_images_original[0]
+            self.part_images_original = self.part_images_original[:-1]
+            for boxpart in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2"):
                 textsurface = self.boxfont.render(boxpart, 1, (0, 0, 0))
                 textrect = textsurface.get_rect(center=(empytybox.get_width() / 2, empytybox.get_height() / 2))
                 newbox = empytybox.copy()
@@ -394,8 +418,10 @@ class Bodyhelper(pygame.sprite.Sprite):
                              "p2_r_leg": (170, 216), "p2_r_foot": (170, 246), "p2_l_leg": (200, 216), "p2_l_foot": (200, 246),
                              "p2_main_weapon": (155, 30), "p2_sub_weapon": (215, 30)}
         else:
-            self.rect_part_list = {"effect1": None, "effect2": None, "dmg_effect1": None, "dmg_effect2": None}
-            self.part_pos = {"effect1": None, "effect2": None, "dmg_effect1": None, "dmg_effect2": None}
+            self.rect_part_list = {"special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
+                                   "effect_1": None, "effect_2": None, "dmg_effect_1": None, "dmg_effect_2": None}
+            self.part_pos = {"special_1": (20, 15), "special_2": (20, 45), "special_3": (20, 75), "special_4": (20, 105), "special_5": (20, 135),
+                             "effect_1": (20, 165), "effect_2": (20, 195), "dmg_effect_1": (20, 225), "dmg_effect_2": (20, 255)}
 
         for key, item in self.part_pos.items():
             self.part_pos[key] = (item[0] * screen_scale[0], item[1] * screen_scale[1])
@@ -487,7 +513,10 @@ class Bodyhelper(pygame.sprite.Sprite):
 
                 textsurface2 = self.font.render(stat2, 1, textcolour)
                 shiftx = 50 * screen_scale[0]
-                if "body" in part:
+                if any(ext in part for ext in ["effect", "special"]):
+                    textrect1 = textsurface1.get_rect(midleft=(self.part_pos[part][0] + shiftx, self.part_pos[part][1] - 10))
+                    textrect2 = textsurface2.get_rect(midleft=(self.part_pos[part][0] + shiftx, self.part_pos[part][1] - 10 + self.fontsize + 2))
+                elif "body" in part:
                     headname = "p1_head"
                     if "p2" in part:
                         headname = "p2_head"
@@ -499,7 +528,7 @@ class Bodyhelper(pygame.sprite.Sprite):
                     textrect2 = textsurface2.get_rect(midright=(self.part_pos[part][0] - shiftx, self.part_pos[part][1] - 10 + self.fontsize + 2))
                 else:
                     shiftx = 14 * screen_scale[0]
-                    if any(ext in part for ext in ["weapon", "effect", "special"]):
+                    if "weapon" in part:
                         shiftx = 26 * screen_scale[0]
                     if self.part_pos[part][0] > self.image.get_width() / 2:
                         textrect1 = textsurface1.get_rect(midleft=(self.part_pos[part][0] + shiftx, self.part_pos[part][1] - 15))
@@ -556,7 +585,9 @@ class Skeleton:
                                "p2_head": None, "p2_body": None, "p2_r_arm_up": None, "p2_r_arm_low": None,
                                "p2_r_hand": None, "p2_l_arm_up": None, "p2_l_arm_low": None, "p2_l_hand": None,
                                "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
-                               "p2_main_weapon": None, "p2_sub_weapon": None}
+                               "p2_main_weapon": None, "p2_sub_weapon": None, "special_1": None, "special_2": None,
+                               "special_3": None, "special_4": None, "special_5": None, "effect_1": None, "effect_2": None,
+                               "dmg_effect_1": None, "dmg_effect_2": None}
         self.part_selected = []
         self.not_show = []
         self.p1_race = "human"
@@ -568,7 +599,7 @@ class Skeleton:
         self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.weapon = {"p1_main_weapon": "sword", "p1_sub_weapon": None, "p2_main_weapon": None, "p2_sub_weapon": None}
-        self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0]
+        self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0, 1]
         self.randomface()
         self.p1_any_eye = self.p1_eye
         self.p1_any_mouth = self.p1_mouth
@@ -617,6 +648,10 @@ class Skeleton:
                                 if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
                                     link_list[part] = [pose[part][2], pose[part][3]]
                                     bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                            elif any(ext in part for ext in ["effect", "special"]):
+                                if pose[part][1] in effect_sprite_pool[pose[part][1]][pose[part][0]]:
+                                    link_list[part] = [pose[part][2], pose[part][3]]
+                                    bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
                             else:
                                 link_list[part] = [pose[part][3], pose[part][4]]
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
@@ -659,7 +694,7 @@ class Skeleton:
                 self.animation_list.append(image)
 
     def create_animation_film(self, pose_layer_list, empty=False):
-        image = pygame.Surface((150, 150), pygame.SRCALPHA)  # default size will scale down later
+        image = pygame.Surface((default_sprite_size[0], default_sprite_size[1]), pygame.SRCALPHA)  # default size will scale down later
         for key, value in self.rect_part_list.items():  # reset rect list
             self.rect_part_list[key] = None
         for joint in joints:  # remove all joint first
@@ -763,16 +798,19 @@ class Skeleton:
         for stuff in bodypart_list:
             if bodypart_list[stuff] is not None:
                 if any(ext in stuff for ext in exceptlist) is False:
-                    if "weapon" not in stuff:
+                    if "weapon" in stuff:
+                        partname = self.weapon[stuff]
+                        if partname is not None and bodypart_list[stuff][2]:
+                            self.sprite_image[stuff] = gen_weapon_sprite_pool[partname][bodypart_list[stuff][1]][bodypart_list[stuff][2]].copy()
+                    elif "effect_" in stuff:
+                        self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][
+                            bodypart_list[stuff][2]].copy()
+                    else:
                         partname = stuff[3:]  # remove p1_ or p2_ to get part name
                         if "r_" in partname[0:2] or "l_" in partname[0:2]:
                             partname = partname[2:]  # remove side
                         self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][partname][
                             bodypart_list[stuff][2]].copy()
-                    else:
-                        partname = self.weapon[stuff]
-                        if partname is not None and bodypart_list[stuff][2]:
-                            self.sprite_image[stuff] = gen_weapon_sprite_pool[partname][bodypart_list[stuff][1]][bodypart_list[stuff][2]].copy()
                 elif "head" in stuff:
                     if "p1" in stuff:
                         self.sprite_image[stuff] = p1_head_sprite_surface
@@ -906,7 +944,7 @@ class Skeleton:
                 main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
                 if self.animation_part_list[current_frame][part_index] == []:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
-                    if "weapon" in part_index:
+                    if any(ext in part_index for ext in ["weapon", "effect", "special"]):
                         self.animation_part_list[current_frame][part_index][1] = "center"
                     else:
                         self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
@@ -1011,6 +1049,8 @@ class Skeleton:
                                                                                                1)
                             elif "down" in edit_type:
                                 self.animation_part_list[current_frame][part_index][6] -= 0.1
+                                if self.animation_part_list[current_frame][part_index][6] < 0:
+                                    self.animation_part_list[current_frame][part_index][6] = 0
                                 self.animation_part_list[current_frame][part_index][6] = round(self.animation_part_list[current_frame][part_index][6],
                                                                                                1)
                         elif "flip" in edit_type:
@@ -1245,11 +1285,13 @@ filmstrips.add(*filmstrip_list)
 imgs = load_images(main_dir, ["animation_maker_ui", "helper_parts"])
 bodyhelper_size = (370 * screen_scale[0], 270 * screen_scale[1])
 p1_body_helper = Bodyhelper(bodyhelper_size, (bodyhelper_size[0] / 2,
-                                              screen_size[1] - (bodyhelper_size[1] / 2)), "p1", imgs[0:14])
+                                              screen_size[1] - (bodyhelper_size[1] / 2)), "p1", imgs[0:13])
 p2_body_helper = Bodyhelper(bodyhelper_size, (screen_size[0] - (bodyhelper_size[0] / 2),
-                                              screen_size[1] - (bodyhelper_size[1] / 2)), "p2", imgs[0:14])
-# effect_helper = Bodyhelper(bodyhelper_size, (screen_size[0] / 2, screen_size[1] - (bodyhelper_size[1] / 2)), "effect", imgs[14:])
-helperlist = [p1_body_helper, p2_body_helper]
+                                              screen_size[1] - (bodyhelper_size[1] / 2)), "p2", imgs[0:13])
+effecthelper_size = (250 * screen_scale[0], 270 * screen_scale[1])
+effect_helper = Bodyhelper(effecthelper_size, (screen_size[0] / 2,  screen_size[1] - (bodyhelper_size[1] / 2)),
+                           "effect", imgs[13:14])
+helperlist = [p1_body_helper, p2_body_helper, effect_helper]
 
 image = load_image(main_dir, "button.png", ["animation_maker_ui"])
 image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
@@ -1753,9 +1795,11 @@ while True:
                             try:
                                 if "p1" in currentpart or "p2" in currentpart:
                                     selectpart = currentpart[3:]
-                                if selectpart[0:2] == "r_" or selectpart[0:2] == "l_":
-                                    selectpart = selectpart[2:]
-                                part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selectpart].keys())
+                                    if selectpart[0:2] == "r_" or selectpart[0:2] == "l_":
+                                        selectpart = selectpart[2:]
+                                    part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selectpart].keys())
+                                elif "effect" in currentpart:
+                                    part_list = list(effect_sprite_pool[race_part_button.text][direction_part_button.text].keys())
                             except KeyError:  # look at weapon next
                                 selectpart = race_part_button.text
                                 part_list = list(gen_weapon_sprite_pool[selectpart][direction_part_button.text].keys())
@@ -1780,10 +1824,12 @@ while True:
                     elif race_part_button.rect.collidepoint(mouse_pos):
                         if skeleton.part_selected != []:
                             currentpart = list(skeleton.rect_part_list.keys())[skeleton.part_selected[-1]]
-                            if "weapon" not in currentpart:
-                                part_list = list(gen_body_sprite_pool.keys())
-                            elif "weapon" in currentpart:
+                            if "weapon" in currentpart:
                                 part_list = list(gen_weapon_sprite_pool)
+                            elif "effect" in currentpart:
+                                part_list = list(effect_sprite_pool)
+                            else:
+                                part_list = list(gen_body_sprite_pool.keys())
                             popuplist_newopen("race_select", race_part_button.rect.topleft, part_list, "bottom")
 
                     elif new_button.rect.collidepoint(mouse_pos):
