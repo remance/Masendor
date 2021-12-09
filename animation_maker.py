@@ -449,7 +449,7 @@ class Bodyhelper(pygame.sprite.Sprite):
             pos = self.part_pos[thiskey]
             newimage = image.copy()
             if thiskey in self.part_selected:  # highlight selected part
-                newimage = apply_colour(newimage)
+                newimage = apply_colour(newimage, (34, 177, 76))
 
             rect = newimage.get_rect(center=pos)
             self.image.blit(newimage, rect)
@@ -640,7 +640,8 @@ class Skeleton:
 
     def read_animation(self, name, old=False, newsize=True):
         #  sprite animation generation from data
-        frame_list = generic_animation_pool[self.side][name]
+        print(generic_animation_pool[self.side][name])
+        frame_list = generic_animation_pool[self.side][name].copy()
         if old:
             frame_list = self.frame_list
         if newsize:
