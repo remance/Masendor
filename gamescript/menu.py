@@ -1,6 +1,7 @@
 import ast
 import csv
 import os
+import pyperclip
 
 import pygame
 import pygame.freetype
@@ -126,10 +127,11 @@ class InputBox(pygame.sprite.Sprite):
         text_surface = self.font.render(text, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
+        self.current_pos = 0
 
         self.active = True
         self.clickinput = False
-        if clickinput:
+        if clickinput:  # active only when click
             self.active = False
             self.clickinput = clickinput
 
@@ -137,31 +139,56 @@ class InputBox(pygame.sprite.Sprite):
 
     def textstart(self, text):
         """Add starting text to input box"""
+        self.current_pos = 0
         self.image = self.image_original.copy()
         self.text = text
-        text_surface = self.font.render(text, True, (0, 0, 0))
+        showtext = self.text[:self.current_pos] + "|" + self.text[self.current_pos:]
+        text_surface = self.font.render(showtext, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
 
-    def userinput(self, event):
+    def userinput(self, event, keypress):
         """register user keyboard and mouse input"""
-        if self.clickinput and event.type == pygame.MOUSEBUTTONDOWN:  # only for text box that require click will activate
-            if self.rect.collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
-            else:
-                self.active = False
-        if event.type == pygame.KEYDOWN:  # text input
-            if self.active:
-                self.image = self.image_original.copy()
-                if event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
-                else:
-                    self.text += event.unicode
-                # Re-render the text.
-                text_surface = self.font.render(self.text, True, (0, 0, 0))
-                text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-                self.image.blit(text_surface, text_rect)
+        # if self.clickinput and event.type == pygame.MOUSEBUTTONDOWN:  # only for text box that require click will activate
+        #     if self.rect.collidepoint(event.pos):
+        #         # Toggle the active variable.
+        #         self.active = not self.active
+        #     else:
+        #         self.active = False
+        if event.type == pygame.KEYDOWN and self.active:  # text input
+            self.image = self.image_original.copy()
+            if event.key == pygame.K_BACKSPACE:
+                if self.current_pos > 0:
+                    if self.current_pos > len(self.text):
+                        self.text = self.text[:-1]
+                    else:
+                        self.text = self.text[:self.current_pos - 1] + self.text[self.current_pos:]
+                    self.current_pos -= 1
+                    if self.current_pos < 0:
+                        self.current_pos = 0
+            elif event.key == pygame.K_RIGHT:
+                self.current_pos += 1
+                if self.current_pos > len(self.text):
+                    self.current_pos = len(self.text)
+            elif event.key == pygame.K_LEFT:
+                self.current_pos -= 1
+                if self.current_pos < 0:
+                    self.current_pos = 0
+            elif keypress[pygame.K_LCTRL] or keypress[pygame.K_RCTRL]:
+                if event.key == pygame.K_c:
+                    pyperclip.copy(self.text)
+                elif event.key == pygame.K_v:
+                    paste_text = pyperclip.paste()
+                    self.text = self.text[:self.current_pos] + paste_text + self.text[self.current_pos:]
+                    self.current_pos = self.current_pos + len(paste_text)
+            elif event.unicode != "":
+                self.text = self.text[:self.current_pos] + event.unicode + self.text[self.current_pos:]
+                self.current_pos += 1
+            # Re-render the text.
+            showtext = self.text[:self.current_pos] + "|" + self.text[self.current_pos:]
+            text_surface = self.font.render(showtext, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+            self.image.blit(text_surface, text_rect)
 
 
 class ProfileBox(pygame.sprite.Sprite):

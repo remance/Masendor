@@ -827,10 +827,9 @@ class Mainmenu:
             mouse_right = False
             mouse_scrolldown = False
             mouse_scrollup = False
-            keypress = None
             esc_press = False
             input_esc = False
-            keystate = pygame.key.get_pressed()
+            keypress = pygame.key.get_pressed()
             if pygame.mouse.get_pressed()[0]:  # Hold left click
                 mouse_down = True
             for event in pygame.event.get():
@@ -850,12 +849,10 @@ class Mainmenu:
                         if event.key == K_ESCAPE:
                             input_esc = True
                         elif self.textinputpopup[0] == "text_input":
-                            self.input_box.userinput(event)
+                            self.input_box.userinput(event, keypress)
                     else:
                         if event.key == K_ESCAPE:
                             esc_press = True
-                        else:  # holding other keys
-                            keypress = event.key
 
                 if event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "mainmenu"):
                     self.quit_button.event = False

@@ -34,7 +34,7 @@ direction_list = ("front", "side", "back", "sideup", "sidedown")
 frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation save, delete function, special part. After 1.0: unique, lock?, sample effect, cloth sample
+# TODO animation save, delete function, special part. After 1.0: unique, lock?, sample effect, cloth sample, undo/redo
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
@@ -138,6 +138,67 @@ def load_textures(main_dir, subfolder=None):
     return imgs
 
 
+def reload_animation(animation, char):
+    frames = [pygame.transform.smoothscale(thisimage, showroom.size) for thisimage in char.animation_list if thisimage is not None]
+    for frame_index in range(0, 10):
+        try:
+            # add property effect sample
+            for prop in frame_property_select[frame_index]:
+                if "effect" in prop:
+                    if "grey" in prop:  # not work with just convert L for some reason
+                        width, height = frames[frame_index].get_size()
+                        for x in range(width):
+                            for y in range(height):
+                                red, green, blue, alpha = frames[frame_index].get_at((x, y))
+                                average = (red + green + blue) // 3
+                                gs_color = (average, average, average, alpha)
+                                frames[frame_index].set_at((x, y), gs_color)
+                    data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
+                    surface = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
+                                              data)  # use PIL to get image data
+                    alpha = surface.split()[-1]  # save alpha
+                    if "blur" in prop:
+                        surface = surface.filter(
+                            ImageFilter.GaussianBlur(radius=int(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
+                    if "contrast" in prop:
+                        enhancer = ImageEnhance.Contrast(surface)
+                        surface = enhancer.enhance(int(prop[prop.rfind("_") + 1:]))
+                    if "brightness" in prop:
+                        enhancer = ImageEnhance.Brightness(surface)
+                        surface = enhancer.enhance(int(prop[prop.rfind("_") + 1:]))
+                    if "fade" in prop:
+                        empty = pygame.Surface((frames[frame_index].get_width(), frames[frame_index].get_height()), pygame.SRCALPHA)
+                        empty.fill((255,255,255,255))
+                        empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
+                        empty = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
+                                                empty)  # use PIL to get image data
+                        surface = Image.blend(surface, empty, alpha=int(prop[prop.rfind("_") + 1:])/10)
+                    surface.putalpha(alpha)  # put back alpha
+                    surface = surface.tobytes()
+                    surface = pygame.image.fromstring(surface, (frames[frame_index].get_width(), frames[frame_index].get_height()), "RGBA")  # convert image back to a pygame surface
+                    frames[frame_index] = surface
+
+            filmstrip_list[frame_index].add_strip(frames[frame_index])
+        except IndexError:
+            filmstrip_list[frame_index].add_strip()
+    animation.reload(frames)
+    for helper in helperlist:
+        helper.stat1 = char.part_name_list[current_frame]
+        helper.stat2 = char.sprite_part
+        if char.part_selected != []:
+            for part in char.part_selected:
+                part = list(char.rect_part_list.keys())[part]
+                helper.select((0, 0), True, part)
+        else:
+            helper.select(None, shift_press)
+
+def anim_to_pool(pool, char):
+    """Add animation to animation pool data"""
+    if animation_name not in pool[0]:
+        for direction in range(0,5):
+            pool[direction][animation_name] = []
+    pool[char.side][animation_name] = [frame for frame in char.frame_list if frame != {}]
+
 race_list = []
 race_acro = []
 with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as unitfile:
@@ -161,7 +222,7 @@ race_accept = ["human"]  # for now accept only human race
 
 generic_animation_pool = []
 for direction in direction_list:
-    with open(os.path.join(main_dir, "data", "arcade", "animation", "generic", direction+ ".csv"), encoding="utf-8", mode="r") as unitfile:
+    with open(os.path.join(main_dir, "data", "animation", "generic", direction+ ".csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         part_name_header = rd[0]
@@ -192,7 +253,7 @@ skel_joint_list = []
 for race in race_list:
     if race in race_accept:
         for direction in direction_list:
-            with open(os.path.join(main_dir, "data", "arcade", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
+            with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
                       mode="r") as unitfile:
                 rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
                 rd = [row for row in rd]
@@ -212,7 +273,7 @@ for race in race_list:
                 skel_joint_list.append(joint_list)
             unitfile.close()
 
-with open(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
+with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
           mode="r") as unitfile:
     rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
     rd = [row for row in rd]
@@ -233,33 +294,33 @@ for race in race_list:
         gen_body_sprite_pool[race] = {}
         for direction in direction_list:
             gen_body_sprite_pool[race][direction] = {}
-            partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", race, direction))
+            partfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
             subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
             for folder in subdirectories:
                 imgs = load_textures(main_dir, folder)
                 gen_body_sprite_pool[race][direction][folder[-1]] = imgs
 
 gen_weapon_sprite_pool = {}
-partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon"))
+partfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon"))
 subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
 for folder in subdirectories:
     gen_weapon_sprite_pool[folder[-1]] = {}
-    partsubfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "generic", "weapon", folder[-1]))
+    partsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon", folder[-1]))
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in partsubfolder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
         for direction in direction_list:
-            imgs = load_textures(main_dir, ["arcade", "sprite", "generic", "weapon", folder[-1], subfolder[-1] , direction])
+            imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1] , direction])
             if direction not in gen_weapon_sprite_pool[folder[-1]]:
                 gen_weapon_sprite_pool[folder[-1]][direction] = imgs
             else:
                 gen_weapon_sprite_pool[folder[-1]][direction].update(imgs)
 
 effect_sprite_pool = {}
-partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "effect"))
+partfolder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
 subdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
 for folder in subdirectories:
     effect_sprite_pool[folder[-1]] = {}
-    partfolder = Path(os.path.join(main_dir, "data", "arcade", "sprite", "effect", folder[-1]))
+    partfolder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in partfolder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
         imgs = load_textures(main_dir, subfolder)
@@ -551,11 +612,6 @@ class Bodyhelper(pygame.sprite.Sprite):
             #     self.image.blit(text_surface, text_rect)
 
 
-class SideChoose:
-    def __init__(self):
-        pass
-
-
 class NameBox(pygame.sprite.Sprite):
     def __init__(self, size, pos):
         self._layer = 6
@@ -584,7 +640,7 @@ class Skeleton:
     def __init__(self):
         self.animation_list = []
         self.animation_part_list = []
-        self.frame_list = None
+        self.frame_list = [{}] * 10
         self.side = 1  # 0 = front, 1 = side, 2 = back, 3 = sideup, 4 = sidedown
 
         self.rect_part_list = {"p1_head": None, "p1_body": None, "p1_r_arm_up": None, "p1_r_arm_low": None, "p1_r_hand": None,
@@ -614,11 +670,16 @@ class Skeleton:
         self.p2_any_eye = self.p2_eye
         self.p2_any_mouth = self.p2_mouth
         self.size = 1  # size scale of sprite
-
-        self.read_animation(list(animation_pool.keys())[0])
-        self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
-        self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
-        self.default_part_name = {key: value for key, value in self.part_name_list[0].items()}
+        try:
+            self.read_animation(list(animation_pool.keys())[0])
+            self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
+            self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
+            self.default_part_name = {key: value for key, value in self.part_name_list[0].items()}
+        except IndexError:  # empty animation file
+            self.read_animation(None)
+            self.default_sprite_part = {key: None for key in self.rect_part_list.keys()}
+            self.default_body_part = {key: None for key in self.rect_part_list.keys()}
+            self.default_part_name = {key: None for key in self.rect_part_list.keys()}
 
     def randomface(self):  # todo change when add option to change face
         self.p1_eyebrow = list(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"].keys())[
@@ -640,84 +701,87 @@ class Skeleton:
 
     def read_animation(self, name, old=False, newsize=True):
         #  sprite animation generation from data
-        print(generic_animation_pool[self.side][name])
-        frame_list = generic_animation_pool[self.side][name].copy()
-        if old:
-            frame_list = self.frame_list
-        if newsize:
-            self.size = frame_list[0]['size']  # use only the size from first frame, all frame should be same size
-            if type(self.size) != int:  # in case the row is empty
-                if type(self.size) != float and self.size.isdigit() is False:
-                    self.size = 1
-                else:
-                    self.size = int(self.size)
-        size_button.change_text("Size: " + str(self.size))
-        for frame in frame_list:  # change frame size value
-            frame['size'] = self.size
         self.animation_part_list = []
         self.animation_list = []
         self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
         self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
-        # for animation in animation_list:
-        for index, pose in enumerate(frame_list):
-            if old is False:
-                link_list = {key: None for key in self.rect_part_list.keys()}
-                bodypart_list = {key: None for key in self.rect_part_list.keys()}
-                bodypart_list.update({"p1_eye": None, "p1_mouth": None, "p2_eye": None, "p2_mouth": None})
-                for part in pose:
-                    if pose[part] != [0] and "property" not in part and part != "size":
-                        if "eye" not in part and "mouth" not in part:
-                            if "weapon" in part:
-                                if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
-                                    link_list[part] = [pose[part][2], pose[part][3]]
-                                    bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
-                            elif any(ext in part for ext in ["effect", "special"]):
-                                if pose[part][1] in effect_sprite_pool[pose[part][1]][pose[part][0]]:
-                                    link_list[part] = [pose[part][2], pose[part][3]]
-                                    bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
-                            else:
-                                link_list[part] = [pose[part][3], pose[part][4]]
-                                bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
-                        elif pose[part] != 0:
-                            bodypart_list[part] = pose[part]
-                        else:
-                            bodypart_list[part] = 1.0
-                    elif "property" in part and pose[part] != [""]:
-                        if "animation" in part:
-                            for stuff in pose[part]:
-                                anim_prop_listbox.namelist.insert(-1, stuff)
-                                anim_property_select.append(stuff)
-                        elif "frame" in part and pose[part] != 0:
-                            for stuff in pose[part]:
-                                frame_prop_listbox.namelist[index].insert(-1, stuff)
-                                frame_property_select[index].append(stuff)
-                self.bodypart_list[index] = bodypart_list
-                self.sprite_part = {key: None for key in self.rect_part_list.keys()}
-
-            main_joint_pos_list = self.generate_body(self.bodypart_list[index])
-            part_name = {key: None for key in self.rect_part_list.keys()}
-
-            exceptlist = ["eye", "mouth", "size"]
-            for part in part_name_header:
-                if pose[part] != [0] and any(ext in part for ext in exceptlist) is False:
-                    if "weapon" in part:
-                        if old is False:
-                            self.sprite_part[part] = [self.sprite_image[part],
-                                                      (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
-                                                      link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
-                        part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+        self.sprite_part = {key: None for key in self.rect_part_list.keys()}
+        if name is not None:
+            frame_list = generic_animation_pool[self.side][name].copy()
+            if old:
+                frame_list = self.frame_list
+            if newsize:
+                self.size = frame_list[0]['size']  # use only the size from first frame, all frame should be same size
+                if type(self.size) != int:  # in case the row is empty
+                    if type(self.size) != float and self.size.isdigit() is False:
+                        self.size = 1
                     else:
-                        if old is False:
-                            self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
-                                                      pose[part][6], pose[part][7], pose[part][8]]
-                        part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
-            pose_layer_list = {k: v[5] for k, v in self.sprite_part.items() if v is not None}
-            pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
-            self.animation_part_list.append(self.sprite_part)
-            self.part_name_list[index] = part_name
-            image = self.create_animation_film(pose_layer_list)
-            self.animation_list.append(image)
-        self.frame_list = frame_list
+                        self.size = int(self.size)
+            size_button.change_text("Size: " + str(self.size))
+            for frame in frame_list:  # change frame size value
+                frame['size'] = self.size
+            for index, pose in enumerate(frame_list):
+                if old is False:
+                    link_list = {key: None for key in self.rect_part_list.keys()}
+                    bodypart_list = {key: None for key in self.rect_part_list.keys()}
+                    bodypart_list.update({"p1_eye": None, "p1_mouth": None, "p2_eye": None, "p2_mouth": None})
+                    for part in pose:
+                        if pose[part] != [0] and "property" not in part and part != "size":
+                            if "eye" not in part and "mouth" not in part:
+                                if "weapon" in part:
+                                    if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
+                                        link_list[part] = [pose[part][2], pose[part][3]]
+                                        bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                                elif any(ext in part for ext in ["effect", "special"]):
+                                    if pose[part][1] in effect_sprite_pool[pose[part][1]][pose[part][0]]:
+                                        link_list[part] = [pose[part][2], pose[part][3]]
+                                        bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                                else:
+                                    link_list[part] = [pose[part][3], pose[part][4]]
+                                    bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
+                            elif pose[part] != 0:
+                                bodypart_list[part] = pose[part]
+                            else:
+                                bodypart_list[part] = 1.0
+                        elif "property" in part and pose[part] != [""]:
+                            if "animation" in part:
+                                for stuff in pose[part]:
+                                    anim_prop_listbox.namelist.insert(-1, stuff)
+                                    anim_property_select.append(stuff)
+                            elif "frame" in part and pose[part] != 0:
+                                for stuff in pose[part]:
+                                    frame_prop_listbox.namelist[index].insert(-1, stuff)
+                                    frame_property_select[index].append(stuff)
+                    self.bodypart_list[index] = bodypart_list
+                    self.sprite_part = {key: None for key in self.rect_part_list.keys()}
+
+                main_joint_pos_list = self.generate_body(self.bodypart_list[index])
+                part_name = {key: None for key in self.rect_part_list.keys()}
+
+                exceptlist = ["eye", "mouth", "size"]
+                for part in part_name_header:
+                    if pose[part] != [0] and any(ext in part for ext in exceptlist) is False:
+                        if "weapon" in part:
+                            if old is False:
+                                self.sprite_part[part] = [self.sprite_image[part],
+                                                          (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
+                                                          link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
+                            part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                        else:
+                            if old is False:
+                                self.sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
+                                                          pose[part][6], pose[part][7], pose[part][8]]
+                            part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
+                pose_layer_list = {k: v[5] for k, v in self.sprite_part.items() if v is not None}
+                pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
+                self.animation_part_list.append(self.sprite_part)
+                self.part_name_list[index] = part_name
+                image = self.create_animation_film(pose_layer_list)
+                self.animation_list.append(image)
+            self.frame_list = frame_list
+            while len(self.frame_list) < 10:  # add empty item
+                self.frame_list.append({})
+
 
     def create_animation_film(self, pose_layer_list, empty=False):
         image = pygame.Surface((default_sprite_size[0] * self.size, default_sprite_size[1] * self.size),
@@ -990,7 +1054,6 @@ class Skeleton:
                     self.weapon[part_index] = partchange
                 if self.bodypart_list[current_frame][part_index] is None:
                     self.bodypart_list[current_frame][part_index] = [0, 0, 0]
-                    # self.animation_part_list[current_frame][part_index] = []
                     self.part_name_list[current_frame][part_index] = ["", "", ""]
                     self.animation_part_list[current_frame][part_index] = []
                 self.bodypart_list[current_frame][part_index][0] = partchange
@@ -1006,7 +1069,12 @@ class Skeleton:
                         self.not_show.append(part_index)
 
         elif "new" in edit_type:  # new animation
-            self.animation_part_list = []
+            # p1_face = {"p1_eye": self.p1_eye if self.p1_eye != self.p1_any_eye else 1,
+            #            "p1_mouth": self.p1_mouth if self.p1_mouth != self.p1_any_mouth else 1}
+            # p2_face = {"p2_eye": self.p2_eye if self.p2_eye != self.p2_any_eye else 1,
+            #            "p2_mouth": self.p2_mouth if self.p2_mouth != self.p2_any_mouth else 1}
+
+            self.animation_part_list = [{key: None for key in self.rect_part_list.keys()}]
             self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
             self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
             self.part_selected = []
@@ -1118,7 +1186,6 @@ class Skeleton:
                                 self.animation_part_list[current_frame][part_index][5] -= 1
                                 if self.animation_part_list[current_frame][part_index][5] == 0:
                                     self.animation_part_list[current_frame][part_index][5] = 1
-
         if len(self.animation_part_list) > 0 and self.animation_part_list[current_frame] != {}:
             self.sprite_part = self.animation_part_list[current_frame]
             pose_layer_list = {k: v[5] for k, v in self.sprite_part.items() if v is not None and v != []}
@@ -1129,9 +1196,14 @@ class Skeleton:
             surface = self.create_animation_film(None, empty=True)
         self.animation_list[current_frame] = surface
         name_list = self.part_name_list[current_frame]
-        self.frame_list[current_frame] = {key: name_list[key] + [self.sprite_part[key][2][0], self.sprite_part[key][2][1], self.sprite_part[key][3], self.sprite_part[key][4],
-                                               self.sprite_part[key][5], self.sprite_part[key][6]] if self.sprite_part[key] is not None else [0]
-                                          for key in list(self.rect_part_list.keys())}
+        try:
+            self.frame_list[current_frame] = {key: name_list[key] + [self.sprite_part[key][2][0], self.sprite_part[key][2][1], self.sprite_part[key][3], self.sprite_part[key][4],
+                                                   self.sprite_part[key][5], self.sprite_part[key][6]] if self.sprite_part[key] is not None else [0]
+                                              for key in list(self.rect_part_list.keys())}
+        except TypeError:  # None type error from empty frame
+            self.frame_list[current_frame] = {key: [0] for key in list(self.rect_part_list.keys())}
+        except IndexError:
+            self.frame_list[current_frame] = {key: [0] for key in list(self.rect_part_list.keys())}
         for key in list(self.frame_list[current_frame].keys()):
             if "weapon" in key and self.frame_list[current_frame][key] != [0]:
                 self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
@@ -1146,7 +1218,8 @@ class Skeleton:
         self.frame_list[current_frame]["size"] = self.size
         self.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
         self.frame_list[current_frame]["animation_property"] = anim_property_select
-        reload_animation(anim)
+        anim_to_pool(generic_animation_pool, self)
+        reload_animation(anim, self)
 
     def part_to_sprite(self, surface, part, part_index, main_joint_pos, target, angle, flip, scale):
         """Find body part's new center point from main_joint_pos with new angle, then create rotated part and blit to sprite"""
@@ -1232,61 +1305,6 @@ class Animation:
         if dt == 0 and show_joint:
             for joint in joints:
                 surface.blit(joint.image, joint.rect)
-
-
-def reload_animation(animation):
-    frames = [pygame.transform.smoothscale(thisimage, showroom.size) for thisimage in skeleton.animation_list]
-    for frame_index in range(0, 10):
-        try:
-            # add property effect sample
-            for prop in frame_property_select[frame_index]:
-                if "effect" in prop:
-                    if "grey" in prop:  # not work with just convert L for some reason
-                        width, height = frames[frame_index].get_size()
-                        for x in range(width):
-                            for y in range(height):
-                                red, green, blue, alpha = frames[frame_index].get_at((x, y))
-                                average = (red + green + blue) // 3
-                                gs_color = (average, average, average, alpha)
-                                frames[frame_index].set_at((x, y), gs_color)
-                    data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
-                    surface = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
-                                              data)  # use PIL to get image data
-                    alpha = surface.split()[-1]  # save alpha
-                    if "blur" in prop:
-                        surface = surface.filter(
-                            ImageFilter.GaussianBlur(radius=int(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
-                    if "contrast" in prop:
-                        enhancer = ImageEnhance.Contrast(surface)
-                        surface = enhancer.enhance(int(prop[prop.rfind("_") + 1:]))
-                    if "brightness" in prop:
-                        enhancer = ImageEnhance.Brightness(surface)
-                        surface = enhancer.enhance(int(prop[prop.rfind("_") + 1:]))
-                    if "fade" in prop:
-                        empty = pygame.Surface((frames[frame_index].get_width(), frames[frame_index].get_height()), pygame.SRCALPHA)
-                        empty.fill((255,255,255,255))
-                        empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
-                        empty = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
-                                                empty)  # use PIL to get image data
-                        surface = Image.blend(surface, empty, alpha=int(prop[prop.rfind("_") + 1:])/10)
-                    surface.putalpha(alpha)  # put back alpha
-                    surface = surface.tobytes()
-                    surface = pygame.image.fromstring(surface, (frames[frame_index].get_width(), frames[frame_index].get_height()), "RGBA")  # convert image back to a pygame surface
-                    frames[frame_index] = surface
-
-            filmstrip_list[frame_index].add_strip(frames[frame_index])
-        except IndexError:
-            filmstrip_list[frame_index].add_strip()
-    animation.reload(frames)
-    for helper in helperlist:
-        helper.stat1 = skeleton.part_name_list[current_frame]
-        helper.stat2 = skeleton.sprite_part
-        if skeleton.part_selected != []:
-            for part in skeleton.part_selected:
-                part = list(skeleton.rect_part_list.keys())[part]
-                helper.select((0, 0), True, part)
-        else:
-            helper.select(None, shift_press)
 
 
 # start animation maker
@@ -1486,16 +1504,23 @@ animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
 part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
                                                     reset_button.rect.midtop[1]))
 
+shift_press = False
+anim = Animation(500, True)
 skeleton = Skeleton()
 skeleton.animation_list = []
-animation_name = list(animation_pool.keys())[0]
 direction = 1
 direction_button.change_text(direction_list[direction])
+try:
+    animation_name = list(animation_pool.keys())[0]
+except:
+    animation_name = None
 skeleton.read_animation(animation_name)
 animation_selector.change_name(animation_name)
-anim = Animation(500, True)
-shift_press = False
-reload_animation(anim)
+if animation_name is not None:
+    reload_animation(anim, skeleton)
+else:
+    skeleton.animation_list = [None] * 10
+    skeleton.edit_part(None, "new")
 
 while True:
     dt = clock.get_time() / 1000
@@ -1563,7 +1588,7 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 input_esc = True
             elif textinputpopup[0] == "text_input":
-                input_box.userinput(event)
+                input_box.userinput(event, keypress)
 
     if pygame.mouse.get_pressed()[0]:  # Hold left click
         mouse_leftdown = True
@@ -1642,7 +1667,7 @@ while True:
                                 elif "p2" in popup_listbox.action:
                                     p2_eye_selector.change_name("P2 Eye: " + name.name)
                                 skeleton.read_animation(animation_name)
-                                reload_animation(anim)
+                                reload_animation(anim, skeleton)
                             elif "mouth" in popup_listbox.action:
                                 skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
                                 if "p1" in popup_listbox.action:
@@ -1650,7 +1675,7 @@ while True:
                                 elif "p2" in popup_listbox.action:
                                     p2_mouth_selector.change_name("P2 Mouth: " + name.name)
                                 skeleton.read_animation(animation_name)
-                                reload_animation(anim)
+                                reload_animation(anim, skeleton)
                             elif popup_listbox.action == "animation_select":
                                 if animation_name != name.name:
                                     current_frame = 0
@@ -1664,7 +1689,7 @@ while True:
                                     skeleton.read_animation(name.name)
                                     animation_name = name.name
                                     animation_selector.change_name(animation_name)
-                                    reload_animation(anim)
+                                    reload_animation(anim, skeleton)
                                     setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                                               anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
                                     setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
@@ -1677,7 +1702,7 @@ while True:
                                 anim.show_frame = current_frame
                                 skeleton.side = direction_list.index(name.name)
                                 skeleton.read_animation(animation_name, newsize=False)
-                                reload_animation(anim)
+                                reload_animation(anim, skeleton)
                             for thisname in popup_namegroup:  # remove name list
                                 thisname.kill()
                                 del thisname
@@ -1768,12 +1793,12 @@ while True:
                                     frame_property_select[current_frame].append(name.name)
                                     setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                               frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
-                                    reload_animation(anim)
+                                    reload_animation(anim, skeleton)
                                 if name.selected:
                                     name.select()
                                     frame_property_select[current_frame].remove(name.name)
                                     skeleton.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
-                                    reload_animation(anim)
+                                    reload_animation(anim, skeleton)
                             else:
                                 name.select()
                                 if name.selected:
@@ -1923,6 +1948,11 @@ while True:
                         inputui.changeinstruction("New Animation Name:")
                         ui.add(inputui_pop)
 
+                    elif delete_button.rect.collidepoint(mouse_pos):
+                        textinputpopup = ("confirm_input", "del_animation")
+                        inputui.changeinstruction("Delete This Animation?")
+                        ui.add(inputui_pop)
+
                     elif size_button.rect.collidepoint(mouse_pos):
                         textinputpopup = ("text_input", "change_size")
                         inputui.changeinstruction("Input Size Number:")
@@ -2053,6 +2083,9 @@ while True:
                 animation_selector.change_name(animation_name)
                 current_frame = 0
                 skeleton.edit_part(mouse_pos, "new")
+
+            # elif textinputpopup[1] == "del_animation":
+            #     if animation_name !=
             elif textinputpopup[1] == "new_anim_prop":
                 anim_prop_listbox.namelist.insert(-1, input_box.text)
                 anim_property_select.append(input_box.text)
@@ -2073,12 +2106,12 @@ while True:
                         frame_property_select[current_frame].append(name[0:name.rfind("_")+1] + input_box.text)
                         setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                   frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
-                        reload_animation(anim)
+                        reload_animation(anim, skeleton)
                         break
             elif textinputpopup[1] == "change_size" and input_box.text.isdigit():
                 skeleton.frame_list[0]["size"] = int(input_box.text)
                 skeleton.read_animation(animation_name, old=True)
-                reload_animation(anim)
+                reload_animation(anim, skeleton)
             elif textinputpopup[1] == "quit":
                 pygame.time.wait(1000)
                 if pygame.mixer:
@@ -2095,7 +2128,7 @@ while True:
             input_box.textstart("")
             textinputpopup = (None, None)
             ui.remove(*inputui_pop, *confirmui_pop)
-        pass
+
     ui.update(mouse_pos, mouse_up, mouse_leftdown, "any")
     anim.play(showroom.image, (0, 0), deactivate_list)
     for strip_index, strip in enumerate(filmstrips):

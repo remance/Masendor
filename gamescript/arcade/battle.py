@@ -40,8 +40,7 @@ class Battle:
         self.SCREENRECT = main.SCREENRECT
         self.teamcolour = main.teamcolour
         self.main_dir = main.main_dir
-        self.width_adjust = main.width_adjust
-        self.height_adjust = main.height_adjust
+        self.screen_scale = main.screen_scale
         self.eventlog = main.eventlog
         self.battlecamera = main.battlecamera
         self.battleui = main.battleui
@@ -782,7 +781,7 @@ class Battle:
             self.showincard = None  # current sub-subunit showing in subunit card
 
             self.main.maketeamcoa([0], uiclass=self.battleui, oneteam=True,
-                                  team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.width_adjust) / 2),
+                                  team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.screen_scale[0]) / 2),
                                                self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
 
             self.troop_scroll.changeimage(newrow=self.current_troop_row, logsize=len(self.troop_list))  # change troop scroll image
@@ -1473,7 +1472,7 @@ class Battle:
                                                         self.main.maketeamcoa([index], uiclass=self.battleui, oneteam=True,
                                                                               team1setpos=(
                                                                                   self.troop_listbox.rect.midleft[0] - int(
-                                                                                      (200 * self.width_adjust) / 2),
+                                                                                      (200 * self.screen_scale[0]) / 2),
                                                                                   self.troop_listbox.rect.midleft[1]))  # change team coa
 
                                                         self.current_list_show = "troop"
