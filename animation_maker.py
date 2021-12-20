@@ -34,7 +34,7 @@ direction_list = ("front", "side", "back", "sideup", "sidedown")
 frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation save, delete function, special part. After 1.0: unique, lock?, sample effect, cloth sample, undo/redo
+# TODO animation save, delete function, special part. After 1.0: unique, lock?, sample effect, cloth sample
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
@@ -828,7 +828,6 @@ class Skeleton:
             p1_head_race = bodypart_list["p1_head"][0]
             p1_head_side = bodypart_list["p1_head"][1]
             p1_head = gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy()
-
             p1_head_sprite_surface = pygame.Surface((p1_head.get_width(), p1_head.get_height()), pygame.SRCALPHA)
             head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
             p1_head_sprite_surface.blit(p1_head, head_rect)
@@ -836,7 +835,6 @@ class Skeleton:
                        self.select_part(p1_head_race, p1_head_side, "eye", bodypart_list["p1_eye"], self.p1_eye),
                        gen_body_sprite_pool[p1_head_race][p1_head_side]["beard"][self.p1_beard].copy(),
                        self.select_part(p1_head_race, p1_head_side, "mouth", bodypart_list["p1_mouth"], self.p1_mouth)]
-
             # if skin != "white":
             #     face[0] = self.apply_colour(face[0], skin_colour)
             p1_face[0] = apply_colour(p1_face[0], self.p1_hair_colour)
@@ -947,6 +945,7 @@ class Skeleton:
                 self.part_selected = [list(self.rect_part_list.keys()).index(part)]
 
     def edit_part(self, mouse_pos, edit_type):
+        global animation_history, bodypart_history, partname_history, current_history
         keylist = list(self.rect_part_list.keys())
         if edit_type == "default":  # reset to default
             self.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
@@ -998,6 +997,11 @@ class Skeleton:
                         self.part_name_list[current_frame][part_index][2] = ""
                         if part_index not in self.not_show:
                             self.not_show.append(part_index)
+
+        elif edit_type == "undo" or edit_type == "redo":
+            self.part_name_list[current_frame] = partname_history[current_history]
+            self.animation_part_list[current_frame] = animation_history[current_history]
+            self.bodypart_list[current_frame] = bodypart_history[current_history]
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
@@ -1069,13 +1073,15 @@ class Skeleton:
                         self.not_show.append(part_index)
 
         elif "new" in edit_type:  # new animation
-            # p1_face = {"p1_eye": self.p1_eye if self.p1_eye != self.p1_any_eye else 1,
-            #            "p1_mouth": self.p1_mouth if self.p1_mouth != self.p1_any_mouth else 1}
-            # p2_face = {"p2_eye": self.p2_eye if self.p2_eye != self.p2_any_eye else 1,
-            #            "p2_mouth": self.p2_mouth if self.p2_mouth != self.p2_any_mouth else 1}
-
             self.animation_part_list = [{key: None for key in self.rect_part_list.keys()}]
+            p1_face = {"p1_eye": self.p1_eye if self.p1_eye != self.p1_any_eye else 1,
+                       "p1_mouth": self.p1_mouth if self.p1_mouth != self.p1_any_mouth else 1}
+            p2_face = {"p2_eye": self.p2_eye if self.p2_eye != self.p2_any_eye else 1,
+                       "p2_mouth": self.p2_mouth if self.p2_mouth != self.p2_any_mouth else 1}
             self.bodypart_list = [{key: None for key in self.rect_part_list.keys()}] * 10
+            for stuff in self.bodypart_list:
+                stuff.update(p1_face)
+                stuff.update(p2_face)
             self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
             self.part_selected = []
 
@@ -1221,6 +1227,30 @@ class Skeleton:
         anim_to_pool(generic_animation_pool, self)
         reload_animation(anim, self)
 
+        if edit_type == "new" or edit_type == "change":  # reset history when change frame or create new animation
+            partname_history = partname_history[-1:] + [self.part_name_list[current_frame]]
+            animation_history = animation_history[-1:] + [self.animation_part_list[current_frame]]
+            bodypart_history = bodypart_history[-1:] + [self.bodypart_list[current_frame]]
+            current_history = 0
+
+        elif edit_type != "undo" and edit_type != "redo":
+            if current_history < len(animation_history) - 1:
+                partname_history = partname_history[:current_history + 1]
+                animation_history = animation_history[:current_history + 1]
+                bodypart_history = bodypart_history[:current_history + 1]
+
+            animation_history.append({key: (value[:] if value is not None else value) for key, value in self.animation_part_list[current_frame].items()})
+            bodypart_history.append({key: value for key, value in self.bodypart_list[current_frame].items()})
+            partname_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
+            current_history += 1
+
+            if len(animation_history) > 100:  # save only last 100 activity
+                newfirst = len(animation_history) - 100
+                partname_history = partname_history[newfirst:]
+                animation_history = animation_history[newfirst:]
+                bodypart_history = bodypart_history[newfirst:]
+                current_history -= newfirst
+
     def part_to_sprite(self, surface, part, part_index, main_joint_pos, target, angle, flip, scale):
         """Find body part's new center point from main_joint_pos with new angle, then create rotated part and blit to sprite"""
         part_rotated = part.copy()
@@ -1324,6 +1354,10 @@ currentpopuprow = 0
 keypress_delay = 0
 point_edit = 0
 textinputpopup = (None, None)
+animation_history = []
+bodypart_history = []
+partname_history = []
+current_history = 0
 
 ui = pygame.sprite.LayeredUpdates()
 fakegroup = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
@@ -1407,6 +1441,10 @@ pointedit_button = SwitchButton(["Center", "Joint"], image, (play_animation_butt
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 3,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 activate_button = SwitchButton(["Enable", "Disable"], image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 4,
+                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+undo_button = Button("Undo", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 5,
+                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+redo_button = Button("Redo", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 6,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
 reset_button = Button("Reset", image, (screen_size[0] / 2.1, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
@@ -1522,6 +1560,10 @@ else:
     skeleton.animation_list = [None] * 10
     skeleton.edit_part(None, "new")
 
+animation_history.append({key: (value[:] if value is not None else value) for key, value in skeleton.animation_part_list[current_frame].items()})
+bodypart_history.append({key: value for key, value in skeleton.bodypart_list[current_frame].items()})
+partname_history.append({key: value for key, value in skeleton.part_name_list[current_frame].items()})
+
 while True:
     dt = clock.get_time() / 1000
     uidt = dt
@@ -1539,6 +1581,8 @@ while True:
     paste_press = False
     part_copy_press = False
     part_paste_press = False
+    undo_press = False
+    redo_press = False
     del_press = False
     shift_press = False
     popup_click = False
@@ -1604,6 +1648,12 @@ while True:
                     copy_press = True
                 elif keypress[pygame.K_v]:  # paste frame
                     paste_press = True
+                elif keypress[pygame.K_z]:  # undo change
+                    keypress_delay = 0.1
+                    undo_press = True
+                elif keypress[pygame.K_y]:  # redo change
+                    keypress_delay = 0.1
+                    redo_press = True
             elif keypress[pygame.K_LALT] or keypress[pygame.K_RALT]:
                 if keypress[pygame.K_c]:  # copy part
                     part_copy_press = True
@@ -1880,6 +1930,12 @@ while True:
                                     activate_button.change_option(1)
                                 break
 
+                    elif undo_button.rect.collidepoint(mouse_pos):
+                        undo_press = True
+
+                    elif redo_button.rect.collidepoint(mouse_pos):
+                        redo_press = True
+
                     elif export_button.rect.collidepoint(mouse_pos):
                         for index, frame in enumerate(anim.frames):
                             pygame.image.save(frame, animation_name + "_" + str(index) + ".png")
@@ -2034,6 +2090,16 @@ while True:
                     if copy_part is not None:
                         skeleton.edit_part(mouse_pos, "paste")
 
+                elif undo_press:
+                    if current_history != 0:
+                        current_history -= 1
+                        skeleton.edit_part(None, "undo")
+
+                elif redo_press:
+                    if len(animation_history) - 1 > current_history:
+                        current_history += 1
+                        skeleton.edit_part(None, "redo")
+
                 if showroom.rect.collidepoint(mouse_pos):
                     new_mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500 * skeleton.size,
                                                (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500 * skeleton.size)
@@ -2053,7 +2119,9 @@ while True:
                     if mouse_wheel or mouse_wheeldown:
                         skeleton.edit_part(new_mouse_pos, "rotate")
                     elif mouse_right or mouse_rightdown:
-                        skeleton.edit_part(new_mouse_pos, "place")
+                        if keypress_delay == 0:
+                            skeleton.edit_part(new_mouse_pos, "place")
+                            keypress_delay = 0.1
 
             if skeleton.part_selected != []:
                 part = skeleton.part_selected[-1]
