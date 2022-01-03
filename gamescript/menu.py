@@ -105,7 +105,7 @@ class InputUI(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
 
-    def changeinstruction(self, text):
+    def change_instruction(self, text):
         self.image = self.image_original.copy()
         self.text = text
         text_surface = self.font.render(text, True, (0, 0, 0))
@@ -137,7 +137,7 @@ class InputBox(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
 
-    def textstart(self, text):
+    def text_start(self, text):
         """Add starting text to input box"""
         self.current_pos = 0
         self.image = self.image_original.copy()
@@ -147,7 +147,7 @@ class InputBox(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
 
-    def userinput(self, event, keypress):
+    def user_input(self, event, keypress):
         """register user keyboard and mouse input"""
         # if self.clickinput and event.type == pygame.MOUSEBUTTONDOWN:  # only for text box that require click will activate
         #     if self.rect.collidepoint(event.pos):

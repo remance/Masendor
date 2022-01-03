@@ -62,7 +62,7 @@ class Mainmenu:
         try:
             config.read_file(open("configuration.ini"))  # read config file
         except Exception:  # Create config file if not found with the default
-            genrefolder = Path(os.path.join(main_dir, "gamescript"))
+            genrefolder = Path(os.path.join(self.main_dir, "gamescript"))
             genrefolder = [x for x in genrefolder.iterdir() if x.is_dir()]
             genrefolder = [str(foldername).split("\\")[-1].capitalize() for foldername in genrefolder]
             genrefolder.remove("__pycache__")  # just grab the first genre folder as default
@@ -328,6 +328,27 @@ class Mainmenu:
         self.change_genre(self.genre)
         # ^ End genre
 
+        self.clock = pygame.time.Clock()
+        self.game_intro(self.screen, self.clock, False)  # run game intro
+
+    def change_genre(self, genre):
+        """Add new genre module here"""
+        if type(genre) == int:
+            self.genre = self.genrelist[genre].lower()
+        else:
+            self.genre = genre.lower()
+        global battle, leader, longscript, unit, subunit, rangeattack, uniteditor
+        if self.genre == "tactical":
+            from gamescript.tactical import battle, leader, longscript, unit, subunit, rangeattack
+            longscript.load_game_data(self)  # obtain game stat data and create lore book object
+        elif self.genre == "arcade":
+            from gamescript.arcade import battle, leader, longscript, unit, subunit, rangeattack
+            longscript.load_game_data(self)
+        uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
+        self.genre_change_box.changetext(self.genre.capitalize())
+        edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
+
+
         unit.Unit.containers = self.unit_updater
         subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battlecamera
         leader.Leader.containers = self.armyleader, self.leader_updater
@@ -335,9 +356,6 @@ class Mainmenu:
 
         rangeattack.RangeArrow.containers = self.arrows, self.effect_updater, self.battlecamera
         unit.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battlecamera
-
-        self.clock = pygame.time.Clock()
-        self.game_intro(self.screen, self.clock, False)  # run game intro
 
         # v Create gamestart menu button
         imagelist = load_base_button(self.main_dir)
@@ -566,7 +584,7 @@ class Mainmenu:
             self.mixervolume = float(self.Soundvolume / 100)
             pygame.mixer.music.set_volume(self.mixervolume)
             self.SONG_END = pygame.USEREVENT + 1
-            self.musiclist = glob.glob(main_dir + "/data/sound/music/*.ogg")
+            self.musiclist = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
             pygame.mixer.music.load(self.musiclist[0])
             pygame.mixer.music.play(-1)
         # ^ End music
@@ -582,6 +600,7 @@ class Mainmenu:
         self.choosingfaction = True  # swap list between faction and subunit, always start with choose faction first as true
 
         self.battlegame = battle.Battle(self, self.winstyle)
+
 
     def game_intro(self, screen, clock, introoption):
         intro = introoption
@@ -607,23 +626,6 @@ class Mainmenu:
             timer += 1
             if timer == 1000:
                 intro = False
-
-    def change_genre(self, genre):
-        """Add new genre module here"""
-        if type(genre) == int:
-            self.genre = self.genrelist[genre].lower()
-        else:
-            self.genre = genre.lower()
-        global battle, leader, longscript, unit, subunit, rangeattack, uniteditor
-        if self.genre == "tactical":
-            from gamescript.tactical import battle, leader, longscript, unit, subunit, rangeattack
-            longscript.load_game_data(self)  # obtain game stat data and create lore book object
-        elif self.genre == "arcade":
-            from gamescript.arcade import battle, leader, longscript, unit, subunit, rangeattack
-            longscript.load_game_data(self)
-        uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
-        self.genre_change_box.changetext(self.genre.capitalize())
-        edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
 
         pygame.display.set_caption(version_name + " " + self.genre.capitalize())  # set the game name on program border/tab
 
@@ -849,7 +851,7 @@ class Mainmenu:
                         if event.key == K_ESCAPE:
                             input_esc = True
                         elif self.textinputpopup[0] == "text_input":
-                            self.input_box.userinput(event, keypress)
+                            self.input_box.user_input(event, keypress)
                     else:
                         if event.key == K_ESCAPE:
                             esc_press = True
@@ -857,7 +859,7 @@ class Mainmenu:
                 if event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "mainmenu"):
                     self.quit_button.event = False
                     self.textinputpopup = ("confirm_input", "quit")
-                    self.confirmui.changeinstruction("Quit Game?")
+                    self.confirmui.change_instruction("Quit Game?")
                     self.mainui.add(*self.confirmui_pop)
 
             self.mousepos = pygame.mouse.get_pos()
@@ -887,13 +889,13 @@ class Mainmenu:
                         sys.exit()
                         return
 
-                    self.input_box.textstart("")
+                    self.input_box.text_start("")
                     self.textinputpopup = (None, None)
                     self.mainui.remove(*self.inputui_pop)
 
                 elif self.input_cancel_button.event or input_esc:
                     self.input_cancel_button.event = False
-                    self.input_box.textstart("")
+                    self.input_box.text_start("")
                     self.textinputpopup = (None, None)
                     self.mainui.remove(*self.inputui_pop, *self.confirmui_pop)
 
@@ -962,8 +964,8 @@ class Mainmenu:
 
                     elif mouse_up and self.profile_box.rect.collidepoint(self.mousepos):
                         self.textinputpopup = ("text_input", "profile_name")
-                        self.input_box.textstart(self.profile_name)
-                        self.inputui.changeinstruction("Profile Name:")
+                        self.input_box.text_start(self.profile_name)
+                        self.inputui.change_instruction("Profile Name:")
                         self.mainui.add(self.inputui_pop)
 
                     elif mouse_up and self.genre_change_box.rect.collidepoint(self.mousepos):

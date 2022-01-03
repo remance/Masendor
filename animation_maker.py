@@ -31,10 +31,16 @@ pygame.display.set_caption("Animation Maker")  # set the game name on program bo
 pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
+anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth" , "p1_body" , "p1_r_arm_up" , "p1_r_arm_low" , "p1_r_hand" , "p1_l_arm_up" ,
+                      "p1_l_arm_low" , "p1_l_hand", "p1_r_leg" , "p1_r_foot" , "p1_l_leg" , "p1_l_foot" , "p1_main_weapon" , "p1_sub_weapon" ,
+                      "p2_head" , "p2_eye" , "p2_mouth" , "p2_body" , "p2_r_arm_up" , "p2_r_arm_low" , "p2_r_hand" , "p2_l_arm_up" ,
+                      "p2_l_arm_low" , "p2_l_hand" , "p2_r_leg" , "p2_r_foot" , "p2_l_leg" , "p2_l_foot" , "p2_main_weapon" , "p2_sub_weapon" ,
+                      "effect_1" , "effect_2" , "dmg_effect_1" , "dmg_effect_2" , "special_1" , "special_2" , "special_3" , "special_4" ,
+                      "special_5" , "size" , "frame_property" , "animation_property"]  # For csv saving
 frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation save, delete function, special part. After 1.0: unique, lock?, sample effect, cloth sample
+# TODO animation save, delete function. After 1.0: unique, lock?, sample effect, cloth sample, special part
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
@@ -137,9 +143,17 @@ def load_textures(main_dir, subfolder=None):
 
     return imgs
 
-
 def reload_animation(animation, char):
     frames = [pygame.transform.smoothscale(thisimage, showroom.size) for thisimage in char.animation_list if thisimage is not None]
+    face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
+            char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
+    headtext = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
+    for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+        thistext = "Any"
+        if face[index] not in (0, 1):
+            thistext = face[index]
+        print(thistext)
+        selector.change_name(headtext[index] + thistext)
     for frame_index in range(0, 10):
         try:
             # add property effect sample
@@ -192,12 +206,64 @@ def reload_animation(animation, char):
         else:
             helper.select(None, shift_press)
 
+def change_animation(newname):
+    global animation_name
+    current_frame = 0
+    anim.show_frame = current_frame
+    anim_prop_listbox.namelist = anim_property_list + ["Custom"]  # reset property list
+    anim_property_select = []
+    frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
+    frame_property_select = [[] for _ in range(10)]
+    current_anim_row = 0
+    current_frame_row = 0
+    skeleton.read_animation(newname)
+    animation_name = newname
+    animation_selector.change_name(newname)
+    reload_animation(anim, skeleton)
+    setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+              anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
+    setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+              frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+    anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
+    frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
+
 def anim_to_pool(pool, char):
     """Add animation to animation pool data"""
     if animation_name not in pool[0]:
         for direction in range(0,5):
             pool[direction][animation_name] = []
     pool[char.side][animation_name] = [frame for frame in char.frame_list if frame != {}]
+
+def anim_save_pool(pool, pool_name):
+    """Save animation pool data"""
+    for index, direction in enumerate(direction_list):
+        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8', newline="") as unitfile:
+            filewriter = csv.writer(unitfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+            savelist = pool[index]
+            finalsave = [[item for item in anim_column_header]]
+            for item in list(savelist.items()):
+                for framenum, frame in enumerate(item[1]):
+                    subitem = [tinyitem for tinyitem in list(frame.values())]
+                    for itemindex, minitem in enumerate(subitem):
+                        if type(minitem) == list:
+                            newitem = str(minitem)
+                            for character in "'[] ":
+                                newitem = newitem.replace(character, '')
+                            subitem[itemindex] = newitem
+                    newitem = [item[0]+"/"+str(framenum)] + subitem
+                    finalsave.append(newitem)
+            for row in finalsave:
+                filewriter.writerow(row)
+        unitfile.close()
+
+def anim_del_pool(pool):
+    """Delete animation from animation pool data"""
+    if animation_name in pool[0]:
+        for direction in range(0,5):
+            try:
+                del pool[direction][animation_name]
+            except:
+                pass
 
 race_list = []
 race_acro = []
@@ -446,7 +512,7 @@ class Bodyhelper(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", self.fontsize)
         self.size = size
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
-        self.image.fill((255, 255, 255))
+        self.image.fill((255, 255, 200))
         pygame.draw.rect(self.image, (100, 150, 150), (0, 0, self.image.get_width(), self.image.get_height()), 3)
         self.image_original = self.image.copy()  # for original before add part and click
         self.rect = self.image.get_rect(center=pos)
@@ -620,7 +686,7 @@ class NameBox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", int(self.fontsize * screen_scale[1]))
         self.size = size
         self.image = pygame.Surface(self.size)
-        self.image.fill((255, 255, 255))
+        self.image.fill((182, 233, 200))
         pygame.draw.rect(self.image, (150, 200, 0), (0, 0, self.image.get_width(), self.image.get_height()), 2)
         self.image_original = self.image.copy()
         self.pos = pos
@@ -814,44 +880,44 @@ class Skeleton:
                         pass
         return image
 
-    def select_part(self, race, side, part, part_check, part_default):
+    def select_facepart(self, race, side, part, part_check, part_default):
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
         if part_check == 1:
             surface = gen_body_sprite_pool[race][side][part][part_default].copy()
         else:
-            surface = gen_body_sprite_pool[part_check[0]][part_check[1]][part][part_check[2]].copy()
+            surface = gen_body_sprite_pool[race][side][part][part_check].copy()
         return surface
 
     def generate_body(self, bodypart_list):
         p1_head_sprite_surface = None
-        try:
-            p1_head_race = bodypart_list["p1_head"][0]
-            p1_head_side = bodypart_list["p1_head"][1]
-            p1_head = gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy()
-            p1_head_sprite_surface = pygame.Surface((p1_head.get_width(), p1_head.get_height()), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
-            p1_head_sprite_surface.blit(p1_head, head_rect)
-            p1_face = [gen_body_sprite_pool[p1_head_race][p1_head_side]["eyebrow"][self.p1_eyebrow].copy(),
-                       self.select_part(p1_head_race, p1_head_side, "eye", bodypart_list["p1_eye"], self.p1_eye),
-                       gen_body_sprite_pool[p1_head_race][p1_head_side]["beard"][self.p1_beard].copy(),
-                       self.select_part(p1_head_race, p1_head_side, "mouth", bodypart_list["p1_mouth"], self.p1_mouth)]
-            # if skin != "white":
-            #     face[0] = self.apply_colour(face[0], skin_colour)
-            p1_face[0] = apply_colour(p1_face[0], self.p1_hair_colour)
-            p1_face[2] = apply_colour(p1_face[2], self.p1_hair_colour)
-            p1_face[1] = apply_colour(p1_face[1], self.p1_eye_colour)
+        # try:
+        p1_head_race = bodypart_list["p1_head"][0]
+        p1_head_side = bodypart_list["p1_head"][1]
+        p1_head = gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy()
+        p1_head_sprite_surface = pygame.Surface((p1_head.get_width(), p1_head.get_height()), pygame.SRCALPHA)
+        head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
+        p1_head_sprite_surface.blit(p1_head, head_rect)
+        p1_face = [gen_body_sprite_pool[p1_head_race][p1_head_side]["eyebrow"][self.p1_eyebrow].copy(),
+                   self.select_facepart(p1_head_race, p1_head_side, "eye", bodypart_list["p1_eye"], self.p1_eye),
+                   gen_body_sprite_pool[p1_head_race][p1_head_side]["beard"][self.p1_beard].copy(),
+                   self.select_facepart(p1_head_race, p1_head_side, "mouth", bodypart_list["p1_mouth"], self.p1_mouth)]
+        # if skin != "white":
+        #     face[0] = self.apply_colour(face[0], skin_colour)
+        p1_face[0] = apply_colour(p1_face[0], self.p1_hair_colour)
+        p1_face[2] = apply_colour(p1_face[2], self.p1_hair_colour)
+        p1_face[1] = apply_colour(p1_face[1], self.p1_eye_colour)
 
-            p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
-            p1_head_sprite_surface.blit(p1_head, head_rect)
+        p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
+        head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
+        p1_head_sprite_surface.blit(p1_head, head_rect)
 
-            for index, item in enumerate(p1_face):
-                rect = item.get_rect(topleft=(0, 0))
-                p1_head_sprite_surface.blit(item, rect)
-        except KeyError:  # some head direction show no face
-            pass
-        except TypeError:  # empty
-            pass
+        for index, item in enumerate(p1_face):
+            rect = item.get_rect(topleft=(0, 0))
+            p1_head_sprite_surface.blit(item, rect)
+        # except KeyError:  # some head direction show no face
+        #     pass
+        # except TypeError:  # empty
+        #     pass
 
         p2_head_sprite_surface = None
         try:
@@ -862,9 +928,9 @@ class Skeleton:
             head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
             p2_head_sprite_surface.blit(p2_head, head_rect)
             p2_face = [gen_body_sprite_pool[p2_head_race][p2_head_side]["eyebrow"][self.p2_eyebrow].copy(),
-                       self.select_part(p2_head_race, p2_head_side, "eye", bodypart_list["p2_eye"], self.p2_eye),
+                       self.select_facepart(p2_head_race, p2_head_side, "eye", bodypart_list["p2_eye"], self.p2_eye),
                        gen_body_sprite_pool[p2_head_race][p2_head_side]["beard"][self.p2_beard].copy(),
-                       self.select_part(p2_head_race, p2_head_side, "mouth", bodypart_list["p2_mouth"], self.p2_mouth)]
+                       self.select_facepart(p2_head_race, p2_head_side, "mouth", bodypart_list["p2_mouth"], self.p2_mouth)]
             # if skin != "white":
             #     face[0] = self.apply_colour(face[0], skin_colour)
             p2_face[0] = apply_colour(p2_face[0], self.p2_hair_colour)
@@ -1024,9 +1090,9 @@ class Skeleton:
                     self.p2_mouth = self.p2_any_mouth
             else:
                 if "p1" in edit_type:
-                    self.p1_eye = edit_type[10:]
+                    self.p1_mouth = edit_type[9:]
                 elif "p2" in edit_type:
-                    self.p2_eye = edit_type[10:]
+                    self.p2_mouth = edit_type[9:]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
 
         elif "part" in edit_type:
@@ -1215,7 +1281,7 @@ class Skeleton:
                 self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
         p1_face = {"p1_eye": self.p1_eye if self.p1_eye != self.p1_any_eye else 1, "p1_mouth": self.p1_mouth if self.p1_mouth != self.p1_any_mouth else 1}
         p2_face = {"p2_eye": self.p2_eye if self.p2_eye != self.p2_any_eye else 1, "p2_mouth": self.p2_mouth if self.p2_mouth != self.p2_any_mouth else 1}
-        p2_face_pos = 13
+        p2_face_pos = 15
         self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p2_face_pos] + list(p2_face.items()) +
                                                             list(self.frame_list[current_frame].items())[p2_face_pos:])}
         p1_face_pos = 1
@@ -1244,8 +1310,8 @@ class Skeleton:
             partname_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
             current_history += 1
 
-            if len(animation_history) > 100:  # save only last 100 activity
-                newfirst = len(animation_history) - 100
+            if len(animation_history) > 1000:  # save only last 1000 activity
+                newfirst = len(animation_history) - 1000
                 partname_history = partname_history[newfirst:]
                 animation_history = animation_history[newfirst:]
                 bodypart_history = bodypart_history[newfirst:]
@@ -1469,16 +1535,12 @@ direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_b
                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 p1_eye_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
                                                       p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
-p1_eye_selector.change_name("P1 Eye: Any")
 p1_mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
                                                         p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
-p1_mouth_selector.change_name("P1 Mouth: Any")
 p2_eye_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
                                                       p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
-p2_eye_selector.change_name("P2 Eye: Any")
 p2_mouth_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
                                                         p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
-p2_mouth_selector.change_name("P2 Mouth: Any")
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
@@ -1632,7 +1694,7 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 input_esc = True
             elif textinputpopup[0] == "text_input":
-                input_box.userinput(event, keypress)
+                input_box.user_input(event, keypress)
 
     if pygame.mouse.get_pressed()[0]:  # Hold left click
         mouse_leftdown = True
@@ -1712,10 +1774,6 @@ while True:
                                 skeleton.edit_part(mouse_pos, "race_" + name.name)
                             elif "eye" in popup_listbox.action:
                                 skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
-                                if "p1" in popup_listbox.action:
-                                    p1_eye_selector.change_name("P1 Eye: " + name.name)
-                                elif "p2" in popup_listbox.action:
-                                    p2_eye_selector.change_name("P2 Eye: " + name.name)
                                 skeleton.read_animation(animation_name)
                                 reload_animation(anim, skeleton)
                             elif "mouth" in popup_listbox.action:
@@ -1728,24 +1786,7 @@ while True:
                                 reload_animation(anim, skeleton)
                             elif popup_listbox.action == "animation_select":
                                 if animation_name != name.name:
-                                    current_frame = 0
-                                    anim.show_frame = current_frame
-                                    anim_prop_listbox.namelist = anim_property_list + ["Custom"]
-                                    anim_property_select = []
-                                    frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
-                                    frame_property_select = [[] for _ in range(10)]
-                                    current_anim_row = 0
-                                    current_frame_row = 0
-                                    skeleton.read_animation(name.name)
-                                    animation_name = name.name
-                                    animation_selector.change_name(animation_name)
-                                    reload_animation(anim, skeleton)
-                                    setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                                              anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
-                                    setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                              frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
-                                    anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
-                                    frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
+                                    change_animation(name.name)
                             elif popup_listbox.action == "animation_side":
                                 direction_button.change_text(name.name)
                                 current_frame = 0
@@ -1816,7 +1857,7 @@ while True:
                         if name.rect.collidepoint(mouse_pos):
                             if name.name == "Custom":
                                 textinputpopup = ("text_input", "new_anim_prop")
-                                inputui.changeinstruction("Custom Anim Prop:")
+                                inputui.change_instruction("Custom Anim Prop:")
                                 ui.add(inputui_pop)
                             else:
                                 name.select()
@@ -1831,13 +1872,13 @@ while True:
                         if name.rect.collidepoint(mouse_pos):
                             if name.name == "Custom":
                                 textinputpopup = ("text_input", "new_frame_prop")
-                                inputui.changeinstruction("Custom Frame Prop:")
+                                inputui.change_instruction("Custom Frame Prop:")
                                 ui.add(inputui_pop)
                             elif "effect_" in name.name:
                                 if (name.name[-1] == "_" or name.name[-1].isdigit()):  # effect that need number value
                                     if name.selected is False:
                                         textinputpopup = ("text_input", "frame_prop_num_" + name.name)
-                                        inputui.changeinstruction("Input Number Value:")
+                                        inputui.change_instruction("Input Number Value:")
                                         ui.add(inputui_pop)
                                 elif name.selected is False:  # effect that no need input
                                     frame_property_select[current_frame].append(name.name)
@@ -2001,17 +2042,22 @@ while True:
 
                     elif new_button.rect.collidepoint(mouse_pos):
                         textinputpopup = ("text_input", "new_animation")
-                        inputui.changeinstruction("New Animation Name:")
+                        inputui.change_instruction("New Animation Name:")
+                        ui.add(inputui_pop)
+
+                    elif save_button.rect.collidepoint(mouse_pos):
+                        textinputpopup = ("confirm_input", "save_animation")
+                        inputui.change_instruction("Save Current Animation?")
                         ui.add(inputui_pop)
 
                     elif delete_button.rect.collidepoint(mouse_pos):
                         textinputpopup = ("confirm_input", "del_animation")
-                        inputui.changeinstruction("Delete This Animation?")
+                        inputui.change_instruction("Delete This Animation?")
                         ui.add(inputui_pop)
 
                     elif size_button.rect.collidepoint(mouse_pos):
                         textinputpopup = ("text_input", "change_size")
-                        inputui.changeinstruction("Input Size Number:")
+                        inputui.change_instruction("Input Size Number:")
                         ui.add(inputui_pop)
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
@@ -2152,8 +2198,19 @@ while True:
                 current_frame = 0
                 skeleton.edit_part(mouse_pos, "new")
 
-            # elif textinputpopup[1] == "del_animation":
-            #     if animation_name !=
+            elif textinputpopup[1] == "save_animation":  # TODO change when have unique ani
+                anim_save_pool(generic_animation_pool, "generic")
+
+            elif textinputpopup[1] == "del_animation":
+                anim_del_pool(generic_animation_pool)
+                if len(generic_animation_pool[0]) == 0:  # no animation left, create empty one
+                    animation_name = "empty"
+                    animation_selector.change_name(animation_name)
+                    current_frame = 0
+                    skeleton.edit_part(mouse_pos, "new")
+                else:  # reset to the first animation
+                    change_animation(list(generic_animation_pool[0].keys())[0])
+
             elif textinputpopup[1] == "new_anim_prop":
                 anim_prop_listbox.namelist.insert(-1, input_box.text)
                 anim_property_select.append(input_box.text)
@@ -2161,11 +2218,13 @@ while True:
                           anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
                 for frame in skeleton.frame_list:
                     frame["animation_property"] = anim_property_select
+
             elif textinputpopup[1] == "new_frame_prop":
                 frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
                 frame_property_select[current_frame].append(input_box.text)
                 setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                           frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+
             elif "frame_prop_num" in textinputpopup[1] and input_box.text.isdigit():
                 for name in frame_prop_listbox.namelist[current_frame]:
                     if name in (textinputpopup[1]):
@@ -2176,10 +2235,12 @@ while True:
                                   frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
                         reload_animation(anim, skeleton)
                         break
+
             elif textinputpopup[1] == "change_size" and input_box.text.isdigit():
                 skeleton.frame_list[0]["size"] = int(input_box.text)
                 skeleton.read_animation(animation_name, old=True)
                 reload_animation(anim, skeleton)
+
             elif textinputpopup[1] == "quit":
                 pygame.time.wait(1000)
                 if pygame.mixer:
@@ -2187,13 +2248,13 @@ while True:
                     pygame.mixer.music.unload()
                 pygame.quit()
 
-            input_box.textstart("")
+            input_box.text_start("")
             textinputpopup = (None, None)
             ui.remove(*inputui_pop)
 
         elif input_cancel_button.event or input_esc:
             input_cancel_button.event = False
-            input_box.textstart("")
+            input_box.text_start("")
             textinputpopup = (None, None)
             ui.remove(*inputui_pop, *confirmui_pop)
 
@@ -2204,7 +2265,7 @@ while True:
             strip.selected(True)
             break
 
-    pen.fill((0, 0, 0))
+    pen.fill((150, 150, 150))
     ui.draw(pen)
 
     pygame.display.update()

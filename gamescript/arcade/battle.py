@@ -855,7 +855,7 @@ class Battle:
             for event in pygame.event.get():  # get event that happen
                 if event.type == QUIT:  # quit game
                     self.textinputpopup = ("confirm_input", "quit")
-                    self.confirmui.changeinstruction("Quit Game?")
+                    self.confirmui.change_instruction("Quit Game?")
                     self.battleui.add(*self.confirmui_pop)
 
                 elif event.type == self.SONG_END:  # change music track
@@ -886,7 +886,7 @@ class Battle:
 
                 elif event.type == pygame.KEYDOWN:
                     if self.textinputpopup[0] == "text_input":  # event update to input box
-                        self.input_box.userinput(event)
+                        self.input_box.user_input(event)
                     else:
                         keypress = event.key
 
@@ -1641,7 +1641,7 @@ class Battle:
                                             pass
                                         else:
                                             self.textinputpopup = ("confirm_input", "delete_preset")
-                                            self.confirmui.changeinstruction("Delete Selected Preset?")
+                                            self.confirmui.change_instruction("Delete Selected Preset?")
                                             self.battleui.add(*self.confirmui_pop)
 
                                     elif self.unit_save_button.rect.collidepoint(self.mousepos) and mouse_up and \
@@ -1650,11 +1650,11 @@ class Battle:
                                         self.textinputpopup = ("text_input", "save_unit")
 
                                         if self.unitpresetname == "":
-                                            self.input_box.textstart("")
+                                            self.input_box.text_start("")
                                         else:
-                                            self.input_box.textstart(self.unitpresetname)
+                                            self.input_box.text_start(self.unitpresetname)
 
-                                        self.inputui.changeinstruction("Preset Name:")
+                                        self.inputui.change_instruction("Preset Name:")
                                         self.battleui.add(*self.inputui_pop)
 
                                     elif self.warningmsg in self.battleui and self.warningmsg.rect.collidepoint(self.mousepos):
@@ -1978,8 +1978,6 @@ class Battle:
                                 self.gamedone_button.rect = self.gamedone_button.image.get_rect(center=(self.battledone_box.rect.midbottom[0],
                                                                                                         self.battledone_box.rect.midbottom[1] / 1.3))
 
-                        # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
-                        #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
                     # ^ End update game time
 
                 elif self.gamestate == 0:  # Complete game pause when open either esc menu or enclycopedia
@@ -2029,13 +2027,13 @@ class Battle:
                         pygame.quit()
                         sys.exit()
 
-                    self.input_box.textstart("")
+                    self.input_box.text_start("")
                     self.textinputpopup = (None, None)
                     self.battleui.remove(*self.inputui_pop, *self.confirmui_pop)
 
                 elif self.input_cancel_button.event or esc_press:
                     self.input_cancel_button.event = False
-                    self.input_box.textstart("")
+                    self.input_box.text_start("")
                     self.textinputpopup = (None, None)
                     self.battleui.remove(*self.inputui_pop, *self.confirmui_pop)
 

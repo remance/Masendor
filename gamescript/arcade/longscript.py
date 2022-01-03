@@ -36,7 +36,6 @@ def load_game_data(game):
     SCREENRECT = game.SCREENRECT
     from gamescript import battleui, uniteditor
     from gamescript.arcade import unit, subunit, rangeattack
-
     unit.Unit.status_list = game.troop_data.status_list
     rangeattack.RangeArrow.gamemapheight = game.battlemap_height
 
@@ -118,7 +117,7 @@ def load_game_data(game):
     # ^ End subunit class
 
     # v Game Effect related class
-    imgs = load_images(game.main_dir, ["effect"])
+    imgs = load_images(game.main_dir, ["effect"], loadorder=False)
     # imgs = []
     # for img in imgsold:
     # x, y = img.get_width(), img.get_height()
@@ -251,7 +250,7 @@ def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
 def setrotate(self, set_target=None, rotationlist=(-90, -120, -45, 0, 90, 45, 120, 180)):
     """set base_target and new angle for sprite rotation"""
     if set_target is None:  # For auto chase rotate
-        myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
+        myradians = math.atan2(seload_game_datalf.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
     else:  # Command move or rotate
         myradians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
     newangle = math.degrees(myradians)

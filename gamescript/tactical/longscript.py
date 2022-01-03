@@ -117,7 +117,7 @@ def load_game_data(game):
     # ^ End subunit class
 
     # v Game Effect related class
-    imgs = load_images(game.main_dir, ["effect"])
+    imgs = load_images(game.main_dir, ["effect"], loadorder=False)
     # imgs = []
     # for img in imgsold:
     # x, y = img.get_width(), img.get_height()
