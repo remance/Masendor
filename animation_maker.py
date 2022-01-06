@@ -44,9 +44,8 @@ anim_property_list = ["dmgsprite", "interuptrevert"]
 
 # eye mouth not work without read_anime, eye mouth none
 # joint and rect wrong frame? happen when start and when stop playing
-# still freeze when change animation maybe no longer prop related
 # change animation crash when have empty frame in old one
-# property not selected when start
+# frame film not change when click player after enable
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
@@ -207,7 +206,7 @@ def reload_animation(animation, char):
             helper.select(None, shift_press)
 
 def change_animation(newname, empty=False):
-    global animation_name, current_frame
+    global animation_name, current_frame, current_anim_row, current_frame_row, anim_property_select, frame_property_select
     current_frame = 0
     anim.show_frame = current_frame
     anim_prop_listbox.namelist = anim_property_list + ["Custom"]  # reset property list
@@ -220,10 +219,6 @@ def change_animation(newname, empty=False):
     animation_name = newname
     animation_selector.change_name(newname)
     reload_animation(anim, skeleton)
-    setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-              anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
-    setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-              frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
     anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
     frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
 
@@ -820,7 +815,6 @@ class Skeleton:
                         else:
                             bodypart_list[part] = 1.0
                     elif "property" in part and pose[part] != [""]:
-                        # print(part, pose[part])
                         if "animation" in part:
                             for stuff in pose[part]:
                                 if stuff not in anim_prop_listbox.namelist:
@@ -829,9 +823,9 @@ class Skeleton:
                                     anim_property_select.append(stuff)
                         elif "frame" in part and pose[part] != 0:
                             for stuff in pose[part]:
-                                if stuff not in frame_prop_listbox.namelist:
+                                if stuff not in frame_prop_listbox.namelist[index]:
                                     frame_prop_listbox.namelist[index].insert(-1, stuff)
-                                if stuff not in frame_property_select:
+                                if stuff not in frame_property_select[index]:
                                     frame_property_select[index].append(stuff)
                 self.bodypart_list[index] = bodypart_list
                 main_joint_pos_list = self.generate_body(self.bodypart_list[index])
@@ -864,10 +858,10 @@ class Skeleton:
                     strip.activate = True
                     activate_list[strip_index] = True
                     break
-        # setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-        #           anim_prop_listbox, ui, layer=9, oldlist=anim_property_list)
-        # setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-        #           frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+        setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                  anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
+        setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                  frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
 
     def create_animation_film(self, pose_layer_list, frame, empty=False):
         image = pygame.Surface((default_sprite_size[0] * self.size, default_sprite_size[1] * self.size),
@@ -884,10 +878,10 @@ class Skeleton:
                 namecheck = layer
                 if "p1" in namecheck or "p2" in namecheck:
                     namecheck = namecheck[3:]  # remove p1_
-                if self.part_name_list[current_frame][layer] is not None and \
-                        namecheck in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
+                if self.part_name_list[frame][layer] is not None and \
+                        namecheck in skel_joint_list[direction_list.index(self.part_name_list[frame][layer][1])]:
                     for index, item in enumerate(
-                            skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][namecheck]):
+                            skel_joint_list[direction_list.index(self.part_name_list[frame][layer][1])][namecheck]):
                         joint_type = 0  # main
                         if index > 0:
                             joint_type = 1
@@ -1398,7 +1392,7 @@ class Animation:
 
     def play(self, surface, position, play_list):
         global current_frame
-        if dt > 0:
+        if dt > 0 and True in play_list:
             if time.time() - self.first_time >= self.speed_ms:
                 self.show_frame += 1
                 while self.show_frame < 10 and play_list[self.show_frame] is False:
@@ -1406,6 +1400,8 @@ class Animation:
                 self.first_time = time.time()
             if self.show_frame > self.end_frame:
                 self.show_frame = self.start_frame
+                while self.show_frame < 10 and play_list[self.show_frame] is False:
+                    self.show_frame += 1
 
         surface.blit(self.frames[int(self.show_frame)], position)
         if dt == 0 and show_joint:
@@ -1601,10 +1597,6 @@ current_anim_row = 0
 current_frame_row = 0
 frame_property_select = [ [] for _ in range(10) ]
 anim_property_select = []
-setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-          anim_prop_listbox, ui, layer=9, removeold=False)
-setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-          frame_prop_listbox, ui, layer=9, removeold=False)
 anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
 frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
 ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_listscroll, frame_prop_listscroll)
@@ -1630,7 +1622,6 @@ if animation_name is not None:
 else:
     skeleton.animation_list = [None] * 10
     skeleton.edit_part(None, "new")
-
 animation_history.append({key: (value[:] if value is not None else value) for key, value in skeleton.animation_part_list[current_frame].items()})
 bodypart_history.append({key: value for key, value in skeleton.bodypart_list[current_frame].items()})
 partname_history.append({key: value for key, value in skeleton.part_name_list[current_frame].items()})
@@ -2225,16 +2216,20 @@ while True:
                     change_animation(list(generic_animation_pool[0].keys())[0])
 
             elif textinputpopup[1] == "new_anim_prop":
-                anim_prop_listbox.namelist.insert(-1, input_box.text)
-                anim_property_select.append(input_box.text)
+                if input_box.text not in anim_prop_listbox:
+                    anim_prop_listbox.namelist.insert(-1, input_box.text)
+                if input_box.text not in anim_property_select:
+                    anim_property_select.append(input_box.text)
                 setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                           anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
                 for frame in skeleton.frame_list:
                     frame["animation_property"] = anim_property_select
 
             elif textinputpopup[1] == "new_frame_prop":
-                frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
-                frame_property_select[current_frame].append(input_box.text)
+                if input_box.text not in frame_prop_listbox:
+                    frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
+                if input_box.text not in frame_property_select[current_frame]:
+                    frame_property_select[current_frame].append(input_box.text)
                 setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                           frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
 
