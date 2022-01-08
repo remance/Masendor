@@ -40,12 +40,9 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
 frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-
-# TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part, duplicate animation
+# TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part
 
 # eye mouth not work without read_anime, eye mouth none
-# joint and rect wrong frame? happen when start and when stop playing
-# change animation crash when have empty frame in old one
 
 
 def apply_colour(surface, colour=None):
@@ -227,20 +224,27 @@ def change_animation(newname):
     frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
 
 
-def anim_to_pool(pool, char, new=False):
+def anim_to_pool(pool, char, new=False, replace=None, duplicate=None):
     """Add animation to animation pool data"""
-    if animation_name not in pool[0]:
+    if replace is not None:  # rename animation
         for direction in range(0, 5):
-            pool[direction][animation_name] = []
-    if new:
+            pool[direction] = {animation_name if k == replace else k: v for k, v in pool[direction].items()}
+    if duplicate is not None:
         for direction in range(0, 5):
-            pool[direction][animation_name] = [frame for frame in char.frame_list if frame != {}]
+            pool[direction][animation_name] = pool[direction][duplicate]
     else:
-        pool[char.side][animation_name] = [frame for frame in char.frame_list if frame != {}]
-
+        if animation_name not in pool[0]:
+            for direction in range(0, 5):
+                pool[direction][animation_name] = []
+        if new:
+            for direction in range(0, 5):
+                pool[direction][animation_name] = [frame for index, frame in enumerate(char.frame_list) if frame != {} and activate_list[index]]
+        else:
+            pool[char.side][animation_name] = [frame for index, frame in enumerate(char.frame_list) if frame != {} and activate_list[index]]
 
 def anim_save_pool(pool, pool_name):
     """Save animation pool data"""
+    activate_list
     for index, direction in enumerate(direction_list):
         with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8', newline="") as unitfile:
             filewriter = csv.writer(unitfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
@@ -795,8 +799,12 @@ class Skeleton:
         self.animation_list = [self.create_animation_film(None, current_frame, empty=True)] * 10
         self.bodypart_list = [{key: value for key, value in self.all_part_list.items()}] * 10
         self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
+        for key, value in self.rect_part_list.items():  # reset rect list
+            self.rect_part_list[key] = None
+        for joint in joints:  # remove all joint first
+            joint.kill()
         if name is not None:
-            frame_list = generic_animation_pool[self.side][name].copy()
+            frame_list = current_pool[self.side][name].copy()
             if old:
                 frame_list = self.frame_list
             while len(frame_list) < 10:  # add empty item
@@ -886,10 +894,6 @@ class Skeleton:
     def create_animation_film(self, pose_layer_list, frame, empty=False):
         image = pygame.Surface((default_sprite_size[0] * self.size, default_sprite_size[1] * self.size),
                                pygame.SRCALPHA)  # default size will scale down later
-        for key, value in self.rect_part_list.items():  # reset rect list
-            self.rect_part_list[key] = None
-        for joint in joints:  # remove all joint first
-            joint.kill()
         if empty is False:
             for index, layer in enumerate(pose_layer_list):
                 part = self.animation_part_list[frame][layer]
@@ -1280,6 +1284,10 @@ class Skeleton:
                                 self.animation_part_list[current_frame][part_index][5] -= 1
                                 if self.animation_part_list[current_frame][part_index][5] == 0:
                                     self.animation_part_list[current_frame][part_index][5] = 1
+        for key, value in self.rect_part_list.items():  # reset rect list
+            self.rect_part_list[key] = None
+        for joint in joints:  # remove all joint first
+            joint.kill()
         if len(self.animation_part_list) > 0 and self.animation_part_list[current_frame] != {}:  # frame already existed
             pose_layer_list = {k: v[5] for k, v in self.animation_part_list[current_frame].items() if v is not None and v != []}
             pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
@@ -1316,14 +1324,14 @@ class Skeleton:
         self.frame_list[current_frame]["size"] = self.size
         self.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
         self.frame_list[current_frame]["animation_property"] = anim_property_select
-        anim_to_pool(generic_animation_pool, self)
+        anim_to_pool(current_pool, self)
         reload_animation(anim, self)
 
         if edit_type == "new" or edit_type == "change":
             if edit_type == "new":
                 for index, frame in enumerate(self.frame_list):  # reset all empty like the first frame
                     self.frame_list[index] = {key: value for key, value in list(self.frame_list[0].items())}
-            anim_to_pool(generic_animation_pool, self, new=True)
+            anim_to_pool(current_pool, self, new=True)
 
             # reset history when change frame or create new animation
             partname_history = partname_history[-1:] + [self.part_name_list[current_frame]]
@@ -1459,6 +1467,7 @@ animation_history = []
 bodypart_history = []
 partname_history = []
 current_history = 0
+current_pool = generic_animation_pool
 
 ui = pygame.sprite.LayeredUpdates()
 fakegroup = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
@@ -1520,7 +1529,8 @@ new_button = Button("New", image, (image.get_width() / 2, image.get_height() / 2
 save_button = Button("Save", image, (image.get_width() * 1.5, image.get_height() / 2))
 size_button = Button("Size: ", image, (image.get_width() * 2.5, image.get_height() / 2))
 direction_button = Button("", image, (image.get_width() * 3.5, image.get_height() / 2))
-duplicate_button = Button("Duplicate", image, (image.get_width() * 11, image.get_height() / 2))
+rename_button = Button("Rename", image, (screen_size[0] - (image.get_width() * 3.5), image.get_height() / 2))
+duplicate_button = Button("Duplicate", image, (screen_size[0] - (image.get_width() * 2.5), image.get_height() / 2))
 export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1.5), image.get_height() / 2))
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2))
 
@@ -1535,6 +1545,8 @@ copy_button = Button("Copy", image, (play_animation_button.pos[0] - play_animati
                                      filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 paste_button = Button("Paste", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+speed_button = Button("Speed: 1", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 2,
+                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 pointedit_button = SwitchButton(["Center", "Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
@@ -1792,7 +1804,7 @@ while True:
             if popup_listbox in ui:
                 if popup_listbox.rect.collidepoint(mouse_pos):
                     popup_click = True
-                    for index, name in enumerate(popup_namegroup):  # change leader with the new selected one
+                    for index, name in enumerate(popup_namegroup):  # click on popup list
                         if name.rect.collidepoint(mouse_pos):
                             if popup_listbox.action == "part_side":
                                 direction_part_button.change_text(name.name)
@@ -1827,6 +1839,7 @@ while True:
                                 del thisname
                             ui.remove(popup_listbox, popup_listscroll)
                             currentpopuprow = 0  # reset row
+
                 elif popup_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     popup_click = True
                     newrow = popup_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
@@ -1834,13 +1847,14 @@ while True:
                         currentpopuprow = newrow
                         setuplist(menu.NameList, currentpopuprow, popup_listbox.namelist, popup_namegroup,
                                   popup_listbox, ui, layer=19)
+
                 else:  # click other stuffs
                     for thisname in popup_namegroup:  # remove name list
                         thisname.kill()
                         del thisname
                     ui.remove(popup_listbox, popup_listscroll)
 
-            if popup_click is False:
+            if popup_click is False:  # button that can be clicked even when animation playing
                 if play_animation_button.rect.collidepoint(mouse_pos):
                     if play_animation_button.current_option == 0:
                         play_animation_button.change_option(1)  # start playing animation
@@ -1848,6 +1862,8 @@ while True:
                     else:
                         play_animation_button.change_option(0)  # stop animation
                         play_animation = False
+                        skeleton.edit_part(None, "change")
+
                 elif grid_button.rect.collidepoint(mouse_pos):
                     if grid_button.current_option == 0:  # remove grid
                         grid_button.change_option(1)
@@ -1855,12 +1871,14 @@ while True:
                     else:
                         grid_button.change_option(0)
                         showroom.grid = True
+
                 elif pointedit_button.rect.collidepoint(mouse_pos):
                     if pointedit_button.current_option == 0:
                         pointedit_button.change_option(1)  # use center point for edit
                     else:
                         pointedit_button.change_option(0)  # use joint point for edit
                     point_edit = pointedit_button.current_option
+
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # remove joint sprite
                         joint_button.change_option(1)
@@ -1868,18 +1886,21 @@ while True:
                     else:  # stop animation
                         joint_button.change_option(0)
                         show_joint = True
+
                 elif anim_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     newrow = anim_prop_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
                     if newrow is not None:
                         current_anim_row = newrow
                         setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                                   anim_prop_listbox, ui, layer=9, oldlist=anim_property_list)
+
                 elif frame_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     newrow = frame_prop_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
                     if newrow is not None:
                         current_frame_row = newrow
                         setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                   frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+
                 elif anim_prop_listbox.rect.collidepoint(mouse_pos):
                     for index, name in enumerate(anim_prop_namegroup):  # change leader with the new selected one
                         if name.rect.collidepoint(mouse_pos):
@@ -1895,6 +1916,7 @@ while True:
                                     anim_property_select.remove(name.name)
                                 for frame in skeleton.frame_list:
                                     frame["animation_property"] = anim_property_select
+
                 elif frame_prop_listbox.rect.collidepoint(mouse_pos):
                     for index, name in enumerate(frame_prop_namegroup):  # change leader with the new selected one
                         if name.rect.collidepoint(mouse_pos):
@@ -1930,13 +1952,18 @@ while True:
             current_frame = int(anim.show_frame)
         else:
             dt = 0
-            if popup_click is False:
+            if popup_click is False:  # button that can't be clicked even when animation playing
                 if mouse_up:
                     if clear_button.rect.collidepoint(mouse_pos):
                         skeleton.edit_part(mouse_pos, "clear")
 
                     elif default_button.rect.collidepoint(mouse_pos):
                         skeleton.edit_part(mouse_pos, "default")
+
+                    elif speed_button.rect.collidepoint(mouse_pos):
+                        textinputpopup = ("text_input", "change_speed")
+                        inputui.change_instruction("Input Speed Number Value:")
+                        ui.add(inputui_pop)
 
                     elif copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
@@ -1993,6 +2020,7 @@ while True:
                                     activate_list[strip_index] = False
                                     activate_button.change_option(1)
                                     strip.add_strip(change=False)
+                                anim_to_pool(current_pool, skeleton)
                                 break
 
                     elif undo_button.rect.collidepoint(mouse_pos):
@@ -2001,9 +2029,19 @@ while True:
                     elif redo_button.rect.collidepoint(mouse_pos):
                         redo_press = True
 
+                    elif rename_button.rect.collidepoint(mouse_pos):
+                        textinputpopup = ("text_input", "new_name")
+                        inputui.change_instruction("Rename Animation:")
+                        ui.add(inputui_pop)
+
+                    elif duplicate_button.rect.collidepoint(mouse_pos):
+                        textinputpopup = ("confirm_input", "duplicate_animation")
+                        inputui.change_instruction("Duplicate Current Animation?")
+                        ui.add(inputui_pop)
+
                     elif export_button.rect.collidepoint(mouse_pos):
                         textinputpopup = ("confirm_input", "export_animation")
-                        inputui.change_instruction("Export to PNG files?")
+                        inputui.change_instruction("Export to PNG Files?")
                         ui.add(inputui_pop)
 
                     elif flip_hori_button.rect.collidepoint(mouse_pos):
@@ -2091,7 +2129,7 @@ while True:
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
                         popuplist_newopen("animation_select", animation_selector.rect.bottomleft,
-                                          [item for item in generic_animation_pool[direction]], "top")
+                                          [item for item in current_pool[direction]], "top")
 
                     else:  # click on other stuff
                         for strip_index, strip in enumerate(filmstrips):  # click on frame film list
@@ -2207,11 +2245,11 @@ while True:
                     race_part_button.change_text("")
                     direction_part_button.change_text("")
                     part_selector.change_name("")
-            else:
+            elif race_part_button.text != "":
                 race_part_button.change_text("")
                 direction_part_button.change_text("")
                 part_selector.change_name("")
-    else:
+    else:  # input box function
         dt = 0
         if input_ok_button.event:
             input_ok_button.event = False
@@ -2223,22 +2261,49 @@ while True:
                 skeleton.edit_part(mouse_pos, "new")
                 change_animation(animation_name)
 
-            elif textinputpopup[1] == "save_animation":  # TODO change when have unique ani
-                anim_save_pool(generic_animation_pool, "generic")
+            elif textinputpopup[1] == "save_animation":
+                anim_save_pool(current_pool, "generic")
+
+            elif textinputpopup[1] == "new_name":
+                old_name = animation_name
+                animation_name = input_box.text
+                animation_selector.change_name(animation_name)
+                anim_to_pool(current_pool, skeleton, replace=old_name)
 
             elif textinputpopup[1] == "export_animation":
+                save_num = 1
                 for index, frame in enumerate(anim.frames):
-                    pygame.image.save(frame, animation_name + "_" + str(index) + ".png")
+                    if activate_list[index]:
+                        pygame.image.save(frame, animation_name + "_" + str(save_num) + ".png")
+                        save_num += 1
+
+            elif textinputpopup[1] == "duplicate_animation":
+                old_name = animation_name
+                last_char = str(1)
+                if animation_name + "(copy" + last_char + ")" in current_pool[0]:  # copy exist
+                    while animation_name + "(copy" + last_char + ")" in current_pool[0]:
+                        last_char = str(int(last_char) + 1)
+                elif ("(copy" in animation_name and animation_name[-2].isdigit() and animation_name[-1] == ")"):
+                    last_char = int(animation_name[-2]) + 1
+                animation_name = animation_name + "(copy" + last_char + ")"
+                animation_selector.change_name(animation_name)
+                anim_to_pool(current_pool, skeleton, duplicate=old_name)
 
             elif textinputpopup[1] == "del_animation":
-                anim_del_pool(generic_animation_pool)
-                if len(generic_animation_pool[0]) == 0:  # no animation left, create empty one
+                anim_del_pool(current_pool)
+                if len(current_pool[0]) == 0:  # no animation left, create empty one
                     animation_name = "empty"
                     animation_selector.change_name(animation_name)
                     current_frame = 0
                     skeleton.edit_part(mouse_pos, "new")
                 else:  # reset to the first animation
-                    change_animation(list(generic_animation_pool[0].keys())[0])
+                    change_animation(list(current_pool[0].keys())[0])
+
+            elif textinputpopup[1] == "change_speed":
+                if input_box.text.isdigit():
+                    new_speed = int(input_box.text)
+                    speed_button.change_text("Speed: " + input_box.text)
+                    anim.speed_ms = (500 / new_speed) / 1000
 
             elif textinputpopup[1] == "new_anim_prop":
                 if input_box.text not in anim_prop_listbox:
