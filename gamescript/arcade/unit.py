@@ -487,11 +487,11 @@ class Unit(pygame.sprite.Sprite):
                         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
                         #     if self.team == 1:
                         #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1unit, self.gamebattle.team2unit,
-                        #                                                         self.gamebattle.team1poslist, self.gamebattle.allunitindex,
+                        #                                                         self.gamebattle.team1_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     else:
                         #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2unit, self.gamebattle.team1unit,
-                        #                                                         self.gamebattle.team2poslist, self.gamebattle.allunitindex,
+                        #                                                         self.gamebattle.team2_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
                         #     self.gamebattle.setuparmyicon()
@@ -525,8 +525,8 @@ class Unit(pygame.sprite.Sprite):
                     self.die(self.gamebattle)
 
                 self.gamebattle.setup_uniticon()  # reset army icon (remove dead one)
-                self.gamebattle.eventlog.addlog([0, str(self.leader.name) + "'s unit is destroyed"],
-                                                [0, 1])  # put destroyed event in troop and army log
+                self.gamebattle.eventlog.add_log([0, str(self.leader.name) + "'s unit is destroyed"],
+                                                 [0, 1])  # put destroyed event in troop and army log
 
                 self.kill()
                 for subunit in self.subunit_sprite:
@@ -664,7 +664,7 @@ class Unit(pygame.sprite.Sprite):
         oldposlist.pop(self.gameid)  # remove from old pos list
         self.gameid = newgameid  # change game id
         # self.changescale() # reset scale to the current zoom
-        self.icon.changeimage(changeside=True)  # change army icon to new team
+        self.icon.change_image(change_side=True)  # change army icon to new team
 
     def placement(self, mouse_pos, mouse_right, mouse_rightdown, double_mouse_right):
         if double_mouse_right:  # move unit to new pos

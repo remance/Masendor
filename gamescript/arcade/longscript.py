@@ -139,7 +139,7 @@ def load_game_data(game):
 
     # Right top bar ui that show rough information of selected battalions
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
-                                       icon=iconimage, uitype="topbar")
+                                       icon=iconimage, ui_type="topbar")
     game.gameui.add(game.unitstat_ui)
     game.unitstat_ui.unit_state_text = game.statetext
 
@@ -301,18 +301,18 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
                     sidecal = battlesidecal[defside]
                     if target.fulldef or target.temp_fulldef:  # defence all side
                         sidecal = 1
-                    dmg = dmg + ((who.charge - (target.chargedef * sidecal)) * 2)
-                    if (target.chargedef * sidecal) >= who.charge / 2:
+                    dmg = dmg + ((who.charge - (target.charge_def * sidecal)) * 2)
+                    if (target.charge_def * sidecal) >= who.charge / 2:
                         who.charge_momentum = 1  # charge get stopped by charge def
                     else:
-                        who.charge_momentum -= (target.chargedef * sidecal) / who.charge
+                        who.charge_momentum -= (target.charge_def * sidecal) / who.charge
                 else:
                     dmg = dmg + (who.charge * 2)
                     who.charge_momentum -= 1 / who.charge
 
-            if target.chargeskill in target.skill_effect:  # Also include chargedef in melee_dmg if enemy charging
+            if target.chargeskill in target.skill_effect:  # Also include charge_def in melee_dmg if enemy charging
                 if target.ignore_chargedef is False:
-                    chargedefcal = who.chargedef - target.charge
+                    chargedefcal = who.charge_def - target.charge
                     if chargedefcal < 0:
                         chargedefcal = 0
                     dmg = dmg + (chargedefcal * 2)  # if charge def is higher than enemy charge then deal back addtional melee_dmg
@@ -436,9 +436,9 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
             targetpercent = 1
 
     whohit = float(attacker.attack * whopercent) + wholuck
-    whodefence = float(attacker.meleedef * whopercent) + wholuck
+    whodefence = float(attacker.melee_def * whopercent) + wholuck
     targethit = float(attacker.attack * targetpercent) + targetluck
-    targetdefence = float(target.meleedef * targetpercent) + targetluck
+    targetdefence = float(target.melee_def * targetpercent) + targetluck
 
     """33 backstabber ignore def when attack rear side, 55 Oblivious To Unexpected can't defend from rear at all"""
     if (attacker.backstab and targetside == 2) or (target.oblivious and targetside == 2) or (
@@ -460,7 +460,7 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
         for this_subunit in listloop:
             if this_subunit != 0 and this_subunit.state != 100:
                 targethit, targetdefence = float(attacker.attack * targetpercent) + targetluck, float(
-                    this_subunit.meleedef * targetpercent) + targetluck
+                    this_subunit.melee_def * targetpercent) + targetluck
                 whodmg, whomoraledmg = losscal(attacker, this_subunit, whohit, targetdefence, 0)
                 complexdmg(attacker, this_subunit, whodmg, whomoraledmg, wholeaderdmg, dmgeffect, timermod)
     # ^ End attack corner

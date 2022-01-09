@@ -18,7 +18,7 @@ def load_game_data(game):
     Soundvolume = game.Soundvolume
 
     # v Craete feature terrain modifier
-    game.featuremod = {}
+    game.feature_mod = {}
     with open(os.path.join(main_dir, "data", "map", "unit_terrainbonus.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         run = 0  # for skipping the first row
@@ -41,7 +41,7 @@ def load_game_data(game):
                         row[n] = int(i)
 
             run += 1
-            game.featuremod[row[0]] = row[1:]
+            game.feature_mod[row[0]] = row[1:]
     unitfile.close()
     # ^ End feature terrain mod
 
@@ -84,16 +84,16 @@ def load_game_data(game):
     # ^ End faction
 
     # v create game map texture and their default variables
-    game.featurelist = []
+    game.feature_list = []
     with open(os.path.join(main_dir, "data", "map", "unit_terrainbonus.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         for row in rd:
-            game.featurelist.append(row[1])  # get terrain feature combination name for folder
+            game.feature_list.append(row[1])  # get terrain feature combination name for folder
     unitfile.close()
-    game.featurelist = game.featurelist[1:]
+    game.feature_list = game.feature_list[1:]
 
     map.FeatureMap.main_dir = main_dir
-    map.FeatureMap.featuremod = game.featuremod
+    map.FeatureMap.feature_mod = game.feature_mod
     map.BeautifulMap.main_dir = main_dir
 
     game.battlemap_base = map.BaseMap(1)  # create base terrain map
@@ -104,16 +104,16 @@ def load_game_data(game):
     emptyimage = load_image(game.main_dir, "empty.png", "map/texture")  # empty texture image
     maptexture = []
     loadtexturefolder = []
-    for feature in game.featurelist:
+    for feature in game.feature_list:
         loadtexturefolder.append(feature.replace(" ", "").lower())  # convert terrain feature list to lower case with no space
     loadtexturefolder = list(set(loadtexturefolder))  # list of terrian folder to load
     loadtexturefolder = [item for item in loadtexturefolder if item != ""]  # For now remove terrain with no planned name/folder yet
     for index, texturefolder in enumerate(loadtexturefolder):
         imgs = load_images(game.main_dir, ["map", "texture", texturefolder], loadorder=False)
         maptexture.append(imgs)
-    map.BeautifulMap.textureimages = maptexture
-    map.BeautifulMap.loadtexturelist = loadtexturefolder
-    map.BeautifulMap.emptyimage = emptyimage
+    map.BeautifulMap.texture_images = maptexture
+    map.BeautifulMap.load_texture_list = loadtexturefolder
+    map.BeautifulMap.empty_image = emptyimage
     # ^ End game map
 
     # v Load genre list
@@ -186,7 +186,7 @@ def load_game_data(game):
 
     activeskill = pygame.Surface((game.skill_imgs[0].get_width(), game.skill_imgs[0].get_height()), pygame.SRCALPHA)
     activeskill.fill((170, 220, 77, 200))  # green colour filter for skill active timer
-    battleui.SkillCardIcon.activeskill = activeskill
+    battleui.SkillCardIcon.active_skill = activeskill
 
     game.troop_data = readstat.Unitstat(main_dir, game.ruleset, game.ruleset_folder)
 
@@ -213,7 +213,7 @@ def load_game_data(game):
     lorebook.Lorebook.trait_stat = game.troop_data.trait_list
     lorebook.Lorebook.leader = game.leader_stat
     lorebook.Lorebook.leader_lore = game.leader_stat.leader_lore
-    lorebook.Lorebook.terrain_stat = game.featuremod
+    lorebook.Lorebook.terrain_stat = game.feature_mod
     lorebook.Lorebook.weather_stat = game.allweather
     lorebook.Lorebook.landmark_stat = None
     lorebook.Lorebook.unit_grade_stat = game.troop_data.grade_list
@@ -311,9 +311,9 @@ def load_game_data(game):
 
     game.troopcard_ui = battleui.GameUI(x=SCREENRECT.width - topimage[2].get_size()[0] / 2,
                                         y=(topimage[0].get_size()[1] * 2.5) + topimage[5].get_size()[1],
-                                        image=topimage[2], icon="", uitype="troopcard")
+                                        image=topimage[2], icon="", ui_type="troopcard")
     game.gameui.add(game.troopcard_ui)
-    game.troopcard_ui.featurelist = game.featurelist  # add terrain feature list name to subunit card
+    game.troopcard_ui.feature_list = game.feature_list  # add terrain feature list name to subunit card
 
     # Button related to subunit card and command
     game.troopcard_button = [battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y + 10, topimage[3], 0),
@@ -335,7 +335,7 @@ def load_game_data(game):
     game.fpscount = battleui.FPScount()  # FPS number counter
 
     game.battledone_box = battleui.BattleDone(game.screen_scale, (game.screen_width / 2, game.screen_height / 2), topimage[-3], topimage[-4])
-    game.gamedone_button = battleui.UIButton(game.battledone_box.pos[0], game.battledone_box.boximage.get_height() * 0.8, topimage[-2], newlayer=19)
+    game.gamedone_button = battleui.UIButton(game.battledone_box.pos[0], game.battledone_box.box_image.get_height() * 0.8, topimage[-2], layer=19)
 
     # v Esc menu related objects
     imgs = load_images(game.main_dir, ["ui", "battlemenu_ui"], loadorder=False)
@@ -521,7 +521,7 @@ def effect_icon_blit(self):
 def countdown_skill_icon(self):
     """Count down timer on skill icon for activate and cooldown time"""
     for skill in self.skill_icon:
-        if skill.icontype == 1:  # only do skill icon not trait
+        if skill.icon_type == 1:  # only do skill icon not trait
             cd = 0
             activetime = 0
             if skill.gameid in self.troopcard_ui.value2[2]:
@@ -562,7 +562,7 @@ def kill_effect_icon(self):
         del icon
 
 
-def setuplist(screen_scale, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
+def setup_list(screen_scale, itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=15):
     """generate list of subsection of the left side of encyclopedia"""
     row = 5 * screen_scale[1]
     column = 5 * screen_scale[0]
@@ -593,28 +593,28 @@ def popout_lorebook(self, section, gameid):
 
     self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
     self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
-    self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+    self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
 
 
-def popuplist_newopen(self, newrect, newlist, uitype):
+def popuplist_newopen(self, new_rect, new_list, ui_type):
     """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
     self.currentpopuprow = 0
 
-    if uitype == "leader" or uitype == "genre":
-        self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=newrect)
+    if ui_type == "leader" or ui_type == "genre":
+        self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=new_rect)
     else:
-        self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=newrect)
+        self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=new_rect)
 
-    setuplist(self.screen_scale, menu.NameList, 0, newlist, self.popup_namegroup,
-                   self.popup_listbox, self.battleui, layer=19)
+    setup_list(self.screen_scale, menu.NameList, 0, new_list, self.popup_namegroup,
+               self.popup_listbox, self.battleui, layer=19)
 
     self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
     self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
-    self.popup_listscroll.changeimage(newrow=0, logsize=len(newlist))
+    self.popup_listscroll.change_image(new_row=0, log_size=len(new_list))
 
-    if uitype == "genre":
+    if ui_type == "genre":
         self.mainui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)
     else:
         self.battleui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
 
-    self.popup_listbox.type = uitype
+    self.popup_listbox.type = ui_type

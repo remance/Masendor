@@ -67,9 +67,9 @@ class Leader(pygame.sprite.Sprite):
                 eventmapid = "ld1"  # read ld1 event log for special log when team 2 commander die, not used for other leader
 
             if self.originalcommander and self.state == 100:
-                self.gamebattle.eventlog.addlog([0, "Commander " + str(self.name) + " is " + self.gone_event_text[self.state]], [0, 1, 2], eventmapid)
+                self.gamebattle.eventlog.add_log([0, "Commander " + str(self.name) + " is " + self.gone_event_text[self.state]], [0, 1, 2], eventmapid)
             else:
-                self.gamebattle.eventlog.addlog([0, "Commander " + str(self.name) + " is " + self.gone_event_text[self.state]], [0, 1, 2])
+                self.gamebattle.eventlog.add_log([0, "Commander " + str(self.name) + " is " + self.gone_event_text[self.state]], [0, 1, 2])
 
             for army in whicharmy:
                 for subunit in army.subunit_sprite:
@@ -77,7 +77,7 @@ class Leader(pygame.sprite.Sprite):
                     subunit.moraleregen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
 
         else:
-            self.gamebattle.eventlog.addlog([0, str(self.name) + " is " + self.gone_event_text[self.state]], [0, 2])
+            self.gamebattle.eventlog.add_log([0, str(self.name) + " is " + self.gone_event_text[self.state]], [0, 2])
 
         self.parentunit.commandbuff = [0, 0, 0]  # reset command buff to 0
         self.authority = 0

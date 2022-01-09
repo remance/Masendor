@@ -22,7 +22,7 @@ edit_config = commonscript.edit_config
 make_bar_list = commonscript.make_bar_list
 load_base_button = commonscript.load_base_button
 text_objects = commonscript.text_objects
-setuplist = commonscript.setuplist
+setup_list = commonscript.setup_list
 version_name = "Dream Decision"
 
 # Will keep leader, subunit, unit and other state as magic number since changing them take too much space, see below for refencing
@@ -778,14 +778,14 @@ class Mainmenu:
             if currentrow < 0:
                 currentrow = 0
             else:
-                setuplist(self.screen_scale, menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
-                scroll.changeimage(newrow=currentrow, logsize=len(namelist))
+                setup_list(self.screen_scale, menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
+                scroll.change_image(new_row=currentrow, log_size=len(namelist))
 
         elif mouse_scrolldown:
             currentrow += 1
             if currentrow + listbox.maxshowlist - 1 < len(namelist):
-                setuplist(self.screen_scale, menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
-                scroll.changeimage(newrow=currentrow, logsize=len(namelist))
+                setup_list(self.screen_scale, menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer)
+                scroll.change_image(new_row=currentrow, log_size=len(namelist))
             else:
                 currentrow -= 1
         return currentrow
@@ -819,7 +819,7 @@ class Mainmenu:
         self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll,
                                      self.pagebutton, self.mainui)
         self.lorebook.change_subsection(gameid, self.pagebutton, self.mainui)
-        self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+        self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
 
     def run(self):
         while True:
@@ -910,8 +910,8 @@ class Mainmenu:
                         self.mainui.remove(*self.mainmenu_ui_only, self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
                         self.menu_button.remove(*self.menu_button)
 
-                        setuplist(self.screen_scale, menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
-                                       self.mainui)
+                        setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                                   self.mainui)
                         self.makemap(self.mapfoldername, self.maplist)
 
                         self.menu_button.add(*self.map_select_button)
@@ -924,8 +924,8 @@ class Mainmenu:
                         self.mainui.remove(*self.mainmenu_ui_only, self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
                         self.menu_button.remove(*self.menu_button)
 
-                        setuplist(self.screen_scale, menu.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
-                                       self.mainui)
+                        setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
+                                   self.mainui)
                         self.makemap(self.mapcustomfoldername, self.mapcustomlist)
 
                         self.menu_button.add(*self.map_select_button)
@@ -989,8 +989,8 @@ class Mainmenu:
                             self.uiclick = True
                             self.currentpopuprow = self.popup_listscroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
-                            setuplist(self.screen_scale, menu.NameList, self.currentpopuprow, self.genrelist,
-                                           self.popup_namegroup, self.popup_listbox, self.mainui)
+                            setup_list(self.screen_scale, menu.NameList, self.currentpopuprow, self.genrelist,
+                                       self.popup_namegroup, self.popup_listbox, self.mainui)
 
                         # else:
                         #     self.mainui.remove(self.popup_listbox, self.popup_listscroll, *self.popup_namegroup)
@@ -1010,8 +1010,8 @@ class Mainmenu:
                         if self.map_scroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                             self.current_map_row = self.map_scroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
-                            setuplist(self.screen_scale, menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
-                                           self.mainui)
+                            setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                                       self.mainui)
 
                     if self.map_listbox.rect.collidepoint(self.mousepos):
                         self.current_map_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.map_scroll, self.map_listbox,
@@ -1064,8 +1064,8 @@ class Mainmenu:
                             self.sourcescale = [""]
                             self.sourcetext = [""]
 
-                        setuplist(self.screen_scale, menu.SourceName, self.current_source_row, self.sourcenamelist, self.source_namegroup,
-                                       self.source_listbox, self.mainui)
+                        setup_list(self.screen_scale, menu.SourceName, self.current_source_row, self.sourcenamelist, self.source_namegroup,
+                                   self.source_listbox, self.mainui)
 
                         self.sourcescroll = battleui.UIScroller(self.source_listbox.rect.topright, self.source_listbox.image.get_height(),
                                                                 self.source_listbox.maxshowlist, layer=16)  # scroller bar for source list
@@ -1118,8 +1118,8 @@ class Mainmenu:
                         if self.sourcescroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
                             self.current_source_row = self.sourcescroll.update(
                                 self.mousepos)  # update the scroller and get new current subsection
-                            setuplist(self.screen_scale, menu.NameList, self.current_source_row, self.sourcelist, self.source_namegroup,
-                                           self.source_listbox, self.mainui)
+                            setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.sourcelist, self.source_namegroup,
+                                       self.source_listbox, self.mainui)
                     if self.source_listbox.rect.collidepoint(self.mousepos):
                         self.current_source_row = self.listscroll(mouse_scrollup, mouse_scrolldown, self.sourcescroll, self.source_listbox,
                                                                   self.current_source_row, self.sourcelist, self.source_namegroup, self.mainui)
@@ -1147,11 +1147,11 @@ class Mainmenu:
                                 del stuff
 
                         if self.menu_state == "presetselect":  # regenerate map name list
-                            setuplist(self.screen_scale, menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
-                                           self.mainui)
+                            setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.maplist, self.map_namegroup, self.map_listbox,
+                                       self.mainui)
                         else:
-                            setuplist(self.screen_scale, menu.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
-                                           self.mainui)
+                            setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.mapcustomlist, self.map_namegroup, self.map_listbox,
+                                       self.mainui)
 
                         self.menu_button.add(*self.map_select_button)
                         self.mainui.add(*self.map_select_button, self.map_listbox, self.map_scroll, self.mapdescription)

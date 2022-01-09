@@ -88,7 +88,7 @@ class RangeArrow(pygame.sprite.Sprite):
         else:  # perfect hit, slightly (randomly) land near base_target
             self.basetarget = targetnow * random.uniform(0.999, 1.001)
 
-        self.targetheight = self.gamemapheight.getheight(self.basetarget)  # get the height at base_target
+        self.targetheight = self.gamemapheight.get_height(self.basetarget)  # get the height at base_target
 
         # ^ End calculate hitchance and base_target
 
@@ -128,7 +128,7 @@ class RangeArrow(pygame.sprite.Sprite):
         if whohit < 0:
             whohit = 0  # hitchance cannot be negative
 
-        targetdefence = float(target.rangedef * targetpercent) + targetluck  # calculate defence
+        targetdefence = float(target.range_def * targetpercent) + targetluck  # calculate defence
         if targetdefence < 0:
             targetdefence = 0  # defence cannot be negative
 
@@ -172,7 +172,7 @@ class RangeArrow(pygame.sprite.Sprite):
             if move.length() <= move_length:
                 self.base_pos += move
                 if self.arcshot is False:  # direct shot will not be able to shoot pass higher height terrain midway
-                    if self.gamemapheight.getheight(self.base_pos) > self.targetheight + 20:
+                    if self.gamemapheight.get_height(self.base_pos) > self.targetheight + 20:
                         self.kill()
                 self.pos = self.base_pos * viewmode
                 self.rect.center = list(int(v) for v in self.pos)
@@ -189,7 +189,7 @@ class RangeArrow(pygame.sprite.Sprite):
                 self.penetrate = 0
 
             for subunit in pygame.sprite.spritecollide(self, unitlist, 0):
-                if subunit != self.shooter:  # and subunit.base_pos.distance_to(self.base_pos) < subunit.imageheight:
+                if subunit != self.shooter:  # and subunit.base_pos.distance_to(self.base_pos) < subunit.image_height:
                     if self.arcshot is False:  # direct shot
                         self.register_hit(subunit)
                         self.kill()

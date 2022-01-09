@@ -62,12 +62,12 @@ def apply_colour(surface, colour=None):
     return surface
 
 
-def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1, removeold=True, oldlist=None):
+def setup_list(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1, removeold=True, oldlist=None):
     """generate list of list item"""
-    widthadjust = screen_scale[0]
-    heightadjust = screen_scale[1]
-    row = 5 * heightadjust
-    column = 5 * widthadjust
+    width_adjust = screen_scale[0]
+    height_adjust = screen_scale[1]
+    row = 5 * height_adjust
+    column = 5 * width_adjust
     pos = box.rect.topleft
     if currentrow > len(showlist) - box.maxshowlist:
         currentrow = len(showlist) - box.maxshowlist
@@ -80,7 +80,7 @@ def setuplist(itemclass, currentrow, showlist, itemgroup, box, uiclass, layer=1,
     for index, item in enumerate(showlist):
         if index >= currentrow:
             itemgroup.add(itemclass(screen_scale, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
-            row += (30 * heightadjust)  # next row
+            row += (30 * height_adjust)  # next row
             addrow += 1
             if addrow > box.maxshowlist:
                 break  # will not generate more than space allowed
@@ -98,14 +98,14 @@ def listscroll(scroll, listbox, currentrow, namelist, namegroup, uiclass, layer=
         if currentrow < 0:
             currentrow = 0
         else:
-            setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer, oldlist=oldlist)
-            scroll.changeimage(newrow=currentrow, logsize=len(namelist))
+            setup_list(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer, oldlist=oldlist)
+            scroll.change_image(new_row=currentrow, log_size=len(namelist))
 
     elif mouse_scrolldown:
         currentrow += 1
         if currentrow + listbox.maxshowlist - 1 < len(namelist):
-            setuplist(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer, oldlist=oldlist)
-            scroll.changeimage(newrow=currentrow, logsize=len(namelist))
+            setup_list(menu.NameList, currentrow, namelist, namegroup, listbox, uiclass, layer=layer, oldlist=oldlist)
+            scroll.change_image(new_row=currentrow, log_size=len(namelist))
         else:
             currentrow -= 1
     return currentrow
@@ -120,12 +120,12 @@ def popuplist_newopen(action, newrect, newlist, uitype):
         popup_listbox.rect = popup_listbox.image.get_rect(bottomleft=newrect)
     popup_listbox.namelist = newlist
     popup_listbox.action = action
-    setuplist(menu.NameList, 0, newlist, popup_namegroup,
-              popup_listbox, ui, layer=19)
+    setup_list(menu.NameList, 0, newlist, popup_namegroup,
+               popup_listbox, ui, layer=19)
 
     popup_listscroll.pos = popup_listbox.rect.topright  # change position variable
     popup_listscroll.rect = popup_listscroll.image.get_rect(topleft=popup_listbox.rect.topright)
-    popup_listscroll.changeimage(newrow=0, logsize=len(newlist))
+    popup_listscroll.change_image(new_row=0, log_size=len(newlist))
     ui.add(popup_listbox, *popup_namegroup, popup_listscroll)
 
     popup_listbox.type = uitype
@@ -206,7 +206,7 @@ def reload_animation(animation, char):
             helper.select_part(None, shift_press, False)
 
 
-def change_animation(newname):
+def change_animation(new_name):
     global animation_name, current_frame, current_anim_row, current_frame_row, anim_property_select, frame_property_select
     current_frame = 0
     anim.show_frame = current_frame
@@ -216,12 +216,12 @@ def change_animation(newname):
     frame_property_select = [[] for _ in range(10)]
     current_anim_row = 0
     current_frame_row = 0
-    skeleton.read_animation(newname)
-    animation_name = newname
-    animation_selector.change_name(newname)
+    skeleton.read_animation(new_name)
+    animation_name = new_name
+    animation_selector.change_name(new_name)
     reload_animation(anim, skeleton)
-    anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
-    frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
+    anim_prop_listscroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
+    frame_prop_listscroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
 
 
 def anim_to_pool(pool, char, new=False, replace=None, duplicate=None):
@@ -241,6 +241,7 @@ def anim_to_pool(pool, char, new=False, replace=None, duplicate=None):
                 pool[direction][animation_name] = [frame for index, frame in enumerate(char.frame_list) if frame != {} and activate_list[index]]
         else:
             pool[char.side][animation_name] = [frame for index, frame in enumerate(char.frame_list) if frame != {} and activate_list[index]]
+
 
 def anim_save_pool(pool, pool_name):
     """Save animation pool data"""
@@ -886,10 +887,10 @@ class Skeleton:
                     strip.activate = True
                     activate_list[strip_index] = True
                     break
-        setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                  anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
-        setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                  frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+        setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                   anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
+        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                   frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
 
     def create_animation_film(self, pose_layer_list, frame, empty=False):
         image = pygame.Surface((default_sprite_size[0] * self.size, default_sprite_size[1] * self.size),
@@ -1472,7 +1473,7 @@ current_pool = generic_animation_pool
 ui = pygame.sprite.LayeredUpdates()
 fakegroup = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
 
-showroom_scale = ((default_sprite_size[0] * screen_size[0] / 500, default_sprite_size[1] * screen_size[1] / 500))
+showroom_scale = (default_sprite_size[0] * screen_size[0] / 500, default_sprite_size[1] * screen_size[1] / 500)
 showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale[1] / default_sprite_size[1])
 showroom = Showroom(showroom_scale)
 ui.add(showroom)
@@ -1639,8 +1640,8 @@ current_anim_row = 0
 current_frame_row = 0
 frame_property_select = [[] for _ in range(10)]
 anim_property_select = []
-anim_prop_listscroll.changeimage(newrow=0, logsize=len(anim_prop_listbox.namelist))
-frame_prop_listscroll.changeimage(newrow=0, logsize=len(frame_prop_listbox.namelist[current_frame]))
+anim_prop_listscroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
+frame_prop_listscroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
 ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_listscroll, frame_prop_listscroll)
 
 animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
@@ -1845,8 +1846,8 @@ while True:
                     newrow = popup_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
                     if newrow is not None:
                         currentpopuprow = newrow
-                        setuplist(menu.NameList, currentpopuprow, popup_listbox.namelist, popup_namegroup,
-                                  popup_listbox, ui, layer=19)
+                        setup_list(menu.NameList, currentpopuprow, popup_listbox.namelist, popup_namegroup,
+                                   popup_listbox, ui, layer=19)
 
                 else:  # click other stuffs
                     for thisname in popup_namegroup:  # remove name list
@@ -1891,15 +1892,15 @@ while True:
                     newrow = anim_prop_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
                     if newrow is not None:
                         current_anim_row = newrow
-                        setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                                  anim_prop_listbox, ui, layer=9, oldlist=anim_property_list)
+                        setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                                   anim_prop_listbox, ui, layer=9, oldlist=anim_property_list)
 
                 elif frame_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     newrow = frame_prop_listscroll.update(mouse_pos, mouse_up)  # update the scroller and get new current subsection
                     if newrow is not None:
                         current_frame_row = newrow
-                        setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                  frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                   frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
 
                 elif anim_prop_listbox.rect.collidepoint(mouse_pos):
                     for index, name in enumerate(anim_prop_namegroup):  # change leader with the new selected one
@@ -1925,15 +1926,15 @@ while True:
                                 inputui.change_instruction("Custom Frame Prop:")
                                 ui.add(inputui_pop)
                             elif "effect_" in name.name:
-                                if (name.name[-1] == "_" or name.name[-1].isdigit()):  # effect that need number value
+                                if name.name[-1] == "_" or name.name[-1].isdigit():  # effect that need number value
                                     if name.selected is False:
                                         textinputpopup = ("text_input", "frame_prop_num_" + name.name)
                                         inputui.change_instruction("Input Number Value:")
                                         ui.add(inputui_pop)
                                 elif name.selected is False:  # effect that no need input
                                     frame_property_select[current_frame].append(name.name)
-                                    setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                              frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+                                    setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                               frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
                                     reload_animation(anim, skeleton)
                                 if name.selected:
                                     name.select()
@@ -2010,7 +2011,7 @@ while True:
                     elif activate_button.rect.collidepoint(mouse_pos):
                         for strip_index, strip in enumerate(filmstrips):
                             if strip_index == current_frame:
-                                if strip.activate == False:
+                                if strip.activate is False:
                                     strip.activate = True
                                     activate_list[strip_index] = True
                                     activate_button.change_option(0)
@@ -2138,8 +2139,8 @@ while True:
                                 anim.show_frame = current_frame
                                 skeleton.edit_part(mouse_pos, "change")
                                 current_frame_row = 0
-                                setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                          frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])  # change frame property list
+                                setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                           frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])  # change frame property list
                                 for index, helper in enumerate(helperlist):
                                     helper.select_part(None, False, False)
                                 if strip.activate:
@@ -2283,7 +2284,7 @@ while True:
                 if animation_name + "(copy" + last_char + ")" in current_pool[0]:  # copy exist
                     while animation_name + "(copy" + last_char + ")" in current_pool[0]:
                         last_char = str(int(last_char) + 1)
-                elif ("(copy" in animation_name and animation_name[-2].isdigit() and animation_name[-1] == ")"):
+                elif "(copy" in animation_name and animation_name[-2].isdigit() and animation_name[-1] == ")":
                     last_char = int(animation_name[-2]) + 1
                 animation_name = animation_name + "(copy" + last_char + ")"
                 animation_selector.change_name(animation_name)
@@ -2310,8 +2311,8 @@ while True:
                     anim_prop_listbox.namelist.insert(-1, input_box.text)
                 if input_box.text not in anim_property_select:
                     anim_property_select.append(input_box.text)
-                setuplist(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                          anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
+                setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
+                           anim_prop_listbox, ui, layer=9, oldlist=anim_property_select)
                 for frame in skeleton.frame_list:
                     frame["animation_property"] = anim_property_select
 
@@ -2320,8 +2321,8 @@ while True:
                     frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
                 if input_box.text not in frame_property_select[current_frame]:
                     frame_property_select[current_frame].append(input_box.text)
-                setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                          frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+                setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                           frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
 
             elif "frame_prop_num" in textinputpopup[1] and input_box.text.isdigit():
                 for name in frame_prop_listbox.namelist[current_frame]:
@@ -2329,8 +2330,8 @@ while True:
                         index = frame_prop_listbox.namelist[current_frame].index(name)
                         frame_prop_listbox.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + input_box.text
                         frame_property_select[current_frame].append(name[0:name.rfind("_") + 1] + input_box.text)
-                        setuplist(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                  frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
+                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                   frame_prop_listbox, ui, layer=9, oldlist=frame_property_select[current_frame])
                         reload_animation(anim, skeleton)
                         break
 

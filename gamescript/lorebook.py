@@ -119,8 +119,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.change_subsection(self.subsection, pagebutton, allui)
         self.setup_subsection_list(listsurface, listgroup)
 
-        lorescroll.changeimage(logsize=self.logsize)
-        lorescroll.changeimage(newrow=self.current_subsection_row)
+        lorescroll.change_image(log_size=self.logsize)
+        lorescroll.change_image(new_row=self.current_subsection_row)
 
     def change_subsection(self, subsection, pagebutton, allui):
         self.subsection = subsection
@@ -480,10 +480,10 @@ class SubsectionName(pygame.sprite.Sprite):
 
 
 # class Searchbox(pygame.sprite.Sprite):
-#     def __init__(self, textsize=16):
+#     def __init__(self, text_size=16):
 #         self._layer = 14
 #         pygame.sprite.Sprite.__init__(self, self.containers)
-#         self.font = pygame.font.SysFont("helvetica", textsize)
+#         self.font = pygame.font.SysFont("helvetica", text_size)
 #         self.image = pygame.Surface(100, 50)
 #         self.text = ""
 #         self.text_surface = self.font.render(str(self.text), 1, (0, 0, 0))
@@ -537,14 +537,14 @@ def lorebook_process(self, uidraw, mouse_up, mouse_down, mouse_scrollup, mouse_s
                 self.lorebook.current_subsection_row = 0
             else:
                 self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)
-                self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+                self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
 
     elif mouse_scrolldown:
         if self.lorenamelist.rect.collidepoint(self.mousepos):  # Scrolling at lore book subsection list
             self.lorebook.current_subsection_row += 1
-            if self.lorebook.current_subsection_row + self.lorebook.max_subsection_show - 1 < self.lorebook.logsize:
+            if self.lorebook.current_subsection_row + self.lorebook.max_subsection_show - 1 < self.lorebook.log_size:
                 self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)
-                self.lorescroll.changeimage(newrow=self.lorebook.current_subsection_row)
+                self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
             else:
                 self.lorebook.current_subsection_row -= 1
 

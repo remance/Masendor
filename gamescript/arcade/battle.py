@@ -26,7 +26,7 @@ class Battle:
     kill_effect_icon = commonscript.kill_effect_icon
     popout_lorebook = commonscript.popout_lorebook
     popuplist_newopen = commonscript.popuplist_newopen
-    setuplist = commonscript.setuplist
+    setuplist = commonscript.setup_list
     camerascale = 5
     escmenu_process = escmenu.escmenu_process
 
@@ -156,7 +156,7 @@ class Battle:
         self.weather_matter_imgs = main.weather_matter_imgs
         self.weather_effect_imgs = main.weather_effect_imgs
 
-        self.featuremod = main.featuremod
+        self.featuremod = main.feature_mod
 
         self.allfaction = main.allfaction
         self.coa = main.coa
@@ -233,12 +233,12 @@ class Battle:
         imgs[1].fill(featurecolour)  # start with plain feature
         imgs[2].fill((255, 100, 100, 125))  # start with height 100 plain
 
-        self.battlemap_base.drawimage(imgs[0])
-        self.battlemap_feature.drawimage(imgs[1])
-        self.battlemap_height.drawimage(imgs[2])
-        self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, None, self, True)
-        self.minimap.drawimage(self.showmap.trueimage, self.camera)
-        self.showmap.changescale(self.camerascale)
+        self.battlemap_base.draw_image(imgs[0])
+        self.battlemap_feature.draw_image(imgs[1])
+        self.battlemap_height.draw_image(imgs[2])
+        self.showmap.draw_image(self.battlemap_base, self.battlemap_feature, self.battlemap_height, None, self, True)
+        self.minimap.draw_image(self.showmap.true_image, self.camera)
+        self.showmap.change_scale(self.camerascale)
 
     def preparenewgame(self, ruleset, ruleset_folder, teamselected, enactment, mapselected, source, unitscale, mode):
 
@@ -300,24 +300,24 @@ class Battle:
         try:  # get new map event for event log
             mapevent = csv_read("eventlog.csv",
                                 [self.main_dir, "data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 0)
-            battleui.EventLog.mapevent = mapevent
+            battleui.EventLog.map_event = mapevent
         except Exception:  # can't find any event file
             mapevent = {}  # create empty list
 
-        self.eventlog.makenew()  # reset old event log
+        self.eventlog.make_new_log()  # reset old event log
 
-        self.eventlog.addeventlog(mapevent)
+        self.eventlog.add_event_log(mapevent)
 
         self.eventschedule = None
         self.eventlist = []
-        for index, event in enumerate(self.eventlog.mapevent):
-            if self.eventlog.mapevent[event][3] is not None:
+        for index, event in enumerate(self.eventlog.map_event):
+            if self.eventlog.map_event[event][3] is not None:
                 if index == 0:
                     self.eventmapid = event
-                    self.eventschedule = self.eventlog.mapevent[event][3]
+                    self.eventschedule = self.eventlog.map_event[event][3]
                 self.eventlist.append(event)
 
-        self.timenumber.startsetup(self.weather_current)
+        self.timenumber.start_setup(self.weather_current)
 
         # v Create the battle map
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
@@ -327,16 +327,16 @@ class Battle:
 
         if mapselected is not None:
             imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], loadorder=False)
-            self.battlemap_base.drawimage(imgs[0])
-            self.battlemap_feature.drawimage(imgs[1])
-            self.battlemap_height.drawimage(imgs[2])
+            self.battlemap_base.draw_image(imgs[0])
+            self.battlemap_feature.draw_image(imgs[1])
+            self.battlemap_height.draw_image(imgs[2])
 
-            try:  # placename map layer is optional, if not existed in folder then assign None
+            try:  # place_name map layer is optional, if not existed in folder then assign None
                 placenamemap = imgs[3]
             except Exception:
                 placenamemap = None
-            self.showmap.drawimage(self.battlemap_base, self.battlemap_feature, self.battlemap_height, placenamemap, self, False)
-            self.showmap.changescale(self.camerascale)
+            self.showmap.draw_image(self.battlemap_base, self.battlemap_feature, self.battlemap_height, placenamemap, self, False)
+            self.showmap.change_scale(self.camerascale)
         else:  # for unit editor mode, create empty temperate glass map
             self.editor_map_change((166, 255, 107), (181, 230, 29))
         # ^ End create battle map
@@ -512,14 +512,14 @@ class Battle:
         effectmouseover = False
         for icon in iconlist:
             if icon.rect.collidepoint(self.mousepos):
-                checkvalue = self.troopcard_ui.value2[icon.icontype]
+                checkvalue = self.troopcard_ui.value2[icon.icon_type]
                 self.effectpopup.pop(self.mousepos, checkvalue[icon.gameid])
                 self.battleui.add(self.effectpopup)
                 effectmouseover = True
                 if mouseright:
-                    if icon.icontype == 0:  # Trait
+                    if icon.icon_type == 0:  # Trait
                         section = 7
-                    elif icon.icontype == 1:  # Skill
+                    elif icon.icon_type == 1:  # Skill
                         section = 6
                     else:
                         section = 5  # Status effect
@@ -569,9 +569,9 @@ class Battle:
                 self.uiclick = True
                 if self.troopcard_ui.option != button.event:
                     self.troopcard_ui.option = button.event
-                    self.troopcard_ui.valueinput(who=who, weaponlist=self.allweapon,
-                                                 armourlist=self.allarmour,
-                                                 changeoption=1, splithappen=self.splithappen)
+                    self.troopcard_ui.value_input(who=who, weapon_list=self.allweapon,
+                                                  armour_list=self.allarmour,
+                                                  change_option=1, split=self.splithappen)
 
                     if self.troopcard_ui.option == 2:
                         self.traitskillblit()
@@ -624,7 +624,7 @@ class Battle:
     def changestate(self):
         self.previous_gamestate = self.gamestate
         if self.gamestate == 1:  # change to battle state
-            self.minimap.drawimage(self.showmap.trueimage, self.camera)
+            self.minimap.draw_image(self.showmap.true_image, self.camera)
 
             if self.last_selected is not None:  # any parentunit is selected
                 self.last_selected = None  # reset last_selected
@@ -652,7 +652,7 @@ class Battle:
             # ^ End starting
 
         elif self.gamestate == 2:  # change to editor state
-            self.minimap.drawimage(self.showmap.trueimage, self.camera)  # reset minimap
+            self.minimap.draw_image(self.showmap.true_image, self.camera)  # reset minimap
             for arrow in self.arrows:  # remove all range attack
                 arrow.kill()
                 del arrow
@@ -722,7 +722,7 @@ class Battle:
 
             for slot in self.unit_build_slot:  # reset all sub-subunit slot
                 slot.changetroop(0, self.baseterrain,
-                                 self.baseterrain * len(self.battlemap_feature.featurelist) + self.featureterrain,
+                                 self.baseterrain * len(self.battlemap_feature.feature_list) + self.featureterrain,
                                  self.currentweather)
                 slot.leader = None  # remove leader link in
 
@@ -784,7 +784,7 @@ class Battle:
                                   team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.screen_scale[0]) / 2),
                                                self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
 
-            self.troop_scroll.changeimage(newrow=self.current_troop_row, logsize=len(self.troop_list))  # change troop scroll image
+            self.troop_scroll.change_image(new_row=self.current_troop_row, log_size=len(self.troop_list))  # change troop scroll image
 
             for index, slot in enumerate(self.unit_build_slot):  # start with the first player subunit slot selected when enter
                 if index == 0:
@@ -802,7 +802,7 @@ class Battle:
             self.changestate()
 
             for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
-                self.presetselectborder.changepos(name.rect.topleft)
+                self.presetselectborder.change_pos(name.rect.topleft)
                 break
 
         else:  # normal battle
@@ -830,7 +830,7 @@ class Battle:
 
         self.effect_updater.update(self.allunitlist, self.dt, self.camerascale)
 
-        # self.mapdefarray = []
+        # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
         pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
 
@@ -910,13 +910,13 @@ class Battle:
                                 if self.eventlog.current_start_row < 0:  # can go no further than the first log
                                     self.eventlog.current_start_row = 0
                                 else:
-                                    self.eventlog.recreateimage()  # recreate eventlog image
-                                    self.logscroll.changeimage(newrow=self.eventlog.current_start_row)
+                                    self.eventlog.recreate_image()  # recreate eventlog image
+                                    self.logscroll.change_image(new_row=self.eventlog.current_start_row)
                             elif mouse_scrolldown:
-                                if self.eventlog.current_start_row + self.eventlog.max_row_show - 1 < self.eventlog.lencheck and \
-                                        self.eventlog.lencheck > 9:
-                                    self.eventlog.recreateimage()
-                                    self.logscroll.changeimage(newrow=self.eventlog.current_start_row)
+                                if self.eventlog.current_start_row + self.eventlog.max_row_show - 1 < self.eventlog.len_check and \
+                                        self.eventlog.len_check > 9:
+                                    self.eventlog.recreate_image()
+                                    self.logscroll.change_image(new_row=self.eventlog.current_start_row)
                                 else:
                                     self.eventlog.current_start_row -= 1
 
@@ -929,7 +929,7 @@ class Battle:
                             elif self.popup_listbox.type == "feature":
                                 self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
                                                                             self.popup_listbox,
-                                                                            self.currentpopuprow, self.battlemap_feature.featurelist,
+                                                                            self.currentpopuprow, self.battlemap_feature.feature_list,
                                                                             self.popup_namegroup, self.battleui)
                             elif self.popup_listbox.type == "weather":
                                 self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
@@ -959,12 +959,10 @@ class Battle:
 
                     # keyboard input
                     if keypress == pygame.K_TAB:
-                        if self.mapviewmode == 0:  # Currently in normal map mode
-                            self.mapviewmode = 1
-                            self.showmap.changemode(self.mapviewmode)
-                        else:  # Currently in height mode
+                        self.mapviewmode += 1  # change height map mode
+                        if self.mapviewmode > 2:
                             self.mapviewmode = 0
-                            self.showmap.changemode(self.mapviewmode)
+                        self.showmap.change_mode(self.mapviewmode)
 
                     elif keypress == pygame.K_p:  # Speed Pause/unpause Button
                         if self.gamespeed > 0:  #
@@ -974,14 +972,14 @@ class Battle:
 
                     elif keypress == pygame.K_PAGEUP:  # Go to top of event log
                         self.eventlog.current_start_row = 0
-                        self.eventlog.recreateimage()
-                        self.logscroll.changeimage(newrow=self.eventlog.current_start_row)
+                        self.eventlog.recreate_image()
+                        self.logscroll.change_image(new_row=self.eventlog.current_start_row)
 
                     elif keypress == pygame.K_PAGEDOWN:  # Go to bottom of event log
-                        if self.eventlog.lencheck > self.eventlog.max_row_show:
-                            self.eventlog.current_start_row = self.eventlog.lencheck - self.eventlog.max_row_show
-                            self.eventlog.recreateimage()
-                            self.logscroll.changeimage(newrow=self.eventlog.current_start_row)
+                        if self.eventlog.len_check > self.eventlog.max_row_show:
+                            self.eventlog.current_start_row = self.eventlog.len_check - self.eventlog.max_row_show
+                            self.eventlog.recreate_image()
+                            self.logscroll.change_image(new_row=self.eventlog.current_start_row)
 
                     elif keypress == pygame.K_SPACE and self.last_selected is not None:
                         self.last_selected.command(self.battle_mouse_pos[0], False, False, self.last_mouseover, None, othercommand=2)
@@ -990,9 +988,9 @@ class Battle:
                         if self.terraincheck in self.battleui:
                             if 0 <= self.battle_mouse_pos[1][0] <= 999 and \
                                     0 <= self.battle_mouse_pos[1][1] <= 999:  # not draw if pos is off the map
-                                terrainpop, featurepop = self.battlemap_feature.getfeature(self.battle_mouse_pos[1], self.battlemap_base)
-                                featurepop = self.battlemap_feature.featuremod[featurepop]
-                                heightpop = self.battlemap_height.getheight(self.battle_mouse_pos[1])
+                                terrainpop, featurepop = self.battlemap_feature.get_feature(self.battle_mouse_pos[1], self.battlemap_base)
+                                featurepop = self.battlemap_feature.feature_mod[featurepop]
+                                heightpop = self.battlemap_height.get_height(self.battle_mouse_pos[1])
                                 self.terraincheck.pop(self.mousepos, featurepop, heightpop)
                                 self.battleui.add(self.terraincheck)
                         else:
@@ -1013,9 +1011,9 @@ class Battle:
                     #     self.textdrama.queue.append("Now much more clear")
                     # elif keypress == pygame.K_n and self.last_selected is not None:
                     #     if self.last_selected.team == 1:
-                    #         self.last_selected.switchfaction(self.team1unit, self.team2unit, self.team1poslist, self.enactment)
+                    #         self.last_selected.switchfaction(self.team1unit, self.team2unit, self.team1_pos_list, self.enactment)
                     #     else:
-                    #         self.last_selected.switchfaction(self.team2unit, self.team1unit, self.team2poslist, self.enactment)
+                    #         self.last_selected.switchfaction(self.team2unit, self.team1unit, self.team2_pos_list, self.enactment)
                     # elif keypress == pygame.K_l and self.last_selected is not None:
                     #     for subunit in self.last_selected.subunit_sprite:
                     #         subunit.base_morale = 0
@@ -1102,7 +1100,7 @@ class Battle:
                                     newrow = self.logscroll.update(self.mousepos)
                                     if self.eventlog.current_start_row != newrow:
                                         self.eventlog.current_start_row = newrow
-                                        self.eventlog.recreateimage()
+                                        self.eventlog.recreate_image()
 
                             elif self.eventlog.rect.collidepoint(self.mousepos):  # check mouse collide for event log ui
                                 if mouse_up:
@@ -1127,11 +1125,11 @@ class Battle:
                                             self.uiclick = True
                                             if mouse_up:
                                                 if button.event in (0, 1, 2, 3):  # change tab mode
-                                                    self.eventlog.changemode(button.event)
+                                                    self.eventlog.change_mode(button.event)
                                                 elif button.event == 4:  # delete tab log button
-                                                    self.eventlog.cleartab()
+                                                    self.eventlog.clear_tab()
                                                 elif button.event == 5:  # delete all tab log button
-                                                    self.eventlog.cleartab(alltab=True)
+                                                    self.eventlog.clear_tab(all_tab=True)
                                         break
 
                             # v code that only run when any unit is selected
@@ -1165,8 +1163,8 @@ class Battle:
                                             self.leadernow[self.selectleader].change_subunit(self.showincard)
                                             self.showincard.leader = self.leadernow[self.selectleader]
                                             self.previewauthority(self.leadernow, self.leadernow[self.selectleader].subunit.armyid)
-                                            self.troopcard_ui.valueinput(who=self.showincard, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                                         changeoption=1)
+                                            self.troopcard_ui.value_input(who=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
+                                                                          change_option=1)
                                             unitdict = self.convertslot_dict("test")
                                             if unitdict is not None:
                                                 warnlist = []
@@ -1188,7 +1186,7 @@ class Battle:
                                 self.uiclick = True
                                 for index, name in enumerate(self.unitpreset_namegroup):
                                     if name.rect.collidepoint(self.mousepos) and mouse_up:
-                                        self.presetselectborder.changepos(name.rect.topleft)  # change border to one selected
+                                        self.presetselectborder.change_pos(name.rect.topleft)  # change border to one selected
                                         if list(self.customunitpresetlist.keys())[index] != "New Preset":
                                             self.unitpresetname = name.name
                                             unitlist = []
@@ -1205,7 +1203,7 @@ class Battle:
                                                 for slot in self.unit_build_slot:
                                                     if slot.gameid == unitindex:
                                                         slot.changetroop(item, self.baseterrain,
-                                                                         self.baseterrain * len(self.battlemap_feature.featurelist)
+                                                                         self.baseterrain * len(self.battlemap_feature.feature_list)
                                                                          + self.featureterrain, self.currentweather)
                                                         break
 
@@ -1229,8 +1227,8 @@ class Battle:
                                             self.leadernow = [leader for leader in self.previewleader]
                                             self.battleui.add(*self.leadernow)  # add leader portrait to draw
                                             self.showincard = slot
-                                            self.troopcard_ui.valueinput(who=self.showincard, weaponlist=self.allweapon,
-                                                                         armourlist=self.allarmour)  # update subunit card on selected subunit
+                                            self.troopcard_ui.value_input(who=self.showincard, weapon_list=self.allweapon,
+                                                                          armour_list=self.allarmour)  # update subunit card on selected subunit
                                             if self.troopcard_ui.option == 2:
                                                 self.traitskillblit()
                                                 self.effecticonblit()
@@ -1241,7 +1239,7 @@ class Battle:
                                             self.unitpresetname = ""
                                             for slot in self.unit_build_slot:  # reset all sub-subunit slot
                                                 slot.changetroop(0, self.baseterrain,
-                                                                 self.baseterrain * len(self.battlemap_feature.featurelist) + self.featureterrain,
+                                                                 self.baseterrain * len(self.battlemap_feature.feature_list) + self.featureterrain,
                                                                  self.currentweather)
                                                 slot.leader = None  # remove leader link in
 
@@ -1254,7 +1252,7 @@ class Battle:
                                             self.showincard = slot
 
                                             # self.troopcard_ui.valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
-                                            #                       changeoption=1)
+                                            #                       change_option=1)
 
                             # elif self.gameui[1] in self.battleui and self.gameui[1].rect.collidepoint(self.mousepos):
                             #     self.uiclick = True
@@ -1301,7 +1299,7 @@ class Battle:
                                                                                map.feature_colour[self.featureterrain])
 
                                                     elif self.popup_listbox.type == "feature":
-                                                        self.feature_change_button.changetext(self.battlemap_feature.featurelist[index])
+                                                        self.feature_change_button.changetext(self.battlemap_feature.feature_list[index])
                                                         self.featureterrain = index
                                                         self.editor_map_change(map.terrain_colour[self.baseterrain],
                                                                                map.feature_colour[self.featureterrain])
@@ -1317,12 +1315,12 @@ class Battle:
                                                     for slot in self.unit_build_slot:  # reset all troop stat
                                                         slot.changetroop(slot.troopid, self.baseterrain,
                                                                          self.baseterrain * len(
-                                                                             self.battlemap_feature.featurelist) + self.featureterrain,
+                                                                             self.battlemap_feature.feature_list) + self.featureterrain,
                                                                          self.currentweather)
                                                     if self.showincard is not None:  # reset subunit card as well
-                                                        self.troopcard_ui.valueinput(who=self.showincard, weaponlist=self.allweapon,
-                                                                                     armourlist=self.allarmour,
-                                                                                     changeoption=1)
+                                                        self.troopcard_ui.value_input(who=self.showincard, weapon_list=self.allweapon,
+                                                                                      armour_list=self.allarmour,
+                                                                                      change_option=1)
                                                         if self.troopcard_ui.option == 2:
                                                             self.traitskillblit()
                                                             self.effecticonblit()
@@ -1343,7 +1341,7 @@ class Battle:
                                                 self.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_base.terrain_list,
                                                                self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "feature":
-                                                self.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_feature.featurelist,
+                                                self.setuplist(menu.NameList, self.currentpopuprow, self.battlemap_feature.feature_list,
                                                                self.popup_namegroup, self.popup_listbox, self.battleui, layer=17)
                                             elif self.popup_listbox.type == "weather":
                                                 self.setuplist(menu.NameList, self.currentpopuprow, self.weather_list,
@@ -1432,8 +1430,8 @@ class Battle:
                                                     self.leadernow = [leader for leader in self.previewleader]
                                                     self.battleui.add(*self.leadernow)  # add leader portrait to draw
                                                     self.showincard = slot
-                                                    self.troopcard_ui.valueinput(who=self.showincard, weaponlist=self.allweapon,
-                                                                                 armourlist=self.allarmour)  # update subunit card on selected subunit
+                                                    self.troopcard_ui.value_input(who=self.showincard, weapon_list=self.allweapon,
+                                                                                  armour_list=self.allarmour)  # update subunit card on selected subunit
                                                     if self.troopcard_ui.option == 2:
                                                         self.traitskillblit()
                                                         self.effecticonblit()
@@ -1466,8 +1464,8 @@ class Battle:
                                                         self.setuplist(menu.NameList, self.current_troop_row, self.troop_list,
                                                                        self.troop_namegroup,
                                                                        self.troop_listbox, self.battleui)  # setup troop name list
-                                                        self.troop_scroll.changeimage(newrow=self.current_troop_row,
-                                                                                      logsize=len(self.troop_list))  # change troop scroll image
+                                                        self.troop_scroll.change_image(new_row=self.current_troop_row,
+                                                                                       log_size=len(self.troop_list))  # change troop scroll image
 
                                                         self.main.maketeamcoa([index], uiclass=self.battleui, oneteam=True,
                                                                               team1setpos=(
@@ -1490,14 +1488,14 @@ class Battle:
                                                                             newslot.changetroop(self.troop_index_list[index + self.current_troop_row],
                                                                                                 self.baseterrain,
                                                                                                 self.baseterrain * len(
-                                                                                                    self.battlemap_feature.featurelist)
+                                                                                                    self.battlemap_feature.feature_list)
                                                                                                 + self.featureterrain, self.currentweather)
 
                                                                 else:
                                                                     slot.changetroop(self.troop_index_list[index + self.current_troop_row],
                                                                                      self.baseterrain,
                                                                                      self.baseterrain * len(
-                                                                                         self.battlemap_feature.featurelist) + self.featureterrain,
+                                                                                         self.battlemap_feature.feature_list) + self.featureterrain,
                                                                                      self.currentweather)
 
                                                                 if slot.name != "None":  # update information of subunit that just got changed
@@ -1506,8 +1504,8 @@ class Battle:
                                                                     self.battleui.add(*self.leadernow)  # add leader portrait to draw
                                                                     self.showincard = slot
                                                                     self.previewauthority(self.leadernow, slot.armyid)
-                                                                    self.troopcard_ui.valueinput(who=self.showincard, weaponlist=self.allweapon,
-                                                                                                 armourlist=self.allarmour)  # update subunit card on selected subunit
+                                                                    self.troopcard_ui.value_input(who=self.showincard, weapon_list=self.allweapon,
+                                                                                                  armour_list=self.allarmour)  # update subunit card on selected subunit
                                                                     if self.troopcard_ui.option == 2:
                                                                         self.traitskillblit()
                                                                         self.effecticonblit()
@@ -1628,7 +1626,7 @@ class Battle:
 
                                     elif self.feature_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map feature button
                                         self.uiclick = True
-                                        self.popuplist_newopen(self.feature_change_button.rect.midtop, self.battlemap_feature.featurelist, "feature")
+                                        self.popuplist_newopen(self.feature_change_button.rect.midtop, self.battlemap_feature.feature_list, "feature")
 
                                     elif self.weather_change_button.rect.collidepoint(self.mousepos) and mouse_up:  # change map weather button
                                         self.uiclick = True
@@ -1669,8 +1667,8 @@ class Battle:
                                                     self.setuplist(menu.NameList, self.current_troop_row, self.faction_list,
                                                                    self.troop_namegroup,
                                                                    self.troop_listbox, self.battleui)
-                                                    self.troop_scroll.changeimage(newrow=self.current_troop_row,
-                                                                                  logsize=len(self.faction_list))  # change troop scroll image
+                                                    self.troop_scroll.change_image(new_row=self.current_troop_row,
+                                                                                   log_size=len(self.faction_list))  # change troop scroll image
                                                     self.current_list_show = "faction"
 
                     if self.last_selected is not None:
@@ -1690,15 +1688,15 @@ class Battle:
                                     self.subunit_selected = None
                                     for index, subunit in enumerate(self.last_selected.subunit_sprite_array.flat):
                                         if subunit is not None:
-                                            self.inspectsubunit[index].addsubunit(subunit)
+                                            self.inspectsubunit[index].add_subunit(subunit)
                                             self.battleui.add(self.inspectsubunit[index])
                                             if self.subunit_selected is None:
                                                 self.subunit_selected = self.inspectsubunit[index]
 
                                     self.subunitselectedborder.pop(self.subunit_selected.pos)
                                     self.battleui.add(self.subunitselectedborder)
-                                    self.troopcard_ui.valueinput(who=self.subunit_selected.who, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                                 splithappen=self.splithappen)
+                                    self.troopcard_ui.value_input(who=self.subunit_selected.who, weapon_list=self.allweapon, armour_list=self.allarmour,
+                                                                  split=self.splithappen)
                                 self.battleui.remove(*self.leadernow)
 
                                 self.addbehaviourui(self.last_selected, elsecheck=True)
@@ -1708,7 +1706,7 @@ class Battle:
 
                             # else:  # Update topbar and command ui value every 1.1 seconds
                             #     if self.ui_timer >= 1.1:
-                            #         self.gameui[0].valueinput(who=self.last_selected, splithappen=self.splithappen)
+                            #         self.gameui[0].valueinput(who=self.last_selected, split=self.split)
 
                         elif self.gamestate == 2 and self.unit_build_slot not in self.battleui:
                             if (mouse_right or mouse_rightdown) and self.uiclick is False:  # Unit placement
@@ -1735,8 +1733,8 @@ class Battle:
                     # v Update value of the clicked subunit every 1.1 second
                     if self.gamestate == 1 and self.inspectui and ((self.ui_timer >= 1.1 and self.troopcard_ui.option != 0) or
                                                                    self.before_selected != self.last_selected):
-                        self.troopcard_ui.valueinput(who=self.subunit_selected.who, weaponlist=self.allweapon, armourlist=self.allarmour,
-                                                     splithappen=self.splithappen)
+                        self.troopcard_ui.value_input(who=self.subunit_selected.who, weapon_list=self.allweapon, armour_list=self.allarmour,
+                                                      split=self.splithappen)
                         if self.troopcard_ui.option == 2:  # skill and status effect card
                             self.countdownskillicon()
                             self.effecticonblit()
@@ -1769,18 +1767,18 @@ class Battle:
                         self.team_troopnumber = [1, 1, 1]  # reset troop count
 
                         # v Event log timer
-                        if self.eventschedule is not None and self.eventlist != [] and self.timenumber.timenum >= self.eventschedule:
-                            self.eventlog.addlog(None, None, eventmapid=self.eventmapid)
-                            for event in self.eventlog.mapevent:
-                                if self.eventlog.mapevent[event][3] is not None and self.eventlog.mapevent[event][3] > self.timenumber.timenum:
+                        if self.eventschedule is not None and self.eventlist != [] and self.timenumber.time_number >= self.eventschedule:
+                            self.eventlog.add_log(None, None, eventmapid=self.eventmapid)
+                            for event in self.eventlog.map_event:
+                                if self.eventlog.map_event[event][3] is not None and self.eventlog.map_event[event][3] > self.timenumber.time_number:
                                     self.eventmapid = event
-                                    self.eventschedule = self.eventlog.mapevent[event][3]
+                                    self.eventschedule = self.eventlog.map_event[event][3]
                                     break
                             self.eventlist = self.eventlist[1:]
                         # ^ End event log timer
 
                         # v Weather system
-                        if self.weather_current is not None and self.timenumber.timenum >= self.weather_current:
+                        if self.weather_current is not None and self.timenumber.time_number >= self.weather_current:
                             del self.currentweather
                             this_weather = self.weather_event[0]
 
@@ -1790,8 +1788,8 @@ class Battle:
                                 self.currentweather = weather.Weather(self.timeui, random.randint(0, 11), random.randint(0, 2),
                                                                       self.allweather)
                             self.weather_event.pop(0)
-                            self.showmap.addeffect(self.battlemap_height,
-                                                   self.weather_effect_imgs[self.currentweather.weathertype][self.currentweather.level])
+                            self.showmap.add_effect(self.battlemap_height,
+                                                    self.weather_effect_imgs[self.currentweather.weathertype][self.currentweather.level])
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_current = self.weather_event[0][1]
@@ -1830,7 +1828,7 @@ class Battle:
                         # ^ End weather system
 
                         # v Music System
-                        if len(self.music_schedule) > 0 and self.timenumber.timenum >= self.music_schedule[0]:
+                        if len(self.music_schedule) > 0 and self.timenumber.time_number >= self.music_schedule[0]:
                             pygame.mixer.music.unload()
                             self.music_current = self.music_event[0].copy()
                             self.pickmusic = random.randint(0, len(self.music_current) - 1)
@@ -1895,7 +1893,7 @@ class Battle:
                                                 spritetwo.state in (2, 4, 6, 10, 11, 12, 13):
                                             spritetwo.same_front.append(spriteone)
 
-                        self.subunitposarray = self.mapmovearray.copy()
+                        self.subunitposarray = self.map_move_array.copy()
                         for subunit in self.allsubunitlist:
                             for y in subunit.posrange[0]:
                                 for x in subunit.posrange[1]:
@@ -1920,14 +1918,14 @@ class Battle:
                     # ^ End melee pathfinding
 
                     if self.ui_timer > 1:
-                        self.scaleui.changefightscale(self.team_troopnumber)  # change fight colour scale on timeui bar
+                        self.scaleui.change_fight_scale(self.team_troopnumber)  # change fight colour scale on timeui bar
                         self.last_team_troopnumber = self.team_troopnumber
 
                     if self.combattimer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combattimer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing
 
                     self.effect_updater.update(self.subunit, self.dt, self.camerascale)
-                    self.weather_updater.update(self.dt, self.timenumber.timenum)
+                    self.weather_updater.update(self.dt, self.timenumber.time_number)
                     self.minimap.update(self.camerascale, [self.camerapos, self.cameraupcorner], self.team1poslist, self.team2poslist)
 
                     self.uiupdater.update()  # update ui
@@ -1972,9 +1970,9 @@ class Battle:
                                 coalist = [None, None]
                                 for index, coa in enumerate(self.teamcoa):
                                     coalist[index] = coa.image
-                                self.battledone_box.showresult(coalist[0], coalist[1], [self.start_troopnumber, self.team_troopnumber,
-                                                                                        self.wound_troopnumber, self.death_troopnumber,
-                                                                                        self.flee_troopnumber, self.capture_troopnumber])
+                                self.battledone_box.show_result(coalist[0], coalist[1], [self.start_troopnumber, self.team_troopnumber,
+                                                                                         self.wound_troopnumber, self.death_troopnumber,
+                                                                                         self.flee_troopnumber, self.capture_troopnumber])
                                 self.gamedone_button.rect = self.gamedone_button.image.get_rect(center=(self.battledone_box.rect.midbottom[0],
                                                                                                         self.battledone_box.rect.midbottom[1] / 1.3))
 
@@ -2002,7 +2000,7 @@ class Battle:
                                            self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset unit list
                             for name in self.unitpreset_namegroup:  # loop to change selected border position to the last in preset list
                                 if name.name == self.unitpresetname:
-                                    self.presetselectborder.changepos(name.rect.topleft)
+                                    self.presetselectborder.change_pos(name.rect.topleft)
                                     break
 
                             self.save_preset()
@@ -2016,7 +2014,7 @@ class Battle:
                         self.setuplist(menu.NameList, self.current_unit_row, list(self.customunitpresetlist.keys()),
                                        self.unitpreset_namegroup, self.unit_listbox, self.battleui)  # setup preset unit list
                         for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
-                            self.presetselectborder.changepos(name.rect.topleft)
+                            self.presetselectborder.change_pos(name.rect.topleft)
                             break
 
                         self.save_preset()
