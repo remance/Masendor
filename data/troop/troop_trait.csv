@@ -146,8 +146,8 @@
 145,"Rotten Smell",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Inducing vomit odour can cause great mental effect to the unfortunate victims."
 146,"Wall Climbing",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can bypass wall easily. They do not require siege equipment in order to go above any wall but may suffer damage if the wall is filled with anti-climbing trap and do not receive any defense bonus from siege equipment."
 147,"Hero Killer",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops deal more damage to champion and hero grade enemies."
-148,"Command Independent",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops’ morale will not be affected by commander's death or retreat."
-149,"Impetuous",1,,,,,0,,,,,,0,0,0,0,-20,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"Whether from pride or arrogance, these troops have tendency to follow order even less when the leader makes mistake or issue command they do not like."
+148,"Command Independent",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops’ morale will not be affected by commander's death or retreat."
+149,"Impetuous",1,,,,,0,,,,,,0,0,0,0,-20,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"Whether from pride or arrogance, these troops have tendency to follow order even less when the leader makes mistake or issue command they do not like."
 150,"Greslanoul's Mastery",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 151,"Hearty Competition",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Being the elite of elite, these elite troops see battle as a game who kill the most enemy. The more they kill the higher their morale including nearby allies."
 152,"Battle Juggernaut",,,130,150,150,20,,,,,,30,0,200,25,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,

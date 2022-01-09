@@ -399,7 +399,7 @@ class Leaderstat:
             self.leader_class_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
-                    if i.isdigit():
+                    if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                         row[n] = int(i)
                 self.leader_class[row[0]] = row[1:]
         unitfile.close()
