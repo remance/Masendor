@@ -8,7 +8,7 @@ from gamescript import commonscript
 from gamescript.tactical import longscript
 from pygame.transform import scale
 
-rotationxy = commonscript.rotationxy
+rotationxy = commonscript.rotation_xy
 
 class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
@@ -142,7 +142,7 @@ class Unit(pygame.sprite.Sprite):
     maxzoom = 10  # max zoom allow
     gamebattle = None
     die = longscript.die  # die script
-    setrotate = longscript.setrotate
+    setrotate = longscript.set_rotate
     formchangetimer = 10
     imgsize = None
 
@@ -517,9 +517,9 @@ class Unit(pygame.sprite.Sprite):
 
         # v assign team leader commander to every parentunit in team if this is commander parentunit
         if self.commander:
-            whicharmy = self.gamebattle.team1unit
+            whicharmy = self.gamebattle.team1_unit
             if self.team == 2:  # team2
-                whicharmy = self.gamebattle.team2unit
+                whicharmy = self.gamebattle.team2_unit
             for army in whicharmy:
                 army.teamcommander = self.leader[0]
         # ^ End assign commander
@@ -713,11 +713,11 @@ class Unit(pygame.sprite.Sprite):
                         self.processretreat(basetarget)
                         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
                         #     if self.team == 1:
-                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1unit, self.gamebattle.team2unit,
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1_unit, self.gamebattle.team2_unit,
                         #                                                         self.gamebattle.team1_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     else:
-                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2unit, self.gamebattle.team1unit,
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2_unit, self.gamebattle.team1_unit,
                         #                                                         self.gamebattle.team2_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])

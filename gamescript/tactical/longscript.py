@@ -166,7 +166,7 @@ def load_game_data(game):
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                                        icon=iconimage, ui_type="topbar")
     game.gameui.add(game.unitstat_ui)
-    game.unitstat_ui.unit_state_text = game.statetext
+    game.unitstat_ui.unit_state_text = game.state_text
 
     game.inspectuipos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
                          game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]
@@ -206,7 +206,7 @@ def load_game_data(game):
 
     battleui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
     game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
-    game.mainui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
+    game.main_ui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
 
     # ^ End game ui
 
@@ -271,7 +271,7 @@ def unitsetup(gamebattle):
     # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
 
     teamcolour = gamebattle.teamcolour
-    teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
+    teamarmy = (gamebattle.team0_unit, gamebattle.team1_unit, gamebattle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
                            gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
@@ -312,7 +312,7 @@ def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
 
 # Battle related gamescript
 
-def setrotate(self, set_target=None):
+def set_rotate(self, set_target=None):
     """set base_target and new angle for sprite rotation"""
     if set_target is None:  # For auto chase rotate
         myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
@@ -551,12 +551,12 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
 def die(who, battle, moralehit=True):
     """remove subunit when it dies"""
     if who.team == 1:
-        group = battle.team1unit
-        enemygroup = battle.team2unit
+        group = battle.team1_unit
+        enemygroup = battle.team2_unit
         battle.team1poslist.pop(who.gameid)
     else:
-        group = battle.team2unit
-        enemygroup = battle.team1unit
+        group = battle.team2_unit
+        enemygroup = battle.team1_unit
         battle.team2poslist.pop(who.gameid)
 
     if moralehit:
@@ -651,7 +651,7 @@ def add_new_unit(gamebattle, who, addunitlist=True):
 
     numberpos = (who.base_pos[0] - who.base_width_box,
                  (who.base_pos[1] + who.base_height_box))
-    who.number_pos = who.rotationxy(who.base_pos, numberpos, who.radians_angle)
+    who.number_pos = who.rotation_xy(who.base_pos, numberpos, who.radians_angle)
     who.change_pos_scale()  # find new position for troop number text
 
     for this_subunit in who.subunit_sprite:
@@ -705,21 +705,21 @@ def splitunit(battle, who, how):
         newarmysubunit = np.array_split(who.armysubunit, 2)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2)[0]
         newpos = pygame.Vector2(who.base_pos[0], who.base_pos[1] + (who.base_height_box / 2))
-        newpos = who.rotationxy(who.base_pos, newpos, who.radians_angle)  # new unit pos (back)
+        newpos = who.rotation_xy(who.base_pos, newpos, who.radians_angle)  # new unit pos (back)
         base_pos = pygame.Vector2(who.base_pos[0], who.base_pos[1] - (who.base_height_box / 2))
-        who.base_pos = who.rotationxy(who.base_pos, base_pos, who.radians_angle)  # new position for original parentunit (front)
+        who.base_pos = who.rotation_xy(who.base_pos, base_pos, who.radians_angle)  # new position for original parentunit (front)
         who.base_height_box /= 2
 
     else:  # split by column
         newarmysubunit = np.array_split(who.armysubunit, 2, axis=1)[1]
         who.armysubunit = np.array_split(who.armysubunit, 2, axis=1)[0]
         newpos = pygame.Vector2(who.base_pos[0] + (who.base_width_box / 3.3), who.base_pos[1])  # 3.3 because 2 make new unit position overlap
-        newpos = who.rotationxy(who.base_pos, newpos, who.radians_angle)  # new unit pos (right)
+        newpos = who.rotation_xy(who.base_pos, newpos, who.radians_angle)  # new unit pos (right)
         base_pos = pygame.Vector2(who.base_pos[0] - (who.base_width_box / 2), who.base_pos[1])
-        who.base_pos = who.rotationxy(who.base_pos, base_pos, who.radians_angle)  # new position for original parentunit (left)
+        who.base_pos = who.rotation_xy(who.base_pos, base_pos, who.radians_angle)  # new position for original parentunit (left)
         who.base_width_box /= 2
         frontpos = (who.base_pos[0], (who.base_pos[1] - who.base_height_box))  # find new front position of unit
-        who.front_pos = who.rotationxy(who.base_pos, frontpos, who.radians_angle)
+        who.front_pos = who.rotation_xy(who.base_pos, frontpos, who.radians_angle)
         who.set_target(who.front_pos)
 
     if who.leader[1].subunit.gameid not in newarmysubunit.flat:  # move the left sub-general leader subunit if it not in new one
@@ -801,9 +801,9 @@ def splitunit(battle, who, how):
 
     # v start making new parentunit
     if who.team == 1:
-        whosearmy = battle.team1unit
+        whosearmy = battle.team1_unit
     else:
-        whosearmy = battle.team2unit
+        whosearmy = battle.team2_unit
     newgameid = battle.allunitlist[-1].gameid + 1
 
     newunit = unit.Unit(startposition=newpos, gameid=newgameid, squadlist=newarmysubunit, colour=who.colour,

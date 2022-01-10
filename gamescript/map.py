@@ -161,17 +161,17 @@ class HeightMap(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.image = pygame.transform.scale(self.image_original, (int(self.dim[0]), int(self.dim[1])))
         if self.topology:
-            self.topology_image = self.image.copy()
-            data = pygame.image.tostring(self.topology_image, "RGB")  # convert image to string data for filtering effect
+            data = pygame.image.tostring(self.image.copy(), "RGB")  # convert image to string data for filtering effect
             img = Image.frombytes("RGB", (default_map_width, default_map_height), data)  # use PIL to get image data
             img = ImageOps.grayscale(img)  # grey scale the image
-            img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
+            img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
             img = ImageOps.posterize(img, self.poster_level)  # posterise
             img = img.filter(ImageFilter.FIND_EDGES)  # get edge
             # img = ImageOps.invert(img)  # invert
             # enhancer = ImageEnhance.Contrast(img)
             # img = enhancer.enhance(5)
 
+            # replace black background with transparent
             img = img.convert("RGBA")
             datas = img.getdata()
             newData = []

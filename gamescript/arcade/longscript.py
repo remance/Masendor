@@ -141,7 +141,7 @@ def load_game_data(game):
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                                        icon=iconimage, ui_type="topbar")
     game.gameui.add(game.unitstat_ui)
-    game.unitstat_ui.unit_state_text = game.statetext
+    game.unitstat_ui.unit_state_text = game.state_text
 
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
     game.buttonui.add(game.inspect_button)
@@ -206,7 +206,7 @@ def unitsetup(gamebattle):
     # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
 
     teamcolour = gamebattle.teamcolour
-    teamarmy = (gamebattle.team0unit, gamebattle.team1unit, gamebattle.team2unit)
+    teamarmy = (gamebattle.team0_unit, gamebattle.team1_unit, gamebattle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
                            gamebattle.mapselected, gamebattle.source, gamebattle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
@@ -247,10 +247,10 @@ def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
 
 # Battle related gamescript
 
-def setrotate(self, set_target=None, rotationlist=(-90, -120, -45, 0, 90, 45, 120, 180)):
+def set_rotate(self, set_target=None, rotationlist=(-90, -120, -45, 0, 90, 45, 120, 180)):
     """set base_target and new angle for sprite rotation"""
     if set_target is None:  # For auto chase rotate
-        myradians = math.atan2(seload_game_datalf.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
+        myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
     else:  # Command move or rotate
         myradians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
     newangle = math.degrees(myradians)
@@ -476,12 +476,12 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
 def die(who, battle, moralehit=True):
     """remove subunit when it dies"""
     if who.team == 1:
-        group = battle.team1unit
-        enemygroup = battle.team2unit
+        group = battle.team1_unit
+        enemygroup = battle.team2_unit
         battle.team1poslist.pop(who.gameid)
     else:
-        group = battle.team2unit
-        enemygroup = battle.team1unit
+        group = battle.team2_unit
+        enemygroup = battle.team1_unit
         battle.team2poslist.pop(who.gameid)
 
     if moralehit:

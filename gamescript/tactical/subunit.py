@@ -12,7 +12,7 @@ from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
 infinity = float("inf")
-rotationxy = commonscript.rotationxy
+rotationxy = commonscript.rotation_xy
 
 def create_troop_stat(self, stat, starthp, startstamina, unitscale):
     stat_header = self.stat_list.troop_list_header
@@ -372,7 +372,7 @@ class Subunit(pygame.sprite.Sprite):
     weapon_list = None
     armour_list = None
     stat_list = None
-    setrotate = longscript.setrotate
+    set_rotate = longscript.set_rotate
     change_leader = longscript.change_leader
     maxzoom = 10  # max zoom allow
     create_troop_stat = create_troop_stat
@@ -403,9 +403,9 @@ class Subunit(pygame.sprite.Sprite):
         self.team = self.parentunit.team
         self.gamebattle.allsubunitlist.append(self)
         if self.team == 1:  # add sprite to team subunit group for collision
-            groupcollide = self.gamebattle.team1subunit
+            groupcollide = self.gamebattle.team1_subunit
         elif self.team == 2:
-            groupcollide = self.gamebattle.team2subunit
+            groupcollide = self.gamebattle.team2_subunit
         groupcollide.add(self)
 
         self.status_list = self.parentunit.status_list
@@ -1108,7 +1108,7 @@ class Subunit(pygame.sprite.Sprite):
                             self.melee_target = subunit
                             if self.enemy_front == []:  # no enemy in front try rotate to enemy at side
                                 # self.base_target = self.melee_target.base_pos
-                                self.new_angle = self.setrotate(self.melee_target.base_pos)
+                                self.new_angle = self.set_rotate(self.melee_target.base_pos)
                         else:  # no way to retreat, Fight to the death
                             if self.enemy_front != [] and self.enemy_side != []:  # if both front and any side got attacked
                                 if 9 not in self.status_effect:
@@ -1136,7 +1136,7 @@ class Subunit(pygame.sprite.Sprite):
 
                                     else:  # no target to fight move back to command pos first)
                                         self.base_target = self.attack_target.base_pos
-                                        self.new_angle = self.setrotate()
+                                        self.new_angle = self.set_rotate()
 
                                 if self.melee_target.parentunit.state != 100:
                                     if self.movetimer == 0:
@@ -1156,7 +1156,7 @@ class Subunit(pygame.sprite.Sprite):
 
                                         elif len(self.combat_move_queue) > 0:  # no collide move to enemy
                                             self.base_target = pygame.Vector2(self.combat_move_queue[0])
-                                            self.new_angle = self.setrotate()
+                                            self.new_angle = self.set_rotate()
 
                                 else:  # whole targeted enemy unit destroyed, reset target and state
                                     self.melee_target = None
@@ -1166,7 +1166,7 @@ class Subunit(pygame.sprite.Sprite):
 
                                     self.attack_target = None
                                     self.base_target = self.command_target
-                                    self.new_angle = self.setrotate()
+                                    self.new_angle = self.set_rotate()
                                     self.new_angle = self.parentunit.angle
                                     self.state = 0
 
@@ -1268,9 +1268,9 @@ class Subunit(pygame.sprite.Sprite):
                     if self.base_target != self.command_target:
                         self.base_target = self.command_target
                         if parentstate == 0:
-                            self.new_angle = self.setrotate()
+                            self.new_angle = self.set_rotate()
                     elif self.base_pos == self.base_target and self.angle != self.parentunit.angle:  # reset angle
-                        self.new_angle = self.setrotate()
+                        self.new_angle = self.set_rotate()
                         self.new_angle = self.parentunit.angle
 
                 # v Rotate Function
@@ -1429,7 +1429,7 @@ class Subunit(pygame.sprite.Sprite):
                                     foundcorner = whichcorner.index(min(whichcorner))
                                     self.base_target = pygame.Vector2(cornerlist[foundcorner])
                                     self.command_target = self.base_target
-                                    self.new_angle = self.setrotate()
+                                    self.new_angle = self.set_rotate()
 
                                 for subunit in self.parentunit.subunit_sprite:
                                     subunit.base_morale -= (

@@ -75,7 +75,7 @@ def load_game_data(game):
     # v Faction class
     faction.Factiondata.main_dir = main_dir
     game.allfaction = faction.Factiondata(option=game.ruleset_folder)
-    imgsold = load_images(game.main_dir, ["ruleset", game.ruleset_folder, "faction", "coa"], loadorder=False)  # coa imagelist
+    imgsold = load_images(game.main_dir, ["ruleset", game.ruleset_folder, "faction", "coa"], loadorder=False)  # coa image_list
     imgs = []
     for img in imgsold:
         imgs.append(img)
@@ -99,7 +99,7 @@ def load_game_data(game):
     game.battlemap_base = map.BaseMap(1)  # create base terrain map
     game.battlemap_feature = map.FeatureMap(1)  # create terrain feature map
     game.battlemap_height = map.HeightMap(1)  # create height map
-    game.showmap = map.BeautifulMap(1)
+    game.show_map = map.BeautifulMap(1)
 
     emptyimage = load_image(game.main_dir, "empty.png", "map/texture")  # empty texture image
     maptexture = []
@@ -223,17 +223,17 @@ def load_game_data(game):
     lorebook.Lorebook.race_list = game.troop_data.race_list
     lorebook.Lorebook.SCREENRECT = SCREENRECT
     lorebook.Lorebook.main_dir = main_dir
-    lorebook.Lorebook.statetext = game.statetext
+    lorebook.Lorebook.state_text = game.state_text
 
     imgs = load_images(game.main_dir, ["ui", "lorebook_ui"], loadorder=False)
     game.lorebook = lorebook.Lorebook(game.main_dir, game.screen_scale, game.SCREENRECT, imgs[0])  # encyclopedia sprite
-    game.lorenamelist = lorebook.SubsectionList(game.screen_scale, game.lorebook.rect.topleft, imgs[1])
+    game.lore_name_list = lorebook.SubsectionList(game.screen_scale, game.lorebook.rect.topleft, imgs[1])
 
     imgs = load_images(game.main_dir, ["ui", "lorebook_ui", "button"], loadorder=False)
     for index, img in enumerate(imgs):
         imgs[index] = pygame.transform.scale(img, (int(img.get_width() * game.screen_scale[0]),
                                                    int(img.get_height() * game.screen_scale[1])))
-    game.lorebuttonui = [
+    game.lore_button_ui = [
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5), game.lorebook.rect.topleft[1] - (imgs[0].get_height() / 2),
                           imgs[0], 0, 13),  # concept section button
         battleui.UIButton(game.lorebook.rect.topleft[0] + (imgs[0].get_width() + 5) * 2,
@@ -270,13 +270,13 @@ def load_game_data(game):
                           imgs[13], 20, 24),  # previous page button
         battleui.UIButton(game.lorebook.rect.bottomright[0] - (imgs[14].get_width()), game.lorebook.rect.bottomright[1] - imgs[14].get_height(),
                           imgs[14], 21, 24)]  # next page button
-    game.pagebutton = (game.lorebuttonui[12], game.lorebuttonui[13])
-    game.lorescroll = battleui.UIScroller(game.lorenamelist.rect.topright, game.lorenamelist.image.get_height(),
+    game.pagebutton = (game.lore_button_ui[12], game.lore_button_ui[13])
+    game.lorescroll = battleui.UIScroller(game.lore_name_list.rect.topright, game.lore_name_list.image.get_height(),
                                           game.lorebook.max_subsection_show, layer=25)  # add subsection list scroller
     # ^ End encyclopedia objects
 
     # v Create gamebattle game ui objects
-    game.minimap = battleui.Minimap((SCREENRECT.width, SCREENRECT.height))
+    game.mini_map = battleui.Minimap((SCREENRECT.width, SCREENRECT.height))
 
     # Popup Ui
     imgs = load_images(game.main_dir, ["ui", "popup_ui", "terraincheck"], loadorder=False)
@@ -536,7 +536,7 @@ def countdown_skill_icon(self):
     #     effect.iconchange(cd, 0)
 
 
-def rotationxy(origin, point, angle):
+def rotation_xy(origin, point, angle):
     ox, oy = origin
     px, py = point
     x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
@@ -584,21 +584,38 @@ def setup_list(screen_scale, itemclass, currentrow, showlist, itemgroup, box, ui
 
         uiclass.add(*itemgroup)
 
+def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, current_row, name_list, group, ui_class, layer=15):
+    if mouse_scroll_up:
+        current_row -= 1
+        if current_row < 0:
+            current_row = 0
+        else:
+            setup_list(screen_scale, menu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
+            scroll.change_image(new_row=current_row, log_size=len(name_list))
+
+    elif mouse_scroll_down:
+        current_row += 1
+        if current_row + box.maxshowlist - 1 < len(name_list):
+            setup_list(screen_scale, menu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
+            scroll.change_image(new_row=current_row, log_size=len(name_list))
+        else:
+            current_row -= 1
+    return current_row
 
 def popout_lorebook(self, section, gameid):
     """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
     self.gamestate = 0
     self.battle_menu.mode = 2
-    self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll, *self.lorebuttonui)
+    self.battleui.add(self.lorebook, self.lore_name_list, self.lorescroll, *self.lore_button_ui)
 
-    self.lorebook.change_section(section, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
+    self.lorebook.change_section(section, self.lore_name_list, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
     self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
     self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
 
 
 def popuplist_newopen(self, new_rect, new_list, ui_type):
     """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
-    self.currentpopuprow = 0
+    self.current_popup_row = 0
 
     if ui_type == "leader" or ui_type == "genre":
         self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=new_rect)
@@ -613,7 +630,7 @@ def popuplist_newopen(self, new_rect, new_list, ui_type):
     self.popup_listscroll.change_image(new_row=0, log_size=len(new_list))
 
     if ui_type == "genre":
-        self.mainui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)
+        self.main_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)
     else:
         self.battleui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
 

@@ -33,7 +33,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
     elif self.battle_menu.mode == 0:  # gamestart esc menu
         for button in self.battle_menu_button:
-            if button.rect.collidepoint(self.mousepos):
+            if button.rect.collidepoint(self.mouse_pos):
                 button.image = button.images[1]  # change button image to mouse over one
                 if mouse_up:  # click on button
                     button.image = button.images[2]  # change button image to clicked one
@@ -44,13 +44,13 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode(2)  # change to enclycopedia mode
-                        self.battleui.add(self.lorebook, self.lorenamelist, self.lorescroll,
-                                          *self.lorebuttonui)  # add sprite related to encyclopedia
-                        self.lorebook.change_section(0, self.lorenamelist, self.subsection_name, self.lorescroll, self.pagebutton,
+                        self.battleui.add(self.lorebook, self.lore_name_list, self.lorescroll,
+                                          *self.lore_button_ui)  # add sprite related to encyclopedia
+                        self.lorebook.change_section(0, self.lore_name_list, self.subsection_name, self.lorescroll, self.pagebutton,
                                                      self.battleui)
                         self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
                                              *self.escvaluebox)  # remove menu sprite
-                        # self.lorebook.setupsubsectionlist(self.lorenamelist, listgroup)
+                        # self.lorebook.setupsubsectionlist(self.lore_name_list, listgroup)
 
                     elif button.text == "Option":  # open option menu
                         self.battle_menu.change_mode(1)  # change to option menu mode
@@ -64,16 +64,16 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         command = "end_battle"
 
                     elif button.text == "Desktop":  # quit game
-                        self.textinputpopup = ("confirm_input", "quit")
-                        self.confirmui.change_instruction("Quit Game?")
-                        self.battleui.add(*self.confirmui_pop)
+                        self.text_input_popup = ("confirm_input", "quit")
+                        self.confirm_ui.change_instruction("Quit Game?")
+                        self.battleui.add(*self.confirm_ui_popup)
                     break  # found clicked button, break loop
             else:
                 button.image = button.images[0]
 
     elif self.battle_menu.mode == 1:  # option menu
         for button in self.escoptionmenubutton:  # check if any button get collided with mouse or clicked
-            if button.rect.collidepoint(self.mousepos):
+            if button.rect.collidepoint(self.mouse_pos):
                 button.image = button.images[1]  # change button image to mouse over one
                 if mouse_up:  # click on button
                     button.image = button.images[2]  # change button image to clicked one
@@ -106,8 +106,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                 button.image = button.images[0]  # revert button image back to the idle one
 
         for slider in self.escslidermenu:
-            if slider.rect.collidepoint(self.mousepos) and (mouse_leftdown or mouse_up):  # mouse click on slider bar
-                slider.update(self.mousepos, self.escvaluebox[0])  # update slider button based on mouse value
+            if slider.rect.collidepoint(self.mouse_pos) and (mouse_leftdown or mouse_up):  # mouse click on slider bar
+                slider.update(self.mouse_pos, self.escvaluebox[0])  # update slider button based on mouse value
                 self.mixervolume = float(slider.value / 100)  # for now only music volume slider exist
 
     elif self.battle_menu.mode == 2:  # Encyclopedia mode

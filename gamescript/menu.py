@@ -664,7 +664,7 @@ class MapShow(pygame.sprite.Sprite):
         self.team2_dot.blit(team2, rect)
         self.team1_dot.blit(team1, rect)
 
-        self.newcolourlist = {}
+        self.new_colour_list = {}
         with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as unitfile:
             rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -673,16 +673,16 @@ class MapShow(pygame.sprite.Sprite):
                         row[n] = int(i)
                     elif "," in i:
                         row[n] = ast.literal_eval(i)
-                self.newcolourlist[row[0]] = row[1:]
+                self.new_colour_list[row[0]] = row[1:]
 
-        self.changemap(basemap, featuremap)
+        self.change_map(basemap, featuremap)
         self.image = pygame.transform.scale(self.prev_image, (int(self.prev_image.get_width() * self.screen_scale[0]),
                                                               int(self.prev_image.get_height() * self.screen_scale[1])))
         self.rect = self.image.get_rect(center=self.pos)
 
-    def changemap(self, basemap, featuremap):
-        newbasemap = pygame.transform.scale(basemap, (300, 300))
-        newfeaturemap = pygame.transform.scale(featuremap, (300, 300))
+    def change_map(self, base_map, feature_map):
+        newbasemap = pygame.transform.scale(base_map, (300, 300))
+        newfeaturemap = pygame.transform.scale(feature_map, (300, 300))
 
         mapimage = pygame.Surface((300, 300))
         for rowpos in range(0, 300):  # recolour the map
@@ -695,7 +695,7 @@ class MapShow(pygame.sprite.Sprite):
                 if feature in featurecolour:
                     featureindex = featurecolour.index(feature)
                     featureindex = featureindex + (terrainindex * 12)
-                newcolour = self.newcolourlist[featureindex][1]
+                newcolour = self.new_colour_list[featureindex][1]
                 rect = pygame.Rect(rowpos, colpos, 1, 1)
                 mapimage.fill(newcolour, rect)
 
@@ -703,15 +703,15 @@ class MapShow(pygame.sprite.Sprite):
         self.prev_image.blit(mapimage, imagerect)
         self.image_original = self.prev_image.copy()
 
-    def changemode(self, mode, team1poslist=None, team2poslist=None):
+    def change_mode(self, mode, team1_pos_list=None, team2_pos_list=None):
         """map mode: 0 = map without army dot, 1 = with army dot"""
         self.prev_image = self.image_original.copy()
         if mode == 1:
-            for team1 in team1poslist.values():
+            for team1 in team1_pos_list.values():
                 scaledpos = pygame.Vector2(team1) * 0.3
                 rect = self.team1_dot.get_rect(center=scaledpos)
                 self.prev_image.blit(self.team1_dot, rect)
-            for team2 in team2poslist.values():
+            for team2 in team2_pos_list.values():
                 scaledpos = pygame.Vector2(team2) * 0.3
                 rect = self.team2_dot.get_rect(center=scaledpos)
                 self.prev_image.blit(self.team2_dot, rect)

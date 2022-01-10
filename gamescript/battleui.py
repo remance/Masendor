@@ -154,7 +154,7 @@ class GameUI(pygame.sprite.Sprite):
                         position += 95
                 self.last_value = self.value
         # for line in range(len(label)):
-        #     surface.blit(label(line), (position[0], position[1] + (line * fontsize) + (15 * line)))
+        #     surface.blit(label(line), (position[0], position[1] + (line * font_size) + (15 * line)))
 
         elif self.ui_type == "commandbar":
             if who.gameid != self.last_who or split:  # only redraw leader circle when change subunit

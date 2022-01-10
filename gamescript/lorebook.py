@@ -498,15 +498,15 @@ def lorebook_process(self, uidraw, mouse_up, mouse_down, mouse_scrollup, mouse_s
     command = None
     if mouse_up or mouse_down:  # mouse down (hold click) only for subsection listscroller
         if mouse_up:
-            for button in self.lorebuttonui:
-                if button in uidraw and button.rect.collidepoint(self.mousepos):  # click button
+            for button in self.lore_button_ui:
+                if button in uidraw and button.rect.collidepoint(self.mouse_pos):  # click button
                     if button.event in range(0, 11):  # section button
-                        self.lorebook.change_section(button.event, self.lorenamelist, self.subsection_name, self.lorescroll,
+                        self.lorebook.change_section(button.event, self.lore_name_list, self.subsection_name, self.lorescroll,
                                                      self.pagebutton, uidraw)  # change to section of that button
 
                     elif button.event == 19:  # Close button
-                        uidraw.remove(self.lorebook, *self.lorebuttonui, self.lorescroll,
-                                           self.lorenamelist)  # remove enclycopedia related sprites
+                        uidraw.remove(self.lorebook, *self.lore_button_ui, self.lorescroll,
+                                      self.lore_name_list)  # remove enclycopedia related sprites
                         for name in self.subsection_name:  # remove subsection name
                             name.kill()
                             del name
@@ -521,29 +521,29 @@ def lorebook_process(self, uidraw, mouse_up, mouse_down, mouse_scrollup, mouse_s
                     break  # found clicked button, break loop
 
             for name in self.subsection_name:
-                if name.rect.collidepoint(self.mousepos):  # click on subsection name
+                if name.rect.collidepoint(self.mouse_pos):  # click on subsection name
                     self.lorebook.change_subsection(name.subsection, self.pagebutton, uidraw)  # change subsection
                     break  # found clicked subsection, break loop
 
-        if self.lorescroll.rect.collidepoint(self.mousepos):  # click on subsection list scroller
+        if self.lorescroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroller
             self.lorebook.current_subsection_row = self.lorescroll.update(
-                self.mousepos)  # update the scroller and get new current subsection
-            self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)  # update subsection name list
+                self.mouse_pos)  # update the scroller and get new current subsection
+            self.lorebook.setup_subsection_list(self.lore_name_list, self.subsection_name)  # update subsection name list
 
     elif mouse_scrollup:
-        if self.lorenamelist.rect.collidepoint(self.mousepos):  # Scrolling at lore book subsection list
+        if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
             self.lorebook.current_subsection_row -= 1
             if self.lorebook.current_subsection_row < 0:
                 self.lorebook.current_subsection_row = 0
             else:
-                self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)
+                self.lorebook.setup_subsection_list(self.lore_name_list, self.subsection_name)
                 self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
 
     elif mouse_scrolldown:
-        if self.lorenamelist.rect.collidepoint(self.mousepos):  # Scrolling at lore book subsection list
+        if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
             self.lorebook.current_subsection_row += 1
             if self.lorebook.current_subsection_row + self.lorebook.max_subsection_show - 1 < self.lorebook.log_size:
-                self.lorebook.setup_subsection_list(self.lorenamelist, self.subsection_name)
+                self.lorebook.setup_subsection_list(self.lore_name_list, self.subsection_name)
                 self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
             else:
                 self.lorebook.current_subsection_row -= 1

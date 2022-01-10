@@ -68,9 +68,9 @@ class Leader(pygame.sprite.Sprite):
             leader.badmorale = (30, 50)  ## gamestart general morale lost for bad event
 
             if leader.parentunit.commander:  ## become army commander
-                whicharmy = leader.gamebattle.team1unit  # team1
+                whicharmy = leader.gamebattle.team1_unit  # team1
                 if leader.parentunit.team == 2:  # team2
-                    whicharmy = self.gamebattle.team2unit
+                    whicharmy = self.gamebattle.team2_unit
                 for army in whicharmy:
                     army.teamcommander = leader
                     army.authrecal()
@@ -96,9 +96,9 @@ class Leader(pygame.sprite.Sprite):
         if self.commander:  # reduce morale to whole army if commander die from the melee_dmg (leader die cal is in leader.py)
             self.gamebattle.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0"  # read ld0 event log for special log when team 1 commander die, not used for other leader
-            whicharmy = self.gamebattle.team1unit
+            whicharmy = self.gamebattle.team1_unit
             if self.parentunit.team == 2:
-                whicharmy = self.gamebattle.team2unit
+                whicharmy = self.gamebattle.team2_unit
                 eventmapid = "ld1"  # read ld1 event log for special log when team 2 commander die, not used for other leader
 
             if self.originalcommander and self.state == 100:

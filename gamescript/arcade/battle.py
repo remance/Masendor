@@ -25,7 +25,7 @@ class Battle:
     countdownskillicon = commonscript.countdown_skill_icon
     kill_effect_icon = commonscript.kill_effect_icon
     popout_lorebook = commonscript.popout_lorebook
-    popuplist_newopen = commonscript.popuplist_newopen
+    popuplist_newopen = commonscript.popup_list_open
     setuplist = commonscript.setup_list
     camerascale = 5
     escmenu_process = escmenu.escmenu_process
@@ -55,18 +55,18 @@ class Battle:
         self.battlemap_base = main.battlemap_base
         self.battlemap_feature = main.battlemap_feature
         self.battlemap_height = main.battlemap_height
-        self.showmap = main.showmap
+        self.showmap = main.show_map
 
-        self.team0unit = main.team0unit
-        self.team1unit = main.team1unit
-        self.team2unit = main.team2unit
-        self.team0subunit = main.team0subunit
-        self.team1subunit = main.team1subunit
-        self.team2subunit = main.team2subunit
+        self.team0unit = main.team0_unit
+        self.team1unit = main.team1_unit
+        self.team2unit = main.team2_unit
+        self.team0subunit = main.team0_subunit
+        self.team1subunit = main.team1_subunit
+        self.team2subunit = main.team2_subunit
         self.subunit = main.subunit
-        self.armyleader = main.armyleader
+        self.armyleader = main.army_leader
 
-        self.arrows = main.arrows
+        self.arrows = main.range_attacks
         self.directionarrows = main.direction_arrows
 
         self.gameui = main.gameui
@@ -75,9 +75,9 @@ class Battle:
         self.battlemap_base = main.battlemap_base
         self.battlemap_feature = main.battlemap_feature
         self.battlemap_height = main.battlemap_height
-        self.showmap = main.showmap
+        self.showmap = main.show_map
 
-        self.minimap = main.minimap
+        self.minimap = main.mini_map
         self.eventlog = main.eventlog
         self.logscroll = main.logscroll
         self.buttonui = main.buttonui
@@ -101,7 +101,7 @@ class Battle:
         self.unit_save_button = self.main.unit_save_button
         self.troop_listbox = main.troop_listbox
         self.troop_namegroup = main.troop_namegroup
-        self.filterbox = main.filterbox
+        self.filterbox = main.filter_box
         self.tickbox_filter = main.tickbox_filter
         self.teamchange_button = main.teamchange_button
         self.slotdisplay_button = main.slotdisplay_button
@@ -124,18 +124,18 @@ class Battle:
         self.weather_list = main.weather_list
         self.popup_listscroll = main.popup_listscroll
         self.troop_scroll = main.troop_scroll
-        self.teamcoa = main.teamcoa
+        self.teamcoa = main.team_coa
         self.unit_presetname_scroll = main.unit_presetname_scroll
         self.warningmsg = main.warningmsg
 
         self.input_button = main.input_button
         self.input_box = main.input_box
-        self.inputui = main.inputui
+        self.inputui = main.input_ui
         self.input_ok_button = main.input_ok_button
         self.input_cancel_button = main.input_cancel_button
-        self.inputui_pop = main.inputui_pop
-        self.confirmui = main.confirmui
-        self.confirmui_pop = main.confirmui_pop
+        self.inputui_pop = main.input_ui_popup
+        self.confirmui = main.confirm_ui
+        self.confirmui_pop = main.confirm_ui_popup
 
         self.timeui = main.timeui
         self.timenumber = main.timenumber
@@ -146,8 +146,8 @@ class Battle:
         self.weathereffect = main.weathereffect
 
         self.lorebook = main.lorebook
-        self.lorenamelist = main.lorenamelist
-        self.lorebuttonui = main.lorebuttonui
+        self.lorenamelist = main.lore_name_list
+        self.lorebuttonui = main.lore_button_ui
         self.lorescroll = main.lorescroll
         self.subsection_name = main.subsection_name
         self.pagebutton = main.pagebutton
@@ -172,7 +172,7 @@ class Battle:
         self.troop_data = main.troop_data
         self.leader_stat = main.leader_stat
 
-        self.statetext = main.statetext
+        self.statetext = main.state_text
 
         self.sprite_width = main.sprite_width
         self.sprite_height = main.sprite_height
@@ -652,7 +652,7 @@ class Battle:
             # ^ End starting
 
         elif self.gamestate == 2:  # change to editor state
-            self.minimap.draw_image(self.showmap.true_image, self.camera)  # reset minimap
+            self.minimap.draw_image(self.showmap.true_image, self.camera)  # reset mini_map
             for arrow in self.arrows:  # remove all range attack
                 arrow.kill()
                 del arrow
@@ -780,9 +780,9 @@ class Battle:
             self.currentweather = weather.Weather(self.timeui, self.weathertype, self.weatherstrength, self.allweather)
             self.showincard = None  # current sub-subunit showing in subunit card
 
-            self.main.maketeamcoa([0], uiclass=self.battleui, oneteam=True,
-                                  team1setpos=(self.troop_listbox.rect.midleft[0] - int((200 * self.screen_scale[0]) / 2),
-                                               self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
+            self.main.make_team_coa([0], ui_class=self.battleui, one_team=True,
+                                    team1_set_pos=(self.troop_listbox.rect.midleft[0] - int((200 * self.screen_scale[0]) / 2),
+                                                   self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
 
             self.troop_scroll.change_image(new_row=self.current_troop_row, log_size=len(self.troop_list))  # change troop scroll image
 
@@ -872,11 +872,11 @@ class Battle:
                         mouse_up = True
                     elif event.button == 3:  # Right Click
                         mouse_right = True
-                        # if self.mousetimer == 0:
-                        #     self.mousetimer = 0.001  # Start timer after first mouse click
-                        # elif self.mousetimer < 0.3:  # if click again within 0.3 second for it to be considered double click
+                        # if self.mouse_timer == 0:
+                        #     self.mouse_timer = 0.001  # Start timer after first mouse click
+                        # elif self.mouse_timer < 0.3:  # if click again within 0.3 second for it to be considered double click
                         #     double_mouse_right = True  # double right click
-                        #     self.mousetimer = 0
+                        #     self.mouse_timer = 0
                     elif event.button == 4:  # Mouse scroll up
                         mouse_scrollup = True
                         rowchange = -1
@@ -922,38 +922,38 @@ class Battle:
 
                         elif self.popup_listbox in self.battleui:  # mouse scroll on popup list
                             if self.popup_listbox.type == "terrain":
-                                self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
-                                                                            self.popup_listbox,
-                                                                            self.currentpopuprow, self.battlemap_base.terrain_list,
-                                                                            self.popup_namegroup, self.battleui)
+                                self.currentpopuprow = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
+                                                                             self.popup_listbox,
+                                                                             self.currentpopuprow, self.battlemap_base.terrain_list,
+                                                                             self.popup_namegroup, self.battleui)
                             elif self.popup_listbox.type == "feature":
-                                self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
-                                                                            self.popup_listbox,
-                                                                            self.currentpopuprow, self.battlemap_feature.feature_list,
-                                                                            self.popup_namegroup, self.battleui)
+                                self.currentpopuprow = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
+                                                                             self.popup_listbox,
+                                                                             self.currentpopuprow, self.battlemap_feature.feature_list,
+                                                                             self.popup_namegroup, self.battleui)
                             elif self.popup_listbox.type == "weather":
-                                self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
-                                                                            self.popup_listbox, self.currentpopuprow, self.weather_list,
-                                                                            self.popup_namegroup, self.battleui)
+                                self.currentpopuprow = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
+                                                                             self.popup_listbox, self.currentpopuprow, self.weather_list,
+                                                                             self.popup_namegroup, self.battleui)
                             elif self.popup_listbox.type == "leader":
-                                self.currentpopuprow = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
-                                                                            self.popup_listbox, self.currentpopuprow, self.leader_list,
-                                                                            self.popup_namegroup, self.battleui, layer=19)
+                                self.currentpopuprow = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.popup_listscroll,
+                                                                             self.popup_listbox, self.currentpopuprow, self.leader_list,
+                                                                             self.popup_namegroup, self.battleui, layer=19)
 
                         elif self.unit_listbox.rect.collidepoint(self.mousepos):  # mouse scroll on unit preset list
-                            self.current_unit_row = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.unit_presetname_scroll,
-                                                                         self.unit_listbox,
-                                                                         self.current_unit_row, list(self.customunitpresetlist.keys()),
-                                                                         self.unitpreset_namegroup, self.battleui)
+                            self.current_unit_row = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.unit_presetname_scroll,
+                                                                          self.unit_listbox,
+                                                                          self.current_unit_row, list(self.customunitpresetlist.keys()),
+                                                                          self.unitpreset_namegroup, self.battleui)
                         elif self.troop_listbox.rect.collidepoint(self.mousepos):
                             if self.current_list_show == "troop":  # mouse scroll on troop list
-                                self.current_troop_row = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.troop_scroll, self.troop_listbox,
-                                                                              self.current_troop_row, self.troop_list,
-                                                                              self.troop_namegroup, self.battleui)
+                                self.current_troop_row = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.troop_scroll, self.troop_listbox,
+                                                                               self.current_troop_row, self.troop_list,
+                                                                               self.troop_namegroup, self.battleui)
                             elif self.current_list_show == "faction":  # mouse scroll on faction list
-                                self.current_troop_row = self.main.listscroll(mouse_scrollup, mouse_scrolldown, self.troop_scroll, self.troop_listbox,
-                                                                              self.current_troop_row, self.faction_list,
-                                                                              self.troop_namegroup, self.battleui)
+                                self.current_troop_row = self.main.list_scroll(mouse_scrollup, mouse_scrolldown, self.troop_scroll, self.troop_listbox,
+                                                                               self.current_troop_row, self.faction_list,
+                                                                               self.troop_namegroup, self.battleui)
 
                     # ^ End mouse scroll input
 
@@ -1011,9 +1011,9 @@ class Battle:
                     #     self.textdrama.queue.append("Now much more clear")
                     # elif keypress == pygame.K_n and self.last_selected is not None:
                     #     if self.last_selected.team == 1:
-                    #         self.last_selected.switchfaction(self.team1unit, self.team2unit, self.team1_pos_list, self.enactment)
+                    #         self.last_selected.switchfaction(self.team1_unit, self.team2_unit, self.team1_pos_list, self.enactment)
                     #     else:
-                    #         self.last_selected.switchfaction(self.team2unit, self.team1unit, self.team2_pos_list, self.enactment)
+                    #         self.last_selected.switchfaction(self.team2_unit, self.team1_unit, self.team2_pos_list, self.enactment)
                     # elif keypress == pygame.K_l and self.last_selected is not None:
                     #     for subunit in self.last_selected.subunit_sprite:
                     #         subunit.base_morale = 0
@@ -1060,10 +1060,10 @@ class Battle:
                                                self.camerapos[1] - self.centerscreen[1])  # calculate top left corner of camera position
                     # ^ End camera movement
 
-                    # if self.mousetimer != 0:  # player click mouse once before
-                    #     self.mousetimer += self.uidt  # increase timer for mouse click using real time
-                    #     if self.mousetimer >= 0.3:  # time pass 0.3 second no longer count as double click
-                    #         self.mousetimer = 0
+                    # if self.mouse_timer != 0:  # player click mouse once before
+                    #     self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
+                    #     if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
+                    #         self.mouse_timer = 0
 
                     self.battle_mouse_pos[0] = pygame.Vector2((self.mousepos[0] - self.centerscreen[0]) + self.camerapos[0],
                                                               self.mousepos[1] - self.centerscreen[1] + self.camerapos[
@@ -1254,20 +1254,20 @@ class Battle:
                                             # self.troopcard_ui.valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
                                             #                       change_option=1)
 
-                            # elif self.gameui[1] in self.battleui and self.gameui[1].rect.collidepoint(self.mousepos):
+                            # elif self.gameui[1] in self.battleui and self.gameui[1].rect.collidepoint(self.mouse_pos):
                             #     self.uiclick = True
                             #     for leaderindex, leader in enumerate(self.leadernow):  # loop mouse pos on leader portrait
-                            #         if leader.rect.collidepoint(self.mousepos):
+                            #         if leader.rect.collidepoint(self.mouse_pos):
                             #             armyposition = self.leaderposname[leader.armyposition + 4]
                             # 
-                            #             self.leaderpopup.pop(self.mousepos, armyposition + ": " + leader.name)  # popup leader name when mouse over
+                            #             self.leaderpopup.pop(self.mouse_pos, armyposition + ": " + leader.name)  # popup leader name when mouse over
                             #             self.battleui.add(self.leaderpopup)
                             # 
-                            #             if mouse_up:  # open list of leader to change leader in that slot
+                            #             if mouse_left_up:  # open list of leader to change leader in that slot
                             #                 self.selectleader = leaderindex
                             #                 self.popuplist_newopen(leader.rect.midright, self.leader_list, "leader")
                             # 
-                            #             elif mouse_right:
+                            #             elif mouse_right_up:
                             #                 self.popout_lorebook(8, leader.leaderid)
                             #             break
 
@@ -1467,8 +1467,8 @@ class Battle:
                                                         self.troop_scroll.change_image(new_row=self.current_troop_row,
                                                                                        log_size=len(self.troop_list))  # change troop scroll image
 
-                                                        self.main.maketeamcoa([index], uiclass=self.battleui, oneteam=True,
-                                                                              team1setpos=(
+                                                        self.main.make_team_coa([index], ui_class=self.battleui, one_team=True,
+                                                                                team1_set_pos=(
                                                                                   self.troop_listbox.rect.midleft[0] - int(
                                                                                       (200 * self.screen_scale[0]) / 2),
                                                                                   self.troop_listbox.rect.midleft[1]))  # change team coa

@@ -52,9 +52,9 @@ class Unit(pygame.sprite.Sprite):
     status_list = None  # status effect list
     maxzoom = 10  # max zoom allow
     gamebattle = None
-    rotationxy = commonscript.rotationxy
+    rotationxy = commonscript.rotation_xy
     die = longscript.die  # die script
-    setrotate = longscript.setrotate
+    setrotate = longscript.set_rotate
     formchangetimer = 10
     imgsize = None
 
@@ -361,9 +361,9 @@ class Unit(pygame.sprite.Sprite):
 
         # v assign team leader commander to every parentunit in team if this is commander parentunit
         if self.commander:
-            whicharmy = self.gamebattle.team1unit
+            whicharmy = self.gamebattle.team1_unit
             if self.team == 2:  # team2
-                whicharmy = self.gamebattle.team2unit
+                whicharmy = self.gamebattle.team2_unit
             for army in whicharmy:
                 army.teamcommander = self.leader
         # ^ End assign commander
@@ -486,11 +486,11 @@ class Unit(pygame.sprite.Sprite):
                         self.processretreat(basetarget)
                         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
                         #     if self.team == 1:
-                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1unit, self.gamebattle.team2unit,
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team1_unit, self.gamebattle.team2_unit,
                         #                                                         self.gamebattle.team1_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     else:
-                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2unit, self.gamebattle.team1unit,
+                        #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2_unit, self.gamebattle.team1_unit,
                         #                                                         self.gamebattle.team2_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
                         #     self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
@@ -694,7 +694,7 @@ class Unit(pygame.sprite.Sprite):
         for subunit in self.subunit_sprite:  # generate position of each subunit
             newtarget = unit_topleft + subunit.unitposition
             subunit.base_pos = pygame.Vector2(
-                subunit.rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
+                subunit.rotation_xy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
             subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen
             subunit.angle = self.angle
             subunit.rotate()
