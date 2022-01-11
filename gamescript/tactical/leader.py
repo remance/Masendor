@@ -58,13 +58,15 @@ class Leader(pygame.sprite.Sprite):
     def poschangestat(self, leader):
         """Change stat that related to army position such as in leader dead event"""
         leader.badmorale = (20, 30)  # sub general morale lost for bad event
-        if leader.armyposition == 0:  # if leader become parentunit commander
+        if leader.army_position == 0:  # if leader become parentunit commander
             try:
                 squadpenal = int(
-                    (leader.subunitpos / len(leader.parentunit.armysubunit[0])) * 10)  # recalculate authority penalty based on subunit position
+                    (leader.subunit_pos / len(leader.parentunit.armysubunit[
+                                                  0])) * 10)  # recalculate authority penalty based on subunit position
             except:
                 squadpenal = 0
-            leader.authority = leader.authority - ((leader.authority * squadpenal / 100) / 2)  # recalculate total authority
+            leader.authority = leader.authority - (
+                        (leader.authority * squadpenal / 100) / 2)  # recalculate total authority
             leader.badmorale = (30, 50)  ## gamestart general morale lost for bad event
 
             if leader.parentunit.commander:  ## become army commander
@@ -116,8 +118,8 @@ class Leader(pygame.sprite.Sprite):
 
         # v change army position of all leader in that parentunit
         for index, leader in enumerate(self.parentunit.leader):
-            leader.armyposition = index  ## change army position to new one
-            if leader.armyposition == 0:  # new gamestart general
+            leader.army_position = index  ## change army position to new one
+            if leader.army_position == 0:  # new gamestart general
                 self.subunit.unit_leader = False
                 if self.parentunit.commander:
                     leader.commander = True
@@ -125,8 +127,8 @@ class Leader(pygame.sprite.Sprite):
                 self.parentunit.leadersubunit = leader.subunit
                 leader.subunit.unit_leader = True
 
-            leader.imgposition = leader.baseimgposition[leader.armyposition]
-            leader.rect = leader.image.get_rect(center=leader.imgposition)
+            leader.img_position = leader.base_img_position[leader.army_position]
+            leader.rect = leader.image.get_rect(center=leader.img_position)
             self.poschangestat(leader)
         # ^ End change position
 

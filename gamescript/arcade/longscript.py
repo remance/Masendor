@@ -37,13 +37,13 @@ def load_game_data(game):
     from gamescript import battleui, uniteditor
     from gamescript.arcade import unit, subunit, rangeattack
     unit.Unit.status_list = game.troop_data.status_list
-    rangeattack.RangeArrow.gamemapheight = game.battle_map_height
+    rangeattack.RangeArrow.height_map = game.battle_map_height
 
     imgs = load_images(game.main_dir, ["ui", "unit_ui"])
     subunit.Subunit.images = imgs
     subunit.Subunit.gamemap = game.battle_map_base  # add gamebattle map to all parentunit class
     subunit.Subunit.gamemapfeature = game.battle_map_feature  # add gamebattle map to all parentunit class
-    subunit.Subunit.gamemapheight = game.battle_map_height
+    subunit.Subunit.height_map = game.battle_map_height
     subunit.Subunit.weapon_list = game.allweapon
     subunit.Subunit.armour_list = game.allarmour
     subunit.Subunit.stat_list = game.troop_data
@@ -146,7 +146,7 @@ def load_game_data(game):
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
     game.button_ui.add(game.inspect_button)
 
-    game.battle_ui.add(game.logscroll)
+    game.battle_ui.add(game.log_scroll)
     # ^ End self ui
 
 
@@ -205,7 +205,7 @@ def unitsetup(gamebattle):
     # defaultunit = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
     # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
 
-    teamcolour = gamebattle.teamcolour
+    teamcolour = gamebattle.team_colour
     teamarmy = (gamebattle.team0_unit, gamebattle.team1_unit, gamebattle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",
@@ -478,11 +478,11 @@ def die(who, battle, moralehit=True):
     if who.team == 1:
         group = battle.team1_unit
         enemygroup = battle.team2_unit
-        battle.team1poslist.pop(who.gameid)
+        battle.team1poslist.pop(who.game_id)
     else:
         group = battle.team2_unit
         enemygroup = battle.team1_unit
-        battle.team2poslist.pop(who.gameid)
+        battle.team2poslist.pop(who.game_id)
 
     if moralehit:
         if who.commander:  # more morale penalty if the parentunit is a command parentunit
@@ -498,7 +498,7 @@ def die(who, battle, moralehit=True):
                 this_subunit.base_morale -= 20
 
     battle.allunitlist.remove(who)
-    battle.allunitindex.remove(who.gameid)
+    battle.allunitindex.remove(who.game_id)
     group.remove(who)
     who.got_killed = True
 
@@ -506,8 +506,8 @@ def die(who, battle, moralehit=True):
 def move_leader_subunit(this_leader, oldarmysubunit, newarmysubunit, alreadypick=()):
     """oldarmysubunit is armysubunit list that the subunit currently in and need to be move out to the new one (newarmysubunit),
     alreadypick is list of position need to be skipped"""
-    replace = [np.where(oldarmysubunit == this_leader.subunit.gameid)[0][0],
-               np.where(oldarmysubunit == this_leader.subunit.gameid)[1][0]]  # grab old array position of subunit
+    replace = [np.where(oldarmysubunit == this_leader.subunit.game_id)[0][0],
+               np.where(oldarmysubunit == this_leader.subunit.game_id)[1][0]]  # grab old array position of subunit
     newrow = int((len(newarmysubunit) - 1) / 2)  # set up new row subunit will be place in at the middle at the start
     newplace = int((len(newarmysubunit[newrow]) - 1) / 2)  # setup new column position
     placedone = False  # finish finding slot to place yet
@@ -515,12 +515,13 @@ def move_leader_subunit(this_leader, oldarmysubunit, newarmysubunit, alreadypick
     while placedone is False:
         if this_leader.subunit.parentunit.armysubunit.flat[newrow * newplace] != 0:
             for this_subunit in this_leader.subunit.parentunit.subunit_sprite:
-                if this_subunit.gameid == this_leader.subunit.parentunit.armysubunit.flat[newrow * newplace]:
+                if this_subunit.game_id == this_leader.subunit.parentunit.armysubunit.flat[newrow * newplace]:
                     if this_subunit.this_leader is not None or (newrow, newplace) in alreadypick:
                         newplace += 1
                         if newplace > len(newarmysubunit[newrow]) - 1:  # find new column
                             newplace = 0
-                        elif newplace == int(len(newarmysubunit[newrow]) / 2):  # find in new row when loop back to the first one
+                        elif newplace == int(
+                                len(newarmysubunit[newrow]) / 2):  # find in new row when loop back to the first one
                             newrow += 1
                         placedone = False
                     else:  # found slot to replace
@@ -530,7 +531,7 @@ def move_leader_subunit(this_leader, oldarmysubunit, newarmysubunit, alreadypick
             placedone = True
 
     oldarmysubunit[replace[0]][replace[1]] = newarmysubunit[newrow][newplace]
-    newarmysubunit[newrow][newplace] = this_leader.subunit.gameid
+    newarmysubunit[newrow][newplace] = this_leader.subunit.game_id
     newposition = (newplace, newrow)
     return oldarmysubunit, newarmysubunit, newposition
 

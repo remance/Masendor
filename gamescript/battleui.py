@@ -2,8 +2,7 @@ import datetime
 
 import pygame
 import pygame.freetype
-
-from gamescript import map
+from gamescript import map, commonscript
 
 
 class UIButton(pygame.sprite.Sprite):
@@ -15,9 +14,6 @@ class UIButton(pygame.sprite.Sprite):
         self.event = event
         self.rect = self.image.get_rect(center=self.pos)
         self.mouse_over = False
-    #
-    # def draw(self, gamescreen):
-    #     gamescreen.blit(self.image, self.rect)
 
 
 class SwitchButton(pygame.sprite.Sprite):
@@ -40,7 +36,7 @@ class SwitchButton(pygame.sprite.Sprite):
 
 
 class PopupIcon(pygame.sprite.Sprite):
-    def __init__(self, x, y, image, event, gameui, item_id=""):
+    def __init__(self, x, y, image, event, game_ui, item_id=""):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.x, self.y = x, y
@@ -49,9 +45,6 @@ class PopupIcon(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.x, self.y))
         self.mouse_over = False
         self.item_id = item_id
-    #
-    # def draw(self, gamescreen):
-    #     gamescreen.blit(self.image, self.rect)
 
 
 class GameUI(pygame.sprite.Sprite):
@@ -77,7 +70,7 @@ class GameUI(pygame.sprite.Sprite):
         self.last_value = 0
         self.option = 0
         self.rect = self.image.get_rect(center=(self.x, self.y))
-        self.last_who = -1  # parentunit last showed, start with -1 which mean any new clicked will show up at start
+        self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
         if self.ui_type == "topbar":  # setup variable for topbar ui
             position = 10
             for ic in self.icon:  # Blit icon into topbar ui
@@ -103,25 +96,8 @@ class GameUI(pygame.sprite.Sprite):
                                "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
         self.image_original = self.image.copy()
 
-    def make_long_text(self, surface, text, pos, font, color=pygame.Color("black")):
-        """Blit long text into separate row of text"""
-        words = [word.split(" ") for word in text.splitlines()]  # 2D array where each row is a list of words
-        space = font.size(" ")[0]  # the width of a space
-        max_width, max_height = surface.get_size()
-        x, y = pos
-        for line in words:
-            for word in line:
-                word_surface = font.render(word, 0, color)
-                word_width, word_height = word_surface.get_size()
-                if x + word_width >= max_width:
-                    x = pos[0]  # reset x
-                    y += word_height  # start on new row.
-                surface.blit(word_surface, (x, y))
-                x += word_width + space
-            x = pos[0]  # reset x
-            y += word_height  # start on new row
-
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
+        make_long_text = commonscript.make_long_text
         for this_button in button:
             this_button.draw(self.image)
         position = 65
@@ -157,7 +133,7 @@ class GameUI(pygame.sprite.Sprite):
         #     surface.blit(label(line), (position[0], position[1] + (line * font_size) + (15 * line)))
 
         elif self.ui_type == "commandbar":
-            if who.gameid != self.last_who or split:  # only redraw leader circle when change subunit
+            if who.game_id != self.last_who or split:  # only redraw leader circle when change subunit
                 use_colour = self.white  # colour of the chess icon for leader, white for team 1
                 if who.team == 2:  # black for team 2
                     use_colour = self.black
@@ -167,7 +143,8 @@ class GameUI(pygame.sprite.Sprite):
                 if who.commander:  # commander parentunit use king and queen icon
                     # gamestart general
                     self.icon_rect = use_colour[0].get_rect(
-                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
+                        center=(
+                        self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
                     self.image.blit(use_colour[0], self.icon_rect)
 
                     # sub commander/strategist role
@@ -197,7 +174,7 @@ class GameUI(pygame.sprite.Sprite):
 
                 self.image_original2 = self.image.copy()
             authority = str(who.authority).split(".")[0]
-            if self.last_auth != authority or who.gameid != self.last_who or split:  # authority number change only when not same as last
+            if self.last_auth != authority or who.game_id != self.last_who or split:  # authority number change only when not same as last
                 self.image = self.image_original2.copy()
                 text_surface = self.font.render(authority, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(
@@ -220,16 +197,17 @@ class GameUI(pygame.sprite.Sprite):
             self.description = who.description
             if type(self.description) == list:
                 self.description = self.description[0]
-            if self.value != self.last_value or change_option == 1 or who.gameid != self.last_who:
+            if self.value != self.last_value or change_option == 1 or who.game_id != self.last_who:
                 self.image = self.image_original.copy()
                 row = 0
                 self.name = self.value[0]
-                leadertext = ""
+                leader_text = ""
                 if who.leader is not None and who.leader.name != "None":
-                    leadertext = "/" + str(who.leader.name)
+                    leader_text = "/" + str(who.leader.name)
                     if who.leader.state in self.leader_state_text:
-                        leadertext += " " + "(" + self.leader_state_text[who.leader.state] + ")"
-                text_surface = self.font_head.render(self.name + leadertext, True, (0, 0, 0))  # subunit and leader name at the top
+                        leader_text += " " + "(" + self.leader_state_text[who.leader.state] + ")"
+                text_surface = self.font_head.render(self.name + leader_text, True,
+                                                     (0, 0, 0))  # subunit and leader name at the top
                 text_rect = text_surface.get_rect(
                     midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
                 self.image.blit(text_surface, text_rect)
@@ -256,7 +234,7 @@ class GameUI(pygame.sprite.Sprite):
                         if row == 9:
                             position_x, position = 200, 35
                 elif self.option == 0:  # description card
-                    self.make_long_text(self.image, self.description, (42, 25), self.font_long)  # blit long description
+                    make_long_text(self.image, self.description, (42, 25), self.font_long)  # blit long description
                 elif self.option == 3:  # equipment and terrain
                     # v Terrain text
                     terrain = self.terrain_list[who.terrain]
@@ -294,18 +272,18 @@ class GameUI(pygame.sprite.Sprite):
                         self.image.blit(text_surface, text_rect)
                         position += 20
                 self.last_value = self.value
-        self.last_who = who.gameid
+        self.last_who = who.game_id
 
 
 class SkillCardIcon(pygame.sprite.Sprite):
     cooldown = None
     active_skill = None
 
-    def __init__(self, image, pos, icontype, gameid=None):
+    def __init__(self, image, pos, icon_type, game_id=None):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icontype = icontype  # type 0 is trait 1 is kill
-        self.gameid = gameid  # ID of the skill
+        self.icon_type = icon_type  # type 0 is trait 1 is skill
+        self.game_id = game_id  # ID of the skill
         self.pos = pos  # pos of the skill on ui
         self.font = pygame.font.SysFont("helvetica", 18)
         self.cooldown_check = 0  # cooldown number
@@ -319,7 +297,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
         """Change number more than thousand to K digit e.g. 1k = 1000"""
         return str(round(number / 1000, 1)) + "K"
 
-    def iconchange(self, cooldown, active_timer):
+    def icon_change(self, cooldown, active_timer):
         """Show active effect timer first if none show cooldown"""
         if active_timer != self.active_check:
             self.active_check = active_timer  # renew number
@@ -340,7 +318,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
             if self.cooldown_check > 0:
                 self.image.blit(self.cooldown, self.cooldown_rect)
                 output_number = str(self.cooldown_check)
-                if self.cooldown_check >= 1000:  # change thousand number into k (1k,2k)
+                if self.cooldown_check >= 1000:  # change a thousand number into k (1k,2k)
                     output_number = self.change_number(output_number)
                 text_surface = self.font.render(output_number, 1, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
@@ -349,11 +327,11 @@ class SkillCardIcon(pygame.sprite.Sprite):
 
 class EffectCardIcon(pygame.sprite.Sprite):
 
-    def __init__(self, image, pos, icontype, gameid=None):
+    def __init__(self, image, pos, icon_type, game_id=None):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon_type = icontype
-        self.gameid = gameid
+        self.icon_type = icon_type
+        self.game_id = game_id
         self.pos = pos
         self.cooldown_check = 0
         self.active_check = 0
@@ -453,7 +431,7 @@ class Minimap(pygame.sprite.Sprite):
 
 class EventLog(pygame.sprite.Sprite):
     max_row_show = 9  # maximum 9 text rows can appear at once
-    logscroll = None  # Link from gamebattle after creation of both object
+    log_scroll = None  # Link from gamebattle after creation of both object
 
     def __init__(self, image, pos):
         self._layer = 10
@@ -463,6 +441,14 @@ class EventLog(pygame.sprite.Sprite):
         self.image = image
         self.image_original = self.image.copy()
         self.rect = self.image.get_rect(bottomleft=self.pos)
+        self.len_check = 0
+        self.current_start_row = 0
+        self.mode = 0
+        self.battle_log = []  # 0 troop
+        self.unit_log = []  # 1 army
+        self.leader_log = []  # 2 leader
+        self.subunit_log = []  # 3 subunit
+        self.current_start_row = 0
 
     def make_new_log(self):
         self.mode = 0  # 0=troop,1=army(subunit),2=leader,3=subunit(sub-subunit)
@@ -496,8 +482,8 @@ class EventLog(pygame.sprite.Sprite):
         self.current_start_row = 0
         if self.len_check > self.max_row_show:  # go to last row if there are more log than limit
             self.current_start_row = self.len_check - self.max_row_show
-        self.logscroll.current_row = self.current_start_row
-        self.logscroll.change_image(log_size=self.len_check)
+        self.log_scroll.current_row = self.current_start_row
+        self.log_scroll.change_image(log_size=self.len_check)
         self.recreate_image()
 
     def clear_tab(self, all_tab=False):
@@ -509,8 +495,8 @@ class EventLog(pygame.sprite.Sprite):
         if all_tab:  # Clear event from every mode
             for log in (self.battle_log, self.unit_log, self.leader_log, self.subunit_log):
                 log.clear()
-        self.logscroll.current_row = self.current_start_row
-        self.logscroll.change_image(log_size=self.len_check)
+        self.log_scroll.current_row = self.current_start_row
+        self.log_scroll.change_image(log_size=self.len_check)
         self.recreate_image()
 
     def recreate_image(self):
@@ -558,7 +544,7 @@ class EventLog(pygame.sprite.Sprite):
                 image_change = True
         return image_change
 
-    def add_log(self, log, mode_list, eventmapid=None):
+    def add_log(self, log, mode_list, event_id=None):
         """Add log to appropriate event log, the log must be in list format following this rule [attacker (gameid), logtext]"""
         at_last_row = False
         image_change = False
@@ -568,15 +554,16 @@ class EventLog(pygame.sprite.Sprite):
         if log is not None:  # when event map log commentary come in, log will be none
             text_output = ": " + log[1]
             image_change = self.log_text_process(log[0], mode_list, text_output)
-        if eventmapid is not None and eventmapid in self.map_event:  # Process whether there is historical commentary to add to event log
-            text_output = self.map_event[eventmapid]
-            image_change2 = self.log_text_process(text_output[0], text_output[2], str(text_output[3]) + ": " + text_output[1])
+        if event_id is not None and event_id in self.map_event:  # Process whether there is historical commentary to add to event log
+            text_output = self.map_event[event_id]
+            image_change2 = self.log_text_process(text_output[0], text_output[2],
+                                                  str(text_output[3]) + ": " + text_output[1])
         if image_change or image_change2:
             self.len_check = len((self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode])
             if at_last_row and self.len_check > 9:
                 self.current_start_row = self.len_check - self.max_row_show
-                self.logscroll.current_row = self.current_start_row
-            self.logscroll.change_image(log_size=self.len_check)
+                self.log_scroll.current_row = self.current_start_row
+            self.log_scroll.change_image(log_size=self.len_check)
             self.recreate_image()
 
 
@@ -621,13 +608,13 @@ class UIScroller(pygame.sprite.Sprite):
     def update(self, mouse_pos, *args):
         """User input update"""
         if (args is False or (args and args[0] and self.rect.collidepoint(mouse_pos))) and mouse_pos is not None:
-            self.mouse_value = (mouse_pos[1] - self.pos[
+            mouse_value = (mouse_pos[1] - self.pos[
                 1]) * 100 / self.height_ui  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
-            if self.mouse_value > 100:
-                self.mouse_value = 100
-            if self.mouse_value < 0:
-                self.mouse_value = 0
-            new_row = int(self.log_size * self.mouse_value / 100)
+            if mouse_value > 100:
+                mouse_value = 100
+            if mouse_value < 0:
+                mouse_value = 0
+            new_row = int(self.log_size * mouse_value / 100)
             if self.log_size > self.max_row_show and new_row > self.log_size - self.max_row_show:
                 new_row = self.log_size - self.max_row_show
             if self.log_size > self.max_row_show:  # only change scroll position in list longer than max length
@@ -653,9 +640,9 @@ class ArmyIcon(pygame.sprite.Sprite):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.army = army  # link army object so when click can correctly select or go to position
-        army.icon = self  # link this icon to army object, mostly for when it get killed so can easily remove from list
+        army.icon = self  # link this icon to army object, mostly for when it gets killed so can easily remove from list
         self.pos = pos  # position on army selector ui
-        self.leader_image = self.army.leader[0].image.copy()  # get gamestart leader image
+        self.leader_image = self.army.leader[0].image.copy()  # get leader image
         self.leader_image = pygame.transform.scale(self.leader_image, (int(self.leader_image.get_width() / 1.5),
                                                                        int(self.leader_image.get_height() / 1.5)))  # scale leader image to fit the icon
         self.image = pygame.Surface((self.leader_image.get_width() + 4, self.leader_image.get_height() + 4))  # create image black corner block
@@ -703,6 +690,7 @@ class Timer(pygame.sprite.Sprite):
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
         self.image_original = self.image.copy()
         self.rect = self.image.get_rect(topleft=pos)
+        self.timer = 0
 
     def start_setup(self, time_start):
         self.timer = time_start.total_seconds()
@@ -822,7 +810,7 @@ class BattleDone(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
         self.winner = None
 
-    def popout(self, winner):
+    def pop(self, winner):
         self.winner = winner
         self.image = self.box_image.copy()
         text_surface = self.font.render(self.winner, True, (0, 0, 0))

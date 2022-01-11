@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pygame
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
+
 from gamescript import commonscript, readstat, menu, battleui
 from gamescript.arcade import longscript
 
@@ -54,7 +55,7 @@ def apply_colour(surface, colour=None):
     surface = surface.convert("L")  # convert to grey scale for colourise
     if colour is not None:
         max_colour = 255  # - (colour[0] + colour[1] + colour[2])
-        mid_colour = [c - ((max_colour - c) / 2) for c in colour]
+        mid_colour = [int(c - ((max_colour - c) / 2)) for c in colour]
         surface = ImageOps.colorize(surface, black="black", mid=mid_colour, white=colour).convert("RGB")
     surface.putalpha(alpha)  # put back alpha
     surface = surface.tobytes()
@@ -69,8 +70,8 @@ def setup_list(item_class, current_row, show_list, item_group, box, ui_class, la
     row = 5 * height_adjust
     column = 5 * width_adjust
     pos = box.rect.topleft
-    if current_row > len(show_list) - box.maxshowlist:
-        current_row = len(show_list) - box.maxshowlist
+    if current_row > len(show_list) - box.max_show:
+        current_row = len(show_list) - box.max_show
 
     if len(item_group) > 0 and remove_old:  # remove previous sprite in the group before generate new one
         for stuff in item_group:
@@ -79,10 +80,11 @@ def setup_list(item_class, current_row, show_list, item_group, box, ui_class, la
     add_row = 0
     for index, item in enumerate(show_list):
         if index >= current_row:
-            item_group.add(item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item, layer=layer))  # add new subsection sprite to group
+            item_group.add(item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item,
+                                      layer=layer))  # add new subsection sprite to group
             row += (30 * height_adjust)  # next row
             add_row += 1
-            if add_row > box.maxshowlist:
+            if add_row > box.max_show:
                 break  # will not generate more than space allowed
 
         ui_class.add(*item_group)
@@ -103,8 +105,9 @@ def list_scroll(scroll, listbox, current_row, name_list, name_group, ui_class, l
 
     elif mouse_scroll_down:
         current_row += 1
-        if current_row + listbox.maxshowlist - 1 < len(name_list):
-            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_class, layer=layer, old_list=old_list)
+        if current_row + listbox.max_show - 1 < len(name_list):
+            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_class, layer=layer,
+                       old_list=old_list)
             scroll.change_image(new_row=current_row, log_size=len(name_list))
         else:
             current_row -= 1
@@ -254,12 +257,12 @@ def anim_save_pool(pool, pool_name):
             for item in list(save_list.items()):
                 for frame_num, frame in enumerate(item[1]):
                     subitem = [tiny_item for tiny_item in list(frame.values())]
-                    for itemindex, min_item in enumerate(subitem):
+                    for item_index, min_item in enumerate(subitem):
                         if type(min_item) == list:
                             new_item = str(min_item)
                             for character in "'[] ":
                                 new_item = new_item.replace(character, '')
-                            subitem[itemindex] = new_item
+                            subitem[item_index] = new_item
                     new_item = [item[0] + "/" + str(frame_num)] + subitem
                     final_save.append(new_item)
             for row in final_save:
@@ -1620,7 +1623,7 @@ menu.ListBox.containers = popup_listbox
 popup_listbox = menu.ListBox(screen_scale, (0, 0), box_img, 15)  # popup box need to be in higher layer
 popup_listscroll = battleui.UIScroller(popup_listbox.rect.topright,
                                        popup_listbox.image.get_height(),
-                                       popup_listbox.maxshowlist,
+                                       popup_listbox.max_show,
                                        layer=14)
 anim_prop_listbox = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
                                                 (reset_button.image.get_height() * 1.5)), box_img, 8)
@@ -1630,11 +1633,11 @@ frame_prop_listbox = menu.ListBox(screen_scale, (screen_size[0] - box_img.get_wi
 frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
 anim_prop_listscroll = battleui.UIScroller(anim_prop_listbox.rect.topright,
                                            anim_prop_listbox.image.get_height(),
-                                           anim_prop_listbox.maxshowlist,
+                                           anim_prop_listbox.max_show,
                                            layer=10)
 frame_prop_listscroll = battleui.UIScroller(frame_prop_listbox.rect.topright,
                                             frame_prop_listbox.image.get_height(),
-                                            frame_prop_listbox.maxshowlist,
+                                            frame_prop_listbox.max_show,
                                             layer=10)
 current_anim_row = 0
 current_frame_row = 0

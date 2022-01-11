@@ -276,7 +276,7 @@ class Unit(pygame.sprite.Sprite):
             self.frontline_object[arrayindex] = self.frontline_object[arrayindex].tolist()
             for index, stuff in enumerate(whofrontline):
                 for subunit in self.subunit_sprite:
-                    if subunit.gameid == stuff:
+                    if subunit.game_id == stuff:
                         self.frontline_object[arrayindex][index] = subunit
                         break
 
@@ -373,7 +373,7 @@ class Unit(pygame.sprite.Sprite):
                             (self.leader.cavcommand - 5) * 0.1]  # parentunit leader command buff
 
         for subunit in squadgroup:
-            self.spritearray = np.where(self.spritearray == subunit.gameid, subunit, self.spritearray)
+            self.spritearray = np.where(self.spritearray == subunit.game_id, subunit, self.spritearray)
 
         parentunittopleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
                                            # get the top left corner of sprite to generate subunit position

@@ -2,12 +2,10 @@ import ast
 import csv
 import os
 import random
-import numpy as np
-import cv2
 
 import pygame
 import pygame.freetype
-from PIL import Image, ImageFilter, ImageOps, ImageEnhance
+from PIL import Image, ImageFilter, ImageOps
 
 # Terrain base colour, change these when add new terrain
 Temperate = (166, 255, 107, 255)
@@ -173,17 +171,18 @@ class HeightMap(pygame.sprite.Sprite):
 
             # replace black background with transparent
             img = img.convert("RGBA")
-            datas = img.getdata()
-            newData = []
-            for item in datas:
+            data = img.getdata()
+            new_data = []
+            for item in data:
                 if item == (0, 0, 0, 255):
-                    newData.append((255, 255, 255, 0))
+                    new_data.append((255, 255, 255, 0))
                 else:
-                    newData.append(item)
-            img.putdata(newData)
+                    new_data.append(item)
+            img.putdata(new_data)
 
             img = img.tobytes()
-            self.topology_image = pygame.image.fromstring(img, (default_map_width, default_map_height), "RGBA")  # convert image back to a pygame surface
+            self.topology_image = pygame.image.fromstring(img, (default_map_width, default_map_height),
+                                                          "RGBA")  # convert image back to a pygame surface
 
     def get_height(self, pos):
         """get the terrain height at that exact position"""
@@ -218,8 +217,9 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.scale = scale
         self.mode = 0
         self.new_colour_list = {}
-        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():

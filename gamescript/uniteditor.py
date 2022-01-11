@@ -9,84 +9,86 @@ from pygame.transform import scale
 
 class PreviewBox(pygame.sprite.Sprite):
     main_dir = None
-    effectimage = None
+    effect_image = None
 
     def __init__(self, pos):
         import main
-        SCREENRECT = main.screen_rect
-        self.widthadjust = SCREENRECT.width / 1366
-        self.heightadjust = SCREENRECT.height / 768
+        screen_rect = main.screen_rect
+        self.width_adjust = screen_rect.width / 1366
+        self.height_adjust = screen_rect.height / 768
 
         self._layer = 1
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.maxwidth = int(500 * self.widthadjust)
-        self.maxheight = int(500 * self.heightadjust)
-        self.image = pygame.Surface((self.maxwidth, self.maxheight))
+        self.max_width = int(500 * self.width_adjust)
+        self.max_height = int(500 * self.height_adjust)
+        self.image = pygame.Surface((self.max_width, self.max_height))
 
-        self.font = pygame.font.SysFont("timesnewroman", int(24 * self.heightadjust))
+        self.font = pygame.font.SysFont("timesnewroman", int(24 * self.height_adjust))
 
-        self.newcolourlist = {}
-        with open(self.main_dir + os.path.join("data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        self.new_colour_list = {}
+        with open(self.main_dir + os.path.join("data", "map", "colourchange.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
                     elif "," in i:
                         row[n] = ast.literal_eval(i)
-                self.newcolourlist[row[0]] = row[1:]
+                self.new_colour_list[row[0]] = row[1:]
 
-        self.changeterrain(self.newcolourlist[0])
+        self.change_terrain(self.new_colour_list[0])
 
         self.rect = self.image.get_rect(center=pos)
 
-    def changeterrain(self, newterrain):
-        self.image.fill(newterrain[1])
+    def change_terrain(self, new_terrain):
+        self.image.fill(new_terrain[1])
 
         rect = self.image.get_rect(topleft=(0, 0))
-        self.image.blit(self.effectimage, rect)  # add special filter effect that make it look like old map
+        self.image.blit(self.effect_image, rect)  # add special filter effect that make it look like old map
 
-        textsurface = self.font.render(newterrain[0], True, (0, 0, 0))
-        textrect = textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() - (textsurface.get_height() / 2)))
-        self.image.blit(textsurface, textrect)
+        text_surface = self.font.render(new_terrain[0], True, (0, 0, 0))
+        text_rect = text_surface.get_rect(
+            center=(self.image.get_width() / 2, self.image.get_height() - (text_surface.get_height() / 2)))
+        self.image.blit(text_surface, text_rect)
 
 
 class PreviewLeader(pygame.sprite.Sprite):
-    baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
+    base_img_position = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
 
-    def __init__(self, leaderid, subunitpos, armyposition, leaderstat):
+    def __init__(self, leader_id, subunit_pos, army_position, leader_stat):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.state = 0
         self.subunit = None
 
-        self.leaderid = leaderid
+        self.leader_id = leader_id
 
-        self.subunitpos = subunitpos  # Squad position is the index of subunit in subunit sprite loop
-        self.armyposition = armyposition  # position in the parentunit (e.g. general or sub-general)
-        self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
+        self.subunit_pos = subunit_pos  # Squad position is the index of subunit in subunit sprite loop
+        self.army_position = army_position  # position in the parentunit (e.g. general or sub-general)
+        self.img_position = self.base_img_position[self.army_position]  # image position based on armyposition
 
-        self.change_leader(leaderid, leaderstat)
+        self.change_leader(leader_id, leader_stat)
 
-    def change_leader(self, leaderid, leaderstat):
-        self.leaderid = leaderid  # leaderid is only used as reference to the leader data
+    def change_leader(self, leader_id, leader_stat):
+        self.leader_id = leader_id  # leaderid is only used as reference to the leader data
 
-        stat = leaderstat.leader_list[leaderid]
-        leader_header = leaderstat.leader_list_header
+        stat = leader_stat.leader_list[leader_id]
+        leader_header = leader_stat.leader_list_header
 
         self.name = stat[0]
         self.authority = stat[2]
-        self.social = leaderstat.leader_class[stat[leader_header["Social Class"]]]
+        self.social = leader_stat.leader_class[stat[leader_header["Social Class"]]]
         self.description = stat[-1]
 
         try:  # Put leader image into leader slot
-            self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
+            self.full_image = leader_stat.imgs[leader_stat.imgorder.index(leader_id)].copy()
         except:  # Use Unknown leader image if there is none in list
-            self.fullimage = leaderstat.imgs[-1].copy()
+            self.full_image = leader_stat.imgs[-1].copy()
 
-        self.image = pygame.transform.scale(self.fullimage, (50, 50))
-        self.rect = self.image.get_rect(center=self.imgposition)
+        self.image = pygame.transform.scale(self.full_image, (50, 50))
+        self.rect = self.image.get_rect(center=self.img_position)
         self.image_original = self.image.copy()
 
         self.commander = False  # army commander
@@ -95,9 +97,9 @@ class PreviewLeader(pygame.sprite.Sprite):
     def change_subunit(self, subunit):
         self.subunit = subunit
         if subunit is None:
-            self.subunitpos = 0
+            self.subunit_pos = 0
         else:
-            self.subunitpos = subunit.slotnumber
+            self.subunit_pos = subunit.slot_number
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):
@@ -108,7 +110,7 @@ class SelectedPresetBorder(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 6)
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-    def changepos(self, pos):
+    def change_pos(self, pos):
         self.rect = self.image.get_rect(topleft=pos)
 
 
@@ -117,24 +119,24 @@ class Unitbuildslot(pygame.sprite.Sprite):
     sprite_height = 0  # subunit sprite height size get add from gamestart
     images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
     weapon_list = None
-    armourlist = None
+    armour_list = None
     stat_list = None
     genre = None
 
-    def __init__(self, gameid, team, armyid, position, startpos, slotnumber, teamcolour):
-        self.colour = teamcolour
+    def __init__(self, game_id, team, army_id, position, start_pos, slot_number, team_colour):
+        self.colour = team_colour
         self._layer = 2
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.selected = False
-        self.gameid = gameid
+        self.game_id = game_id
         self.team = team
-        self.armyid = armyid
-        self.troopid = 0  # index according to sub-unit file
+        self.army_id = army_id
+        self.troop_id = 0  # index according to sub-unit file
         self.name = "None"
         self.leader = None
         self.height = 100
         self.commander = False
-        if self.armyid == 0:
+        if self.army_id == 0:
             self.commander = True
         self.authority = 100
         self.state = 0
@@ -146,29 +148,29 @@ class Unitbuildslot(pygame.sprite.Sprite):
 
         self.coa = pygame.Surface((0, 0))  # empty coa_list to prevent leader ui error
 
-        self.changeteam(False)
+        self.change_team(False)
 
-        self.slotnumber = slotnumber
-        self.armypos = position  # position in parentunit sprite
-        self.inspposition = (self.armypos[0] + startpos[0], self.armypos[1] + startpos[1])  # position in inspect ui
-        self.rect = self.image.get_rect(topleft=self.inspposition)
+        self.slot_number = slot_number
+        self.army_pos = position  # position in parentunit sprite
+        self.inspect_pos = (self.army_pos[0] + start_pos[0], self.army_pos[1] + start_pos[1])  # position in inspect ui
+        self.rect = self.image.get_rect(topleft=self.inspect_pos)
 
-    def changeteam(self, changetroop):
+    def change_team(self, change_troop):
         self.image = pygame.Surface((self.sprite_width, self.sprite_height), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.sprite_width - 2, self.sprite_height - 2))
-        whiteimage.fill(self.colour[self.team])
-        whiterect = whiteimage.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(whiteimage, whiterect)
+        white_image = pygame.Surface((self.sprite_width - 2, self.sprite_height - 2))
+        white_image.fill(self.colour[self.team])
+        white_rect = white_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(white_image, white_rect)
         self.image_original = self.image.copy()
-        if changetroop:
-            self.changetroop(self.troopid, self.terrain, self.feature, self.weather)
+        if change_troop:
+            self.change_troop(self.troop_id, self.terrain, self.feature, self.weather)
 
-    def changetroop(self, troopindex, terrain, feature, weather):
+    def change_troop(self, troop_index, terrain, feature, weather):
         self.image = self.image_original.copy()
-        if self.troopid != troopindex:
-            self.troopid = troopindex
-            self.create_troop_stat(self.stat_list.troop_list[troopindex].copy(), 100, 100, [1, 1])
+        if self.troop_id != troop_index:
+            self.troop_id = troop_index
+            self.create_troop_stat(self.stat_list.troop_list[troop_index].copy(), 100, 100, [1, 1])
 
         self.terrain = terrain
         self.feature = feature
@@ -180,19 +182,20 @@ class Unitbuildslot(pygame.sprite.Sprite):
             # ^ End subunit block team colour
 
             # v health circle image setup
-            healthimage = self.images[1]
-            healthimagerect = healthimage.get_rect(center=self.image.get_rect().center)
-            self.image.blit(healthimage, healthimagerect)
+            health_image = self.images[1]
+            health_image_rect = health_image.get_rect(center=self.image.get_rect().center)
+            self.image.blit(health_image, health_image_rect)
             # ^ End health circle
 
             # v stamina circle image setup
-            staminaimage = self.images[6]
-            staminaimagerect = staminaimage.get_rect(center=self.image.get_rect().center)
-            self.image.blit(staminaimage, staminaimagerect)
+            stamina_image = self.images[6]
+            stamina_image_rect = stamina_image.get_rect(center=self.image.get_rect().center)
+            self.image.blit(stamina_image, stamina_image_rect)
             # ^ End stamina circle
 
             # v weapon class icon in middle circle
-            image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
+            image1 = self.weapon_list.imgs[
+                self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)
             # ^ End weapon icon
@@ -213,46 +216,46 @@ class WarningMsg(pygame.sprite.Sprite):
         self.screen_scale = screen_scale
         self.font = pygame.font.SysFont("timesnewroman", int(20 * self.screen_scale[1]))
         self.rowcount = 0
-        self.warninglog = []
-        self.fixwidth = int(230 * screen_scale[1])
+        self.warning_log = []
+        self.fix_width = int(230 * screen_scale[1])
         self.pos = pos
 
-    def warning(self, warnlist):
-        self.warninglog = []
-        self.rowcount = len(warnlist)
-        for warnitem in warnlist:
-            if len(warnitem) > 25:
-                newrow = len(warnitem) / 25
-                if newrow.is_integer() is False:
-                    newrow = int(newrow) + 1
+    def warning(self, warn_list):
+        self.warning_log = []
+        self.rowcount = len(warn_list)
+        for warn_item in warn_list:
+            if len(warn_item) > 25:
+                new_row = len(warn_item) / 25
+                if new_row.is_integer() is False:
+                    new_row = int(new_row) + 1
                 else:
-                    newrow = int(newrow)
-                self.rowcount += newrow
+                    new_row = int(new_row)
+                self.rowcount += new_row
 
-                cutspace = [index for index, letter in enumerate(warnitem) if letter == " "]
-                startingindex = 0
-                for run in range(1, newrow + 1):
-                    textcutnumber = [number for number in cutspace if number <= run * 25]
-                    cutnumber = textcutnumber[-1]
-                    finaltextoutput = warnitem[startingindex:cutnumber]
-                    if run == newrow:
-                        finaltextoutput = warnitem[startingindex:]
-                    self.warninglog.append(finaltextoutput)
-                    startingindex = cutnumber + 1
+                cut_space = [index for index, letter in enumerate(warn_item) if letter == " "]
+                start_index = 0
+                for run in range(1, new_row + 1):
+                    text_cut_number = [number for number in cut_space if number <= run * 25]
+                    cut_number = text_cut_number[-1]
+                    final_text_output = warn_item[start_index:cut_number]
+                    if run == new_row:
+                        final_text_output = warn_item[start_index:]
+                    self.warning_log.append(final_text_output)
+                    start_index = cut_number + 1
             else:
-                self.warninglog.append(warnitem)
+                self.warning_log.append(warn_item)
 
-        self.image = pygame.Surface((self.fixwidth, int(22 * self.screen_scale[1]) * self.rowcount))
+        self.image = pygame.Surface((self.fix_width, int(22 * self.screen_scale[1]) * self.rowcount))
         self.image.fill((0, 0, 0))
-        whiteimage = pygame.Surface((self.fixwidth - 2, (int(22 * self.screen_scale[1]) * self.rowcount) - 2))
-        whiteimage.fill((255, 255, 255))
-        whiteimage_rect = whiteimage.get_rect(topleft=(1, 1))
-        self.image.blit(whiteimage, whiteimage_rect)
+        white_image = pygame.Surface((self.fix_width - 2, (int(22 * self.screen_scale[1]) * self.rowcount) - 2))
+        white_image.fill((255, 255, 255))
+        white_image_rect = white_image.get_rect(topleft=(1, 1))
+        self.image.blit(white_image, white_image_rect)
         row = 5
-        for index, text in enumerate(self.warninglog):
-            textsurface = self.font.render(text, True, (0, 0, 0))
-            textrect = textsurface.get_rect(topleft=(5, row))
-            self.image.blit(textsurface, textrect)
+        for index, text in enumerate(self.warning_log):
+            text_surface = self.font.render(text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(topleft=(5, row))
+            self.image.blit(text_surface, text_rect)
             row += 20  # Whitespace between text row
         self.rect = self.image.get_rect(topleft=self.pos)
 

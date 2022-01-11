@@ -5,9 +5,9 @@ import pygame.freetype
 class Camera:
     screen_rect = None
 
-    def __init__(self, startpos, zoom):
+    def __init__(self, start_pos, zoom):
         self.zoom = zoom  # Zoom level
-        self.pos = startpos  # Starting camara pos
+        self.pos = start_pos  # Starting camara pos
         self.image = pygame.Surface((self.screen_rect.width, self.screen_rect.height))  # Camera image
 
     def update(self, pos, surfaces, zoom):

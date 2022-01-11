@@ -5,14 +5,15 @@ import time
 import numpy as np
 import pygame
 import pygame.freetype
-from PIL import Image, ImageFilter
-from gamescript import commonscript
-from gamescript.arcade import rangeattack, longscript
+from PIL import Image
+from gamescript import commonscript, rangeattack
+from gamescript.arcade import longscript
 from pygame.transform import scale
 
 infinity = float("inf")
 
 rotationxy = commonscript.rotation_xy
+
 
 def create_troop_stat(self, stat, starthp, troop_type):
     if troop_type == "troop":
@@ -334,7 +335,7 @@ class Subunit(pygame.sprite.Sprite):
         troop_type = "troop"
         if self.troopid == "h":  # leader subunit
             troop_type = "leader"
-            self.troopid = self.parentunit.leader.gameid
+            self.troopid = self.parentunit.leader.game_id
             self.leader = self.parentunit.leader
 
         self.angle = self.parentunit.angle
@@ -481,11 +482,11 @@ class Subunit(pygame.sprite.Sprite):
             if aoe > 1:  # only direct nearby friendly subunit
                 for subunit in self.nearby_subunit_list[0:4]:
                     if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
-                        subunit.statuseffect[statusid] = statuslist  # apply status effect
+                        subunit.status_effect[statusid] = statuslist  # apply status effect
             if aoe > 2:  # all nearby including corner friendly subunit
                 for subunit in self.nearby_subunit_list[4:]:
                     if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
-                        subunit.statuseffect[statusid] = statuslist  # apply status effect
+                        subunit.status_effect[statusid] = statuslist  # apply status effect
         elif aoe == 4:  # apply to whole parentunit
             for subunit in self.parentunit.spritearray.flat:
                 if subunit.state != 100:  # only apply to alive squads
@@ -563,16 +564,16 @@ class Subunit(pygame.sprite.Sprite):
         weather_temperature = 0
         if this_weather is not None:
             weather = this_weather
-            self.attack += weather.meleeatk_buff
-            self.melee_def += weather.meleedef_buff
-            self.range_def += weather.rangedef_buff
+            self.attack += weather.melee_atk_buff
+            self.melee_def += weather.melee_def_buff
+            self.range_def += weather.range_def_buff
             self.armour += weather.armour_buff
             self.speed += weather.speed_buff
             self.accuracy += weather.accuracy_buff
             self.reload += weather.reload_buff
             self.charge += weather.charge_buff
-            self.charge_def += weather.chargedef_buff
-            self.hp_regen += weather.hpregen_buff
+            self.charge_def += weather.charge_def_buff
+            self.hp_regen += weather.hp_regen_buff
             self.morale += (weather.morale_buff * self.mental)
             self.discipline += weather.discipline_buff
             if weather.elem[0] != 0:  # Weather can cause elemental effect such as wet
@@ -846,10 +847,11 @@ class Subunit(pygame.sprite.Sprite):
     def update(self, weather, newdt, combattimer, mousepos, mouseup):
         if self.state != 100:  # only run these when not dead
             # v Mouse collision detection
-            if self.gamebattle.gamestate == 1 or (self.gamebattle.gamestate == 2 and self.gamebattle.unit_build_slot not in self.gamebattle.battle_ui):
+            if self.gamebattle.game_state == 1 or (
+                    self.gamebattle.game_state == 2 and self.gamebattle.unit_build_slot not in self.gamebattle.battle_ui):
                 if self.rect.collidepoint(mousepos):
                     self.gamebattle.last_mouseover = self.parentunit  # last mouse over on this parentunit
-                    if mouseup and self.gamebattle.uiclick is False:
+                    if mouseup and self.gamebattle.ui_click is False:
                         self.gamebattle.last_selected = self.parentunit  # become last selected parentunit
                         if self.parentunit.selected is False:
                             self.parentunit.justselected = True

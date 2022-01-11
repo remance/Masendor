@@ -2,7 +2,11 @@ import csv
 import os
 import re
 
-"""This file contains all class and function that read subunit/leader related data and save them into dict for ingame use"""
+"""This file contains all class and function that read subunit/leader related data and save them into dict for ingame use
+int_column is column that need to be converted to int value only
+list_column is column that need to be converted to list only
+mod_column is column that need to be converted to float only
+"""
 
 
 def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=()):
@@ -55,15 +59,16 @@ class Weaponstat:
             self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.weapon_list[row[0]] = row[1:]
         edit_file.close()
-        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifer to weapon stat
+        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
 
 
 class Armourstat:
@@ -82,28 +87,31 @@ class Armourstat:
             self.armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.armour_list[row[0]] = row[1:]
         edit_file.close()
-        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifer to armour stat
+        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to armour stat
 
 
 class Unitstat:
-    def __init__(self, main_dir, ruleset, rulesetfolder):
+    def __init__(self, main_dir, ruleset, ruleset_folder):
         """Unit stat data read"""
         # v Unit stat dict
         self.troop_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", rulesetfolder, "troop", "troop_preset.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             int_column = ["ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size"]  # value int only
-            list_column = ["Trait", "Skill", "Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon", "Secondary Sub Weapon",
+            list_column = ["Trait", "Skill", "Armour", "Primary Main Weapon", "Primary Sub Weapon",
+                           "Secondary Main Weapon", "Secondary Sub Weapon",
                            "Mount", "Role", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
@@ -117,7 +125,8 @@ class Unitstat:
 
         # v Lore of the subunit dict
         self.troop_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", rulesetfolder, "troop", "troop_lore.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_lore.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -137,20 +146,23 @@ class Unitstat:
             int_column = ["ID", "Temperature Change"]  # value int only
             list_column = ["Special Effect", "Status Conflict", "Ruleset"]  # value in list only
             mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Armour Effect",
-                          "Speed Effect", "Accuracy Effect", "Reload Effect", "Charge Effect"]  # need to be calculate to percentage
+                          "Speed Effect", "Accuracy Effect", "Reload Effect",
+                          "Charge Effect"]  # need to be calculated to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             self.status_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
-                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column, int_column=int_column)
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               int_column=int_column)
                     self.status_list[row[0]] = row[1:]
                 run += 1
         edit_file.close()
@@ -162,10 +174,11 @@ class Unitstat:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                             row[n] = float(i)
@@ -183,7 +196,7 @@ class Unitstat:
             int_column = ["ID"]  # value int only
             list_column = ["Trait"]  # value in list only
             mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
-                          "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect"]  # need to be calculate to percentage
+                          "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
@@ -208,20 +221,22 @@ class Unitstat:
             list_column = ["Status", "Restriction", "Condition", "Enemy Status", "Ruleset"]  # value in list only
             mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Damage Effect"]  # need to be calculate to percentage
+                          "Critical Effect", "Damage Effect"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             self.skill_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         if run != 0:  # Skip first row header
-                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column, int_column=int_column)
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               int_column=int_column)
                     self.skill_list[row[0]] = row[1:]
                     run += 1
         edit_file.close()
@@ -238,21 +253,22 @@ class Unitstat:
             list_column = ["Status", "Special Effect", "Enemy Status", "Ruleset"]  # value in list only
             mod_column = ["Buff Modifier", "Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
-                          "Siege Effect", "Supply Effect", "Upkeep Effect"]  # need to be calculate to percentage
+                          "Siege Effect", "Supply Effect", "Upkeep Effect"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             self.trait_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
+                    this_ruleset = [row[-2]]
 
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in this_ruleset):
                     for n, i in enumerate(row):
                         if run != 0:
-                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column, int_column=int_column)
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               int_column=int_column)
                     self.trait_list[row[0]] = row[1:]
                     run += 1
         edit_file.close()
@@ -283,10 +299,11 @@ class Unitstat:
             self.mount_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # ruleset list, make str with "," into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):  # only grab effect that existed in the ruleset and frist row
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and frist row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.mount_list[row[0]] = row[1:]
@@ -327,10 +344,10 @@ class Unitstat:
             self.mount_armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # ruleset list, make str with "," into list
-                    thisruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
-                    thisruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in thisruleset):
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in this_ruleset):
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.mount_armour_list[row[0]] = row[1:]
