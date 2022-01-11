@@ -4,13 +4,13 @@ import pygame.freetype
 
 class TerrainPopup(pygame.sprite.Sprite):
     images = []
-    SCREENRECT = None
+    screen_rect = None
 
     def __init__(self):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.scaleadjust = (
-                self.SCREENRECT.width * self.SCREENRECT.height / (1366 * 768))  # For adjusting the image and text according to screen size
+                self.screen_rect.width * self.screen_rect.height / (1366 * 768))  # For adjusting the image and text according to screen size
         self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width() * self.scaleadjust),
                                                              int(self.images[0].get_height() * self.scaleadjust)))
         self.font = pygame.font.SysFont("helvetica", int(16 * self.scaleadjust))

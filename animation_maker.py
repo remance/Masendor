@@ -27,7 +27,7 @@ screen_scale = (screen_size[0] / 1000, screen_size[1] / 1000)
 
 pygame.init()
 pen = pygame.display.set_mode(screen_size)
-pygame.display.set_caption("Animation Maker")  # set the game name on program border/tab
+pygame.display.set_caption("Animation Maker")  # set the self name on program border/tab
 pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
@@ -247,8 +247,8 @@ def anim_save_pool(pool, pool_name):
     """Save animation pool data"""
     activate_list
     for index, direction in enumerate(direction_list):
-        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8', newline="") as unitfile:
-            filewriter = csv.writer(unitfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8', newline="") as edit_file:
+            filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
             save_list = pool[index]
             final_save = [[item for item in anim_column_header]]
             for item in list(save_list.items()):
@@ -264,7 +264,7 @@ def anim_save_pool(pool, pool_name):
                     final_save.append(new_item)
             for row in final_save:
                 filewriter.writerow(row)
-        unitfile.close()
+        edit_file.close()
 
 
 def anim_del_pool(pool):
@@ -279,8 +279,8 @@ def anim_del_pool(pool):
 
 race_list = []
 race_acro = []
-with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as unitfile:
-    rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
+    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     for row in rd:
         if "," in row[-2]:  # make str with , into list
             this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -292,7 +292,7 @@ with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="u
                 row[n] = float(i)
         race_list.append(row[1].lower())
         race_acro.append(row[3])
-unitfile.close()
+edit_file.close()
 
 race_list = race_list[2:]  # remove header and any race
 race_acro = race_acro[2:]
@@ -300,8 +300,8 @@ race_accept = ["human"]  # for now accept only human race
 
 generic_animation_pool = []
 for direction in direction_list:
-    with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8", mode="r") as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+    with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8", mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         part_name_header = rd[0]
         list_column = ["p1_head", "p1_face", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
@@ -325,15 +325,15 @@ for direction in direction_list:
                     animation_pool[key] = [{part_name_header[item_index]: item for item_index, item in enumerate(row)}]
         generic_animation_pool.append(animation_pool)
         part_name_header = [item for item in part_name_header if item != "effect" and "property" not in item]
-    unitfile.close()
+    edit_file.close()
 
 skel_joint_list = []
 for race in race_list:
     if race in race_accept:
         for direction in direction_list:
             with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
-                      mode="r") as unitfile:
-                rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+                      mode="r") as edit_file:
+                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
                 rd = [row for row in rd]
                 header = rd[0]
                 list_column = ["Position"]  # value in list only
@@ -349,11 +349,11 @@ for race in race_list:
                         else:
                             joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
                 skel_joint_list.append(joint_list)
-            unitfile.close()
+            edit_file.close()
 
 with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
-          mode="r") as unitfile:
-    rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+          mode="r") as edit_file:
+    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     rd = [row for row in rd]
     header = rd[0]
     skin_colour_list = {}

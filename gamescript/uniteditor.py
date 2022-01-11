@@ -13,7 +13,7 @@ class PreviewBox(pygame.sprite.Sprite):
 
     def __init__(self, pos):
         import main
-        SCREENRECT = main.SCREENRECT
+        SCREENRECT = main.screen_rect
         self.widthadjust = SCREENRECT.width / 1366
         self.heightadjust = SCREENRECT.height / 768
 
@@ -144,7 +144,7 @@ class Unitbuildslot(pygame.sprite.Sprite):
         self.feature = 0
         self.weather = 0
 
-        self.coa = pygame.Surface((0, 0))  # empty coa to prevent leader ui error
+        self.coa = pygame.Surface((0, 0))  # empty coa_list to prevent leader ui error
 
         self.changeteam(False)
 
@@ -198,7 +198,7 @@ class Unitbuildslot(pygame.sprite.Sprite):
             # ^ End weapon icon
 
 
-class Warningmsg(pygame.sprite.Sprite):
+class WarningMsg(pygame.sprite.Sprite):
     eightsubunit_warn = "- Require at least 8 sub-units for both test and employment"
     mainleader_warn = "- Require a gamestart leader for both test and employment"
     emptyrowcol_warn = "- Empty row or column will be removed when employed"

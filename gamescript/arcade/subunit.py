@@ -836,7 +836,7 @@ class Subunit(pygame.sprite.Sprite):
                          range(int(max(0, self.base_pos[1] - (self.imageheight - 1))), int(min(1000, self.base_pos[1] + self.imageheight))))
 
     def gamestart(self):
-        """run once when game start or subunit just get created"""
+        """run once when self start or subunit just get created"""
         self.make_pos_range()
         self.find_nearby_subunit()
         self.statusupdate()
@@ -859,7 +859,7 @@ class Subunit(pygame.sprite.Sprite):
             # ^ End mouse detect
 
             dt = newdt
-            if dt > 0:  # only run these when game not pause
+            if dt > 0:  # only run these when self not pause
                 self.timer += dt
 
                 self.walk = False  # reset walk
@@ -956,7 +956,7 @@ class Subunit(pygame.sprite.Sprite):
                 # ^ End range attack function
 
                 # v Combat action related
-                if combattimer >= 0.5:  # combat is calculated every 0.5 second in game time
+                if combattimer >= 0.5:  # combat is calculated every 0.5 second in self time
                     if self.state == 10:  # if melee combat (engaging anyone on any side)
                         collidelist = [subunit for subunit in self.enemy_front]
                         for subunit in collidelist:

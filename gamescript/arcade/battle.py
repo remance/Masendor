@@ -31,13 +31,13 @@ class Battle:
     escmenu_process = escmenu.escmenu_process
 
     def __init__(self, main, winstyle):
-        # v Get game object/variable from gamestart
-        self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for game battle
+        # v Get self object/variable from gamestart
+        self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for self battle
         self.main = main
         self.genre = main.genre
         self.config = main.config
         self.SoundVolume = main.Soundvolume
-        self.SCREENRECT = main.SCREENRECT
+        self.SCREENRECT = main.screen_rect
         self.teamcolour = main.teamcolour
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
@@ -69,8 +69,8 @@ class Battle:
         self.arrows = main.range_attacks
         self.directionarrows = main.direction_arrows
 
-        self.gameui = main.gameui
-        self.popgameui = main.gameui  # saving list of gameui that will pop out when parentunit is selected
+        self.gameui = main.game_ui
+        self.popgameui = main.game_ui  # saving list of game_ui that will pop out when parentunit is selected
 
         self.battlemap_base = main.battle_map_base
         self.battlemap_feature = main.battle_map_feature
@@ -102,7 +102,7 @@ class Battle:
         self.troop_listbox = main.troop_listbox
         self.troop_namegroup = main.troop_namegroup
         self.filterbox = main.filter_box
-        self.tickbox_filter = main.tickbox_filter
+        self.tickbox_filter = main.filter_tick_box
         self.teamchange_button = main.teamchange_button
         self.slotdisplay_button = main.slotdisplay_button
         self.test_button = main.test_button
@@ -116,7 +116,7 @@ class Battle:
         self.uniteditborder = main.unit_edit_border
         self.previewleader = main.preview_leader
         self.unitpreset_namegroup = main.unitpreset_namegroup
-        self.presetselectborder = main.presetselectborder
+        self.presetselectborder = main.preset_select_border
         self.customunitpresetlist = main.customunitpresetlist
         self.unit_listbox = main.unit_listbox
         self.troo_scroll = main.troop_scroll
@@ -126,7 +126,7 @@ class Battle:
         self.troop_scroll = main.troop_scroll
         self.teamcoa = main.team_coa
         self.unit_presetname_scroll = main.unit_presetname_scroll
-        self.warningmsg = main.warningmsg
+        self.warningmsg = main.warning_msg
 
         self.input_button = main.input_button
         self.input_box = main.input_box
@@ -148,18 +148,18 @@ class Battle:
         self.lorebook = main.lorebook
         self.lorenamelist = main.lore_name_list
         self.lorebuttonui = main.lore_button_ui
-        self.lorescroll = main.lorescroll
+        self.lorescroll = main.lore_scroll
         self.subsection_name = main.subsection_name
-        self.pagebutton = main.pagebutton
+        self.pagebutton = main.page_button
 
-        self.allweather = main.allweather
+        self.allweather = main.all_weather
         self.weather_matter_imgs = main.weather_matter_imgs
         self.weather_effect_imgs = main.weather_effect_imgs
 
         self.featuremod = main.feature_mod
 
-        self.allfaction = main.allfaction
-        self.coa = main.coa
+        self.allfaction = main.all_faction
+        self.coa = main.coa_list
 
         self.allweapon = main.allweapon
         self.allarmour = main.allarmour
@@ -215,7 +215,7 @@ class Battle:
                              self.feature_change_button, self.weather_change_button, self.tickbox_filter)
 
         self.bestdepth = pygame.display.mode_ok(self.SCREENRECT.size, winstyle, 32)  # Set the display mode
-        self.screen = pygame.display.set_mode(self.SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up game screen
+        self.screen = pygame.display.set_mode(self.SCREENRECT.size, winstyle | pygame.RESIZABLE, self.bestdepth)  # set up self screen
 
         # v Assign default variable to some class
         unit.Unit.gamebattle = self
@@ -322,7 +322,7 @@ class Battle:
         # v Create the battle map
         self.camerapos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
         self.basecamerapos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
-        camera.Camera.SCREENRECT = self.SCREENRECT
+        camera.Camera.screen_rect = self.SCREENRECT
         self.camera = camera.Camera(self.camerapos, self.camerascale)
 
         if mapselected is not None:
@@ -347,10 +347,10 @@ class Battle:
         self.team1poslist = {}  # team 1 parentunit position
         self.team2poslist = {}  # same for team 2
 
-        self.allunitlist = []  # list of every parentunit in game alive
+        self.allunitlist = []  # list of every parentunit in self alive
         self.allunitindex = []  # list of every parentunit index alive
 
-        self.allsubunitlist = []  # list of all subunit alive in game
+        self.allsubunitlist = []  # list of all subunit alive in self
 
         # v initialise starting subunit sprites
         self.mode = mode
@@ -560,7 +560,7 @@ class Battle:
 
         self.leadernow = whoinput.leader
         self.battleui.add(*self.leadernow)  # add leader portrait to draw
-        # self.gameui[0].valueinput(who=whoinput)
+        # self.game_ui[0].valueinput(who=whoinput)
 
     def unitcardbutton_click(self, who):
         for button in self.troopcard_button:  # Change subunit card option based on button clicking
@@ -670,7 +670,7 @@ class Battle:
             self.buttonui[3].rect = self.buttonui[3].image.get_rect(topleft=(self.troopcard_ui.rect.topleft[0],  # equipment button
                                                                              self.troopcard_ui.rect.topleft[1] + 80))
 
-            self.battleui.remove(self.eventlog, self.logscroll)  # self.gameui[0]
+            self.battleui.remove(self.eventlog, self.logscroll)  # self.game_ui[0]
 
             self.leadernow = [leader for leader in self.previewleader]  # reset leader in command ui
 
@@ -810,10 +810,10 @@ class Battle:
 
         self.mousetimer = 0  # This is timer for checking double mouse click, use realtime
         self.ui_timer = 0  # This is timer for ui update function, use realtime
-        self.drama_timer = 0  # This is timer for combat related function, use game time (realtime * gamespeed)
-        self.dt = 0  # Realtime used for in game calculation
+        self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * gamespeed)
+        self.dt = 0  # Realtime used for in self calculation
         self.uidt = 0  # Realtime used for ui timer
-        self.combattimer = 0  # This is timer for combat related function, use game time (realtime * gamespeed)
+        self.combattimer = 0  # This is timer for combat related function, use self time (realtime * gamespeed)
         self.uiclick = False  # for checking if mouse click is on ui
         self.clickany = False  # For checking if mouse click on anything, if not close ui related to parentunit
         self.last_selected = None  # Which unit is last selected
@@ -825,7 +825,7 @@ class Battle:
         self.bottomcorner = self.SCREENRECT.height - 5
         self.centerscreen = [self.SCREENRECT.width / 2, self.SCREENRECT.height / 2]  # center position of the screen
         self.battle_mouse_pos = [[0, 0],
-                                 [0, 0]]  # mouse position list in game not screen, the first without zoom and the second with camera zoom adjust
+                                 [0, 0]]  # mouse position list in self not screen, the first without zoom and the second with camera zoom adjust
         # ^ End start value
 
         self.effect_updater.update(self.allunitlist, self.dt, self.camerascale)
@@ -834,7 +834,7 @@ class Battle:
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
         pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
 
-        while True:  # game running
+        while True:  # self running
             self.fpscount.fps_show(self.clock)
             keypress = None
             self.mousepos = pygame.mouse.get_pos()  # current mouse pos based on screen
@@ -853,7 +853,7 @@ class Battle:
             self.battleui.clear(self.screen, self.background)  # Clear sprite before update new one
 
             for event in pygame.event.get():  # get event that happen
-                if event.type == QUIT:  # quit game
+                if event.type == QUIT:  # quit self
                     self.textinputpopup = ("confirm_input", "quit")
                     self.confirmui.change_instruction("Quit Game?")
                     self.battleui.add(*self.confirmui_pop)
@@ -901,7 +901,7 @@ class Battle:
                         self.gamestate = 0  # open munu
                         self.battleui.add(self.battle_menu, *self.battle_menu_button)  # add menu and its buttons to drawer
 
-                if self.gamestate in (1, 2):  # game in battle state
+                if self.gamestate in (1, 2):  # self in battle state
                     # v register user input during gameplay
                     if mouse_scrollup or mouse_scrolldown:  # Mouse scroll
                         if self.eventlog.rect.collidepoint(self.mousepos):  # Scrolling when mouse at event log
@@ -966,9 +966,9 @@ class Battle:
 
                     elif keypress == pygame.K_p:  # Speed Pause/unpause Button
                         if self.gamespeed > 0:  #
-                            self.gamespeed = 0  # pause game speed
+                            self.gamespeed = 0  # pause self speed
                         else:  # speed currently pause
-                            self.gamespeed = 1  # unpause game and set to speed 1
+                            self.gamespeed = 1  # unpause self and set to speed 1
 
                     elif keypress == pygame.K_PAGEUP:  # Go to top of event log
                         self.eventlog.current_start_row = 0
@@ -1254,14 +1254,14 @@ class Battle:
                                             # self.troopcard_ui.valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
                                             #                       change_option=1)
 
-                            # elif self.gameui[1] in self.battle_ui and self.gameui[1].rect.collidepoint(self.mouse_pos):
+                            # elif self.game_ui[1] in self.battle_ui and self.game_ui[1].rect.collidepoint(self.mouse_pos):
                             #     self.uiclick = True
                             #     for leaderindex, leader in enumerate(self.leadernow):  # loop mouse pos on leader portrait
                             #         if leader.rect.collidepoint(self.mouse_pos):
                             #             armyposition = self.leaderposname[leader.armyposition + 4]
                             # 
-                            #             self.leaderpopup.pop(self.mouse_pos, armyposition + ": " + leader.name)  # popup leader name when mouse over
-                            #             self.battle_ui.add(self.leaderpopup)
+                            #             self.leader_popup.pop(self.mouse_pos, armyposition + ": " + leader.name)  # popup leader name when mouse over
+                            #             self.battle_ui.add(self.leader_popup)
                             # 
                             #             if mouse_left_up:  # open list of leader to change leader in that slot
                             #                 self.selectleader = leaderindex
@@ -1471,7 +1471,7 @@ class Battle:
                                                                                 team1_set_pos=(
                                                                                   self.troop_listbox.rect.midleft[0] - int(
                                                                                       (200 * self.screen_scale[0]) / 2),
-                                                                                  self.troop_listbox.rect.midleft[1]))  # change team coa
+                                                                                  self.troop_listbox.rect.midleft[1]))  # change team coa_list
 
                                                         self.current_list_show = "troop"
 
@@ -1706,7 +1706,7 @@ class Battle:
 
                             # else:  # Update topbar and command ui value every 1.1 seconds
                             #     if self.ui_timer >= 1.1:
-                            #         self.gameui[0].valueinput(who=self.last_selected, split=self.split)
+                            #         self.game_ui[0].valueinput(who=self.last_selected, split=self.split)
 
                         elif self.gamestate == 2 and self.unit_build_slot not in self.battleui:
                             if (mouse_right or mouse_rightdown) and self.uiclick is False:  # Unit placement
@@ -1932,12 +1932,12 @@ class Battle:
                     self.camera.update(self.camerapos, self.battlecamera, self.camerascale)
                     # ^ End battle updater
 
-                    # v Update game time
+                    # v Update self time
                     self.dt = self.clock.get_time() / 1000  # dt before gamespeed
                     if self.ui_timer >= 1.1:  # reset ui timer every 1.1 seconds
                         self.ui_timer -= 1.1
-                    self.ui_timer += self.dt  # ui update by real time instead of game time to reduce workload
-                    self.uidt = self.dt  # get ui timer before apply game
+                    self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
+                    self.uidt = self.dt  # get ui timer before apply self
 
                     self.dt = self.dt * self.gamespeed  # apply dt with gamespeed for ingame calculation
                     if self.dt > 0.1:
@@ -1976,9 +1976,9 @@ class Battle:
                                 self.gamedone_button.rect = self.gamedone_button.image.get_rect(center=(self.battledone_box.rect.midbottom[0],
                                                                                                         self.battledone_box.rect.midbottom[1] / 1.3))
 
-                    # ^ End update game time
+                    # ^ End update self time
 
-                elif self.gamestate == 0:  # Complete game pause when open either esc menu or enclycopedia
+                elif self.gamestate == 0:  # Complete self pause when open either esc menu or enclycopedia
                     command = self.escmenu_process(mouse_up, mouse_leftdown, esc_press, mouse_scrollup, mouse_scrolldown, self.battleui)
                     if command == "end_battle":
                         return
@@ -2035,7 +2035,7 @@ class Battle:
                     self.textinputpopup = (None, None)
                     self.battleui.remove(*self.inputui_pop, *self.confirmui_pop)
 
-            self.screen.blit(self.camera.image, (0, 0))  # Draw the game camera and everything that appear in it
+            self.screen.blit(self.camera.image, (0, 0))  # Draw the self camera and everything that appear in it
             self.battleui.draw(self.screen)  # Draw the UI
-            pygame.display.update()  # update game display, draw everything
-            self.clock.tick(60)  # clock update even if game pause
+            pygame.display.update()  # update self display, draw everything
+            self.clock.tick(60)  # clock update even if self pause

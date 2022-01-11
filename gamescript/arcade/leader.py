@@ -13,7 +13,7 @@ class Leader(pygame.sprite.Sprite):
         self.morale = 100
         stat = leaderstat.leader_list[leaderid]
         leader_header = leaderstat.leader_list_header
-        self.leaderid = leaderid  # Different than game id, leaderid is only used as reference to the data
+        self.leaderid = leaderid  # Different than self id, leaderid is only used as reference to the data
         self.name = stat[0]
         self.authority = stat[leader_header["Authority"]]
         self.meleecommand = stat[leader_header["Melee Command"]]

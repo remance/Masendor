@@ -47,7 +47,7 @@ class BaseMap(pygame.sprite.Sprite):
     max_zoom = 10
 
     def __init__(self, scale):
-        """image file of map should be at size 1000x1000 then it will be scaled in game"""
+        """image file of map should be at size 1000x1000 then it will be scaled in self"""
         self._layer = 0
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.scale = scale

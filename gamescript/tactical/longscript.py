@@ -14,7 +14,7 @@ csv_read = commonscript.csv_read
 
 """This file contains fuctions of various purposes"""
 
-# Default game mechanic value
+# Default self mechanic value
 
 battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier
 infinity = float("inf")
@@ -30,9 +30,9 @@ for dd in numberboard:
 # Data Loading gamescript
 
 def load_game_data(game):
-    """Load various game data"""
+    """Load various self data"""
 
-    SCREENRECT = game.SCREENRECT
+    SCREENRECT = game.screen_rect
     from gamescript import battleui, uniteditor
     from gamescript.tactical import unit, subunit, rangeattack
 
@@ -112,8 +112,6 @@ def load_game_data(game):
     uniteditor.Unitbuildslot.armour_list = game.allarmour
     uniteditor.Unitbuildslot.stat_list = game.troop_data
     uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
-
-    game.sprite_width, game.sprite_height = imgs[0].get_width(), imgs[0].get_height()  # size of subnit image at closest zoom
     # ^ End subunit class
 
     # v Game Effect related class
@@ -124,7 +122,7 @@ def load_game_data(game):
     # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
     # imgs.append(img)
     rangeattack.RangeArrow.images = [imgs[0]]
-    # ^ End game effect
+    # ^ End self effect
 
     topimage = load_images(game.main_dir, ["ui", "battle_ui"])
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "commandbar_icon"])
@@ -136,7 +134,7 @@ def load_game_data(game):
     game.command_ui = battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unit_selector.image.get_height(),
                                       image=topimage[1], icon=iconimage,
                                       ui_type="commandbar")  # Left top command ui with leader and parentunit behavious button
-    game.gameui.add(game.command_ui)
+    game.game_ui.add(game.command_ui)
 
     # Load all image of ui and icon from folder
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
@@ -152,7 +150,7 @@ def load_game_data(game):
     game.time_ui = battleui.TimeUI(game.unit_selector.rect.topright, topimage[31])
     game.time_number = battleui.Timer(game.time_ui.rect.topleft)  # time number on time ui
     game.speed_number = battleui.SpeedNumber((game.time_ui.rect.center[0] + 40, game.time_ui.rect.center[1]),
-                                             1)  # game speed number on the time ui
+                                             1)  # self speed number on the time ui
 
     image = pygame.Surface((topimage[31].get_width(), 15))
     game.scale_ui = battleui.ScaleUI(game.time_ui.rect.bottomleft, image)
@@ -165,7 +163,7 @@ def load_game_data(game):
     # Right top bar ui that show rough information of selected battalions
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                                        icon=iconimage, ui_type="topbar")
-    game.gameui.add(game.unitstat_ui)
+    game.game_ui.add(game.unitstat_ui)
     game.unitstat_ui.unit_state_text = game.state_text
 
     game.inspectuipos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
@@ -174,7 +172,7 @@ def load_game_data(game):
     # Subunit information card ui
     game.inspect_ui = battleui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
                                       image=topimage[5], icon="", ui_type="unitbox")  # inspect ui that show subnit in selected parentunit
-    game.gameui.add(game.inspect_ui)
+    game.game_ui.add(game.inspect_ui)
     # v Subunit shown in inspect ui
     width, height = game.inspectuipos[0], game.inspectuipos[1]
     subunitnum = 0  # Number of subnit based on the position in row and column
@@ -208,7 +206,7 @@ def load_game_data(game):
     game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
     game.main_ui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
 
-    # ^ End game ui
+    # ^ End self ui
 
 
 # Battle Start related gamescript
@@ -229,7 +227,7 @@ def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, cont
 
 
 def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
-    """generate unit data into game object
+    """generate unit data into self object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript.tactical import unit, subunit
     this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
@@ -294,7 +292,7 @@ def unitsetup(gamebattle):
             command = False  # Not commander parentunit by default
             if len(whicharmy) == 0:  # First parentunit is commander
                 command = True
-            coa = pygame.transform.scale(gamebattle.coa[row[12]], (60, 60))  # get coa image and scale smaller to fit ui
+            coa = pygame.transform.scale(gamebattle.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
             subunitgameid = generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid)
             # ^ End subunit setup
 
@@ -807,7 +805,7 @@ def splitunit(battle, who, how):
     newgameid = battle.allunitlist[-1].gameid + 1
 
     newunit = unit.Unit(startposition=newpos, gameid=newgameid, squadlist=newarmysubunit, colour=who.colour,
-                        control=who.control, coa=who.coa, commander=False, startangle=who.angle, team=who.team)
+                        control=who.control, coa=who.coa_list, commander=False, startangle=who.angle, team=who.team)
 
     whosearmy.add(newunit)
     newunit.teamcommander = teamcommander

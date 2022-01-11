@@ -14,12 +14,12 @@ featurecolour = map.feature_colour
 
 class Escbox(pygame.sprite.Sprite):
     images = []
-    SCREENRECT = None
+    screen_rect = None
 
     def __init__(self):
         self._layer = 24
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = (self.SCREENRECT.width / 2, self.SCREENRECT.height / 2)
+        self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
         self.mode = 0  # Current menu mode
@@ -546,7 +546,7 @@ class NameList(pygame.sprite.Sprite):
 
 class TickBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image, tickimage, option):
-        """option is in str text for identifying what kind of tickbox it is"""
+        """option is in str text for identifying what kind of tick_box it is"""
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -665,8 +665,8 @@ class MapShow(pygame.sprite.Sprite):
         self.team1_dot.blit(team1, rect)
 
         self.new_colour_list = {}
-        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as unitfile:
-            rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():

@@ -714,7 +714,7 @@ class Timer(pygame.sprite.Sprite):
         self.image.blit(self.timer_surface, self.timer_rect)
 
     def timerupdate(self, dt):
-        """Update in-game timer number"""
+        """Update in-self timer number"""
         if dt > 0:
             self.timer += dt
             if self.timer - self.old_timer > 1:

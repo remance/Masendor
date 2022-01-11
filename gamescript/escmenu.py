@@ -9,7 +9,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     mouse_scrolldown: bool, uidraw: pygame.sprite.LayeredUpdates):
     """
     ESC menu user interaction
-    :param self: game process object, battle
+    :param self: self process object, battle
     :param mouse_up: mouse left click release
     :param mouse_leftdown: mouse hold left click
     :param esc_press: esc button
@@ -37,16 +37,16 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                 button.image = button.images[1]  # change button image to mouse over one
                 if mouse_up:  # click on button
                     button.image = button.images[2]  # change button image to clicked one
-                    if button.text == "Resume":  # resume game
+                    if button.text == "Resume":  # resume self
                         self.gamestate = self.previous_gamestate  # resume battle gameplay state
                         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
                                               *self.escvaluebox)  # remove menu sprite
 
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode(2)  # change to enclycopedia mode
-                        self.battle_ui.add(self.lorebook, self.lore_name_list, self.lorescroll,
+                        self.battle_ui.add(self.lorebook, self.lore_name_list, self.lore_scroll,
                                            *self.lore_button_ui)  # add sprite related to encyclopedia
-                        self.lorebook.change_section(0, self.lore_name_list, self.subsection_name, self.lorescroll, self.pagebutton,
+                        self.lorebook.change_section(0, self.lore_name_list, self.subsection_name, self.lore_scroll, self.page_button,
                                                      self.battle_ui)
                         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
                                               *self.escvaluebox)  # remove menu sprite
@@ -63,7 +63,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         self.exitbattle()
                         command = "end_battle"
 
-                    elif button.text == "Desktop":  # quit game
+                    elif button.text == "Desktop":  # quit self
                         self.text_input_popup = ("confirm_input", "quit")
                         self.confirm_ui.change_instruction("Quit Game?")
                         self.battle_ui.add(*self.confirm_ui_popup)

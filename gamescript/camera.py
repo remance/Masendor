@@ -3,15 +3,15 @@ import pygame.freetype
 
 
 class Camera:
-    SCREENRECT = None
+    screen_rect = None
 
     def __init__(self, startpos, zoom):
         self.zoom = zoom  # Zoom level
         self.pos = startpos  # Starting camara pos
-        self.image = pygame.Surface((self.SCREENRECT.width, self.SCREENRECT.height))  # Camera image
+        self.image = pygame.Surface((self.screen_rect.width, self.screen_rect.height))  # Camera image
 
     def update(self, pos, surfaces, zoom):
-        """Update game camera with sprite blit to camera image"""
+        """Update self camera with sprite blit to camera image"""
         self.zoom = zoom
         self.image.fill((0, 0, 0))
         self.pos = pos

@@ -150,7 +150,7 @@ class Unit(pygame.sprite.Sprite):
         """Although parentunit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon = None  # for linking with army selection ui, got linked when icon created in gameui.ArmyIcon
+        self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon
         self.teamcommander = None  # commander leader
         self.startwhere = []
         self.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
@@ -176,7 +176,7 @@ class Unit(pygame.sprite.Sprite):
         self.last_base_pos = self.base_pos
         self.base_attack_pos = 0  # position of attack base_target
         self.angle = startangle  # start at this angle
-        if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when game start
+        if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
             self.angle = 0
         self.new_angle = self.angle
         self.radians_angle = math.radians(360 - startangle)  # radians for apply angle to position (allsidepos and subunit)
@@ -336,7 +336,7 @@ class Unit(pygame.sprite.Sprite):
             if len(allshootrange) > 0:
                 self.max_range = max(allshootrange)  # Max shoot range of all subunit
                 self.min_range = min(allshootrange)  # Min shoot range of all subunit
-            if battlestart is False:  # Only do once when game start
+            if battlestart is False:  # Only do once when self start
                 self.max_stamina = self.stamina
                 self.last_health_state, self.last_stamina_state = 4, 4
                 self.max_morale = self.morale
@@ -944,7 +944,7 @@ class Unit(pygame.sprite.Sprite):
         oldgroup.remove(self)  # remove from old team group
         newgroup.append(self)  # add to new team group
         oldposlist.pop(self.gameid)  # remove from old pos list
-        self.gameid = newgameid  # change game id
+        self.gameid = newgameid  # change self id
         # self.changescale() # reset scale to the current zoom
         self.icon.change_image(change_side=True)  # change army icon to new team
 

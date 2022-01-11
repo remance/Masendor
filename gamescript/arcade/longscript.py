@@ -14,7 +14,7 @@ csv_read = commonscript.csv_read
 
 """This file contains fuctions of various purposes"""
 
-# Default game mechanic value
+# Default self mechanic value
 
 battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier
 infinity = float("inf")
@@ -30,10 +30,10 @@ for dd in numberboard:
 # Data Loading gamescript
 
 def load_game_data(game):
-    """Load various game data"""
+    """Load various self data"""
 
     main_dir = game.main_dir
-    SCREENRECT = game.SCREENRECT
+    SCREENRECT = game.screen_rect
     from gamescript import battleui, uniteditor
     from gamescript.arcade import unit, subunit, rangeattack
     unit.Unit.status_list = game.troop_data.status_list
@@ -124,7 +124,7 @@ def load_game_data(game):
     # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
     # imgs.append(img)
     rangeattack.RangeArrow.images = [imgs[0]]
-    # ^ End game effect
+    # ^ End self effect
 
     # Load all image of ui and icon from folder
     topimage = load_images(game.main_dir, ["ui", "battle_ui"])
@@ -140,14 +140,14 @@ def load_game_data(game):
     # Right top bar ui that show rough information of selected battalions
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
                                        icon=iconimage, ui_type="topbar")
-    game.gameui.add(game.unitstat_ui)
+    game.game_ui.add(game.unitstat_ui)
     game.unitstat_ui.unit_state_text = game.state_text
 
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
     game.button_ui.add(game.inspect_button)
 
     game.battle_ui.add(game.logscroll)
-    # ^ End game ui
+    # ^ End self ui
 
 
 # Battle Start related gamescript
@@ -166,7 +166,7 @@ def add_unit(subunitlist, position, gameid, colour, unitleader, leaderstat, cont
 
 
 def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
-    """generate unit data into game object
+    """generate unit data into self object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript.arcade import subunit
     this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5]]), (row[6][0], row[6][1]), row[0],
@@ -229,7 +229,7 @@ def unitsetup(gamebattle):
             command = False  # Not commander parentunit by default
             if len(whicharmy) == 0:  # First parentunit is commander
                 command = True
-            coa = pygame.transform.scale(gamebattle.coa[row[12]], (60, 60))  # get coa image and scale smaller to fit ui
+            coa = pygame.transform.scale(gamebattle.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
             subunitgameid = generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid)
             # ^ End subunit setup
 
