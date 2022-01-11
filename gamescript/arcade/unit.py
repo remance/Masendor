@@ -110,7 +110,7 @@ class Unit(pygame.sprite.Sprite):
         self.morale = 0  # average from all subunit
         self.ammo = 0  # total magazine_left left of the whole parentunit
         self.oldammo = 0  # previous number of magazine_left for magazine_left bar checking
-        self.state = 0  # see battleui.py topbar for name of each state
+        self.state = 0  # see battle_ui.py topbar for name of each state
         self.command_state = self.state
         self.deadchange = False  # for checking when subunit dead and run related code
         self.timer = random.random()

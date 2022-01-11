@@ -27,8 +27,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
             pygame.mixer.music.set_volume(self.mixervolume)
             self.escslidermenu[0].update(self.mixervolume, self.escvaluebox[0], forcedvalue=True)
             self.battle_menu.change_mode(0)
-        self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escoptionmenubutton,
-                             *self.escslidermenu, *self.escvaluebox)
+        self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.escoptionmenubutton,
+                              *self.escslidermenu, *self.escvaluebox)
         self.gamestate = self.previous_gamestate
 
     elif self.battle_menu.mode == 0:  # gamestart esc menu
@@ -39,23 +39,23 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     button.image = button.images[2]  # change button image to clicked one
                     if button.text == "Resume":  # resume game
                         self.gamestate = self.previous_gamestate  # resume battle gameplay state
-                        self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
-                                             *self.escvaluebox)  # remove menu sprite
+                        self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
+                                              *self.escvaluebox)  # remove menu sprite
 
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode(2)  # change to enclycopedia mode
-                        self.battleui.add(self.lorebook, self.lore_name_list, self.lorescroll,
-                                          *self.lore_button_ui)  # add sprite related to encyclopedia
+                        self.battle_ui.add(self.lorebook, self.lore_name_list, self.lorescroll,
+                                           *self.lore_button_ui)  # add sprite related to encyclopedia
                         self.lorebook.change_section(0, self.lore_name_list, self.subsection_name, self.lorescroll, self.pagebutton,
-                                                     self.battleui)
-                        self.battleui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
-                                             *self.escvaluebox)  # remove menu sprite
+                                                     self.battle_ui)
+                        self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.escslidermenu,
+                                              *self.escvaluebox)  # remove menu sprite
                         # self.lorebook.setupsubsectionlist(self.lore_name_list, listgroup)
 
                     elif button.text == "Option":  # open option menu
                         self.battle_menu.change_mode(1)  # change to option menu mode
-                        self.battleui.remove(*self.battle_menu_button)  # remove gamestart esc menu button
-                        self.battleui.add(*self.escoptionmenubutton, *self.escslidermenu, *self.escvaluebox)
+                        self.battle_ui.remove(*self.battle_menu_button)  # remove gamestart esc menu button
+                        self.battle_ui.add(*self.escoptionmenubutton, *self.escslidermenu, *self.escvaluebox)
                         self.oldsetting = self.escslidermenu[0].value  # Save previous setting for in case of cancel
 
                     elif button.text == "End Battle":  # back to gamestart menu
@@ -66,7 +66,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     elif button.text == "Desktop":  # quit game
                         self.text_input_popup = ("confirm_input", "quit")
                         self.confirm_ui.change_instruction("Quit Game?")
-                        self.battleui.add(*self.confirm_ui_popup)
+                        self.battle_ui.add(*self.confirm_ui_popup)
                     break  # found clicked button, break loop
             else:
                 button.image = button.images[0]
@@ -83,9 +83,9 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         editconfig("DEFAULT", "SoundVolume", str(self.escslidermenu[0].value), "configuration.ini",
                                    self.config)  # save to config file
                         self.battle_menu.change_mode(0)  # go back to gamestart esc menu
-                        self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
-                                             *self.escvaluebox)  # remove option menu sprite
-                        self.battleui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
+                        self.battle_ui.remove(*self.escoptionmenubutton, *self.escslidermenu,
+                                              *self.escvaluebox)  # remove option menu sprite
+                        self.battle_ui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
 
                     elif button.text == "Apply":  # apply button, save the setting
                         self.oldsetting = self.mixervolume  # save mixer volume
@@ -98,9 +98,9 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         pygame.mixer.music.set_volume(self.mixervolume)  # set new music player volume
                         self.escslidermenu[0].update(self.mixervolume, self.escvaluebox[0], forcedvalue=True)  # update slider bar
                         self.battle_menu.change_mode(0)  # go back to gamestart esc menu
-                        self.battleui.remove(*self.escoptionmenubutton, *self.escslidermenu,
-                                             *self.escvaluebox)  # remove option menu sprite
-                        self.battleui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
+                        self.battle_ui.remove(*self.escoptionmenubutton, *self.escslidermenu,
+                                              *self.escvaluebox)  # remove option menu sprite
+                        self.battle_ui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
 
             else:  # no button currently collided with mouse
                 button.image = button.images[0]  # revert button image back to the idle one

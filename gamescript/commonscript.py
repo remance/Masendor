@@ -96,9 +96,9 @@ def load_game_data(game):
     map.FeatureMap.feature_mod = game.feature_mod
     map.BeautifulMap.main_dir = main_dir
 
-    game.battlemap_base = map.BaseMap(1)  # create base terrain map
-    game.battlemap_feature = map.FeatureMap(1)  # create terrain feature map
-    game.battlemap_height = map.HeightMap(1)  # create height map
+    game.battle_map_base = map.BaseMap(1)  # create base terrain map
+    game.battle_map_feature = map.FeatureMap(1)  # create terrain feature map
+    game.battle_map_height = map.HeightMap(1)  # create height map
     game.show_map = map.BeautifulMap(1)
 
     emptyimage = load_image(game.main_dir, "empty.png", "map/texture")  # empty texture image
@@ -279,7 +279,7 @@ def load_game_data(game):
     game.mini_map = battleui.Minimap((SCREENRECT.width, SCREENRECT.height))
 
     # Popup Ui
-    imgs = load_images(game.main_dir, ["ui", "popup_ui", "terraincheck"], loadorder=False)
+    imgs = load_images(game.main_dir, ["ui", "popup_ui", "terrain_check"], loadorder=False)
     popup.TerrainPopup.images = imgs
     popup.TerrainPopup.SCREENRECT = SCREENRECT
     imgs = load_images(game.main_dir, ["ui", "popup_ui", "dramatext"], loadorder=False)
@@ -304,7 +304,7 @@ def load_game_data(game):
     # delete all log button
 
     game.eventlog_button = [game.trooplog_button] + game.eventlog_button
-    game.buttonui.add(game.eventlog_button)
+    game.button_ui.add(game.eventlog_button)
 
     game.logscroll = battleui.UIScroller(game.eventlog.rect.topright, topimage[23].get_height(), game.eventlog.max_row_show)  # event log scroller
     game.eventlog.logscroll = game.logscroll  # Link scroller to ui since it is easier to do here with the current order
@@ -322,17 +322,17 @@ def load_game_data(game):
                              battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y - 30, topimage[7], 2),  # subunit card skill button
                              battleui.UIButton(game.troopcard_ui.x - 152, game.troopcard_ui.y + 50, topimage[22], 3)]  # subunit card equipment button
 
-    game.buttonui.add(game.troopcard_button)
+    game.button_ui.add(game.troopcard_button)
 
-    game.terraincheck = popup.TerrainPopup()  # popup box that show terrain information when right click on map
+    game.terrain_check = popup.TerrainPopup()  # popup box that show terrain information when right click on map
     game.button_name_popup = popup.OnelinePopup()  # popup box that show button name when mouse over
     game.leader_popup = popup.OnelinePopup()  # popup box that show leader name when mouse over
     game.effect_popup = popup.EffecticonPopup()  # popup box that show skill/trait/status name when mouse over
 
     drama.TextDrama.SCREENRECT = SCREENRECT
-    game.textdrama = drama.TextDrama()  # messege at the top of screen that show up for important event
+    game.drama_text = drama.TextDrama()  # messege at the top of screen that show up for important event
 
-    game.fpscount = battleui.FPScount()  # FPS number counter
+    game.fps_count = battleui.FPScount()  # FPS number counter
 
     game.battledone_box = battleui.BattleDone(game.screen_scale, (game.screen_width / 2, game.screen_height / 2), topimage[-3], topimage[-4])
     game.gamedone_button = battleui.UIButton(game.battledone_box.pos[0], game.battledone_box.box_image.get_height() * 0.8, topimage[-2], layer=19)
@@ -606,10 +606,10 @@ def popout_lorebook(self, section, gameid):
     """open and draw enclycopedia at the specified subsection, used for when user right click at icon that has encyclopedia section"""
     self.gamestate = 0
     self.battle_menu.mode = 2
-    self.battleui.add(self.lorebook, self.lore_name_list, self.lorescroll, *self.lore_button_ui)
+    self.battle_ui.add(self.lorebook, self.lore_name_list, self.lorescroll, *self.lore_button_ui)
 
-    self.lorebook.change_section(section, self.lore_name_list, self.subsection_name, self.lorescroll, self.pagebutton, self.battleui)
-    self.lorebook.change_subsection(gameid, self.pagebutton, self.battleui)
+    self.lorebook.change_section(section, self.lore_name_list, self.subsection_name, self.lorescroll, self.pagebutton, self.battle_ui)
+    self.lorebook.change_subsection(gameid, self.pagebutton, self.battle_ui)
     self.lorescroll.change_image(new_row=self.lorebook.current_subsection_row)
 
 
@@ -623,7 +623,7 @@ def popuplist_newopen(self, new_rect, new_list, ui_type):
         self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=new_rect)
 
     setup_list(self.screen_scale, menu.NameList, 0, new_list, self.popup_namegroup,
-               self.popup_listbox, self.battleui, layer=19)
+               self.popup_listbox, self.battle_ui, layer=19)
 
     self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
     self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
@@ -632,6 +632,6 @@ def popuplist_newopen(self, new_rect, new_list, ui_type):
     if ui_type == "genre":
         self.main_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)
     else:
-        self.battleui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
+        self.battle_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
 
     self.popup_listbox.type = ui_type

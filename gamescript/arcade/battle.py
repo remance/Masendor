@@ -42,8 +42,8 @@ class Battle:
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
         self.eventlog = main.eventlog
-        self.battlecamera = main.battlecamera
-        self.battleui = main.battleui
+        self.battlecamera = main.battle_camera
+        self.battleui = main.battle_ui
 
         self.unit_updater = main.unit_updater
         self.subunit_updater = main.subunit_updater
@@ -52,9 +52,9 @@ class Battle:
         self.weather_updater = main.weather_updater
         self.effect_updater = main.effect_updater
 
-        self.battlemap_base = main.battlemap_base
-        self.battlemap_feature = main.battlemap_feature
-        self.battlemap_height = main.battlemap_height
+        self.battlemap_base = main.battle_map_base
+        self.battlemap_feature = main.battle_map_feature
+        self.battlemap_height = main.battle_map_height
         self.showmap = main.show_map
 
         self.team0unit = main.team0_unit
@@ -72,23 +72,23 @@ class Battle:
         self.gameui = main.gameui
         self.popgameui = main.gameui  # saving list of gameui that will pop out when parentunit is selected
 
-        self.battlemap_base = main.battlemap_base
-        self.battlemap_feature = main.battlemap_feature
-        self.battlemap_height = main.battlemap_height
+        self.battlemap_base = main.battle_map_base
+        self.battlemap_feature = main.battle_map_feature
+        self.battlemap_height = main.battle_map_height
         self.showmap = main.show_map
 
         self.minimap = main.mini_map
         self.eventlog = main.eventlog
         self.logscroll = main.logscroll
-        self.buttonui = main.buttonui
+        self.buttonui = main.button_ui
 
-        self.fpscount = main.fpscount
+        self.fpscount = main.fps_count
 
-        self.terraincheck = main.terraincheck
+        self.terraincheck = main.terrain_check
         self.button_name_popup = main.button_name_popup
         self.leaderpopup = main.leader_popup
         self.effectpopup = main.effect_popup
-        self.textdrama = main.textdrama
+        self.textdrama = main.drama_text
 
         self.skill_icon = main.skill_icon
         self.effect_icon = main.effect_icon
@@ -137,13 +137,13 @@ class Battle:
         self.confirmui = main.confirm_ui
         self.confirmui_pop = main.confirm_ui_popup
 
-        self.timeui = main.timeui
-        self.timenumber = main.timenumber
+        self.timeui = main.time_ui
+        self.timenumber = main.time_number
 
-        self.scaleui = main.scaleui
+        self.scaleui = main.scale_ui
 
-        self.weathermatter = main.weathermatter
-        self.weathereffect = main.weathereffect
+        self.weathermatter = main.weather_matter
+        self.weathereffect = main.weather_effect
 
         self.lorebook = main.lorebook
         self.lorenamelist = main.lore_name_list
@@ -998,17 +998,17 @@ class Battle:
 
                     # vv FOR DEVELOPMENT DELETE LATER
                     # elif keypress == pygame.K_1:
-                    #     self.textdrama.queue.append("Hello and Welcome to update video")
+                    #     self.drama_text.queue.append("Hello and Welcome to update video")
                     # elif keypress == pygame.K_2:
-                    #     self.textdrama.queue.append("Showcase: Just simple clarity update")
+                    #     self.drama_text.queue.append("Showcase: Just simple clarity update")
                     # elif keypress == pygame.K_3:
-                    #     self.textdrama.queue.append("Before")
+                    #     self.drama_text.queue.append("Before")
                     # elif keypress == pygame.K_4:
-                    #     self.textdrama.queue.append("Where the hell is blue team, can only see red")
+                    #     self.drama_text.queue.append("Where the hell is blue team, can only see red")
                     # elif keypress == pygame.K_5:
-                    #     self.textdrama.queue.append("After")
+                    #     self.drama_text.queue.append("After")
                     # elif keypress == pygame.K_6:
-                    #     self.textdrama.queue.append("Now much more clear")
+                    #     self.drama_text.queue.append("Now much more clear")
                     # elif keypress == pygame.K_n and self.last_selected is not None:
                     #     if self.last_selected.team == 1:
                     #         self.last_selected.switchfaction(self.team1_unit, self.team2_unit, self.team1_pos_list, self.enactment)
@@ -1254,18 +1254,18 @@ class Battle:
                                             # self.troopcard_ui.valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
                                             #                       change_option=1)
 
-                            # elif self.gameui[1] in self.battleui and self.gameui[1].rect.collidepoint(self.mouse_pos):
+                            # elif self.gameui[1] in self.battle_ui and self.gameui[1].rect.collidepoint(self.mouse_pos):
                             #     self.uiclick = True
                             #     for leaderindex, leader in enumerate(self.leadernow):  # loop mouse pos on leader portrait
                             #         if leader.rect.collidepoint(self.mouse_pos):
                             #             armyposition = self.leaderposname[leader.armyposition + 4]
                             # 
                             #             self.leaderpopup.pop(self.mouse_pos, armyposition + ": " + leader.name)  # popup leader name when mouse over
-                            #             self.battleui.add(self.leaderpopup)
+                            #             self.battle_ui.add(self.leaderpopup)
                             # 
                             #             if mouse_left_up:  # open list of leader to change leader in that slot
                             #                 self.selectleader = leaderindex
-                            #                 self.popuplist_newopen(leader.rect.midright, self.leader_list, "leader")
+                            #                 self.popup_list_open(leader.rect.midright, self.leader_list, "leader")
                             # 
                             #             elif mouse_right_up:
                             #                 self.popout_lorebook(8, leader.leaderid)
@@ -1918,7 +1918,7 @@ class Battle:
                     # ^ End melee pathfinding
 
                     if self.ui_timer > 1:
-                        self.scaleui.change_fight_scale(self.team_troopnumber)  # change fight colour scale on timeui bar
+                        self.scaleui.change_fight_scale(self.team_troopnumber)  # change fight colour scale on time_ui bar
                         self.last_team_troopnumber = self.team_troopnumber
 
                     if self.combattimer >= 0.5:  # reset combat timer every 0.5 seconds

@@ -231,7 +231,7 @@ class Unit(pygame.sprite.Sprite):
         self.max_range = 0  # maximum shoot range of all subunit inside this parentunit
         self.use_min_range = 0  # use min or max range for walk/run (range) command
         self.skill_cond = 0  # skill condition for stamina reservation
-        self.state = 0  # see battleui.py topbar for name of each state
+        self.state = 0  # see battle_ui.py topbar for name of each state
         self.command_state = self.state
         self.deadchange = False  # for checking when subunit dead and run related code
         self.timer = random.random()

@@ -37,13 +37,13 @@ def load_game_data(game):
     from gamescript.tactical import unit, subunit, rangeattack
 
     unit.Unit.status_list = game.troop_data.status_list
-    rangeattack.RangeArrow.gamemapheight = game.battlemap_height
+    rangeattack.RangeArrow.gamemapheight = game.battle_map_height
 
     imgs = load_images(game.main_dir, ["ui", "unit_ui"])
     subunit.Subunit.images = imgs
-    subunit.Subunit.gamemap = game.battlemap_base  # add gamebattle map to all parentunit class
-    subunit.Subunit.gamemapfeature = game.battlemap_feature  # add gamebattle map to all parentunit class
-    subunit.Subunit.gamemapheight = game.battlemap_height
+    subunit.Subunit.gamemap = game.battle_map_base  # add gamebattle map to all parentunit class
+    subunit.Subunit.gamemapfeature = game.battle_map_feature  # add gamebattle map to all parentunit class
+    subunit.Subunit.gamemapheight = game.battle_map_height
     subunit.Subunit.weapon_list = game.allweapon
     subunit.Subunit.armour_list = game.allarmour
     subunit.Subunit.stat_list = game.troop_data
@@ -129,11 +129,11 @@ def load_game_data(game):
     topimage = load_images(game.main_dir, ["ui", "battle_ui"])
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "commandbar_icon"])
     # Army select list ui
-    game.unitselector = battleui.ArmySelect((0, 0), topimage[30])
-    game.selectscroll = battleui.UIScroller(game.unitselector.rect.topright, topimage[30].get_height(),
-                                            game.unitselector.max_row_show)  # scroller for unit select ui
+    game.unit_selector = battleui.ArmySelect((0, 0), topimage[30])
+    game.selectscroll = battleui.UIScroller(game.unit_selector.rect.topright, topimage[30].get_height(),
+                                            game.unit_selector.max_row_show)  # scroller for unit select ui
 
-    game.command_ui = battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unitselector.image.get_height(),
+    game.command_ui = battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unit_selector.image.get_height(),
                                       image=topimage[1], icon=iconimage,
                                       ui_type="commandbar")  # Left top command ui with leader and parentunit behavious button
     game.gameui.add(game.command_ui)
@@ -143,24 +143,24 @@ def load_game_data(game):
 
     game.col_split_button = battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 26, topimage[8], 0)  # parentunit split by column button
     game.row_split_button = battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 56, topimage[9], 1)  # parentunit split by row button
-    game.buttonui.add(game.col_split_button)
-    game.buttonui.add(game.row_split_button)
+    game.button_ui.add(game.col_split_button)
+    game.button_ui.add(game.row_split_button)
 
     game.decimation_button = battleui.UIButton(game.command_ui.x + 100, game.command_ui.y + 56, topimage[14], 1)
 
     # Time bar ui
-    game.timeui = battleui.TimeUI(game.unitselector.rect.topright, topimage[31])
-    game.timenumber = battleui.Timer(game.timeui.rect.topleft)  # time number on time ui
-    game.speednumber = battleui.SpeedNumber((game.timeui.rect.center[0] + 40, game.timeui.rect.center[1]),
-                                            1)  # game speed number on the time ui
+    game.time_ui = battleui.TimeUI(game.unit_selector.rect.topright, topimage[31])
+    game.time_number = battleui.Timer(game.time_ui.rect.topleft)  # time number on time ui
+    game.speed_number = battleui.SpeedNumber((game.time_ui.rect.center[0] + 40, game.time_ui.rect.center[1]),
+                                             1)  # game speed number on the time ui
 
     image = pygame.Surface((topimage[31].get_width(), 15))
-    game.scaleui = battleui.ScaleUI(game.timeui.rect.bottomleft, image)
+    game.scale_ui = battleui.ScaleUI(game.time_ui.rect.bottomleft, image)
 
-    game.time_button = [battleui.UIButton(game.timeui.rect.center[0] - 30, game.timeui.rect.center[1], topimage[32], 0),  # time pause button
-                        battleui.UIButton(game.timeui.rect.center[0], game.timeui.rect.center[1], topimage[33], 1),  # time decrease button
-                        battleui.UIButton(game.timeui.rect.midright[0] - 60, game.timeui.rect.center[1], topimage[34], 2)]  # time increase button
-    game.battleui.add(*game.time_button)
+    game.time_button = [battleui.UIButton(game.time_ui.rect.center[0] - 30, game.time_ui.rect.center[1], topimage[32], 0),  # time pause button
+                        battleui.UIButton(game.time_ui.rect.center[0], game.time_ui.rect.center[1], topimage[33], 1),  # time decrease button
+                        battleui.UIButton(game.time_ui.rect.midright[0] - 60, game.time_ui.rect.center[1], topimage[34], 2)]  # time increase button
+    game.battle_ui.add(*game.time_button)
 
     # Right top bar ui that show rough information of selected battalions
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
@@ -200,9 +200,9 @@ def load_game_data(game):
                           battleui.SwitchButton(game.command_ui.x + 120, game.command_ui.y + 96, topimage[40:43])]  # toggle melee mode
 
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
-    game.buttonui.add(game.inspect_button)
+    game.button_ui.add(game.inspect_button)
 
-    game.battleui.add(game.logscroll, game.selectscroll)
+    game.battle_ui.add(game.logscroll, game.selectscroll)
 
     battleui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
     game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui

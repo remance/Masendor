@@ -51,7 +51,7 @@ class Mainmenu:
     leaderposname = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                      "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
     teamcolour = ((255, 255, 255), (144, 167, 255), (255, 114, 114))  # team colour, Neutral, 1, 2
-    popuplist_newopen = commonscript.popup_list_open
+    popup_list_open = commonscript.popup_list_open
     lorebook_process = lorebook.lorebook_process
 
     def __init__(self, main_dir):
@@ -64,10 +64,10 @@ class Mainmenu:
         try:
             config.read_file(open("configuration.ini"))  # read config file
         except Exception:  # Create config file if not found with the default
-            genrefolder = Path(os.path.join(self.main_dir, "gamescript"))
-            genrefolder = [x for x in genrefolder.iterdir() if x.is_dir()]
-            genrefolder = [str(foldername).split("\\")[-1].capitalize() for foldername in genrefolder]
-            genrefolder.remove("__pycache__")  # just grab the first genre folder as default
+            genre_folder = Path(os.path.join(self.main_dir, "gamescript"))
+            genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
+            genre_folder = [str(foldername).split("\\")[-1].capitalize() for foldername in genre_folder]
+            genre_folder.remove("__pycache__")  # just grab the first genre folder as default
 
             config = configparser.ConfigParser()
 
@@ -77,7 +77,7 @@ class Mainmenu:
 
             config["DEFAULT"] = {"ScreenWidth": screen_width, "ScreenHeight": screen_height, "Fullscreen": "0",
                                  "PlayerName": "Noname", "SoundVolume": "100.0", "MusicVolume": "0.0",
-                                 "VoiceVolume": "0.0", "MaxFPS": "60", "Ruleset": "1", "Genre": genrefolder[-1]}
+                                 "VoiceVolume": "0.0", "MaxFPS": "60", "Ruleset": "1", "Genre": genre_folder[-1]}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
             config.read_file(open("configuration.ini"))
@@ -128,9 +128,9 @@ class Mainmenu:
         self.enactment = True
         self.state_text = unit_state_text
 
-        self.mapsource = 0  # current selected map source
-        self.teamselected = 1
-        self.currentpopuprow = 0
+        self.map_source = 0  # current selected map source
+        self.team_selected = 1
+        self.current_popup_row = 0
 
         # v Decorate the game window
         # icon = load_image(self.main_dir, "sword.jpg")
@@ -142,7 +142,7 @@ class Mainmenu:
         # gamestart menu object group
         self.main_ui = pygame.sprite.LayeredUpdates()  # sprite drawer group
         self.menu_button = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
-        self.menuicon = pygame.sprite.Group()  # mostly for option icon like volumne or scren resolution
+        self.menu_icon = pygame.sprite.Group()  # mostly for option icon like volumne or scren resolution
 
         self.menu_slider = pygame.sprite.Group()
         self.map_listbox = pygame.sprite.Group()  # ui box for map list
@@ -177,10 +177,10 @@ class Mainmenu:
         self.unitpreset_namegroup = pygame.sprite.Group()  # preset name list
 
         # battle object group
-        self.battlecamera = pygame.sprite.LayeredUpdates()  # layer drawer game camera, all image pos should be based on the map not screen
+        self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer game camera, all image pos should be based on the map not screen
         # the camera layer is as followed 0 = terrain map, 1 = dead unit, 2 = map special feature, 3 = , 4 = subunit, 5 = sub-subunit,
         # 6 = flying parentunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
-        self.battleui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
+        self.battle_ui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
         self.unit_updater = pygame.sprite.Group()  # updater for parentunit objects
         self.subunit_updater = pygame.sprite.Group()  # updater for subunit objects
@@ -189,9 +189,9 @@ class Mainmenu:
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for in-game effect objects (e.g. range attack sprite)
 
-        self.battlemap_base = pygame.sprite.Group()  # base terrain map object
-        self.battlemap_feature = pygame.sprite.Group()  # terrain feature map object
-        self.battlemap_height = pygame.sprite.Group()  # height map object
+        self.battle_map_base = pygame.sprite.Group()  # base terrain map object
+        self.battle_map_feature = pygame.sprite.Group()  # terrain feature map object
+        self.battle_map_height = pygame.sprite.Group()  # height map object
         self.show_map = pygame.sprite.Group()  # beautiful map object that is shown in gameplay
 
         self.team0_unit = pygame.sprite.Group()  # taem 0 units group
@@ -215,16 +215,16 @@ class Mainmenu:
         self.gameui = pygame.sprite.Group()  # various game ui group
         self.mini_map = pygame.sprite.Group()  # mini_map ui
         self.eventlog = pygame.sprite.Group()  # event log ui
-        self.buttonui = pygame.sprite.Group()  # buttons for various ui group
+        self.button_ui = pygame.sprite.Group()  # buttons for various ui group
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
-        self.fpscount = pygame.sprite.Group()  # fps number counter
-        self.switchbuttonui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. parentunit behaviour setting)
+        self.fps_count = pygame.sprite.Group()  # fps number counter
+        self.switch_button_ui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. parentunit behaviour setting)
 
-        self.terraincheck = pygame.sprite.Group()  # terrain information pop up ui
+        self.terrain_check = pygame.sprite.Group()  # terrain information pop up ui
         self.buttonname_popup = pygame.sprite.Group()  # button name pop up ui when mouse over button
         self.leader_popup = pygame.sprite.Group()  # leader name pop up ui when mouse over leader image in command ui
         self.effect_popup = pygame.sprite.Group()  # effect name pop up ui when mouse over status effect icon
-        self.textdrama = pygame.sprite.Group()  # dramatic text effect (announcement) object
+        self.drama_text = pygame.sprite.Group()  # dramatic text effect (announcement) object
 
         self.skill_icon = pygame.sprite.Group()  # skill and trait icon objects
         self.effect_icon = pygame.sprite.Group()  # status effect icon objects
@@ -234,23 +234,23 @@ class Mainmenu:
         self.escoption_menu_button = pygame.sprite.Group()  # buttons for esc menu option object group
         self.slidermenu = pygame.sprite.Group()  # volume slider in esc option menu
 
-        self.unitselector = pygame.sprite.Group()  # unit selector ui
-        self.uniticon = pygame.sprite.Group()  # unit icon object group in unit selector ui
+        self.unit_selector = pygame.sprite.Group()  # unit selector ui
+        self.unit_icon = pygame.sprite.Group()  # unit icon object group in unit selector ui
 
-        self.timeui = pygame.sprite.Group()  # time bar ui
-        self.timenumber = pygame.sprite.Group()  # number text of in-game time
-        self.speednumber = pygame.sprite.Group()  # number text of current game speed
+        self.time_ui = pygame.sprite.Group()  # time bar ui
+        self.time_number = pygame.sprite.Group()  # number text of in-game time
+        self.speed_number = pygame.sprite.Group()  # number text of current game speed
 
-        self.scaleui = pygame.sprite.Group()  # battle scale bar
+        self.scale_ui = pygame.sprite.Group()  # battle scale bar
 
-        self.weathermatter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
-        self.weathereffect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
+        self.weather_matter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
+        self.weather_effect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
         # ^ End initialise
 
         # v Assign default groups
         # gamestart menu containers
         menu.MenuButton.containers = self.menu_button
-        menu.MenuIcon.containers = self.menuicon
+        menu.MenuIcon.containers = self.menu_icon
         menu.SliderMenu.containers = self.menu_slider, self.slidermenu
         menu.ValueBox.containers = self.value_box
 
@@ -268,7 +268,7 @@ class Mainmenu:
         menu.TickBox.containers = self.tickbox
 
         lorebook.SubsectionList.containers = self.lore_name_list
-        lorebook.SubsectionName.containers = self.subsection_name, self.main_ui, self.battleui
+        lorebook.SubsectionName.containers = self.subsection_name, self.main_ui, self.battle_ui
 
         battleui.UIButton.containers = self.lore_button_ui
 
@@ -281,38 +281,38 @@ class Mainmenu:
         uniteditor.PreviewLeader.containers = self.preview_leader
 
         # battle containers
-        map.BaseMap.containers = self.battlemap_base
-        map.FeatureMap.containers = self.battlemap_feature
-        map.HeightMap.containers = self.battlemap_height
-        map.BeautifulMap.containers = self.show_map, self.battlecamera
+        map.BaseMap.containers = self.battle_map_base
+        map.FeatureMap.containers = self.battle_map_feature
+        map.HeightMap.containers = self.battle_map_height
+        map.BeautifulMap.containers = self.show_map, self.battle_camera
 
         battleui.GameUI.containers = self.gameui, self.ui_updater
-        battleui.Minimap.containers = self.mini_map, self.battleui
-        battleui.FPScount.containers = self.battleui
-        battleui.UIButton.containers = self.buttonui, self.lore_button_ui
-        battleui.SwitchButton.containers = self.switchbuttonui, self.ui_updater
-        battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battleui
-        battleui.SkillCardIcon.containers = self.skill_icon, self.battleui
-        battleui.EffectCardIcon.containers = self.effect_icon, self.battleui
+        battleui.Minimap.containers = self.mini_map, self.battle_ui
+        battleui.FPScount.containers = self.battle_ui
+        battleui.UIButton.containers = self.button_ui, self.lore_button_ui
+        battleui.SwitchButton.containers = self.switch_button_ui, self.ui_updater
+        battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battle_ui
+        battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui
+        battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui
         battleui.EventLog.containers = self.eventlog
-        battleui.ArmySelect.containers = self.unitselector, self.battleui
-        battleui.ArmyIcon.containers = self.uniticon, self.battleui
-        battleui.TimeUI.containers = self.timeui, self.battleui
-        battleui.Timer.containers = self.timenumber, self.battleui
-        battleui.ScaleUI.containers = self.scaleui, self.battleui
-        battleui.SpeedNumber.containers = self.speednumber, self.battleui
+        battleui.ArmySelect.containers = self.unit_selector, self.battle_ui
+        battleui.ArmyIcon.containers = self.unit_icon, self.battle_ui
+        battleui.TimeUI.containers = self.time_ui, self.battle_ui
+        battleui.Timer.containers = self.time_number, self.battle_ui
+        battleui.ScaleUI.containers = self.scale_ui, self.battle_ui
+        battleui.SpeedNumber.containers = self.speed_number, self.battle_ui
 
-        popup.TerrainPopup.containers = self.terraincheck
+        popup.TerrainPopup.containers = self.terrain_check
         popup.OnelinePopup.containers = self.buttonname_popup, self.leader_popup
         popup.EffecticonPopup.containers = self.effect_popup
 
-        drama.TextDrama.containers = self.textdrama
+        drama.TextDrama.containers = self.drama_text
 
         menu.Escbox.containers = self.battle_menu
         menu.Escbutton.containers = self.battle_menu_button, self.escoption_menu_button
 
-        weather.Mattersprite.containers = self.weathermatter, self.battleui, self.weather_updater
-        weather.Specialeffect.containers = self.weathereffect, self.battleui, self.weather_updater
+        weather.Mattersprite.containers = self.weather_matter, self.battle_ui, self.weather_updater
+        weather.Specialeffect.containers = self.weather_effect, self.battle_ui, self.weather_updater
         # ^ End assign
 
         commonscript.load_game_data(self)  # load common data
@@ -346,12 +346,12 @@ class Mainmenu:
 
 
         unit.Unit.containers = self.unit_updater
-        subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battlecamera
+        subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battle_camera
         leader.Leader.containers = self.army_leader, self.leader_updater
-        unit.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battlecamera
+        unit.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
 
-        rangeattack.RangeArrow.containers = self.range_attacks, self.effect_updater, self.battlecamera
-        unit.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battlecamera
+        rangeattack.RangeArrow.containers = self.range_attacks, self.effect_updater, self.battle_camera
+        unit.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
 
         # v Create gamestart menu button
         imagelist = load_base_button(self.main_dir)
@@ -490,7 +490,7 @@ class Mainmenu:
         self.deploy_button = battleui.UIButton(self.filter_box.rect.topleft[0] + 150, self.filter_box.rect.topleft[1] + 90, img1, 0)
         img1 = load_image(self.main_dir, "test_button.png", "ui\\mainmenu_ui")  # start test button in editor
         img2 = load_image(self.main_dir, "end_button.png", "ui\\mainmenu_ui")  # stop test button
-        self.test_button = battleui.SwitchButton(self.scaleui.rect.bottomleft[0] + 55, self.scaleui.rect.bottomleft[1] + 25, [img1, img2])
+        self.test_button = battleui.SwitchButton(self.scale_ui.rect.bottomleft[0] + 55, self.scale_ui.rect.bottomleft[1] + 25, [img1, img2])
         img1 = load_image(self.main_dir, "tick_box_no.png", "ui\\mainmenu_ui")  # start test button in editor
         img2 = load_image(self.main_dir, "tick_box_yes.png", "ui\\mainmenu_ui")  # stop test button
         self.tickbox_filter = [menu.TickBox(self.screen_scale, (self.filter_box.rect.bottomright[0] / 1.26, self.filter_box.rect.bottomright[1] / 8),
@@ -649,7 +649,7 @@ class Mainmenu:
         if self.menu_state == "presetselect" or self.lastselect == "presetselect":
             if source:
                 data = csv_read(self.main_dir, file,
-                                ["data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select], str(self.mapsource), self.genre])
+                                ["data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select], str(self.map_source), self.genre])
             else:
                 data = csv_read(self.main_dir, file, ["data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select]])
         else:
@@ -947,7 +947,7 @@ class Mainmenu:
                         self.main_ui.add(self.inputui_pop)
 
                     elif mouse_left_up and self.genre_change_box.rect.collidepoint(self.mouse_pos):
-                        self.popuplist_newopen(self.genre_change_box.rect.bottomleft, self.genrelist, "genre")
+                        self.popup_list_open(self.genre_change_box.rect.bottomleft, self.genrelist, "genre")
 
                     elif self.popup_listbox in self.main_ui:
                         if self.popup_listbox.rect.collidepoint(self.mouse_pos):
@@ -965,9 +965,9 @@ class Mainmenu:
 
                         elif self.popup_listscroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
                             self.uiclick = True
-                            self.currentpopuprow = self.popup_listscroll.update(
+                            self.current_popup_row = self.popup_listscroll.update(
                                 self.mouse_pos)  # update the scroller and get new current subsection
-                            setup_list(self.screen_scale, menu.NameList, self.currentpopuprow, self.genrelist,
+                            setup_list(self.screen_scale, menu.NameList, self.current_popup_row, self.genrelist,
                                        self.popup_namegroup, self.popup_listbox, self.main_ui)
 
                         # else:
@@ -1023,7 +1023,7 @@ class Mainmenu:
                             del stuff
 
                         for team in self.team_coa:
-                            if self.teamselected == team.team:
+                            if self.team_selected == team.team:
                                 team.changeselect(True)
 
                         openfolder = self.mapfoldername
@@ -1056,8 +1056,8 @@ class Mainmenu:
                                 self.army_stat.add(
                                     menu.ArmyStat(self.screen_scale, (team.rect.bottomright[0], self.SCREENRECT.height / 1.5)))  # right army stat
 
-                        self.change_source([self.sourcescaletext[self.mapsource], self.sourcetext[self.mapsource]],
-                                           self.sourcescale[self.mapsource])
+                        self.change_source([self.sourcescaletext[self.map_source], self.sourcetext[self.map_source]],
+                                           self.sourcescale[self.map_source])
 
                         self.menu_button.add(*self.battle_setup_button)
                         self.main_ui.add(*self.battle_setup_button, self.map_optionbox, self.tickbox_enactment, self.source_listbox,
@@ -1068,20 +1068,20 @@ class Mainmenu:
                         if mouse_left_up:
                             for thisteam in self.team_coa:  # User select any team by clicking on coat of arm
                                 if thisteam.rect.collidepoint(self.mouse_pos):
-                                    self.teamselected = thisteam.team
+                                    self.team_selected = thisteam.team
                                     thisteam.changeselect(True)
 
                                     # Reset team selected on team user not currently selected
                                     for thisteam2 in self.team_coa:
-                                        if self.teamselected != thisteam2.team and thisteam2.selected:
+                                        if self.team_selected != thisteam2.team and thisteam2.selected:
                                             thisteam2.changeselect(False)
                                     break
 
                             for index, name in enumerate(self.source_namegroup):  # user select source
                                 if name.rect.collidepoint(self.mouse_pos):  # click on source name
-                                    self.mapsource = index
-                                    self.change_source([self.sourcescaletext[self.mapsource], self.sourcetext[self.mapsource]],
-                                                       self.sourcescale[self.mapsource])
+                                    self.map_source = index
+                                    self.change_source([self.sourcescaletext[self.map_source], self.sourcetext[self.map_source]],
+                                                       self.sourcescale[self.map_source])
                                     break
 
                             for box in self.tickbox:
@@ -1112,10 +1112,10 @@ class Mainmenu:
                         # v Reset selected team
                         for team in self.team_coa:
                             team.changeselect(False)
-                        self.teamselected = 1
+                        self.team_selected = 1
                         # ^ End reset selected team
 
-                        self.mapsource = 0
+                        self.map_source = 0
                         for thismap in self.map_show:
                             thismap.changemode(0)  # revert map preview back to without unit dot
 
@@ -1136,9 +1136,9 @@ class Mainmenu:
 
                     elif self.start_button.event:  # start game button
                         self.start_button.event = False
-                        self.battlegame.preparenewgame(self.ruleset, self.ruleset_folder, self.teamselected, self.enactment,
-                                                       self.mapfoldername[self.current_map_select], self.mapsource,
-                                                       self.sourcescale[self.mapsource], "battle")
+                        self.battlegame.preparenewgame(self.ruleset, self.ruleset_folder, self.team_selected, self.enactment,
+                                                       self.mapfoldername[self.current_map_select], self.map_source,
+                                                       self.sourcescale[self.map_source], "battle")
                         self.battlegame.rungame()
                         pygame.mixer.music.unload()
                         pygame.mixer.music.set_endevent(self.SONG_END)

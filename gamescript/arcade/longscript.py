@@ -37,13 +37,13 @@ def load_game_data(game):
     from gamescript import battleui, uniteditor
     from gamescript.arcade import unit, subunit, rangeattack
     unit.Unit.status_list = game.troop_data.status_list
-    rangeattack.RangeArrow.gamemapheight = game.battlemap_height
+    rangeattack.RangeArrow.gamemapheight = game.battle_map_height
 
     imgs = load_images(game.main_dir, ["ui", "unit_ui"])
     subunit.Subunit.images = imgs
-    subunit.Subunit.gamemap = game.battlemap_base  # add gamebattle map to all parentunit class
-    subunit.Subunit.gamemapfeature = game.battlemap_feature  # add gamebattle map to all parentunit class
-    subunit.Subunit.gamemapheight = game.battlemap_height
+    subunit.Subunit.gamemap = game.battle_map_base  # add gamebattle map to all parentunit class
+    subunit.Subunit.gamemapfeature = game.battle_map_feature  # add gamebattle map to all parentunit class
+    subunit.Subunit.gamemapheight = game.battle_map_height
     subunit.Subunit.weapon_list = game.allweapon
     subunit.Subunit.armour_list = game.allarmour
     subunit.Subunit.stat_list = game.troop_data
@@ -131,11 +131,11 @@ def load_game_data(game):
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
     # Time bar ui
-    game.timeui = battleui.TimeUI((game.screen_width - topimage[31].get_width(), 0), topimage[31])
-    game.timenumber = battleui.Timer(game.timeui.rect.topleft)  # time number on time ui
+    game.time_ui = battleui.TimeUI((game.screen_width - topimage[31].get_width(), 0), topimage[31])
+    game.time_number = battleui.Timer(game.time_ui.rect.topleft)  # time number on time ui
 
     image = pygame.Surface((topimage[31].get_width(), 15))
-    game.scaleui = battleui.ScaleUI(game.timeui.rect.bottomleft, image)
+    game.scale_ui = battleui.ScaleUI(game.time_ui.rect.bottomleft, image)
 
     # Right top bar ui that show rough information of selected battalions
     game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
@@ -144,9 +144,9 @@ def load_game_data(game):
     game.unitstat_ui.unit_state_text = game.state_text
 
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
-    game.buttonui.add(game.inspect_button)
+    game.button_ui.add(game.inspect_button)
 
-    game.battleui.add(game.logscroll)
+    game.battle_ui.add(game.logscroll)
     # ^ End game ui
 
 

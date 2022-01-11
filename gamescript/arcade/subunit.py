@@ -846,7 +846,7 @@ class Subunit(pygame.sprite.Sprite):
     def update(self, weather, newdt, combattimer, mousepos, mouseup):
         if self.state != 100:  # only run these when not dead
             # v Mouse collision detection
-            if self.gamebattle.gamestate == 1 or (self.gamebattle.gamestate == 2 and self.gamebattle.unit_build_slot not in self.gamebattle.battleui):
+            if self.gamebattle.gamestate == 1 or (self.gamebattle.gamestate == 2 and self.gamebattle.unit_build_slot not in self.gamebattle.battle_ui):
                 if self.rect.collidepoint(mousepos):
                     self.gamebattle.last_mouseover = self.parentunit  # last mouse over on this parentunit
                     if mouseup and self.gamebattle.uiclick is False:
@@ -1172,8 +1172,8 @@ class Subunit(pygame.sprite.Sprite):
 
                         self.parentunit.deadchange = True
 
-                        if self in self.gamebattle.battlecamera:
-                            self.gamebattle.battlecamera.change_layer(sprite=self, new_layer=1)
+                        if self in self.gamebattle.battle_camera:
+                            self.gamebattle.battle_camera.change_layer(sprite=self, new_layer=1)
                         self.gamebattle.allsubunitlist.remove(self)
                         self.parentunit.subunit_sprite.remove(self)
 
@@ -1194,7 +1194,7 @@ class Subunit(pygame.sprite.Sprite):
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
                 self.gamebattle.flee_troopnumber[self.team] += 1  # add number of troop retreat from battle
-                self.gamebattle.battlecamera.remove(self)
+                self.gamebattle.battle_camera.remove(self)
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []

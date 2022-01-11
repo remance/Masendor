@@ -43,8 +43,8 @@ class Battle:
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
         self.eventlog = main.eventlog
-        self.battlecamera = main.battlecamera
-        self.battleui = main.battleui
+        self.battlecamera = main.battle_camera
+        self.battleui = main.battle_ui
 
         self.unit_updater = main.unit_updater
         self.subunit_updater = main.subunit_updater
@@ -53,9 +53,9 @@ class Battle:
         self.weather_updater = main.weather_updater
         self.effect_updater = main.effect_updater
 
-        self.battlemap_base = main.battlemap_base
-        self.battlemap_feature = main.battlemap_feature
-        self.battlemap_height = main.battlemap_height
+        self.battlemap_base = main.battle_map_base
+        self.battlemap_feature = main.battle_map_feature
+        self.battlemap_height = main.battle_map_height
         self.showmap = main.show_map
 
         self.team0unit = main.team0_unit
@@ -76,25 +76,25 @@ class Battle:
         self.inspectsubunit = main.inspectsubunit
         self.popgameui = main.gameui  # saving list of gameui that will pop out when parentunit is selected
 
-        self.battlemap_base = main.battlemap_base
-        self.battlemap_feature = main.battlemap_feature
-        self.battlemap_height = main.battlemap_height
+        self.battlemap_base = main.battle_map_base
+        self.battlemap_feature = main.battle_map_feature
+        self.battlemap_height = main.battle_map_height
         self.showmap = main.show_map
 
         self.minimap = main.mini_map
         self.eventlog = main.eventlog
         self.logscroll = main.logscroll
-        self.buttonui = main.buttonui
+        self.buttonui = main.button_ui
         self.subunitselectedborder = main.inspect_selected_border
         self.switch_button = main.switch_button
 
-        self.fpscount = main.fpscount
+        self.fpscount = main.fps_count
 
-        self.terraincheck = main.terraincheck
+        self.terraincheck = main.terrain_check
         self.button_name_popup = main.button_name_popup
         self.leaderpopup = main.leader_popup
         self.effectpopup = main.effect_popup
-        self.textdrama = main.textdrama
+        self.textdrama = main.drama_text
 
         self.skill_icon = main.skill_icon
         self.effect_icon = main.effect_icon
@@ -143,19 +143,19 @@ class Battle:
         self.confirmui = main.confirm_ui
         self.confirmui_pop = main.confirm_ui_popup
 
-        self.unitselector = main.unitselector
-        self.uniticon = main.uniticon
+        self.unitselector = main.unit_selector
+        self.uniticon = main.unit_icon
         self.selectscroll = main.selectscroll
 
-        self.timeui = main.timeui
-        self.timenumber = main.timenumber
+        self.timeui = main.time_ui
+        self.timenumber = main.time_number
 
-        self.scaleui = main.scaleui
+        self.scaleui = main.scale_ui
 
-        self.speednumber = main.speednumber
+        self.speednumber = main.speed_number
 
-        self.weathermatter = main.weathermatter
-        self.weathereffect = main.weathereffect
+        self.weathermatter = main.weather_matter
+        self.weathereffect = main.weather_effect
 
         self.lorebook = main.lorebook
         self.lorenamelist = main.lore_name_list
@@ -656,7 +656,7 @@ class Battle:
 
     def addbehaviourui(self, whoinput, elsecheck=False):
         if whoinput.control:
-            # self.battleui.add(self.buttonui[7])  # add decimation button
+            # self.battle_ui.add(self.button_ui[7])  # add decimation button
             self.battleui.add(*self.switch_button[0:7])  # add parentunit behaviour change button
             self.switch_button[0].event = whoinput.skill_cond
             self.switch_button[1].event = whoinput.fireatwill
@@ -671,7 +671,7 @@ class Battle:
                 self.row_split_button.kill()
             if self.col_split_button in self.battleui:
                 self.col_split_button.kill()
-            # self.battleui.remove(self.buttonui[7])  # remove decimation button
+            # self.battle_ui.remove(self.button_ui[7])  # remove decimation button
             self.battleui.remove(*self.switch_button[0:7])  # remove parentunit behaviour change button
 
         self.leadernow = whoinput.leader
@@ -1197,17 +1197,17 @@ class Battle:
 
                     # vv FOR DEVELOPMENT DELETE LATER
                     # elif keypress == pygame.K_1:
-                    #     self.textdrama.queue.append("Hello and Welcome to update video")
+                    #     self.drama_text.queue.append("Hello and Welcome to update video")
                     # elif keypress == pygame.K_2:
-                    #     self.textdrama.queue.append("Showcase: Just simple clarity update")
+                    #     self.drama_text.queue.append("Showcase: Just simple clarity update")
                     # elif keypress == pygame.K_3:
-                    #     self.textdrama.queue.append("Before")
+                    #     self.drama_text.queue.append("Before")
                     # elif keypress == pygame.K_4:
-                    #     self.textdrama.queue.append("Where the hell is blue team, can only see red")
+                    #     self.drama_text.queue.append("Where the hell is blue team, can only see red")
                     # elif keypress == pygame.K_5:
-                    #     self.textdrama.queue.append("After")
+                    #     self.drama_text.queue.append("After")
                     # elif keypress == pygame.K_6:
-                    #     self.textdrama.queue.append("Now much more clear")
+                    #     self.drama_text.queue.append("Now much more clear")
                     # elif keypress == pygame.K_n and self.last_selected is not None:
                     #     if self.last_selected.team == 1:
                     #         self.last_selected.switchfaction(self.team1_unit, self.team2_unit, self.team1_pos_list, self.enactment)
@@ -1529,9 +1529,9 @@ class Battle:
                                                 self.battleui.add(*self.leadernow)
                                                 self.setup_uniticon()
 
-                                        # elif self.buttonui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
+                                        # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
                                         #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
-                                        #     self.battleui.add(self.button_name_popup)
+                                        #     self.battle_ui.add(self.button_name_popup)
                                         #     if mouse_left_up and self.last_selected.state == 0:
                                         #         for subunit in self.last_selected.subunit_sprite:
                                         #             subunit.status_effect[98] = self.troop_data.status_list[98].copy()
@@ -2390,7 +2390,7 @@ class Battle:
                     # ^ End remove
 
                     if self.ui_timer > 1:
-                        self.scaleui.change_fight_scale(self.team_troopnumber)  # change fight colour scale on timeui bar
+                        self.scaleui.change_fight_scale(self.team_troopnumber)  # change fight colour scale on time_ui bar
                         self.last_team_troopnumber = self.team_troopnumber
 
                     if self.combattimer >= 0.5:  # reset combat timer every 0.5 seconds

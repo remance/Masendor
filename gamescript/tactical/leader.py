@@ -94,7 +94,7 @@ class Leader(pygame.sprite.Sprite):
             subunit.moraleregen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 
         if self.commander:  # reduce morale to whole army if commander die from the melee_dmg (leader die cal is in leader.py)
-            self.gamebattle.textdrama.queue.append(str(self.name) + " is " + eventtext[self.state])
+            self.gamebattle.drama_text.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0"  # read ld0 event log for special log when team 1 commander die, not used for other leader
             whicharmy = self.gamebattle.team1_unit
             if self.parentunit.team == 2:
