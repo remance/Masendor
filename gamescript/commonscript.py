@@ -157,8 +157,7 @@ def read_faction_data(main_dir, ruleset_folder):
 
 
 def make_encyclopedia_ui(main_dir, ruleset_folder, screen_scale, screen_rect):
-
-    # v Encyclopedia related objects
+    """Create Encyclopedia related objects"""
     lorebook.Lorebook.concept_stat = csv_read(main_dir, "concept_stat.csv", ["data", "ruleset", ruleset_folder, "lore"])
     lorebook.Lorebook.concept_lore = csv_read(main_dir, "concept_lore.csv", ["data", "ruleset", ruleset_folder, "lore"])
     lorebook.Lorebook.history_stat = csv_read(main_dir, "history_stat.csv", ["data", "ruleset", ruleset_folder, "lore"])
@@ -217,7 +216,7 @@ def make_encyclopedia_ui(main_dir, ruleset_folder, screen_scale, screen_rect):
 
 
 def make_editor_ui(main_dir, screen_scale, screen_rect, imgs, image_list):
-    """Army editor ui and button"""
+    """Create army editor ui and button"""
 
     bottom_height = screen_rect.height - image_list[0].get_height()
     box_img = load_image(main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
@@ -460,21 +459,24 @@ def load_game_data(self):
 
 def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
     """Blit long text into separate row of text"""
-    words = [word.split(" ") for word in text.splitlines()]  # 2D array where each row is a list of words
-    space = font.size(" ")[0]  # the width of a space
-    max_width, max_height = surface.get_size()
+    if type(text) != list:
+        text = [text]
     x, y = pos
-    for line in words:
-        for word in line:
-            word_surface = font.render(word, 0, color)
-            word_width, word_height = word_surface.get_size()
-            if x + word_width >= max_width:
-                x = pos[0]  # reset x
-                y += word_height  # start on new row.
-            surface.blit(word_surface, (x, y))
-            x += word_width + space
-        x = pos[0]  # reset x
-        y += word_height  # start on new row
+    for this_text in text:
+        words = [word.split(" ") for word in this_text.splitlines()]  # 2D array where each row is a list of words
+        space = font.size(" ")[0]  # the width of a space
+        max_width, max_height = surface.get_size()
+        for line in words:
+            for word in line:
+                word_surface = font.render(word, 0, color)
+                word_width, word_height = word_surface.get_size()
+                if x + word_width >= max_width:
+                    x = pos[0]  # reset x
+                    y += word_height  # start on new row.
+                surface.blit(word_surface, (x, y))
+                x += word_width + space
+            x = pos[0]  # reset x
+            y += word_height  # start on new row
 
 
 def make_bar_list(main_dir, screen_scale, list_to_do, menu_image):
@@ -724,12 +726,12 @@ def popout_lorebook(self, section, game_id):
     used for when user right click at icon that has encyclopedia section"""
     self.game_state = 0
     self.battle_menu.mode = 2
-    self.battle_ui.add(self.lorebook, self.lore_name_list, self.lore_scroll, *self.lore_button_ui)
+    self.battle_ui.add(self.encyclopedia, self.lore_name_list, self.lore_scroll, *self.lore_button_ui)
 
-    self.lorebook.change_section(section, self.lore_name_list, self.subsection_name, self.lore_scroll, self.page_button,
+    self.encyclopedia.change_section(section, self.lore_name_list, self.subsection_name, self.lore_scroll, self.page_button,
                                  self.battle_ui)
-    self.lorebook.change_subsection(game_id, self.page_button, self.battle_ui)
-    self.lore_scroll.change_image(new_row=self.lorebook.current_subsection_row)
+    self.encyclopedia.change_subsection(game_id, self.page_button, self.battle_ui)
+    self.lore_scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
 
 
 def popup_list_open(self, new_rect, new_list, ui_type):

@@ -545,7 +545,7 @@ class EventLog(pygame.sprite.Sprite):
         return image_change
 
     def add_log(self, log, mode_list, event_id=None):
-        """Add log to appropriate event log, the log must be in list format following this rule [attacker (gameid), logtext]"""
+        """Add log to appropriate event log, the log must be in list format following this rule [attacker (game_id), logtext]"""
         at_last_row = False
         image_change = False
         image_change2 = False

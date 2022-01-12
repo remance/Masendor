@@ -41,8 +41,8 @@ def load_game_data(game):
 
     imgs = load_images(game.main_dir, ["ui", "unit_ui"])
     subunit.Subunit.images = imgs
-    subunit.Subunit.gamemap = game.battle_map_base  # add gamebattle map to all parentunit class
-    subunit.Subunit.gamemapfeature = game.battle_map_feature  # add gamebattle map to all parentunit class
+    subunit.Subunit.base_map = game.battle_map_base  # add gamebattle map to all parentunit class
+    subunit.Subunit.feature_map = game.battle_map_feature  # add gamebattle map to all parentunit class
     subunit.Subunit.height_map = game.battle_map_height
     subunit.Subunit.weapon_list = game.allweapon
     subunit.Subunit.armour_list = game.allarmour
@@ -242,7 +242,7 @@ def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, sub
     for subunitnum in np.nditer(this_unit.armysubunit, op_flags=["readwrite"], order="C"):
         if subunitnum != 0:
             addsubunit = subunit.Subunit(subunitnum, subunitgameid, this_unit, this_unit.subunit_position_list[armysubunitindex],
-                                         this_unit.starthp, this_unit.startstamina, gamebattle.unitscale)
+                                         this_unit.start_hp, this_unit.startstamina, gamebattle.unitscale)
             gamebattle.subunit.add(addsubunit)
             addsubunit.board_pos = boardpos[armysubunitindex]
             subunitnum[...] = subunitgameid

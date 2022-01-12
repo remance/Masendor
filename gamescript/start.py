@@ -165,7 +165,7 @@ class Mainmenu:
 
         self.tick_box = pygame.sprite.Group()  # option tick box
 
-        self.lore_button_ui = pygame.sprite.Group()  # buttons for enclycopedia group
+        self.lore_button_ui = pygame.sprite.Group()  # buttons for encyclopedia group
         self.value_box = pygame.sprite.Group()  # value number and box in esc menu option
         self.lore_name_list = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
         self.subsection_name = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lore_name_list
@@ -1240,7 +1240,7 @@ class Mainmenu:
                             pygame.mixer.music.set_volume(self.mixer_volume)
 
                 elif self.menu_state == "encyclopedia":
-                    command = self.encyclopedia_process(self.main_ui, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down)
+                    command = self.lorebook_process(self.main_ui, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down)
                     if esc_press or command == "exit":
                         self.menu_state = "mainmenu"  # change menu back to default 0
 

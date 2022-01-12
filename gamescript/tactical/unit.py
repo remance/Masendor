@@ -146,7 +146,7 @@ class Unit(pygame.sprite.Sprite):
     formchangetimer = 10
     imgsize = None
 
-    def __init__(self, startposition, gameid, squadlist, colour, control, coa, commander, startangle, starthp=100, startstamina=100, team=0):
+    def __init__(self, startposition, game_id, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although parentunit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -158,11 +158,11 @@ class Unit(pygame.sprite.Sprite):
         self.leader = []
         self.leadersubunit = None  # subunit that general is in, get added in leader first update
         self.near_target = {}  # list dict of nearby enemy parentunit, sorted by distance
-        self.gameid = gameid  # id of parentunit for reference in many function
+        self.game_id = game_id  # id of parentunit for reference in many function
         self.control = control  # player control or not
-        self.starthp = starthp  # starting hp percentage
-        self.startstamina = startstamina  # starting stamina percentage
-        self.armysubunit = squadlist  # subunit array
+        self.start_hp = start_hp  # starting hp percentage
+        self.startstamina = start_stamina  # starting stamina percentage
+        self.armysubunit = subunit_list  # subunit array
         self.colour = colour  # box colour according to team
         self.commander = commander  # commander parentunit if true
 
@@ -175,11 +175,11 @@ class Unit(pygame.sprite.Sprite):
         self.base_pos = pygame.Vector2(startposition)  # base_pos is for true pos that is used for ingame calculation
         self.last_base_pos = self.base_pos
         self.base_attack_pos = 0  # position of attack base_target
-        self.angle = startangle  # start at this angle
+        self.angle = start_angle  # start at this angle
         if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
             self.angle = 0
         self.new_angle = self.angle
-        self.radians_angle = math.radians(360 - startangle)  # radians for apply angle to position (allsidepos and subunit)
+        self.radians_angle = math.radians(360 - start_angle)  # radians for apply angle to position (allsidepos and subunit)
         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
         self.front_pos = rotationxy(self.base_pos, frontpos, self.radians_angle)
         self.movement_queue = []
@@ -253,7 +253,7 @@ class Unit(pygame.sprite.Sprite):
         self.coa = coa  # coat of arm image
         teamposlist = (self.gamebattle.team0poslist, self.gamebattle.team1poslist, self.gamebattle.team2poslist)
         self.gamebattle.allunitlist.append(self)
-        self.gamebattle.allunitindex.append(self.gameid)
+        self.gamebattle.allunitindex.append(self.game_id)
 
         self.team = team  # team
         self.ally_pos_list = teamposlist[self.team]
@@ -579,7 +579,7 @@ class Unit(pygame.sprite.Sprite):
         # ^ End setup frontline when subunit die
 
         if self.state != 100:
-            self.ally_pos_list[self.gameid] = self.base_pos  # update current position to team position list
+            self.ally_pos_list[self.game_id] = self.base_pos  # update current position to team position list
 
             if self.justselected:  # add highlight to subunit in selected unit
                 for subunit in self.subunit_sprite:
@@ -929,7 +929,7 @@ class Unit(pygame.sprite.Sprite):
                     self.processcommand(pos, double_mouse_right, self.revert, target, othercommand)
 
     def switchfaction(self, oldgroup, newgroup, oldposlist, enactment):
-        """Change army group and gameid when change side"""
+        """Change army group and game_id when change side"""
         self.colour = (144, 167, 255)  # team1 colour
         self.control = True  # TODO need to change later when player can choose team
 
@@ -943,8 +943,8 @@ class Unit(pygame.sprite.Sprite):
 
         oldgroup.remove(self)  # remove from old team group
         newgroup.append(self)  # add to new team group
-        oldposlist.pop(self.gameid)  # remove from old pos list
-        self.gameid = newgameid  # change self id
+        oldposlist.pop(self.game_id)  # remove from old pos list
+        self.game_id = newgameid  # change self id
         # self.changescale() # reset scale to the current zoom
         self.icon.change_image(change_side=True)  # change army icon to new team
 

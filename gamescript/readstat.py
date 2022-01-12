@@ -57,15 +57,16 @@ class Weaponstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row in rd:
+            for row_index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     this_ruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
-                       this_ruleset):  # only grab effect that existed in the ruleset and frist row
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.weapon_list[row[0]] = row[1:]
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
@@ -85,15 +86,16 @@ class Armourstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.armour_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row in rd:
+            for row_index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     this_ruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.armour_list[row[0]] = row[1:]
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to armour stat
@@ -116,9 +118,10 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row in rd:
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+            for row_index, row in enumerate(rd):
+                if row_index > 0:  # skip conver header row
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.troop_list[row[0]] = row[1:]
             edit_file.close()
         # ^ End subunit stat list
@@ -297,13 +300,13 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.mount_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row in rd:
-                if "," in row[-2]:  # ruleset list, make str with "," into list
+            for row_index, row in enumerate(rd):
+                if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     this_ruleset = [row[-2]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
-                       this_ruleset):  # only grab effect that existed in the ruleset and frist row
+                       this_ruleset) and row_index > 0:  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.mount_list[row[0]] = row[1:]
@@ -342,15 +345,17 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.mount_armour_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row in rd:
-                if "," in row[-2]:  # ruleset list, make str with "," into list
+            for row_index, row in enumerate(rd):
+                if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
                 else:
                     this_ruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in this_ruleset):
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                    self.mount_armour_list[row[0]] = row[1:]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+                        self.mount_armour_list[row[0]] = row[1:]
         edit_file.close()
         # ^ End mount armour
 
@@ -370,13 +375,14 @@ class Leaderstat:
                            "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            for row in rd:
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+            for row_index, row in enumerate(rd):
+                if row_index > 0:  # skip conver header row
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.leader_list[row[0]] = row[1:]
         edit_file.close()
 
-        # v Add common leader to the leader list with gameid + 10000
+        # v Add common leader to the leader list with game_id + 10000
         with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
@@ -388,9 +394,10 @@ class Leaderstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.leader_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row in rd:
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+            for row_index, row in enumerate(rd):
+                if row_index > 0:  # skip conver header row
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.leader_list[row[0]] = row[1:]
         edit_file.close()
         # ^ End common leader

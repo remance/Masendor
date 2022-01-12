@@ -366,9 +366,9 @@ def create_troop_stat(self, stat, starthp, startstamina, unitscale):
 class Subunit(pygame.sprite.Sprite):
     images = []
     gamebattle = None
-    gamemap = None  # base map
-    gamemapfeature = None  # feature map
-    gamemapheight = None  # height map
+    base_map = None  # base map
+    feature_map = None  # feature map
+    height_map = None  # height map
     dmgcal = longscript.dmgcal
     weapon_list = None
     armour_list = None
@@ -378,7 +378,7 @@ class Subunit(pygame.sprite.Sprite):
     maxzoom = 10  # max zoom allow
     create_troop_stat = create_troop_stat
 
-    def __init__(self, troopid, gameid, parentunit, position, starthp, startstamina, unitscale):
+    def __init__(self, troopid, game_id, parentunit, position, start_hp, start_stamina, unit_scale):
         """Although subunit in code, this is referred as sub-subunit ingame"""
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -411,8 +411,8 @@ class Subunit(pygame.sprite.Sprite):
 
         self.status_list = self.parentunit.status_list
 
-        self.gameid = gameid  # ID of this
-        self.troopid = int(troopid)  # ID of preset used for this subunit
+        self.game_id = game_id  # ID of this
+        self.troop_id = int(troopid)  # ID of preset used for this subunit
 
         self.angle = self.parentunit.angle
         self.new_angle = self.parentunit.angle
@@ -430,13 +430,13 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_cond = 0
         self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
 
-        self.getfeature = self.gamemapfeature.get_feature
-        self.getheight = self.gamemapheight.get_height
+        self.getfeature = self.feature_map.get_feature
+        self.getheight = self.height_map.get_height
 
         # v Setup troop stat
-        stat = self.stat_list.troop_list[self.troopid].copy()
+        stat = self.stat_list.troop_list[self.troop_id].copy()
 
-        self.create_troop_stat(stat, starthp, startstamina, unitscale)
+        self.create_troop_stat(stat, start_hp, start_stamina, unit_scale)
         self.gamebattle.start_troopnumber[self.team] += self.troop_number  # add troop number to counter how many troop join battle
         # ^ End setup stat
 
@@ -533,9 +533,9 @@ class Subunit(pygame.sprite.Sprite):
         self.front_pos = rotationxy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
 
         self.attack_pos = self.parentunit.base_attack_pos
-        self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)  # get new terrain and feature at each subunit position
-        self.height = self.gamemapheight.get_height(self.base_pos)  # current terrain height
-        self.front_height = self.gamemapheight.get_height(self.front_pos)  # terrain height at front position
+        self.terrain, self.feature = self.getfeature(self.base_pos, self.base_map)  # get new terrain and feature at each subunit position
+        self.height = self.height_map.get_height(self.base_pos)  # current terrain height
+        self.front_height = self.height_map.get_height(self.front_pos)  # terrain height at front position
         # ^ End position related
 
         self.rect = self.image.get_rect(center=self.pos)
@@ -597,38 +597,38 @@ class Subunit(pygame.sprite.Sprite):
         self.nearby_subunit_list = []
         corner_subunit = []
         for rowindex, rowlist in enumerate(self.parentunit.armysubunit.tolist()):
-            if self.gameid in rowlist:
-                if rowlist.index(self.gameid) - 1 != -1:  # get subunit from left if not at first column
-                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex][rowlist.index(self.gameid) - 1])  # index 0
+            if self.game_id in rowlist:
+                if rowlist.index(self.game_id) - 1 != -1:  # get subunit from left if not at first column
+                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex][rowlist.index(self.game_id) - 1])  # index 0
                 else:  # not exist
                     self.nearby_subunit_list.append(0)  # add number 0 instead
 
-                if rowlist.index(self.gameid) + 1 != len(rowlist):  # get subunit from right if not at last column
-                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex][rowlist.index(self.gameid) + 1])  # index 1
+                if rowlist.index(self.game_id) + 1 != len(rowlist):  # get subunit from right if not at last column
+                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex][rowlist.index(self.game_id) + 1])  # index 1
                 else:  # not exist
                     self.nearby_subunit_list.append(0)  # add number 0 instead
 
                 if rowindex != 0:  # get top subunit
-                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex - 1][rowlist.index(self.gameid)])  # index 2
-                    if rowlist.index(self.gameid) - 1 != -1:  # get top left subunit
-                        corner_subunit.append(self.parentunit.spritearray[rowindex - 1][rowlist.index(self.gameid) - 1])  # index 3
+                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex - 1][rowlist.index(self.game_id)])  # index 2
+                    if rowlist.index(self.game_id) - 1 != -1:  # get top left subunit
+                        corner_subunit.append(self.parentunit.spritearray[rowindex - 1][rowlist.index(self.game_id) - 1])  # index 3
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
-                    if rowlist.index(self.gameid) + 1 != len(rowlist):  # get top right
-                        corner_subunit.append(self.parentunit.spritearray[rowindex - 1][rowlist.index(self.gameid) + 1])  # index 4
+                    if rowlist.index(self.game_id) + 1 != len(rowlist):  # get top right
+                        corner_subunit.append(self.parentunit.spritearray[rowindex - 1][rowlist.index(self.game_id) + 1])  # index 4
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
                 else:  # not exist
                     self.nearby_subunit_list.append(0)  # add number 0 instead
 
                 if rowindex != len(self.parentunit.spritearray) - 1:  # get bottom subunit
-                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex + 1][rowlist.index(self.gameid)])  # index 5
-                    if rowlist.index(self.gameid) - 1 != -1:  # get bottom left subunit
-                        corner_subunit.append(self.parentunit.spritearray[rowindex + 1][rowlist.index(self.gameid) - 1])  # index 6
+                    self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex + 1][rowlist.index(self.game_id)])  # index 5
+                    if rowlist.index(self.game_id) - 1 != -1:  # get bottom left subunit
+                        corner_subunit.append(self.parentunit.spritearray[rowindex + 1][rowlist.index(self.game_id) - 1])  # index 6
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
-                    if rowlist.index(self.gameid) + 1 != len(rowlist):  # get bottom  right subunit
-                        corner_subunit.append(self.parentunit.spritearray[rowindex + 1][rowlist.index(self.gameid) + 1])  # index 7
+                    if rowlist.index(self.game_id) + 1 != len(rowlist):  # get bottom  right subunit
+                        corner_subunit.append(self.parentunit.spritearray[rowindex + 1][rowlist.index(self.game_id) + 1])  # index 7
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
                 else:  # not exist
@@ -753,14 +753,14 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End weather
 
         # v Map feature modifier to stat
-        map_feature_mod = self.gamemapfeature.feature_mod[self.feature]
+        map_feature_mod = self.feature_map.feature_mod[self.feature]
         if map_feature_mod[self.feature_mod] != 1:  # speed/charge
             speed_mod = map_feature_mod[self.feature_mod]  # get the speed mod appropiate to subunit type
             self.speed *= speed_mod
             self.charge *= speed_mod
 
         if map_feature_mod[self.feature_mod + 1] != 1:  # melee attack
-            # combatmod = self.parentunit.gamemapfeature.feature_mod[self.parentunit.feature][self.feature_mod + 1]
+            # combatmod = self.parentunit.feature_map.feature_mod[self.parentunit.feature][self.feature_mod + 1]
             self.attack *= map_feature_mod[self.feature_mod + 1]  # get the attack mod appropiate to subunit type
 
         if map_feature_mod[self.feature_mod + 2] != 1:  # melee/charge defence
@@ -792,7 +792,7 @@ class Subunit(pygame.sprite.Sprite):
 
             if 3 in map_feature_mod[11]:  # Poison type terrain
                 self.elem_count[4] += ((100 - self.elem_res[4]) / 100)
-        # self.hidden += self.parentunit.gamemapfeature[self.parentunit.feature][6]
+        # self.hidden += self.parentunit.feature_map[self.parentunit.feature][6]
         tempreach = map_feature_mod[10] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
         # ^ End map feature
 
@@ -1030,8 +1030,8 @@ class Subunit(pygame.sprite.Sprite):
         self.zoomscale()
         self.find_nearby_subunit()
         self.statusupdate()
-        self.terrain, self.feature = self.getfeature(self.base_pos, self.gamemap)
-        self.height = self.gamemapheight.get_height(self.base_pos)
+        self.terrain, self.feature = self.getfeature(self.base_pos, self.base_map)
+        self.height = self.height_map.get_height(self.base_pos)
 
     def update(self, weather, newdt, zoom, combattimer, mousepos, mouseup):
         if self.lastzoom != zoom:  # camera zoom is changed
@@ -1051,8 +1051,8 @@ class Subunit(pygame.sprite.Sprite):
                         if self.parentunit.selected is False:
                             self.parentunit.justselected = True
                             self.parentunit.selected = True
-                        self.wholastselect = self.gameid
-                        self.gamebattle.clickany = True
+                        self.wholastselect = self.game_id
+                        self.gamebattle.click_any = True
             # ^ End mouse detect
 
             dt = newdt
@@ -1306,7 +1306,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
                     self.rotate()  # rotate sprite to new angle
                     self.make_front_pos()  # generate new pos related to side
-                    self.front_height = self.gamemapheight.get_height(self.front_pos)
+                    self.front_height = self.height_map.get_height(self.front_pos)
                 # ^ End rotate
 
                 # v Move function to given base_target position
@@ -1388,9 +1388,9 @@ class Subunit(pygame.sprite.Sprite):
                                 self.make_pos_range()
 
                                 self.terrain, self.feature = self.getfeature(self.base_pos,
-                                                                             self.gamemap)  # get new terrain and feature at each subunit position
-                                self.height = self.gamemapheight.get_height(self.base_pos)  # get new height
-                                self.front_height = self.gamemapheight.get_height(self.front_pos)
+                                                                             self.base_map)  # get new terrain and feature at each subunit position
+                                self.height = self.height_map.get_height(self.base_pos)  # get new height
+                                self.front_height = self.height_map.get_height(self.front_pos)
                                 self.last_pos = self.base_pos
 
                                 if self.unit_leader and newmove_length > 0:
@@ -1564,8 +1564,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.parentunit.subunit_sprite.remove(self)
 
                 for subunit in self.parentunit.armysubunit.flat:  # remove from index array
-                    if subunit == self.gameid:
-                        self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.gameid, 0, self.parentunit.armysubunit)
+                    if subunit == self.game_id:
+                        self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.game_id, 0, self.parentunit.armysubunit)
                         break
 
                 self.change_leader("die")
@@ -1630,7 +1630,7 @@ class Subunit(pygame.sprite.Sprite):
         # print("operations:", runs, "path length:", len(path))
         # print(grid.grid_str(path=path, start=start, end=end))
         # print(self.combat_move_queue)
-        # print(self.base_pos, self.close_target.base_pos, self.gameid, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
+        # print(self.base_pos, self.close_target.base_pos, self.game_id, startpoint, intbasepos[0] - startpoint[0], intbasepos[1] - startpoint[1])
         # ^ End path finding
 
     def delete(self, local=False):

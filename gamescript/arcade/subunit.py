@@ -589,7 +589,7 @@ class Subunit(pygame.sprite.Sprite):
             self.charge *= speedmod
 
         if map_feature_mod[self.feature_mod + 1] != 1:  # melee attack
-            # combat_mod = self.parentunit.gamemapfeature.feature_mod[self.parentunit.feature][self.feature_mod + 1]
+            # combat_mod = self.parentunit.feature_map.feature_mod[self.parentunit.feature][self.feature_mod + 1]
             self.attack *= map_feature_mod[self.feature_mod + 1]  # get the attack mod appropiate to subunit type
 
         if map_feature_mod[self.feature_mod + 2] != 1:  # melee/charge defence
@@ -621,7 +621,7 @@ class Subunit(pygame.sprite.Sprite):
 
             if 3 in map_feature_mod[11]:  # Poison type terrain
                 self.elem_count[4] += ((100 - self.elem_res[5]) / 100)
-        # self.hidden += self.parentunit.gamemapfeature[self.parentunit.feature][6]
+        # self.hidden += self.parentunit.feature_map[self.parentunit.feature][6]
         tempreach = map_feature_mod[10] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
         # ^ End map feature
 
@@ -857,7 +857,7 @@ class Subunit(pygame.sprite.Sprite):
                             self.parentunit.justselected = True
                             self.parentunit.selected = True
                         self.wholastselect = self.gameid
-                        self.gamebattle.clickany = True
+                        self.gamebattle.click_any = True
             # ^ End mouse detect
 
             dt = newdt

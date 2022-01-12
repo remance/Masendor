@@ -647,7 +647,7 @@ class Unit(pygame.sprite.Sprite):
                     self.processcommand(pos, double_mouse_right, self.revert, target, othercommand)
 
     def switchfaction(self, oldgroup, newgroup, oldposlist, enactment):
-        """Change army group and gameid when change side"""
+        """Change army group and game_id when change side"""
         self.colour = (144, 167, 255)  # team1 colour
         self.control = True  # TODO need to change later when player can choose team
 

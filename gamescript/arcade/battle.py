@@ -622,8 +622,8 @@ class Battle:
                         self.troop_index_list.remove(unit)
 
     def changestate(self):
-        self.previous_gamestate = self.gamestate
-        if self.gamestate == 1:  # change to battle state
+        self.previous_gamestate = self.game_state
+        if self.game_state == 1:  # change to battle state
             self.minimap.draw_image(self.showmap.true_image, self.camera)
 
             if self.last_selected is not None:  # any parentunit is selected
@@ -651,7 +651,7 @@ class Battle:
                 leader.gamestart()
             # ^ End starting
 
-        elif self.gamestate == 2:  # change to editor state
+        elif self.game_state == 2:  # change to editor state
             self.minimap.draw_image(self.showmap.true_image, self.camera)  # reset mini_map
             for arrow in self.arrows:  # remove all range attack
                 arrow.kill()
@@ -746,7 +746,7 @@ class Battle:
     def rungame(self):
         # v Create Starting Values
         self.mixervolume = self.SoundVolume
-        self.gamestate = 1  # battle mode
+        self.game_state = 1  # battle mode
         self.current_unit_row = 0
         self.current_troop_row = 0
         self.textinputpopup = (None, None)  # no popup asking for user text input state
@@ -756,7 +756,7 @@ class Battle:
         self.last_team_troopnumber = [1, 1, 1]
         self.textdrama.queue = []  # reset drama text popup queue
         if self.mode == "uniteditor":
-            self.gamestate = 2  # editor mode
+            self.game_state = 2  # editor mode
 
             self.full_troop_list = [item[0] for item in self.troop_data.troop_list.values()][1:]
 
@@ -810,10 +810,10 @@ class Battle:
 
         self.mousetimer = 0  # This is timer for checking double mouse click, use realtime
         self.ui_timer = 0  # This is timer for ui update function, use realtime
-        self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * gamespeed)
+        self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
         self.dt = 0  # Realtime used for in self calculation
         self.uidt = 0  # Realtime used for ui timer
-        self.combattimer = 0  # This is timer for combat related function, use self time (realtime * gamespeed)
+        self.combattimer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
         self.uiclick = False  # for checking if mouse click is on ui
         self.clickany = False  # For checking if mouse click on anything, if not close ui related to parentunit
         self.last_selected = None  # Which unit is last selected
@@ -897,11 +897,11 @@ class Battle:
 
             if self.textinputpopup == (None, None):
                 if esc_press:  # open/close menu
-                    if self.gamestate in (1, 2):  # in battle
-                        self.gamestate = 0  # open munu
+                    if self.game_state in (1, 2):  # in battle
+                        self.game_state = 0  # open munu
                         self.battleui.add(self.battle_menu, *self.battle_menu_button)  # add menu and its buttons to drawer
 
-                if self.gamestate in (1, 2):  # self in battle state
+                if self.game_state in (1, 2):  # self in battle state
                     # v register user input during gameplay
                     if mouse_scrollup or mouse_scrolldown:  # Mouse scroll
                         if self.eventlog.rect.collidepoint(self.mousepos):  # Scrolling when mouse at event log
@@ -1089,10 +1089,10 @@ class Battle:
                                 elif self.test_button.event == 1:
                                     self.test_button.event = 0
                                     newmode = 2
-                                self.gamestate = newmode
+                                self.game_state = newmode
                                 self.changestate()
 
-                        if self.gamestate == 1:
+                        if self.game_state == 1:
                             if self.logscroll.rect.collidepoint(self.mousepos):  # Must check mouse collide for scroller before event log ui
                                 self.uiclick = True
                                 if mouse_leftdown or mouse_up:
@@ -1142,7 +1142,7 @@ class Battle:
 
                             # ^ End subunit selected code
 
-                        elif self.gamestate == 2:  # uniteditor state
+                        elif self.game_state == 2:  # uniteditor state
                             self.battleui.remove(self.leaderpopup)
                             if self.popup_listbox in self.battleui and self.popup_listbox.type == "leader" \
                                     and self.popup_listbox.rect.collidepoint(
@@ -1222,7 +1222,7 @@ class Battle:
                                                 self.previewleader[leaderindex].change_leader(item, self.leader_stat)
 
                                                 posindex = 0
-                                                for slot in self.unit_build_slot:  # can't use gameid here as none subunit not count in position check
+                                                for slot in self.unit_build_slot:  # can't use game_id here as none subunit not count in position check
                                                     if posindex == leaderposlist[leaderindex]:
                                                         self.previewleader[leaderindex].change_subunit(slot)
                                                         slot.leader = self.previewleader[leaderindex]
@@ -1263,10 +1263,10 @@ class Battle:
                                             #                       change_option=1)
 
                             # elif self.game_ui[1] in self.battle_ui and self.game_ui[1].rect.collidepoint(self.mouse_pos):
-                            #     self.uiclick = True
+                            #     self.ui_click = True
                             #     for leaderindex, leader in enumerate(self.leadernow):  # loop mouse pos on leader portrait
                             #         if leader.rect.collidepoint(self.mouse_pos):
-                            #             armyposition = self.leaderposname[leader.armyposition + 4]
+                            #             armyposition = self.leader_level[leader.armyposition + 4]
                             # 
                             #             self.leader_popup.pop(self.mouse_pos, armyposition + ": " + leader.name)  # popup leader name when mouse over
                             #             self.battle_ui.add(self.leader_popup)
@@ -1686,7 +1686,7 @@ class Battle:
                                                     self.current_list_show = "faction"
 
                     if self.last_selected is not None:
-                        if self.gamestate == 1 and self.last_selected.state != 100:
+                        if self.game_state == 1 and self.last_selected.state != 100:
                             if self.before_selected is None:  # add back the pop up ui so it get shown when click subunit with none selected before
                                 self.gameui = self.popgameui
                                 self.battleui.add(*self.gameui[0:2])  # add leader and top ui
@@ -1722,7 +1722,7 @@ class Battle:
                             #     if self.ui_timer >= 1.1:
                             #         self.game_ui[0].valueinput(who=self.last_selected, split=self.split)
 
-                        elif self.gamestate == 2 and self.unit_build_slot not in self.battleui:
+                        elif self.game_state == 2 and self.unit_build_slot not in self.battleui:
                             if (mouse_right or mouse_rightdown) and self.uiclick is False:  # Unit placement
                                 self.last_selected.placement(self.battle_mouse_pos[1], mouse_right, mouse_rightdown, double_mouse_right)
 
@@ -1746,8 +1746,8 @@ class Battle:
                                 self.last_selected = None
 
                     # v Update value of the clicked subunit every 1.1 second
-                    if self.gamestate == 1 and self.inspectui and ((self.ui_timer >= 1.1 and self.troopcard_ui.option != 0) or
-                                                                   self.before_selected != self.last_selected):
+                    if self.game_state == 1 and self.inspectui and ((self.ui_timer >= 1.1 and self.troopcard_ui.option != 0) or
+                                                                    self.before_selected != self.last_selected):
                         self.troopcard_ui.value_input(who=self.subunit_selected.who, weapon_list=self.allweapon, armour_list=self.allarmour,
                                                       split=self.splithappen)
                         if self.troopcard_ui.option == 2:  # skill and status effect card
@@ -1804,7 +1804,7 @@ class Battle:
                                                                       self.allweather)
                             self.weather_event.pop(0)
                             self.showmap.add_effect(self.battlemap_height,
-                                                    self.weather_effect_imgs[self.currentweather.weathertype][self.currentweather.level])
+                                                    self.weather_effect_imgs[self.currentweather.weather_type][self.currentweather.level])
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_current = self.weather_event[0][1]
@@ -1948,13 +1948,13 @@ class Battle:
                     # ^ End battle updater
 
                     # v Update self time
-                    self.dt = self.clock.get_time() / 1000  # dt before gamespeed
+                    self.dt = self.clock.get_time() / 1000  # dt before game_speed
                     if self.ui_timer >= 1.1:  # reset ui timer every 1.1 seconds
                         self.ui_timer -= 1.1
                     self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
                     self.uidt = self.dt  # get ui timer before apply self
 
-                    self.dt = self.dt * self.gamespeed  # apply dt with gamespeed for ingame calculation
+                    self.dt = self.dt * self.gamespeed  # apply dt with game_speed for ingame calculation
                     if self.dt > 0.1:
                         self.dt = 0.1  # make it so stutter does not cause sprite to clip other sprite especially when zoom change
 
@@ -1980,7 +1980,7 @@ class Battle:
                             self.battleui.add(self.battledone_box, self.gamedone_button)
                         else:
                             if mouse_up and self.gamedone_button.rect.collidepoint(self.mousepos):
-                                self.gamestate = 3  # end battle mode, result screen
+                                self.game_state = 3  # end battle mode, result screen
                                 self.gamespeed = 0
                                 coalist = [None, None]
                                 for index, coa in enumerate(self.teamcoa):
@@ -1993,7 +1993,7 @@ class Battle:
 
                     # ^ End update self time
 
-                elif self.gamestate == 0:  # Complete self pause when open either esc menu or enclycopedia
+                elif self.game_state == 0:  # Complete self pause when open either esc menu or enclycopedia
                     command = self.escmenu_process(mouse_up, mouse_leftdown, esc_press, mouse_scrollup, mouse_scrolldown, self.battleui)
                     if command == "end_battle":
                         return
