@@ -44,8 +44,8 @@ def load_game_data(game):
     subunit.Subunit.base_map = game.battle_map_base  # add gamebattle map to all parentunit class
     subunit.Subunit.feature_map = game.battle_map_feature  # add gamebattle map to all parentunit class
     subunit.Subunit.height_map = game.battle_map_height
-    subunit.Subunit.weapon_list = game.allweapon
-    subunit.Subunit.armour_list = game.allarmour
+    subunit.Subunit.weapon_list = game.all_weapon
+    subunit.Subunit.armour_list = game.all_armour
     subunit.Subunit.stat_list = game.troop_data
     subunit.Subunit.eventlog = game.eventlog  # Assign eventlog to subunit class to broadcast event to the log
 
@@ -108,8 +108,8 @@ def load_game_data(game):
     # ^ End get index
 
     uniteditor.Unitbuildslot.images = imgs
-    uniteditor.Unitbuildslot.weapon_list = game.allweapon
-    uniteditor.Unitbuildslot.armour_list = game.allarmour
+    uniteditor.Unitbuildslot.weapon_list = game.all_weapon
+    uniteditor.Unitbuildslot.armour_list = game.all_armour
     uniteditor.Unitbuildslot.stat_list = game.troop_data
     uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
 
@@ -478,11 +478,11 @@ def die(who, battle, moralehit=True):
     if who.team == 1:
         group = battle.team1_unit
         enemygroup = battle.team2_unit
-        battle.team1poslist.pop(who.game_id)
+        battle.team1_pos_list.pop(who.game_id)
     else:
         group = battle.team2_unit
         enemygroup = battle.team1_unit
-        battle.team2poslist.pop(who.game_id)
+        battle.team2_pos_list.pop(who.game_id)
 
     if moralehit:
         if who.commander:  # more morale penalty if the parentunit is a command parentunit
@@ -497,8 +497,8 @@ def die(who, battle, moralehit=True):
             for this_subunit in thisarmy.subunit_sprite:
                 this_subunit.base_morale -= 20
 
-    battle.allunitlist.remove(who)
-    battle.allunitindex.remove(who.game_id)
+    battle.all_unit_list.remove(who)
+    battle.all_unit_index.remove(who.game_id)
     group.remove(who)
     who.got_killed = True
 

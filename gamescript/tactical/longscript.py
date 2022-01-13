@@ -44,8 +44,8 @@ def load_game_data(game):
     subunit.Subunit.base_map = game.battle_map_base  # add gamebattle map to all parentunit class
     subunit.Subunit.feature_map = game.battle_map_feature  # add gamebattle map to all parentunit class
     subunit.Subunit.height_map = game.battle_map_height
-    subunit.Subunit.weapon_list = game.allweapon
-    subunit.Subunit.armour_list = game.allarmour
+    subunit.Subunit.weapon_list = game.all_weapon
+    subunit.Subunit.armour_list = game.all_armour
     subunit.Subunit.stat_list = game.troop_data
     subunit.Subunit.eventlog = game.eventlog  # Assign eventlog to subunit class to broadcast event to the log
 
@@ -108,8 +108,8 @@ def load_game_data(game):
     # ^ End get index
 
     uniteditor.Unitbuildslot.images = imgs
-    uniteditor.Unitbuildslot.weapon_list = game.allweapon
-    uniteditor.Unitbuildslot.armour_list = game.allarmour
+    uniteditor.Unitbuildslot.weapon_list = game.all_weapon
+    uniteditor.Unitbuildslot.armour_list = game.all_armour
     uniteditor.Unitbuildslot.stat_list = game.troop_data
     uniteditor.Unitbuildslot.skill_trooptype = skill_header['Troop Type']
     # ^ End subunit class
@@ -128,8 +128,8 @@ def load_game_data(game):
     iconimage = load_images(game.main_dir, ["ui", "battle_ui", "commandbar_icon"])
     # Army select list ui
     game.unit_selector = battleui.ArmySelect((0, 0), topimage[30])
-    game.selectscroll = battleui.UIScroller(game.unit_selector.rect.topright, topimage[30].get_height(),
-                                            game.unit_selector.max_row_show)  # scroller for unit select ui
+    game.select_scroll = battleui.UIScroller(game.unit_selector.rect.topright, topimage[30].get_height(),
+                                             game.unit_selector.max_row_show)  # scroller for unit select ui
 
     game.command_ui = battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unit_selector.image.get_height(),
                                       image=topimage[1], icon=iconimage,
@@ -166,24 +166,24 @@ def load_game_data(game):
     game.game_ui.add(game.unitstat_ui)
     game.unitstat_ui.unit_state_text = game.state_text
 
-    game.inspectuipos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
-                         game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]
+    game.inspect_ui_pos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
+                           game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]
 
     # Subunit information card ui
     game.inspect_ui = battleui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
                                       image=topimage[5], icon="", ui_type="unitbox")  # inspect ui that show subnit in selected parentunit
     game.game_ui.add(game.inspect_ui)
     # v Subunit shown in inspect ui
-    width, height = game.inspectuipos[0], game.inspectuipos[1]
+    width, height = game.inspect_ui_pos[0], game.inspect_ui_pos[1]
     subunitnum = 0  # Number of subnit based on the position in row and column
     imgsize = (game.sprite_width, game.sprite_height)
-    game.inspectsubunit = []
+    game.inspect_subunit = []
     for this_subunit in list(range(0, 64)):
         width += imgsize[0]
-        game.inspectsubunit.append(battleui.InspectSubunit((width, height)))
+        game.inspect_subunit.append(battleui.InspectSubunit((width, height)))
         subunitnum += 1
         if subunitnum == 8:  # Reach the last subnit in the row, go to the next one
-            width = game.inspectuipos[0]
+            width = game.inspect_ui_pos[0]
             height += imgsize[1]
             subunitnum = 0
     # ^ End subunit shown
@@ -200,7 +200,7 @@ def load_game_data(game):
     game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
     game.button_ui.add(game.inspect_button)
 
-    game.battle_ui.add(game.log_scroll, game.selectscroll)
+    game.battle_ui.add(game.log_scroll, game.select_scroll)
 
     battleui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
     game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
@@ -551,11 +551,11 @@ def die(who, battle, moralehit=True):
     if who.team == 1:
         group = battle.team1_unit
         enemygroup = battle.team2_unit
-        battle.team1poslist.pop(who.game_id)
+        battle.team1_pos_list.pop(who.game_id)
     else:
         group = battle.team2_unit
         enemygroup = battle.team1_unit
-        battle.team2poslist.pop(who.game_id)
+        battle.team2_pos_list.pop(who.game_id)
 
     if moralehit:
         if who.commander:  # more morale penalty if the parentunit is a command parentunit
@@ -570,8 +570,8 @@ def die(who, battle, moralehit=True):
             for this_subunit in thisarmy.subunit_sprite:
                 this_subunit.base_morale -= 20
 
-    battle.allunitlist.remove(who)
-    battle.allunitindex.remove(who.game_id)
+    battle.all_unit_list.remove(who)
+    battle.all_unit_index.remove(who.game_id)
     group.remove(who)
     who.got_killed = True
 
@@ -641,7 +641,7 @@ def add_new_unit(gamebattle, who, addunitlist=True):
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 
-    who.zoom = 11 - gamebattle.camerascale
+    who.zoom = 11 - gamebattle.camera_scale
     who.new_angle = who.angle
 
     who.startset(gamebattle.subunit)
@@ -656,8 +656,8 @@ def add_new_unit(gamebattle, who, addunitlist=True):
         this_subunit.gamestart(this_subunit.zoom)
 
     if addunitlist:
-        gamebattle.allunitlist.append(who)
-        gamebattle.allunitindex.append(who.game_id)
+        gamebattle.all_unit_list.append(who)
+        gamebattle.all_unit_index.append(who.game_id)
 
     numberspite = unit.TroopNumber(gamebattle.screen_scale, who)
     gamebattle.troop_number_sprite.add(numberspite)
@@ -770,7 +770,7 @@ def splitunit(battle, who, how):
                 who.subunit_sprite.append(this_subunit)
     # ^ End sort
 
-    # v Reset position of sub-unit in inspectui for both old and new unit
+    # v Reset position of sub-unit in inspect_ui for both old and new unit
     for sprite in (who.subunit_sprite, new_subunit_sprite):
         width, height = 0, 0
         subunitnum = 0
@@ -783,7 +783,7 @@ def splitunit(battle, who, how):
                 height += battle.sprite_height
                 subunitnum = 0
 
-            this_subunit.inspect_pos = (width + battle.inspectuipos[0], height + battle.inspectuipos[1])
+            this_subunit.inspect_pos = (width + battle.inspect_ui_pos[0], height + battle.inspect_ui_pos[1])
             this_subunit.rect = this_subunit.image.get_rect(topleft=this_subunit.inspect_pos)
             this_subunit.pos = pygame.Vector2(this_subunit.rect.centerx, this_subunit.rect.centery)
             subunitnum += 1
@@ -807,7 +807,7 @@ def splitunit(battle, who, how):
         whosearmy = battle.team1_unit
     else:
         whosearmy = battle.team2_unit
-    newgameid = battle.allunitlist[-1].game_id + 1
+    newgameid = battle.all_unit_list[-1].game_id + 1
 
     newunit = unit.Unit(startposition=newpos, gameid=newgameid, squadlist=newarmysubunit, colour=who.colour,
                         control=who.control, coa=who.coa_list, commander=False, startangle=who.angle, team=who.team)

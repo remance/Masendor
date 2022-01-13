@@ -402,7 +402,7 @@ class Subunit(pygame.sprite.Sprite):
         self.fullmerge = []  # list of sprite that collide and almost overlap with this sprite
         self.collide_penalty = False
         self.team = self.parentunit.team
-        self.gamebattle.allsubunitlist.append(self)
+        self.gamebattle.all_subunit_list.append(self)
         if self.team == 1:  # add sprite to team subunit group for collision
             groupcollide = self.gamebattle.team1_subunit
         elif self.team == 2:
@@ -1133,8 +1133,8 @@ class Subunit(pygame.sprite.Sprite):
                                     self.close_target = self.find_close_target(self.melee_target.parentunit.subunit_sprite)  # find new close target
 
                                     if self.close_target is not None:  # found target to fight
-                                        if self not in self.gamebattle.combatpathqueue:
-                                            self.gamebattle.combatpathqueue.append(self)
+                                        if self not in self.gamebattle.combat_path_queue:
+                                            self.gamebattle.combat_path_queue.append(self)
 
                                     else:  # no target to fight move back to command pos first)
                                         self.base_target = self.attack_target.base_pos
@@ -1153,8 +1153,8 @@ class Subunit(pygame.sprite.Sprite):
                                         elif self.movetimer > 10 or len(self.combat_move_queue) == 0:  # # time up, or no path. reset path
                                             self.movetimer = 0
                                             self.close_target = None
-                                            if self in self.gamebattle.combatpathqueue:
-                                                self.gamebattle.combatpathqueue.remove(self)
+                                            if self in self.gamebattle.combat_path_queue:
+                                                self.gamebattle.combat_path_queue.remove(self)
 
                                         elif len(self.combat_move_queue) > 0:  # no collide move to enemy
                                             self.base_target = pygame.Vector2(self.combat_move_queue[0])
@@ -1163,8 +1163,8 @@ class Subunit(pygame.sprite.Sprite):
                                 else:  # whole targeted enemy unit destroyed, reset target and state
                                     self.melee_target = None
                                     self.close_target = None
-                                    if self in self.gamebattle.combatpathqueue:
-                                        self.gamebattle.combatpathqueue.remove(self)
+                                    if self in self.gamebattle.combat_path_queue:
+                                        self.gamebattle.combat_path_queue.remove(self)
 
                                     self.attack_target = None
                                     self.base_target = self.command_target
@@ -1175,8 +1175,8 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
                         self.melee_target = None
                         self.close_target = None
-                        if self in self.gamebattle.combatpathqueue:
-                            self.gamebattle.combatpathqueue.remove(self)
+                        if self in self.gamebattle.combat_path_queue:
+                            self.gamebattle.combat_path_queue.remove(self)
 
                         self.attack_target = None
                         self.base_target = self.command_target
@@ -1193,8 +1193,8 @@ class Subunit(pygame.sprite.Sprite):
                 else:  # range attack
                     self.melee_target = None
                     self.close_target = None
-                    if self in self.gamebattle.combatpathqueue:
-                        self.gamebattle.combatpathqueue.remove(self)
+                    if self in self.gamebattle.combat_path_queue:
+                        self.gamebattle.combat_path_queue.remove(self)
                     self.attack_target = None
                     self.combat_move_queue = []
 
@@ -1237,9 +1237,9 @@ class Subunit(pygame.sprite.Sprite):
 
                     elif self.state in (11, 12, 13):  # range combat
                         if type(self.attack_target) == int:  # For fire at will, which attacktarget is int
-                            allunitindex = self.gamebattle.allunitindex
+                            allunitindex = self.gamebattle.all_unit_index
                             if self.attack_target in allunitindex:  # if the attack base_target still alive (if dead it would not be in index list)
-                                self.attack_target = self.gamebattle.allunitlist[
+                                self.attack_target = self.gamebattle.all_unit_list[
                                     allunitindex.index(self.attack_target)]  # change attack_target index into sprite
                             else:  # enemy dead
                                 self.attack_pos = 0  # reset attack_pos to 0
@@ -1249,7 +1249,7 @@ class Subunit(pygame.sprite.Sprite):
                                     if target in allunitindex:  # check if base_target alive
                                         self.attack_pos = target[1]
                                         self.attack_target = target[1]
-                                        self.attack_target = self.gamebattle.allunitlist[allunitindex.index(self.attack_target)]
+                                        self.attack_target = self.gamebattle.all_unit_list[allunitindex.index(self.attack_target)]
                                         break  # found new base_target break loop
                         elif self.attack_target is None:
                             self.attack_target = self.parentunit.attack_target
@@ -1560,7 +1560,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 if self in self.gamebattle.battle_camera:
                     self.gamebattle.battle_camera.change_layer(sprite=self, new_layer=1)
-                self.gamebattle.allsubunitlist.remove(self)
+                self.gamebattle.all_subunit_list.remove(self)
                 self.parentunit.subunit_sprite.remove(self)
 
                 for subunit in self.parentunit.armysubunit.flat:  # remove from index array
@@ -1592,7 +1592,7 @@ class Subunit(pygame.sprite.Sprite):
     def combat_pathfind(self):
         # v Pathfinding
         self.combat_move_queue = []
-        movearray = self.gamebattle.subunitposarray.copy()
+        movearray = self.gamebattle.subunit_pos_array.copy()
         intbasetarget = (int(self.close_target.base_pos[0]), int(self.close_target.base_pos[1]))
         for y in self.close_target.posrange[0]:
             for x in self.close_target.posrange[1]:
@@ -1644,5 +1644,5 @@ class Subunit(pygame.sprite.Sprite):
             del self.attack_target
             del self.melee_target
             del self.close_target
-            if self in self.gamebattle.combatpathqueue:
-                self.gamebattle.combatpathqueue.remove(self)
+            if self in self.gamebattle.combat_path_queue:
+                self.gamebattle.combat_path_queue.remove(self)

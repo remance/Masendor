@@ -82,7 +82,7 @@ class Mainmenu:
             screen_height = int(screen.height)
 
             config["DEFAULT"] = {"ScreenWidth": screen_width, "ScreenHeight": screen_height, "Fullscreen": "0",
-                                 "PlayerName": "Noname", "SoundVolume": "100.0", "MusicVolume": "0.0",
+                                 "PlayerName": "Noname", "mixer_volume": "100.0", "MusicVolume": "0.0",
                                  "VoiceVolume": "0.0", "MaxFPS": "60", "Ruleset": "1", "Genre": genre_folder[-1]}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
@@ -92,7 +92,7 @@ class Mainmenu:
         self.screen_height = int(self.config["DEFAULT"]["ScreenHeight"])
         self.screen_width = int(self.config["DEFAULT"]["ScreenWidth"])
         self.FULLSCREEN = int(self.config["DEFAULT"]["Fullscreen"])
-        self.Soundvolume = float(self.config["DEFAULT"]["SoundVolume"])
+        self.mixer_volume = float(self.config["DEFAULT"]["SoundVolume"])
         self.profile_name = str(self.config["DEFAULT"]["PlayerName"])
         self.genre = str(self.config["DEFAULT"]["Genre"])
         self.ruleset = 1  # for now default historical ruleset only
@@ -390,8 +390,8 @@ class Mainmenu:
         lorebook.Lorebook.faction_lore = self.all_faction.faction_list
         lorebook.Lorebook.unit_stat = self.troop_data.troop_list
         lorebook.Lorebook.troop_lore = self.troop_data.troop_lore
-        lorebook.Lorebook.armour_stat = self.allarmour.armour_list
-        lorebook.Lorebook.weapon_stat = self.allweapon.weapon_list
+        lorebook.Lorebook.armour_stat = self.all_armour.armour_list
+        lorebook.Lorebook.weapon_stat = self.all_weapon.weapon_list
         lorebook.Lorebook.mount_stat = self.troop_data.mount_list
         lorebook.Lorebook.mount_armour_stat = self.troop_data.mount_armour_list
         lorebook.Lorebook.status_stat = self.troop_data.status_list
@@ -555,10 +555,10 @@ class Mainmenu:
         img4 = load_image(self.main_dir, "value_icon.jpg", "ui\\mainmenu_ui")
         self.volume_slider = menu.SliderMenu(bar_image=img, button_image=[img2, img3],
                                              pos=(self.screen_rect.width / 2, self.screen_rect.height / 3),
-                                             value=self.Soundvolume)
+                                             value=self.mixer_volume)
         self.value_box = [
             menu.ValueBox(img4, (self.volume_slider.rect.topright[0] * 1.1, self.volume_slider.rect.topright[1]),
-                          self.Soundvolume)]
+                          self.mixer_volume)]
         img = load_image(self.main_dir, "volume_icon.png", "ui\\mainmenu_ui")
         self.volume_icon = menu.MenuIcon([img], (
         self.volume_slider.pos[0] - (self.volume_slider.pos[0] / 4.5), self.volume_slider.pos[1]),
@@ -574,7 +574,7 @@ class Mainmenu:
 
         # v Music player
         if pygame.mixer:
-            self.mixer_volume = float(self.Soundvolume / 100)
+            self.mixer_volume = float(self.mixer_volume / 100)
             pygame.mixer.music.set_volume(self.mixer_volume)
             self.SONG_END = pygame.USEREVENT + 1
             self.music_list = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
@@ -1163,11 +1163,11 @@ class Mainmenu:
 
                     elif self.start_button.event:  # start self button
                         self.start_button.event = False
-                        self.battle_game.preparenewgame(self.ruleset, self.ruleset_folder, self.team_selected,
-                                                        self.enactment,
-                                                        self.preset_map_folder[self.current_map_select],
-                                                        self.map_source,
-                                                        self.source_scale[self.map_source], "battle")
+                        self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
+                                                          self.enactment,
+                                                          self.preset_map_folder[self.current_map_select],
+                                                          self.map_source,
+                                                          self.source_scale[self.map_source], "battle")
                         self.battle_game.rungame()
                         pygame.mixer.music.unload()
                         pygame.mixer.music.set_endevent(self.SONG_END)
@@ -1182,7 +1182,7 @@ class Mainmenu:
 
                     elif self.unit_edit_button.event:
                         self.unit_edit_button.event = False
-                        self.battle_game.preparenewgame(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1), "uniteditor")
+                        self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1), "uniteditor")
                         self.battle_game.rungame()
                         pygame.mixer.music.unload()
                         pygame.mixer.music.set_endevent(self.SONG_END)
@@ -1194,7 +1194,7 @@ class Mainmenu:
                         if bar.event:
                             bar.event = False
 
-                            self.resolution_scroll.changestate(
+                            self.resolution_scroll.change_state(
                                 bar.text)  # change button value based on new selected value
                             resolution_change = bar.text.split()
                             self.new_screen_width = resolution_change[0]
@@ -1235,7 +1235,7 @@ class Mainmenu:
                                                       self.value_box[0])  # update slider button based on mouse value
                             self.mixer_volume = float(
                                 self.volume_slider.value / 100)  # for now only music volume slider exist
-                            edit_config("DEFAULT", "SoundVolume", str(self.volume_slider.value), "configuration.ini",
+                            edit_config("DEFAULT", "mixer_volume", str(self.volume_slider.value), "configuration.ini",
                                         self.config)
                             pygame.mixer.music.set_volume(self.mixer_volume)
 

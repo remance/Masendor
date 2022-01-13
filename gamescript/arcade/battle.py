@@ -36,7 +36,7 @@ class Battle:
         self.main = main
         self.genre = main.genre
         self.config = main.config
-        self.SoundVolume = main.Soundvolume
+        self.SoundVolume = main.mixer_volume
         self.SCREENRECT = main.screen_rect
         self.teamcolour = main.team_colour
         self.main_dir = main.main_dir
@@ -161,8 +161,8 @@ class Battle:
         self.allfaction = main.all_faction
         self.coa = main.coa_list
 
-        self.allweapon = main.allweapon
-        self.allarmour = main.allarmour
+        self.allweapon = main.all_weapon
+        self.allarmour = main.all_armour
 
         self.status_imgs = main.status_imgs
         self.role_imgs = main.role_imgs
@@ -560,7 +560,7 @@ class Battle:
 
         self.leadernow = whoinput.leader
         self.battleui.add(*self.leadernow)  # add leader portrait to draw
-        # self.game_ui[0].valueinput(who=whoinput)
+        # self.game_ui[0].valueinput(who=who_input)
 
     def unitcardbutton_click(self, who):
         for button in self.troopcard_button:  # Change subunit card option based on button clicking
@@ -1259,7 +1259,7 @@ class Battle:
                                             self.battleui.add(*self.leadernow)  # add leader portrait to draw
                                             self.showincard = slot
 
-                                            # self.troopcard_ui.valueinput(attacker=self.showincard, weapon_list=self.allweapon, armour_list=self.allarmour,
+                                            # self.troopcard_ui.valueinput(attacker=self.show_in_card, weapon_list=self.allweapon, armour_list=self.allarmour,
                                             #                       change_option=1)
 
                             # elif self.game_ui[1] in self.battle_ui and self.game_ui[1].rect.collidepoint(self.mouse_pos):
@@ -1272,7 +1272,7 @@ class Battle:
                             #             self.battle_ui.add(self.leader_popup)
                             # 
                             #             if mouse_left_up:  # open list of leader to change leader in that slot
-                            #                 self.selectleader = leaderindex
+                            #                 self.selected_leader = leaderindex
                             #                 self.popup_list_open(leader.rect.midright, self.leader_list, "leader")
                             # 
                             #             elif mouse_right_up:

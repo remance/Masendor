@@ -313,7 +313,7 @@ def load_game_data(self):
     """Load various self data and encyclopedia object"""
     main_dir = self.main_dir
     screen_rect = self.screen_rect
-    Soundvolume = self.Soundvolume
+    Soundvolume = self.mixer_volume
 
     # v create subunit related class
     imgsold = load_images(self.main_dir, ["ui", "unit_ui", "weapon"])
@@ -323,10 +323,10 @@ def load_game_data(self):
         img = pygame.transform.scale(img,
                                      (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
         imgs.append(img)
-    self.allweapon = readstat.Weaponstat(self.main_dir, imgs, self.ruleset)  # Create weapon class
+    self.all_weapon = readstat.Weaponstat(self.main_dir, imgs, self.ruleset)  # Create weapon class
 
     imgs = load_images(self.main_dir, ["ui", "unit_ui", "armour"])
-    self.allarmour = readstat.Armourstat(main_dir, imgs, self.ruleset)  # Create armour class
+    self.all_armour = readstat.Armourstat(main_dir, imgs, self.ruleset)  # Create armour class
 
     self.status_imgs = load_images(self.main_dir, ["ui", "status_icon"], load_order=False)
     self.role_imgs = load_images(self.main_dir, ["ui", "role_icon"], load_order=False)

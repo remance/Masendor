@@ -318,7 +318,6 @@ class BeautifulMap(pygame.sprite.Sprite):
     def change_mode(self, mode):
         """Switch between normal, height normal map, topology map mode"""
         self.mode = mode
-        print(self.mode)
         self.change_scale(self.scale)
 
     def change_scale(self, scale):

@@ -251,9 +251,9 @@ class Unit(pygame.sprite.Sprite):
         self.auth_penalty = 0  # authority penalty
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
-        teamposlist = (self.gamebattle.team0poslist, self.gamebattle.team1poslist, self.gamebattle.team2poslist)
-        self.gamebattle.allunitlist.append(self)
-        self.gamebattle.allunitindex.append(self.game_id)
+        teamposlist = (self.gamebattle.team0_pos_list, self.gamebattle.team1_pos_list, self.gamebattle.team2_pos_list)
+        self.gamebattle.all_unit_list.append(self)
+        self.gamebattle.all_unit_index.append(self.game_id)
 
         self.team = team  # team
         self.ally_pos_list = teamposlist[self.team]
