@@ -1035,9 +1035,10 @@ class Skeleton:
         return main_joint_pos_list
 
     def click_part(self, mouse_pos, shift_press, ctrl_press, part=None):
+        print(shift_press)
         if part is None:
             click_part = False
-            if shift_press is False or ctrl_press is False:
+            if shift_press is False and ctrl_press is False:
                 self.part_selected = []
             else:
                 click_part = True
@@ -1048,6 +1049,7 @@ class Skeleton:
                     if shift_press:  # add
                         if index not in self.part_selected:
                             self.part_selected.append(index)
+                            print(self.part_selected)
                     elif ctrl_press:  # remove
                         if index in self.part_selected:
                             self.part_selected.remove(index)
