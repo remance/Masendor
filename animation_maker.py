@@ -43,7 +43,6 @@ anim_property_list = ["dmgsprite", "interuptrevert"]
 
 # TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part
 
-# eye mouth not work without read_anime
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
@@ -177,20 +176,20 @@ def reload_animation(animation, char):
                 alpha = surface.split()[-1]  # save alpha
                 if "blur" in prop:
                     surface = surface.filter(
-                        ImageFilter.GaussianBlur(radius=int(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
+                        ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
                 if "contrast" in prop:
                     enhancer = ImageEnhance.Contrast(surface)
-                    surface = enhancer.enhance(int(prop[prop.rfind("_") + 1:]))
+                    surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
                 if "brightness" in prop:
                     enhancer = ImageEnhance.Brightness(surface)
-                    surface = enhancer.enhance(int(prop[prop.rfind("_") + 1:]))
+                    surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
                 if "fade" in prop:
                     empty = pygame.Surface((frames[frame_index].get_width(), frames[frame_index].get_height()), pygame.SRCALPHA)
                     empty.fill((255, 255, 255, 255))
                     empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
                     empty = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
                                             empty)  # use PIL to get image data
-                    surface = Image.blend(surface, empty, alpha=int(prop[prop.rfind("_") + 1:]) / 10)
+                    surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
                 surface.putalpha(alpha)  # put back alpha
                 surface = surface.tobytes()
                 surface = pygame.image.fromstring(surface, (frames[frame_index].get_width(), frames[frame_index].get_height()),
@@ -763,7 +762,7 @@ class Skeleton:
         self.p1_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.weapon = {"p1_main_weapon": "sword", "p1_sub_weapon": None, "p2_main_weapon": None, "p2_sub_weapon": None}
+        self.weapon = {"p1_main_weapon": "sword", "p1_sub_weapon": "sword", "p2_main_weapon": "sword", "p2_sub_weapon": "sword"}
         self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0, 1]
         self.random_face()
         self.size = 1  # size scale of sprite
@@ -884,6 +883,8 @@ class Skeleton:
                 self.part_name_list[index] = part_name
                 image = self.create_animation_film(pose_layer_list, index)
                 self.animation_list[index] = image
+                if index == current_frame:
+                    self.create_joint(pose_layer_list)
             self.frame_list = frame_list
 
         activate_list = [False] * 10
@@ -909,21 +910,25 @@ class Skeleton:
                 part = self.animation_part_list[frame][layer]
                 image = self.part_to_sprite(image, part[0], list(self.animation_part_list[frame].keys()).index(layer),
                                             part[1], part[2], part[3], part[4], part[6])
-                name_check = layer
-                if "p1" in name_check or "p2" in name_check:
-                    name_check = name_check[3:]  # remove p1_
-                if self.part_name_list[frame][layer] is not None and \
-                        name_check in skel_joint_list[direction_list.index(self.part_name_list[frame][layer][1])]:
-                    for index, item in enumerate(
-                            skel_joint_list[direction_list.index(self.part_name_list[frame][layer][1])][name_check]):
-                        joint_type = 0  # main
-                        if index > 0:
-                            joint_type = 1
-                        joint_pos = list(item.values())[0]
-                        pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
-                               part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
-                        Joint(joint_type, layer, name_check, (pos[0] / self.size, pos[1] / self.size), part[3])
         return image
+
+    def create_joint(self, pose_layer_list):
+        for index, layer in enumerate(pose_layer_list):
+            part = self.animation_part_list[current_frame][layer]
+            name_check = layer
+            if "p1" in name_check or "p2" in name_check:
+                name_check = name_check[3:]  # remove p1_
+            if self.part_name_list[current_frame][layer] is not None and \
+                    name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
+                for index, item in enumerate(
+                        skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][name_check]):
+                    joint_type = 0  # main
+                    if index > 0:
+                        joint_type = 1
+                    joint_pos = list(item.values())[0]
+                    pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
+                           part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
+                    Joint(joint_type, layer, name_check, (pos[0] / self.size, pos[1] / self.size), part[3])
 
     def grab_face_part(self, race, side, part, part_check, part_default):
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
@@ -1310,6 +1315,7 @@ class Skeleton:
         # recreate frame image
         pose_layer_list = self.make_layer_list(self.animation_part_list[current_frame])
         surface = self.create_animation_film(pose_layer_list, current_frame)
+        self.create_joint(pose_layer_list)
         self.animation_list[current_frame] = surface
         name_list = self.part_name_list[current_frame]
         try:
@@ -1711,7 +1717,7 @@ while True:
     input_esc = False
     popup_list = []
 
-    keypress = pygame.key.get_pressed()
+    key_press = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -1751,7 +1757,7 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 input_esc = True
             elif text_input_popup[0] == "text_input":
-                input_box.user_input(event, keypress)
+                input_box.user_input(event, key_press)
 
     if pygame.mouse.get_pressed()[0]:  # Hold left click
         mouse_left_down = True
@@ -1761,47 +1767,47 @@ while True:
         mouse_right_down = True
 
     if input_ui not in ui:
-        if keypress is not None and keypress_delay < 0.1:
-            if keypress[pygame.K_LCTRL] or keypress[pygame.K_RCTRL]:
+        if key_press is not None and keypress_delay < 0.1:
+            if key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:
                 ctrl_press = True
-                if keypress[pygame.K_c]:  # copy frame
+                if key_press[pygame.K_c]:  # copy frame
                     copy_press = True
-                elif keypress[pygame.K_v]:  # paste frame
+                elif key_press[pygame.K_v]:  # paste frame
                     paste_press = True
-                elif keypress[pygame.K_z]:  # undo change
+                elif key_press[pygame.K_z]:  # undo change
                     keypress_delay = 0.1
                     undo_press = True
-                elif keypress[pygame.K_y]:  # redo change
+                elif key_press[pygame.K_y]:  # redo change
                     keypress_delay = 0.1
                     redo_press = True
-            elif keypress[pygame.K_LALT] or keypress[pygame.K_RALT]:
-                if keypress[pygame.K_c]:  # copy part
+            elif key_press[pygame.K_LALT] or key_press[pygame.K_RALT]:
+                if key_press[pygame.K_c]:  # copy part
                     part_copy_press = True
-                elif keypress[pygame.K_v]:  # paste part
+                elif key_press[pygame.K_v]:  # paste part
                     part_paste_press = True
-            elif keypress[pygame.K_LSHIFT] or keypress[pygame.K_RSHIFT]:
+            elif key_press[pygame.K_LSHIFT] or key_press[pygame.K_RSHIFT]:
                 shift_press = True
-            elif keypress[pygame.K_w]:
+            elif key_press[pygame.K_w]:
                 skeleton.edit_part(mouse_pos, "move_w")
-            elif keypress[pygame.K_s]:
+            elif key_press[pygame.K_s]:
                 skeleton.edit_part(mouse_pos, "move_s")
-            elif keypress[pygame.K_a]:
+            elif key_press[pygame.K_a]:
                 skeleton.edit_part(mouse_pos, "move_a")
-            elif keypress[pygame.K_d]:
+            elif key_press[pygame.K_d]:
                 skeleton.edit_part(mouse_pos, "move_d")
-            elif keypress[pygame.K_q]:
+            elif key_press[pygame.K_q]:
                 skeleton.edit_part(mouse_pos, "tilt_q")
-            elif keypress[pygame.K_e]:
+            elif key_press[pygame.K_e]:
                 skeleton.edit_part(mouse_pos, "tilt_e")
-            elif keypress[pygame.K_DELETE]:
+            elif key_press[pygame.K_DELETE]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
                     skeleton.edit_part(mouse_pos, "delete")
-            elif keypress[pygame.K_PAGEUP]:
+            elif key_press[pygame.K_PAGEUP]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
                     skeleton.edit_part(mouse_pos, "layer_up")
-            elif keypress[pygame.K_PAGEDOWN]:
+            elif key_press[pygame.K_PAGEDOWN]:
                 keypress_delay = 0.1
                 if skeleton.part_selected != []:
                     skeleton.edit_part(mouse_pos, "layer_down")
@@ -1917,8 +1923,8 @@ while True:
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                    frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-                elif anim_prop_listbox.rect.collidepoint(mouse_pos):
-                    for index, name in enumerate(anim_prop_namegroup):  # change leader with the new selected one
+                elif anim_prop_listbox.rect.collidepoint(mouse_pos):  # click on animation property list
+                    for index, name in enumerate(anim_prop_namegroup):
                         if name.rect.collidepoint(mouse_pos):
                             if name.name == "Custom":
                                 text_input_popup = ("text_input", "new_anim_prop")
@@ -1933,8 +1939,8 @@ while True:
                                 for frame in skeleton.frame_list:
                                     frame["animation_property"] = anim_property_select
 
-                elif frame_prop_listbox.rect.collidepoint(mouse_pos):
-                    for index, name in enumerate(frame_prop_namegroup):  # change leader with the new selected one
+                elif frame_prop_listbox.rect.collidepoint(mouse_pos):  # click on frame property list
+                    for index, name in enumerate(frame_prop_namegroup):
                         if name.rect.collidepoint(mouse_pos):
                             if name.name == "Custom":
                                 text_input_popup = ("text_input", "new_frame_prop")
@@ -2267,7 +2273,7 @@ while True:
                 part_selector.change_name("")
     else:  # input box function
         dt = 0
-        if input_ok_button.event:
+        if input_ok_button.event or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
             input_ok_button.event = False
 
             if text_input_popup[1] == "new_animation":
@@ -2339,7 +2345,7 @@ while True:
                 setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                            frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-            elif "frame_prop_num" in text_input_popup[1] and input_box.text.isdigit():
+            elif "frame_prop_num" in text_input_popup[1] and input_box.text.isdigit() or ("." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
                 for name in frame_prop_listbox.namelist[current_frame]:
                     if name in (text_input_popup[1]):
                         index = frame_prop_listbox.namelist[current_frame].index(name)

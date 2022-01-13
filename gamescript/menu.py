@@ -166,6 +166,8 @@ class InputBox(pygame.sprite.Sprite):
                     self.current_pos -= 1
                     if self.current_pos < 0:
                         self.current_pos = 0
+            elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:  # use external code instead for enter press
+                pass
             elif event.key == pygame.K_RIGHT:
                 self.current_pos += 1
                 if self.current_pos > len(self.text):

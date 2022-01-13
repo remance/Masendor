@@ -859,7 +859,7 @@ class Mainmenu:
                 for button in self.input_button:
                     button.update(self.mouse_pos, mouse_left_up, mouse_left_down, "any")
 
-                if self.input_ok_button.event:
+                if self.input_ok_button.event or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
                     self.input_ok_button.event = False
 
                     if self.text_input_popup[1] == "profile_name":
