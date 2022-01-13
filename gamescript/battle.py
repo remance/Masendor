@@ -8,8 +8,8 @@ import sys
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import camera, map, weather, battleui, commonscript, menu, escmenu
-from gamescript.tactical import subunit, unit, leader, longscript
+from gamescript import camera, map, weather, battleui, commonscript, menu, escmenu, subunit, unit, leader
+from gamescript.tactical import longscript
 from pygame.locals import *
 from scipy.spatial import KDTree
 
@@ -636,7 +636,7 @@ class Battle:
         # self.ui_updater.remove(*self.game_ui, self.unit_button)
         self.kill_effect_icon()
         self.battle_ui.remove(*self.switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
-        self.inspect_ui = False  # inspect ui close
+        self.inspect = False  # inspect ui close
         self.battle_ui.remove(*self.leader_now)  # remove leader image from command ui
         self.subunit_selected = None  # reset subunit selected
         self.battle_ui.remove(self.subunit_selected_border)  # remove subunit selected border sprite
@@ -770,7 +770,7 @@ class Battle:
             # ^ End starting
 
         elif self.game_state == 2:  # change to editor state
-            self.inspect_ui = False  # reset inspect ui
+            self.inspect = False  # reset inspect ui
             self.mini_map.draw_image(self.show_map.true_image, self.camera)  # reset mini_map
             for arrow in self.range_attacks:  # remove all range attack
                 arrow.kill()
@@ -954,7 +954,7 @@ class Battle:
         self.ui_click = False  # for checking if mouse click is on ui
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to parentunit
         self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
-        self.inspect_ui = False  # For checking if inspect ui is currently open or not
+        self.inspect = False  # For checking if inspect ui is currently open or not
         self.last_selected = None  # Which unit is last selected
         self.map_mode = 0  # default, another one show height map
         self.subunit_selected = None  # which subunit in inspect ui is selected in last update loop
@@ -1385,15 +1385,15 @@ class Battle:
                             # v code that only run when any unit is selected
                             if self.last_selected is not None and self.last_selected.state != 100:
                                 if self.inspect_button.rect.collidepoint(self.mouse_pos) or (
-                                        mouse_left_up and self.inspect_ui and self.new_unit_click):  # click on inspect ui open/close button
+                                        mouse_left_up and self.inspect and self.new_unit_click):  # click on inspect ui open/close button
                                     if self.inspect_button.rect.collidepoint(self.mouse_pos):
                                         self.button_name_popup.pop(self.mouse_pos, "Inspect Subunit")
                                         self.battle_ui.add(self.button_name_popup)
                                         if mouse_right_up:
                                             self.ui_click = True  # for some reason the loop mouse check above does not work for inspect button, so it here instead
                                     if mouse_left_up:
-                                        if self.inspect_ui is False:  # Add unit inspect ui when left click at ui button or when change subunit with inspect open
-                                            self.inspect_ui = True
+                                        if self.inspect is False:  # Add unit inspect ui when left click at ui button or when change subunit with inspect open
+                                            self.inspect = True
                                             self.battle_ui.add(*self.troopcard_button,
                                                                self.troopcard_ui, self.inspect_ui)
                                             self.subunit_selected = None
@@ -1416,10 +1416,10 @@ class Battle:
                                                 self.effect_icon_blit()
                                                 self.countdown_skill_icon()
 
-                                        elif self.inspect_ui:  # Remove when click again and the ui already open
+                                        elif self.inspect:  # Remove when click again and the ui already open
                                             self.battle_ui.remove(*self.inspect_subunit, self.subunit_selected_border, self.troopcard_button,
                                                                   self.troopcard_ui, self.inspect_ui)
-                                            self.inspect_ui = False
+                                            self.inspect = False
                                             self.new_unit_click = False
 
                                 elif self.command_ui in self.battle_ui and (
@@ -1540,7 +1540,7 @@ class Battle:
                                     self.battle_ui.remove(self.leader_popup)  # remove leader name popup if no mouseover on any button
                                     self.battle_ui.remove(self.button_name_popup)  # remove popup if no mouseover on any button
 
-                                if self.inspect_ui:  # if inspect ui is open
+                                if self.inspect:  # if inspect ui is open
                                     if mouse_left_up or mouse_right_up:
                                         if self.inspect_ui.rect.collidepoint(self.mouse_pos):  # if mouse pos inside unit ui when click
                                             self.click_any = True  # for avoiding right click or  subunit
@@ -2149,7 +2149,7 @@ class Battle:
                                 self.add_behaviour_ui(self.last_selected)
 
                             elif self.before_selected != self.last_selected or self.split_happen:  # change subunit information when select other unit
-                                if self.inspect_ui:  # change inspect ui
+                                if self.inspect:  # change inspect ui
                                     self.new_unit_click = True
                                     self.battle_ui.remove(*self.inspect_subunit)
 
@@ -2206,7 +2206,7 @@ class Battle:
                                 self.last_selected = None
 
                     # v Update value of the clicked subunit every 1.1 second
-                    if self.game_state == 1 and self.inspect_ui and ((self.ui_timer >= 1.1 and self.troopcard_ui.option != 0) or
+                    if self.game_state == 1 and self.inspect and ((self.ui_timer >= 1.1 and self.troopcard_ui.option != 0) or
                                                                      self.before_selected != self.last_selected):
                         self.troopcard_ui.value_input(who=self.subunit_selected.who, weapon_list=self.all_weapon, armour_list=self.all_armour,
                                                       split=self.split_happen)

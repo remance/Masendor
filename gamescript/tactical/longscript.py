@@ -33,8 +33,7 @@ def load_game_data(game):
     """Load various self data"""
 
     SCREENRECT = game.screen_rect
-    from gamescript import battleui, uniteditor, rangeattack
-    from gamescript.tactical import unit, subunit
+    from gamescript import battleui, uniteditor, rangeattack, unit, subunit
 
     unit.Unit.status_list = game.troop_data.status_list
     rangeattack.RangeArrow.height_map = game.battle_map_height
@@ -213,7 +212,7 @@ def load_game_data(game):
 
 def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
     """Create batalion object into the battle and leader of the parentunit"""
-    from gamescript.tactical import unit, leader
+    from gamescript import unit, leader
     oldsubunitlist = subunitlist[~np.all(subunitlist == 0, axis=1)]  # remove whole empty column in subunit list
     subunitlist = oldsubunitlist[:, ~np.all(oldsubunitlist == 0, axis=0)]  # remove whole empty row in subunit list
     unit = unit.Unit(position, gameid, subunitlist, colour, control, coa, command, abs(360 - startangle), starthp, startstamina, team)
@@ -229,7 +228,7 @@ def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, cont
 def generate_unit(gamebattle, whicharmy, row, control, command, colour, coa, subunitgameid):
     """generate unit data into self object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
-    from gamescript.tactical import unit, subunit
+    from gamescript import unit, subunit
     this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]]), (row[9][0], row[9][1]), row[0],
                          colour, row[10] + row[11], gamebattle.leader_stat, control,
                          coa, command, row[13], row[14], row[15], row[16])
@@ -620,7 +619,7 @@ def change_leader(self, event):
 
 
 def add_new_unit(gamebattle, who, addunitlist=True):
-    from gamescript.tactical import unit
+    from gamescript import unit
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
     foundcount = 0  # for subunit_sprite index
@@ -698,7 +697,7 @@ def move_leader_subunit(this_leader, oldarmysubunit, newarmysubunit, alreadypick
 
 def splitunit(battle, who, how):
     """split parentunit either by row or column into two seperate parentunit"""  # TODO check split when moving
-    from gamescript.tactical import unit, leader
+    from gamescript import unit, leader
 
     if how == 0:  # split by row
         newarmysubunit = np.array_split(who.armysubunit, 2)[1]

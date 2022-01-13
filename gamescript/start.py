@@ -10,7 +10,7 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import map, weather, lorebook, drama, battleui, commonscript, popup, menu, rangeattack, uniteditor
+from gamescript import map, weather, lorebook, drama, battleui, commonscript, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
 from pygame.locals import *
 
 load_image = commonscript.load_image
@@ -353,6 +353,8 @@ class Mainmenu:
 
         uniteditor.Unitbuildslot.sprite_width = self.sprite_width  # sprite_width and height generated in mode (e.g. tactical) file longscript.py
         uniteditor.Unitbuildslot.sprite_height = self.sprite_height
+        uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
+
         start_pos = [(self.screen_rect.width / 2) - (self.sprite_width * 5),
                      (self.screen_rect.height / 2) - (self.sprite_height * 4)]
         self.make_unit_slot(0, 1, 0, range(0, 64), start_pos)  # make player custom unit slot
@@ -424,31 +426,12 @@ class Mainmenu:
         self.change_genre(self.genre)
         # ^ End genre
 
-        self.clock = pygame.time.Clock()
-        self.game_intro(self.screen, self.clock, False)  # run self intro
-
-    def change_genre(self, genre):
-        """Add new genre module here"""
-        if type(genre) == int:
-            self.genre = self.genre_list[genre].lower()
-        else:
-            self.genre = genre.lower()
-        global battle, leader, longscript, unit, subunit
-        if self.genre == "tactical":
-            from gamescript.tactical import battle, leader, longscript, unit, subunit
-            longscript.load_game_data(self)  # obtain self stat data and create lore book object
-        elif self.genre == "arcade":
-            from gamescript.arcade import battle, leader, longscript, unit, subunit
-            longscript.load_game_data(self)
-        uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
-        self.genre_change_box.changetext(self.genre.capitalize())
-        edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
-
         unit.Unit.containers = self.unit_updater
         subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battle_camera
         leader.Leader.containers = self.army_leader, self.leader_updater
         unit.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         unit.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
+
 
         # v Create game start menu button
         image_list = load_base_button(self.main_dir)
@@ -594,6 +577,26 @@ class Mainmenu:
         self.choosing_faction = True  # swap list between faction and subunit, always start with choose faction first as true
 
         self.battle_game = battle.Battle(self, self.winstyle)
+
+        self.clock = pygame.time.Clock()
+        self.game_intro(self.screen, self.clock, False)  # run self intro
+
+    def change_genre(self, genre):
+        """Add new genre module here"""
+        if type(genre) == int:
+            self.genre = self.genre_list[genre].lower()
+        else:
+            self.genre = genre.lower()
+        global longscript
+        if self.genre == "tactical":
+            from gamescript.tactical import longscript
+            longscript.load_game_data(self)  # obtain self stat data and create lore book object
+        elif self.genre == "arcade":
+            from gamescript.arcade import longscript
+            longscript.load_game_data(self)
+
+        self.genre_change_box.changetext(self.genre.capitalize())
+        edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
 
     def game_intro(self, screen, clock, intro):
         timer = 0
