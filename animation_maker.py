@@ -43,8 +43,7 @@ anim_property_list = ["dmgsprite", "interuptrevert"]
 
 # TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part
 
-# eye mouth not work without read_anime, eye mouth none
-
+# eye mouth not work without read_anime
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
@@ -151,6 +150,7 @@ def load_textures(main_dir, subfolder=None):
 
 
 def reload_animation(animation, char):
+    """Reload animation frames"""
     frames = [pygame.transform.smoothscale(thisimage, showroom.size) for thisimage in char.animation_list if thisimage is not None]
     face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
             char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
@@ -796,6 +796,11 @@ class Skeleton:
         self.p2_beard = list(gen_body_sprite_pool[self.p2_race]["side"]["beard"].keys())[
             random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["beard"]) - 1)]
 
+    def make_layer_list(self, sprite_part):
+        pose_layer_list = {k: v[5] for k, v in sprite_part.items() if v is not None and v != []}
+        pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
+        return pose_layer_list
+
     def read_animation(self, name, old=False, new_size=True):
         global activate_list
         #  sprite animation generation from data
@@ -827,7 +832,6 @@ class Skeleton:
                 sprite_part = {key: None for key in self.rect_part_list.keys()}
                 link_list = {key: None for key in self.rect_part_list.keys()}
                 bodypart_list = {key: value for key, value in self.all_part_list.items()}
-                bodypart_list.update({"p1_eye": None, "p1_mouth": None, "p2_eye": None, "p2_mouth": None})
                 for part in pose:
                     if pose[part] != [0] and "property" not in part and part != "size":
                         if "eye" not in part and "mouth" not in part:
@@ -875,13 +879,13 @@ class Skeleton:
                             sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
                                                  pose[part][6], pose[part][7], pose[part][8]]
                             part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
-                pose_layer_list = {k: v[5] for k, v in sprite_part.items() if v is not None}
-                pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
+                pose_layer_list = self.make_layer_list(sprite_part)
                 self.animation_part_list[index] = sprite_part
                 self.part_name_list[index] = part_name
                 image = self.create_animation_film(pose_layer_list, index)
                 self.animation_list[index] = image
             self.frame_list = frame_list
+
         activate_list = [False] * 10
         for strip_index, strip in enumerate(filmstrips):
             strip.activate = False
@@ -890,6 +894,8 @@ class Skeleton:
                     strip.activate = True
                     activate_list[strip_index] = True
                     break
+
+        # recreate property list
         setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                    anim_prop_listbox, ui, layer=9, old_list=anim_property_select)
         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
@@ -921,7 +927,7 @@ class Skeleton:
 
     def grab_face_part(self, race, side, part, part_check, part_default):
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
-        if part_check == 1:
+        if part_check == 1:  # any part
             surface = gen_body_sprite_pool[race][side][part][part_default].copy()
         else:
             surface = gen_body_sprite_pool[race][side][part][part_check].copy()
@@ -1108,29 +1114,37 @@ class Skeleton:
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
-                if "p1" in edit_type:
+                if "p1_" in edit_type:
                     self.bodypart_list[current_frame]["p1_eye"] = self.p1_any_eye
-                elif "p2" in edit_type:
+                elif "p2_" in edit_type:
                     self.bodypart_list[current_frame]["p2_eye"] = self.p2_any_eye
             else:
-                if "p1" in edit_type:
+                if "p1_" in edit_type:
                     self.bodypart_list[current_frame]["p1_eye"] = edit_type[7:]
-                elif "p2" in edit_type:
+                elif "p2_" in edit_type:
                     self.bodypart_list[current_frame]["p2_eye"] = edit_type[7:]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+            part = "p1_head"
+            if "p2_" in edit_type:
+                part = "p2_head"
+            self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "mouth" in edit_type:
             if "Any" in edit_type:
-                if "p1" in edit_type:
+                if "p1_" in edit_type:
                     self.bodypart_list[current_frame]["p1_mouth"] = self.p1_any_mouth
-                elif "p2" in edit_type:
+                elif "p2_" in edit_type:
                     self.bodypart_list[current_frame]["p2_mouth"] = self.p2_any_mouth
             else:
-                if "p1" in edit_type:
+                if "p1_" in edit_type:
                     self.bodypart_list[current_frame]["p1_mouth"] = edit_type[9:]
-                elif "p2" in edit_type:
+                elif "p2_" in edit_type:
                     self.bodypart_list[current_frame]["p2_mouth"] = edit_type[9:]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+            part = "p1_head"
+            if "p2_" in edit_type:
+                part = "p2_head"
+            self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "part" in edit_type:
             if self.part_selected != []:
@@ -1292,12 +1306,10 @@ class Skeleton:
             self.rect_part_list[key] = None
         for joint in joints:  # remove all joint first
             joint.kill()
-        if len(self.animation_part_list) > 0 and self.animation_part_list[current_frame] != {}:  # frame already existed
-            pose_layer_list = {k: v[5] for k, v in self.animation_part_list[current_frame].items() if v is not None and v != []}
-            pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
-            surface = self.create_animation_film(pose_layer_list, current_frame)
-        else:  # create new frame
-            surface = self.create_animation_film(None, current_frame, empty=True)
+
+        # recreate frame image
+        pose_layer_list = self.make_layer_list(self.animation_part_list[current_frame])
+        surface = self.create_animation_film(pose_layer_list, current_frame)
         self.animation_list[current_frame] = surface
         name_list = self.part_name_list[current_frame]
         try:
