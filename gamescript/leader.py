@@ -39,9 +39,10 @@ class Leader(pygame.sprite.Sprite):
         self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
 
         try:  # Put leader image into leader slot
-            self.fullimage = leaderstat.imgs[leaderstat.imgorder.index(leaderid)].copy()
+            image_name = str(leaderid) +".png"
+            self.fullimage = leaderstat.imgs[image_name].copy()
         except:  # Use Unknown leader image if there is none in list)
-            self.fullimage = leaderstat.imgs[-1].copy()
+            self.fullimage = leaderstat.imgs["9999999.png"].copy()
             font = pygame.font.SysFont("timesnewroman", 300)
             textimage = font.render(str(self.leaderid), True, pygame.Color("white"))
             textrect = textimage.get_rect(center=(self.fullimage.get_width() / 2, self.fullimage.get_height() / 1.3))

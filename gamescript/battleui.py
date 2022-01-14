@@ -6,10 +6,10 @@ from gamescript import map, commonscript
 
 
 class UIButton(pygame.sprite.Sprite):
-    def __init__(self, x, y, image, event=None, layer=11):
+    def __init__(self, pos, image, event=None, layer=11):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = (x, y)
+        self.pos = pos
         self.image = image
         self.event = event
         self.rect = self.image.get_rect(center=self.pos)
@@ -17,10 +17,10 @@ class UIButton(pygame.sprite.Sprite):
 
 
 class SwitchButton(pygame.sprite.Sprite):
-    def __init__(self, x, y, image):
+    def __init__(self, pos, image):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = (x, y)
+        self.pos = pos
         self.images = image
         self.image = self.images[0]
         self.event = 0
@@ -36,19 +36,19 @@ class SwitchButton(pygame.sprite.Sprite):
 
 
 class PopupIcon(pygame.sprite.Sprite):
-    def __init__(self, x, y, image, event, game_ui, item_id=""):
+    def __init__(self, image, event, game_ui, item_id=""):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.x, self.y = x, y
+        self.pos = pos
         self.image = image
         self.event = 0
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self.rect = self.image.get_rect(center=(self.pos))
         self.mouse_over = False
         self.item_id = item_id
 
 
 class GameUI(pygame.sprite.Sprite):
-    def __init__(self, x, y, image, icon, ui_type, text="", text_size=16):
+    def __init__(self, image, icon, ui_type, text="", text_size=16, button_list={}):
         from gamescript import start
         self.unit_state_text = start.unit_state_text
         self.morale_state_text = start.morale_state_text
@@ -61,7 +61,6 @@ class GameUI(pygame.sprite.Sprite):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", text_size)
-        self.x, self.y = x, y
         self.text = text
         self.image = image
         self.icon = icon
@@ -69,7 +68,6 @@ class GameUI(pygame.sprite.Sprite):
         self.value = [-1, -1]
         self.last_value = 0
         self.option = 0
-        self.rect = self.image.get_rect(center=(self.x, self.y))
         self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
         if self.ui_type == "topbar":  # setup variable for topbar ui
             position = 10
@@ -95,6 +93,10 @@ class GameUI(pygame.sprite.Sprite):
                                "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
                                "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
         self.image_original = self.image.copy()
+
+    def set_position(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(center=pos)
 
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
         make_long_text = commonscript.make_long_text
@@ -343,7 +345,7 @@ class EffectCardIcon(pygame.sprite.Sprite):
 class FPScount(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 12
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.image_original = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
@@ -625,7 +627,7 @@ class UIScroller(pygame.sprite.Sprite):
 class ArmySelect(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -730,7 +732,7 @@ class TimeUI(pygame.sprite.Sprite):
 class ScaleUI(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.percent_scale = -100
         self.team1_colour = (144, 167, 255)
         self.team2_colour = (255, 114, 114)

@@ -1,0 +1,1 @@
+['troop_icon.png','stamina_icon.png','morale_icon.png']

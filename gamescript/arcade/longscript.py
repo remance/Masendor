@@ -37,13 +37,13 @@ def load_game_data(game):
     from gamescript.tactical import unit, subunit
 
     unit.Unit.status_list = game.troop_data.status_list
-    rangeattack.RangeArrow.height_map = game.battle_map_height
+    rangeattack.RangeArrow.height_map = game.battle_height_map
 
     imgs = load_images(game.main_dir, ["ui", "unit_ui"])
     subunit.Subunit.images = imgs
-    subunit.Subunit.base_map = game.battle_map_base  # add gamebattle map to all parentunit class
-    subunit.Subunit.feature_map = game.battle_map_feature  # add gamebattle map to all parentunit class
-    subunit.Subunit.height_map = game.battle_map_height
+    subunit.Subunit.base_map = game.battle_base_map  # add gamebattle map to all parentunit class
+    subunit.Subunit.feature_map = game.battle_feature_map  # add gamebattle map to all parentunit class
+    subunit.Subunit.height_map = game.battle_height_map
     subunit.Subunit.weapon_list = game.all_weapon
     subunit.Subunit.armour_list = game.all_armour
     subunit.Subunit.stat_list = game.troop_data
@@ -116,11 +116,11 @@ def load_game_data(game):
 
     # v Game Effect related class
     imgs = load_images(game.main_dir, ["effect"], load_order=False)
-    # imgs = []
+    # images = []
     # for img in imgsold:
     # x, y = img.get_width(), img.get_height()
     # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
-    # imgs.append(img)
+    # images.append(img)
     rangeattack.RangeArrow.images = [imgs[0]]
     # ^ End self effect
 

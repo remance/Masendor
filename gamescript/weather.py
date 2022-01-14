@@ -48,7 +48,7 @@ class Weather:
     #     self.level = level
 
 
-class Mattersprite(pygame.sprite.Sprite):
+class MatterSprite(pygame.sprite.Sprite):
     def __init__(self, pos, target, speed, image):
         self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -108,7 +108,7 @@ class SpecialEffect(pygame.sprite.Sprite):
             self.kill()
 
 
-class Supereffect(pygame.sprite.Sprite):
+class SuperEffect(pygame.sprite.Sprite):
     """Super effect that affect whole screen"""
 
     def __init__(self, pos, image):

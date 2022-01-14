@@ -47,7 +47,7 @@ class BaseMap(pygame.sprite.Sprite):
     def __init__(self, scale):
         """image file of map should be at size 1000x1000 then it will be scaled in self"""
         self._layer = 0
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.scale = scale
         self.terrain_colour = terrain_colour
         self.terrain_list = terrain_list
@@ -94,7 +94,7 @@ class FeatureMap(pygame.sprite.Sprite):
 
     def __init__(self, scale):
         self._layer = 0
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         # self.image = pygame.surface((0,0))
         self.scale = scale
         self.feature_colour = feature_colour
@@ -145,7 +145,7 @@ class HeightMap(pygame.sprite.Sprite):
 
     def __init__(self, scale):
         self._layer = 0
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.scale = scale
         self.topology = True
         # self.rect = self.image.get_rect(topleft=(0, 0))
@@ -212,7 +212,7 @@ class BeautifulMap(pygame.sprite.Sprite):
 
     def __init__(self, scale):
         self._layer = 0
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         # self.image = pygame.surface((0,0))
         self.scale = scale
         self.mode = 0

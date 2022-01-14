@@ -1534,15 +1534,16 @@ filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_wid
 
 filmstrips.add(*filmstrip_list)
 
-imgs = load_images(main_dir, ["animation_maker_ui", "helper_parts"])
+images = load_images(main_dir, ["animation_maker_ui", "helper_parts"])
 body_helper_size = (370 * screen_scale[0], 270 * screen_scale[1])
-p1_body_helper = Bodyhelper(body_helper_size, (body_helper_size[0] / 2,
-                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", imgs[0:13])
-p2_body_helper = Bodyhelper(body_helper_size, (screen_size[0] - (body_helper_size[0] / 2),
-                                               screen_size[1] - (body_helper_size[1] / 2)), "p2", imgs[0:13])
 effect_helper_size = (250 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = Bodyhelper(effect_helper_size, (screen_size[0] / 2, screen_size[1] - (body_helper_size[1] / 2)),
-                           "effect", imgs[13:14])
+                           "effect", [images["smallbox_helper.png"]])
+del images["smallbox_helper.png"]
+p1_body_helper = Bodyhelper(body_helper_size, (body_helper_size[0] / 2,
+                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
+p2_body_helper = Bodyhelper(body_helper_size, (screen_size[0] - (body_helper_size[0] / 2),
+                                               screen_size[1] - (body_helper_size[1] / 2)), "p2", list(images.values()))
 helper_list = [p1_body_helper, p2_body_helper, effect_helper]
 
 image = load_image(main_dir, "button.png", ["animation_maker_ui"])

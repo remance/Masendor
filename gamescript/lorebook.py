@@ -499,9 +499,10 @@ class SubsectionName(pygame.sprite.Sprite):
 #         newcharacter = pygame.key.name(input)
 #         self.text += newcharacter
 
-def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scroll_down):
+def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     """Lorebook user interaction"""
     command = None
+    close = False
     if mouse_up or mouse_down:  # mouse down (hold click) only for subsection listscroller
         if mouse_up:
             for button in self.lore_button_ui:
@@ -511,18 +512,13 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                                                      self.lore_scroll,
                                                      self.page_button, ui)  # change to section of that button
 
-                    elif button.event == 19:  # Close button
-                        ui.remove(self.encyclopedia, *self.lore_button_ui, self.lore_scroll,
-                                  self.lore_name_list)  # remove encyclopedia related sprites
-                        for name in self.subsection_name:  # remove subsection name
-                            name.kill()
-                            del name
-                        command = "exit"
+                    elif button.event == "close" or esc_press:  # Close button
+                        close = True
 
-                    elif button.event == 20:  # Previous page button
+                    elif button.event == "previous":  # Previous page button
                         self.encyclopedia.change_page(self.encyclopedia.page - 1, self.page_button, ui)  # go back 1 page
 
-                    elif button.event == 21:  # Next page button
+                    elif button.event == "next":  # Next page button
                         self.encyclopedia.change_page(self.encyclopedia.page + 1, self.page_button, ui)  # go forward 1 page
 
                     break  # found clicked button, break loop
@@ -555,5 +551,13 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                 self.lore_scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
             else:
                 self.encyclopedia.current_subsection_row -= 1
+
+    if close or esc_press:
+        ui.remove(self.encyclopedia, *self.lore_button_ui, self.lore_scroll,
+                  self.lore_name_list)  # remove encyclopedia related sprites
+        for name in self.subsection_name:  # remove subsection name
+            name.kill()
+            del name
+        command = "exit"
 
     return command

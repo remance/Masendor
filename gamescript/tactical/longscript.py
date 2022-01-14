@@ -32,17 +32,17 @@ for dd in numberboard:
 def load_game_data(game):
     """Load various self data"""
 
-    SCREENRECT = game.screen_rect
+    screen_rect = game.screen_rect
     from gamescript import battleui, uniteditor, rangeattack, unit, subunit
 
     unit.Unit.status_list = game.troop_data.status_list
-    rangeattack.RangeArrow.height_map = game.battle_map_height
+    rangeattack.RangeArrow.height_map = game.battle_height_map
 
     imgs = load_images(game.main_dir, ["ui", "unit_ui"])
     subunit.Subunit.images = imgs
-    subunit.Subunit.base_map = game.battle_map_base  # add gamebattle map to all parentunit class
-    subunit.Subunit.feature_map = game.battle_map_feature  # add gamebattle map to all parentunit class
-    subunit.Subunit.height_map = game.battle_map_height
+    subunit.Subunit.base_map = game.battle_base_map  # add gamebattle map to all parentunit class
+    subunit.Subunit.feature_map = game.battle_feature_map  # add gamebattle map to all parentunit class
+    subunit.Subunit.height_map = game.battle_height_map
     subunit.Subunit.weapon_list = game.all_weapon
     subunit.Subunit.armour_list = game.all_armour
     subunit.Subunit.stat_list = game.troop_data
@@ -114,54 +114,41 @@ def load_game_data(game):
     # ^ End subunit class
 
     # v Game Effect related class
-    imgs = load_images(game.main_dir, ["effect"], load_order=False)
-    # imgs = []
+    effect_images = load_images(game.main_dir, ["sprite", "effect"], load_order=False)
+    # images = []
     # for img in imgsold:
     # x, y = img.get_width(), img.get_height()
     # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
-    # imgs.append(img)
-    rangeattack.RangeArrow.images = [imgs[0]]
+    # images.append(img)
+    rangeattack.RangeArrow.images = [effect_images["arrow.png"]]
     # ^ End self effect
 
-    topimage = load_images(game.main_dir, ["ui", "battle_ui"])
-    iconimage = load_images(game.main_dir, ["ui", "battle_ui", "commandbar_icon"])
+    ui_image = load_images(game.main_dir, ["tactical", "ui", "battle_ui"], load_order=False)
+    icon_image = load_images(game.main_dir, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
     # Army select list ui
-    game.unit_selector = battleui.ArmySelect((0, 0), topimage[30])
-    game.select_scroll = battleui.UIScroller(game.unit_selector.rect.topright, topimage[30].get_height(),
+    game.unit_selector = battleui.ArmySelect((0, 0), ui_image["unit_select_box.png"])
+    game.select_scroll = battleui.UIScroller(game.unit_selector.rect.topright, ui_image["unit_select_box.png"].get_height(),
                                              game.unit_selector.max_row_show)  # scroller for unit select ui
 
-    game.command_ui = battleui.GameUI(x=topimage[1].get_size()[0] / 2, y=(topimage[1].get_size()[1] / 2) + game.unit_selector.image.get_height(),
-                                      image=topimage[1], icon=iconimage,
+    game.command_ui = battleui.GameUI((ui_image["command_box.png"].get_size()[0] / 2,
+                                       (ui_image["command_box.png"].get_size()[1] / 2) + game.unit_selector.image.get_height()),
+                                      image=ui_image["command_box.png"], icon=icon_image,
                                       ui_type="commandbar")  # Left top command ui with leader and parentunit behavious button
     game.game_ui.add(game.command_ui)
 
     # Load all image of ui and icon from folder
-    iconimage = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
+    icon_image = load_images(game.main_dir, ["ui", "battle_ui", "topbar_icon"])
 
-    game.col_split_button = battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 26, topimage[8], 0)  # parentunit split by column button
-    game.row_split_button = battleui.UIButton(game.command_ui.x - 115, game.command_ui.y + 56, topimage[9], 1)  # parentunit split by row button
+    game.col_split_button = battleui.UIButton(game.command_ui.pos[0] - 115, game.command_ui.pos[1] + 26, ui_image["colsplit_button.png"], 0)  # parentunit split by column button
+    game.row_split_button = battleui.UIButton(game.command_ui.pos[0] - 115, game.command_ui.pos[1] + 56, ui_image["rowsplit_button.png"], 1)  # parentunit split by row button
     game.button_ui.add(game.col_split_button)
     game.button_ui.add(game.row_split_button)
 
-    game.decimation_button = battleui.UIButton(game.command_ui.x + 100, game.command_ui.y + 56, topimage[14], 1)
-
-    # Time bar ui
-    game.time_ui = battleui.TimeUI(game.unit_selector.rect.topright, topimage[31])
-    game.time_number = battleui.Timer(game.time_ui.rect.topleft)  # time number on time ui
-    game.speed_number = battleui.SpeedNumber((game.time_ui.rect.center[0] + 40, game.time_ui.rect.center[1]),
-                                             1)  # self speed number on the time ui
-
-    image = pygame.Surface((topimage[31].get_width(), 15))
-    game.scale_ui = battleui.ScaleUI(game.time_ui.rect.bottomleft, image)
-
-    game.time_button = [battleui.UIButton(game.time_ui.rect.center[0] - 30, game.time_ui.rect.center[1], topimage[32], 0),  # time pause button
-                        battleui.UIButton(game.time_ui.rect.center[0], game.time_ui.rect.center[1], topimage[33], 1),  # time decrease button
-                        battleui.UIButton(game.time_ui.rect.midright[0] - 60, game.time_ui.rect.center[1], topimage[34], 2)]  # time increase button
-    game.battle_ui.add(*game.time_button)
+    game.decimation_button = battleui.UIButton(game.command_ui.pos[0] + 100, game.command_ui.pos[1] + 56, ui_image["decimation.png"], 1)
 
     # Right top bar ui that show rough information of selected battalions
-    game.unitstat_ui = battleui.GameUI(x=SCREENRECT.width - topimage[0].get_size()[0] / 2, y=topimage[0].get_size()[1] / 2, image=topimage[0],
-                                       icon=iconimage, ui_type="topbar")
+    game.unitstat_ui = battleui.GameUI((screen_rect.width - ui_image["topbar.png"].get_size()[0] / 2, ui_image[0].get_size()[1] / 2),
+                                       image=ui_image["topbar.png"], icon=icon_image, ui_type="topbar")
     game.game_ui.add(game.unitstat_ui)
     game.unitstat_ui.unit_state_text = game.state_text
 
@@ -169,8 +156,8 @@ def load_game_data(game):
                            game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]
 
     # Subunit information card ui
-    game.inspect_ui = battleui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
-                                      image=topimage[5], icon="", ui_type="unitbox")  # inspect ui that show subnit in selected parentunit
+    game.inspect_ui = battleui.GameUI((screen_rect.width - ui_image["army_inspect.png"].get_size()[0] / 2, ui_image["topbar.png"].get_size()[1] * 4),
+                                      image=ui_image["army_inspect.png"], icon="", ui_type="unitbox")  # inspect ui that show subnit in selected parentunit
     game.game_ui.add(game.inspect_ui)
     # v Subunit shown in inspect ui
     width, height = game.inspect_ui_pos[0], game.inspect_ui_pos[1]
@@ -188,20 +175,20 @@ def load_game_data(game):
     # ^ End subunit shown
 
     # Behaviour button that once click switch to other mode for subunit behaviour
-    game.switch_button = [battleui.SwitchButton(game.command_ui.x - 40, game.command_ui.y + 96, topimage[10:14]),  # skill condition button
-                          battleui.SwitchButton(game.command_ui.x - 80, game.command_ui.y + 96, topimage[15:17]),  # fire at will button
-                          battleui.SwitchButton(game.command_ui.x, game.command_ui.y + 96, topimage[17:20]),  # behaviour button
-                          battleui.SwitchButton(game.command_ui.x + 40, game.command_ui.y + 96, topimage[20:22]),  # shoot range button
-                          battleui.SwitchButton(game.command_ui.x - 125, game.command_ui.y + 96, topimage[35:38]),  # arcshot button
-                          battleui.SwitchButton(game.command_ui.x + 80, game.command_ui.y + 96, topimage[38:40]),  # toggle run button
-                          battleui.SwitchButton(game.command_ui.x + 120, game.command_ui.y + 96, topimage[40:43])]  # toggle melee mode
+    game.switch_button = [battleui.SwitchButton(game.command_ui.x - 40, game.command_ui.y + 96, ui_image[10:14]),  # skill condition button
+                          battleui.SwitchButton(game.command_ui.x - 80, game.command_ui.y + 96, ui_image[15:17]),  # fire at will button
+                          battleui.SwitchButton(game.command_ui.x, game.command_ui.y + 96, ui_image[17:20]),  # behaviour button
+                          battleui.SwitchButton(game.command_ui.x + 40, game.command_ui.y + 96, ui_image[20:22]),  # shoot range button
+                          battleui.SwitchButton(game.command_ui.x - 125, game.command_ui.y + 96, ui_image[35:38]),  # arcshot button
+                          battleui.SwitchButton(game.command_ui.x + 80, game.command_ui.y + 96, ui_image[38:40]),  # toggle run button
+                          battleui.SwitchButton(game.command_ui.x + 120, game.command_ui.y + 96, ui_image[40:43])]  # toggle melee mode
 
-    game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, topimage[6], 1)  # unit inspect open/close button
+    game.inspect_button = battleui.UIButton(game.unitstat_ui.x - 206, game.unitstat_ui.y - 1, ui_image[6], 1)  # unit inspect open/close button
     game.button_ui.add(game.inspect_button)
 
     game.battle_ui.add(game.log_scroll, game.select_scroll)
 
-    battleui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
+    battleui.SelectedSquad.image = ui_image[-1]  # subunit border image always the last one
     game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
     game.main_ui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
 

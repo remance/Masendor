@@ -83,9 +83,10 @@ class PreviewLeader(pygame.sprite.Sprite):
         self.description = stat[-1]
 
         try:  # Put leader image into leader slot
-            self.full_image = leader_stat.imgs[leader_stat.imgorder.index(leader_id)].copy()
+            image_name = str(leader_stat.imgorder.index(leader_id))+".png"
+            self.full_image = leader_stat.imgs[image_name].copy()
         except:  # Use Unknown leader image if there is none in list
-            self.full_image = leader_stat.imgs[-1].copy()
+            self.full_image = leader_stat.imgs["9999999.png"].copy()
 
         self.image = pygame.transform.scale(self.full_image, (50, 50))
         self.rect = self.image.get_rect(center=self.img_position)

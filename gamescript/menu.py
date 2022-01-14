@@ -20,7 +20,7 @@ class EscBox(pygame.sprite.Sprite):
         self._layer = 24
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
-        self.image = self.images[0]
+        self.image = list(self.images.values())[0]
         self.rect = self.image.get_rect(center=self.pos)
         self.mode = 0  # Current menu mode
 
@@ -28,7 +28,7 @@ class EscBox(pygame.sprite.Sprite):
         """Change between 0 menu, 1 option, 2 encyclopedia mode"""
         self.mode = mode
         if self.mode != 2:
-            self.image = self.images[mode]
+            self.image = list(self.images.values())[mode]
             self.rect = self.image.get_rect(center=self.pos)
 
 
@@ -37,7 +37,7 @@ class EscButton(pygame.sprite.Sprite):
         self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.images = [image.copy() for image in images]
+        self.images = [image.copy() for image in list(images.values())]
         self.text = text
         self.font = pygame.font.SysFont("timesnewroman", size)
 

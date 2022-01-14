@@ -44,14 +44,14 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode(2)  # change to enclycopedia mode
-                        self.battle_ui.add(self.lorebook, self.lore_name_list, self.lore_scroll,
+                        self.battle_ui.add(self.encyclopedia, self.lore_name_list, self.lore_scroll,
                                            *self.lore_button_ui)  # add sprite related to encyclopedia
-                        self.lorebook.change_section(0, self.lore_name_list, self.subsection_name, self.lore_scroll,
+                        self.encyclopedia.change_section(0, self.lore_name_list, self.subsection_name, self.lore_scroll,
                                                      self.page_button,
                                                      self.battle_ui)
                         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                               *self.esc_value_box)  # remove menu sprite
-                        # self.lorebook.setupsubsectionlist(self.lore_name_list, listgroup)
+                        # self.encyclopedia.setupsubsectionlist(self.lore_name_list, listgroup)
 
                     elif button.text == "Option":  # open option menu
                         self.battle_menu.change_mode(1)  # change to option menu mode
@@ -113,7 +113,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                 self.mixer_volume = float(slider.value / 100)  # for now only music volume slider exist
 
     elif self.battle_menu.mode == 2:  # Encyclopedia mode
-        lorecommand = lorebook_process(self, uidraw, mouse_up, mouse_leftdown, mouse_scrollup, mouse_scrolldown)
+        lorecommand = lorebook_process(self, uidraw, mouse_up, mouse_leftdown, mouse_scrollup, mouse_scrolldown, esc_press)
         if esc_press or lorecommand == "exit":
             self.battle_menu.change_mode(0)  # change menu back to default 0
             self.game_state = self.previous_gamestate  # resume gameplay

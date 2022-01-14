@@ -9,9 +9,9 @@ class TextDrama(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 17
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.body = self.images[0]
-        self.left_corner = self.images[1]
-        self.right_corner = self.images[2]
+        self.body = self.images["body.png"]
+        self.left_corner = self.images["start.png"]
+        self.right_corner = self.images["end.png"]
         self.pos = (
         self.screen_rect.width / 2, self.screen_rect.height / 4)  # The center pos of the drama popup on screen
         self.font = pygame.font.SysFont("helvetica", 70)
