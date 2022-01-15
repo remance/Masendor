@@ -430,6 +430,13 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_cond = 0
         self.brokenlimit = 0  # morale require for parentunit to stop broken state, will increase everytime broken state stop
 
+        self.health_image_list = [self.images["ui_health_circle_100.png"], self.images["ui_health_circle_75.png"],
+                                  self.images["ui_health_circle_50.png"], self.images["ui_health_circle_25.png"],
+                                  self.images["ui_health_circle_0.png"]]
+        self.stamina_image_list = [self.images["ui_stamina_circle_100.png"], self.images["ui_stamina_circle_75.png"],
+                                   self.images["ui_stamina_circle_50.png"], self.images["ui_stamina_circle_25.png"],
+                                   self.images["ui_stamina_circle_0.png"]]
+
         self.getfeature = self.feature_map.get_feature
         self.getheight = self.height_map.get_height
 
@@ -441,9 +448,9 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End setup stat
 
         # v Subunit image block
-        image = self.images[0].copy()  # Subunit block blue colour for team1 for shown in inspect ui
+        image = self.images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
         if self.team == 2:
-            image = self.images[13].copy()  # red colour
+            image = self.images["ui_squad_enemy.png"].copy()  # red colour
 
         self.image = pygame.Surface((image.get_width() + 10, image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
         pygame.draw.circle(self.image, self.parentunit.colour, (self.image.get_width() / 2, self.image.get_height() / 2), image.get_width() / 2)
@@ -457,7 +464,7 @@ class Subunit(pygame.sprite.Sprite):
             end = (self.image.get_width() * -math.cos(radian), self.image.get_width() * -math.sin(radian))  # drow line to 225 degree in circle
             pygame.draw.line(self.image, (0, 0, 0), start, end, 2)
 
-        self.imageblock = image.copy()  # image shown in inspect ui as square instead of circle
+        self.image_block = image.copy()  # image shown in inspect ui as square instead of circle
 
         self.selectedimage = pygame.Surface((image.get_width(), image.get_height()), pygame.SRCALPHA)
         pygame.draw.circle(self.selectedimage, (255, 255, 255, 150), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2)
@@ -473,39 +480,39 @@ class Subunit(pygame.sprite.Sprite):
         pygame.draw.circle(self.far_selectedimage, (0, 0, 0), (self.far_selectedimage.get_width() / 2, self.far_selectedimage.get_height() / 2),
                            self.far_selectedimage.get_width() / 2, 4)
 
-        scalewidth = self.image.get_width() * 1 / self.maxzoom
-        scaleheight = self.image.get_height() * 1 / self.maxzoom
-        dim = pygame.Vector2(scalewidth, scaleheight)
+        scale_width = self.image.get_width() * 1 / self.maxzoom
+        scale_height = self.image.get_height() * 1 / self.maxzoom
+        dim = pygame.Vector2(scale_width, scale_height)
         self.far_image = pygame.transform.scale(self.far_image, (int(dim[0]), int(dim[1])))
         self.far_selectedimage = pygame.transform.scale(self.far_selectedimage, (int(dim[0]), int(dim[1])))
 
         # v health circle image setup
-        self.healthimage = self.images[1]
-        self.health_image_rect = self.healthimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
-        self.health_imageblock_rect = self.healthimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
-        self.image.blit(self.healthimage, self.health_image_rect)
-        self.imageblock.blit(self.healthimage, self.health_imageblock_rect)
+        self.health_image = self.images["ui_health_circle_100.png"]
+        self.health_image_rect = self.health_image.get_rect(center=self.image.get_rect().center)  # for battle sprite
+        self.health_imageblock_rect = self.health_image.get_rect(center=self.image_block.get_rect().center)  # for ui sprite
+        self.image.blit(self.health_image, self.health_image_rect)
+        self.image_block.blit(self.health_image, self.health_imageblock_rect)
         # ^ End health circle
 
         # v stamina circle image setup
-        self.staminaimage = self.images[6]
-        self.stamina_image_rect = self.staminaimage.get_rect(center=self.image.get_rect().center)  # for battle sprite
-        self.stamina_imageblock_rect = self.staminaimage.get_rect(center=self.imageblock.get_rect().center)  # for ui sprite
-        self.image.blit(self.staminaimage, self.stamina_image_rect)
-        self.imageblock.blit(self.staminaimage, self.stamina_imageblock_rect)
+        self.stamina_image = self.images["ui_stamina_circle_100.png"]
+        self.stamina_image_rect = self.stamina_image.get_rect(center=self.image.get_rect().center)  # for battle sprite
+        self.stamina_imageblock_rect = self.stamina_image.get_rect(center=self.image_block.get_rect().center)  # for ui sprite
+        self.image.blit(self.stamina_image, self.stamina_image_rect)
+        self.image_block.blit(self.stamina_image, self.stamina_imageblock_rect)
         # ^ End stamina circle
 
         # v weapon class icon in middle circle
-        image1 = self.weapon_list.imgs[self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
-        image1rect = image1.get_rect(center=self.image.get_rect().center)
-        self.image.blit(image1, image1rect)
+        image1 = self.weapon_list.images[self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
+        image1_rect = image1.get_rect(center=self.image.get_rect().center)
+        self.image.blit(image1, image1_rect)
 
-        image1rect = image1.get_rect(center=self.imageblock.get_rect().center)
-        self.imageblock.blit(image1, image1rect)
-        self.imageblock_original = self.imageblock.copy()
+        image1_rect = image1.get_rect(center=self.image_block.get_rect().center)
+        self.image_block.blit(image1, image1_rect)
+        self.imageblock_original = self.image_block.copy()
 
-        self.corner_image_rect = self.images[11].get_rect(
-            center=self.imageblock.get_rect().center)  # red corner when take melee_dmg shown in image block
+        self.corner_image_rect = self.images["ui_squad_combat.png"].get_rect(
+            center=self.image_block.get_rect().center)  # red corner when take melee_dmg shown in image block
         # ^ End weapon icon
 
         self.image_original = self.image.copy()  # original for rotate
@@ -513,12 +520,12 @@ class Subunit(pygame.sprite.Sprite):
         self.image_original3 = self.image.copy()  # original3 for saving original zoom level
 
         # v position related
-        self.unitposition = (position[0] / 10, position[1] / 10)  # position in parentunit sprite
-        battaliontopleft = pygame.Vector2(self.parentunit.base_pos[0] - self.parentunit.base_width_box / 2,
+        self.unit_position = (position[0] / 10, position[1] / 10)  # position in parentunit sprite
+        unit_topleft = pygame.Vector2(self.parentunit.base_pos[0] - self.parentunit.base_width_box / 2,
                                           self.parentunit.base_pos[
                                               1] - self.parentunit.base_height_box / 2)  # get topleft corner position of parentunit to calculate true pos
-        self.base_pos = pygame.Vector2(battaliontopleft[0] + self.unitposition[0],
-                                       battaliontopleft[1] + self.unitposition[1])  # true position of subunit in map
+        self.base_pos = pygame.Vector2(unit_topleft[0] + self.unit_position[0],
+                                       unit_topleft[1] + self.unit_position[1])  # true position of subunit in map
         self.last_pos = self.base_pos
 
         self.movement_queue = []
@@ -679,7 +686,7 @@ class Subunit(pygame.sprite.Sprite):
         """calculate stat from stamina, morale state, skill, status, terrain"""
 
         if self.red_border and self.parentunit.selected:  # have red border (taking melee_dmg) on inspect ui, reset image
-            self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
+            self.image_block.blit(self.imageblock_original, self.corner_image_rect)
             self.red_border = False
 
         # v reset stat to default and apply morale, stamina, command buff to stat
@@ -1510,9 +1517,9 @@ class Subunit(pygame.sprite.Sprite):
                         for index, health in enumerate(healthlist):
                             if self.unit_health > health:
                                 if self.last_health_state != abs(4 - index):
-                                    self.image_original3.blit(self.images[index + 1], self.health_image_rect)
-                                    self.imageblock_original.blit(self.images[index + 1], self.health_imageblock_rect)
-                                    self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
+                                    self.image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
+                                    self.imageblock_original.blit(self.health_image_list[index + 1], self.health_imageblock_rect)
+                                    self.image_block.blit(self.imageblock_original, self.corner_image_rect)
                                     self.last_health_state = abs(4 - index)
                                     self.zoomscale()
                                 break
@@ -1527,10 +1534,10 @@ class Subunit(pygame.sprite.Sprite):
                         if self.stamina >= stamina:
                             if self.last_stamina_state != abs(4 - index):
                                 # if index != 3:
-                                self.image_original3.blit(self.images[index + 6], self.stamina_image_rect)
+                                self.image_original3.blit(self.stamina_image_list[index + 6], self.stamina_image_rect)
                                 self.zoomscale()
-                                self.imageblock_original.blit(self.images[index + 6], self.stamina_imageblock_rect)
-                                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
+                                self.imageblock_original.blit(self.stamina_image_list[index + 6], self.stamina_imageblock_rect)
+                                self.image_block.blit(self.imageblock_original, self.corner_image_rect)
                                 self.last_stamina_state = abs(4 - index)
                             break
 
@@ -1546,14 +1553,14 @@ class Subunit(pygame.sprite.Sprite):
 
             if self.troop_number <= 0:  # enter dead state
                 self.state = 100  # enter dead state
-                self.image_original3.blit(self.images[5], self.health_image_rect)  # blit white hp bar
-                self.imageblock_original.blit(self.images[5], self.health_imageblock_rect)
+                self.image_original3.blit(self.health_image_list[5], self.health_image_rect)  # blit white hp bar
+                self.imageblock_original.blit(self.health_image_rect[5], self.health_imageblock_rect)
                 self.zoomscale()
                 self.last_health_state = 0
                 self.skill_cooldown = {}  # remove all cooldown
                 self.skill_effect = {}  # remove all skill effects
 
-                self.imageblock.blit(self.imageblock_original, self.corner_image_rect)
+                self.image_block.blit(self.imageblock_original, self.corner_image_rect)
                 self.red_border = True  # to prevent red border appear when dead
 
                 self.parentunit.deadchange = True

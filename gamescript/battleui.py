@@ -48,7 +48,7 @@ class PopupIcon(pygame.sprite.Sprite):
 
 
 class GameUI(pygame.sprite.Sprite):
-    def __init__(self, image, icon, ui_type, text="", text_size=16, button_list={}):
+    def __init__(self, image, icon, ui_type, text="", text_size=16):
         from gamescript import start
         self.unit_state_text = start.unit_state_text
         self.morale_state_text = start.morale_state_text
@@ -72,17 +72,19 @@ class GameUI(pygame.sprite.Sprite):
         if self.ui_type == "topbar":  # setup variable for topbar ui
             position = 10
             for ic in self.icon:  # Blit icon into topbar ui
-                self.icon_rect = ic.get_rect(
+                self.icon_rect = self.icon[ic].get_rect(
                     topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
-                self.image.blit(ic, self.icon_rect)
+                self.image.blit(self.icon[ic], self.icon_rect)
                 position += 90
 
         elif self.ui_type == "commandbar":  # setup variable for command bar ui
-            self.icon_rect = self.icon[6].get_rect(
+            self.icon_rect = self.icon["authority.png"].get_rect(
                 center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-            self.image.blit(self.icon[6], self.icon_rect)
-            self.white = [self.icon[0], self.icon[1], self.icon[2], self.icon[3], self.icon[4], self.icon[5]]  # team 1 white chess head
-            self.black = [self.icon[7], self.icon[8], self.icon[9], self.icon[10], self.icon[11], self.icon[12]]  # team 2 black chess head
+            self.image.blit(self.icon["authority.png"], self.icon_rect)
+            self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
+                          self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
+            self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
+                          self.icon["red_knight_right.png"], self.icon["red_bishop.png"]]  # team 2 black chess head
             self.last_auth = 0
 
         elif self.ui_type == "troopcard":  # setup variable for subunit card ui
@@ -94,9 +96,10 @@ class GameUI(pygame.sprite.Sprite):
                                "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
         self.image_original = self.image.copy()
 
-    def set_position(self, pos):
+    def change_pos(self, pos):
+        """change position of ui to new one"""
         self.pos = pos
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
         make_long_text = commonscript.make_long_text
@@ -607,9 +610,9 @@ class UIScroller(pygame.sprite.Sprite):
             self.current_row = new_row
             self.create_new_image()
 
-    def update(self, mouse_pos, *args):
+    def user_input(self, mouse_pos):
         """User input update"""
-        if (args is False or (args and args[0] and self.rect.collidepoint(mouse_pos))) and mouse_pos is not None:
+        if self.rect.collidepoint(mouse_pos) and mouse_pos is not None:
             mouse_value = (mouse_pos[1] - self.pos[
                 1]) * 100 / self.height_ui  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
             if mouse_value > 100:
@@ -617,10 +620,12 @@ class UIScroller(pygame.sprite.Sprite):
             if mouse_value < 0:
                 mouse_value = 0
             new_row = int(self.log_size * mouse_value / 100)
+            print('test', new_row)
             if self.log_size > self.max_row_show and new_row > self.log_size - self.max_row_show:
                 new_row = self.log_size - self.max_row_show
             if self.log_size > self.max_row_show:  # only change scroll position in list longer than max length
                 self.change_image(new_row)
+            print(new_row)
             return self.current_row
 
 
@@ -791,7 +796,7 @@ class InspectSubunit(pygame.sprite.Sprite):
 
     def add_subunit(self, who):
         self.who = who
-        self.image = self.who.imageblock
+        self.image = self.who.image_block
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def delete(self):

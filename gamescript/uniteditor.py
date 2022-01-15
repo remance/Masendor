@@ -83,10 +83,10 @@ class PreviewLeader(pygame.sprite.Sprite):
         self.description = stat[-1]
 
         try:  # Put leader image into leader slot
-            image_name = str(leader_stat.imgorder.index(leader_id))+".png"
-            self.full_image = leader_stat.imgs[image_name].copy()
+            image_name = str(leader_stat.image_order.index(leader_id)) + ".png"
+            self.full_image = leader_stat.images[image_name].copy()
         except:  # Use Unknown leader image if there is none in list
-            self.full_image = leader_stat.imgs["9999999.png"].copy()
+            self.full_image = leader_stat.images["9999999.png"].copy()
 
         self.image = pygame.transform.scale(self.full_image, (50, 50))
         self.rect = self.image.get_rect(center=self.img_position)
@@ -183,19 +183,19 @@ class Unitbuildslot(pygame.sprite.Sprite):
             # ^ End subunit block team colour
 
             # v health circle image setup
-            health_image = self.images[1]
+            health_image = self.images["ui_health_circle_100.png"]
             health_image_rect = health_image.get_rect(center=self.image.get_rect().center)
             self.image.blit(health_image, health_image_rect)
             # ^ End health circle
 
             # v stamina circle image setup
-            stamina_image = self.images[6]
+            stamina_image = self.images["ui_stamina_circle_100.png"]
             stamina_image_rect = stamina_image.get_rect(center=self.image.get_rect().center)
             self.image.blit(stamina_image, stamina_image_rect)
             # ^ End stamina circle
 
             # v weapon class icon in middle circle
-            image1 = self.weapon_list.imgs[
+            image1 = self.weapon_list.images[
                 self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
             image1rect = image1.get_rect(center=self.image.get_rect().center)
             self.image.blit(image1, image1rect)

@@ -1867,7 +1867,7 @@ while True:
 
                 elif popup_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     popup_click = True
-                    new_row = popup_listscroll.update(mouse_pos, mouse_left_up)
+                    new_row = popup_listscroll.user_input(mouse_pos)
                     if new_row is not None:
                         current_popup_row = new_row
                         setup_list(menu.NameList, current_popup_row, popup_listbox.namelist, popup_namegroup,
@@ -1913,14 +1913,14 @@ while True:
                         show_joint = True
 
                 elif anim_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = anim_prop_listscroll.update(mouse_pos, mouse_left_up)
+                    new_row = anim_prop_listscroll.user_input(mouse_pos)
                     if new_row is not None:
                         current_anim_row = new_row
                         setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                                    anim_prop_listbox, ui, layer=9, old_list=anim_property_list)
 
                 elif frame_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = frame_prop_listscroll.update(mouse_pos, mouse_left_up)
+                    new_row = frame_prop_listscroll.user_input(mouse_pos)
                     if new_row is not None:
                         current_frame_row = new_row
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,

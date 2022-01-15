@@ -44,9 +44,9 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=()):
 
 
 class Weaponstat:
-    def __init__(self, main_dir, img, ruleset):
+    def __init__(self, main_dir, images, ruleset):
         """Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
-        self.imgs = img
+        self.images = list(images.values())
         self.weapon_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -73,9 +73,9 @@ class Weaponstat:
 
 
 class Armourstat:
-    def __init__(self, main_dir, img, ruleset):
+    def __init__(self, main_dir, images, ruleset):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
-        self.imgs = img
+        self.images = images
         self.armour_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_armour.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -361,9 +361,9 @@ class Unitstat:
 
 
 class Leaderstat:
-    def __init__(self, main_dir, img, imgorder, option):
-        self.imgs = img
-        self.imgorder = imgorder
+    def __init__(self, main_dir, images, image_order, option):
+        self.images = images
+        self.image_order = image_order
         self.leader_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)

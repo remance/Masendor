@@ -163,8 +163,8 @@ class Battle:
         self.page_button = main.page_button
 
         self.all_weather = main.all_weather
-        self.weather_matter_imgs = main.weather_matter_imgs
-        self.weather_effect_imgs = main.weather_effect_imgs
+        self.weather_matter_imgs = main.weather_matter_images
+        self.weather_effect_imgs = main.weather_effect_images
         self.weather_list = main.weather_list
 
         self.feature_mod = main.feature_mod
@@ -349,9 +349,9 @@ class Battle:
 
         if map_selected is not None:
             imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], load_order=False)
-            self.battle_map_base.draw_image(imgs[0])
-            self.battle_map_feature.draw_image(imgs[1])
-            self.battle_map_height.draw_image(imgs[2])
+            self.battle_map_base.draw_image(imgs["base.png"])
+            self.battle_map_feature.draw_image(imgs["feature.png"])
+            self.battle_map_height.draw_image(imgs["height.png"])
 
             try:  # place_name map layer is optional, if not existed in folder then assign None
                 place_name_map = imgs[3]
@@ -496,7 +496,7 @@ class Battle:
             self.command_ui.value_input(who=self.show_in_card)
         # ^ End cal authority
 
-    def setup_uniticon(self):
+    def setup_unit_icon(self):
         """Setup unit selection list in unit selector ui top left of screen"""
         row = 30
         start_column = 25
@@ -747,13 +747,13 @@ class Battle:
                 self.before_selected = None  # reset before selected parentunit after remove last selected
 
             self.command_ui.rect = self.command_ui.image.get_rect(
-                center=(self.command_ui.x, self.command_ui.y))  # change leader ui position back
+                center=self.command_ui.pos)  # change leader ui position back
             self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(
-                center=(self.troop_card_ui.x, self.troop_card_ui.y))  # change subunit card position back
-            self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(center=(self.troop_card_ui.x - 152, self.troop_card_ui.y + 10))
-            self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(center=(self.troop_card_ui.x - 152, self.troop_card_ui.y - 70))
-            self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(center=(self.troop_card_ui.x - 152, self.troop_card_ui.y - 30))
-            self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(center=(self.troop_card_ui.x - 152, self.troop_card_ui.y + 50))
+                center=self.troop_card_ui.pos)  # change subunit card position back
+            self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 10))
+            self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] - 70))
+            self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] - 30))
+            self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 50))
 
             self.battle_ui.remove(self.filter_stuff, self.unitsetup_stuff, self.leader_now, self.button_ui, self.warning_msg)
             self.battle_ui.add(self.eventlog, self.log_scroll, self.eventlog_button, self.time_button)
@@ -970,7 +970,7 @@ class Battle:
         self.unit_selector.current_row = 0
         # ^ End start value
 
-        self.setup_uniticon()
+        self.setup_unit_icon()
         self.select_scroll.change_image(new_row=self.unit_selector.current_row)
 
         self.effect_updater.update(self.all_unit_list, self.dt, self.camera_scale)
@@ -1071,11 +1071,11 @@ class Battle:
                                 if self.unit_selector.current_row < 0:
                                     self.unit_selector.current_row = 0
                                 else:
-                                    self.setup_uniticon()
+                                    self.setup_unit_icon()
                                     self.select_scroll.change_image(new_row=self.unit_selector.current_row)
                             elif mouse_scroll_down:
                                 if self.unit_selector.current_row < self.unit_selector.log_size:
-                                    self.setup_uniticon()
+                                    self.setup_unit_icon()
                                     self.select_scroll.change_image(new_row=self.unit_selector.current_row)
                                 else:
                                     self.unit_selector.current_row -= 1
@@ -1293,10 +1293,11 @@ class Battle:
                             self.ui_click = True
                             if mouse_left_down or mouse_left_up:
                                 self.click_any = True
-                                new_row = self.select_scroll.update(self.mouse_pos)
+                                new_row = self.select_scroll.user_input(self.mouse_pos)
+                                print(new_row)
                                 if self.unit_selector.current_row != new_row:
                                     self.unit_selector.current_row = new_row
-                                    self.setup_uniticon()
+                                    self.setup_unit_icon()
 
                         elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
                             if mouse_left_up:
@@ -1323,7 +1324,7 @@ class Battle:
                                 self.ui_click = True
                                 if mouse_left_down or mouse_left_up:
                                     self.click_any = True
-                                    new_row = self.log_scroll.update(self.mouse_pos)
+                                    new_row = self.log_scroll.user_input(self.mouse_pos)
                                     if self.eventlog.current_start_row != new_row:
                                         self.eventlog.current_start_row = new_row
                                         self.eventlog.recreate_image()
@@ -1512,7 +1513,7 @@ class Battle:
                                                 self.battle_ui.remove(*self.leader_now)
                                                 self.leader_now = self.last_selected.leader
                                                 self.battle_ui.add(*self.leader_now)
-                                                self.setup_uniticon()
+                                                self.setup_unit_icon()
 
                                         elif self.row_split_button in self.battle_ui and self.row_split_button.rect.collidepoint(self.mouse_pos):
                                             self.button_name_popup.pop(self.mouse_pos, "Split by Middle Row")
@@ -1524,7 +1525,7 @@ class Battle:
                                                 self.battle_ui.remove(*self.leader_now)
                                                 self.leader_now = self.last_selected.leader
                                                 self.battle_ui.add(*self.leader_now)
-                                                self.setup_uniticon()
+                                                self.setup_unit_icon()
 
                                         # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
                                         #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
@@ -1798,7 +1799,7 @@ class Battle:
 
                                         elif self.popup_listscroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
                                             self.ui_click = True
-                                            self.current_popu_prow = self.popup_listscroll.update(
+                                            self.current_popu_prow = self.popup_listscroll.user_input(
                                                 self.mouse_pos)  # update the scroll and get new current subsection
                                             if self.popup_listbox.type == "terrain":
                                                 setup_list(self.screen_scale, menu.NameList, self.current_popu_prow, self.battle_map_base.terrain_list,
@@ -1820,7 +1821,7 @@ class Battle:
 
                                     elif self.troop_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
                                         self.ui_click = True
-                                        self.current_troop_row = self.troop_scroll.update(
+                                        self.current_troop_row = self.troop_scroll.user_input(
                                             self.mouse_pos)  # update the scroll and get new current subsection
                                         if self.current_list_show == "troop":
                                             setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.troop_list, self.troop_namegroup,
@@ -1831,7 +1832,7 @@ class Battle:
 
                                     elif self.unit_preset_name_scroll.rect.collidepoint(self.mouse_pos):
                                         self.ui_click = True
-                                        self.current_unit_row = self.unit_preset_name_scroll.update(
+                                        self.current_unit_row = self.unit_preset_name_scroll.user_input(
                                             self.mouse_pos)  # update the scroll and get new current subsection
                                         setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                                                    self.unitpreset_namegroup, self.unit_listbox, self.battle_ui)  # setup preset army list
@@ -2053,7 +2054,7 @@ class Battle:
                                                         break
                                                     self.slot_display_button.event = 1
                                                     self.kill_effect_icon()
-                                                    self.setup_uniticon()
+                                                    self.setup_unit_icon()
                                                     self.battle_ui.remove(self.unitsetup_stuff, self.leader_now)
                                                     for unit in self.all_unit_list:
                                                         unit.startset(self.subunit)
@@ -2202,7 +2203,7 @@ class Battle:
                                 self.last_selected.kill()
                                 self.all_unit_list.remove(self.last_selected)
                                 self.all_unit_index.remove(self.last_selected.game_id)
-                                self.setup_uniticon()
+                                self.setup_unit_icon()
                                 self.last_selected = None
 
                     # v Update value of the clicked subunit every 1.1 second

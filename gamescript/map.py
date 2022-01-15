@@ -165,9 +165,9 @@ class HeightMap(pygame.sprite.Sprite):
             img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
             img = ImageOps.posterize(img, self.poster_level)  # posterise
             img = img.filter(ImageFilter.FIND_EDGES)  # get edge
-            # img = ImageOps.invert(img)  # invert
-            # enhancer = ImageEnhance.Contrast(img)
-            # img = enhancer.enhance(5)
+            # images = ImageOps.invert(images)  # invert
+            # enhancer = ImageEnhance.Contrast(images)
+            # images = enhancer.enhance(5)
 
             # replace black background with transparent
             img = img.convert("RGBA")

@@ -365,11 +365,11 @@ class Unit(pygame.sprite.Sprite):
                     if index == 0:  # front side
                         self.armysubunit = self.armysubunit[1:]
                         for subunit in self.subunit_sprite:
-                            subunit.unitposition = (subunit.unitposition[0], subunit.unitposition[1] - (self.imgsize[1] / 8))
+                            subunit.unit_position = (subunit.unit_position[0], subunit.unit_position[1] - (self.imgsize[1] / 8))
                     elif index == 1:  # left side
                         self.armysubunit = np.delete(self.armysubunit, 0, 1)
                         for subunit in self.subunit_sprite:
-                            subunit.unitposition = (subunit.unitposition[0] - (self.imgsize[0] / 8), subunit.unitposition[1])
+                            subunit.unit_position = (subunit.unit_position[0] - (self.imgsize[0] / 8), subunit.unit_position[1])
                     elif index == 2:  # right side
                         self.armysubunit = np.delete(self.armysubunit, -1, 1)
                     elif index == 3:  # rear side
@@ -469,7 +469,7 @@ class Unit(pygame.sprite.Sprite):
 
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
-                    newtarget = unit_topleft + subunit.unitposition
+                    newtarget = unit_topleft + subunit.unit_position
                     if resetpath:
                         subunit.command_target.append(pygame.Vector2(
                             rotationxy(self.base_pos, newtarget, self.radians_angle)))
@@ -485,7 +485,7 @@ class Unit(pygame.sprite.Sprite):
             for subunit in self.subunit_sprite:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     subunit.new_angle = self.new_angle
-                    newtarget = unit_topleft + subunit.unitposition
+                    newtarget = unit_topleft + subunit.unit_position
                     if resetpath:
                         subunit.command_target.append(pygame.Vector2(
                             rotationxy(target, newtarget, self.radians_angle)))
@@ -535,7 +535,7 @@ class Unit(pygame.sprite.Sprite):
                                            # get the top left corner of sprite to generate subunit position
                                            self.base_pos[1] - self.base_height_box)
         for subunit in self.subunit_sprite:  # generate start position of each subunit
-            subunit.base_pos = parentunittopleft + subunit.unitposition
+            subunit.base_pos = parentunittopleft + subunit.unit_position
             subunit.base_pos = pygame.Vector2(rotationxy(self.base_pos, subunit.base_pos, self.radians_angle))
             subunit.pos = subunit.base_pos * subunit.zoom
             subunit.rect.center = subunit.pos
@@ -806,7 +806,7 @@ class Unit(pygame.sprite.Sprite):
                 else:
                     self.die(self.gamebattle)
 
-                self.gamebattle.setup_uniticon()  # reset army icon (remove dead one)
+                self.gamebattle.setup_unit_icon()  # reset army icon (remove dead one)
                 self.gamebattle.eventlog.add_log([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
                                                  [0, 1])  # put destroyed event in troop and army log
 
@@ -974,7 +974,7 @@ class Unit(pygame.sprite.Sprite):
                                       self.base_pos[1] - self.base_height_box)
 
         for subunit in self.subunit_sprite:  # generate position of each subunit
-            newtarget = unit_topleft + subunit.unitposition
+            newtarget = unit_topleft + subunit.unit_position
             subunit.base_pos = pygame.Vector2(
                 rotationxy(self.base_pos, newtarget, self.radians_angle))  # rotate according to sprite current rotation
             subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen

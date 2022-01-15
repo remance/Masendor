@@ -117,10 +117,10 @@ def load_game_data(game):
     # v Game Effect related class
     imgs = load_images(game.main_dir, ["effect"], load_order=False)
     # images = []
-    # for img in imgsold:
-    # x, y = img.get_width(), img.get_height()
-    # img = pygame.transform.scale(img, (int(x ), int(y / 2)))
-    # images.append(img)
+    # for images in imgsold:
+    # x, y = images.get_width(), images.get_height()
+    # images = pygame.transform.scale(images, (int(x ), int(y / 2)))
+    # images.append(images)
     rangeattack.RangeArrow.images = [imgs[0]]
     # ^ End self effect
 
@@ -463,7 +463,7 @@ def complexdmg(attacker, receiver, dmg, moraledmg, leaderdmg, dmgeffect, timermo
 
     # v Add red corner to indicate combat
     if receiver.red_border is False:
-        receiver.imageblock.blit(receiver.images[11], receiver.corner_image_rect)
+        receiver.image_block.blit(receiver.images[11], receiver.corner_image_rect)
         receiver.red_border = True
     # ^ End red corner
 
@@ -629,8 +629,8 @@ def add_new_unit(gamebattle, who, addunitlist=True):
         for column in range(0, len(who.armysubunit[0])):
             if who.armysubunit[row][column] != 0:
                 who.subunit_sprite_array[row][column] = who.subunit_sprite[foundcount]
-                who.subunit_sprite[foundcount].unitposition = (who.subunit_position_list[foundcount2][0] / 10,
-                                                               who.subunit_position_list[foundcount2][1] / 10)  # position in parentunit sprite
+                who.subunit_sprite[foundcount].unit_position = (who.subunit_position_list[foundcount2][0] / 10,
+                                                                who.subunit_position_list[foundcount2][1] / 10)  # position in parentunit sprite
                 foundcount += 1
             else:
                 who.subunit_sprite_array[row][column] = None

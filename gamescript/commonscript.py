@@ -117,7 +117,7 @@ def read_terrain_data(main_dir):
     texture_folder = [item for item in texture_folder if item != ""]  # For now remove terrain with no planned name/folder yet
     for index, folder in enumerate(texture_folder):
         imgs = load_images(main_dir, ["map", "texture", folder], load_order=False)
-        map_texture.append(imgs)
+        map_texture.append(list(imgs.values()))
 
     # read terrain feature mode
     feature_mod = {}
@@ -168,23 +168,23 @@ def read_weather_data(main_dir):
         for strength in strength_list:
             new_weather_list.append(strength + item)
 
-    weather_matter_imgs = []
+    weather_matter_images = []
     for weather_sprite in ("0", "1", "2", "3"):  # Load weather matter sprite image
         imgs = load_images(main_dir, ["map", "weather", weather_sprite], load_order=False)
-        weather_matter_imgs.append(imgs)
+        weather_matter_images.append(list(imgs.values()))
 
-    weather_effect_imgs = []
+    weather_effect_images = []
     for weather_effect in ("0", "1", "2", "3", "4", "5", "6", "7"):  # Load weather effect sprite image
         imgs = load_images(main_dir, ["map", "weather", "effect", weather_effect], load_order=False)
         # images = []
-        # for img in imgsold:
-        #     img = pygame.transform.scale(img, (screen_rect.width, screen_rect.height))
-        #     images.append(img)
-        weather_effect_imgs.append(imgs)
+        # for images in imgsold:
+        #     images = pygame.transform.scale(images, (screen_rect.width, screen_rect.height))
+        #     images.append(images)
+        weather_effect_images.append(list(imgs.values()))
 
-    imgs = load_images(main_dir, ["map", "weather", "icon"], load_order=False)  # Load weather icon
-    weather.Weather.images = imgs
-    return all_weather, new_weather_list, weather_matter_imgs, weather_effect_imgs
+    weather_icon = load_images(main_dir, ["map", "weather", "icon"], load_order=False)  # Load weather icon
+    weather.Weather.images = list(weather_icon.values())
+    return all_weather, new_weather_list, weather_matter_images, weather_effect_images
 
 
 def read_map_data(main_dir, ruleset_folder):
@@ -232,14 +232,13 @@ def read_map_data(main_dir, ruleset_folder):
 def read_faction_data(main_dir, ruleset_folder):
     faction.FactionData.main_dir = main_dir
     all_faction = faction.FactionData(option=ruleset_folder)
-    imgs_old = load_images(main_dir, ["ruleset", ruleset_folder, "faction", "coa"],
+    images_old = load_images(main_dir, ["ruleset", ruleset_folder, "faction", "coa"],
                            load_order=False)  # coa_list images list
-    imgs = []
-    for img in imgs_old:
-        imgs.append(img)
-    coa = imgs
+    coa_list = []
+    for image in images_old:
+        coa_list.append(images_old[image])
     faction_list = [item[0] for item in all_faction.faction_list.values()][1:]
-    return all_faction, coa, faction_list
+    return all_faction, coa_list, faction_list
 
 
 def make_encyclopedia_ui(main_dir, ruleset_folder, screen_scale, screen_rect):
@@ -497,8 +496,6 @@ def make_popup_ui(main_dir, screen_rect, battle_ui_image):
     popup.TerrainPopup.screen_rect = screen_rect
 
     troop_card_ui = battleui.GameUI(image=battle_ui_image["troop_card.png"], icon="", ui_type="troopcard")
-    # x = screen_rect.width - battle_ui_image["troop_card.png"].get_size()[0] / 2,
-    # y = (battle_ui_image[0].get_size()[1] * 2.5) + battle_ui_image[5].get_size()[1],
 
     # Button related to subunit card and command
     troop_card_button = [battleui.UIButton((0, 0), battle_ui_image["troopcard_button1.png"], 0),

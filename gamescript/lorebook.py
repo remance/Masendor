@@ -44,7 +44,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (int(image.get_width() * self.screen_scale[0]),
                                                     int(image.get_height() * self.screen_scale[1])))
         self.image_original = self.image.copy()
-        self.leader_stat = self.leader.leader_list
+        self.leader_list = self.leader_stat.leader_list
         self.section = 0
         self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section Start with 1 instead of 0
         self.stat_data = None  # for getting the section stat data
@@ -72,7 +72,7 @@ class Lorebook(pygame.sprite.Sprite):
             (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore), (self.faction_lore, None),
             (self.unit_stat, self.unit_lore),
             (self.equipment_stat, None), (self.status_stat, None), (self.skill_stat, None),
-            (self.trait_stat, None), (self.leader_stat, self.leader_lore), (self.terrain_stat, None),
+            (self.trait_stat, None), (self.leader_list, self.leader_lore), (self.terrain_stat, None),
             (self.weather_stat, None))
         self.current_subsection_row = 0
         self.max_subsection_show = 21
@@ -146,10 +146,10 @@ class Lorebook(pygame.sprite.Sprite):
             self.page_design()
         else:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
-                self.portrait = self.leader.imgs[self.leader.imgorder.index(
-                    self.subsection)].copy()  # get leader portrait based on subsection number
+                image_name = str(self.subsection) + ".png"
+                self.portrait = self.leader_stat.images[image_name].copy()  # get leader portrait based on subsection number
             except:
-                self.portrait = self.leader.imgs[-1].copy()  # Use Unknown leader image if there is none in list
+                self.portrait = self.leader_stat.images["9999999.png"].copy()  # Use Unknown leader image if there is none in list
                 font = pygame.font.SysFont("timesnewroman", 300)
                 text_image = font.render(str(self.subsection), True, pygame.Color("white"))
                 text_rect = text_image.get_rect(

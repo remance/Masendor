@@ -40,9 +40,9 @@ class Leader(pygame.sprite.Sprite):
 
         try:  # Put leader image into leader slot
             image_name = str(leaderid) +".png"
-            self.fullimage = leaderstat.imgs[image_name].copy()
+            self.fullimage = leaderstat.images[image_name].copy()
         except:  # Use Unknown leader image if there is none in list)
-            self.fullimage = leaderstat.imgs["9999999.png"].copy()
+            self.fullimage = leaderstat.images["9999999.png"].copy()
             font = pygame.font.SysFont("timesnewroman", 300)
             textimage = font.render(str(self.leaderid), True, pygame.Color("white"))
             textrect = textimage.get_rect(center=(self.fullimage.get_width() / 2, self.fullimage.get_height() / 1.3))
@@ -142,7 +142,7 @@ class Leader(pygame.sprite.Sprite):
         self.combat = 0
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)  # draw dead cross on leader image
-        self.gamebattle.setup_uniticon()
+        self.gamebattle.setup_unit_icon()
         self.parentunit.leader_change = True  # initiate leader change stat recalculation for parentunit
 
     def gamestart(self):

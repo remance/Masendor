@@ -143,7 +143,7 @@ class RangeArrow(pygame.sprite.Sprite):
 
         # v Add red corner to indicate melee_dmg
         if target.red_border is False:
-            target.imageblock.blit(target.images[11], target.corner_image_rect)
+            target.image_block.blit(target.images[11], target.corner_image_rect)
             target.red_border = True
         # ^ End red corner
 

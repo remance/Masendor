@@ -331,7 +331,7 @@ class Mainmenu:
         battle_ui_image = load_images(self.main_dir, ["ui", "battle_ui"], load_order=False)
 
         self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
-        self.all_weather, self.weather_list, self.weather_matter_imgs, self.weather_effect_imgs = read_weather_data(
+        self.all_weather, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
             self.main_dir)
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
@@ -411,7 +411,7 @@ class Mainmenu:
         lorebook.Lorebook.status_stat = self.troop_data.status_list
         lorebook.Lorebook.skill_stat = self.troop_data.skill_list
         lorebook.Lorebook.trait_stat = self.troop_data.trait_list
-        lorebook.Lorebook.leader = self.leader_stat
+        lorebook.Lorebook.leader_stat = self.leader_stat
         lorebook.Lorebook.leader_lore = self.leader_stat.leader_lore
         lorebook.Lorebook.terrain_stat = self.feature_mod
         lorebook.Lorebook.weather_stat = self.all_weather
@@ -517,6 +517,8 @@ class Mainmenu:
         self.option_menu_button = (self.back_button, self.resolution_scroll)
         self.option_menu_slider = self.volume_slider
         # ^ End option menu button
+
+        battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
 
         self.battledone_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
                                                   battle_ui_image["end_box.png"], battle_ui_image["result_box.png"])
@@ -686,14 +688,15 @@ class Mainmenu:
             this_map.kill()
             del this_map
         if self.menu_state == "presetselect":
-            imgs = load_images(self.main_dir,
+            map_images = load_images(self.main_dir,
                                ["ruleset", self.ruleset_folder, "map", map_folder_list[self.current_map_select]],
                                load_order=False)
         else:
-            imgs = load_images(self.main_dir,
+            map_images = load_images(self.main_dir,
                                ["ruleset", self.ruleset_folder, "map/custom", map_folder_list[self.current_map_select]],
                                load_order=False)
-        self.map_show.add(menu.MapShow(self.main_dir, self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 3), imgs[0], imgs[1]))
+        self.map_show.add(menu.MapShow(self.main_dir, self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 3),
+                                       map_images["base.png"], map_images["feature.png"]))
         self.main_ui.add(self.map_show)
         # ^ End map preview
 
@@ -984,7 +987,7 @@ class Mainmenu:
 
                         elif self.popup_listscroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
                             self.ui_click = True
-                            self.current_popup_row = self.popup_listscroll.update(
+                            self.current_popup_row = self.popup_listscroll.user_input(
                                 self.mouse_pos)  # update the scroller and get new current subsection
                             setup_list(self.screen_scale, menu.NameList, self.current_popup_row, self.genre_list,
                                        self.popup_namegroup, self.popup_listbox, self.main_ui)
@@ -1005,7 +1008,7 @@ class Mainmenu:
                                     break
 
                         if self.map_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-                            self.current_map_row = self.map_scroll.update(
+                            self.current_map_row = self.map_scroll.user_input(
                                 self.mouse_pos)  # update the scroll and get new current subsection
                             setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list,
                                        self.map_namegroup, self.map_listbox,
@@ -1122,7 +1125,7 @@ class Mainmenu:
                                         self.enactment = box.tick
 
                         if self.source_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-                            self.current_source_row = self.source_scroll.update(
+                            self.current_source_row = self.source_scroll.user_input(
                                 self.mouse_pos)  # update the scroll and get new current subsection
                             setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_list,
                                        self.source_namegroup,
