@@ -34,7 +34,7 @@ class Leader(pygame.sprite.Sprite):
 
         self.parentunit = unit
         # self.mana = stat
-        self.armyposition = armyposition  # position in the parentunit (i.e. general (0) or sub-general (1, 2) or advisor (3))
+        self.armyposition = armyposition  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
         self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
         self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
 
@@ -59,10 +59,10 @@ class Leader(pygame.sprite.Sprite):
     def poschangestat(self, leader):
         """Change stat that related to army position such as in leader dead event"""
         leader.badmorale = (20, 30)  # sub general morale lost for bad event
-        if leader.army_position == 0:  # if leader become parentunit commander
+        if leader.army_position == 0:  # if leader become unit commander
             try:
                 squadpenal = int(
-                    (leader.subunit_pos / len(leader.parentunit.subunit_list[
+                    (leader.subunit_pos / len(leader.unit.subunit_list[
                                                   0])) * 10)  # recalculate authority penalty based on subunit position
             except:
                 squadpenal = 0
@@ -70,13 +70,13 @@ class Leader(pygame.sprite.Sprite):
                         (leader.authority * squadpenal / 100) / 2)  # recalculate total authority
             leader.badmorale = (30, 50)  ## gamestart general morale lost for bad event
 
-            if leader.parentunit.commander:  ## become army commander
-                whicharmy = leader.gamebattle.team1_unit  # team1
-                if leader.parentunit.team == 2:  # team2
+            if leader.unit.commander:  ## become army commander
+                whicharmy = leader.battle.team1_unit  # team1
+                if leader.unit.team == 2:  # team2
                     whicharmy = self.gamebattle.team2_unit
                 for army in whicharmy:
-                    army.teamcommander = leader
-                    army.authrecal()
+                    army.team_commander = leader
+                    army.auth_recal()
 
     def gone(self, eventtext={96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}):
         """leader no longer in command due to death or other events"""
@@ -94,7 +94,7 @@ class Leader(pygame.sprite.Sprite):
 
         for subunit in self.parentunit.subunit_sprite:
             subunit.base_morale -= (thisbadmorale * subunit.mental)  # decrease all subunit morale when leader die depending on position
-            subunit.moraleregen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
+            subunit.morale_regen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 
         if self.commander:  # reduce morale to whole army if commander die from the melee_dmg (leader die cal is in leader.py)
             self.gamebattle.drama_text.queue.append(str(self.name) + " is " + eventtext[self.state])
@@ -112,12 +112,12 @@ class Leader(pygame.sprite.Sprite):
             for army in whicharmy:
                 for subunit in army.subunit_sprite:
                     subunit.base_morale -= (200 * subunit.mental)  # all subunit morale -100 when commander die
-                    subunit.moraleregen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
+                    subunit.morale_regen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
 
         else:
             self.gamebattle.event_log.add_log([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])
 
-        # v change army position of all leader in that parentunit
+        # v change army position of all leader in that unit
         for index, leader in enumerate(self.parentunit.leader):
             leader.army_position = index  ## change army position to new one
             if leader.army_position == 0:  # new gamestart general
@@ -125,7 +125,7 @@ class Leader(pygame.sprite.Sprite):
                 if self.parentunit.commander:
                     leader.commander = True
 
-                self.parentunit.leadersubunit = leader.subunit
+                self.parentunit.leader_subunit = leader.subunit
                 leader.subunit.unit_leader = True
 
             leader.img_position = leader.base_img_position[leader.army_position]
@@ -143,16 +143,16 @@ class Leader(pygame.sprite.Sprite):
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)  # draw dead cross on leader image
         self.gamebattle.setup_unit_icon()
-        self.parentunit.leader_change = True  # initiate leader change stat recalculation for parentunit
+        self.parentunit.leader_change = True  # initiate leader change stat recalculation for unit
 
     def gamestart(self):
         row = int(self.subunitpos / 8)
         column = self.subunitpos - (row * 8)
         self.subunit = self.parentunit.subunit_sprite[self.subunitpos]  # setup subunit that leader belong
         self.subunit.leader = self  ## put in leader to subunit with the set pos
-        if self.armyposition == 0:  # parentunit leader
-            self.parentunit.leadersubunit = self.subunit  # TODO add this to when change leader or gamestart leader move ot other subunit
-            # self.parentunit.leadersubunit - self.parentunit.base_pos
+        if self.armyposition == 0:  # unit leader
+            self.parentunit.leader_subunit = self.subunit  # TODO add this to when change leader or gamestart leader move ot other subunit
+            # self.unit.leader_subunit - self.unit.base_pos
             self.subunit.unit_leader = True
 
             squadpenal = int(

@@ -66,7 +66,7 @@ class PreviewLeader(pygame.sprite.Sprite):
         self.leader_id = leader_id
 
         self.subunit_pos = subunit_pos  # Squad position is the index of subunit in subunit sprite loop
-        self.army_position = army_position  # position in the parentunit (e.g. general or sub-general)
+        self.army_position = army_position  # position in the unit (e.g. general or sub-general)
         self.img_position = self.base_img_position[self.army_position]  # image position based on armyposition
 
         self.change_leader(leader_id, leader_stat)
@@ -152,7 +152,7 @@ class UnitBuildSlot(pygame.sprite.Sprite):
         self.change_team(False)
 
         self.slot_number = slot_number
-        self.army_pos = position  # position in parentunit sprite
+        self.army_pos = position  # position in unit sprite
         self.inspect_pos = (self.army_pos[0] + start_pos[0], self.army_pos[1] + start_pos[1])  # position in inspect ui
         self.rect = self.image.get_rect(topleft=self.inspect_pos)
 

@@ -107,7 +107,7 @@ class GameUI(pygame.sprite.Sprite):
             this_button.draw(self.image)
         position = 65
         if self.ui_type == "topbar":
-            self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.staminastate, who.moralestate, who.state]
+            self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.stamina_state, who.morale_state, who.state]
             if self.value[3] in self.unit_state_text:  # Check subunit state and blit name
                 self.value[3] = self.unit_state_text[self.value[3]]
             # if type(self.value[2]) != str:
@@ -145,7 +145,7 @@ class GameUI(pygame.sprite.Sprite):
                 self.image = self.image_original.copy()
                 self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
-                if who.commander:  # commander parentunit use king and queen icon
+                if who.commander:  # commander unit use king and queen icon
                     # gamestart general
                     self.icon_rect = use_colour[0].get_rect(
                         center=(
@@ -190,13 +190,13 @@ class GameUI(pygame.sprite.Sprite):
         elif self.ui_type == "troopcard":
             position = 15  # starting row
             position_x = 45  # starting point of text
-            self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.maxtroop)) + ")",
+            self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.max_troop)) + ")",
                           str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
                           str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.melee_def).split(".")[0],
                           str(who.range_def).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
-                          str(who.accuracy).split(".")[0], str(who.shootrange).split(".")[0], str(who.magazine_left),
+                          str(who.accuracy).split(".")[0], str(who.shoot_range).split(".")[0], str(who.magazine_left),
                           str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
-                          str(who.charge).split(".")[0], str(who.charge_def).split(".")[0], str(who.mentaltext).split(".")[0],
+                          str(who.charge).split(".")[0], str(who.charge_def).split(".")[0], str(who.mental_text).split(".")[0],
                           str(who.temp_count).split(".")[0]]
             self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
             self.description = who.description
@@ -254,20 +254,20 @@ class GameUI(pygame.sprite.Sprite):
                         self.quality_text[who.secondary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_main_weapon[0]][0]) + " / " +
                         self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]][0])]
 
-                    text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.meleespeed).split(".")[0] +
+                    text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.melee_speed).split(".")[0] +
                                   ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
                     text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
                                   ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
 
-                    text_value += [str(armour_list.armour_list[who.armourgear[0]][0]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
-                                   str(armour_list.armour_list[who.armourgear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                    text_value += [str(armour_list.armour_list[who.armour_gear[0]][0]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
+                                   str(armour_list.armour_list[who.armour_gear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                   "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
 
                     if "None" not in who.mount:  # if mount is not the None mount id 1
-                        armour_text = "//" + who.mountarmour[0]
-                        if "None" in who.mountarmour[0]:
+                        armour_text = "//" + who.mount_armour[0]
+                        if "None" in who.mount_armour[0]:
                             armour_text = ""
-                        text_value.insert(3, "Mount:" + who.mountgrade[0] + " " + who.mount[0] + armour_text)
+                        text_value.insert(3, "Mount:" + who.mount_grade[0] + " " + who.mount[0] + armour_text)
                     # ^ End equipment text
 
                     for text in text_value:
@@ -415,7 +415,7 @@ class Minimap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomright=self.pos)
 
     def update(self, view_mode, camera_pos, team1_pos_list, team2_pos_list):
-        """update parentunit dot on map"""
+        """update unit dot on map"""
         if self.team1_pos != team1_pos_list.values() or self.team2_pos != team2_pos_list.values() or \
                 self.camera_pos != camera_pos or self.last_scale != view_mode:
             self.team1_pos = team1_pos_list.values()
@@ -436,7 +436,7 @@ class Minimap(pygame.sprite.Sprite):
 
 class EventLog(pygame.sprite.Sprite):
     max_row_show = 9  # maximum 9 text rows can appear at once
-    log_scroll = None  # Link from gamebattle after creation of both object
+    log_scroll = None  # Link from battle after creation of both object
 
     def __init__(self, image, pos):
         self._layer = 10
@@ -803,7 +803,7 @@ class InspectSubunit(pygame.sprite.Sprite):
 
     def add_subunit(self, who):
         self.who = who
-        self.image = self.who.image_block
+        self.image = self.who.block
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def delete(self):

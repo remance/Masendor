@@ -12,14 +12,13 @@ class TextDrama(pygame.sprite.Sprite):
         self.body = self.images["body.png"]
         self.left_corner = self.images["start.png"]
         self.right_corner = self.images["end.png"]
-        self.pos = (
-        self.screen_rect.width / 2, self.screen_rect.height / 4)  # The center pos of the drama popup on screen
+        self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 4)  # The center pos of the drama popup on screen
         self.font = pygame.font.SysFont("helvetica", 70)
         self.queue = []  # Text list to popup
         self.blit_text = False
         self.current_length = 20  # Current unfolded length start at 20
         self.text_input = ""
-        self.leftcorner_rect = self.left_corner.get_rect(topleft=(0, 0))  # The starting point
+        self.left_corner_rect = self.left_corner.get_rect(topleft=(0, 0))  # The starting point
 
     def process_queue(self):
         """Initiate the first text in list and remove it"""
@@ -34,7 +33,7 @@ class TextDrama(pygame.sprite.Sprite):
         self.text_surface = self.font.render(self.text_input, True, (0, 0, 0))
         self.text_rect = self.text_surface.get_rect(topleft=(30, 1))
         self.image = pygame.Surface((self.text_rect.width + 70, self.text_rect.height), pygame.SRCALPHA)
-        self.image.blit(self.left_corner, self.leftcorner_rect)  # start animation with the left corner
+        self.image.blit(self.left_corner, self.left_corner_rect)  # start animation with the left corner
         self.rect = self.image.get_rect(center=self.pos)
         self.max_length = self.image.get_width() - 20  # Max length of the body, not counting the end corner
 

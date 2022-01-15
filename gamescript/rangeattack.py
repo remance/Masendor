@@ -18,17 +18,17 @@ class RangeArrow(pygame.sprite.Sprite):
         self.image = self.images[0]
         self.image_original = self.image.copy()
         self.shooter = shooter  # subunit that shoot arrow
-        self.speed = self.shooter.arrowspeed  # arrow speed
-        self.arcshot = False  # direct shot will no go pass collided parentunit
-        if self.shooter.arcshot and self.shooter.parentunit.shoothow != 2:
-            self.arcshot = True  # arc shot will go pass parentunit to land at final base_target
+        self.speed = self.shooter.arrow_speed  # arrow speed
+        self.arcshot = False  # direct shot will no go pass collided unit
+        if self.shooter.arcshot and self.shooter.unit.shoot_mode != 2:
+            self.arcshot = True  # arc shot will go pass unit to land at final base_target
         self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
         self.dmg = random.randint(self.shooter.range_dmg[0], self.shooter.range_dmg[1])
         self.penetrate = self.shooter.range_penetrate
         if self.shooter.state in (12, 13) and self.shooter.agileaim is False:
             self.accuracy -= 10  # accuracy penalty for shoot while moving
-        self.pass_who = None  # check which parentunit arrow passing through
+        self.pass_who = None  # check which unit arrow passing through
         self.side = None  # side that arrow collided last
         if hit_cal:
             random_pos1 = random.randint(0, 1)  # for left or right random
@@ -59,7 +59,7 @@ class RangeArrow(pygame.sprite.Sprite):
                         if target_move.length() > 1:
                             target_move.normalize_ip()
                             target_now = target_hit.base_pos + (
-                                        (target_move * (target_hit.parentunit.walkspeed * how_long)) / 11)
+                                    (target_move * (target_hit.unit.walkspeed * how_long)) / 11)
                             if self.shooter.agileaim is False:
                                 hit_chance -= 10
                         else:  # movement too short, simply hit the current position
@@ -71,7 +71,7 @@ class RangeArrow(pygame.sprite.Sprite):
                         if target_move.length() > 1:
                             target_move.normalize_ip()
                             target_now = target_hit.base_pos + (
-                                        (target_move * (target_hit.parentunit.runspeed * how_long)) / 11)
+                                    (target_move * (target_hit.unit.runspeed * how_long)) / 11)
                             if self.shooter.agileaim is False:
                                 hit_chance -= 20
                         else:
@@ -97,8 +97,8 @@ class RangeArrow(pygame.sprite.Sprite):
         # ^ End calculate hit_chance and base_target
 
         # v Rotate arrow sprite
-        radians = math.atan2(self.base_target[1] - self.shooter.parentunit.base_pos[1],
-                             self.base_target[0] - self.shooter.parentunit.base_pos[0])
+        radians = math.atan2(self.base_target[1] - self.shooter.unit.base_pos[1],
+                             self.base_target[0] - self.shooter.unit.base_pos[0])
         self.angle = math.degrees(radians)
 
         # """upper left and upper right"""
@@ -127,7 +127,7 @@ class RangeArrow(pygame.sprite.Sprite):
         target_luck = random.randint(-20, 20)  # luck of the defender subunit
 
         target_percent = side_percent[target_side]  # side penalty
-        if target.fulldef or target.temp_fulldef:
+        if target.fulldef or target.temp_full_def:
             target_percent = 1  # no side penalty for all round defend
         who_hit = float(self.accuracy) + who_luck  # calculate hit chance
         if who_hit < 0:
@@ -137,13 +137,13 @@ class RangeArrow(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        who_dmg, who_morale_dmg, who_leader_dmg = script_other.losscal(who, target, who_hit, target_def, self)
+        who_dmg, who_morale_dmg, who_leader_dmg = script_other.loss_cal(who, target, who_hit, target_def, self)
         target.unit_health -= who_dmg
         target.base_morale -= who_morale_dmg
 
         # v Add red corner to indicate melee_dmg
         if target.red_border is False:
-            target.image_block.blit(target.images[11], target.corner_image_rect)
+            target.block.blit(target.images[11], target.corner_image_rect)
             target.red_border = True
         # ^ End red corner
 

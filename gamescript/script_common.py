@@ -758,13 +758,13 @@ def popup_list_open(self, new_rect, new_list, ui_type):
     setup_list(self.screen_scale, menu.NameList, 0, new_list, self.popup_namegroup,
                self.popup_listbox, self.battle_ui, layer=19)
 
-    self.popup_listscroll.pos = self.popup_listbox.rect.topright  # change position variable
-    self.popup_listscroll.rect = self.popup_listscroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
-    self.popup_listscroll.change_image(new_row=0, log_size=len(new_list))
+    self.popup_list_scroll.pos = self.popup_listbox.rect.topright  # change position variable
+    self.popup_list_scroll.rect = self.popup_list_scroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
+    self.popup_list_scroll.change_image(new_row=0, log_size=len(new_list))
 
     if ui_type == "genre":
-        self.main_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)
+        self.main_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)
     else:
-        self.battle_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_listscroll)  # add the option list to screen
+        self.battle_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)  # add the option list to screen
 
     self.popup_listbox.type = ui_type

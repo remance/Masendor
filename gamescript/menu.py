@@ -335,39 +335,38 @@ class MapTitle(pygame.sprite.Sprite):
 class MapDescription(pygame.sprite.Sprite):
     image = None
 
-    def __init__(self, screen_scale, pos, text):
+    def __init__(self, screen_scale, pos):
         pygame.sprite.Sprite.__init__(self)
-        make_long_text = script_common.make_long_text
-
-        self.font = pygame.font.SysFont("timesnewroman", int(16 * screen_scale[1]))
-        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * screen_scale[0]),
-                                                         int(self.image.get_height() * screen_scale[1])))
-
+        self.screen_scale = screen_scale
+        self.font = pygame.font.SysFont("timesnewroman", int(16 * self.screen_scale[1]))
+        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * self.screen_scale[0]),
+                                                         int(self.image.get_height() * self.screen_scale[1])))
         self.image_original = self.image.copy()
-        self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
-
-        make_long_text(self.image, text, (int(20 * screen_scale[0]), int(20 * screen_scale[1])), self.font)
-
         self.rect = self.image.get_rect(center=pos)
+
+    def change_text(self, text):
+        make_long_text = script_common.make_long_text
+        self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
+        make_long_text(self.image, text, (int(20 * self.screen_scale[0]), int(20 * self.screen_scale[1])), self.font)
 
 
 class SourceDescription(pygame.sprite.Sprite):
     image = None
 
-    def __init__(self, screen_scale, pos, text):
+    def __init__(self, screen_scale, pos):
         pygame.sprite.Sprite.__init__(self)
-        make_long_text = script_common.make_long_text
 
-        self.font = pygame.font.SysFont("timesnewroman", int(16 * screen_scale[1]))
-        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * screen_scale[0]),
-                                                         int(self.image.get_height() * screen_scale[1])))
-
+        self.screen_scale = screen_scale
+        self.font = pygame.font.SysFont("timesnewroman", int(16 * self.screen_scale[1]))
+        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() *self. screen_scale[0]),
+                                                         int(self.image.get_height() * self.screen_scale[1])))
         self.image_original = self.image.copy()
-        self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
-
-        make_long_text(self.image, text, (int(15 * screen_scale[0]), int(20 * screen_scale[1])), self.font)
-
         self.rect = self.image.get_rect(center=pos)
+
+    def change_text(self, text):
+        make_long_text = script_common.make_long_text
+        self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
+        make_long_text(self.image, text, (int(15 * self.screen_scale[0]), int(20 * self.screen_scale[1])), self.font)
 
 
 class TeamCoa(pygame.sprite.Sprite):
@@ -603,7 +602,7 @@ class SourceName(pygame.sprite.Sprite):
 
 
 class MapShow(pygame.sprite.Sprite):
-    def __init__(self, main_dir, screen_scale, pos, base_map, feature_map):
+    def __init__(self, main_dir, screen_scale, pos):
         self.main_dir = main_dir
         pygame.sprite.Sprite.__init__(self)
 
@@ -636,12 +635,12 @@ class MapShow(pygame.sprite.Sprite):
                         row[n] = ast.literal_eval(i)
                 self.new_colour_list[row[0]] = row[1:]
 
-        self.change_map(base_map, feature_map)
         self.image = pygame.transform.scale(self.prev_image, (int(self.prev_image.get_width() * self.screen_scale[0]),
                                                               int(self.prev_image.get_height() * self.screen_scale[1])))
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_map(self, base_map, feature_map):
+        print('test')
         new_base_map = pygame.transform.scale(base_map, (300, 300))
         new_feature_map = pygame.transform.scale(feature_map, (300, 300))
 
@@ -663,6 +662,9 @@ class MapShow(pygame.sprite.Sprite):
         image_rect = map_image.get_rect(topleft=(5, 5))
         self.prev_image.blit(map_image, image_rect)
         self.image_original = self.prev_image.copy()
+
+        self.image = pygame.transform.scale(self.prev_image, (int(self.prev_image.get_width() * self.screen_scale[0]),
+                                                              int(self.prev_image.get_height() * self.screen_scale[1])))
 
     def change_mode(self, mode, team1_pos_list=None, team2_pos_list=None):
         """map mode: 0 = map without army dot, 1 = with army dot"""
