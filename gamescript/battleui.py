@@ -620,12 +620,10 @@ class UIScroller(pygame.sprite.Sprite):
             if mouse_value < 0:
                 mouse_value = 0
             new_row = int(self.log_size * mouse_value / 100)
-            print('test', new_row)
             if self.log_size > self.max_row_show and new_row > self.log_size - self.max_row_show:
                 new_row = self.log_size - self.max_row_show
             if self.log_size > self.max_row_show:  # only change scroll position in list longer than max length
                 self.change_image(new_row)
-            print(new_row)
             return self.current_row
 
 

@@ -1035,7 +1035,6 @@ class Skeleton:
         return main_joint_pos_list
 
     def click_part(self, mouse_pos, shift_press, ctrl_press, part=None):
-        print(shift_press)
         if part is None:
             click_part = False
             if shift_press is False and ctrl_press is False:
@@ -1049,7 +1048,6 @@ class Skeleton:
                     if shift_press:  # add
                         if index not in self.part_selected:
                             self.part_selected.append(index)
-                            print(self.part_selected)
                     elif ctrl_press:  # remove
                         if index in self.part_selected:
                             self.part_selected.remove(index)
@@ -1917,7 +1915,7 @@ while True:
                     if new_row is not None:
                         current_anim_row = new_row
                         setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                                   anim_prop_listbox, ui, layer=9, old_list=anim_property_list)
+                                   anim_prop_listbox, ui, layer=9, old_list=anim_property_select)
 
                 elif frame_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     new_row = frame_prop_listscroll.user_input(mouse_pos)
@@ -2219,7 +2217,7 @@ while True:
                                      skeleton.part_name_list[current_frame].items()}
 
                         # keep only selected one
-                        copy_part = {item: copy_part[item] for index, item in enumerate(copy_part.keys()) if index in skeleton.part_selected}
+                        copy_part = {item: copy_part[item] for item in copy_part.keys() if item in skeleton.rect_part_list and list(skeleton.rect_part_list.keys()).index(item) in skeleton.part_selected}
                         copy_animation = {item: copy_animation[item] for index, item in enumerate(copy_animation.keys()) if
                                           index in skeleton.part_selected}
                         copy_name = {item: copy_name[item] for index, item in enumerate(copy_name.keys()) if index in skeleton.part_selected}

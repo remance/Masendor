@@ -1294,7 +1294,6 @@ class Battle:
                             if mouse_left_down or mouse_left_up:
                                 self.click_any = True
                                 new_row = self.select_scroll.user_input(self.mouse_pos)
-                                print(new_row)
                                 if self.unit_selector.current_row != new_row:
                                     self.unit_selector.current_row = new_row
                                     self.setup_unit_icon()
