@@ -8,7 +8,7 @@ class TextDrama(pygame.sprite.Sprite):
 
     def __init__(self):
         self._layer = 17
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.body = self.images["body.png"]
         self.left_corner = self.images["start.png"]
         self.right_corner = self.images["end.png"]

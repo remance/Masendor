@@ -92,19 +92,19 @@ def setup_list(item_class, current_row, show_list, item_group, box, ui_class, la
                 item.select()
 
 
-def list_scroll(scroll, listbox, current_row, name_list, name_group, ui_class, layer=19, old_list=None):
+def list_scroll(scroll, listbox, current_row, name_list, name_group, ui_object, layer=19, old_list=None):
     if mouse_scroll_up:
         current_row -= 1
         if current_row < 0:
             current_row = 0
         else:
-            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_class, layer=layer, old_list=old_list)
+            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_object, layer=layer, old_list=old_list)
             scroll.change_image(new_row=current_row, log_size=len(name_list))
 
     elif mouse_scroll_down:
         current_row += 1
         if current_row + listbox.max_show - 1 < len(name_list):
-            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_class, layer=layer,
+            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_object, layer=layer,
                        old_list=old_list)
             scroll.change_image(new_row=current_row, log_size=len(name_list))
         else:

@@ -4,11 +4,11 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import commonscript
-from gamescript.tactical import longscript
+from gamescript import script_common
+from gamescript.tactical import script_other
 from pygame.transform import scale
 
-rotationxy = commonscript.rotation_xy
+rotationxy = script_common.rotation_xy
 
 class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
@@ -139,12 +139,12 @@ class TroopNumber(pygame.sprite.Sprite):
 class Unit(pygame.sprite.Sprite):
     images = []
     status_list = None  # status effect list
-    maxzoom = 10  # max zoom allow
+    max_zoom = 10  # max zoom allow
     gamebattle = None
-    die = longscript.die  # die script
-    setrotate = longscript.set_rotate
-    formchangetimer = 10
-    imgsize = None
+    die = script_other.die  # die script
+    set_rotate = script_other.set_rotate
+    form_change_timer = 10
+    image_size = None
 
     def __init__(self, startposition, game_id, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although parentunit in code, this is referred as subunit ingame"""
@@ -162,15 +162,15 @@ class Unit(pygame.sprite.Sprite):
         self.control = control  # player control or not
         self.start_hp = start_hp  # starting hp percentage
         self.startstamina = start_stamina  # starting stamina percentage
-        self.armysubunit = subunit_list  # subunit array
+        self.subunit_list = subunit_list  # subunit array
         self.colour = colour  # box colour according to team
         self.commander = commander  # commander parentunit if true
 
         self.zoom = 10  # start with closest zoom
         self.lastzoom = 1  # zoom level without calculate with 11 - zoom for scale
 
-        self.base_width_box, self.base_height_box = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, len(self.armysubunit) * (
-                self.imgsize[1] + 2) / 20
+        self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, len(self.subunit_list) * (
+                self.image_size[1] + 2) / 20
 
         self.base_pos = pygame.Vector2(startposition)  # base_pos is for true pos that is used for ingame calculation
         self.last_base_pos = self.base_pos
@@ -241,11 +241,11 @@ class Unit(pygame.sprite.Sprite):
 
         # check if can split unit
         self.can_split_row = False
-        if np.array_split(self.armysubunit, 2)[0].size > 10 and np.array_split(self.armysubunit, 2)[1].size > 10:
+        if np.array_split(self.subunit_list, 2)[0].size > 10 and np.array_split(self.subunit_list, 2)[1].size > 10:
             self.can_split_row = True
 
         self.can_split_col = False
-        if np.array_split(self.armysubunit, 2, axis=1)[0].size > 10 and np.array_split(self.armysubunit, 2, axis=1)[1].size > 10:
+        if np.array_split(self.subunit_list, 2, axis=1)[0].size > 10 and np.array_split(self.subunit_list, 2, axis=1)[1].size > 10:
             self.can_split_col = True
 
         self.auth_penalty = 0  # authority penalty
@@ -269,13 +269,13 @@ class Unit(pygame.sprite.Sprite):
         # v Set up subunit position list for drawing
         width, height = 0, 0
         subunitnum = 0  # Number of subunit based on the position in row and column
-        for subunit in self.armysubunit.flat:
-            width += self.imgsize[0]
+        for subunit in self.subunit_list.flat:
+            width += self.image_size[0]
             self.subunit_position_list.append((width, height))
             subunitnum += 1
-            if subunitnum >= len(self.armysubunit[0]):  # Reach the last subunit in the row, go to the next one
+            if subunitnum >= len(self.subunit_list[0]):  # Reach the last subunit in the row, go to the next one
                 width = 0
-                height += self.imgsize[1]
+                height += self.image_size[1]
                 subunitnum = 0
         # ^ End subunit position list
 
@@ -323,10 +323,10 @@ class Unit(pygame.sprite.Sprite):
             self.speed = min(allspeed)  # use slowest subunit
             self.walkspeed, self.runspeed = self.speed / 20, self.speed / 15
             if self.state in (1, 3, 5):
-                self.rotatespeed = self.walkspeed * 50 / (len(self.armysubunit[0]) * len(
-                    self.armysubunit))  # rotate speed is based on move speed and parentunit block size (not subunit total number)
+                self.rotatespeed = self.walkspeed * 50 / (len(self.subunit_list[0]) * len(
+                    self.subunit_list))  # rotate speed is based on move speed and parentunit block size (not subunit total number)
             else:
-                self.rotatespeed = self.runspeed * 50 / (len(self.armysubunit[0]) * len(self.armysubunit))
+                self.rotatespeed = self.runspeed * 50 / (len(self.subunit_list[0]) * len(self.subunit_list))
 
             if self.rotatespeed > 20:
                 self.rotatespeed = 20  # state 10 melee combat rotate is auto placement
@@ -356,29 +356,29 @@ class Unit(pygame.sprite.Sprite):
         stoploop = False
         while stoploop is False:  # loop until no longer find completely empty row/col
             stoploop = True
-            whoarray = self.armysubunit
+            whoarray = self.subunit_list
             fullwhoarray = [whoarray, np.fliplr(whoarray.swapaxes(0, 1)), np.rot90(whoarray),
                             np.fliplr([whoarray])[0]]  # rotate the array based on the side
             whoarray = [whoarray[0], fullwhoarray[1][0], fullwhoarray[2][0], fullwhoarray[3][0]]
             for index, whofrontline in enumerate(whoarray):
                 if any(subunit != 0 for subunit in whofrontline) is False:  # has completely empty outer row or column, remove them
                     if index == 0:  # front side
-                        self.armysubunit = self.armysubunit[1:]
+                        self.subunit_list = self.subunit_list[1:]
                         for subunit in self.subunit_sprite:
-                            subunit.unit_position = (subunit.unit_position[0], subunit.unit_position[1] - (self.imgsize[1] / 8))
+                            subunit.unit_position = (subunit.unit_position[0], subunit.unit_position[1] - (self.image_size[1] / 8))
                     elif index == 1:  # left side
-                        self.armysubunit = np.delete(self.armysubunit, 0, 1)
+                        self.subunit_list = np.delete(self.subunit_list, 0, 1)
                         for subunit in self.subunit_sprite:
-                            subunit.unit_position = (subunit.unit_position[0] - (self.imgsize[0] / 8), subunit.unit_position[1])
+                            subunit.unit_position = (subunit.unit_position[0] - (self.image_size[0] / 8), subunit.unit_position[1])
                     elif index == 2:  # right side
-                        self.armysubunit = np.delete(self.armysubunit, -1, 1)
+                        self.subunit_list = np.delete(self.subunit_list, -1, 1)
                     elif index == 3:  # rear side
-                        self.armysubunit = np.delete(self.armysubunit, -1, 0)
+                        self.subunit_list = np.delete(self.subunit_list, -1, 0)
 
-                    if len(self.armysubunit) > 0:  # still has row left
+                    if len(self.subunit_list) > 0:  # still has row left
                         oldwidthbox, oldheightbox = self.base_width_box, self.base_height_box
-                        self.base_width_box, self.base_height_box = len(self.armysubunit[0]) * (self.imgsize[0] + 10) / 20, \
-                                                                    len(self.armysubunit) * (self.imgsize[1] + 2) / 20
+                        self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, \
+                                                                    len(self.subunit_list) * (self.image_size[1] + 2) / 20
 
                         numberpos = (self.base_pos[0] - self.base_width_box,
                                      (self.base_pos[1] + self.base_height_box))  # find position for number text
@@ -499,7 +499,7 @@ class Unit(pygame.sprite.Sprite):
                          (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
         self.leader_social = self.leader[0].social
         if self.authority > 0:
-            bigarmysize = self.armysubunit > 0
+            bigarmysize = self.subunit_list > 0
             bigarmysize = bigarmysize.sum()
             if bigarmysize > 20:  # army size larger than 20 will reduce gamestart leader authority
                 self.authority = (self.teamcommander.authority / 2) + (self.leader[0].authority / 2 * (100 - bigarmysize) / 100) + \
@@ -512,7 +512,7 @@ class Unit(pygame.sprite.Sprite):
         self.setup_army(False)
         self.setup_frontline()
         self.oldarmyhealth, self.oldarmystamina = self.troop_number, self.stamina
-        self.spritearray = self.armysubunit
+        self.spritearray = self.subunit_list
         self.leader_social = self.leader[0].social
 
         # v assign team leader commander to every parentunit in team if this is commander parentunit
@@ -557,7 +557,7 @@ class Unit(pygame.sprite.Sprite):
 
         # v Setup frontline again when any subunit die
         if self.deadchange:
-            if len(self.armysubunit) > 0 and (len(self.armysubunit) > 1 or any(subunit != 0 for subunit in self.armysubunit[0])):
+            if len(self.subunit_list) > 0 and (len(self.subunit_list) > 1 or any(subunit != 0 for subunit in self.subunit_list[0])):
                 self.setup_frontline()
 
                 for subunit in self.subunit_sprite:
@@ -664,7 +664,7 @@ class Unit(pygame.sprite.Sprite):
                             else:
                                 self.set_target(self.attack_target.base_pos)
                             self.base_attack_pos = self.base_target
-                            self.new_angle = self.setrotate()  # keep rotating while chasing
+                            self.new_angle = self.set_rotate()  # keep rotating while chasing
                     else:  # enemy dead stop chasing
                         self.attack_target = None
                         self.base_attack_pos = 0
@@ -720,7 +720,7 @@ class Unit(pygame.sprite.Sprite):
                         #         self.gamebattle.allunitindex = self.switchfaction(self.gamebattle.team2_unit, self.gamebattle.team1_unit,
                         #                                                         self.gamebattle.team2_pos_list, self.gamebattle.allunitindex,
                         #                                                         self.gamebattle.enactment)
-                        #     self.gamebattle.eventlog.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
+                        #     self.gamebattle.event_log.addlog([0, str(self.leader[0].name) + "'s parentunit surrender"], [0, 1])
                         #     self.gamebattle.setuparmyicon()
                 # ^ End retreat function
 
@@ -795,7 +795,7 @@ class Unit(pygame.sprite.Sprite):
                     self.state = self.command_state  # set state to attack command state
                     self.range_combat_check = False  # stop range combat check
                     self.set_target(self.attack_target.base_pos)  # move to new base_target
-                    self.new_angle = self.setrotate()  # also keep rotate to base_target
+                    self.new_angle = self.set_rotate()  # also keep rotate to base_target
                 # ^ End range attack state
 
         else:  # dead parentunit
@@ -807,8 +807,8 @@ class Unit(pygame.sprite.Sprite):
                     self.die(self.gamebattle)
 
                 self.gamebattle.setup_unit_icon()  # reset army icon (remove dead one)
-                self.gamebattle.eventlog.add_log([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
-                                                 [0, 1])  # put destroyed event in troop and army log
+                self.gamebattle.event_log.add_log([0, str(self.leader[0].name) + "'s parentunit is destroyed"],
+                                                  [0, 1])  # put destroyed event in troop and army log
 
                 self.kill()
                 for subunit in self.subunit_sprite:
@@ -825,7 +825,7 @@ class Unit(pygame.sprite.Sprite):
         self.new_angle = self.angle
         self.moverotate = False  # will not rotate to move
         self.revert = True
-        newangle = self.setrotate()
+        newangle = self.set_rotate()
         for subunit in self.subunit_sprite:
             subunit.new_angle = newangle
 
@@ -859,7 +859,7 @@ class Unit(pygame.sprite.Sprite):
 
             self.range_combat_check = False
             self.command_target = self.base_target
-            self.new_angle = self.setrotate()
+            self.new_angle = self.set_rotate()
 
             if revertmove:  # revert subunit without rotate, cannot run in this state
                 self.revertmove()
@@ -880,7 +880,7 @@ class Unit(pygame.sprite.Sprite):
             self.set_target(self.front_pos)  # set base_target at self
             self.command_target = self.base_target  # reset command base_target
             self.range_combat_check = False  # reset range combat check
-            self.new_angle = self.setrotate()  # set rotation base_target
+            self.new_angle = self.set_rotate()  # set rotation base_target
 
     def processretreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)
@@ -954,7 +954,7 @@ class Unit(pygame.sprite.Sprite):
             self.last_base_pos = self.base_pos
 
         elif mouse_right or mouse_rightdown:  # rotate unit
-            self.angle = self.setrotate(mouse_pos)
+            self.angle = self.set_rotate(mouse_pos)
             self.new_angle = self.angle
             self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
             if self.angle < 0:  # negative angle (rotate to left side)

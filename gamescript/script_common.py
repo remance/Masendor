@@ -615,7 +615,7 @@ def trait_skill_blit(self):
 
     for trait in self.troop_card_ui.value2[0]:
         self.skill_icon.add(
-            battleui.SkillCardIcon(self.trait_imgs[0], (position[0], position[1]), 0,
+            battleui.SkillCardIcon(self.trait_images[0], (position[0], position[1]), 0,
                                    game_id=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= screen_rect.width:
@@ -628,7 +628,7 @@ def trait_skill_blit(self):
 
     for skill in self.troop_card_ui.value2[1]:
         self.skill_icon.add(
-            battleui.SkillCardIcon(self.skill_imgs[0], (position[0], position[1]), 1,
+            battleui.SkillCardIcon(self.skill_images[0], (position[0], position[1]), 1,
                                    game_id=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= screen_rect.width:
@@ -648,7 +648,7 @@ def effect_icon_blit(self):
         icon.kill()
 
     for status in self.troop_card_ui.value2[4]:
-        self.effect_icon.add(battleui.SkillCardIcon(self.status_imgs[0], (position[0], position[1]), 4, game_id=status))
+        self.effect_icon.add(battleui.SkillCardIcon(self.status_images[0], (position[0], position[1]), 4, game_id=status))
         position[0] += 40
         if position[0] >= screen_rect.width:
             position[1] += 30

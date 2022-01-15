@@ -6,7 +6,7 @@ import pygame
 import pygame.freetype
 import pygame.freetype
 import pyperclip
-from gamescript import map, commonscript
+from gamescript import map, script_common
 
 terrain_colour = map.terrain_colour
 feature_colour = map.feature_colour
@@ -18,7 +18,7 @@ class EscBox(pygame.sprite.Sprite):
 
     def __init__(self):
         self._layer = 24
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
         self.image = list(self.images.values())[0]
         self.rect = self.image.get_rect(center=self.pos)
@@ -309,14 +309,17 @@ class ValueBox(pygame.sprite.Sprite):
 
 
 class MapTitle(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, name, pos):
-        pygame.sprite.Sprite.__init__(self, self.containers)
+    def __init__(self, screen_scale, pos):
+        pygame.sprite.Sprite.__init__(self)
 
         self.font = pygame.font.SysFont("oldenglishtext", int(70 * screen_scale[1]))
-        text_surface = self.font.render(str(name), True, (0, 0, 0))
+        self.screen_scale = screen_scale
+        self.pos = pos
 
-        self.image = pygame.Surface((int(text_surface.get_width() + (20 * screen_scale[0])),
-                                     int(text_surface.get_height() + (20 * screen_scale[1]))))
+    def change_name(self, name):
+        text_surface = self.font.render(str(name), True, (0, 0, 0))
+        self.image = pygame.Surface((int(text_surface.get_width() + (20 * self.screen_scale[0])),
+                                     int(text_surface.get_height() + (20 * self.screen_scale[1]))))
         self.image.fill((0, 0, 0))
 
         white_body = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
@@ -326,15 +329,15 @@ class MapTitle(pygame.sprite.Sprite):
 
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
-        self.rect = self.image.get_rect(midtop=pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
 
 
 class MapDescription(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, screen_scale, pos, text):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        make_long_text = commonscript.make_long_text
+        pygame.sprite.Sprite.__init__(self)
+        make_long_text = script_common.make_long_text
 
         self.font = pygame.font.SysFont("timesnewroman", int(16 * screen_scale[1]))
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * screen_scale[0]),
@@ -352,8 +355,8 @@ class SourceDescription(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, screen_scale, pos, text):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        make_long_text = commonscript.make_long_text
+        pygame.sprite.Sprite.__init__(self)
+        make_long_text = script_common.make_long_text
 
         self.font = pygame.font.SysFont("timesnewroman", int(16 * screen_scale[1]))
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * screen_scale[0]),
@@ -602,7 +605,7 @@ class SourceName(pygame.sprite.Sprite):
 class MapShow(pygame.sprite.Sprite):
     def __init__(self, main_dir, screen_scale, pos, base_map, feature_map):
         self.main_dir = main_dir
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
 
         self.screen_scale = screen_scale
         self.pos = pos

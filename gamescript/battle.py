@@ -8,31 +8,32 @@ import sys
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import camera, map, weather, battleui, commonscript, menu, escmenu, subunit, unit, leader
-from gamescript.tactical import longscript
+from gamescript import camera, map, weather, battleui, script_common, menu, script_escmenu, subunit, unit, leader
+from gamescript.tactical import script_other, script_battle
 from pygame.locals import *
 from scipy.spatial import KDTree
 
-load_image = commonscript.load_image
-load_images = commonscript.load_images
-csv_read = commonscript.csv_read
-load_sound = commonscript.load_sound
-editconfig = commonscript.edit_config
-setup_list = commonscript.setup_list
-list_scroll = commonscript.list_scroll
+load_image = script_common.load_image
+load_images = script_common.load_images
+csv_read = script_common.csv_read
+load_sound = script_common.load_sound
+editconfig = script_common.edit_config
+setup_list = script_common.setup_list
+list_scroll = script_common.list_scroll
 
 
 class Battle:
-    splitunit = longscript.splitunit
-    trait_skill_blit = commonscript.trait_skill_blit
-    effect_icon_blit = commonscript.effect_icon_blit
-    countdown_skill_icon = commonscript.countdown_skill_icon
-    kill_effect_icon = commonscript.kill_effect_icon
-    popout_lorebook = commonscript.popout_lorebook
-    popup_list_newopen = commonscript.popup_list_open
-    escmenu_process = escmenu.escmenu_process
+    splitunit = script_other.splitunit
+    trait_skill_blit = script_common.trait_skill_blit
+    effect_icon_blit = script_common.effect_icon_blit
+    countdown_skill_icon = script_common.countdown_skill_icon
+    kill_effect_icon = script_common.kill_effect_icon
+    popout_lorebook = script_common.popout_lorebook
+    popup_list_newopen = script_common.popup_list_open
+    escmenu_process = script_escmenu.escmenu_process
+    check_split = script_battle.check_split
 
-    def __init__(self, main, winstyle):
+    def __init__(self, main, window_style):
         # v Get self object/variable from gamestart
         self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for self battle
         self.main = main
@@ -43,7 +44,7 @@ class Battle:
         self.team_colour = main.team_colour
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
-        self.eventlog = main.eventlog
+        self.event_log = main.event_log
         self.battle_camera = main.battle_camera
         self.battle_ui = main.battle_ui
 
@@ -82,7 +83,7 @@ class Battle:
         self.show_map = main.show_map
 
         self.mini_map = main.mini_map
-        self.eventlog = main.eventlog
+        self.event_log = main.event_log
         self.log_scroll = main.log_scroll
         self.button_ui = main.button_ui
         self.subunit_selected_border = main.inspect_selected_border
@@ -163,8 +164,8 @@ class Battle:
         self.page_button = main.page_button
 
         self.all_weather = main.all_weather
-        self.weather_matter_imgs = main.weather_matter_images
-        self.weather_effect_imgs = main.weather_effect_images
+        self.weather_matter_images = main.weather_matter_images
+        self.weather_effect_images = main.weather_effect_images
         self.weather_list = main.weather_list
 
         self.feature_mod = main.feature_mod
@@ -175,10 +176,10 @@ class Battle:
         self.all_weapon = main.all_weapon
         self.all_armour = main.all_armour
 
-        self.status_imgs = main.status_imgs
-        self.role_imgs = main.role_imgs
-        self.trait_imgs = main.trait_imgs
-        self.skill_imgs = main.skill_imgs
+        self.status_images = main.status_images
+        self.role_images = main.role_images
+        self.trait_images = main.trait_images
+        self.skill_images = main.skill_images
 
         self.troop_data = main.troop_data
         self.leader_stat = main.leader_stat
@@ -209,8 +210,8 @@ class Battle:
 
         self.leader_level = main.leader_level
 
-        self.battledone_box = main.battledone_box
-        self.gamedone_button = main.gamedone_button
+        self.battle_done_box = main.battle_done_box
+        self.battle_done_button = main.battle_done_button
         # ^ End load from gamestart
 
         self.game_speed = 0
@@ -236,12 +237,12 @@ class Battle:
         self.filter_stuff = (self.filter_box, self.slot_display_button, self.team_change_button, self.deploy_button, self.terrain_change_button,
                              self.feature_change_button, self.weather_change_button, self.filter_tick_box)
 
-        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, winstyle, 32)  # Set the display mode
-        self.screen = pygame.display.set_mode(self.screen_rect.size, winstyle | pygame.RESIZABLE, self.best_depth)  # set up self screen
+        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, window_style, 32)  # Set the display mode
+        self.screen = pygame.display.set_mode(self.screen_rect.size, window_style | pygame.RESIZABLE, self.best_depth)  # set up self screen
 
         # v Assign default variable to some class
         unit.Unit.gamebattle = self
-        unit.Unit.imgsize = (self.sprite_width, self.sprite_height)
+        unit.Unit.image_size = (self.sprite_width, self.sprite_height)
         subunit.Subunit.gamebattle = self
         leader.Leader.gamebattle = self
         # ^ End assign default
@@ -250,14 +251,14 @@ class Battle:
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
     def editor_map_change(self, base_colour, feature_colour):
-        imgs = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
-        imgs[0].fill(base_colour)  # start with temperate terrain
-        imgs[1].fill(feature_colour)  # start with plain feature
-        imgs[2].fill((255, 100, 100, 125))  # start with height 100 plain
+        map_images = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
+        map_images[0].fill(base_colour)  # start with temperate terrain
+        map_images[1].fill(feature_colour)  # start with plain feature
+        map_images[2].fill((255, 100, 100, 125))  # start with height 100 plain
 
-        self.battle_map_base.draw_image(imgs[0])
-        self.battle_map_feature.draw_image(imgs[1])
-        self.battle_map_height.draw_image(imgs[2])
+        self.battle_map_base.draw_image(map_images[0])
+        self.battle_map_feature.draw_image(map_images[1])
+        self.battle_map_height.draw_image(map_images[2])
         self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, None, self, True)
         self.mini_map.draw_image(self.show_map.true_image, self.camera)
         self.show_map.change_scale(self.camera_scale)
@@ -281,7 +282,7 @@ class Battle:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
                                           ["data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 1)
             self.weather_event = self.weather_event[1:]
-            commonscript.convert_str_time(self.weather_event)
+            script_common.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
@@ -300,7 +301,7 @@ class Battle:
                                             ["data", "ruleset", self.ruleset_folder, "map", self.mapselected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
-                    commonscript.convert_str_time(self.music_event)
+                    script_common.convert_str_time(self.music_event)
                     self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
                     new_list = []
                     for time in self.music_schedule:
@@ -319,23 +320,23 @@ class Battle:
         # ^ End music play
 
         try:  # get new map event for event log
-            map_event = csv_read("eventlog.csv",
+            map_event = csv_read("event_log.csv",
                                 [self.main_dir, "data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 0)
             battleui.EventLog.map_event = map_event
         except Exception:  # can't find any event file
             map_event = {}  # create empty list
 
-        self.eventlog.make_new_log()  # reset old event log
+        self.event_log.make_new_log()  # reset old event log
 
-        self.eventlog.add_event_log(map_event)
+        self.event_log.add_event_log(map_event)
 
         self.event_schedule = None
         self.event_list = []
-        for index, event in enumerate(self.eventlog.map_event):
-            if self.eventlog.map_event[event][3] is not None:
+        for index, event in enumerate(self.event_log.map_event):
+            if self.event_log.map_event[event][3] is not None:
                 if index == 0:
                     self.event_id = event
-                    self.event_schedule = self.eventlog.map_event[event][3]
+                    self.event_schedule = self.event_log.map_event[event][3]
                 self.event_list.append(event)
 
         self.time_number.start_setup(self.weather_current)
@@ -348,13 +349,13 @@ class Battle:
         self.camera = camera.Camera(self.camera_pos, self.camera_scale)
 
         if map_selected is not None:
-            imgs = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], load_order=False)
-            self.battle_map_base.draw_image(imgs["base.png"])
-            self.battle_map_feature.draw_image(imgs["feature.png"])
-            self.battle_map_height.draw_image(imgs["height.png"])
+            images = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], load_order=False)
+            self.battle_map_base.draw_image(images["base.png"])
+            self.battle_map_feature.draw_image(images["feature.png"])
+            self.battle_map_height.draw_image(images["height.png"])
 
             try:  # place_name map layer is optional, if not existed in folder then assign None
-                place_name_map = imgs[3]
+                place_name_map = images[3]
             except Exception:
                 place_name_map = None
             self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, place_name_map, self, False)
@@ -383,17 +384,17 @@ class Battle:
             self.death_troopnumber = [0, 0, 0]
             self.flee_troopnumber = [0, 0, 0]
             self.capture_troopnumber = [0, 0, 0]
-            longscript.unitsetup(self)
+            script_other.unitsetup(self)
         # ^ End start subunit sprite
 
     def save_preset(self):
         with open(os.path.join("profile", "unitpreset", str(self.ruleset), "custom_unitpreset.csv"), "w", encoding='utf-8', newline="") as csvfile:
             filewriter = csv.writer(csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
-            savelist = self.custom_unit_preset_list.copy()
-            del savelist["New Preset"]
+            save_list = self.custom_unit_preset_list.copy()
+            del save_list["New Preset"]
             final_save = [["presetname", "subunitline1", "subunitline2", "subunitline3", "subunitline4", "subunitline5", "subunitline6",
                           "subunitline7", "subunitline8", "leader", "leaderposition", "faction"]]
-            for item in list(savelist.items()):
+            for item in list(save_list.items()):
                 subitem = [smallitem for smallitem in item[1]]
                 item = [item[0]] + subitem
                 final_save.append(item)
@@ -401,7 +402,7 @@ class Battle:
                 filewriter.writerow(row)
             csvfile.close()
 
-    def convert_slot_dict(self, name, pos=None, addid=None):
+    def convert_slot_dict(self, name, pos=None, add_id=None):
         current_preset = [[], [], [], [], [], [], [], []]
         start_item = 0
         subunit_count = 0
@@ -467,8 +468,8 @@ class Battle:
                         current_preset[item_index] = ",".join(item)
                     else:  # still type list because only one item in list
                         current_preset[item_index] = str(current_preset[item_index][0])
-            if addid is not None:
-                current_preset = [addid] + current_preset
+            if add_id is not None:
+                current_preset = [add_id] + current_preset
             current_preset = {name: current_preset}
         else:
             current_preset = None
@@ -476,7 +477,7 @@ class Battle:
         return current_preset
 
     def preview_authority(self, leader_list, army_id):
-        """Calculate authority of editted unit"""
+        """Calculate authority of editing unit"""
         authority = int(
             leader_list[0].authority + (leader_list[0].authority / 2) +
             (leader_list[1].authority / 4) + (leader_list[2].authority / 4) +
@@ -522,7 +523,7 @@ class Battle:
                 icon.kill()
                 del icon
 
-        for index, unit in enumerate(unit_list):  # add unit icon for drawing according to appopriate current row
+        for index, unit in enumerate(unit_list):  # add unit icon for drawing according to appropriated current row
             if index >= current_index:
                 self.unit_icon.add(battleui.ArmyIcon((column, row), unit))
                 column += 40
@@ -533,24 +534,7 @@ class Battle:
                     break  # do not draw for the third row
         self.select_scroll.change_image(log_size=self.unit_selector.log_size)
 
-    def check_split(self, who):
-        """Check if unit can be splitted, if not remove splitting button"""
-        # v split by middle collumn
-        if np.array_split(who.armysubunit, 2, axis=1)[0].size >= 10 and np.array_split(who.armysubunit, 2, axis=1)[1].size >= 10 and \
-                who.leader[1].name != "None":  # can only split if both parentunit size will be larger than 10 and second leader exist
-            self.battle_ui.add(self.col_split_button)
-        elif self.col_split_button in self.battle_ui:
-            self.battle_ui.remove(self.col_split_button)
-        # ^ End col
-
-        # v split by middle row
-        if np.array_split(who.armysubunit, 2)[0].size >= 10 and np.array_split(who.armysubunit, 2)[1].size >= 10 and \
-                who.leader[1].name != "None":
-            self.battle_ui.add(self.row_split_button)
-        elif self.row_split_button in self.battle_ui:
-            self.battle_ui.remove(self.row_split_button)
-
-    def ui_mouseover(self):
+    def ui_mouse_over(self):
         """mouse over ui that is not subunit card and unitbox (topbar and commandbar)"""
         for this_ui in self.game_ui:
             if this_ui in self.battle_ui and this_ui.rect.collidepoint(self.mouse_pos):
@@ -559,7 +543,7 @@ class Battle:
                 break
         return self.click_any
 
-    def uniticon_mouseover(self, mouse_up, mouse_right):
+    def unit_icon_mouse_over(self, mouse_up, mouse_right):
         """process user mouse input on unit icon, left click = select, right click = go to parentunit position on map"""
         self.click_any = True
         self.ui_click = True
@@ -583,7 +567,7 @@ class Battle:
                     break
         return self.click_any
 
-    def button_mouseover(self, mouse_right):
+    def button_mouse_over(self, mouse_right):
         """process user mouse input on various ui buttons"""
         for button in self.button_ui:
             if button in self.battle_ui and button.rect.collidepoint(self.mouse_pos):
@@ -592,7 +576,7 @@ class Battle:
                 break
         return self.click_any
 
-    def leader_mouseover(self, mouse_right):  # TODO make it so button and leader popup not show at same time
+    def leader_mouse_over(self, mouse_right):  # TODO make it so button and leader popup not show at same time
         """process user mouse input on leader portrait in command ui"""
         leader_mouse_over = False
         for leader in self.leader_now:
@@ -756,7 +740,7 @@ class Battle:
             self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 50))
 
             self.battle_ui.remove(self.filter_stuff, self.unitsetup_stuff, self.leader_now, self.button_ui, self.warning_msg)
-            self.battle_ui.add(self.eventlog, self.log_scroll, self.eventlog_button, self.time_button)
+            self.battle_ui.add(self.event_log, self.log_scroll, self.eventlog_button, self.time_button)
 
             self.game_speed = 1
 
@@ -790,7 +774,7 @@ class Battle:
             self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(topleft=(self.troop_card_ui.rect.topleft[0],  # equipment button
                                                                                                self.troop_card_ui.rect.topleft[1] + 80))
 
-            self.battle_ui.remove(self.eventlog, self.log_scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
+            self.battle_ui.remove(self.event_log, self.log_scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
                                   self.eventlog_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
                                   self.subunit_selected_border, self.inspect_button, self.switch_button)
 
@@ -813,7 +797,7 @@ class Battle:
         self.battle_camera.clear(self.screen, self.background)  # remove all sprite
 
         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                              *self.esc_value_box, self.battledone_box, self.gamedone_button)  # remove menu
+                              *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
 
         for group in (self.subunit, self.army_leader, self.team0_unit, self.team1_unit, self.team2_unit,
                       self.unit_icon, self.troop_number_sprite,
@@ -1049,21 +1033,21 @@ class Battle:
                 if self.game_state in (1, 2):  # self in battle state
                     # v register user input during gameplay
                     if mouse_scroll_up or mouse_scroll_down:  # Mouse scroll
-                        if self.eventlog.rect.collidepoint(self.mouse_pos):  # Scrolling when mouse at event log
-                            self.eventlog.current_start_row += row_change
+                        if self.event_log.rect.collidepoint(self.mouse_pos):  # Scrolling when mouse at event log
+                            self.event_log.current_start_row += row_change
                             if mouse_scroll_up:
-                                if self.eventlog.current_start_row < 0:  # can go no further than the first log
-                                    self.eventlog.current_start_row = 0
+                                if self.event_log.current_start_row < 0:  # can go no further than the first log
+                                    self.event_log.current_start_row = 0
                                 else:
-                                    self.eventlog.recreate_image()  # recreate eventlog image
-                                    self.log_scroll.change_image(new_row=self.eventlog.current_start_row)
+                                    self.event_log.recreate_image()  # recreate event_log image
+                                    self.log_scroll.change_image(new_row=self.event_log.current_start_row)
                             elif mouse_scroll_down:
-                                if self.eventlog.current_start_row + self.eventlog.max_row_show - 1 < self.eventlog.len_check and \
-                                        self.eventlog.len_check > 9:
-                                    self.eventlog.recreate_image()
-                                    self.log_scroll.change_image(new_row=self.eventlog.current_start_row)
+                                if self.event_log.current_start_row + self.event_log.max_row_show - 1 < self.event_log.len_check and \
+                                        self.event_log.len_check > 9:
+                                    self.event_log.recreate_image()
+                                    self.log_scroll.change_image(new_row=self.event_log.current_start_row)
                                 else:
-                                    self.eventlog.current_start_row -= 1
+                                    self.event_log.current_start_row -= 1
 
                         elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # Scrolling when mouse at unit selector ui
                             self.unit_selector.current_row += row_change
@@ -1084,12 +1068,12 @@ class Battle:
 
                         elif self.popup_listbox in self.battle_ui:  # mouse scroll on popup list
                             if self.popup_listbox.type == "terrain":
-                                self.current_popu_prow = list_scroll(mouse_scroll_up, mouse_scroll_down, self.popup_listscroll,
+                                self.current_popu_prow = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.popup_listscroll,
                                                                      self.popup_listbox,
                                                                      self.current_popu_prow, self.battle_map_base.terrain_list,
                                                                      self.popup_namegroup, self.battle_ui)
                             elif self.popup_listbox.type == "feature":
-                                self.current_popu_prow = list_scroll(mouse_scroll_up, mouse_scroll_down, self.popup_listscroll,
+                                self.current_popu_prow = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.popup_listscroll,
                                                                      self.popup_listbox,
                                                                      self.current_popu_prow, self.battle_map_feature.feature_list,
                                                                      self.popup_namegroup, self.battle_ui)
@@ -1098,23 +1082,23 @@ class Battle:
                                                           self.popup_listbox, self.current_popu_prow, self.weather_list,
                                                           self.popup_namegroup, self.battle_ui)
                             elif self.popup_listbox.type == "leader":
-                                self.current_popu_prow = list_scroll(mouse_scroll_up, mouse_scroll_down, self.popup_listscroll,
+                                self.current_popu_prow = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.popup_listscroll,
                                                                      self.popup_listbox, self.current_popu_prow, self.leader_list,
                                                                      self.popup_namegroup, self.battle_ui, layer=19)
 
                         elif self.unit_listbox.rect.collidepoint(self.mouse_pos):  # mouse scroll on unit preset list
-                            self.current_unit_row = list_scroll(mouse_scroll_up, mouse_scroll_down, self.unit_preset_name_scroll,
+                            self.current_unit_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.unit_preset_name_scroll,
                                                                 self.unit_listbox,
                                                                 self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                                                                 self.unitpreset_namegroup, self.battle_ui)
                         elif self.troop_listbox.rect.collidepoint(self.mouse_pos):
                             if self.current_list_show == "troop":  # mouse scroll on troop list
-                                self.current_troop_row = list_scroll(mouse_scroll_up, mouse_scroll_down, self.troop_scroll, self.troop_listbox,
-                                                                     self.current_troop_row, self.troop_list,
+                                self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.troop_scroll,
+                                                                     self.troop_listbox, self.current_troop_row, self.troop_list,
                                                                      self.troop_namegroup, self.battle_ui)
                             elif self.current_list_show == "faction":  # mouse scroll on faction list
-                                self.current_troop_row = list_scroll(mouse_scroll_up, mouse_scroll_down, self.troop_scroll, self.troop_listbox,
-                                                                     self.current_troop_row, self.faction_list,
+                                self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.troop_scroll,
+                                                                     self.troop_listbox, self.current_troop_row, self.faction_list,
                                                                      self.troop_namegroup, self.battle_ui)
 
                         elif self.map_scale_delay == 0:  # Scrolling in self map to zoom
@@ -1179,15 +1163,15 @@ class Battle:
                         self.speed_number.speed_update(self.game_speed)
 
                     elif keypress == pygame.K_PAGEUP:  # Go to top of event log
-                        self.eventlog.current_start_row = 0
-                        self.eventlog.recreate_image()
-                        self.log_scroll.change_image(new_row=self.eventlog.current_start_row)
+                        self.event_log.current_start_row = 0
+                        self.event_log.recreate_image()
+                        self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
                     elif keypress == pygame.K_PAGEDOWN:  # Go to bottom of event log
-                        if self.eventlog.len_check > self.eventlog.max_row_show:
-                            self.eventlog.current_start_row = self.eventlog.len_check - self.eventlog.max_row_show
-                            self.eventlog.recreate_image()
-                            self.log_scroll.change_image(new_row=self.eventlog.current_start_row)
+                        if self.event_log.len_check > self.event_log.max_row_show:
+                            self.event_log.current_start_row = self.event_log.len_check - self.event_log.max_row_show
+                            self.event_log.recreate_image()
+                            self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
                     elif keypress == pygame.K_SPACE and self.last_selected is not None:
                         self.last_selected.command(self.battle_mouse_pos[0], False, False, self.last_mouseover, None, othercommand=2)
@@ -1302,7 +1286,7 @@ class Battle:
                             if mouse_left_up:
                                 self.click_any = True
                             self.ui_click = True
-                            self.uniticon_mouseover(mouse_left_up, mouse_right_up)
+                            self.unit_icon_mouse_over(mouse_left_up, mouse_right_up)
 
                         elif self.test_button.rect.collidepoint(self.mouse_pos) and self.test_button in self.battle_ui:
                             self.ui_click = True
@@ -1324,11 +1308,11 @@ class Battle:
                                 if mouse_left_down or mouse_left_up:
                                     self.click_any = True
                                     new_row = self.log_scroll.user_input(self.mouse_pos)
-                                    if self.eventlog.current_start_row != new_row:
-                                        self.eventlog.current_start_row = new_row
-                                        self.eventlog.recreate_image()
+                                    if self.event_log.current_start_row != new_row:
+                                        self.event_log.current_start_row = new_row
+                                        self.event_log.recreate_image()
 
-                            elif self.eventlog.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
+                            elif self.event_log.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
                                 if mouse_left_up:
                                     self.click_any = True
                                 self.ui_click = True
@@ -1353,10 +1337,10 @@ class Battle:
                                             self.speed_number.speed_update(self.game_speed)
                                             break
 
-                            elif self.ui_mouseover():  # check mouse collide for other ui
+                            elif self.ui_mouse_over():  # check mouse collide for other ui
                                 pass
 
-                            elif self.button_mouseover(mouse_right_up):  # check mouse collide for button
+                            elif self.button_mouse_over(mouse_right_up):  # check mouse collide for button
                                 pass
 
                             elif mouse_right_up and self.last_selected is None and self.ui_click is False:  # draw terrain popup ui when right click at map with no selected parentunit
@@ -1371,15 +1355,15 @@ class Battle:
                             elif self.ui_click is False:
                                 for index, button in enumerate(self.eventlog_button):  # Event log button and timer button click
                                     if button.rect.collidepoint(self.mouse_pos):
-                                        if index in (0, 1, 2, 3, 4, 5):  # eventlog button
+                                        if index in (0, 1, 2, 3, 4, 5):  # event_log button
                                             self.ui_click = True
                                             if mouse_left_up:
                                                 if button.event in (0, 1, 2, 3):  # change tab mode
-                                                    self.eventlog.change_mode(button.event)
+                                                    self.event_log.change_mode(button.event)
                                                 elif button.event == 4:  # delete tab log button
-                                                    self.eventlog.clear_tab()
+                                                    self.event_log.clear_tab()
                                                 elif button.event == 5:  # delete all tab log button
-                                                    self.eventlog.clear_tab(all_tab=True)
+                                                    self.event_log.clear_tab(all_tab=True)
                                         break
 
                             # v code that only run when any unit is selected
@@ -1533,7 +1517,7 @@ class Battle:
                                         #         for subunit in self.last_selected.subunit_sprite:
                                         #             subunit.status_effect[98] = self.troop_data.status_list[98].copy()
                                         #             subunit.unit_health -= round(subunit.unit_health * 0.1)
-                                    if self.leader_mouseover(mouse_right_up):
+                                    if self.leader_mouse_over(mouse_right_up):
                                         self.battle_ui.remove(self.button_name_popup)
                                         pass
                                 else:
@@ -1551,7 +1535,7 @@ class Battle:
                                                     if mouse_left_up:
                                                         self.subunit_selected = subunit
                                                         self.subunit_selected_border.pop(self.subunit_selected.pos)
-                                                        self.eventlog.add_log(
+                                                        self.event_log.add_log(
                                                             [0, str(self.subunit_selected.who.board_pos) + " " + str(
                                                                 self.subunit_selected.who.name) + " in " +
                                                              self.subunit_selected.who.parentunit.leader[0].name + "'s parentunit is selected"], [3])
@@ -2043,7 +2027,7 @@ class Battle:
                                                         subunit_gameid = subunit_gameid + 1
                                                     for slot in self.unit_build_slot:  # just for grabing current selected team
                                                         current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
-                                                        longscript.convertedit_unit(self,
+                                                        script_other.convertedit_unit(self,
                                                                                     (self.team0_unit, self.team1_unit, self.team2_unit)[slot.team],
                                                                                     current_preset[self.unit_preset_name],
                                                                                     self.team_colour[slot.team],
@@ -2238,11 +2222,11 @@ class Battle:
 
                         # v Event log timer
                         if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
-                            self.eventlog.add_log(None, None, event_id=self.event_id)
-                            for event in self.eventlog.map_event:
-                                if self.eventlog.map_event[event][3] is not None and self.eventlog.map_event[event][3] > self.time_number.time_number:
+                            self.event_log.add_log(None, None, event_id=self.event_id)
+                            for event in self.event_log.map_event:
+                                if self.event_log.map_event[event][3] is not None and self.event_log.map_event[event][3] > self.time_number.time_number:
                                     self.event_id = event
-                                    self.event_schedule = self.eventlog.map_event[event][3]
+                                    self.event_schedule = self.event_log.map_event[event][3]
                                     break
                             self.event_list = self.event_list[1:]
                         # ^ End event log timer
@@ -2259,7 +2243,7 @@ class Battle:
                                                                        self.all_weather)
                             self.weather_event.pop(0)
                             self.show_map.add_effect(self.battle_map_height,
-                                                     self.weather_effect_imgs[self.current_weather.weather_type][self.current_weather.level])
+                                                     self.weather_effect_images[self.current_weather.weather_type][self.current_weather.level])
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_current = self.weather_event[0][1]
@@ -2290,10 +2274,10 @@ class Battle:
                                     true_pos = (self.screen_rect.width, random.randint(0, self.screen_rect.height))
                                     target = (0, true_pos[1])
 
-                                random_pic = random.randint(0, len(self.weather_matter_imgs[self.current_weather.weather_type]) - 1)
+                                random_pic = random.randint(0, len(self.weather_matter_images[self.current_weather.weather_type]) - 1)
                                 self.weather_matter.add(weather.MatterSprite(true_pos, target,
                                                                              self.current_weather.speed,
-                                                                             self.weather_matter_imgs[self.current_weather.weather_type][
+                                                                             self.weather_matter_images[self.current_weather.weather_type][
                                                                                 random_pic]))
                         # ^ End weather system
 
@@ -2427,7 +2411,7 @@ class Battle:
                     self.time_number.timerupdate(self.dt * 10)  # update ingame time with 5x speed
 
                     if self.mode == "battle" and (len(self.team1_unit) <= 0 or len(self.team2_unit) <= 0):
-                        if self.battledone_box not in self.battle_ui:
+                        if self.battle_done_box not in self.battle_ui:
                             if len(self.team1_unit) <= 0 and len(self.team2_unit) <= 0:
                                 team_win = 0  # draw
                             elif len(self.team2_unit) <= 0:
@@ -2437,24 +2421,24 @@ class Battle:
                             if team_win != 0:
                                 for index, coa in enumerate(self.team_coa):
                                     if index == team_win - 1:
-                                        self.battledone_box.pop(coa.name)
+                                        self.battle_done_box.pop(coa.name)
                                         break
                             else:
-                                self.battledone_box.pop("Draw")
-                            self.gamedone_button.rect = self.gamedone_button.image.get_rect(midtop=self.gamedone_button.pos)
-                            self.battle_ui.add(self.battledone_box, self.gamedone_button)
+                                self.battle_done_box.pop("Draw")
+                            self.battle_done_button.rect = self.battle_done_button.image.get_rect(midtop=self.battle_done_button.pos)
+                            self.battle_ui.add(self.battle_done_box, self.battle_done_button)
                         else:
-                            if mouse_left_up and self.gamedone_button.rect.collidepoint(self.mouse_pos):
+                            if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
                                 self.game_state = 3  # end battle mode, result screen
                                 self.game_speed = 0
                                 coa_list = [None, None]
                                 for index, coa in enumerate(self.team_coa):
                                     coa_list[index] = coa.image
-                                self.battledone_box.show_result(coa_list[0], coa_list[1], [self.start_troopnumber, self.team_troopnumber,
-                                                                                         self.wound_troopnumber, self.death_troopnumber,
-                                                                                         self.flee_troopnumber, self.capture_troopnumber])
-                                self.gamedone_button.rect = self.gamedone_button.image.get_rect(center=(self.battledone_box.rect.midbottom[0],
-                                                                                                        self.battledone_box.rect.midbottom[1] / 1.3))
+                                self.battle_done_box.show_result(coa_list[0], coa_list[1], [self.start_troopnumber, self.team_troopnumber,
+                                                                                            self.wound_troopnumber, self.death_troopnumber,
+                                                                                            self.flee_troopnumber, self.capture_troopnumber])
+                                self.battle_done_button.rect = self.battle_done_button.image.get_rect(center=(self.battle_done_box.rect.midbottom[0],
+                                                                                                              self.battle_done_box.rect.midbottom[1] / 1.3))
 
                         # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
                         #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)

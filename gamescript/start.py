@@ -10,32 +10,32 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import map, weather, lorebook, drama, battleui, commonscript, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
+from gamescript import map, weather, lorebook, drama, battleui, script_common, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
 from pygame.locals import *
 
-load_image = commonscript.load_image
-load_images = commonscript.load_images
-csv_read = commonscript.csv_read
-load_sound = commonscript.load_sound
-edit_config = commonscript.edit_config
-make_bar_list = commonscript.make_bar_list
-load_base_button = commonscript.load_base_button
-text_objects = commonscript.text_objects
-setup_list = commonscript.setup_list
-list_scroll = commonscript.list_scroll
-read_terrain_data = commonscript.read_terrain_data
-read_weather_data = commonscript.read_weather_data
-read_map_data = commonscript.read_map_data
-read_faction_data = commonscript.read_faction_data
-make_encyclopedia_ui = commonscript.make_encyclopedia_ui
-make_input_box = commonscript.make_input_box
-make_editor_ui = commonscript.make_editor_ui
-load_icon_data = commonscript.load_icon_data
-load_battle_data = commonscript.load_battle_data
-load_option_menu = commonscript.load_option_menu
-make_event_log = commonscript.make_event_log
-make_esc_menu = commonscript.make_esc_menu
-make_popup_ui = commonscript.make_popup_ui
+load_image = script_common.load_image
+load_images = script_common.load_images
+csv_read = script_common.csv_read
+load_sound = script_common.load_sound
+edit_config = script_common.edit_config
+make_bar_list = script_common.make_bar_list
+load_base_button = script_common.load_base_button
+text_objects = script_common.text_objects
+setup_list = script_common.setup_list
+list_scroll = script_common.list_scroll
+read_terrain_data = script_common.read_terrain_data
+read_weather_data = script_common.read_weather_data
+read_map_data = script_common.read_map_data
+read_faction_data = script_common.read_faction_data
+make_encyclopedia_ui = script_common.make_encyclopedia_ui
+make_input_box = script_common.make_input_box
+make_editor_ui = script_common.make_editor_ui
+load_icon_data = script_common.load_icon_data
+load_battle_data = script_common.load_battle_data
+load_option_menu = script_common.load_option_menu
+make_event_log = script_common.make_event_log
+make_esc_menu = script_common.make_esc_menu
+make_popup_ui = script_common.make_popup_ui
 version_name = "Dream Decision"
 
 # Will keep leader, subunit, unit and other state as magic number since changing them take too much space, see below for refencing
@@ -63,7 +63,7 @@ class Mainmenu:
     leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                     "Advisor")  # Name of leader position in parentunit, the first 4 is for commander parentunit
     team_colour = ((255, 255, 255), (144, 167, 255), (255, 114, 114))  # team colour, Neutral, 1, 2
-    popup_list_open = commonscript.popup_list_open
+    popup_list_open = script_common.popup_list_open
     lorebook_process = lorebook.lorebook_process
 
     def __init__(self, main_dir):
@@ -168,11 +168,7 @@ class Mainmenu:
         # battle select menu
         self.map_listbox = pygame.sprite.Group()  # ui box for map list
         self.map_namegroup = pygame.sprite.Group()  # map name list group
-        self.map_show = pygame.sprite.Group()  # preview image of selected map
         self.team_coa = pygame.sprite.Group()  # team coat of arm that also act as team selection icon
-        self.map_title = pygame.sprite.Group()  # map title box
-        self.map_description = pygame.sprite.Group()  # map description box in map select screen
-        self.source_description = pygame.sprite.Group()  # map source description box in preset battle preparation screen
         self.army_stat = pygame.sprite.Group()  # ui box that show army stat in preset battle preparation screen
         self.source_namegroup = pygame.sprite.Group()  # source name list group
         self.tick_box = pygame.sprite.Group()  # option tick box
@@ -232,32 +228,22 @@ class Mainmenu:
         self.dead_unit = pygame.sprite.Group()  # dead subunit group
 
         self.game_ui = pygame.sprite.Group()  # various self ui group
-        self.mini_map = pygame.sprite.Group()  # mini_map ui
-        self.eventlog = pygame.sprite.Group()  # event log ui
         self.button_ui = pygame.sprite.Group()  # buttons for various ui group
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
         self.switch_button_ui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. parentunit behaviour setting)
 
-        self.terrain_check = pygame.sprite.Group()  # terrain information pop up ui
         self.buttonname_popup = pygame.sprite.Group()  # button name pop up ui when mouse over button
         self.leader_popup = pygame.sprite.Group()  # leader name pop up ui when mouse over leader image in command ui
         self.effect_popup = pygame.sprite.Group()  # effect name pop up ui when mouse over status effect icon
-        self.drama_text = pygame.sprite.Group()  # dramatic text effect (announcement) object
 
         self.skill_icon = pygame.sprite.Group()  # skill and trait icon objects
         self.effect_icon = pygame.sprite.Group()  # status effect icon objects
 
-        self.battle_menu = pygame.sprite.Group()  # esc menu object
         self.battle_menu_button = pygame.sprite.Group()  # buttons for esc menu object group
         self.escoption_menu_button = pygame.sprite.Group()  # buttons for esc menu option object group
         self.slidermenu = pygame.sprite.Group()  # volume slider in esc option menu
 
         self.unit_icon = pygame.sprite.Group()  # unit icon object group in unit selector ui
-
-        self.time_ui = pygame.sprite.Group()  # time bar ui
-        self.time_number = pygame.sprite.Group()  # number text of in-self time
-        self.speed_number = pygame.sprite.Group()  # number text of current self speed
-
         self.weather_matter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
         self.weather_effect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
         # ^ End initialise
@@ -270,11 +256,7 @@ class Mainmenu:
 
         menu.ListBox.containers = self.map_listbox, self.troop_listbox, self.popup_listbox
         menu.NameList.containers = self.map_namegroup
-        menu.MapShow.containers = self.map_show
         menu.TeamCoa.containers = self.team_coa
-        menu.MapTitle.containers = self.map_title
-        menu.MapDescription.containers = self.map_description
-        menu.SourceDescription.containers = self.source_description
         menu.ArmyStat.containers = self.army_stat
 
         menu.SourceName.containers = self.source_namegroup, self.main_ui
@@ -290,32 +272,23 @@ class Mainmenu:
         uniteditor.PreviewBox.effect_image = load_image(self.main_dir, "effect.png", "map")  # map special effect image
         uniteditor.FilterBox.containers = self.filter_box
         uniteditor.PreviewChangeButton.containers = self.terrain_change_button, self.weather_change_button, self.feature_change_button
-        uniteditor.Unitbuildslot.containers = self.unit_build_slot
+        uniteditor.UnitBuildSlot.containers = self.unit_build_slot
         uniteditor.PreviewLeader.containers = self.preview_leader
 
         # battle containers
         battleui.GameUI.containers = self.game_ui, self.ui_updater
-        battleui.Minimap.containers = self.mini_map, self.battle_ui
         battleui.UIButton.containers = self.button_ui, self.lore_button_ui
         battleui.SwitchButton.containers = self.switch_button_ui, self.ui_updater
         battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battle_ui
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui
-        battleui.EventLog.containers = self.eventlog
         battleui.ArmyIcon.containers = self.unit_icon, self.battle_ui
-        battleui.TimeUI.containers = self.time_ui, self.battle_ui
-        battleui.Timer.containers = self.time_number, self.battle_ui
-        battleui.SpeedNumber.containers = self.speed_number, self.battle_ui
 
-        popup.TerrainPopup.containers = self.terrain_check
         popup.OneLinePopup.containers = self.buttonname_popup, self.leader_popup
         popup.EffectIconPopup.containers = self.effect_popup
 
-        drama.TextDrama.containers = self.drama_text
-
         rangeattack.RangeArrow.containers = self.range_attacks, self.effect_updater, self.battle_camera
 
-        menu.EscBox.containers = self.battle_menu
         menu.EscButton.containers = self.battle_menu_button, self.escoption_menu_button
 
         weather.MatterSprite.containers = self.weather_matter, self.battle_ui, self.weather_updater
@@ -345,17 +318,19 @@ class Mainmenu:
 
         self.all_faction, self.coa_list, self.faction_list = read_faction_data(main_dir, self.ruleset_folder)
 
-        self.status_imgs, self.role_imgs, self.trait_imgs, self.skill_imgs = load_icon_data(self.main_dir)
+        self.status_images, self.role_images, self.trait_images, self.skill_images = load_icon_data(self.main_dir)
 
         self.mini_map = battleui.Minimap((self.screen_rect.width, self.screen_rect.height))
+        self.battle_ui.add(self.mini_map)
 
         self.all_weapon, self.all_armour, self.troop_data, self.leader_stat = load_battle_data(self.main_dir, self.ruleset, self.ruleset_folder)
 
         # Time bar ui
-        self.time_ui = battleui.TimeUI((0,0), battle_ui_image["timebar.png"])  # TODO change later
+        self.time_ui = battleui.TimeUI((0, 0), battle_ui_image["timebar.png"])  # TODO change later
         self.time_number = battleui.Timer(self.time_ui.rect.topleft)  # time number on time ui
         self.speed_number = battleui.SpeedNumber((self.time_ui.rect.center[0] + 40, self.time_ui.rect.center[1]),
                                                  1)  # self speed number on the time ui
+        self.battle_ui.add(self.time_ui, self.time_number, self.speed_number)
 
         image = pygame.Surface((battle_ui_image["timebar.png"].get_width(), 15))
         self.scale_ui = battleui.ScaleUI(self.time_ui.rect.bottomleft, image)
@@ -370,9 +345,9 @@ class Mainmenu:
         self.sprite_width = subunit_icon_image.get_width()
         self.sprite_height = subunit_icon_image.get_height()
 
-        uniteditor.Unitbuildslot.sprite_width = self.sprite_width  # sprite_width and height generated in mode (e.g. tactical) file longscript.py
-        uniteditor.Unitbuildslot.sprite_height = self.sprite_height
-        uniteditor.Unitbuildslot.create_troop_stat = subunit.create_troop_stat
+        uniteditor.UnitBuildSlot.sprite_width = self.sprite_width  # sprite_width and height generated in mode (e.g. tactical) file script_other.py
+        uniteditor.UnitBuildSlot.sprite_height = self.sprite_height
+        uniteditor.UnitBuildSlot.create_troop_stat = subunit.create_troop_stat
 
         start_pos = [(self.screen_rect.width / 2) - (self.sprite_width * 5),
                      (self.screen_rect.height / 2) - (self.sprite_height * 4)]
@@ -485,13 +460,14 @@ class Mainmenu:
         if self.enactment:
             self.enactment_tick_box.change_tick(True)
 
+        self.map_title = menu.MapTitle(self.screen_scale, (self.screen_rect.width / 2, 0))
+
         menu.MapDescription.image = battle_select_image["map_description.png"]
         menu.SourceDescription.image = battle_select_image["source_description.png"]
         menu.ArmyStat.image = battle_select_image["stat.png"]
 
         self.current_map_row = 0
         self.current_map_select = 0
-
         self.current_source_row = 0
         # ^ End battle map menu button
 
@@ -520,16 +496,16 @@ class Mainmenu:
 
         battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
 
-        self.battledone_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
-                                                  battle_ui_image["end_box.png"], battle_ui_image["result_box.png"])
-        self.gamedone_button = battleui.UIButton((self.battledone_box.pos[0], self.battledone_box.box_image.get_height() * 0.8),
-                                                 battle_ui_image["end_button.png"], layer=19)
+        self.battle_done_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
+                                                   battle_ui_image["end_box.png"], battle_ui_image["result_box.png"])
+        self.battle_done_button = battleui.UIButton((self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8),
+                                                    battle_ui_image["end_button.png"], layer=19)
 
         drama.TextDrama.images = load_images(self.main_dir, ["ui", "popup_ui", "drama_text"], load_order=False)
         drama.TextDrama.screen_rect = self.screen_rect
         self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
 
-        self.eventlog, self.trooplog_button, self.eventlog_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
+        self.event_log, self.trooplog_button, self.eventlog_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
         self.button_ui.add(self.eventlog_button)
 
         self.battle_menu, self.battle_menu_button, self.esc_option_menu_button, self.esc_slider_menu, \
@@ -550,18 +526,18 @@ class Mainmenu:
         self.genre_list = subdirectories  # map name list for map selection list
 
         # genre box ui
-        box_img = load_image(self.main_dir, "genre_box.png", "ui\\mainmenu_ui")
+        box_image = load_image(self.main_dir, "genre_box.png", "ui\\mainmenu_ui")
         self.genre_change_box = uniteditor.PreviewChangeButton(self.screen_scale,
-                                                               (box_img.get_width() / 2 * self.screen_scale[0],
-                                                                box_img.get_height() * self.screen_scale[1]), box_img,
+                                                               (box_image.get_width() / 2 * self.screen_scale[0],
+                                                                box_image.get_height() * self.screen_scale[1]), box_image,
                                                                self.genre.capitalize())
         self.change_genre(self.genre)
         # ^ End genre
 
         # v profile box
         self.profile_name = self.profile_name
-        img = load_image(self.main_dir, "profile_box.png", "ui\\mainmenu_ui")
-        self.profile_box = menu.ProfileBox(self.screen_scale, img, (self.screen_width, 0),
+        profile_box_image = load_image(self.main_dir, "profile_box.png", "ui\\mainmenu_ui")
+        self.profile_box = menu.ProfileBox(self.screen_scale, profile_box_image, (self.screen_width, 0),
                                            self.profile_name)  # profile name box at top right of screen at gamestart menu screen
         # ^ End profile box
 
@@ -599,13 +575,13 @@ class Mainmenu:
             self.genre = self.genre_list[genre].lower()
         else:
             self.genre = genre.lower()
-        global longscript
+        global script_other
         if self.genre == "tactical":
-            from gamescript.tactical import longscript
-            longscript.load_game_data(self)  # obtain self stat data and create lore book object
+            from gamescript.tactical import script_other
+            script_other.load_game_data(self)  # obtain self stat data and create lore book object
         elif self.genre == "arcade":
-            from gamescript.arcade import longscript
-            longscript.load_game_data(self)
+            from gamescript.arcade import script_other
+            script_other.load_game_data(self)
 
         self.genre_change_box.changetext(self.genre.capitalize())
         edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
@@ -701,10 +677,7 @@ class Mainmenu:
         # ^ End map preview
 
         # v Create map title at the top
-        for name in self.map_title:
-            name.kill()
-            del name
-        self.map_title.add(menu.MapTitle(self.screen_scale, map_list[self.current_map_select], (self.screen_rect.width / 2, 0)))
+        self.map_title.change_name(map_list[self.current_map_select])
         self.main_ui.add(self.map_title)
         # ^ End map title
 
@@ -795,7 +768,7 @@ class Mainmenu:
             if columnonly is False:
                 width += self.sprite_width
                 self.unit_build_slot.add(
-                    uniteditor.Unitbuildslot(gameid, team, unitid, (width, height), startpos, slot_number,
+                    uniteditor.UnitBuildSlot(gameid, team, unitid, (width, height), startpos, slot_number,
                                              self.team_colour))
                 slot_number += 1
                 if slot_number % 8 == 0:  # Pass the last subunit in the row, go to the next one
@@ -804,7 +777,7 @@ class Mainmenu:
             else:
                 height += self.sprite_height
                 self.unit_build_slot.add(
-                    uniteditor.Unitbuildslot(gameid, team, unitid, (width, height), startpos, slot_number,
+                    uniteditor.UnitBuildSlot(gameid, team, unitid, (width, height), startpos, slot_number,
                                              self.team_colour))
                 slot_number += 1
             gameid += 1

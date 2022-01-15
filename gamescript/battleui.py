@@ -2,7 +2,7 @@ import datetime
 
 import pygame
 import pygame.freetype
-from gamescript import map, commonscript
+from gamescript import map, script_common
 
 
 class UIButton(pygame.sprite.Sprite):
@@ -102,7 +102,7 @@ class GameUI(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
-        make_long_text = commonscript.make_long_text
+        make_long_text = script_common.make_long_text
         for this_button in button:
             this_button.draw(self.image)
         position = 65
@@ -384,7 +384,7 @@ class SelectedSquad(pygame.sprite.Sprite):
 class Minimap(pygame.sprite.Sprite):
     def __init__(self, pos):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.pos = pos
 
         self.team2_dot = pygame.Surface((8, 8))  # dot for team2 subunit
@@ -440,7 +440,7 @@ class EventLog(pygame.sprite.Sprite):
 
     def __init__(self, image, pos):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", 16)
         self.pos = pos
         self.image = image
@@ -689,13 +689,17 @@ class ArmyIcon(pygame.sprite.Sprite):
 class Timer(pygame.sprite.Sprite):
     def __init__(self, pos, text_size=20):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
         self.image_original = self.image.copy()
         self.rect = self.image.get_rect(topleft=pos)
         self.timer = 0
+
+    def change_pos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=pos)
 
     def start_setup(self, time_start):
         self.timer = time_start.total_seconds()
@@ -725,12 +729,17 @@ class Timer(pygame.sprite.Sprite):
 class TimeUI(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.pos = pos
         self.image = image.copy()
         self.image_original = self.image.copy()
         self.rect = self.image.get_rect(topleft=pos)
 
+    def change_pos(self, pos, time_number, speed_number=None, time_button=None):
+        """change position of the ui and related buttons"""
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=pos)
+        time_number.change_pos(self.rect.topleft)
 
 class ScaleUI(pygame.sprite.Sprite):
     def __init__(self, pos, image):
@@ -764,7 +773,7 @@ class ScaleUI(pygame.sprite.Sprite):
 class SpeedNumber(pygame.sprite.Sprite):
     def __init__(self, pos, speed, text_size=20):
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
         self.image = pygame.Surface((50, 30), pygame.SRCALPHA)

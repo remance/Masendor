@@ -4,15 +4,15 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import commonscript, rangeattack
-from gamescript.tactical import longscript
+from gamescript import script_common, rangeattack
+from gamescript.tactical import script_other
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
 infinity = float("inf")
-rotationxy = commonscript.rotation_xy
+rotationxy = script_common.rotation_xy
 
 
 def create_troop_stat(self, stat, starthp, startstamina, unitscale):
@@ -369,12 +369,12 @@ class Subunit(pygame.sprite.Sprite):
     base_map = None  # base map
     feature_map = None  # feature map
     height_map = None  # height map
-    dmgcal = longscript.dmgcal
+    dmgcal = script_other.dmgcal
     weapon_list = None
     armour_list = None
     stat_list = None
-    set_rotate = longscript.set_rotate
-    change_leader = longscript.change_leader
+    set_rotate = script_other.set_rotate
+    change_leader = script_other.change_leader
     maxzoom = 10  # max zoom allow
     create_troop_stat = create_troop_stat
 
@@ -603,7 +603,7 @@ class Subunit(pygame.sprite.Sprite):
         """Find nearby friendly squads in the same parentunit for applying buff"""
         self.nearby_subunit_list = []
         corner_subunit = []
-        for rowindex, rowlist in enumerate(self.parentunit.armysubunit.tolist()):
+        for rowindex, rowlist in enumerate(self.parentunit.subunit_list.tolist()):
             if self.game_id in rowlist:
                 if rowlist.index(self.game_id) - 1 != -1:  # get subunit from left if not at first column
                     self.nearby_subunit_list.append(self.parentunit.spritearray[rowindex][rowlist.index(self.game_id) - 1])  # index 0
@@ -804,7 +804,7 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End map feature
 
         # v Apply effect from skill
-        # For list of status and skill effect column index used in statusupdate see longscript.py load_game_data()
+        # For list of status and skill effect column index used in statusupdate see script_other.py load_game_data()
         if len(self.skill_effect) > 0:
             for status in self.skill_effect:  # apply elemental effect to melee_dmg if skill has element
                 calstatus = self.skill_effect[status]
@@ -1570,16 +1570,16 @@ class Subunit(pygame.sprite.Sprite):
                 self.gamebattle.all_subunit_list.remove(self)
                 self.parentunit.subunit_sprite.remove(self)
 
-                for subunit in self.parentunit.armysubunit.flat:  # remove from index array
+                for subunit in self.parentunit.subunit_list.flat:  # remove from index array
                     if subunit == self.game_id:
-                        self.parentunit.armysubunit = np.where(self.parentunit.armysubunit == self.game_id, 0, self.parentunit.armysubunit)
+                        self.parentunit.subunit_list = np.where(self.parentunit.subunit_list == self.game_id, 0, self.parentunit.subunit_list)
                         break
 
                 self.change_leader("die")
 
-                self.gamebattle.eventlog.add_log([0, str(self.board_pos) + " " + str(self.name)
-                                                  + " in " + self.parentunit.leader[0].name
-                                                  + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
+                self.gamebattle.event_log.add_log([0, str(self.board_pos) + " " + str(self.name)
+                                                   + " in " + self.parentunit.leader[0].name
+                                                   + "'s parentunit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []

@@ -115,10 +115,10 @@ class SelectedPresetBorder(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
-class Unitbuildslot(pygame.sprite.Sprite):
+class UnitBuildSlot(pygame.sprite.Sprite):
     sprite_width = 0  # subunit sprite width size get add from gamestart
     sprite_height = 0  # subunit sprite height size get add from gamestart
-    images = []  # image related to subunit sprite, get add from loadgamedata in gamelongscript
+    images = []  # image related to subunit sprite
     weapon_list = None
     armour_list = None
     stat_list = None

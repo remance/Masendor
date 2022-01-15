@@ -3,7 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript.tactical import longscript
+from gamescript.tactical import script_other
 from pygame.transform import scale
 
 
@@ -137,7 +137,7 @@ class RangeArrow(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        who_dmg, who_morale_dmg, who_leader_dmg = longscript.losscal(who, target, who_hit, target_def, self)
+        who_dmg, who_morale_dmg, who_leader_dmg = script_other.losscal(who, target, who_hit, target_def, self)
         target.unit_health -= who_dmg
         target.base_morale -= who_morale_dmg
 

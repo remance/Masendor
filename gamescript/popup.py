@@ -8,7 +8,7 @@ class TerrainPopup(pygame.sprite.Sprite):
 
     def __init__(self):
         self._layer = 12
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.scale_adjust = (
                 self.screen_rect.width * self.screen_rect.height / (
                     1366 * 768))  # For adjusting the image and text according to screen size
