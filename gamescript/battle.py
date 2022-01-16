@@ -9,13 +9,10 @@ import numpy as np
 import pygame
 import pygame.freetype
 from gamescript import camera, map, weather, battleui, script_common, menu, script_escmenu, subunit, unit, leader
-from gamescript.tactical import script_other, script_battle
+from gamescript.tactical import script_other, script_battle, script_editor
+from gamescript.tactical.subunit import fight
 from pygame.locals import *
 from scipy.spatial import KDTree
-
-import gamescript.tactical.script_battle
-import gamescript.tactical.script_editor
-import gamescript.tactical.script_subunit
 
 load_image = script_common.load_image
 load_images = script_common.load_images
@@ -36,6 +33,7 @@ class Battle:
     popup_list_newopen = script_common.popup_list_open
     escmenu_process = script_escmenu.escmenu_process
     check_split = script_battle.check_split
+    unit_setup = script_battle.unit_setup
 
     def __init__(self, main, window_style):
         # v Get self object/variable from gamestart
@@ -388,7 +386,7 @@ class Battle:
             self.death_troopnumber = [0, 0, 0]
             self.flee_troopnumber = [0, 0, 0]
             self.capture_troopnumber = [0, 0, 0]
-            gamescript.tactical.script_battle.unit_setup(self)
+            self.unit_setup()
         # ^ End start subunit sprite
 
     def save_preset(self):
@@ -851,7 +849,7 @@ class Battle:
 
             for leader in self.preview_leader:
                 leader.change_subunit(None)  # remove subunit link in leader
-                gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
+                combat.change_leader(1, self.leader_stat)
 
             del self.current_weather
 
@@ -1204,13 +1202,13 @@ class Battle:
                     # elif keypress == pygame.K_k and self.last_selected is not None:
                     #     # for index, subunit in enumerate(self.last_selected.subunit_sprite):
                     #     #     subunit.unit_health -= subunit.unit_health
-                    #     self.subunit_selected.who.unit_health -= self.subunit_selected.who.unit_health
+                    #     self.subunit_selected.self.unit_health -= self.subunit_selected.self.unit_health
                     # elif keypress == pygame.K_m and self.last_selected is not None:
                     #     # self.last_selected.leader[0].health -= 1000
-                    #     self.subunit_selected.who.leader.health -= 1000
-                    #     # self.subunit_selected.who.base_morale -= 1000
-                    #     # self.subunit_selected.who.broken_limit = 80
-                    #     # self.subunit_selected.who.state = 99
+                    #     self.subunit_selected.self.leader.health -= 1000
+                    #     # self.subunit_selected.self.base_morale -= 1000
+                    #     # self.subunit_selected.self.broken_limit = 80
+                    #     # self.subunit_selected.self.state = 99
                     # elif keypress == pygame.K_COMMA and self.last_selected is not None:
                     #     for index, subunit in enumerate(self.last_selected.subunit_sprite):
                     #         subunit.stamina -= subunit.stamina
@@ -1659,7 +1657,7 @@ class Battle:
                                                 if self.preview_leader[leader_index].subunit is not None:
                                                     self.preview_leader[leader_index].subunit.leader = None
 
-                                                gamescript.tactical.script_subunit.change_leader(item, self.leader_stat)
+                                                combat.change_leader(item, self.leader_stat)
 
                                                 pos_index = 0
                                                 for slot in self.unit_build_slot:  # can't use game_id here as none subunit not count in position check
@@ -1694,7 +1692,7 @@ class Battle:
 
                                             for leader in self.preview_leader:
                                                 leader.change_subunit(None)  # remove subunit link in leader
-                                                gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
+                                                combat.change_leader(1, self.leader_stat)
 
                                             self.leader_now = [leader for leader in self.preview_leader]
                                             self.battle_ui.add(*self.leader_now)  # add leader portrait to draw
@@ -1964,7 +1962,7 @@ class Battle:
                                                                         self.effect_icon_blit()
                                                                         self.countdown_skill_icon()
                                                                 elif slot.name == "None" and slot.leader is not None:  # remove leader from none subunit if any
-                                                                    gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
+                                                                    combat.change_leader(1, self.leader_stat)
                                                                     slot.leader.change_subunit(None)  # remove subunit link in leader
                                                                     slot.leader = None  # remove leader link in subunit
                                                                     self.preview_authority(self.leader_now, slot.army_id)
@@ -2353,8 +2351,8 @@ class Battle:
 
                         self.subunit_pos_array = self.map_move_array.copy()
                         for subunit in self.all_subunit_list:
-                            for y in subunit.posrange[0]:
-                                for x in subunit.posrange[1]:
+                            for y in subunit.pos_range[0]:
+                                for x in subunit.pos_range[1]:
                                     self.subunit_pos_array[x][y] = 0
 
                     # v Updater

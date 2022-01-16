@@ -6,9 +6,8 @@ import pygame
 import pygame.freetype
 from gamescript import script_common
 from gamescript.tactical import script_other
+from gamescript.tactical.unit import combat
 from pygame.transform import scale
-
-import gamescript.tactical.script_subunit
 
 rotationxy = script_common.rotation_xy
 
@@ -143,7 +142,7 @@ class Unit(pygame.sprite.Sprite):
     status_list = None  # status effect list
     max_zoom = 10  # max zoom allow
     battle = None
-    die = gamescript.tactical.script_subunit.die  # die script
+    destroyed = combat.destroyed  # destroyed script
     set_rotate = script_other.set_rotate
     form_change_timer = 10
     image_size = None
@@ -220,7 +219,7 @@ class Unit(pygame.sprite.Sprite):
         self.collide = False  # for checking if subunit collide, if yes then stop moving
         self.range_combat_check = False
         self.attack_target = None  # attack base_target, can be either int or unit object
-        self.got_killed = False  # for checking if die() was performed when subunit die yet
+        self.got_killed = False  # for checking if destroyed() was performed when subunit destroyed yet
         # ^ End behaviour check
 
         # v setup default starting value
@@ -557,7 +556,7 @@ class Unit(pygame.sprite.Sprite):
                 self.change_pos_scale()  # update unit sprite according to new scale
         # ^ End zoom
 
-        # v Setup frontline again when any subunit die
+        # v Setup frontline again when any subunit destroyed
         if self.dead_change:
             if len(self.subunit_list) > 0 and (len(self.subunit_list) > 1 or any(subunit != 0 for subunit in self.subunit_list[0])):
                 self.setup_frontline()
@@ -578,7 +577,7 @@ class Unit(pygame.sprite.Sprite):
 
                 self.state = 100
             # ^ End remove
-        # ^ End setup frontline when subunit die
+        # ^ End setup frontline when subunit destroyed
 
         if self.state != 100:
             self.ally_pos_list[self.game_id] = self.base_pos  # update current position to team position list
@@ -623,13 +622,13 @@ class Unit(pygame.sprite.Sprite):
 
                     self.timer -= 1  # reset timer, not reset to 0 because higher speed can cause inconsistency in update timing
 
-                # v Recal stat involve leader if one die
+                # v Recal stat involve leader if one destroyed
                 if self.leader_change:
                     self.auth_recal()
                     self.commandbuff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
                                         (self.leader[0].cavcommand - 5) * 0.1]
                     self.leader_change = False
-                # ^ End recal stat when leader die
+                # ^ End recal stat when leader destroyed
 
                 if self.range_combat_check:
                     self.state = 11  # can only shoot if range_combat_check is true
@@ -804,9 +803,9 @@ class Unit(pygame.sprite.Sprite):
             # v unit just got killed
             if self.got_killed is False:
                 if self.team == 1:
-                    self.die(self.battle)
+                    self.destroyed(self.battle)
                 else:
-                    self.die(self.battle)
+                    self.destroyed(self.battle)
 
                 self.battle.setup_unit_icon()  # reset army icon (remove dead one)
                 self.battle.event_log.add_log([0, str(self.leader[0].name) + "'s unit is destroyed"],

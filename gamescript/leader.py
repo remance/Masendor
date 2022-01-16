@@ -81,7 +81,7 @@ class Leader(pygame.sprite.Sprite):
     def gone(self, eventtext={96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}):
         """leader no longer in command due to death or other events"""
         if self.commander and self.parentunit.leader[3].state not in (96, 97, 98, 99, 100) and self.parentunit.leader[3].name != "None":
-            # If commander die will use strategist as next commander first
+            # If commander destroyed will use strategist as next commander first
             self.parentunit.leader[0], self.parentunit.leader[3] = self.parentunit.leader[3], self.parentunit.leader[0]
         elif self.armyposition + 1 != 4 and self.parentunit.leader[self.armyposition + 1].state not in (96, 97, 98, 99, 100) and \
                 self.parentunit.leader[self.armyposition + 1].name != "None":
@@ -93,16 +93,16 @@ class Leader(pygame.sprite.Sprite):
             thisbadmorale = self.badmorale[1]
 
         for subunit in self.parentunit.subunit_sprite:
-            subunit.base_morale -= (thisbadmorale * subunit.mental)  # decrease all subunit morale when leader die depending on position
+            subunit.base_morale -= (thisbadmorale * subunit.mental)  # decrease all subunit morale when leader destroyed depending on position
             subunit.morale_regen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 
-        if self.commander:  # reduce morale to whole army if commander die from the melee_dmg (leader die cal is in leader.py)
+        if self.commander:  # reduce morale to whole army if commander destroyed from the melee_dmg (leader destroyed cal is in leader.py)
             self.gamebattle.drama_text.queue.append(str(self.name) + " is " + eventtext[self.state])
-            eventmapid = "ld0"  # read ld0 event log for special log when team 1 commander die, not used for other leader
+            eventmapid = "ld0"  # read ld0 event log for special log when team 1 commander destroyed, not used for other leader
             whicharmy = self.gamebattle.team1_unit
             if self.parentunit.team == 2:
                 whicharmy = self.gamebattle.team2_unit
-                eventmapid = "ld1"  # read ld1 event log for special log when team 2 commander die, not used for other leader
+                eventmapid = "ld1"  # read ld1 event log for special log when team 2 commander destroyed, not used for other leader
 
             if self.originalcommander and self.state == 100:
                 self.gamebattle.event_log.add_log([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
@@ -111,7 +111,7 @@ class Leader(pygame.sprite.Sprite):
 
             for army in whicharmy:
                 for subunit in army.subunit_sprite:
-                    subunit.base_morale -= (200 * subunit.mental)  # all subunit morale -100 when commander die
+                    subunit.base_morale -= (200 * subunit.mental)  # all subunit morale -100 when commander destroyed
                     subunit.morale_regen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
 
         else:
@@ -158,14 +158,14 @@ class Leader(pygame.sprite.Sprite):
             squadpenal = int(
                 (self.subunitpos / len(self.parentunit.subunit_list[0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squadpenal / 100) / 2)
-            self.badmorale = (30, 50)  ## gamestart general morale lost when die
+            self.badmorale = (30, 50)  ## gamestart general morale lost when destroyed
             if self.parentunit.commander:
                 self.commander = True
                 self.originalcommander = True
 
     def update(self):
         if self.state not in (96, 97, 98, 99, 100):
-            if self.health <= 0:  # health reach 0, die. may implement wound state chance later
+            if self.health <= 0:  # health reach 0, destroyed. may implement wound state chance later
                 self.health = 0
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0

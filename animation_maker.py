@@ -9,15 +9,15 @@ from pathlib import Path
 import pygame
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 
-from gamescript import commonscript, readstat, menu, battleui
-from gamescript.arcade import longscript
+from gamescript import script_common, readstat, menu, battleui
+from gamescript.arcade import script_other
 
-rotation_xy = commonscript.rotation_xy
-load_image = commonscript.load_image
-load_images = commonscript.load_images
-load_base_button = commonscript.load_base_button
+rotation_xy = script_common.rotation_xy
+load_image = script_common.load_image
+load_images = script_common.load_images
+load_base_button = script_common.load_base_button
 stat_convert = readstat.stat_convert
-set_rotate = longscript.set_rotate
+set_rotate = script_other.set_rotate
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 

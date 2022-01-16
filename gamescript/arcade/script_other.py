@@ -6,11 +6,11 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import commonscript
+from gamescript import script_common
 
-load_image = commonscript.load_image
-load_images = commonscript.load_images
-csv_read = commonscript.csv_read
+load_image = script_common.load_image
+load_images = script_common.load_images
+csv_read = script_common.csv_read
 
 """This file contains fuctions of various purposes"""
 
@@ -577,7 +577,7 @@ def die(who, battle, moralehit=True):
 
 
 def change_leader(self, event):
-    """Leader change subunit or gone/die, event can be "die" or "broken" """
+    """Leader change subunit or gone/destroyed, event can be "destroyed" or "broken" """
     checkstate = [100]
     if event == "broken":
         checkstate = [99, 100]
@@ -611,7 +611,7 @@ def change_leader(self, event):
 
                     break
 
-            if self.leader is not None and event == "die":  # Still can't find new subunit so leader disappear with chance of different result
+            if self.leader is not None and event == "destroyed":  # Still can't find new subunit so leader disappear with chance of different result
                 self.leader.state = random.randint(97, 100)  # captured, retreated, wounded, dead
                 self.leader.health = 0
                 self.leader.gone()
