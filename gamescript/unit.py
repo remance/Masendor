@@ -8,7 +8,7 @@ from gamescript import script_common
 from gamescript.tactical import script_other
 from pygame.transform import scale
 
-import Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit
+import gamescript.tactical.script_subunit
 
 rotationxy = script_common.rotation_xy
 
@@ -143,7 +143,7 @@ class Unit(pygame.sprite.Sprite):
     status_list = None  # status effect list
     max_zoom = 10  # max zoom allow
     battle = None
-    die = Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit.die  # die script
+    die = gamescript.tactical.script_subunit.die  # die script
     set_rotate = script_other.set_rotate
     form_change_timer = 10
     image_size = None

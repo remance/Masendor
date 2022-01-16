@@ -13,9 +13,9 @@ from gamescript.tactical import script_other, script_battle
 from pygame.locals import *
 from scipy.spatial import KDTree
 
-import Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_battle
-import Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_editor
-import Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit
+import gamescript.tactical.script_battle
+import gamescript.tactical.script_editor
+import gamescript.tactical.script_subunit
 
 load_image = script_common.load_image
 load_images = script_common.load_images
@@ -388,7 +388,7 @@ class Battle:
             self.death_troopnumber = [0, 0, 0]
             self.flee_troopnumber = [0, 0, 0]
             self.capture_troopnumber = [0, 0, 0]
-            Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_battle.unitsetup(self)
+            gamescript.tactical.script_battle.unit_setup(self)
         # ^ End start subunit sprite
 
     def save_preset(self):
@@ -851,7 +851,7 @@ class Battle:
 
             for leader in self.preview_leader:
                 leader.change_subunit(None)  # remove subunit link in leader
-                Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
+                gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
 
             del self.current_weather
 
@@ -1659,7 +1659,7 @@ class Battle:
                                                 if self.preview_leader[leader_index].subunit is not None:
                                                     self.preview_leader[leader_index].subunit.leader = None
 
-                                                Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit.change_leader(item, self.leader_stat)
+                                                gamescript.tactical.script_subunit.change_leader(item, self.leader_stat)
 
                                                 pos_index = 0
                                                 for slot in self.unit_build_slot:  # can't use game_id here as none subunit not count in position check
@@ -1694,7 +1694,7 @@ class Battle:
 
                                             for leader in self.preview_leader:
                                                 leader.change_subunit(None)  # remove subunit link in leader
-                                                Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
+                                                gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
 
                                             self.leader_now = [leader for leader in self.preview_leader]
                                             self.battle_ui.add(*self.leader_now)  # add leader portrait to draw
@@ -1964,7 +1964,7 @@ class Battle:
                                                                         self.effect_icon_blit()
                                                                         self.countdown_skill_icon()
                                                                 elif slot.name == "None" and slot.leader is not None:  # remove leader from none subunit if any
-                                                                    Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
+                                                                    gamescript.tactical.script_subunit.change_leader(1, self.leader_stat)
                                                                     slot.leader.change_subunit(None)  # remove subunit link in leader
                                                                     slot.leader = None  # remove leader link in subunit
                                                                     self.preview_authority(self.leader_now, slot.army_id)
@@ -2031,7 +2031,7 @@ class Battle:
                                                         subunit_gameid = subunit_gameid + 1
                                                     for slot in self.unit_build_slot:  # just for grabing current selected team
                                                         current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
-                                                        Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_editor.convert_edit_unit(self,
+                                                        gamescript.tactical.script_editor.convert_edit_unit(self,
                                                                                                                                                    (self.team0_unit, self.team1_unit, self.team2_unit)[slot.team],
                                                                                                                                                    current_preset[self.unit_preset_name],
                                                                                                                                                    self.team_colour[slot.team],

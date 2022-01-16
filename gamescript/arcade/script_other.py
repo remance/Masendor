@@ -16,7 +16,7 @@ csv_read = commonscript.csv_read
 
 # Default self mechanic value
 
-battlesidecal = (1, 0.5, 0.1, 0.5)  # battlesidecal is for melee combat side modifier
+battlesidecal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side modifier
 infinity = float("inf")
 
 letterboard = ("a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
@@ -375,7 +375,7 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
             if who.charge_skill in who.skill_effect:  # Include charge in melee_dmg if attacking
                 if who.ignore_chargedef is False:  # Ignore charge defence if have ignore trait
                     sidecal = battlesidecal[defside]
-                    if target.fulldef or target.temp_full_def:  # defence all side
+                    if target.full_def or target.temp_full_def:  # defence all side
                         sidecal = 1
                     dmg = dmg + ((who.charge - (target.charge_def * sidecal)) * 2)
                     if (target.charge_def * sidecal) >= who.charge / 2:
@@ -485,12 +485,12 @@ def dmgcal(attacker, target, attackerside, targetside, statuslist, combattimer):
     targetluck = random.randint(-50, 50)  # defender luck
     whopercent = battlesidecal[attackerside]  # attacker attack side modifier
 
-    """34 battlemaster fulldef or 91 allrounddef status = no flanked penalty"""
-    if attacker.fulldef or 91 in attacker.status_effect:
+    """34 battlemaster full_def or 91 allrounddef status = no flanked penalty"""
+    if attacker.full_def or 91 in attacker.status_effect:
         whopercent = 1
     targetpercent = battlesidecal[targetside]  # defender defend side
 
-    if target.fulldef or 91 in target.status_effect:
+    if target.full_def or 91 in target.status_effect:
         targetpercent = 1
 
     dmgeffect = attacker.front_dmg_effect

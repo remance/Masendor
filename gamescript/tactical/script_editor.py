@@ -1,4 +1,4 @@
-from Documents.PycharmProjects.Masendor.RTS.gamescript.tactical.script_battle import generate_unit
+from gamescript.tactical.script_battle import generate_unit
 
 
 def convert_edit_unit(gamebattle, which_army, row, colour, coa, subunit_game_id):

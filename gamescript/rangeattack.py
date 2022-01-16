@@ -127,7 +127,7 @@ class RangeArrow(pygame.sprite.Sprite):
         target_luck = random.randint(-20, 20)  # luck of the defender subunit
 
         target_percent = side_percent[target_side]  # side penalty
-        if target.fulldef or target.temp_full_def:
+        if target.full_def or target.temp_full_def:
             target_percent = 1  # no side penalty for all round defend
         who_hit = float(self.accuracy) + who_luck  # calculate hit chance
         if who_hit < 0:

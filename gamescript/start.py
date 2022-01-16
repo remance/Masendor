@@ -347,7 +347,7 @@ class Mainmenu:
 
         uniteditor.UnitBuildSlot.sprite_width = self.sprite_width  # sprite_width and height generated in mode (e.g. tactical) file script_other.py
         uniteditor.UnitBuildSlot.sprite_height = self.sprite_height
-        uniteditor.UnitBuildSlot.create_troop_stat = subunit.create_troop_stat
+        uniteditor.UnitBuildSlot.add_trait = subunit.Subunit.add_trait
 
         start_pos = [(self.screen_rect.width / 2) - (self.sprite_width * 5),
                      (self.screen_rect.height / 2) - (self.sprite_height * 4)]
