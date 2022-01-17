@@ -9,9 +9,27 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
+from types import MethodType
 
 infinity = float("inf")
 rotation_xy = script_common.rotation_xy
+
+
+def change_genre(genre):
+    """Change game genre and add appropiate method to subunit class"""
+    if genre == "tactical":
+        from gamescript.tactical.subunit import fight, spawn, movement
+    elif genre == "arcade":
+        from gamescript.arcade.subunit import fight, spawn, movement
+
+    Subunit.add_weapon_stat = spawn.add_weapon_stat
+    Subunit.add_mount_stat = spawn.add_mount_stat
+    Subunit.create_sprite = spawn.create_sprite
+    Subunit.dmg_cal = fight.dmg_cal
+    Subunit.change_leader = fight.change_leader
+    Subunit.rotate = movement.rotate
+    Subunit.rotate_logic = movement.rotate_logic
+    Subunit.move_logic = movement.move_logic
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -24,6 +42,8 @@ class Subunit(pygame.sprite.Sprite):
     armour_list = None
     stat_list = None
     max_zoom = 10  # max zoom allow
+
+    set_rotate = script_common.set_rotate
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, genre):
         """Although subunit in code, this is referred as sub-subunit ingame"""
@@ -83,49 +103,40 @@ class Subunit(pygame.sprite.Sprite):
 
         # v Setup troop stat
         stat = self.stat_list.troop_list[self.troop_id].copy()
-        stat_header = self.stat_list.troop_list_header
-        weapon_header = self.weapon_list.weapon_list_header
-        armour_header = self.armour_list.armour_list_header
-        grade_header = self.stat_list.grade_list_header
-        mount_header = self.stat_list.mount_list_header
-        mount_grade_header = self.stat_list.mount_grade_list_header
 
-        self.name = stat[0]  # name according to the preset
-        self.grade = stat[stat_header["Grade"]]  # training level/class grade
-        self.race = stat[stat_header["Race"]]  # creature race
-        self.trait = stat[stat_header["Trait"]]  # trait list from preset
-        self.trait = self.trait + self.stat_list.grade_list[self.grade][grade_header["Trait"]]  # add trait from grade
-        skill = stat[stat_header["Skill"]]  # skill list according to the preset
+        self.name = stat["Name"]  # name according to the preset
+        self.grade = stat["Grade"]  # training level/class grade
+        self.race = stat["Race"]  # creature race
+        self.trait = stat["Trait"]  # trait list from preset
+        self.trait = self.trait + self.stat_list.grade_list[self.grade]["Trait"]  # add trait from grade
+        skill = stat["Skill"]  # skill list according to the preset
         self.skill_cooldown = {}
-        self.cost = stat[stat_header["Cost"]]
+        self.cost = stat["Cost"]
         grade_stat = self.stat_list.grade_list[self.grade]
-        self.base_attack = stat[stat_header["Melee Attack"]] + \
-                           grade_stat[grade_header["Melee Attack Bonus"]]  # base melee attack with grade bonus
-        self.base_melee_def = stat[stat_header["Melee Defence"]] + \
-                              grade_stat[grade_header["Defence Bonus"]]  # base melee defence with grade bonus
-        self.base_range_def = stat[stat_header["Ranged Defence"]] + \
-                              grade_stat[grade_header["Defence Bonus"]]  # base range defence with grade bonus
-        self.armour_gear = stat[stat_header["Armour"]]  # armour equipment
-        self.base_armour = self.armour_list.armour_list[self.armour_gear[0]][1] \
+        self.grade_name = grade_stat["Name"]
+        self.base_attack = stat["Melee Attack"] + grade_stat["Melee Attack Bonus"]  # base melee attack with grade bonus
+        self.base_melee_def = stat["Melee Defence"] + grade_stat["Defence Bonus"]  # base melee defence with grade bonus
+        self.base_range_def = stat["Ranged Defence"] + grade_stat["Defence Bonus"]  # base range defence with grade bonus
+        self.armour_gear = stat["Armour"]  # armour equipment
+        self.base_armour = self.armour_list.armour_list[self.armour_gear[0]]["Armour"] \
                            * self.armour_list.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
-        self.base_accuracy = stat[stat_header["Accuracy"]] + grade_stat[grade_header["Accuracy Bonus"]]
-        self.base_sight = stat[stat_header["Sight"]]  # base sight range
-        self.magazine_left = stat[stat_header["Ammunition"]]  # amount of ammunition
-        self.base_reload = stat[stat_header["Reload"]] + grade_stat[grade_header["Reload Bonus"]]
-        self.base_charge = stat[stat_header["Charge"]]
+        self.base_accuracy = stat["Accuracy"] + grade_stat["Accuracy Bonus"]
+        self.base_sight = stat["Sight"]  # base sight range
+        self.magazine_left = stat["Ammunition"]  # amount of ammunition
+        self.base_reload = stat["Reload"] + grade_stat["Reload Bonus"]
+        self.base_charge = stat["Charge"]
         self.base_charge_def = 50  # All infantry subunit has default 50 charge defence
-        self.charge_skill = stat[stat_header["Charge Skill"]]  # For easier reference to check what charge skill this subunit has
+        self.charge_skill = stat["Charge Skill"]  # For easier reference to check what charge skill this subunit has
         self.skill = [self.charge_skill] + skill  # Add charge skill as first item in the list
-        self.troop_health = stat[stat_header["Health"]] * grade_stat[grade_header["Health Effect"]]  # Health of each troop
-        self.stamina = stat[stat_header["Stamina"]] * grade_stat[grade_header["Stamina Effect"]] * (
-                    start_stamina / 100)  # starting stamina with grade
-        self.mana = stat[stat_header["Mana"]]  # Resource for magic skill
+        self.troop_health = stat["Health"] * grade_stat["Health Effect"]  # Health of each troop
+        self.stamina = stat["Stamina"] * grade_stat["Stamina Effect"] * (start_stamina / 100)  # starting stamina with grade
+        self.mana = stat["Mana"]  # Resource for magic skill
 
         # vv Weapon stat
-        self.primary_main_weapon = stat[stat_header["Primary Main Weapon"]]
-        self.primary_sub_weapon = stat[stat_header["Primary Sub Weapon"]]
-        self.secondary_main_weapon = stat[stat_header["Secondary Main Weapon"]]
-        self.secondary_sub_weapon = stat[stat_header["Secondary Sub Weapon"]]
+        self.primary_main_weapon = stat["Primary Main Weapon"]
+        self.primary_sub_weapon = stat["Primary Sub Weapon"]
+        self.secondary_main_weapon = stat["Secondary Main Weapon"]
+        self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
 
         self.weight = 0
         self.melee_dmg = [0, 0]
@@ -136,14 +147,12 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_speed = 0
         self.magazine_size = 0
 
-        self.base_morale = stat[stat_header["Morale"]] + grade_stat[grade_header["Morale Bonus"]]  # morale with grade bonus
-        self.base_discipline = stat[stat_header["Discipline"]] + grade_stat[grade_header["Discipline Bonus"]]  # discilpline with grade bonus
-        self.mental = stat[stat_header["Mental"]] + grade_stat[
-            grade_header["Mental Bonus"]]  # mental resistance from morale melee_dmg and mental status effect
-        self.troop_number = stat[stat_header["Troop"]] * unit_scale[
-            self.team - 1] * start_hp / 100  # number of starting troop, team -1 to become list index
+        self.base_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
+        self.base_discipline = stat["Discipline"] + grade_stat["Discipline Bonus"]  # discilpline with grade bonus
+        self.mental = stat["Mental"] + grade_stat["Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
+        self.troop_number = stat["Troop"] * unit_scale[self.team - 1] * start_hp / 100  # number of starting troop, team -1 to become list index
         self.base_speed = 50  # All infantry has base speed at 50
-        self.subunit_type = stat[stat_header["Troop Class"]] - 1  # 0 is melee infantry and 1 is range for command buff
+        self.subunit_type = stat["Troop Class"] - 1  # 0 is melee infantry and 1 is range for command buff
         self.feature_mod = 1  # the starting column in unit_terrainbonus of infantry
         self.authority = 100  # default start at 100
 
@@ -195,30 +204,10 @@ class Subunit(pygame.sprite.Sprite):
         self.temp_unbreakable = False
         self.stationplace = False
         # ^^ End setup trait variable
-
-        self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
-        if len(self.trait) > 0:
-            self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
-                          x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
-            self.add_trait()
-        self.battle.start_troopnumber[self.team] += self.troop_number  # add troop number to counter how many troop join battle
         # ^ End setup stat
 
-        # self.loyalty
-
         if genre == "tactical":
-            global script_other, script_battle, script_subunit
-            from gamescript.tactical.subunit import fight, start, movement
-            self.dmg_cal = fight.dmg_cal
-            self.add_weapon_stat = start.add_weapon_stat
-            self.add_mount_stat = start.add_mount_statset_rotate
-            self.set_rotate = script_other.set_rotate
-            self.change_leader = fight.change_leader
-            self.rotate_logic = movement.rotate_logic
-            self.rotate = movement.rotate_logic
-            self.move_logic = movement.move_logic
-
-            self.add_weapon_stat(weapon_header)
+            self.add_weapon_stat()
 
             self.melee_speed = int(self.melee_speed)
 
@@ -229,11 +218,11 @@ class Subunit(pygame.sprite.Sprite):
             # ^^ End weapon stat
 
             # vv Mount stat
-            self.mount = self.stat_list.mount_list[stat[stat_header["Mount"]][0]]  # mount this subunit use
-            self.mount_grade = self.stat_list.mount_grade_list[stat[stat_header["Mount"]][1]]
-            self.mount_armour = self.stat_list.mount_armour_list[stat[stat_header["Mount"]][2]]
-            if stat[stat_header["Mount"]][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
-                self.add_mount_stat(mount_header, mount_grade_header)
+            self.mount = self.stat_list.mount_list[stat["Mount"][0]]  # mount this subunit use
+            self.mount_grade = self.stat_list.mount_grade_list[stat["Mount"][1]]
+            self.mount_armour = self.stat_list.mount_armour_list[stat["Mount"][2]]
+            if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
+                self.add_mount_stat()
             # ^^ End mount stat
 
             self.last_health_state = 4  # state start at full
@@ -246,16 +235,14 @@ class Subunit(pygame.sprite.Sprite):
             self.stamina5 = self.stamina * 0.05
 
             self.unit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
+            self.old_unit_health = self.unit_health
             self.max_health = self.unit_health  # health percentage
             self.health_list = (self.unit_health * 0.75, self.unit_health * 0.5, self.unit_health * 0.25, 0)
 
             self.old_last_health, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
             self.max_troop = self.troop_number  # max number of troop at the start
-            self.morale_state = self.base_morale / self.max_morale  # turn into percentage
-            self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
-            self.stamina_state_cal = self.stamina_state / 100  # for using as modifier on stat
 
-            sprite_dict = script_battle.create_sprite(self)
+            sprite_dict = self.create_sprite()
             self.image = sprite_dict["sprite"]
             self.image_original = sprite_dict["original"]
             self.image_original2 = sprite_dict["original2"]
@@ -263,7 +250,7 @@ class Subunit(pygame.sprite.Sprite):
             self.block = sprite_dict["block"]
             self.block_original = sprite_dict["block_original"]
             self.selected_image = sprite_dict["selected"]
-            self.selected_image_rect = sprite_dict["selected_image_rect"]
+            self.selected_image_rect = sprite_dict["selected_rect"]
             self.selected_image_original = sprite_dict["selected_original"]
             self.selected_image_original2 = sprite_dict["selected_original2"]
             self.far_image = sprite_dict["far"]
@@ -276,27 +263,33 @@ class Subunit(pygame.sprite.Sprite):
             self.health_image_list = sprite_dict["health_list"]
             self.stamina_image_list = sprite_dict["stamina_list"]
 
+        self.trait += self.armour_list.armour_list[self.armour_gear[0]]["Trait"]  # Apply armour trait to subunit
+
+        self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
+        if len(self.trait) > 0:
+            self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
+                          x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+            self.add_trait()
+
         self.skill = {x: self.stat_list.skill_list[x].copy() for x in self.skill if
                       x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
         for skill in list(self.skill.keys()):  # remove skill if class mismatch
-            skill_troop_cond = self.skill[skill][self.skill_troop_type]
+            skill_troop_cond = self.skill[skill]["Troop Type"]
             if skill_troop_cond == 0 or (self.subunit_type == 2 and skill_troop_cond == 2) or (self.subunit_type != 2 and skill_troop_cond != 2):
                 pass
             else:
                 self.skill.pop(skill)
 
         # v Weight calculation
-        self.weight += self.armour_list.armour_list[self.armour_gear[0]][armour_header["Weight"]] + \
-                       self.mount_armour[2]  # Weight from both melee and range weapon and armour
+        self.weight += self.armour_list.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
         # ^ End weight cal
 
-        self.trait += self.armour_list.armour_list[self.armour_gear[0]][armour_header["Trait"]]  # Apply armour trait to subunit
-        self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
-            grade_header["Speed Bonus"]]  # finalise base speed with weight and grade bonus
-        self.size = stat[stat_header["Size"]]
-        self.description = stat[-1]  # subunit description for inspect ui
+        self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat["Speed Bonus"]  # finalise base speed with weight and grade bonus
+        self.size = stat["Size"]
+        self.battle.start_troopnumber[self.team] += self.troop_number  # add troop number to counter how many troop join battle
+        self.description = stat["Description"]  # subunit description for inspect ui
         # if self.hidden
 
         # vv Stat variable after receive modifier effect from various sources, used for activity and effect calculation
@@ -320,6 +313,10 @@ class Subunit(pygame.sprite.Sprite):
         self.elem_melee = self.base_elem_melee
         self.elem_range = self.base_elem_range
         # ^^ End stat for status effect
+
+        self.morale_state = self.base_morale / self.max_morale  # turn into percentage
+        self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
+        self.stamina_state_cal = self.stamina_state / 100  # for using as modifier on stat
 
         if self.mental < 0:  # cannot be negative
             self.mental = 0
@@ -389,12 +386,12 @@ class Subunit(pygame.sprite.Sprite):
         if which_skill == 0:  # charge skill need to seperate since charge power will be used only for charge skill
             skill_stat = self.skill[list(self.skill)[0]].copy()  # get skill stat
             self.skill_effect[self.charge_skill] = skill_stat  # add stat to skill effect
-            self.skill_cooldown[self.charge_skill] = skill_stat[self.skill_cd]  # add skill cooldown
+            self.skill_cooldown[self.charge_skill] = skill_stat["Cooldown"]  # add skill cooldown
         else:  # other skill
             skill_stat = self.skill[which_skill].copy()  # get skill stat
             self.skill_effect[which_skill] = skill_stat  # add stat to skill effect
-            self.skill_cooldown[which_skill] = skill_stat[self.skill_cd]  # add skill cooldown
-        self.stamina -= skill_stat[9]
+            self.skill_cooldown[which_skill] = skill_stat["Cooldown"]  # add skill cooldown
+        self.stamina -= skill_stat["Stamina Cost"]
         # self.skill_cooldown[which_skill] =
 
     # def receiveskill(self,which_skill):
@@ -407,9 +404,9 @@ class Subunit(pygame.sprite.Sprite):
             self.available_skill = []
         else:  # check all skill
             self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
-                                    and self.state in self.skill[skill][self.skill_condition] and self.discipline >= self.skill[skill][
-                                        self.skill_discipline_req]
-                                    and self.stamina > self.skill[skill][self.skill_stamina_cost] and skill != self.charge_skill]
+                                    and self.state in self.skill[skill]["Condition"] and self.discipline >= self.skill[skill][
+                                        "Discipline Requirement"]
+                                    and self.stamina > self.skill[skill]["Stamina Cost"] and skill != self.charge_skill]
 
     def find_nearby_subunit(self):
         """Find nearby friendly squads in the same unit for applying buff"""
@@ -542,10 +539,10 @@ class Subunit(pygame.sprite.Sprite):
         # v Apply status effect from trait
         if len(self.trait) > 1:
             for trait in self.trait.values():
-                if trait[18] != [0]:
-                    for effect in trait[18]:  # aplly status effect from trait
+                if trait["Status"] != [0]:
+                    for effect in trait["Status"]:  # aplly status effect from trait
                         self.status_effect[effect] = self.status_list[effect].copy()
-                        if trait[1] > 1:  # status buff range to nearby friend
+                        if trait["Buff Range"] > 1:  # status buff range to nearby friend
                             self.status_to_friend(trait[1], effect, self.status_list[effect].copy())
         # ^ End trait
 
@@ -620,47 +617,47 @@ class Subunit(pygame.sprite.Sprite):
         if len(self.skill_effect) > 0:
             for status in self.skill_effect:  # apply elemental effect to melee_dmg if skill has element
                 cal_status = self.skill_effect[status]
-                if cal_status[self.skill_type] == 0 and cal_status[self.skill_element] != 0:  # melee elemental effect
-                    self.elem_melee = cal_status[self.skill_element]
-                elif cal_status[self.skill_type] == 1 and cal_status[self.skill_element] != 0:  # range elemental effect
-                    self.elem_range = cal_status[self.skill_element]
-                self.attack = self.attack * cal_status[self.skill_melee_attack]
-                self.melee_def = self.melee_def * cal_status[self.skill_melee_defence]
-                self.range_def = self.range_def * cal_status[self.skill_range_defence]
-                self.speed = self.speed * cal_status[self.skill_speed]
-                self.accuracy = self.accuracy * cal_status[self.skill_accuracy]
-                self.shoot_range = self.shoot_range * cal_status[self.skill_range]
+                if cal_status["Type"] == 0 and cal_status["Element"] != 0:  # melee elemental effect
+                    self.elem_melee = cal_status["Element"]
+                elif cal_status["Type"] == 1 and cal_status["Element"] != 0:  # range elemental effect
+                    self.elem_range = cal_status["Element"]
+                self.attack = self.attack * cal_status["Melee Attack Effect"]
+                self.melee_def = self.melee_def * cal_status["Melee Defence Effect"]
+                self.range_def = self.range_def * cal_status["Ranged Defence Effect"]
+                self.speed = self.speed * cal_status["Speed Effect"]
+                self.accuracy = self.accuracy * cal_status["Accuracy Effect"]
+                self.shoot_range = self.shoot_range * cal_status["Range Effect"]
                 self.reload = self.reload / cal_status[
-                    self.skill_reload]  # different than other modifier the higher mod reduce reload time (decrease stat)
-                self.charge = self.charge * cal_status[self.skill_charge]
-                self.charge_def = self.charge_def + cal_status[self.skill_charge_defence]
-                self.hp_regen += cal_status[self.skill_hp_regen]
-                self.stamina_regen += cal_status[self.skill_stamina_regen]
-                self.morale = self.morale + (cal_status[self.skill_morale] * self.mental)
-                self.discipline = self.discipline + cal_status[self.skill_discipline]
-                # self.sight += cal_status[self.skill_sight]
-                # self.hidden += cal_status[self.skill_hide]
-                self.crit_effect = self.crit_effect * cal_status[self.skill_critical]
-                self.front_dmg_effect = self.front_dmg_effect * cal_status[self.skill_damage]
-                if cal_status[self.skill_aoe] in (2, 3) and cal_status[self.skill_damage] != 100:
-                    self.side_dmg_effect = self.side_dmg_effect * cal_status[self.skill_damage]
-                    if cal_status[self.skill_aoe] == 3:
+                    "Reload Effect"]  # different than other modifier the higher mod reduce reload time (decrease stat)
+                self.charge = self.charge * cal_status["Charge Effect"]
+                self.charge_def = self.charge_def + cal_status["Charge Defence Bonus"]
+                self.hp_regen += cal_status["HP Regeneration Bonus"]
+                self.stamina_regen += cal_status["Stamina Regeneration Bonus"]
+                self.morale = self.morale + (cal_status["Morale Bonus"] * self.mental)
+                self.discipline = self.discipline + cal_status["Discipline Bonus"]
+                # self.sight += cal_status["Sight Bonus"]
+                # self.hidden += cal_status["Hidden Bonus"]
+                self.crit_effect = self.crit_effect * cal_status["Critical Effect"]
+                self.front_dmg_effect = self.front_dmg_effect * cal_status["Damage Effect"]
+                if cal_status["Area of Effect"] in (2, 3) and cal_status["Damage Effect"] != 100:
+                    self.side_dmg_effect = self.side_dmg_effect * cal_status["Damage Effect"]
+                    if cal_status["Area of Effect"] == 3:
                         self.corner_atk = True  # if aoe 3 mean it can attack enemy on all side
 
                 # v Apply status to friendly if there is one in skill effect
-                if cal_status[self.skill_status] != [0]:
-                    for effect in cal_status[self.skill_status]:
+                if cal_status["Status"] != [0]:
+                    for effect in cal_status["Status"]:
                         self.status_effect[effect] = self.status_list[effect].copy()
                         if self.status_effect[effect][2] > 1:
                             self.status_to_friend(self.status_effect[effect][2], effect, self.status_list)
                 # ^ End apply status to
 
-                self.bonus_morale_dmg += cal_status[self.skill_moraledmg]
-                self.bonus_stamina_dmg += cal_status[self.skill_staminadmg]
-                if cal_status[self.skill_enemy_status] != [0]:  # Apply inflict status effect to enemy from skill to inflict list
-                    for effect in cal_status[self.skill_enemy_status]:
+                self.bonus_morale_dmg += cal_status["Morale Damage"]
+                self.bonus_stamina_dmg += cal_status["Stamina Damage"]
+                if cal_status["Enemy Status"] != [0]:  # Apply inflict status effect to enemy from skill to inflict list
+                    for effect in cal_status["Enemy Status"]:
                         if effect != 0:
-                            self.inflict_status[effect] = cal_status[self.skill_aoe]
+                            self.inflict_status[effect] = cal_status["Area of Effect"]
             if self.charge_skill in self.skill_effect:
                 self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while attacking)
         # ^ End skill effect
@@ -671,29 +668,29 @@ class Subunit(pygame.sprite.Sprite):
         if len(self.status_effect) > 0:
             for status in self.status_effect:
                 cal_status = self.status_list[status]
-                self.attack = self.attack * cal_status[self.status_melee_attack]
-                self.melee_def = self.melee_def * cal_status[self.status_melee_defence]
-                self.range_def = self.range_def * cal_status[self.status_range_defence]
-                self.armour = self.armour * cal_status[self.status_armour]
-                self.speed = self.speed * cal_status[self.status_speed]
-                self.accuracy = self.accuracy * cal_status[self.status_accuracy]
-                self.reload = self.reload / cal_status[self.status_reload]
-                self.charge = self.charge * cal_status[self.status_charge]
-                self.charge_def += cal_status[self.status_charge_defence]
-                self.hp_regen += cal_status[self.status_hp_regen]
-                self.stamina_regen += cal_status[self.status_stamina_regen]
-                self.morale = self.morale + (cal_status[self.status_morale] * self.mental)
-                self.discipline += cal_status[self.status_discipline]
-                # self.sight += cal_status[self.status_sight]
-                # self.hidden += cal_status[self.status_hide]
-                tempreach += cal_status[self.status_temperature]
+                self.attack = self.attack * cal_status["Melee Attack Effect"]
+                self.melee_def = self.melee_def * cal_status["Melee Defence Effect"]
+                self.range_def = self.range_def * cal_status["Ranged Defence Effect"]
+                self.armour = self.armour * cal_status["Armour Effect"]
+                self.speed = self.speed * cal_status["Speed Effect"]
+                self.accuracy = self.accuracy * cal_status["Accuracy Effect"]
+                self.reload = self.reload / cal_status["Reload Effect"]
+                self.charge = self.charge * cal_status["Charge Effect"]
+                self.charge_def += cal_status["Charge Defence Bonus"]
+                self.hp_regen += cal_status["HP Regeneration Bonus"]
+                self.stamina_regen += cal_status["Stamina Regeneration Bonus"]
+                self.morale = self.morale + (cal_status["Morale Bonus"] * self.mental)
+                self.discipline += cal_status["Discipline Bonus"]
+                # self.sight += cal_status["Sight Bonus"]
+                # self.hidden += cal_status["Hidden Bonus"]
+                tempreach += cal_status["Temperature Change"]
                 if status == 91:  # All round defence status
                     self.temp_full_def = True
         # ^ End status effect
 
         # v Temperature mod function from terrain and weather
         for status in self.status_effect.values():
-            tempreach += status[19]  # add more from status effect
+            tempreach += status["Temperature Change"]  # add more from status effect
         if tempreach < 0:  # cold temperature
             tempreach = tempreach * (100 - self.cold_res) / 100  # lowest temperature the subunit will change based on cold resist
         else:  # hot temperature
@@ -746,7 +743,7 @@ class Subunit(pygame.sprite.Sprite):
             self.staminastatecal = self.staminastate / 100  # for using as modifer to stat
 
         self.discipline = (self.discipline * self.moralestate * self.staminastatecal) + self.unit.leader_social[
-            self.grade + 1] + (self.authority / 10)  # use morale, stamina, leader social vs grade (+1 to skip class name) and authority
+            self.grade_name] + (self.authority / 10)  # use morale, stamina, leader social vs grade (+1 to skip class name) and authority
         self.attack = (self.attack * (self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
         self.melee_def = (self.melee_def * (
                 self.moralestate + 0.1)) * self.staminastatecal + self.commandbuff  # use morale, stamina and command buff
@@ -811,12 +808,12 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_cooldown = {key: val - self.timer for key, val in self.skill_cooldown.items()}  # cooldown decrease overtime
         self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if val > 0}  # remove cooldown if time reach 0
         for a, b in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
-            b[3] -= self.timer
+            b["Duration"] -= self.timer
         self.skill_effect = {key: val for key, val in self.skill_effect.items() if
-                             val[3] > 0 and self.state in val[6]}  # remove effect if time reach 0 or restriction state is not met
+                             val["Duration"] > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
         for a, b in self.status_effect.items():
-            b[3] -= self.timer
-        self.status_effect = {key: val for key, val in self.status_effect.items() if val[3] > 0}
+            b["Duration"] -= self.timer
+        self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0}
         # ^ End timer effectrangedamage
 
     def find_shooting_target(self, parentstate):
@@ -938,7 +935,7 @@ class Subunit(pygame.sprite.Sprite):
                             parent_state = 10
                             self.unit.state = 10
                         if self.melee_target is not None:
-                            self.unit.attack_target = self.melee_target.parentunit
+                            self.unit.attack_target = self.melee_target.unit
                         break
 
                 elif parent_state == 10:  # no collide enemy while parent unit in fight state
@@ -949,7 +946,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.melee_target = self.unit.attack_target.subunit_sprite[0]
                             if self.melee_target is not None:
                                 if self.close_target is None:  # movement queue is empty regenerate new one
-                                    self.close_target = self.find_close_target(self.melee_target.parentunit.subunit_sprite)  # find new close target
+                                    self.close_target = self.find_close_target(self.melee_target.unit.subunit_sprite)  # find new close target
 
                                     if self.close_target is not None:  # found target to fight
                                         if self not in self.battle.combat_path_queue:
@@ -959,7 +956,7 @@ class Subunit(pygame.sprite.Sprite):
                                         self.base_target = self.attack_target.base_pos
                                         self.new_angle = self.set_rotate()
 
-                                if self.melee_target.parentunit.state != 100:
+                                if self.melee_target.unit.state != 100:
                                     if self.move_timer == 0:
                                         self.move_timer = 0.1  # recalculate again in 10 seconds if not in fight
                                         # if len(self.same_front) != 0 and len(self.enemy_front) == 0: # collide with friend try move to base_target first before enemy
@@ -1179,7 +1176,7 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.unit_health > self.max_health:
                         self.unit_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
 
-                    if self.oldlasthealth != self.unit_health:
+                    if self.old_unit_health != self.unit_health:
                         remain = self.unit_health / self.troop_health
                         if remain.is_integer() is False:  # always round up if there is decimal number
                             remain = int(remain) + 1
@@ -1206,7 +1203,7 @@ class Subunit(pygame.sprite.Sprite):
                                 break
                         # ^ End Health bar
 
-                        self.oldlasthealth = self.unit_health
+                        self.old_unit_health = self.unit_health
 
                 # v Stamina bar
                 if self.old_last_stamina != self.stamina:
@@ -1316,36 +1313,34 @@ class Subunit(pygame.sprite.Sprite):
 
     def add_trait(self):
         """Add trait to base stat"""
-        trait_header = self.stat_list.trait_list_header
-
         for trait in self.trait.values():  # add trait modifier to base stat
-            self.base_attack *= trait[trait_header['Melee Attack Effect']]
-            self.base_melee_def *= trait[trait_header['Melee Defence Effect']]
-            self.base_range_def *= trait[trait_header['Ranged Defence Effect']]
-            self.base_armour += trait[trait_header['Armour Bonus']]
-            self.base_speed *= trait[trait_header['Speed Effect']]
-            self.base_accuracy *= trait[trait_header['Accuracy Effect']]
-            self.base_range *= trait[trait_header['Range Effect']]
-            self.base_reload *= trait[trait_header['Reload Effect']]
-            self.base_charge *= trait[trait_header['Charge Effect']]
-            self.base_charge_def += trait[trait_header['Charge Defence Bonus']]
-            self.base_hp_regen += trait[trait_header['HP Regeneration Bonus']]
-            self.base_stamina_regen += trait[trait_header['Stamina Regeneration Bonus']]
-            self.base_morale += trait[trait_header['Morale Bonus']]
-            self.base_discipline += trait[trait_header['Discipline Bonus']]
-            self.crit_effect += trait[trait_header['Critical Bonus']]
-            self.elem_res[0] += (trait[trait_header['Fire Resistance']] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
-            self.elem_res[1] += (trait[trait_header['Water Resistance']] / 100)
-            self.elem_res[2] += (trait[trait_header['Air Resistance']] / 100)
-            self.elem_res[3] += (trait[trait_header['Earth Resistance']] / 100)
-            self.magic_res += (trait[trait_header['Magic Resistance']] / 100)
-            self.heat_res += (trait[trait_header['Heat Resistance']] / 100)
-            self.cold_res += (trait[trait_header['Cold Resistance']] / 100)
-            self.elem_res[4] += (trait[trait_header['Poison Resistance']] / 100)
-            self.mental += trait[trait_header['Mental Bonus']]
-            if trait[trait_header['Enemy Status']] != [0]:
-                for effect in trait[trait_header['Enemy Status']]:
-                    self.base_inflict_status[effect] = trait[trait_header['Buff Range']]
+            self.base_attack *= trait['Melee Attack Effect']
+            self.base_melee_def *= trait['Melee Defence Effect']
+            self.base_range_def *= trait['Ranged Defence Effect']
+            self.base_armour += trait['Armour Bonus']
+            self.base_speed *= trait['Speed Effect']
+            self.base_accuracy *= trait['Accuracy Effect']
+            self.base_range *= trait['Range Effect']
+            self.base_reload *= trait['Reload Effect']
+            self.base_charge *= trait['Charge Effect']
+            self.base_charge_def += trait['Charge Defence Bonus']
+            self.base_hp_regen += trait['HP Regeneration Bonus']
+            self.base_stamina_regen += trait['Stamina Regeneration Bonus']
+            self.base_morale += trait['Morale Bonus']
+            self.base_discipline += trait['Discipline Bonus']
+            self.crit_effect += trait['Critical Bonus']
+            self.elem_res[0] += (trait['Fire Resistance'] / 100)  # percentage, 1 mean perfect resistance, 0 mean none
+            self.elem_res[1] += (trait['Water Resistance'] / 100)
+            self.elem_res[2] += (trait['Air Resistance'] / 100)
+            self.elem_res[3] += (trait['Earth Resistance'] / 100)
+            self.magic_res += (trait['Magic Resistance'] / 100)
+            self.heat_res += (trait['Heat Resistance'] / 100)
+            self.cold_res += (trait['Cold Resistance'] / 100)
+            self.elem_res[4] += (trait['Poison Resistance'] / 100)
+            self.mental += trait['Mental Bonus']
+            if trait['Enemy Status'] != [0]:
+                for effect in trait['Enemy Status']:
+                    self.base_inflict_status[effect] = trait['Buff Range']
             # self.base_elem_melee =
             # self.base_elem_range =
 

@@ -67,20 +67,19 @@ class PreviewLeader(pygame.sprite.Sprite):
 
         self.subunit_pos = subunit_pos  # Squad position is the index of subunit in subunit sprite loop
         self.army_position = army_position  # position in the unit (e.g. general or sub-general)
-        self.img_position = self.base_img_position[self.army_position]  # image position based on armyposition
+        self.img_position = self.base_img_position[self.army_position]  # image position based on army_position
 
         self.change_leader(leader_id, leader_stat)
 
     def change_leader(self, leader_id, leader_stat):
-        self.leader_id = leader_id  # leaderid is only used as reference to the leader data
+        self.leader_id = leader_id  # leader_id is only used as reference to the leader data
 
         stat = leader_stat.leader_list[leader_id]
-        leader_header = leader_stat.leader_list_header
 
-        self.name = stat[0]
-        self.authority = stat[2]
-        self.social = leader_stat.leader_class[stat[leader_header["Social Class"]]]
-        self.description = stat[-1]
+        self.name = stat["Name"]
+        self.authority = stat["Authority"]
+        self.social = leader_stat.leader_class[stat["Social Class"]]
+        self.description = stat["Description"]
 
         try:  # Put leader image into leader slot
             image_name = str(leader_stat.image_order.index(leader_id)) + ".png"

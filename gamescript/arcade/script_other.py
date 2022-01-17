@@ -310,33 +310,6 @@ def convertedit_unit(gamebattle, whicharmy, row, colour, coa, subunitgameid):
 
 # Battle related gamescript
 
-def set_rotate(self, set_target=None):
-    """set base_target and new angle for sprite rotation"""
-    if set_target is None:  # For auto chase rotate
-        myradians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
-    else:  # Command move or rotate
-        myradians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
-    newangle = math.degrees(myradians)
-
-    # """upper left -"""
-    if -180 <= newangle <= -90:
-        newangle = -newangle - 90
-
-    # """upper right +"""
-    elif -90 < newangle < 0:
-        newangle = (-newangle) - 90
-
-    # """lower right -"""
-    elif 0 <= newangle <= 90:
-        newangle = -(newangle + 90)
-
-    # """lower left +"""
-    elif 90 < newangle <= 180:
-        newangle = 270 - newangle
-
-    return round(newangle)
-
-
 def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
     """Calculate dmg, type 0 is melee attack and will use attacker subunit stat,
     type that is not 0 will use the type object stat instead (mostly used for range attack)"""

@@ -43,7 +43,7 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=()):
     return row
 
 
-class Weaponstat:
+class WeaponStat:
     def __init__(self, main_dir, images, ruleset):
         """Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.images = list(images.values())
@@ -56,7 +56,6 @@ class Weaponstat:
             list_column = ["Skill", "Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.weapon_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -67,12 +66,12 @@ class Weaponstat:
                     if row_index > 0:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                    self.weapon_list[row[0]] = row[1:]
+                    self.weapon_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
 
 
-class Armourstat:
+class ArmourStat:
     def __init__(self, main_dir, images, ruleset):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.images = images
@@ -85,7 +84,6 @@ class Armourstat:
             list_column = ["Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -96,12 +94,12 @@ class Armourstat:
                     if row_index > 0:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                    self.armour_list[row[0]] = row[1:]
+                    self.armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to armour stat
 
 
-class Unitstat:
+class UnitStat:
     def __init__(self, main_dir, ruleset, ruleset_folder):
         """Unit stat data read"""
         # v Unit stat dict
@@ -122,7 +120,7 @@ class Unitstat:
                 if row_index > 0:  # skip conver header row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                self.troop_list[row[0]] = row[1:]
+                self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
         # ^ End subunit stat list
 
@@ -154,7 +152,6 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            self.status_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -166,7 +163,7 @@ class Unitstat:
                         if run != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                int_column=int_column)
-                    self.status_list[row[0]] = row[1:]
+                    self.status_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                 run += 1
         edit_file.close()
         # ^ End status effect
@@ -175,6 +172,7 @@ class Unitstat:
         self.race_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            # header = rd[0]
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -203,12 +201,11 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            self.grade_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     if run != 0:
                         row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column, int_column=int_column)
-                self.grade_list[row[0]] = row[1:]
+                self.grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                 run += 1
         edit_file.close()
         # ^ End subunit grade
@@ -228,7 +225,6 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            self.skill_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -240,7 +236,7 @@ class Unitstat:
                         if run != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                int_column=int_column)
-                    self.skill_list[row[0]] = row[1:]
+                    self.skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                     run += 1
         edit_file.close()
         # ^ End subunit skill
@@ -260,7 +256,6 @@ class Unitstat:
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            self.trait_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -272,7 +267,7 @@ class Unitstat:
                         if run != 0:
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                int_column=int_column)
-                    self.trait_list[row[0]] = row[1:]
+                    self.trait_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                     run += 1
         edit_file.close()
         # ^ End subunit trait
@@ -299,7 +294,6 @@ class Unitstat:
             list_column = ["Trait", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.mount_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -309,7 +303,7 @@ class Unitstat:
                        this_ruleset) and row_index > 0:  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                    self.mount_list[row[0]] = row[1:]
+                    self.mount_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         # ^ End subunit mount dict
 
@@ -324,12 +318,11 @@ class Unitstat:
             list_column = ["Trait"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.mount_grade_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     if run != 0:
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                self.mount_grade_list[row[0]] = row[1:]
+                self.mount_grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                 run += 1
         edit_file.close()
         # ^ End mount grade
@@ -355,12 +348,12 @@ class Unitstat:
                     if row_index > 0:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                        self.mount_armour_list[row[0]] = row[1:]
+                        self.mount_armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         # ^ End mount armour
 
 
-class Leaderstat:
+class LeaderStat:
     def __init__(self, main_dir, images, image_order, option):
         self.images = images
         self.image_order = image_order
@@ -375,11 +368,10 @@ class Leaderstat:
                            "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            for row_index, row in enumerate(rd):
-                if row_index > 0:  # skip conver header row
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                self.leader_list[row[0]] = row[1:]
+            for row in rd[1:]:  # skip convert header row
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+                self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # v Add common leader to the leader list with game_id + 10000
@@ -393,12 +385,10 @@ class Leaderstat:
                            "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.leader_list_header = {k: v for v, k in enumerate(header[1:])}
-            for row_index, row in enumerate(rd):
-                if row_index > 0:  # skip conver header row
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                self.leader_list[row[0]] = row[1:]
+            for row in rd[1:]:  # skip convert header row
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+                self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         # ^ End common leader
 
@@ -420,11 +410,10 @@ class Leaderstat:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            self.leader_class_list_header = {k: v for v, k in enumerate(header[1:])}
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                         row[n] = int(i)
-                self.leader_class[row[0]] = row[1:]
+                self.leader_class[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         # ^ End leader class

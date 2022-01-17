@@ -17,7 +17,6 @@ load_image = script_common.load_image
 load_images = script_common.load_images
 load_base_button = script_common.load_base_button
 stat_convert = readstat.stat_convert
-set_rotate = script_other.set_rotate
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 

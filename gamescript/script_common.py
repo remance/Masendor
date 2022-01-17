@@ -421,16 +421,16 @@ def load_battle_data(main_dir, ruleset, ruleset_folder):
         x, y = images[image].get_width(), images[image].get_height()
         images[image] = pygame.transform.scale(images[image],
                                      (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
-    all_weapon = readstat.Weaponstat(main_dir, images, ruleset)  # Create weapon class
+    all_weapon = readstat.WeaponStat(main_dir, images, ruleset)  # Create weapon class
 
     images = load_images(main_dir, ["ui", "unit_ui", "armour"])
-    all_armour = readstat.Armourstat(main_dir, images, ruleset)  # Create armour class
-    troop_data = readstat.Unitstat(main_dir, ruleset, ruleset_folder)
+    all_armour = readstat.ArmourStat(main_dir, images, ruleset)  # Create armour class
+    troop_data = readstat.UnitStat(main_dir, ruleset, ruleset_folder)
 
     # v create leader list
     images, order = load_images(main_dir, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False,
                               return_order=True)
-    leader_stat = readstat.Leaderstat(main_dir, images, order, option=ruleset_folder)
+    leader_stat = readstat.LeaderStat(main_dir, images, order, option=ruleset_folder)
     # ^ End leader
     return all_weapon, all_armour, troop_data, leader_stat
 
@@ -679,6 +679,33 @@ def rotation_xy(origin, point, angle):
     x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
     y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
     return pygame.Vector2(x, y)
+
+
+def set_rotate(self, set_target=None):
+    """set base_target and new angle for sprite rotation"""
+    if set_target is None:  # For auto chase rotate
+        my_radians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
+    else:  # Command move or rotate
+        my_radians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
+    new_angle = math.degrees(my_radians)
+
+    # """upper left -"""
+    if -180 <= new_angle <= -90:
+        new_angle = -new_angle - 90
+
+    # """upper right +"""
+    elif -90 < new_angle < 0:
+        new_angle = (-new_angle) - 90
+
+    # """lower right -"""
+    elif 0 <= new_angle <= 90:
+        new_angle = -(new_angle + 90)
+
+    # """lower left +"""
+    elif 90 < new_angle <= 180:
+        new_angle = 270 - new_angle
+
+    return round(new_angle)
 
 
 def kill_effect_icon(self):

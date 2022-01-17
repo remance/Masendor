@@ -43,69 +43,11 @@ def load_game_data(game):
     subunit.Subunit.stat_list = game.troop_data
     subunit.Subunit.event_log = game.event_log  # Assign event_log to subunit class to broadcast event to the log
 
-    skill_header = game.troop_data.skill_list_header
-    status_header = game.troop_data.status_list_header
-
-    # v Get index of effect column for skill and status
-    subunit.Subunit.skill_troop_type = skill_header['Troop Type']
-    subunit.Subunit.skill_type = skill_header['Type']
-    subunit.Subunit.skill_aoe = skill_header['Area of Effect']
-    subunit.Subunit.skill_duration = skill_header['Duration']
-    subunit.Subunit.skill_cd = skill_header['Cooldown']
-    subunit.Subunit.skill_restriction = skill_header['Restriction']
-    subunit.Subunit.skill_condition = skill_header['Condition']
-    subunit.Subunit.skill_discipline_req = skill_header['Discipline Requirement']
-    subunit.Subunit.skill_stamina_cost = skill_header['Stamina Cost']
-    subunit.Subunit.skill_mana_cost = skill_header['Mana Cost']
-    subunit.Subunit.skill_melee_attack = skill_header['Melee Attack Effect']
-    subunit.Subunit.skill_melee_defence = skill_header['Melee Defence Effect']
-    subunit.Subunit.skill_range_defence = skill_header['Ranged Defence Effect']
-    subunit.Subunit.skill_speed = skill_header['Speed Effect']
-    subunit.Subunit.skill_accuracy = skill_header['Accuracy Effect']
-    subunit.Subunit.skill_range = skill_header['Range Effect']
-    subunit.Subunit.skill_reload = skill_header['Reload Effect']
-    subunit.Subunit.skill_charge = skill_header['Charge Effect']
-    subunit.Subunit.skill_charge_defence = skill_header['Charge Defence Bonus']
-    subunit.Subunit.skill_hp_regen = skill_header['HP Regeneration Bonus']
-    subunit.Subunit.skill_stamina_regen = skill_header['Stamina Regeneration Bonus']
-    subunit.Subunit.skill_morale = skill_header['Morale Bonus']
-    subunit.Subunit.skill_discipline = skill_header['Discipline Bonus']
-    subunit.Subunit.skill_critical = skill_header['Critical Effect']
-    subunit.Subunit.skill_damage = skill_header['Damage Effect']
-    subunit.Subunit.skill_sight = skill_header['Sight Bonus']
-    subunit.Subunit.skill_hide = skill_header['Hidden Bonus']
-    subunit.Subunit.skill_status = skill_header['Status']
-    subunit.Subunit.skill_stamina_dmg = skill_header['Stamina Damage']
-    subunit.Subunit.skill_morale_dmg = skill_header['Morale Damage']
-    subunit.Subunit.skill_enemy_status = skill_header['Enemy Status']
-    subunit.Subunit.skill_element = skill_header['Element']
-
-    subunit.Subunit.status_effect = status_header['Special Effect']
-    subunit.Subunit.status_conflict = status_header['Status Conflict']
-    subunit.Subunit.status_duration = status_header['Duration']
-    subunit.Subunit.status_melee_attack = status_header['Melee Attack Effect']
-    subunit.Subunit.status_melee_defence = status_header['Melee Defence Effect']
-    subunit.Subunit.status_range_defence = status_header['Ranged Defence Effect']
-    subunit.Subunit.status_armour = status_header['Armour Effect']
-    subunit.Subunit.status_speed = status_header['Speed Effect']
-    subunit.Subunit.status_accuracy = status_header['Accuracy Effect']
-    subunit.Subunit.status_reload = status_header['Reload Effect']
-    subunit.Subunit.status_charge = status_header['Charge Effect']
-    subunit.Subunit.status_charge_defence = status_header['Charge Defence Bonus']
-    subunit.Subunit.status_hp_regen = status_header['HP Regeneration Bonus']
-    subunit.Subunit.status_stamina_regen = status_header['Stamina Regeneration Bonus']
-    subunit.Subunit.status_morale = status_header['Morale Bonus']
-    subunit.Subunit.status_discipline = status_header['Discipline Bonus']
-    subunit.Subunit.status_sight = status_header['Sight Bonus']
-    subunit.Subunit.status_hide = status_header['Hidden Bonus']
-    subunit.Subunit.status_temperature = status_header['Temperature Change']
-    # ^ End get index
-
+    # self.loyalty
     uniteditor.UnitBuildSlot.images = imgs
     uniteditor.UnitBuildSlot.weapon_list = game.all_weapon
     uniteditor.UnitBuildSlot.armour_list = game.all_armour
     uniteditor.UnitBuildSlot.stat_list = game.troop_data
-    uniteditor.UnitBuildSlot.skill_troop_type = skill_header['Troop Type']
     # ^ End subunit class
 
     # v Game Effect related class
@@ -201,35 +143,7 @@ def load_game_data(game):
 
 # Battle Start related gamescript
 
-
 # Battle related gamescript
-
-def set_rotate(self, set_target=None):
-    """set base_target and new angle for sprite rotation"""
-    if set_target is None:  # For auto chase rotate
-        my_radians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
-    else:  # Command move or rotate
-        my_radians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
-    new_angle = math.degrees(my_radians)
-
-    # """upper left -"""
-    if -180 <= new_angle <= -90:
-        new_angle = -new_angle - 90
-
-    # """upper right +"""
-    elif -90 < new_angle < 0:
-        new_angle = (-new_angle) - 90
-
-    # """lower right -"""
-    elif 0 <= new_angle <= 90:
-        new_angle = -(new_angle + 90)
-
-    # """lower left +"""
-    elif 90 < new_angle <= 180:
-        new_angle = 270 - new_angle
-
-    return round(new_angle)
-
 
 def add_new_unit(gamebattle, who, addunitlist=True):
     from gamescript import unit

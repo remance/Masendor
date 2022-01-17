@@ -2304,7 +2304,7 @@ class Battle:
                             for one, two in collisions:
                                 sprite_one = self.all_subunit_list[one]
                                 sprite_two = self.all_subunit_list[two]
-                                if sprite_one.parentunit != sprite_two.parentunit:  # collide with subunit in other unit
+                                if sprite_one.unit != sprite_two.unit:  # collide with subunit in other unit
                                     if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
                                         sprite_one.fullmerge.append(sprite_two)
                                         sprite_two.fullmerge.append(sprite_one)
@@ -2312,11 +2312,11 @@ class Battle:
                                     if sprite_one.front_pos.distance_to(sprite_two.base_pos) < self.front_distance:  # first subunit collision
                                         if sprite_one.team != sprite_two.team:  # enemy team
                                             sprite_one.enemy_front.append(sprite_two)
-                                            sprite_one.parentunit.collide = True
+                                            sprite_one.unit.collide = True
                                         elif sprite_one.state in (2, 4, 6, 10, 11, 13) or \
                                                 sprite_two.state in (2, 4, 6, 10, 11, 13):  # cannot run pass other unit if either run or in combat
                                             sprite_one.friend_front.append(sprite_two)
-                                            sprite_one.parentunit.collide = True
+                                            sprite_one.unit.collide = True
                                         sprite_one.collide_penalty = True
                                     else:
                                         if sprite_one.team != sprite_two.team:  # enemy team
@@ -2324,11 +2324,11 @@ class Battle:
                                     if sprite_two.front_pos.distance_to(sprite_one.base_pos) < self.front_distance:  # second subunit
                                         if sprite_one.team != sprite_two.team:  # enemy team
                                             sprite_two.enemy_front.append(sprite_one)
-                                            sprite_two.parentunit.collide = True
+                                            sprite_two.unit.collide = True
                                         elif sprite_one.state in (2, 4, 6, 10, 11, 13) or \
                                                 sprite_two.state in (2, 4, 6, 10, 11, 13):
                                             sprite_two.friend_front.append(sprite_one)
-                                            sprite_two.parentunit.collide = True
+                                            sprite_two.unit.collide = True
                                         sprite_two.collide_penalty = True
                                     else:
                                         if sprite_one.team != sprite_two.team:  # enemy team

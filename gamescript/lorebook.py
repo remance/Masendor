@@ -115,6 +115,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.max_page = 0  # reset max page
         self.current_subsection_row = 0  # reset subsection scroll to the top one
         this_list = self.stat_data.values()  # get list of subsection
+        print(this_list)
         self.subsection_list = [name[0] for name in this_list if
                                 "Name" != name[0]]  # remove the header from subsection list
         self.log_size = len(self.subsection_list)  # get size of subsection list

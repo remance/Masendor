@@ -3,7 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript.tactical import script_other
+from gamescript.tactical.subunit import fight
 from pygame.transform import scale
 
 
@@ -137,13 +137,13 @@ class RangeArrow(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        who_dmg, who_morale_dmg, who_leader_dmg = script_other.loss_cal(who, target, who_hit, target_def, self)
+        who_dmg, who_morale_dmg, who_leader_dmg = fight.loss_cal(who, target, who_hit, target_def, self)
         target.unit_health -= who_dmg
         target.base_morale -= who_morale_dmg
 
         # v Add red corner to indicate melee_dmg
         if target.red_border is False:
-            target.block.blit(target.images[11], target.corner_image_rect)
+            target.block.blit(target.images["ui_squad_combat.png"], target.corner_image_rect)
             target.red_border = True
         # ^ End red corner
 

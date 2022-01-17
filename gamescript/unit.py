@@ -143,7 +143,7 @@ class Unit(pygame.sprite.Sprite):
     max_zoom = 10  # max zoom allow
     battle = None
     destroyed = combat.destroyed  # destroyed script
-    set_rotate = script_other.set_rotate
+    set_rotate = script_common.set_rotate
     form_change_timer = 10
     image_size = None
 

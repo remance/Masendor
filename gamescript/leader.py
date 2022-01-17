@@ -5,23 +5,21 @@ import pygame.freetype
 class Leader(pygame.sprite.Sprite):
     gamebattle = None
 
-    def __init__(self, leaderid, position, armyposition, unit, leaderstat):
+    def __init__(self, leader_id, position, army_position, unit, leader_stat):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
-        stat = leaderstat.leader_list[leaderid]
-        leader_header = leaderstat.leader_list_header
-        self.leaderid = leaderid  # Different than self id, leaderid is only used as reference to the data
-        self.name = stat[0]
-        self.health = stat[leader_header["Health"]]
-        self.authority = stat[leader_header["Authority"]]
-        self.meleecommand = stat[leader_header["Melee Command"]]
-        self.rangecommand = stat[leader_header["Range Command"]]
-        self.cavcommand = stat[leader_header["Cavalry Command"]]
-        self.combat = stat[leader_header["Combat"]] * 2
-        self.social = leaderstat.leader_class[stat[leader_header["Social Class"]]]
-        self.description = stat[-1]
-        self.description = stat[-1]
+        stat = leader_stat.leader_list[leader_id]
+        self.leaderid = leader_id  # Different than self id, leader_id is only used as reference to the data
+        self.name = stat["Name"]
+        self.health = stat["Health"]
+        self.authority = stat["Authority"]
+        self.meleecommand = stat["Melee Command"]
+        self.rangecommand = stat["Range Command"]
+        self.cavcommand = stat["Cavalry Command"]
+        self.combat = stat["Combat"] * 2
+        self.social = leader_stat.leader_class[stat["Social Class"]]
+        self.description = stat["Description"]
 
         self.subunitpos = position  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
@@ -34,15 +32,15 @@ class Leader(pygame.sprite.Sprite):
 
         self.parentunit = unit
         # self.mana = stat
-        self.armyposition = armyposition  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
+        self.armyposition = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
         self.baseimgposition = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
-        self.imgposition = self.baseimgposition[self.armyposition]  # image position based on armyposition
+        self.imgposition = self.baseimgposition[self.armyposition]  # image position based on army_position
 
         try:  # Put leader image into leader slot
-            image_name = str(leaderid) +".png"
-            self.fullimage = leaderstat.images[image_name].copy()
+            image_name = str(leader_id) + ".png"
+            self.fullimage = leader_stat.images[image_name].copy()
         except:  # Use Unknown leader image if there is none in list)
-            self.fullimage = leaderstat.images["9999999.png"].copy()
+            self.fullimage = leader_stat.images["9999999.png"].copy()
             font = pygame.font.SysFont("timesnewroman", 300)
             textimage = font.render(str(self.leaderid), True, pygame.Color("white"))
             textrect = textimage.get_rect(center=(self.fullimage.get_width() / 2, self.fullimage.get_height() / 1.3))

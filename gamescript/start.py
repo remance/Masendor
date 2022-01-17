@@ -589,9 +589,12 @@ class Mainmenu:
         if self.genre == "tactical":
             from gamescript.tactical import script_other
             script_other.load_game_data(self)  # obtain self stat data and create lore book object
+
         elif self.genre == "arcade":
             from gamescript.arcade import script_other
             script_other.load_game_data(self)
+
+        subunit.change_genre(self.genre)
 
         self.genre_change_box.changetext(self.genre.capitalize())
         edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
@@ -738,19 +741,18 @@ class Mainmenu:
         for index, team in enumerate(army_loop_list):
             for this_unit in team:
                 if this_unit != 0:
-                    team_total_troop[index] += int(self.troop_data.troop_list[this_unit][27] * scale_value[index])
+                    team_total_troop[index] += int(self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
                     troop_type = 0
-                    if self.troop_data.troop_list[this_unit][22] != [1, 0] \
-                            and self.troop_data.troop_list[this_unit][8] < self.troop_data.troop_list[this_unit][12]:  # range sub-unit
+                    if self.troop_data.troop_list[this_unit]["Troop Class"] in (2, 4):  # range subunit
                         troop_type += 1  # range weapon and accuracy higher than melee attack
-                    if self.troop_data.troop_list[this_unit][29] != [1, 0, 1]:  # cavalry
+                    if self.troop_data.troop_list[this_unit]["Troop Class"] in (3, 4, 5, 6, 7):  # cavalry
                         troop_type += 2
                     troop_type_list[index][troop_type] += int(
-                        self.troop_data.troop_list[this_unit][27] * scale_value[index])
+                        self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
             troop_type_list[index].append(len(army_team_list[index]))
 
         army_loop_list = ["{:,}".format(troop) + " Troops" for troop in team_total_troop]
-        army_loop_list = [self.leader_stat.leader_list[leader_name_list[index][0]][0] + ": " + troop for index, troop in enumerate(army_loop_list)]
+        army_loop_list = [self.leader_stat.leader_list[leader_name_list[index][0]]["Name"] + ": " + troop for index, troop in enumerate(army_loop_list)]
 
         for index, army in enumerate(self.army_stat):
             army.add_stat(troop_type_list[index], army_loop_list[index])

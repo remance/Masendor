@@ -3,40 +3,40 @@ import numpy as np
 
 import pygame
 
-def add_weapon_stat(self, weapon_header):
+def add_weapon_stat(self):
     """Combine weapon stat"""
     weapon_reload = 0
     base_range = []
     arrow_speed = []
 
     for index, weapon in enumerate([self.primary_main_weapon, self.primary_sub_weapon, self.secondary_main_weapon, self.secondary_sub_weapon]):
-        if self.weapon_list.weapon_list[weapon[0]][weapon_header["Range"]] == 0:  # melee weapon if range 0
-            self.melee_dmg[0] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Minimum Damage"]] * \
+        if self.weapon_list.weapon_list[weapon[0]]["Range"] == 0:  # melee weapon if range 0
+            self.melee_dmg[0] += self.weapon_list.weapon_list[weapon[0]]["Minimum Damage"] * \
                                  self.weapon_list.quality[weapon[1]] / (index + 1)
-            self.melee_dmg[1] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Maximum Damage"]] * \
+            self.melee_dmg[1] += self.weapon_list.weapon_list[weapon[0]]["Maximum Damage"] * \
                                  self.weapon_list.quality[weapon[1]] / (index + 1)
 
-            self.melee_penetrate += self.weapon_list.weapon_list[weapon[0]][weapon_header["Armour Penetration"]] * \
+            self.melee_penetrate += self.weapon_list.weapon_list[weapon[0]]["Armour Penetration"] * \
                                     self.weapon_list.quality[weapon[1]] / (index + 1)
-            self.melee_speed += self.weapon_list.weapon_list[weapon[0]][weapon_header["Speed"]] / (index + 1)
+            self.melee_speed += self.weapon_list.weapon_list[weapon[0]]["Speed"] / (index + 1)
         else:
-            self.range_dmg[0] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Minimum Damage"]] * \
+            self.range_dmg[0] += self.weapon_list.weapon_list[weapon[0]]["Minimum Damage"] * \
                                  self.weapon_list.quality[weapon[1]]
-            self.range_dmg[1] += self.weapon_list.weapon_list[weapon[0]][weapon_header["Maximum Damage"]] * \
+            self.range_dmg[1] += self.weapon_list.weapon_list[weapon[0]]["Maximum Damage"] * \
                                  self.weapon_list.quality[weapon[1]]
 
-            self.range_penetrate += self.weapon_list.weapon_list[weapon[0]][weapon_header["Armour Penetration"]] * \
+            self.range_penetrate += self.weapon_list.weapon_list[weapon[0]]["Armour Penetration"] * \
                                     self.weapon_list.quality[weapon[1]] / (index + 1)
             self.magazine_size += self.weapon_list.weapon_list[weapon[0]][
-                weapon_header["Magazine"]]  # can shoot how many times before have to reload
-            weapon_reload += self.weapon_list.weapon_list[weapon[0]][weapon_header["Speed"]] * (index + 1)
-            base_range.append(self.weapon_list.weapon_list[weapon[0]][weapon_header["Range"]] * self.weapon_list.quality[weapon[1]])
-            arrow_speed.append(self.weapon_list.weapon_list[weapon[0]][weapon_header["Travel Speed"]])  # travel speed of range attack
-        self.base_melee_def += self.weapon_list.weapon_list[weapon[0]][weapon_header["Defense"]] / (index + 1)
-        self.base_range_def += self.weapon_list.weapon_list[weapon[0]][weapon_header["Defense"]] / (index + 1)
-        self.skill += self.weapon_list.weapon_list[weapon[0]][weapon_header['Skill']]
-        self.trait += self.weapon_list.weapon_list[weapon[0]][weapon_header['Trait']]
-        self.weight += self.weapon_list.weapon_list[weapon[0]][weapon_header["Weight"]]
+                "Magazine"]  # can shoot how many times before have to reload
+            weapon_reload += self.weapon_list.weapon_list[weapon[0]]["Speed"] * (index + 1)
+            base_range.append(self.weapon_list.weapon_list[weapon[0]]["Range"] * self.weapon_list.quality[weapon[1]])
+            arrow_speed.append(self.weapon_list.weapon_list[weapon[0]]["Travel Speed"])  # travel speed of range attack
+        self.base_melee_def += self.weapon_list.weapon_list[weapon[0]]["Defense"] / (index + 1)
+        self.base_range_def += self.weapon_list.weapon_list[weapon[0]]["Defense"] / (index + 1)
+        self.skill += self.weapon_list.weapon_list[weapon[0]]["Skill"]
+        self.trait += self.weapon_list.weapon_list[weapon[0]]["Trait"]
+        self.weight += self.weapon_list.weapon_list[weapon[0]]["Weight"]
 
         if base_range != []:
             self.base_range = np.mean(base_range)  # use average range
@@ -47,19 +47,19 @@ def add_weapon_stat(self, weapon_header):
         self.base_reload = weapon_reload + ((50 - self.base_reload) * weapon_reload / 100)  # final reload speed from weapon and skill
 
 
-def add_mount_stat(self, mount_header, mount_grade_header):
+def add_mount_stat(self):
     """Combine mount stat"""
     self.base_charge_def = 25  # charge defence only 25 for cav
     self.base_speed = (
-            self.mount[mount_header['Speed']] + self.mount_grade[mount_grade_header['Speed Bonus']])  # use mount base speed instead
-    self.troop_health += (self.mount[mount_header['Health Bonus']] * self.mount_grade[mount_grade_header['Health Effect']]) + \
-                         self.mount_armour[1]  # Add mount health to the troop health
-    self.base_charge += (self.mount[mount_header['Charge Bonus']] +
-                         self.mount_grade[mount_grade_header['Charge Bonus']])  # Add charge power of mount to troop
-    self.base_morale += self.mount_grade[mount_grade_header['Morale Bonus']]
-    self.base_discipline += self.mount_grade[mount_grade_header['Discipline Bonus']]
-    self.stamina += self.mount[mount_header['Stamina Bonus']]
-    self.trait += self.mount[mount_header['Trait']]  # Apply mount trait to subunit
+            self.mount["Speed"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
+    self.troop_health += (self.mount["Health Bonus"] * self.mount_grade["Health Effect"]) + \
+                         self.mount_armour["Health"]  # Add mount health to the troop health
+    self.base_charge += (self.mount["Charge Bonus"] +
+                         self.mount_grade["Charge Bonus"])  # Add charge power of mount to troop
+    self.base_morale += self.mount_grade["Morale Bonus"]
+    self.base_discipline += self.mount_grade["Discipline Bonus"]
+    self.stamina += self.mount["Stamina Bonus"]
+    self.trait += self.mount["Trait"]  # Apply mount trait to subunit
     self.subunit_type = 2  # If subunit has a mount, count as cav for command buff
     self.feature_mod = 4  # the starting column in unit_terrainbonus of cavalry
 
@@ -127,7 +127,7 @@ def create_sprite(self):
     # ^ End health and stamina
 
     # v weapon class icon in middle circle
-    image1 = self.weapon_list.images[self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
+    image1 = self.weapon_list.images[self.weapon_list.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
     image1_rect = image1.get_rect(center=sprite_image.get_rect().center)
     sprite_image.blit(image1, image1_rect)
 
@@ -138,7 +138,7 @@ def create_sprite(self):
     corner_image_rect = self.images["ui_squad_combat.png"].get_rect(center=block.get_rect().center)  # red corner when take melee_dmg shown in image block
     # ^ End weapon icon
 
-    image_original = sprite_image.image.copy()  # original for rotate
+    image_original = sprite_image.copy()  # original for rotate
     image_original2 = sprite_image.copy()  # original2 for saving original not clicked
     image_original3 = sprite_image.copy()  # original3 for saving original zoom level
 
