@@ -849,7 +849,7 @@ class Battle:
 
             for leader in self.preview_leader:
                 leader.change_subunit(None)  # remove subunit link in leader
-                combat.change_leader(1, self.leader_stat)
+                fight.change_leader(1, self.leader_stat)
 
             del self.current_weather
 
@@ -864,7 +864,7 @@ class Battle:
 
             self.leader_now = []
 
-    def rungame(self):
+    def run_game(self):
         # v Create Starting Values
         self.game_state = 1  # battle mode
         self.current_unit_row = 0
@@ -878,12 +878,10 @@ class Battle:
         if self.mode == "uniteditor":
             self.game_state = 2  # editor mode
 
-            self.full_troop_list = [item[0] for item in self.troop_data.troop_list.values()][1:]
-
-            self.troop_list = self.full_troop_list  # generate troop name list
+            self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][1:]  # generate troop name list
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
-            self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][1:]  # generate leader name list
+            self.leader_list = [item["Name"] for item in self.leader_stat.leader_list.values()][1:]  # generate leader name list
 
             setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                        self.unitpreset_namegroup, self.unit_listbox, self.battle_ui)  # setup preset army list
@@ -1657,7 +1655,7 @@ class Battle:
                                                 if self.preview_leader[leader_index].subunit is not None:
                                                     self.preview_leader[leader_index].subunit.leader = None
 
-                                                combat.change_leader(item, self.leader_stat)
+                                                fight.change_leader(item, self.leader_stat)
 
                                                 pos_index = 0
                                                 for slot in self.unit_build_slot:  # can't use game_id here as none subunit not count in position check

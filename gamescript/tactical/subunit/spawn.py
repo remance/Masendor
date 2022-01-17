@@ -71,7 +71,7 @@ def create_sprite(self):
         image = self.images["ui_squad_enemy.png"].copy()  # red colour
 
     sprite_image = pygame.Surface((image.get_width() + 10, image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
-    pygame.draw.circle(sprite_image, self.unit.colour, (sprite_image.get_width() / 2, sprite_image.get_height() / 2), image.get_width() / 2)
+    pygame.draw.circle(sprite_image, colour, (sprite_image.get_width() / 2, sprite_image.get_height() / 2), image.get_width() / 2)
 
     if self.subunit_type == 2:  # cavalry draw line on block
         pygame.draw.line(image, (0, 0, 0), (0, 0), (image.get_width(), image.get_height()), 2)

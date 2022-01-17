@@ -18,10 +18,10 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = who
         self.pos = self.who.pos
-        self.who.directionarrow = self
-        self.lengthgap = self.who.image.get_height() / 2
-        self.length = self.who.pos.distance_to(self.who.base_target) + self.lengthgap
-        self.previouslength = self.length
+        self.who.direction_arrow = self
+        self.length_gap = self.who.image.get_height() / 2
+        self.length = self.who.pos.distance_to(self.who.base_target) + self.length_gap
+        self.previous_length = self.length
         self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
         # self.image_original = self.image.copy()
@@ -30,17 +30,17 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
         self.rect = self.image.get_rect(midbottom=self.who.front_pos)
 
     def update(self, zoom):
-        self.length = self.who.pos.distance_to(self.who.base_target) + self.lengthgap
-        distance = self.who.front_pos.distance_to(self.who.base_target) + self.lengthgap
-        if self.length != self.previouslength and distance > 2 and self.who.state != 0:
+        self.length = self.who.pos.distance_to(self.who.base_target) + self.length_gap
+        distance = self.who.front_pos.distance_to(self.who.base_target) + self.length_gap
+        if self.length != self.previous_length and distance > 2 and self.who.state != 0:
             self.pos = self.who.pos
             self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
             self.image.fill((0, 0, 0))
             self.image = pygame.transform.rotate(self.image, self.who.angle)
             self.rect = self.image.get_rect(midbottom=self.who.front_pos)
-            self.previouslength = self.length
+            self.previous_length = self.length
         elif distance < 2 or self.who.state in (0, 10, 11, 100):
-            self.who.directionarrow = False
+            self.who.direction_arrow = False
             self.kill()
 
 
@@ -51,16 +51,16 @@ class TroopNumber(pygame.sprite.Sprite):
 
         self.screen_scale = screen_scale
         self.who = who
-        self.textcolour = pygame.Color("blue")
+        self.text_colour = pygame.Color("blue")
         if self.who.team == 2:
-            self.textcolour = pygame.Color("red")
+            self.text_colour = pygame.Color("red")
         self.pos = self.who.true_number_pos
         self.number = self.who.troop_number
         self.zoom = 0
 
         self.font = pygame.font.SysFont("timesnewroman", int(12 * self.screen_scale[1]))
 
-        self.image = self.render(str(self.number), self.font, self.textcolour)
+        self.image = self.render(str(self.number), self.font, self.text_colour)
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def update(self, *args, **kwargs) -> None:
@@ -73,21 +73,21 @@ class TroopNumber(pygame.sprite.Sprite):
             zoom = (11 - self.zoom) / 2
             if zoom < 1:
                 zoom = 1
-            newfontsize = int(60 / zoom * self.screen_scale[1])
-            self.font = pygame.font.SysFont("timesnewroman", newfontsize)
-            self.image = self.render(str(self.number), self.font, self.textcolour)
+            new_font_size = int(60 / zoom * self.screen_scale[1])
+            self.font = pygame.font.SysFont("timesnewroman", new_font_size)
+            self.image = self.render(str(self.number), self.font, self.text_colour)
             self.rect = self.image.get_rect(topleft=self.pos)
 
         if self.number != self.who.troop_number:  # new troop number
             self.number = self.who.troop_number
-            self.image = self.render(str(self.number), self.font, self.textcolour)
+            self.image = self.render(str(self.number), self.font, self.text_colour)
             self.rect = self.image.get_rect(topleft=self.pos)
 
         if self.who.state == 100:
             self.kill()
             self.delete()
 
-    def circlepoints(self, r):
+    def circle_points(self, r):
         """Calculate text point to add background"""
         circle_cache = {}
         r = int(round(r))
@@ -109,25 +109,25 @@ class TroopNumber(pygame.sprite.Sprite):
         points.sort()
         return points
 
-    def render(self, text, font, gfcolor=pygame.Color("black"), ocolor=(255, 255, 255), opx=2):
+    def render(self, text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255, 255), opx=2):
         """Render text with background border"""
-        textsurface = font.render(text, True, gfcolor).convert_alpha()
-        w = textsurface.get_width() + 2 * opx
+        text_surface = font.render(text, True, gf_colour).convert_alpha()
+        w = text_surface.get_width() + 2 * opx
         h = font.get_height()
 
         osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
         osurf.fill((0, 0, 0, 0))
 
-        surf = osurf.copy()
+        surface = osurf.copy()
 
-        osurf.blit(font.render(text, True, ocolor).convert_alpha(), (0, 0))
+        osurf.blit(font.render(text, True, o_colour).convert_alpha(), (0, 0))
 
-        for dx, dy in self.circlepoints(opx):
-            surf.blit(osurf, (dx + opx, dy + opx))
+        for dx, dy in self.circle_points(opx):
+            surface.blit(osurf, (dx + opx, dy + opx))
 
-        surf.blit(textsurface, (opx, opx))
+        surface.blit(text_surface, (opx, opx))
 
-        return surf
+        return surface
 
     def delete(self, local=False):
         """delete reference when del is called"""
@@ -173,7 +173,7 @@ class Unit(pygame.sprite.Sprite):
         self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, len(self.subunit_list) * (
                 self.image_size[1] + 2) / 20
 
-        self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for ingame calculation
+        self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
         self.last_base_pos = self.base_pos
         self.base_attack_pos = 0  # position of attack base_target
         self.angle = start_angle  # start at this angle
@@ -202,7 +202,7 @@ class Unit(pygame.sprite.Sprite):
         self.rotate_check = 0  # for checking if the new angle rotate pass the base_target angle or not
         self.just_split = False  # subunit just got split
         self.leader_change = False
-        self.directionarrow = False
+        self.direction_arrow = False
         self.rotate_only = False  # Order unit to rotate to base_target direction
         self.charging = False  # For subunit charge skill activation
         self.forced_melee = False  # Force unit to melee attack
@@ -284,7 +284,7 @@ class Unit(pygame.sprite.Sprite):
         """Change position variable to new camera scale"""
         self.true_number_pos = self.number_pos * (11 - self.zoom)
 
-    def setup_army(self, battlestart=True):
+    def setup_army(self, battle_start=True):
         """Grab stat from all subunit in the unit"""
         self.troop_number = 0
         self.stamina = 0
@@ -322,12 +322,12 @@ class Unit(pygame.sprite.Sprite):
             self.stamina = self.stamina / how_many  # Average stamina of all subunit
             self.morale = self.morale / how_many  # Average morale of all subunit
             self.speed = min(all_speed)  # use the slowest subunit
-            self.walkspeed, self.runspeed = self.speed / 20, self.speed / 15
+            self.walk_speed, self.runs_peed = self.speed / 20, self.speed / 15
             if self.state in (1, 3, 5):
-                self.rotate_speed = self.walkspeed * 50 / (len(self.subunit_list[0]) * len(
+                self.rotate_speed = self.walk_speed * 50 / (len(self.subunit_list[0]) * len(
                     self.subunit_list))  # rotate speed is based on move speed and unit block size (not subunit total number)
             else:
-                self.rotate_speed = self.runspeed * 50 / (len(self.subunit_list[0]) * len(self.subunit_list))
+                self.rotate_speed = self.runs_peed * 50 / (len(self.subunit_list[0]) * len(self.subunit_list))
 
             if self.rotate_speed > 20:
                 self.rotate_speed = 20  # state 10 melee combat rotate is auto placement
@@ -337,7 +337,7 @@ class Unit(pygame.sprite.Sprite):
             if len(all_shoot_range) > 0:
                 self.max_range = max(all_shoot_range)  # Max shoot range of all subunit
                 self.min_range = min(all_shoot_range)  # Min shoot range of all subunit
-            if battlestart is False:  # Only do once when self start
+            if battle_start is False:  # Only do once when self start
                 self.max_stamina = self.stamina
                 self.last_health_state, self.last_stamina_state = 4, 4
                 self.max_morale = self.morale
@@ -500,10 +500,10 @@ class Unit(pygame.sprite.Sprite):
                          (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
         self.leader_social = self.leader[0].social
         if self.authority > 0:
-            bigarmysize = self.subunit_list > 0
-            bigarmysize = bigarmysize.sum()
-            if bigarmysize > 20:  # army size larger than 20 will reduce gamestart leader authority
-                self.authority = (self.team_commander.authority / 2) + (self.leader[0].authority / 2 * (100 - bigarmysize) / 100) + \
+            big_army_size = self.subunit_list > 0
+            big_army_size = big_army_size.sum()
+            if big_army_size > 20:  # army size larger than 20 will reduce gamestart leader authority
+                self.authority = (self.team_commander.authority / 2) + (self.leader[0].authority / 2 * (100 - big_army_size) / 100) + \
                                  (self.leader[1].authority / 2) + (self.leader[2].authority / 2) + (self.leader[3].authority / 4)
             else:
                 self.authority = self.authority + (self.team_commander.authority / 2)
@@ -611,12 +611,12 @@ class Unit(pygame.sprite.Sprite):
 
                     # v Check if any subunit still fighting, if not change to idle state
                     if self.state == 10:
-                        stopfight = True
+                        stop_fight = True
                         for subunit in self.subunit_sprite:
                             if subunit.state == 10:
-                                stopfight = False
+                                stop_fight = False
                                 break
-                        if stopfight:
+                        if stop_fight:
                             self.state = 0
                     # ^ End check fighting
 

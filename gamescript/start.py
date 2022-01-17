@@ -183,13 +183,10 @@ class Mainmenu:
         self.filter_box = pygame.sprite.Group()
         self.popup_listbox = pygame.sprite.Group()
         self.popup_namegroup = pygame.sprite.Group()
-        self.terrain_change_button = pygame.sprite.Group()  # button to change preview map base terrain
-        self.feature_change_button = pygame.sprite.Group()  # button to change preview map terrain feature
-        self.weather_change_button = pygame.sprite.Group()  # button to change preview map weather
-        self.unit_build_slot = pygame.sprite.Group()  # slot for putting troop into unit preset during preparation mode
         self.unit_edit_border = pygame.sprite.Group()  # border that appear when selected sub-subunit
         self.preview_leader = pygame.sprite.Group()  # just to make preview leader class has containers
         self.unitpreset_namegroup = pygame.sprite.Group()  # preset name list
+        self.subunit_build = pygame.sprite.Group()
 
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
@@ -203,11 +200,6 @@ class Mainmenu:
         self.ui_updater = pygame.sprite.Group()  # updater for ui objects
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for in-self effect objects (e.g. range attack sprite)
-
-        self.battle_base_map = pygame.sprite.Group()  # base terrain map object
-        self.battle_feature_map = pygame.sprite.Group()  # terrain feature map object
-        self.battle_height_map = pygame.sprite.Group()  # height map object
-        self.show_map = pygame.sprite.Group()  # beautiful map object that is shown in gameplay
 
         self.team0_unit = pygame.sprite.Group()  # team 0 units group
         self.team1_unit = pygame.sprite.Group()  # team 1 units group
@@ -271,8 +263,6 @@ class Mainmenu:
         uniteditor.PreviewBox.main_dir = self.main_dir
         uniteditor.PreviewBox.effect_image = load_image(self.main_dir, "effect.png", "map")  # map special effect image
         uniteditor.FilterBox.containers = self.filter_box
-        uniteditor.PreviewChangeButton.containers = self.terrain_change_button, self.weather_change_button, self.feature_change_button
-        uniteditor.UnitBuildSlot.containers = self.unit_build_slot
         uniteditor.PreviewLeader.containers = self.preview_leader
 
         # battle containers
@@ -345,10 +335,6 @@ class Mainmenu:
         self.sprite_width = subunit_icon_image.get_width()
         self.sprite_height = subunit_icon_image.get_height()
 
-        uniteditor.UnitBuildSlot.sprite_width = self.sprite_width  # sprite_width and height generated in mode (e.g. tactical) file script_other.py
-        uniteditor.UnitBuildSlot.sprite_height = self.sprite_height
-        uniteditor.UnitBuildSlot.add_trait = subunit.Subunit.add_trait
-
         start_pos = [(self.screen_rect.width / 2) - (self.sprite_width * 5),
                      (self.screen_rect.height / 2) - (self.sprite_height * 4)]
         self.make_unit_slot(0, 1, 0, range(0, 64), start_pos)  # make player custom unit slot
@@ -359,12 +345,29 @@ class Mainmenu:
                                uniteditor.PreviewLeader(1, 0, 3, self.leader_stat)]  # list of preview leader for unit editor
         self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
 
-        self.unit_listbox, self.unit_preset_name_scroll, self.preset_select_border, self.troop_listbox, self.troop_scroll, self.unit_delete_button, \
-        self.unit_save_button, self.popup_listbox, self.popup_list_scroll, self.terrain_change_button, self.feature_change_button, \
-        self.weather_change_button, self.filter_box, self.team_change_button, self.slot_display_button, self.deploy_button, self.test_button, \
-        self.filter_tick_box, self.warning_msg = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
-                                                                load_image(self.main_dir, "name_list.png", "ui\\mapselect_ui"),
-                                                                load_base_button(self.main_dir), self.scale_ui)
+        editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
+                                     load_image(self.main_dir, "name_list.png", "ui\\mapselect_ui"),
+                                     load_base_button(self.main_dir), self.scale_ui)
+        self.unit_listbox = editor_dict["unit_listbox"]
+        self.unit_preset_name_scroll = editor_dict["unit_preset_name_scroll"]
+        self.preset_select_border = editor_dict["preset_select_border"]
+        self.troop_listbox = editor_dict["troop_listbox"]
+        self.troop_scroll = editor_dict["troop_scroll"]
+        self.unit_delete_button = editor_dict["unit_delete_button"]
+        self.unit_save_button = editor_dict["unit_save_button"]
+        self.popup_listbox = editor_dict["popup_listbox"]
+        self.popup_list_scroll = editor_dict["popup_list_scroll"]
+        self.terrain_change_button = editor_dict["terrain_change_button"]
+        self.feature_change_button = editor_dict["feature_change_button"]
+        self.weather_change_button = editor_dict["weather_change_button"]
+        self.filter_box = editor_dict["filter_box"]
+        self.team_change_button = editor_dict["team_change_button"]
+        self.slot_display_button = editor_dict["slot_display_button"]
+        self.deploy_button = editor_dict["deploy_button"]
+        self.test_button = editor_dict["test_button"]
+        self.filter_tick_box = editor_dict["filter_tick_box"]
+        self.warning_msg = editor_dict["warning_msg"]
+        self.unit_build_slot = editor_dict["unit_build_slot"]
 
         self.tick_box.add(*self.filter_tick_box)
 
@@ -757,26 +760,22 @@ class Mainmenu:
         for index, army in enumerate(self.army_stat):
             army.add_stat(troop_type_list[index], army_loop_list[index])
 
-    def make_unit_slot(self, game_id, team, unit_id, range_to_run, start_pos, column_only=False):
+    def make_unit_slot(self, game_id, team, troop_id, range_to_run, start_pos):
         width, height = 0, 0
         slot_number = 0  # Number of subunit based on the position in row and column
         for subunit in range_to_run:  # generate player unit slot for filling troop into preview unit
-            if column_only is False:
-                width += self.sprite_width
-                self.unit_build_slot.add(
-                    uniteditor.UnitBuildSlot(game_id, team, unit_id, (width, height), start_pos, slot_number,
-                                             self.team_colour))
-                slot_number += 1
-                if slot_number % 8 == 0:  # Pass the last subunit in the row, go to the next one
-                    width = 0
-                    height += self.sprite_height
-            else:
+            width += self.sprite_width
+            dummy_subunit = subunit.Subunit(troop_id, game_id, self.unit_build_slot, start_pos, 100, 100, self.genre, "edit")
+            self.subunit_build.add(dummy_subunit)
+            slot_number += 1
+            if slot_number % 8 == 0:  # Pass the last subunit in the row, go to the next one
+                width = 0
                 height += self.sprite_height
-                self.unit_build_slot.add(
-                    uniteditor.UnitBuildSlot(game_id, team, unit_id, (width, height), start_pos, slot_number,
-                                             self.team_colour))
-                slot_number += 1
+
             game_id += 1
+            self.subunit_updater.remove()
+            self.subunit.remove()
+            self.battle_camera.remove()
         return game_id
 
     def popout_lorebook(self, section, game_id):
@@ -1140,7 +1139,7 @@ class Mainmenu:
                                                           self.preset_map_folder[self.current_map_select],
                                                           self.map_source,
                                                           self.source_scale[self.map_source], "battle")
-                        self.battle_game.rungame()
+                        self.battle_game.run_game()
                         pygame.mixer.music.unload()
                         pygame.mixer.music.set_endevent(self.SONG_END)
                         pygame.mixer.music.load(self.music_list[0])
@@ -1155,7 +1154,7 @@ class Mainmenu:
                     elif self.unit_edit_button.event:
                         self.unit_edit_button.event = False
                         self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1), "uniteditor")
-                        self.battle_game.rungame()
+                        self.battle_game.run_game()
                         pygame.mixer.music.unload()
                         pygame.mixer.music.set_endevent(self.SONG_END)
                         pygame.mixer.music.load(self.music_list[0])

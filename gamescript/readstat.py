@@ -117,7 +117,7 @@ class UnitStat:
             list_column = [index for index, item in enumerate(header) if item in list_column]
             self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd):
-                if row_index > 0:  # skip conver header row
+                if row_index > 0:  # skip convert header row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
@@ -172,7 +172,8 @@ class UnitStat:
         self.race_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            # header = rd[0]
+            rd = [row for row in rd]
+            header = rd[0]
             for row in rd:
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -183,7 +184,7 @@ class UnitStat:
                     for n, i in enumerate(row):
                         if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                             row[n] = float(i)
-                    self.race_list[row[0]] = row[1:]
+                    self.race_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         # ^ End race
 
@@ -368,6 +369,7 @@ class LeaderStat:
                            "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            self.leader_list["ID"] = {stuff: stuff for stuff in header[1:]}
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)

@@ -41,6 +41,7 @@ def load_game_data(game):
     subunit.Subunit.weapon_list = game.all_weapon
     subunit.Subunit.armour_list = game.all_armour
     subunit.Subunit.stat_list = game.troop_data
+    subunit.Subunit.status_list = game.troop_data.status_list
     subunit.Subunit.event_log = game.event_log  # Assign event_log to subunit class to broadcast event to the log
 
     # self.loyalty

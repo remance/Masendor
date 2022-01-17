@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pygame
 import pygame.freetype
-from gamescript import readstat, map, lorebook, weather, drama, battleui, menu, faction, popup, uniteditor
+from gamescript import readstat, map, lorebook, weather, battleui, menu, faction, popup, uniteditor
 
 
 def load_image(main_dir, file, subfolder=""):
@@ -360,19 +360,24 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
     img1 = load_image(main_dir, "tick_box_no.png", "ui\\mainmenu_ui")  # start test button in editor
     img2 = load_image(main_dir, "tick_box_yes.png", "ui\\mainmenu_ui")  # stop test button
     filter_tick_box = [menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.26,
-                                                             filter_box.rect.bottomright[1] / 8), img1, img2, "meleeinf"),
-                            menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.26,
-                                                             filter_box.rect.bottomright[1] / 1.7), img1, img2, "rangeinf"),
-                            menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.11,
-                                                             filter_box.rect.bottomright[1] / 8), img1, img2, "meleecav"),
-                            menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.11,
-                                                             filter_box.rect.bottomright[1] / 1.7), img1, img2, "rangecav")]
+                                                   filter_box.rect.bottomright[1] / 8), img1, img2, "meleeinf"),
+                       menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.26,
+                                                   filter_box.rect.bottomright[1] / 1.7), img1, img2, "rangeinf"),
+                       menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.11,
+                                                   filter_box.rect.bottomright[1] / 8), img1, img2, "meleecav"),
+                       menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.11,
+                                                   filter_box.rect.bottomright[1] / 1.7), img1, img2, "rangecav")]
     warning_msg = uniteditor.WarningMsg(screen_scale, (test_button.rect.bottomleft[0], test_button.rect.bottomleft[1]))
 
-    return unit_listbox, unit_presetname_scroll, preset_select_border, troop_listbox, troop_scroll, \
-           unit_delete_button, unit_save_button, popup_listbox, popup_listscroll, terrain_change_button, \
-           feature_change_button, weather_change_button, filter_box, team_change_button, slot_display_button, \
-           deploy_button, test_button, filter_tick_box, warning_msg
+    unit_build_slot = uniteditor.UnitBuildSlot(0)
+
+    return {"unit_listbox": unit_listbox, "unit_presetname_scroll": unit_presetname_scroll, "preset_select_border": preset_select_border,
+            "troop_listbox": troop_listbox, "troop_scroll": troop_scroll, "unit_delete_button": unit_delete_button,
+            "unit_save_button": unit_save_button, "popup_listbox": popup_listbox, "popup_listscroll": popup_listscroll,
+            "terrain_change_button": terrain_change_button, "feature_change_button": feature_change_button,
+            "weather_change_button": weather_change_button, "filter_box": filter_box, "team_change_button": team_change_button,
+            "slot_display_button": slot_display_button, "deploy_button": deploy_button, "test_button": test_button,
+            "filter_tick_box": filter_tick_box, "warning_msg": warning_msg, "unit_build_slot": unit_build_slot}
 
 
 def make_input_box(main_dir, screen_scale, screen_rect, image_list):
@@ -560,7 +565,7 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
         text = [text]
     x, y = pos
     for this_text in text:
-        words = [word.split(" ") for word in this_text.splitlines()]  # 2D array where each row is a list of words
+        words = [word.split(" ") for word in str(this_text).splitlines()]  # 2D array where each row is a list of words
         space = font.size(" ")[0]  # the width of a space
         max_width, max_height = surface.get_size()
         for line in words:

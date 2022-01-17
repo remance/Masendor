@@ -115,29 +115,14 @@ class SelectedPresetBorder(pygame.sprite.Sprite):
 
 
 class UnitBuildSlot(pygame.sprite.Sprite):
-    sprite_width = 0  # subunit sprite width size get add from gamestart
-    sprite_height = 0  # subunit sprite height size get add from gamestart
-    images = []  # image related to subunit sprite
-    weapon_list = None
-    armour_list = None
-    stat_list = None
-    genre = None
 
-    def __init__(self, game_id, team, army_id, position, start_pos, slot_number, team_colour):
-        self.colour = team_colour
+    def __init__(self, team):
+        """Dummy unit for editing"""
         self._layer = 2
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.selected = False
-        self.game_id = game_id
         self.team = team
-        self.army_id = army_id
-        self.troop_id = 0  # index according to sub-unit file
-        self.name = "None"
         self.leader = None
-        self.height = 100
-        self.commander = False
-        if self.army_id == 0:
-            self.commander = True
         self.authority = 100
         self.state = 0
         self.ammo_now = 0
@@ -150,12 +135,9 @@ class UnitBuildSlot(pygame.sprite.Sprite):
 
         self.change_team(False)
 
-        self.slot_number = slot_number
-        self.army_pos = position  # position in unit sprite
-        self.inspect_pos = (self.army_pos[0] + start_pos[0], self.army_pos[1] + start_pos[1])  # position in inspect ui
-        self.rect = self.image.get_rect(topleft=self.inspect_pos)
-
     def change_team(self, change_troop):
+        if change_troop:
+            self.change_troop(self.troop_id, self.terrain, self.feature, self.weather)
         self.image = pygame.Surface((self.sprite_width, self.sprite_height), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
         white_image = pygame.Surface((self.sprite_width - 2, self.sprite_height - 2))
@@ -163,52 +145,23 @@ class UnitBuildSlot(pygame.sprite.Sprite):
         white_rect = white_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(white_image, white_rect)
         self.image_original = self.image.copy()
-        if change_troop:
-            self.change_troop(self.troop_id, self.terrain, self.feature, self.weather)
 
     def change_troop(self, troop_index, terrain, feature, weather):
-        self.image = self.image_original.copy()
+        from gamescript import subunit
         if self.troop_id != troop_index:
             self.troop_id = troop_index
-            self.create_troop_stat(self.stat_list.troop_list[troop_index].copy(), 100, 100, [1, 1])
-
+            self = subunit.Subunit(self.troop_id, self.game_id, None, self.army_pos, 100, 100, [1], self.genre)
         self.terrain = terrain
         self.feature = feature
         self.weather = weather
-        if self.name != "None":
-            # v subunit block team colour
-            if self.subunit_type == 2:  # cavalry draw line on block
-                pygame.draw.line(self.image, (0, 0, 0), (0, 0), (self.image.get_width(), self.image.get_height()), 2)
-            # ^ End subunit block team colour
-
-            # v health circle image setup
-            health_image = self.images["ui_health_circle_100.png"]
-            health_image_rect = health_image.get_rect(center=self.image.get_rect().center)
-            self.image.blit(health_image, health_image_rect)
-            # ^ End health circle
-
-            # v stamina circle image setup
-            stamina_image = self.images["ui_stamina_circle_100.png"]
-            stamina_image_rect = stamina_image.get_rect(center=self.image.get_rect().center)
-            self.image.blit(stamina_image, stamina_image_rect)
-            # ^ End stamina circle
-
-            # v weapon class icon in middle circle
-            image1 = self.weapon_list.images[
-                self.weapon_list.weapon_list[self.primary_main_weapon[0]][-3]]  # image on subunit sprite
-            image1rect = image1.get_rect(center=self.image.get_rect().center)
-            self.image.blit(image1, image1rect)
-            # ^ End weapon icon
 
 
 class WarningMsg(pygame.sprite.Sprite):
     eightsubunit_warn = "- Require at least 8 sub-units for both test and employment"
     mainleader_warn = "- Require a gamestart leader for both test and employment"
     emptyrowcol_warn = "- Empty row or column will be removed when employed"
-    duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leaer option enable"
+    duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leader option enable"
     multifaction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"
-
-    # outofmap_warn = "- There are sub-unit(s) outside of map border, they will retreat when test start"
 
     def __init__(self, screen_scale, pos):
         self._layer = 18
@@ -263,7 +216,7 @@ class WarningMsg(pygame.sprite.Sprite):
 class PreviewChangeButton(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image, text):
         self._layer = 13
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("timesnewroman", int(30 * screen_scale[1]))
 
         self.image = image.copy()
