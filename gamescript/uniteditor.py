@@ -127,10 +127,13 @@ class UnitBuildSlot(pygame.sprite.Sprite):
         self.authority = 100
         self.state = 0
         self.ammo_now = 0
+        self.game_id = 0
 
         self.terrain = 0
         self.feature = 0
         self.weather = 0
+
+        self.commander = True
 
         self.coa = pygame.Surface((0, 0))  # empty coa_list to prevent leader ui error
 

@@ -109,6 +109,6 @@ def load_game_data(game):
 
     game.battle_ui.add(game.log_scroll, game.select_scroll)
 
-    game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
+    game.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
     game.main_ui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
     # ^ End self ui

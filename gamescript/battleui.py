@@ -249,18 +249,18 @@ class GameUI(pygame.sprite.Sprite):
 
                     # v Equipment text
                     text_value = [
-                        self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_main_weapon[0]][0]) + " / " +
-                        self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_sub_weapon[0]][0]),
-                        self.quality_text[who.secondary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_main_weapon[0]][0]) + " / " +
-                        self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]][0])]
+                        self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
+                        self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_sub_weapon[0]]["Name"]),
+                        self.quality_text[who.secondary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
+                        self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
                     text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.melee_speed).split(".")[0] +
                                   ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
                     text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
                                   ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
 
-                    text_value += [str(armour_list.armour_list[who.armour_gear[0]][0]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
-                                   str(armour_list.armour_list[who.armour_gear[0]][2]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                    text_value += [str(armour_list.armour_list[who.armour_gear[0]]["Name"]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
+                                   str(armour_list.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                   "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
 
                     if "None" not in who.mount:  # if mount is not the None mount id 1
@@ -370,6 +370,7 @@ class SelectedSquad(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, pos, layer=17):
+        """Used for showing selected subunit in inpeact ui and unit editor"""
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos

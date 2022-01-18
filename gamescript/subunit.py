@@ -58,7 +58,6 @@ class Subunit(pygame.sprite.Sprite):
     move_logic = None
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, genre, purpose="battle"):
-        global group_collide
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -318,6 +317,7 @@ class Subunit(pygame.sprite.Sprite):
         self.temp_full_def = False
 
         if purpose == "battle":
+            global group_collide
             self.battle.all_subunit_list.append(self)
             if self.team == 1:  # add sprite to team subunit group for collision
                 group_collide = self.battle.team1_subunit
@@ -355,10 +355,13 @@ class Subunit(pygame.sprite.Sprite):
             self.height = self.height_map.get_height(self.base_pos)  # current terrain height
             self.front_height = self.height_map.get_height(self.front_pos)  # terrain height at front position
             # ^ End position related
-
-            self.rect = self.image.get_rect(center=self.pos)
         elif purpose == "edit":
-            pass
+            self.image = self.block
+            self.pos = start_pos
+            self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
+            self.image_original = self.block_original
+
+        self.rect = self.image.get_rect(center=self.pos)
 
     def zoom_scale(self):
         """camera zoom change and rescale the sprite and position scale"""
