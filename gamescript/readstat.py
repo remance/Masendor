@@ -419,3 +419,28 @@ class LeaderStat:
                 self.leader_class[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         # ^ End leader class
+
+
+class FactionStat:
+    images = []
+    main_dir = None
+
+    def __init__(self, option):
+        """Unit stat data read"""
+        self.faction_list = {}
+        with open(os.path.join(self.main_dir, "data", "ruleset", option, "faction", "faction.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            for row in rd:
+                for n, i in enumerate(row):
+                    if i.isdigit():
+                        row[n] = int(i)
+                    if n in (2, 3):
+                        if "," in i:
+                            row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
+                        elif i.isdigit():
+                            row[n] = [int(i)]
+                self.faction_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+            edit_file.close()

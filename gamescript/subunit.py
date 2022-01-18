@@ -317,7 +317,6 @@ class Subunit(pygame.sprite.Sprite):
         self.temp_full_def = False
 
         if purpose == "battle":
-            global group_collide
             self.battle.all_subunit_list.append(self)
             if self.team == 1:  # add sprite to team subunit group for collision
                 group_collide = self.battle.team1_subunit
@@ -360,6 +359,8 @@ class Subunit(pygame.sprite.Sprite):
             self.pos = start_pos
             self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
             self.image_original = self.block_original
+            self.coa = self.unit.coa
+            self.commander = True
 
         self.rect = self.image.get_rect(center=self.pos)
 

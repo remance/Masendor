@@ -230,14 +230,15 @@ def read_map_data(main_dir, ruleset_folder):
 
 
 def read_faction_data(main_dir, ruleset_folder):
-    faction.FactionData.main_dir = main_dir
-    all_faction = faction.FactionData(option=ruleset_folder)
+    readstat.FactionStat.main_dir = main_dir
+    all_faction = readstat.FactionStat(option=ruleset_folder)
     images_old = load_images(main_dir, ["ruleset", ruleset_folder, "faction", "coa"],
                            load_order=False)  # coa_list images list
     coa_list = []
     for image in images_old:
         coa_list.append(images_old[image])
-    faction_list = [item[0] for item in all_faction.faction_list.values()][1:]
+    print(all_faction.faction_list.values())
+    faction_list = [item["Name"] for item in all_faction.faction_list.values()][1:]
     return all_faction, coa_list, faction_list
 
 
@@ -369,7 +370,7 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
                                                    filter_box.rect.bottomright[1] / 1.7), img1, img2, "rangecav")]
     warning_msg = uniteditor.WarningMsg(screen_scale, (test_button.rect.bottomleft[0], test_button.rect.bottomleft[1]))
 
-    unit_build_slot = uniteditor.UnitBuildSlot(0, colour[0])
+    unit_build_slot = uniteditor.UnitBuildSlot(1, colour[0])
 
     return {"unit_listbox": unit_listbox, "unit_preset_name_scroll": unit_preset_name_scroll, "preset_select_border": preset_select_border,
             "troop_listbox": troop_listbox, "troop_scroll": troop_scroll, "unit_delete_button": unit_delete_button,

@@ -684,11 +684,11 @@ class Mainmenu:
             team1_set_pos = (self.screen_rect.width / 2 - (300 * self.screen_scale[0]), self.screen_rect.height / 3)
         # position = self.map_show[0].get_rect()
         self.team_coa.add(menu.TeamCoa(self.screen_scale, team1_set_pos, self.coa_list[data[0]],
-                                       1, self.all_faction.faction_list[data[0]][0]))  # team 1
+                                       1, self.all_faction.faction_list[data[0]]["Name"]))  # team 1
 
         if one_team is False:
             self.team_coa.add(menu.TeamCoa(self.screen_scale, (self.screen_rect.width / 2 + (300 * self.screen_scale[0]), self.screen_rect.height / 3),
-                                           self.coa_list[data[1]], 2, self.all_faction.faction_list[data[1]][0]))  # team 2
+                                           self.coa_list[data[1]], 2, self.all_faction.faction_list[data[1]]["Name"]))  # team 2
         ui_class.add(self.team_coa)
 
     def make_map(self, map_folder_list, map_list):
