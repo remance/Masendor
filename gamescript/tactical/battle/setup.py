@@ -1,31 +1,16 @@
 import csv
 import os
-import random
-
 import numpy as np
 import pygame
 
-from gamescript.tactical.script_other import board_pos
+letter_board = ("a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
+number_board = ("8", "7", "6", "5", "4", "3", "2", "1")  # same as above
+board_pos = []
+for dd in number_board:
+    for ll in letter_board:
+        board_pos.append(ll + dd)
 
 battle_side_cal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side modifier
-
-
-def check_split(self, who):
-    """Check if unit can be splitted, if not remove splitting button"""
-    # v split by middle column
-    if np.array_split(who.subunit_list, 2, axis=1)[0].size >= 10 and np.array_split(who.subunit_list, 2, axis=1)[1].size >= 10 and \
-            who.leader[1].name != "None":  # can only split if both unit size will be larger than 10 and second leader exist
-        self.battle_ui.add(self.col_split_button)
-    elif self.col_split_button in self.battle_ui:
-        self.battle_ui.remove(self.col_split_button)
-    # ^ End col
-
-    # v split by middle row
-    if np.array_split(who.subunit_list, 2)[0].size >= 10 and np.array_split(who.subunit_list, 2)[1].size >= 10 and \
-            who.leader[1].name != "None":
-        self.battle_ui.add(self.row_split_button)
-    elif self.row_split_button in self.battle_ui:
-        self.battle_ui.remove(self.row_split_button)
 
 
 def add_unit(subunitlist, position, gameid, colour, leaderlist, leaderstat, control, coa, command, startangle, starthp, startstamina, team):
@@ -114,3 +99,47 @@ def unit_setup(gamebattle):
             # ^ End subunit setup
 
     unitfile.close()
+
+
+def add_new_unit(gamebattle, who, addunitlist=True):
+    from gamescript import unit
+    # generate subunit sprite array for inspect ui
+    who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
+    foundcount = 0  # for subunit_sprite index
+    foundcount2 = 0  # for positioning
+    for row in range(0, len(who.subunit_list)):
+        for column in range(0, len(who.subunit_list[0])):
+            if who.subunit_list[row][column] != 0:
+                who.subunit_sprite_array[row][column] = who.subunit_sprite[foundcount]
+                who.subunit_sprite[foundcount].unit_position = (who.subunit_position_list[foundcount2][0] / 10,
+                                                                who.subunit_position_list[foundcount2][1] / 10)  # position in unit sprite
+                foundcount += 1
+            else:
+                who.subunit_sprite_array[row][column] = None
+            foundcount2 += 1
+    # ^ End generate subunit array
+
+    for index, this_subunit in enumerate(who.subunit_sprite):  # reset leader subunitpos
+        if this_subunit.leader is not None:
+            this_subunit.leader.subunit_pos = index
+
+    who.zoom = 11 - gamebattle.camera_scale
+    who.new_angle = who.angle
+
+    who.start_set(gamebattle.subunit)
+    who.set_target(who.front_pos)
+
+    numberpos = (who.base_pos[0] - who.base_width_box,
+                 (who.base_pos[1] + who.base_height_box))
+    who.number_pos = who.rotation_xy(who.base_pos, numberpos, who.radians_angle)
+    who.change_pos_scale()  # find new position for troop number text
+
+    for this_subunit in who.subunit_sprite:
+        this_subunit.gamestart(this_subunit.zoom)
+
+    if addunitlist:
+        gamebattle.all_unit_list.append(who)
+        gamebattle.all_unit_index.append(who.game_id)
+
+    numberspite = unit.TroopNumber(gamebattle.screen_scale, who)
+    gamebattle.troop_number_sprite.add(numberspite)

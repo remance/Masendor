@@ -303,14 +303,14 @@ def make_encyclopedia_ui(main_dir, ruleset_folder, screen_scale, screen_rect):
     return encyclopedia, lore_name_list, lore_button_ui, page_button, lore_scroll
 
 
-def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_list, scale_ui):
+def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_list, scale_ui, colour):
     """Create army editor ui and button"""
 
     bottom_height = screen_rect.height - image_list[0].get_height()
     box_image = load_image(main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
     unit_listbox = menu.ListBox(screen_scale, (0, screen_rect.height / 2.2),
                                 box_image)  # box for showing unit preset list
-    unit_presetname_scroll = battleui.UIScroller(unit_listbox.rect.topright, unit_listbox.image.get_height(),
+    unit_preset_name_scroll = battleui.UIScroller(unit_listbox.rect.topright, unit_listbox.image.get_height(),
                                                  unit_listbox.max_show, layer=14)  # preset name scroll
     preset_select_border = uniteditor.SelectedPresetBorder(unit_listbox.image.get_width() - int(15 * screen_scale[0]),
                                                            int(25 * screen_scale[1]))
@@ -329,7 +329,7 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
                                             text="Save")
 
     popup_listbox = menu.ListBox(screen_scale, (0, 0), box_image, 15)  # popup box need to be in higher layer
-    popup_listscroll = battleui.UIScroller(popup_listbox.rect.topright,
+    popup_list_scroll = battleui.UIScroller(popup_listbox.rect.topright,
                                            popup_listbox.image.get_height(),
                                            popup_listbox.max_show,
                                            layer=14)
@@ -369,11 +369,11 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
                                                    filter_box.rect.bottomright[1] / 1.7), img1, img2, "rangecav")]
     warning_msg = uniteditor.WarningMsg(screen_scale, (test_button.rect.bottomleft[0], test_button.rect.bottomleft[1]))
 
-    unit_build_slot = uniteditor.UnitBuildSlot(0)
+    unit_build_slot = uniteditor.UnitBuildSlot(0, colour[0])
 
-    return {"unit_listbox": unit_listbox, "unit_presetname_scroll": unit_presetname_scroll, "preset_select_border": preset_select_border,
+    return {"unit_listbox": unit_listbox, "unit_preset_name_scroll": unit_preset_name_scroll, "preset_select_border": preset_select_border,
             "troop_listbox": troop_listbox, "troop_scroll": troop_scroll, "unit_delete_button": unit_delete_button,
-            "unit_save_button": unit_save_button, "popup_listbox": popup_listbox, "popup_listscroll": popup_listscroll,
+            "unit_save_button": unit_save_button, "popup_listbox": popup_listbox, "popup_list_scroll": popup_list_scroll,
             "terrain_change_button": terrain_change_button, "feature_change_button": feature_change_button,
             "weather_change_button": weather_change_button, "filter_box": filter_box, "team_change_button": team_change_button,
             "slot_display_button": slot_display_button, "deploy_button": deploy_button, "test_button": test_button,

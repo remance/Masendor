@@ -44,7 +44,40 @@ def change_leader(self, event):
         self.unit_leader = False
 
 
-def loss_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
+def move_leader_subunit(this_leader, old_army_subunit, new_army_subunit, already_pick=()):
+    """old_army_subunit is subunit_list list that the subunit currently in and need to be move out to the new one (new_army_subunit),
+    already_pick is list of position need to be skipped"""
+    replace = [np.where(old_army_subunit == this_leader.subunit.game_id)[0][0],
+               np.where(old_army_subunit == this_leader.subunit.game_id)[1][0]]  # grab old array position of subunit
+    new_row = int((len(new_army_subunit) - 1) / 2)  # set up new row subunit will be place in at the middle at the start
+    new_place = int((len(new_army_subunit[new_row]) - 1) / 2)  # setup new column position
+    place_done = False  # finish finding slot to place yet
+
+    while place_done is False:
+        if this_leader.subunit.unit.subunit_list.flat[new_row * new_place] != 0:
+            for this_subunit in this_leader.subunit.unit.subunit_sprite:
+                if this_subunit.game_id == this_leader.subunit.unit.subunit_list.flat[new_row * new_place]:
+                    if this_subunit.leader is not None or (new_row, new_place) in already_pick:
+                        new_place += 1
+                        if new_place > len(new_army_subunit[new_row]) - 1:  # find new column
+                            new_place = 0
+                        elif new_place == int(
+                                len(new_army_subunit[new_row]) / 2):  # find in new row when loop back to the first one
+                            new_row += 1
+                        place_done = False
+                    else:  # found slot to replace
+                        place_done = True
+                        break
+        else:  # fill in the subunit if the slot is empty
+            place_done = True
+
+    old_army_subunit[replace[0]][replace[1]] = new_army_subunit[new_row][new_place]
+    new_army_subunit[new_row][new_place] = this_leader.subunit.game_id
+    new_position = (new_place, new_row)
+    return old_army_subunit, new_army_subunit, new_position
+
+
+def complex_dmg_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
     """Calculate dmg, type 0 is melee attack and will use attacker subunit stat,
     type that is not 0 will use the type object stat instead (mostly used for range attack)"""
     who = attacker
@@ -80,7 +113,7 @@ def loss_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
         if dmg_type == 0:  # Melee melee_dmg
             dmg = random.uniform(who.melee_dmg[0], who.melee_dmg[1])
             if who.charge_skill in who.skill_effect:  # Include charge in melee_dmg if attacking
-                if who.ignore_chargedef is False:  # Ignore charge defence if have ignore trait
+                if who.ignore_charge_def is False:  # Ignore charge defence if have ignore trait
                     side_cal = battle_side_cal[def_side]
                     if target.full_def or target.temp_full_def:  # defence all side
                         side_cal = 1
@@ -94,7 +127,7 @@ def loss_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
                     who.charge_momentum -= 1 / who.charge
 
             if target.charge_skill in target.skill_effect:  # Also include charge_def in melee_dmg if enemy charging
-                if target.ignore_chargedef is False:
+                if target.ignore_charge_def is False:
                     charge_def_cal = who.charge_def - target.charge
                     if charge_def_cal < 0:
                         charge_def_cal = 0
@@ -135,27 +168,7 @@ def loss_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
     return unit_dmg, morale_dmg, leader_dmg
 
 
-def apply_status_to_enemy(status_list, inflict_status, receiver, attacker_side, receiver_side):
-    """apply aoe status effect to enemy subunits"""
-    for status in inflict_status.items():
-        if status[1] == 1 and attacker_side == 0:  # only front enemy
-            receiver.status_effect[status[0]] = status_list[status[0]].copy()
-        elif status[1] == 2:  # aoe effect to side enemy
-            receiver.status_effect[status[0]] = status_list[status[0]].copy()
-            if status[1] == 3:  # apply to corner enemy subunit (left and right of self front enemy subunit)
-                corner_enemy_apply = receiver.nearby_subunit_list[0:2]
-                if receiver_side in (1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
-                    corner_enemy_apply = [receiver.nearby_subunit_list[2], receiver.nearby_subunit_list[5]]
-                for this_subunit in corner_enemy_apply:
-                    if this_subunit != 0:
-                        this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
-        elif status[1] == 3:  # whole unit aoe
-            for this_subunit in receiver.unit.subunit_sprite:
-                if this_subunit.state != 100:
-                    this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
-
-
-def complex_dmg_cal(attacker, receiver, dmg, morale_dmg, leader_dmg, dmg_effect, timer_mod):
+def loss_cal(attacker, receiver, dmg, morale_dmg, leader_dmg, dmg_effect, timer_mod):
     final_dmg = round(dmg * dmg_effect * timer_mod)
     final_morale_dmg = round(morale_dmg * dmg_effect * timer_mod)
     if final_dmg > receiver.unit_health:  # dmg cannot be higher than remaining health
@@ -225,12 +238,12 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
             target.flanker and attacker_side in (1, 3)):  # Apply only for attacker
         target_defence = 0
 
-    who_dmg, who_morale_dmg, who_leader_dmg = loss_cal(attacker, target, who_hit, target_defence, 0, target_side)  # get dmg by attacker
-    target_dmg, target_morale_dmg, target_leader_dmg = loss_cal(target, attacker, target_hit, who_defence, 0, attacker_side)  # get dmg by defender
+    who_dmg, who_morale_dmg, who_leader_dmg = complex_dmg_cal(attacker, target, who_hit, target_defence, 0, target_side)  # get dmg by attacker
+    target_dmg, target_morale_dmg, target_leader_dmg = complex_dmg_cal(target, attacker, target_hit, who_defence, 0, attacker_side)  # get dmg by defender
 
     timer_mod = combat_timer / 0.5  # Since the update happen anytime more than 0.5 second, high speed that pass by longer than x1 speed will become inconsistent
-    complex_dmg_cal(attacker, target, who_dmg, who_morale_dmg, who_leader_dmg, dmg_effect, timer_mod)  # Inflict dmg to defender
-    complex_dmg_cal(target, attacker, target_dmg, target_morale_dmg, target_leader_dmg, target_dmg_effect, timer_mod)  # Inflict dmg to attacker
+    loss_cal(attacker, target, who_dmg, who_morale_dmg, who_leader_dmg, dmg_effect, timer_mod)  # Inflict dmg to defender
+    loss_cal(target, attacker, target_dmg, target_morale_dmg, target_leader_dmg, target_dmg_effect, timer_mod)  # Inflict dmg to attacker
 
     # v Attack corner (side) of self with aoe attack
     if attacker.corner_atk:
@@ -241,8 +254,8 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
             if this_subunit != 0 and this_subunit.state != 100:
                 target_hit, target_defence = float(attacker.attack * target_percent) + target_luck, float(
                     this_subunit.melee_def * target_percent) + target_luck
-                who_dmg, who_morale_dmg = loss_cal(attacker, this_subunit, who_hit, target_defence, 0)
-                complex_dmg_cal(attacker, this_subunit, who_dmg, who_morale_dmg, who_leader_dmg, dmg_effect, timer_mod)
+                who_dmg, who_morale_dmg = complex_dmg_cal(attacker, this_subunit, who_hit, target_defence, 0)
+                loss_cal(attacker, this_subunit, who_dmg, who_morale_dmg, who_leader_dmg, dmg_effect, timer_mod)
     # ^ End attack corner
 
     # v inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy subunit, 4 entire unit
@@ -251,3 +264,53 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
     if target.inflict_status != {}:
         apply_status_to_enemy(status_list, target.inflict_status, attacker, target_side, attacker_side)
     # ^ End inflict status
+
+
+def apply_status_to_enemy(status_list, inflict_status, receiver, attacker_side, receiver_side):
+    """apply aoe status effect to enemy subunits"""
+    for status in inflict_status.items():
+        if status[1] == 1 and attacker_side == 0:  # only front enemy
+            receiver.status_effect[status[0]] = status_list[status[0]].copy()
+        elif status[1] == 2:  # aoe effect to side enemy
+            receiver.status_effect[status[0]] = status_list[status[0]].copy()
+            if status[1] == 3:  # apply to corner enemy subunit (left and right of self front enemy subunit)
+                corner_enemy_apply = receiver.nearby_subunit_list[0:2]
+                if receiver_side in (1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
+                    corner_enemy_apply = [receiver.nearby_subunit_list[2], receiver.nearby_subunit_list[5]]
+                for this_subunit in corner_enemy_apply:
+                    if this_subunit != 0:
+                        this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
+        elif status[1] == 3:  # whole unit aoe
+            for this_subunit in receiver.unit.subunit_sprite:
+                if this_subunit.state != 100:
+                    this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
+
+
+def die(self):
+    self.image_original3.blit(self.health_image_list[5], self.health_image_rect)  # blit white hp bar
+    self.block_original.blit(self.health_image_rect[5], self.health_block_rect)
+    self.zoom_scale()
+    self.last_health_state = 0
+    self.skill_cooldown = {}  # remove all cooldown
+    self.skill_effect = {}  # remove all skill effects
+
+    self.block.blit(self.block_original, self.corner_image_rect)
+    self.red_border = True  # to prevent red border appear when dead
+
+    self.unit.dead_change = True
+
+    if self in self.battle.battle_camera:
+        self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
+    self.battle.all_subunit_list.remove(self)
+    self.unit.subunit_sprite.remove(self)
+
+    for subunit in self.unit.subunit_list.flat:  # remove from index array
+        if subunit == self.game_id:
+            self.unit.subunit_list = np.where(self.unit.subunit_list == self.game_id, 0, self.unit.subunit_list)
+            break
+
+    self.change_leader("destroyed")
+
+    self.battle.event_log.add_log([0, str(self.board_pos) + " " + str(self.name)
+                                   + " in " + self.unit.leader[0].name
+                                   + "'s unit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab

@@ -166,8 +166,8 @@ def load_game_data(game):
     game.game_ui.add(game.unitstat_ui)
     game.unitstat_ui.unit_state_text = game.state_text
 
-    game.inspect_ui_pos = [game.unitstat_ui.rect.bottomleft[0] - game.sprite_width / 1.25,
-                           game.unitstat_ui.rect.bottomleft[1] - game.sprite_height / 3]
+    game.inspect_ui_pos = [game.unitstat_ui.rect.bottomleft[0] - game.icon_sprite_width / 1.25,
+                           game.unitstat_ui.rect.bottomleft[1] - game.icon_sprite_height / 3]
 
     # Subunit information card ui
     game.inspect_ui = battleui.GameUI(x=SCREENRECT.width - topimage[5].get_size()[0] / 2, y=topimage[0].get_size()[1] * 4,
@@ -176,7 +176,7 @@ def load_game_data(game):
     # v Subunit shown in inspect ui
     width, height = game.inspect_ui_pos[0], game.inspect_ui_pos[1]
     subunitnum = 0  # Number of subnit based on the position in row and column
-    imgsize = (game.sprite_width, game.sprite_height)
+    imgsize = (game.icon_sprite_width, game.icon_sprite_height)
     game.inspect_subunit = []
     for this_subunit in list(range(0, 64)):
         width += imgsize[0]
@@ -193,7 +193,7 @@ def load_game_data(game):
                           battleui.SwitchButton(game.command_ui.x - 80, game.command_ui.y + 96, topimage[15:17]),  # fire at will button
                           battleui.SwitchButton(game.command_ui.x, game.command_ui.y + 96, topimage[17:20]),  # behaviour button
                           battleui.SwitchButton(game.command_ui.x + 40, game.command_ui.y + 96, topimage[20:22]),  # shoot range button
-                          battleui.SwitchButton(game.command_ui.x - 125, game.command_ui.y + 96, topimage[35:38]),  # arcshot button
+                          battleui.SwitchButton(game.command_ui.x - 125, game.command_ui.y + 96, topimage[35:38]),  # arc_shot button
                           battleui.SwitchButton(game.command_ui.x + 80, game.command_ui.y + 96, topimage[38:40]),  # toggle run button
                           battleui.SwitchButton(game.command_ui.x + 120, game.command_ui.y + 96, topimage[40:43])]  # toggle melee mode
 
@@ -346,7 +346,7 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
         if dmgtype == 0:  # Melee melee_dmg
             dmg = random.uniform(who.melee_dmg[0], who.melee_dmg[1])
             if who.charge_skill in who.skill_effect:  # Include charge in melee_dmg if attacking
-                if who.ignore_chargedef is False:  # Ignore charge defence if have ignore trait
+                if who.ignore_charge_def is False:  # Ignore charge defence if have ignore trait
                     sidecal = battlesidecal[defside]
                     if target.full_def or target.temp_full_def:  # defence all side
                         sidecal = 1
@@ -360,7 +360,7 @@ def losscal(attacker, defender, hit, defence, dmgtype, defside=None):
                     who.charge_momentum -= 1 / who.charge
 
             if target.charge_skill in target.skill_effect:  # Also include charge_def in melee_dmg if enemy charging
-                if target.ignore_chargedef is False:
+                if target.ignore_charge_def is False:
                     chargedefcal = who.charge_def - target.charge
                     if chargedefcal < 0:
                         chargedefcal = 0
@@ -748,12 +748,12 @@ def splitunit(battle, who, how):
         width, height = 0, 0
         subunitnum = 0
         for this_subunit in sprite:
-            width += battle.sprite_width
+            width += battle.icon_sprite_width
 
             if subunitnum >= len(who.subunit_list[0]):
                 width = 0
-                width += battle.sprite_width
-                height += battle.sprite_height
+                width += battle.icon_sprite_width
+                height += battle.icon_sprite_height
                 subunitnum = 0
 
             this_subunit.inspect_pos = (width + battle.inspect_ui_pos[0], height + battle.inspect_ui_pos[1])

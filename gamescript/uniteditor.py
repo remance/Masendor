@@ -116,12 +116,13 @@ class SelectedPresetBorder(pygame.sprite.Sprite):
 
 class UnitBuildSlot(pygame.sprite.Sprite):
 
-    def __init__(self, team):
+    def __init__(self, team, colour):
         """Dummy unit for editing"""
         self._layer = 2
         pygame.sprite.Sprite.__init__(self)
         self.selected = False
         self.team = team
+        self.colour = colour
         self.leader = None
         self.authority = 100
         self.state = 0
@@ -133,27 +134,27 @@ class UnitBuildSlot(pygame.sprite.Sprite):
 
         self.coa = pygame.Surface((0, 0))  # empty coa_list to prevent leader ui error
 
-        self.change_team(False)
+        # self.change_team(False)
 
-    def change_team(self, change_troop):
-        if change_troop:
-            self.change_troop(self.troop_id, self.terrain, self.feature, self.weather)
-        self.image = pygame.Surface((self.sprite_width, self.sprite_height), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0))
-        white_image = pygame.Surface((self.sprite_width - 2, self.sprite_height - 2))
-        white_image.fill(self.colour[self.team])
-        white_rect = white_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(white_image, white_rect)
-        self.image_original = self.image.copy()
-
-    def change_troop(self, troop_index, terrain, feature, weather):
-        from gamescript import subunit
-        if self.troop_id != troop_index:
-            self.troop_id = troop_index
-            self = subunit.Subunit(self.troop_id, self.game_id, None, self.army_pos, 100, 100, [1], self.genre)
-        self.terrain = terrain
-        self.feature = feature
-        self.weather = weather
+    # def change_team(self, change_troop):
+    #     if change_troop:
+    #         self.change_troop(self.troop_id, self.terrain, self.feature, self.weather)
+    #     self.image = pygame.Surface((self.icon_sprite_width, self.icon_sprite_height), pygame.SRCALPHA)
+    #     self.image.fill((0, 0, 0))
+    #     white_image = pygame.Surface((self.icon_sprite_width - 2, self.icon_sprite_height - 2))
+    #     white_image.fill(self.colour[self.team])
+    #     white_rect = white_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+    #     self.image.blit(white_image, white_rect)
+    #     self.image_original = self.image.copy()
+    #
+    # def change_troop(self, troop_index, terrain, feature, weather):
+    #     from gamescript import subunit
+    #     if self.troop_id != troop_index:
+    #         self.troop_id = troop_index
+    #         self = subunit.Subunit(self.troop_id, self.game_id, None, self.army_pos, 100, 100, [1], self.genre)
+    #     self.terrain = terrain
+    #     self.feature = feature
+    #     self.weather = weather
 
 
 class WarningMsg(pygame.sprite.Sprite):

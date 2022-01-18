@@ -38,6 +38,12 @@ def add_weapon_stat(self):
         self.trait += self.weapon_list.weapon_list[weapon[0]]["Trait"]
         self.weight += self.weapon_list.weapon_list[weapon[0]]["Weight"]
 
+        self.melee_speed = int(self.melee_speed)
+        if self.melee_penetrate < 0:
+            self.melee_penetrate = 0  # melee melee_penetrate cannot be lower than 0
+        if self.range_penetrate < 0:
+            self.range_penetrate = 0
+
         if base_range != []:
             self.base_range = np.mean(base_range)  # use average range
         if arrow_speed != []:
@@ -66,12 +72,12 @@ def add_mount_stat(self):
 
 def create_sprite(self):
     # v Subunit image sprite
-    image = self.images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
+    image = self.unit_ui_images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
     if self.team == 2:
-        image = self.images["ui_squad_enemy.png"].copy()  # red colour
+        image = self.unit_ui_images["ui_squad_enemy.png"].copy()  # red colour
 
     sprite_image = pygame.Surface((image.get_width() + 10, image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
-    pygame.draw.circle(sprite_image, colour, (sprite_image.get_width() / 2, sprite_image.get_height() / 2), image.get_width() / 2)
+    pygame.draw.circle(sprite_image, self.unit.colour, (sprite_image.get_width() / 2, sprite_image.get_height() / 2), image.get_width() / 2)
 
     if self.subunit_type == 2:  # cavalry draw line on block
         pygame.draw.line(image, (0, 0, 0), (0, 0), (image.get_width(), image.get_height()), 2)
@@ -106,20 +112,20 @@ def create_sprite(self):
     # ^ End subunit base sprite
 
     # v health and stamina related
-    health_image_list = [self.images["ui_health_circle_100.png"], self.images["ui_health_circle_75.png"],
-                              self.images["ui_health_circle_50.png"], self.images["ui_health_circle_25.png"],
-                              self.images["ui_health_circle_0.png"]]
-    stamina_image_list = [self.images["ui_stamina_circle_100.png"], self.images["ui_stamina_circle_75.png"],
-                               self.images["ui_stamina_circle_50.png"], self.images["ui_stamina_circle_25.png"],
-                               self.images["ui_stamina_circle_0.png"]]
+    health_image_list = [self.unit_ui_images["ui_health_circle_100.png"], self.unit_ui_images["ui_health_circle_75.png"],
+                              self.unit_ui_images["ui_health_circle_50.png"], self.unit_ui_images["ui_health_circle_25.png"],
+                              self.unit_ui_images["ui_health_circle_0.png"]]
+    stamina_image_list = [self.unit_ui_images["ui_stamina_circle_100.png"], self.unit_ui_images["ui_stamina_circle_75.png"],
+                               self.unit_ui_images["ui_stamina_circle_50.png"], self.unit_ui_images["ui_stamina_circle_25.png"],
+                               self.unit_ui_images["ui_stamina_circle_0.png"]]
 
-    health_image = self.images["ui_health_circle_100.png"]
+    health_image = self.unit_ui_images["ui_health_circle_100.png"]
     health_image_rect = health_image.get_rect(center=sprite_image.get_rect().center)  # for battle sprite
     health_block_rect = health_image.get_rect(center=block.get_rect().center)  # for ui sprite
     sprite_image.blit(health_image, health_image_rect)
     block.blit(health_image, health_block_rect)
 
-    stamina_image = self.images["ui_stamina_circle_100.png"]
+    stamina_image = self.unit_ui_images["ui_stamina_circle_100.png"]
     stamina_image_rect = stamina_image.get_rect(center=sprite_image.get_rect().center)  # for battle sprite
     stamina_block_rect = stamina_image.get_rect(center=block.get_rect().center)  # for ui sprite
     sprite_image.blit(stamina_image, stamina_image_rect)
@@ -135,7 +141,7 @@ def create_sprite(self):
     block.blit(image1, image1_rect)
     block_original = block.copy()
 
-    corner_image_rect = self.images["ui_squad_combat.png"].get_rect(center=block.get_rect().center)  # red corner when take melee_dmg shown in image block
+    corner_image_rect = self.unit_ui_images["ui_squad_combat.png"].get_rect(center=block.get_rect().center)  # red corner when take melee_dmg shown in image block
     # ^ End weapon icon
 
     image_original = sprite_image.copy()  # original for rotate

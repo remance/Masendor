@@ -20,13 +20,13 @@ class RangeArrow(pygame.sprite.Sprite):
         self.shooter = shooter  # subunit that shoot arrow
         self.speed = self.shooter.arrow_speed  # arrow speed
         self.arcshot = False  # direct shot will no go pass collided unit
-        if self.shooter.arcshot and self.shooter.unit.shoot_mode != 2:
+        if self.shooter.arc_shot and self.shooter.unit.shoot_mode != 2:
             self.arcshot = True  # arc shot will go pass unit to land at final base_target
         self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
         self.dmg = random.randint(self.shooter.range_dmg[0], self.shooter.range_dmg[1])
         self.penetrate = self.shooter.range_penetrate
-        if self.shooter.state in (12, 13) and self.shooter.agileaim is False:
+        if self.shooter.state in (12, 13) and self.shooter.agile_aim is False:
             self.accuracy -= 10  # accuracy penalty for shoot while moving
         self.pass_who = None  # check which unit arrow passing through
         self.side = None  # side that arrow collided last
@@ -60,7 +60,7 @@ class RangeArrow(pygame.sprite.Sprite):
                             target_move.normalize_ip()
                             target_now = target_hit.base_pos + (
                                     (target_move * (target_hit.unit.walk_speed * how_long)) / 11)
-                            if self.shooter.agileaim is False:
+                            if self.shooter.agile_aim is False:
                                 hit_chance -= 10
                         else:  # movement too short, simply hit the current position
                             target_now = target_hit.base_pos
@@ -72,7 +72,7 @@ class RangeArrow(pygame.sprite.Sprite):
                             target_move.normalize_ip()
                             target_now = target_hit.base_pos + (
                                     (target_move * (target_hit.unit.runs_peed * how_long)) / 11)
-                            if self.shooter.agileaim is False:
+                            if self.shooter.agile_aim is False:
                                 hit_chance -= 20
                         else:
                             target_now = target_hit.base_pos
@@ -137,7 +137,7 @@ class RangeArrow(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        who_dmg, who_morale_dmg, who_leader_dmg = fight.loss_cal(who, target, who_hit, target_def, self)
+        who_dmg, who_morale_dmg, who_leader_dmg = fight.complex_dmg_cal(who, target, who_hit, target_def, self)
         target.unit_health -= who_dmg
         target.base_morale -= who_morale_dmg
 

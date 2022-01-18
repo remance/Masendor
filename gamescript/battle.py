@@ -5,12 +5,10 @@ import os
 import random
 import sys
 
-import numpy as np
 import pygame
 import pygame.freetype
 from gamescript import camera, map, weather, battleui, script_common, menu, script_escmenu, subunit, unit, leader
-from gamescript.tactical import script_other, script_battle, script_editor
-from gamescript.tactical.subunit import fight
+
 from pygame.locals import *
 from scipy.spatial import KDTree
 
@@ -23,8 +21,21 @@ setup_list = script_common.setup_list
 list_scroll = script_common.list_scroll
 
 
+def change_battle_genre(genre):
+    if genre == "tactical":
+        from gamescript.tactical import script_other
+        from gamescript.tactical.battle import setup
+        from gamescript.tactical.unit import combat
+        from gamescript.tactical.subunit import fight
+    elif genre == "arcade":
+        from gamescript.arcade.subunit import fight, spawn, movement
+
+    Battle.split_unit = combat.split_unit
+    Battle.check_split = combat.check_split
+    Battle.unit_setup = setup.unit_setup
+
+
 class Battle:
-    splitunit = script_other.split_unit
     trait_skill_blit = script_common.trait_skill_blit
     effect_icon_blit = script_common.effect_icon_blit
     countdown_skill_icon = script_common.countdown_skill_icon
@@ -32,14 +43,13 @@ class Battle:
     popout_lorebook = script_common.popout_lorebook
     popup_list_newopen = script_common.popup_list_open
     escmenu_process = script_escmenu.escmenu_process
-    check_split = script_battle.check_split
-    unit_setup = script_battle.unit_setup
-
+    
     def __init__(self, main, window_style):
         # v Get self object/variable from gamestart
         self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for self battle
         self.main = main
         self.genre = main.genre
+
         self.config = main.config
         self.mixer_volume = main.mixer_volume
         self.screen_rect = main.screen_rect
@@ -188,8 +198,8 @@ class Battle:
 
         self.state_text = main.state_text
 
-        self.sprite_width = main.sprite_width
-        self.sprite_height = main.sprite_height
+        self.sprite_width = main.icon_sprite_width
+        self.sprite_height = main.icon_sprite_height
         self.collide_distance = self.sprite_height / 10  # distance to check collision
         self.front_distance = self.sprite_height / 20  # distance from front side
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
@@ -1490,7 +1500,7 @@ class Battle:
                                             self.button_name_popup.pop(self.mouse_pos, "Split By Middle Column")
                                             self.battle_ui.add(self.button_name_popup)
                                             if mouse_left_up and self.last_selected.state != 10:
-                                                self.splitunit(self.last_selected, 1)
+                                                self.split_unit(self.last_selected, 1)
                                                 self.split_happen = True
                                                 self.check_split(self.last_selected)
                                                 self.battle_ui.remove(*self.leader_now)
@@ -1502,7 +1512,7 @@ class Battle:
                                             self.button_name_popup.pop(self.mouse_pos, "Split by Middle Row")
                                             self.battle_ui.add(self.button_name_popup)
                                             if mouse_left_up and self.last_selected.state != 10:
-                                                self.splitunit(self.last_selected, 0)
+                                                self.split_unit(self.last_selected, 0)
                                                 self.split_happen = True
                                                 self.check_split(self.last_selected)
                                                 self.battle_ui.remove(*self.leader_now)

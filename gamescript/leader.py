@@ -131,8 +131,8 @@ class Leader(pygame.sprite.Sprite):
             self.poschangestat(leader)
         # ^ End change position
 
-        self.parentunit.commandbuff = [(self.parentunit.leader[0].meleecommand - 5) * 0.1, (self.parentunit.leader[0].rangecommand - 5) * 0.1,
-                                       (self.parentunit.leader[0].cavcommand - 5) * 0.1]  # reset command buff to new leader
+        self.parentunit.command_buff = [(self.parentunit.leader[0].meleecommand - 5) * 0.1, (self.parentunit.leader[0].rangecommand - 5) * 0.1,
+                                        (self.parentunit.leader[0].cavcommand - 5) * 0.1]  # reset command buff to new leader
         self.authority = 0
         self.meleecommand = 0
         self.rangecommand = 0
