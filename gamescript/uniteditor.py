@@ -87,7 +87,7 @@ class PreviewLeader(pygame.sprite.Sprite):
         except:  # Use Unknown leader image if there is none in list
             self.full_image = leader_stat.images["9999999.png"].copy()
 
-        self.image = pygame.transform.scale(self.full_image, (50, 50))
+        self.image = pygame.transform.scale(self.full_image, (50, 50))  # TODO change scale number
         self.rect = self.image.get_rect(center=self.img_position)
         self.image_original = self.image.copy()
 
@@ -195,34 +195,9 @@ class WarningMsg(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class PreviewChangeButton(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, image, text):
-        self._layer = 13
-        pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("timesnewroman", int(30 * screen_scale[1]))
-
-        self.image = image.copy()
-        self.image_original = self.image.copy()
-
-        self.text = text
-        self.textsurface = self.font.render(text, True, (0, 0, 0))
-        self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(self.textsurface, self.textrect)
-
-        self.rect = self.image.get_rect(midbottom=pos)
-
-    def changetext(self, text):
-        self.image = self.image_original.copy()
-        self.text = text
-        self.textsurface = self.font.render(text, True, (0, 0, 0))
-        self.textrect = self.textsurface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(self.textsurface, self.textrect)
-
-
 class FilterBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[0]),
-                                                    int(image.get_height() * screen_scale[1])))
+        self.image = image
         self.rect = self.image.get_rect(topleft=pos)

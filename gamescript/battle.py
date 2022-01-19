@@ -8,7 +8,7 @@ import sys
 import pygame
 import pygame.freetype
 from gamescript import camera, map, weather, battleui, menu, subunit, unit, leader
-from gamescript.common import utility, escmenu
+from gamescript.common import utility, escmenu, editor
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -47,6 +47,11 @@ class Battle:
     popout_lorebook = utility.popout_lorebook
     popup_list_newopen = utility.popup_list_open
     escmenu_process = escmenu.escmenu_process
+    editor_map_change = editor.editor_map_change
+    save_preset = editor.save_preset
+    convert_slot_dict = editor.convert_slot_dict
+    preview_authority = editor.preview_authority
+    filter_troop_list = editor.filter_troop_list
     
     def __init__(self, main, window_style):
         # v Get self object/variable from gamestart
@@ -55,7 +60,7 @@ class Battle:
         self.genre = main.genre
 
         self.config = main.config
-        self.mixer_volume = main.mixer_volume
+        self.master_volume = main.master_volume
         self.screen_rect = main.screen_rect
         self.team_colour = main.team_colour
         self.main_dir = main.main_dir
@@ -230,6 +235,11 @@ class Battle:
         self.battle_done_button = main.battle_done_button
         # ^ End load from gamestart
 
+        self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
+        self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
+        self.bottom_corner = self.screen_rect.height - (5 * self.screen_scale[1])
+        self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
+
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # availabe self speed
         self.leader_now = []
@@ -266,18 +276,6 @@ class Battle:
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
-    def editor_map_change(self, base_colour, feature_colour):
-        map_images = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
-        map_images[0].fill(base_colour)  # start with temperate terrain
-        map_images[1].fill(feature_colour)  # start with plain feature
-        map_images[2].fill((255, 100, 100, 125))  # start with height 100 plain
-
-        self.battle_map_base.draw_image(map_images[0])
-        self.battle_map_feature.draw_image(map_images[1])
-        self.battle_map_height.draw_image(map_images[2])
-        self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, None, self, True)
-        self.mini_map.draw_image(self.show_map.true_image, self.camera)
-        self.show_map.change_scale(self.camera_scale)
 
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, enactment, map_selected, source, unit_scale, mode):
         """Setup stuff when start new battle"""
@@ -365,7 +363,7 @@ class Battle:
         self.camera = camera.Camera(self.camera_pos, self.camera_scale)
 
         if map_selected is not None:
-            images = load_images(self.main_dir, ["ruleset", self.ruleset_folder, "map", self.mapselected], load_order=False)
+            images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.mapselected], load_order=False)
             self.battle_map_base.draw_image(images["base.png"])
             self.battle_map_feature.draw_image(images["feature.png"])
             self.battle_map_height.draw_image(images["height.png"])
@@ -402,115 +400,6 @@ class Battle:
             self.capture_troopnumber = [0, 0, 0]
             self.unit_setup()
         # ^ End start subunit sprite
-
-    def save_preset(self):
-        with open(os.path.join("profile", "unitpreset", str(self.ruleset), "custom_unitpreset.csv"), "w", encoding='utf-8', newline="") as csvfile:
-            filewriter = csv.writer(csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
-            save_list = self.custom_unit_preset_list.copy()
-            del save_list["New Preset"]
-            final_save = [["presetname", "subunitline1", "subunitline2", "subunitline3", "subunitline4", "subunitline5", "subunitline6",
-                          "subunitline7", "subunitline8", "leader", "leaderposition", "faction"]]
-            for item in list(save_list.items()):
-                subitem = [smallitem for smallitem in item[1]]
-                item = [item[0]] + subitem
-                final_save.append(item)
-            for row in final_save:
-                filewriter.writerow(row)
-            csvfile.close()
-
-    def convert_slot_dict(self, name, pos=None, add_id=None):
-        current_preset = [[], [], [], [], [], [], [], []]
-        start_item = 0
-        subunit_count = 0
-        for slot in self.subunit_build:  # add subunit troop id
-            current_preset[int(start_item / 8)].append(str(slot.troop_id))
-            start_item += 1
-            if slot.troop_id != 0:
-                subunit_count += 1
-        if pos is not None:
-            current_preset.append(pos)
-
-        if subunit_count > 0:
-            leader_list = []
-            leader_pos_list = []
-            for this_leader in self.preview_leader:  # add leader id
-                count_zero = 0
-                if this_leader.leader_id != 1:
-                    subunit_count += 1
-                    for slotindex, slot in enumerate(self.subunit_build):  # add subunit troop id
-                        if slot.troop_id == 0:
-                            count_zero += 1
-                        if slotindex == this_leader.subunit_pos:
-                            break
-
-                leader_list.append(str(this_leader.leader_id))
-                leader_pos_list.append(str(this_leader.subunit_pos - count_zero))
-            current_preset.append(leader_list)
-            current_preset.append(leader_pos_list)
-
-            faction = []  # generate faction list that can use this unit
-            faction_list = self.all_faction.faction_list.copy()
-            del faction_list["ID"]
-            del faction_list[0]
-            faction_count = dict.fromkeys(faction_list.keys(), 0)  # dict of faction occurrence count
-
-            for index, item in enumerate(current_preset):
-                for this_item in item:
-                    if index in range(0, 8):  # subunit
-                        for faction_item in faction_list.items():
-                            if int(this_item) in faction_item[1]["Troop"]:
-                                faction_count[faction_item[0]] += 1
-                    elif index == 8:  # leader
-                        for faction_item in faction_list.items():
-                            if int(this_item) < 10000 and int(this_item) in faction_item[1]["Leader"]:
-                                faction_count[faction_item[0]] += 1
-                            elif int(this_item) >= 10000:
-                                if faction_item[0] == self.leader_stat.leader_list[int(this_item)]["Faction"] or \
-                                        self.leader_stat.leader_list[int(this_item)]["Faction"] == 0:
-                                    faction_count[faction_item[0]] += 1
-
-            for item in faction_count.items():  # find faction of this unit
-                if item[1] == faction_count[max(faction_count, key=faction_count.get)]:
-                    if faction_count[max(faction_count, key=faction_count.get)] == subunit_count:
-                        faction.append(item[0])
-                    else:  # units from various factions, counted as multi-faction unit
-                        faction = [0]
-                        break
-            current_preset.append(faction)
-
-            for item_index, item in enumerate(current_preset):  # convert list to string
-                if type(item) == list:
-                    if len(item) > 1:
-                        current_preset[item_index] = ",".join(item)
-                    else:  # still type list because only one item in list
-                        current_preset[item_index] = str(current_preset[item_index][0])
-            if add_id is not None:
-                current_preset = [add_id] + current_preset
-            current_preset = {name: current_preset}
-        else:
-            current_preset = None
-
-        return current_preset
-
-    def preview_authority(self, leader_list):
-        """Calculate authority of editing unit"""
-        authority = int(
-            leader_list[0].authority + (leader_list[0].authority / 2) +
-            (leader_list[1].authority / 4) + (leader_list[2].authority / 4) +
-            (leader_list[3].authority / 10))
-        big_unit_size = len([slot for slot in self.subunit_build if slot.name != "None"])
-        if big_unit_size > 20:  # army size larger than 20 will reduce gamestart leader authority
-            authority = int(leader_list[0].authority +
-                            (leader_list[0].authority / 2 * (100 - big_unit_size) / 100) +
-                            leader_list[1].authority / 2 + leader_list[2].authority / 2 +
-                            leader_list[3].authority / 4)
-
-        for slot in self.subunit_build:
-            slot.authority = authority
-
-        if self.show_in_card is not None:
-            self.command_ui.value_input(who=self.unit_build_slot)
-        # ^ End cal authority
 
     def ui_mouse_over(self):
         """mouse over ui that is not subunit card and unitbox (topbar and commandbar)"""
@@ -639,7 +528,7 @@ class Battle:
         self.unitstat_ui.value_input(who=who_input, split=self.split_happen)
         self.command_ui.value_input(who=who_input, split=self.split_happen)
 
-    def unitcardbutton_click(self, who):
+    def troop_card_button_click(self, who):
         for button in self.troop_card_button:  # Change subunit card option based on button clicking
             if button.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
@@ -657,46 +546,6 @@ class Battle:
                     else:
                         self.kill_effect_icon()
                 break
-
-    def filter_troop_list(self):
-        """Filter troop list based on faction picked and type filter"""
-        if self.faction_pick != 0:
-            self.troop_list = [item[1]["Name"] for item in self.troop_data.troop_list.items()
-                               if item[1]["Name"] == "None" or
-                               item[0] in self.all_faction.faction_list[self.faction_pick]["Troop"]]
-            self.troop_index_list = [0] + self.all_faction.faction_list[self.faction_pick]["Troop"]
-
-        else:  # pick all faction
-            self.troop_list = [item[0] for item in self.troop_data.troop_list.values()][1:]
-            self.troop_index_list = list(range(0, len(self.troop_list)))
-
-        for this_unit in self.troop_index_list[::-1]:
-            if this_unit != 0:
-                if self.filter_troop[0] is False:  # filter out melee infantry
-                    if self.troop_data.troop_list[this_unit][8] > self.troop_data.troop_list[this_unit][12] and \
-                            self.troop_data.troop_list[this_unit][29] == [1, 0, 1]:
-                        self.troop_list.pop(self.troop_index_list.index(this_unit))
-                        self.troop_index_list.remove(this_unit)
-
-                if self.filter_troop[1] is False:  # filter out range infantry
-                    if self.troop_data.troop_list[this_unit][22] != [1, 0] and \
-                            self.troop_data.troop_list[this_unit][8] < self.troop_data.troop_list[this_unit][12] and \
-                            self.troop_data.troop_list[this_unit][29] == [1, 0, 1]:
-                        self.troop_list.pop(self.troop_index_list.index(this_unit))
-                        self.troop_index_list.remove(this_unit)
-
-                if self.filter_troop[2] is False:  # filter out melee cav
-                    if self.troop_data.troop_list[this_unit][8] > self.troop_data.troop_list[this_unit][12] and \
-                            self.troop_data.troop_list[this_unit][29] != [1, 0, 1]:
-                        self.troop_list.pop(self.troop_index_list.index(this_unit))
-                        self.troop_index_list.remove(this_unit)
-
-                if self.filter_troop[3] is False:  # filter out range cav
-                    if self.troop_data.troop_list[this_unit][22] != [1, 0] and \
-                            self.troop_data.troop_list[this_unit][8] < self.troop_data.troop_list[this_unit][12] and \
-                            self.troop_data.troop_list[this_unit][29] != [1, 0, 1]:
-                        self.troop_list.pop(self.troop_index_list.index(this_unit))
-                        self.troop_index_list.remove(this_unit)
 
     def change_state(self):
         self.previous_gamestate = self.game_state
@@ -918,10 +767,6 @@ class Battle:
         self.before_selected = None  # Which unit is selected before
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
-        self.weatherscreenadjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
-        self.rightcorner = self.screen_rect.width - 5
-        self.bottomcorner = self.screen_rect.height - 5
-        self.centerscreen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
         self.battle_mouse_pos = [[0, 0],
                                  [0, 0]]  # mouse position list in self not screen, the first without zoom and the second with camera zoom adjust
         self.unit_selector.current_row = 0
@@ -1187,7 +1032,7 @@ class Battle:
                     # ^ End register input
 
                     # v Camera movement
-                    if key_state[K_s] or self.mouse_pos[1] >= self.bottomcorner:  # Camera move down
+                    if key_state[K_s] or self.mouse_pos[1] >= self.bottom_corner:  # Camera move down
                         self.base_camera_pos[1] += 4 * (
                                 11 - self.camera_scale)  # need "11 -" for converting cameral scale so the further zoom camera move faster
                         self.camera_pos[1] = self.base_camera_pos[1] * self.camera_scale  # resize camera pos
@@ -1203,13 +1048,13 @@ class Battle:
                         self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
                         self.camera_fix()
 
-                    elif key_state[K_d] or self.mouse_pos[0] >= self.rightcorner:  # Camera move right
+                    elif key_state[K_d] or self.mouse_pos[0] >= self.right_corner:  # Camera move right
                         self.base_camera_pos[0] += 4 * (11 - self.camera_scale)
                         self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
                         self.camera_fix()
 
-                    self.cameraupcorner = (self.camera_pos[0] - self.centerscreen[0],
-                                           self.camera_pos[1] - self.centerscreen[1])  # calculate top left corner of camera position
+                    self.cameraupcorner = (self.camera_pos[0] - self.center_screen[0],
+                                           self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
                     # ^ End camera movement
 
                     if self.mouse_timer != 0:  # player click mouse once before
@@ -1222,8 +1067,8 @@ class Battle:
                         if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
                             self.map_scale_delay = 0
 
-                    self.battle_mouse_pos[0] = pygame.Vector2((self.mouse_pos[0] - self.centerscreen[0]) + self.camera_pos[0],
-                                                              self.mouse_pos[1] - self.centerscreen[1] + self.camera_pos[
+                    self.battle_mouse_pos[0] = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0]) + self.camera_pos[0],
+                                                              self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
                                                                   1])  # mouse pos on the map based on camera position
                     self.battle_mouse_pos[1] = self.battle_mouse_pos[0] / self.camera_scale  # mouse pos on the map at current camera zoom scale
 
@@ -1530,7 +1375,7 @@ class Battle:
                                         elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):  # mouse position in subunit card
                                             self.click_any = True
                                             self.ui_click = True  # for avoiding clicking subunit under ui
-                                            self.unitcardbutton_click(self.subunit_selected.who)
+                                            self.troop_card_button_click(self.subunit_selected.who)
 
                                     if self.troop_card_ui.option == 2:
                                         if self.effect_icon_mouse_over(self.skill_icon, mouse_right_up):
@@ -1684,7 +1529,7 @@ class Battle:
                             elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):
                                 self.ui_click = True
                                 if self.show_in_card is not None and mouse_left_up:
-                                    self.unitcardbutton_click(self.show_in_card)
+                                    self.troop_card_button_click(self.show_in_card)
 
                                 if self.troop_card_ui.option == 2:
                                     for icon_list in (self.effect_icon, self.skill_icon):
@@ -1703,13 +1548,13 @@ class Battle:
                                             for index, name in enumerate(self.popup_namegroup):
                                                 if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # click on name in list
                                                     if self.popup_listbox.type == "terrain":
-                                                        self.terrain_change_button.changetext(self.battle_map_base.terrain_list[index])
+                                                        self.terrain_change_button.change_text(self.battle_map_base.terrain_list[index])
                                                         self.base_terrain = index
                                                         self.editor_map_change(map.terrain_colour[self.base_terrain],
                                                                                map.feature_colour[self.feature_terrain])
 
                                                     elif self.popup_listbox.type == "feature":
-                                                        self.feature_change_button.changetext(self.battle_map_feature.feature_list[index])
+                                                        self.feature_change_button.change_text(self.battle_map_feature.feature_list[index])
                                                         self.feature_terrain = index
                                                         self.editor_map_change(map.terrain_colour[self.base_terrain],
                                                                                map.feature_colour[self.feature_terrain])
@@ -1717,7 +1562,7 @@ class Battle:
                                                     elif self.popup_listbox.type == "weather":
                                                         self.weather_type = int(index / 3)
                                                         self.weather_strength = index - (self.weather_type * 3)
-                                                        self.weather_change_button.changetext(self.weather_list[index])
+                                                        self.weather_change_button.change_text(self.weather_list[index])
                                                         del self.current_weather
                                                         self.current_weather = weather.Weather(self.time_ui, self.weather_type + 1,
                                                                                                self.weather_strength, self.all_weather)
@@ -2225,9 +2070,9 @@ class Battle:
                                         true_pos = (start_pos, random.randint(0, self.screen_rect.height))
 
                                     if true_pos[1] > 0:  # start position simulate from beyond top right of screen
-                                        target = (true_pos[1] * self.weatherscreenadjust, self.screen_rect.height)
+                                        target = (true_pos[1] * self.weather_screen_adjust, self.screen_rect.height)
                                     elif true_pos[0] < self.screen_rect.width:  # start position inside screen width
-                                        target = (0, true_pos[0] / self.weatherscreenadjust)
+                                        target = (0, true_pos[0] / self.weather_screen_adjust)
 
                                 elif self.current_weather.spawn_angle == 270:  # right to left movement
                                     true_pos = (self.screen_rect.width, random.randint(0, self.screen_rect.height))

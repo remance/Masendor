@@ -43,6 +43,7 @@ class Subunit(pygame.sprite.Sprite):
     stat_list = None
     status_list = None
     max_zoom = 10  # max zoom allow
+    screen_scale = (1, 1)
 
     set_rotate = utility.set_rotate
 
@@ -343,7 +344,7 @@ class Subunit(pygame.sprite.Sprite):
             self.combat_move_queue = []
             self.base_target = self.base_pos  # base_target to move
             self.command_target = self.base_pos  # actual base_target outside of combat
-            self.pos = self.base_pos * self.zoom  # pos is for showing on screen
+            self.pos = (self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * self.zoom  # pos is for showing on screen
 
             self.image_height = (self.image.get_height() - 1) / 20  # get real half height of circle sprite
 
@@ -387,7 +388,8 @@ class Subunit(pygame.sprite.Sprite):
 
     def change_pos_scale(self):
         """Change position variable to new camera scale"""
-        self.pos = self.base_pos * self.zoom
+        self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)
+        print(self.pos)
         self.rect = self.image.get_rect(center=self.pos)
 
     def use_skill(self, which_skill):

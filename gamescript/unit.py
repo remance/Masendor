@@ -52,19 +52,21 @@ class TroopNumber(pygame.sprite.Sprite):
         self.text_colour = pygame.Color("blue")
         if self.who.team == 2:
             self.text_colour = pygame.Color("red")
-        self.pos = self.who.true_number_pos
+        self.last_true_number_pos = self.who.true_number_pos
+        self.pos = (self.who.true_number_pos[0] * self.screen_scale[0], self.who.true_number_pos[1] * self.screen_scale[1])
         self.number = self.who.troop_number
         self.zoom = 0
 
-        self.font = pygame.font.SysFont("timesnewroman", int(12 * self.screen_scale[1]))
+        self.font = pygame.font.SysFont("timesnewroman", int(22 * self.screen_scale[1]))
 
         self.image = self.render(str(self.number), self.font, self.text_colour)
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def update(self, *args, **kwargs) -> None:
-        if self.pos != self.who.true_number_pos:  # new position
-            self.pos = self.who.true_number_pos
+        if self.last_true_number_pos != self.who.true_number_pos:  # new position
+            self.pos = (self.who.true_number_pos[0] * self.screen_scale[0], self.who.true_number_pos[1] * self.screen_scale[1])
             self.rect = self.image.get_rect(topleft=self.pos)
+            self.last_true_number_pos = self.who.true_number_pos
 
         if self.zoom != args[2]:  # zoom argument
             self.zoom = int(args[2])

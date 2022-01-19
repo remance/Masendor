@@ -9,13 +9,13 @@ from pathlib import Path
 import pygame
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 
-from gamescript import script_common, readstat, menu, battleui
-from gamescript.arcade import script_other
+from gamescript import readstat, menu, battleui
+from gamescript.common import utility
 
-rotation_xy = script_common.rotation_xy
-load_image = script_common.load_image
-load_images = script_common.load_images
-load_base_button = script_common.load_base_button
+rotation_xy = utility.rotation_xy
+load_image = utility.load_image
+load_images = utility.load_images
+load_base_button = utility.load_base_button
 stat_convert = readstat.stat_convert
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -142,7 +142,7 @@ def load_textures(main_dir, subfolder=None):
     loadorderfile = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
     loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
     for file in loadorderfile:
-        imgs[file.split(".")[0]] = load_image(main_dir, file, dir_path)
+        imgs[file.split(".")[0]] = load_image(main_dir, screen_scale, file, dir_path)
 
     return imgs
 
@@ -1498,13 +1498,13 @@ showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale
 showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
-Joint.images = [pygame.transform.scale(load_image(main_dir, "mainjoint.png", ["animation_maker_ui"]),
+Joint.images = [pygame.transform.scale(load_image(main_dir, screen_scale, "mainjoint.png", ["animation_maker_ui"]),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
-                pygame.transform.scale(load_image(main_dir, "subjoint.png", ["animation_maker_ui"]),
+                pygame.transform.scale(load_image(main_dir, screen_scale, "subjoint.png", ["animation_maker_ui"]),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
 joints = pygame.sprite.Group()
 
-image = pygame.transform.scale(load_image(main_dir, "film.png", ["animation_maker_ui"]),
+image = pygame.transform.scale(load_image(main_dir, screen_scale, "film.png", ["animation_maker_ui"]),
                                (int(100 * screen_scale[0]), int(100 * screen_scale[1])))
 
 Filmstrip.image_original = image
@@ -1531,7 +1531,7 @@ filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_wid
 
 filmstrips.add(*filmstrip_list)
 
-images = load_images(main_dir, ["animation_maker_ui", "helper_parts"])
+images = load_images(main_dir, screen_scale, ["animation_maker_ui", "helper_parts"])
 body_helper_size = (370 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (250 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = Bodyhelper(effect_helper_size, (screen_size[0] / 2, screen_size[1] - (body_helper_size[1] / 2)),
@@ -1543,7 +1543,7 @@ p2_body_helper = Bodyhelper(body_helper_size, (screen_size[0] - (body_helper_siz
                                                screen_size[1] - (body_helper_size[1] / 2)), "p2", list(images.values()))
 helper_list = [p1_body_helper, p2_body_helper, effect_helper]
 
-image = load_image(main_dir, "button.png", ["animation_maker_ui"])
+image = load_image(main_dir, screen_scale, "button.png", ["animation_maker_ui"])
 image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
                                        int(image.get_height() * screen_scale[1])))
 
@@ -1613,11 +1613,11 @@ p2_mouth_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-input_ui_img = load_image(main_dir, "input_ui.png", "ui\\mainmenu_ui")
+input_ui_img = load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui")
 input_ui = menu.InputUI(screen_scale, input_ui_img,
                         (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
-image_list = load_base_button(main_dir)
+image_list = load_base_button(main_dir, screen_scale)
 
 input_ok_button = menu.MenuButton(screen_scale, image_list, pos=(input_ui.rect.midleft[0] + image_list[0].get_width(),
                                                                  input_ui.rect.midleft[1] + image_list[0].get_height()),
@@ -1635,7 +1635,7 @@ confirm_ui = menu.InputUI(screen_scale, input_ui_img,
                           (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
 
-box_img = load_image(main_dir, "unit_presetbox.png", "ui\\mainmenu_ui")
+box_img = load_image(main_dir, screen_scale, "unit_presetbox.png", "ui\\mainmenu_ui")
 
 menu.ListBox.containers = popup_listbox
 popup_listbox = menu.ListBox(screen_scale, (0, 0), box_img, 15)  # popup box need to be in higher layer

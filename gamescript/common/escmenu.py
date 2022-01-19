@@ -24,9 +24,9 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
     if esc_press and self.battle_menu.mode in (0, 1):  # in menu or option
         if self.battle_menu.mode == 1:  # option menu
-            self.mixer_volume = self.oldsetting
-            pygame.mixer.music.set_volume(self.mixer_volume)
-            self.esc_slider_menu[0].update(self.mixer_volume, self.esc_value_box[0], forced_value=True)
+            self.master_volume = self.oldsetting
+            pygame.mixer.music.set_volume(self.master_volume)
+            self.esc_slider_menu[0].update(self.master_volume, self.esc_value_box[0], forced_value=True)
             self.battle_menu.change_mode(0)
         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.esc_option_menu_button,
                               *self.esc_slider_menu, *self.esc_value_box)
@@ -80,9 +80,9 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                 if mouse_up:  # click on button
                     button.image = button.images[2]  # change button image to clicked one
                     if button.text == "Confirm":  # confirm button, save the setting and close option menu
-                        self.oldsetting = self.mixer_volume  # save mixer volume
-                        pygame.mixer.music.set_volume(self.mixer_volume)  # set new music player volume
-                        editconfig("DEFAULT", "mixer_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
+                        self.oldsetting = self.master_volume  # save mixer volume
+                        pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
+                        editconfig("DEFAULT", "master_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
                                    self.config)  # save to config file
                         self.battle_menu.change_mode(0)  # go back to gamestart esc menu
                         self.battle_ui.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
@@ -90,15 +90,15 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         self.battle_ui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
 
                     elif button.text == "Apply":  # apply button, save the setting
-                        self.oldsetting = self.mixer_volume  # save mixer volume
-                        pygame.mixer.music.set_volume(self.mixer_volume)  # set new music player volume
-                        editconfig("DEFAULT", "mixer_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
+                        self.oldsetting = self.master_volume  # save mixer volume
+                        pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
+                        editconfig("DEFAULT", "master_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
                                    self.config)  # save to config file
 
                     elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
-                        self.mixer_volume = self.oldsetting  # revert to old setting
-                        pygame.mixer.music.set_volume(self.mixer_volume)  # set new music player volume
-                        self.esc_slider_menu[0].update(self.mixer_volume, self.esc_value_box[0],
+                        self.master_volume = self.oldsetting  # revert to old setting
+                        pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
+                        self.esc_slider_menu[0].update(self.master_volume, self.esc_value_box[0],
                                                        forced_value=True)  # update slider bar
                         self.battle_menu.change_mode(0)  # go back to gamestart esc menu
                         self.battle_ui.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
@@ -111,7 +111,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
         for slider in self.esc_slider_menu:
             if slider.rect.collidepoint(self.mouse_pos) and (mouse_leftdown or mouse_up):  # mouse click on slider bar
                 slider.update(self.mouse_pos, self.esc_value_box[0])  # update slider button based on mouse value
-                self.mixer_volume = float(slider.value / 100)  # for now only music volume slider exist
+                self.master_volume = float(slider.value / 100)  # for now only music volume slider exist
 
     elif self.battle_menu.mode == 2:  # Encyclopedia mode
         lorecommand = lorebook_process(self, uidraw, mouse_up, mouse_leftdown, mouse_scrollup, mouse_scrolldown, esc_press)
