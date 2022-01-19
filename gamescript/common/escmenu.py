@@ -1,7 +1,8 @@
 import pygame
-from gamescript import script_common, lorebook
+from gamescript import lorebook
+from gamescript.common import utility
 
-editconfig = script_common.edit_config
+editconfig = utility.edit_config
 
 lorebook_process = lorebook.lorebook_process
 

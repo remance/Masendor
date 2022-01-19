@@ -4,12 +4,10 @@ import random
 import numpy as np
 import pygame
 import pygame.freetype
-from gamescript import script_common
-from gamescript.tactical import script_other
-from gamescript.tactical.unit import combat
+from gamescript.common import utility
 from pygame.transform import scale
 
-rotationxy = script_common.rotation_xy
+rotationxy = utility.rotation_xy
 
 class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
@@ -137,14 +135,34 @@ class TroopNumber(pygame.sprite.Sprite):
             del self.who
 
 
+def change_unit_genre(genre):
+    """Change game genre and add appropriate method to subunit class"""
+    if genre == "tactical":
+        from gamescript.tactical.unit import combat, initialise, mobalise
+    elif genre == "arcade":
+        from gamescript.arcade.unit import combat, initialise, mobalise
+
+    Unit.skirmish = combat.skirmish
+    Unit.chase = combat.chase
+    Unit.destroyed = combat.destroyed  # destroyed script
+    Unit.retreat = combat.retreat
+
+
 class Unit(pygame.sprite.Sprite):
     images = []
     max_zoom = 10  # max zoom allow
     battle = None
-    destroyed = combat.destroyed  # destroyed script
-    set_rotate = script_common.set_rotate
     form_change_timer = 10
     image_size = None
+
+    set_rotate = utility.set_rotate
+
+    # method that change based on genre
+
+    skirmish = None
+    chase = None
+    destroyed = None
+    retreat = None
 
     def __init__(self, start_pos, game_id, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although unit in code, this is referred as subunit ingame"""
@@ -632,45 +650,8 @@ class Unit(pygame.sprite.Sprite):
                 if self.range_combat_check:
                     self.state = 11  # can only shoot if range_combat_check is true
 
-                # v skirmishing
-                if self.hold == 1 and self.state not in (97, 98, 99):
-                    min_range = self.min_range  # run away from enemy that reach minimum range
-                    if min_range < 50:
-                        min_range = 50  # for in case min_range is 0 (melee troop only)
-                    target_list = list(self.near_target.values())
-                    if len(target_list) > 0 and target_list[0].distance_to(self.base_pos) <= min_range:  # if there is any enemy in minimum range
-                        self.state = 96  # retreating
-                        base_target = self.base_pos - ((list(self.near_target.values())[0] - self.base_pos) / 5)  # generate base_target to run away
-
-                        if base_target[0] < 1:  # can't run away when reach corner of map same for below if elif
-                            base_target[0] = 1
-                        elif base_target[0] > 998:
-                            base_target[0] = 998
-                        if base_target[1] < 1:
-                            base_target[1] = 1
-                        elif base_target[1] > 998:
-                            base_target[1] = 998
-
-                        self.process_command(base_target, True, True)  # set base_target position to run away
-                # ^ End skirmishing
-
-                # v Chase base_target and rotate accordingly
-                if self.state in (3, 4, 5, 6, 10) and self.command_state in (3, 4, 5, 6) and self.attack_target is not None and self.hold == 0:
-                    if self.attack_target.state != 100:
-                        if self.collide is False:
-                            self.state = self.command_state  # resume attack command
-                            if self.base_pos.distance_to(self.attack_target.base_pos) < 10:
-                                self.set_target(self.attack_target.leader_subunit.base_pos)  # set base_target to cloest enemy's side
-                            else:
-                                self.set_target(self.attack_target.base_pos)
-                            self.base_attack_pos = self.base_target
-                            self.new_angle = self.set_rotate()  # keep rotating while chasing
-                    else:  # enemy dead stop chasing
-                        self.attack_target = None
-                        self.base_attack_pos = 0
-                        self.process_command(self.front_pos, other_command=1)
-                # ^ End chase
-
+                self.skirmish()
+                self.chase()
                 # v Morale/authority state function
                 if self.authority <= 0:  # disobey
                     self.state = 95
@@ -691,38 +672,7 @@ class Unit(pygame.sprite.Sprite):
                     self.process_command(self.base_pos, False, False, other_command=1)
 
                 if self.retreat_start and self.state != 96:
-                    if self.retreat_way is None:  # not yet start retreat or previous retreat way got blocked
-                        retreat_side = (
-                            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[0] if subunit != 0) + 2,
-                            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[1] if subunit != 0) + 1,
-                            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[2] if subunit != 0) + 1,
-                            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[3] if subunit != 0))
-
-                        this_index = retreat_side.index(min(retreat_side))  # find side with least subunit fighting to retreat, rear always prioritised
-                        if this_index == 0:  # front
-                            self.retreat_way = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find position to retreat
-                        elif this_index == 1:  # left
-                            self.retreat_way = (self.base_pos[0] - self.base_width_box, self.base_pos[1])  # find position to retreat
-                        elif this_index == 2:  # right
-                            self.retreat_way = (self.base_pos[0] + self.base_width_box, self.base_pos[1])  # find position to retreat
-                        else:  # rear
-                            self.retreat_way = (self.base_pos[0], (self.base_pos[1] + self.base_height_box))  # find rear position to retreat
-                        self.retreat_way = [rotationxy(self.base_pos, self.retreat_way, self.radians_angle), this_index]
-                        base_target = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
-
-                        self.process_retreat(base_target)
-                        # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
-                        #     if self.team == 1:
-                        #         self.battle.allunitindex = self.switchfaction(self.battle.team1_unit, self.battle.team2_unit,
-                        #                                                         self.battle.team1_pos_list, self.battle.allunitindex,
-                        #                                                         self.battle.enactment)
-                        #     else:
-                        #         self.battle.allunitindex = self.switchfaction(self.battle.team2_unit, self.battle.team1_unit,
-                        #                                                         self.battle.team2_pos_list, self.battle.allunitindex,
-                        #                                                         self.battle.enactment)
-                        #     self.battle.event_log.addlog([0, str(self.leader[0].name) + "'s unit surrender"], [0, 1])
-                        #     self.battle.setuparmyicon()
-                # ^ End retreat function
+                    self.retreat()
 
                 # v Rotate Function
                 if self.angle != self.new_angle and self.charging is False and self.state != 10 and self.stamina > 0 and self.collide is False:
@@ -798,8 +748,7 @@ class Unit(pygame.sprite.Sprite):
                     self.new_angle = self.set_rotate()  # also keep rotate to base_target
                 # ^ End range attack state
 
-        else:  # dead unit
-            # v unit just got killed
+        else:  # destroyed unit
             if self.got_killed is False:
                 if self.team == 1:
                     self.destroyed(self.battle)
@@ -813,7 +762,6 @@ class Unit(pygame.sprite.Sprite):
                 self.kill()
                 for subunit in self.subunit_sprite:
                     subunit.kill()
-            # ^ End got killed
 
     def set_target(self, pos):
         """set new base_target, scale base_target from base_target according to zoom scale"""
@@ -894,7 +842,7 @@ class Unit(pygame.sprite.Sprite):
         self.revert_move()
         self.command_target = self.base_target
 
-    def command(self, pos, mouse_right, double_mouse_right, target, key_state, other_command=0):
+    def user_input(self, pos, mouse_right, double_mouse_right, target, key_state, other_command=0):
         """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
         if self.control and self.state not in (95, 97, 98, 99):
             self.revert = False
@@ -944,7 +892,6 @@ class Unit(pygame.sprite.Sprite):
         old_group.remove(self)  # remove from old team group
         new_group.append(self)  # add to new team group
         old_pos_list.pop(self.game_id)  # remove from old pos list
-        self.game_id = newgameid  # change self id
         # self.changescale() # reset scale to the current zoom
         self.icon.change_image(change_side=True)  # change army icon to new team
 

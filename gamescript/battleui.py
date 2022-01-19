@@ -2,8 +2,8 @@ import datetime
 
 import pygame
 import pygame.freetype
-from gamescript import map, script_common
-
+from gamescript import map
+from gamescript.common import utility
 
 class UIButton(pygame.sprite.Sprite):
     def __init__(self, pos, image, event=None, layer=11):
@@ -36,7 +36,7 @@ class SwitchButton(pygame.sprite.Sprite):
 
 
 class PopupIcon(pygame.sprite.Sprite):
-    def __init__(self, image, event, game_ui, item_id=""):
+    def __init__(self, image, pos, event, game_ui, item_id=""):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
@@ -47,53 +47,44 @@ class PopupIcon(pygame.sprite.Sprite):
         self.item_id = item_id
 
 
-class GameUI(pygame.sprite.Sprite):
-    def __init__(self, image, icon, ui_type, text="", text_size=16):
+class InspectUI(pygame.sprite.Sprite):
+    def __init__(self, image):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.image_original = self.image.copy()
+
+    def change_pos(self, pos):
+        """change position of ui to new one"""
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+
+class TopBar(pygame.sprite.Sprite):
+    def __init__(self, image, icon, text="", text_size=16):
         from gamescript import start
         self.unit_state_text = start.unit_state_text
         self.morale_state_text = start.morale_state_text
         self.stamina_state_text = start.stamina_state_text
-        self.subunit_state_text = start.subunit_state_text
-        self.quality_text = start.quality_text
-        self.leader_state_text = start.leader_state_text
-        self.terrain_list = map.terrain_list
 
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.text = text
         self.image = image
         self.icon = icon
-        self.ui_type = ui_type
         self.value = [-1, -1]
         self.last_value = 0
         self.option = 0
         self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
-        if self.ui_type == "topbar":  # setup variable for topbar ui
-            position = 10
-            for ic in self.icon:  # Blit icon into topbar ui
-                self.icon_rect = self.icon[ic].get_rect(
-                    topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
-                self.image.blit(self.icon[ic], self.icon_rect)
-                position += 90
 
-        elif self.ui_type == "commandbar":  # setup variable for command bar ui
-            self.icon_rect = self.icon["authority.png"].get_rect(
-                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-            self.image.blit(self.icon["authority.png"], self.icon_rect)
-            self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
-                          self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
-            self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
-                          self.icon["red_knight_right.png"], self.icon["red_bishop.png"]]  # team 2 black chess head
-            self.last_auth = 0
+        position = 10
+        for ic in self.icon:  # Blit icon into topbar ui
+            self.icon_rect = self.icon[ic].get_rect(
+                topleft=(self.image.get_rect()[0] + position, self.image.get_rect()[1]))
+            self.image.blit(self.icon[ic], self.icon_rect)
+            position += 90
 
-        elif self.ui_type == "troopcard":  # setup variable for subunit card ui
-            self.font_head = pygame.font.SysFont("curlz", text_size + 4)
-            self.font_head.set_italic(True)
-            self.font_long = pygame.font.SysFont("helvetica", text_size - 2)
-            self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
-                               "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
-                               "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
         self.image_original = self.image.copy()
 
     def change_pos(self, pos):
@@ -102,181 +93,250 @@ class GameUI(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
-        make_long_text = script_common.make_long_text
+        position = 65
+        self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.stamina_state, who.morale_state, who.state]
+        if self.value[3] in self.unit_state_text:  # Check subunit state and blit name
+            self.value[3] = self.unit_state_text[self.value[3]]
+        # if type(self.value[2]) != str:
+
+        self.value[2] = round(self.value[2] / 10)  # morale state
+        if self.value[2] in self.morale_state_text:  # Check if morale state in the list and blit the name
+            self.value[2] = self.morale_state_text[self.value[2]]
+        elif self.value[2] > 15:  # if morale somehow too high use the highest morale state one
+            self.value[2] = self.morale_state_text[15]
+
+        self.value[1] = round(self.value[1] / 10)  # stamina state
+        if self.value[1] in self.stamina_state_text:  # Check if stamina state and blit the name
+            self.value[1] = self.stamina_state_text[self.value[1]]
+
+        if self.value != self.last_value or split:  # only blit new text when value change or subunit split
+            self.image = self.image_original.copy()
+            for value in self.value:  # blit value text
+                text_surface = self.font.render(str(value), True, (0, 0, 0))
+                text_rect = text_surface.get_rect(
+                    center=(self.image.get_rect()[0] + position, self.image.get_rect()[1] + 25))
+                self.image.blit(text_surface, text_rect)
+                if position >= 200:
+                    position += 50
+                else:
+                    position += 95
+            self.last_value = self.value
+    # for line in range(len(label)):
+    #     surface.blit(label(line), (position[0], position[1] + (line * font_size) + (15 * line)))
+
+
+class TroopCard(pygame.sprite.Sprite):
+    def __init__(self, image, icon, text_size=16):
+        from gamescript import start
+
+        self.subunit_state_text = start.subunit_state_text
+        self.quality_text = start.quality_text
+        self.leader_state_text = start.leader_state_text
+        self.terrain_list = map.terrain_list
+
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self)
+        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.image = image
+        self.icon = icon
+        self.value = [-1, -1]
+        self.last_value = 0
+        self.option = 0
+
+        self.image_original = self.image.copy()
+
+        self.font_head = pygame.font.SysFont("curlz", text_size + 4)
+        self.font_head.set_italic(True)
+        self.font_long = pygame.font.SysFont("helvetica", text_size - 2)
+        self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
+                           "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
+                           "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
+
+    def change_pos(self, pos):
+        """change position of ui to new one"""
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
+        make_long_text = utility.make_long_text
+        position = 15  # starting row
+        position_x = 45  # starting point of text
+        self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.max_troop)) + ")",
+                      str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
+                      str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.melee_def).split(".")[0],
+                      str(who.range_def).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
+                      str(who.accuracy).split(".")[0], str(who.shoot_range).split(".")[0], str(who.magazine_left),
+                      str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
+                      str(who.charge).split(".")[0], str(who.charge_def).split(".")[0], str(who.mental_text).split(".")[0],
+                      str(who.temp_count).split(".")[0]]
+        self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
+        self.description = who.description
+        if type(self.description) == list:
+            self.description = self.description[0]
+        if self.value != self.last_value or change_option == 1 or who.game_id != self.last_who:
+            self.image = self.image_original.copy()
+            row = 0
+            self.name = self.value[0]
+            leader_text = ""
+            if who.leader is not None and who.leader.name != "None":
+                leader_text = "/" + str(who.leader.name)
+                if who.leader.state in self.leader_state_text:
+                    leader_text += " " + "(" + self.leader_state_text[who.leader.state] + ")"
+            text_surface = self.font_head.render(self.name + leader_text, True,
+                                                 (0, 0, 0))  # subunit and leader name at the top
+            text_rect = text_surface.get_rect(
+                midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
+            self.image.blit(text_surface, text_rect)
+            row += 1
+            position += 20
+            if self.option == 1:  # stat card
+                # self.icon_rect = self.icon[0].get_rect(
+                #     center=(
+                #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
+                # deletelist = [i for i,x in enumerate(self.value) if x == 0]
+                # if len(deletelist) != 0:
+                #     for i in sorted(deletelist, reverse = True):
+                #         self.value.pop(i)
+                #         text.pop(i)
+                new_value, text = self.value[0:-1], self.front_text[1:]
+                for n, value in enumerate(new_value[1:]):
+                    value = value.replace("inf", "\u221e")
+                    text_surface = self.font.render(text[n] + value, True, (0, 0, 0))
+                    text_rect = text_surface.get_rect(
+                        midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
+                    self.image.blit(text_surface, text_rect)
+                    position += 20
+                    row += 1
+                    if row == 9:
+                        position_x, position = 200, 35
+            elif self.option == 0:  # description card
+                make_long_text(self.image, self.description, (42, 25), self.font_long)  # blit long description
+            elif self.option == 3:  # equipment and terrain
+                # v Terrain text
+                terrain = self.terrain_list[who.terrain]
+                if who.feature is not None:
+                    terrain += "/" + self.feature_list[who.feature]
+                # ^ End terrain text
+
+                # v Equipment text
+                text_value = [
+                    self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
+                    self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_sub_weapon[0]]["Name"]),
+                    self.quality_text[who.secondary_main_weapon[1]] + " " + str(
+                        weapon_list.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
+                    self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
+
+                text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.melee_speed).split(".")[0] +
+                               ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
+                text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
+                               ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
+
+                text_value += [str(armour_list.armour_list[who.armour_gear[0]]["Name"]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
+                               str(armour_list.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                               "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
+
+                if "None" not in who.mount:  # if mount is not the None mount id 1
+                    armour_text = "//" + who.mount_armour[0]
+                    if "None" in who.mount_armour[0]:
+                        armour_text = ""
+                    text_value.insert(3, "Mount:" + who.mount_grade[0] + " " + who.mount[0] + armour_text)
+                # ^ End equipment text
+
+                for text in text_value:
+                    text_surface = self.font.render(str(text), 1, (0, 0, 0))
+                    text_rect = text_surface.get_rect(
+                        midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
+                    self.image.blit(text_surface, text_rect)
+                    position += 20
+
+        self.last_value = self.value
+        self.last_who = who.game_id
+
+
+class CommandBar(pygame.sprite.Sprite):
+    def __init__(self, image, icon, text="", text_size=16):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self)
+        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.text = text
+        self.image = image
+        self.icon = icon
+        self.value = [-1, -1]
+        self.last_value = 0
+        self.option = 0
+        self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
+
+        self.icon_rect = self.icon["authority.png"].get_rect(
+            center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
+        self.image.blit(self.icon["authority.png"], self.icon_rect)
+        self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
+                      self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
+        self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
+                      self.icon["red_knight_right.png"], self.icon["red_bishop.png"]]  # team 2 black chess head
+        self.last_auth = 0
+
+        self.image_original = self.image.copy()
+
+    def change_pos(self, pos):
+        """change position of ui to new one"""
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
         for this_button in button:
             this_button.draw(self.image)
-        position = 65
-        if self.ui_type == "topbar":
-            self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.stamina_state, who.morale_state, who.state]
-            if self.value[3] in self.unit_state_text:  # Check subunit state and blit name
-                self.value[3] = self.unit_state_text[self.value[3]]
-            # if type(self.value[2]) != str:
 
-            self.value[2] = round(self.value[2] / 10)  # morale state
-            if self.value[2] in self.morale_state_text:  # Check if morale state in the list and blit the name
-                self.value[2] = self.morale_state_text[self.value[2]]
-            elif self.value[2] > 15:  # if morale somehow too high use the highest morale state one
-                self.value[2] = self.morale_state_text[15]
+        if who.game_id != self.last_who or split:  # only redraw leader circle when change subunit
+            use_colour = self.white  # colour of the chess icon for leader, white for team 1
+            if who.team == 2:  # black for team 2
+                use_colour = self.black
+            self.image = self.image_original.copy()
+            self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
-            self.value[1] = round(self.value[1] / 10)  # stamina state
-            if self.value[1] in self.stamina_state_text:  # Check if stamina state and blit the name
-                self.value[1] = self.stamina_state_text[self.value[1]]
+            if who.commander:  # commander unit use king and queen icon
+                # gamestart general
+                self.icon_rect = use_colour[0].get_rect(
+                    center=(
+                    self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
+                self.image.blit(use_colour[0], self.icon_rect)
 
-            if self.value != self.last_value or split:  # only blit new text when value change or subunit split
-                self.image = self.image_original.copy()
-                for value in self.value:  # blit value text
-                    text_surface = self.font.render(str(value), True, (0, 0, 0))
-                    text_rect = text_surface.get_rect(
-                        center=(self.image.get_rect()[0] + position, self.image.get_rect()[1] + 25))
-                    self.image.blit(text_surface, text_rect)
-                    if position >= 200:
-                        position += 50
-                    else:
-                        position += 95
-                self.last_value = self.value
-        # for line in range(len(label)):
-        #     surface.blit(label(line), (position[0], position[1] + (line * font_size) + (15 * line)))
+                # sub commander/strategist role
+                self.icon_rect = use_colour[1].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
+                self.image.blit(use_colour[1], self.icon_rect)
 
-        elif self.ui_type == "commandbar":
-            if who.game_id != self.last_who or split:  # only redraw leader circle when change subunit
-                use_colour = self.white  # colour of the chess icon for leader, white for team 1
-                if who.team == 2:  # black for team 2
-                    use_colour = self.black
-                self.image = self.image_original.copy()
-                self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
+            else:  # the rest use rook and bishop
+                # general
+                self.icon_rect = use_colour[2].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
+                self.image.blit(use_colour[2], self.icon_rect)
 
-                if who.commander:  # commander unit use king and queen icon
-                    # gamestart general
-                    self.icon_rect = use_colour[0].get_rect(
-                        center=(
-                        self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
-                    self.image.blit(use_colour[0], self.icon_rect)
+                # sub general/special advisor role
+                self.icon_rect = use_colour[5].get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
+                self.image.blit(use_colour[5], self.icon_rect)
 
-                    # sub commander/strategist role
-                    self.icon_rect = use_colour[1].get_rect(
-                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
-                    self.image.blit(use_colour[1], self.icon_rect)
+            self.icon_rect = use_colour[3].get_rect(center=(  # left sub general
+                self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
+                self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
+            self.image.blit(use_colour[3], self.icon_rect)
+            self.icon_rect = use_colour[0].get_rect(center=(  # right sub general
+                self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
+                self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
+            self.image.blit(use_colour[4], self.icon_rect)
 
-                else:  # the rest use rook and bishop
-                    # general
-                    self.icon_rect = use_colour[2].get_rect(
-                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
-                    self.image.blit(use_colour[2], self.icon_rect)
+            self.image_original2 = self.image.copy()
 
-                    # sub general/special advisor role
-                    self.icon_rect = use_colour[5].get_rect(
-                        center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
-                    self.image.blit(use_colour[5], self.icon_rect)
+        authority = str(who.authority).split(".")[0]
+        if self.last_auth != authority or who.game_id != self.last_who or split:  # authority number change only when not same as last
+            self.image = self.image_original2.copy()
+            text_surface = self.font.render(authority, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(
+                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
+            self.image.blit(text_surface, text_rect)
+            self.last_auth = authority
 
-                self.icon_rect = use_colour[3].get_rect(center=(  # left sub general
-                    self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
-                    self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
-                self.image.blit(use_colour[3], self.icon_rect)
-                self.icon_rect = use_colour[0].get_rect(center=(  # right sub general
-                    self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
-                    self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
-                self.image.blit(use_colour[4], self.icon_rect)
-
-                self.image_original2 = self.image.copy()
-            authority = str(who.authority).split(".")[0]
-            if self.last_auth != authority or who.game_id != self.last_who or split:  # authority number change only when not same as last
-                self.image = self.image_original2.copy()
-                text_surface = self.font.render(authority, True, (0, 0, 0))
-                text_rect = text_surface.get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
-                self.image.blit(text_surface, text_rect)
-                self.last_auth = authority
-
-        elif self.ui_type == "troopcard":
-            position = 15  # starting row
-            position_x = 45  # starting point of text
-            self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.max_troop)) + ")",
-                          str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
-                          str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.melee_def).split(".")[0],
-                          str(who.range_def).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
-                          str(who.accuracy).split(".")[0], str(who.shoot_range).split(".")[0], str(who.magazine_left),
-                          str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
-                          str(who.charge).split(".")[0], str(who.charge_def).split(".")[0], str(who.mental_text).split(".")[0],
-                          str(who.temp_count).split(".")[0]]
-            self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
-            self.description = who.description
-            if type(self.description) == list:
-                self.description = self.description[0]
-            if self.value != self.last_value or change_option == 1 or who.game_id != self.last_who:
-                self.image = self.image_original.copy()
-                row = 0
-                self.name = self.value[0]
-                leader_text = ""
-                if who.leader is not None and who.leader.name != "None":
-                    leader_text = "/" + str(who.leader.name)
-                    if who.leader.state in self.leader_state_text:
-                        leader_text += " " + "(" + self.leader_state_text[who.leader.state] + ")"
-                text_surface = self.font_head.render(self.name + leader_text, True,
-                                                     (0, 0, 0))  # subunit and leader name at the top
-                text_rect = text_surface.get_rect(
-                    midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
-                self.image.blit(text_surface, text_rect)
-                row += 1
-                position += 20
-                if self.option == 1:  # stat card
-                    # self.icon_rect = self.icon[0].get_rect(
-                    #     center=(
-                    #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
-                    # deletelist = [i for i,x in enumerate(self.value) if x == 0]
-                    # if len(deletelist) != 0:
-                    #     for i in sorted(deletelist, reverse = True):
-                    #         self.value.pop(i)
-                    #         text.pop(i)
-                    new_value, text = self.value[0:-1], self.front_text[1:]
-                    for n, value in enumerate(new_value[1:]):
-                        value = value.replace("inf", "\u221e")
-                        text_surface = self.font.render(text[n] + value, True, (0, 0, 0))
-                        text_rect = text_surface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
-                        self.image.blit(text_surface, text_rect)
-                        position += 20
-                        row += 1
-                        if row == 9:
-                            position_x, position = 200, 35
-                elif self.option == 0:  # description card
-                    make_long_text(self.image, self.description, (42, 25), self.font_long)  # blit long description
-                elif self.option == 3:  # equipment and terrain
-                    # v Terrain text
-                    terrain = self.terrain_list[who.terrain]
-                    if who.feature is not None:
-                        terrain += "/" + self.feature_list[who.feature]
-                    # ^ End terrain text
-
-                    # v Equipment text
-                    text_value = [
-                        self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
-                        self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_sub_weapon[0]]["Name"]),
-                        self.quality_text[who.secondary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
-                        self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
-
-                    text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.melee_speed).split(".")[0] +
-                                  ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
-                    text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
-                                  ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
-
-                    text_value += [str(armour_list.armour_list[who.armour_gear[0]]["Name"]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
-                                   str(armour_list.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
-                                  "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
-
-                    if "None" not in who.mount:  # if mount is not the None mount id 1
-                        armour_text = "//" + who.mount_armour[0]
-                        if "None" in who.mount_armour[0]:
-                            armour_text = ""
-                        text_value.insert(3, "Mount:" + who.mount_grade[0] + " " + who.mount[0] + armour_text)
-                    # ^ End equipment text
-
-                    for text in text_value:
-                        text_surface = self.font.render(str(text), 1, (0, 0, 0))
-                        text_rect = text_surface.get_rect(
-                            midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
-                        self.image.blit(text_surface, text_rect)
-                        position += 20
-                self.last_value = self.value
+        self.last_value = self.value
         self.last_who = who.game_id
 
 

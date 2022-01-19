@@ -10,32 +10,33 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import map, weather, lorebook, drama, battleui, script_common, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
+from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
+from gamescript.common import utility
 from pygame.locals import *
 
-load_image = script_common.load_image
-load_images = script_common.load_images
-csv_read = script_common.csv_read
-load_sound = script_common.load_sound
-edit_config = script_common.edit_config
-make_bar_list = script_common.make_bar_list
-load_base_button = script_common.load_base_button
-text_objects = script_common.text_objects
-setup_list = script_common.setup_list
-list_scroll = script_common.list_scroll
-read_terrain_data = script_common.read_terrain_data
-read_weather_data = script_common.read_weather_data
-read_map_data = script_common.read_map_data
-read_faction_data = script_common.read_faction_data
-make_encyclopedia_ui = script_common.make_encyclopedia_ui
-make_input_box = script_common.make_input_box
-make_editor_ui = script_common.make_editor_ui
-load_icon_data = script_common.load_icon_data
-load_battle_data = script_common.load_battle_data
-load_option_menu = script_common.load_option_menu
-make_event_log = script_common.make_event_log
-make_esc_menu = script_common.make_esc_menu
-make_popup_ui = script_common.make_popup_ui
+load_image = utility.load_image
+load_images = utility.load_images
+csv_read = utility.csv_read
+load_sound = utility.load_sound
+edit_config = utility.edit_config
+make_bar_list = utility.make_bar_list
+load_base_button = utility.load_base_button
+text_objects = utility.text_objects
+setup_list = utility.setup_list
+list_scroll = utility.list_scroll
+read_terrain_data = utility.read_terrain_data
+read_weather_data = utility.read_weather_data
+read_map_data = utility.read_map_data
+read_faction_data = utility.read_faction_data
+make_encyclopedia_ui = utility.make_encyclopedia_ui
+make_input_box = utility.make_input_box
+make_editor_ui = utility.make_editor_ui
+load_icon_data = utility.load_icon_data
+load_battle_data = utility.load_battle_data
+load_option_menu = utility.load_option_menu
+make_event_log = utility.make_event_log
+make_esc_menu = utility.make_esc_menu
+make_popup_ui = utility.make_popup_ui
 version_name = "Dream Decision"
 
 # Will keep leader, subunit, unit and other state as magic number since changing them take too much space, see below for referencing
@@ -63,7 +64,7 @@ class Mainmenu:
     leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                     "Advisor")  # Name of leader position in unit, the first 4 is for commander unit
     team_colour = ((255, 255, 255), (144, 167, 255), (255, 114, 114))  # team colour, Neutral, 1, 2
-    popup_list_open = script_common.popup_list_open
+    popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
 
     def __init__(self, main_dir):
@@ -219,7 +220,6 @@ class Mainmenu:
 
         self.dead_unit = pygame.sprite.Group()  # dead subunit group
 
-        self.game_ui = pygame.sprite.Group()  # various self ui group
         self.button_ui = pygame.sprite.Group()  # buttons for various ui group
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
         self.switch_button_ui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. unit behaviour setting)
@@ -266,7 +266,6 @@ class Mainmenu:
         uniteditor.PreviewLeader.containers = self.preview_leader
 
         # battle containers
-        battleui.GameUI.containers = self.game_ui, self.ui_updater
         battleui.UIButton.containers = self.button_ui, self.lore_button_ui
         battleui.SwitchButton.containers = self.switch_button_ui, self.ui_updater
         battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battle_ui
@@ -474,6 +473,7 @@ class Mainmenu:
 
         battle_ui_image = load_images(self.main_dir, ["ui", "battle_ui"], load_order=False)
 
+        # Battle map
         self.battle_base_map = map.BaseMap(1)  # create base terrain map
         self.battle_feature_map = map.FeatureMap(1)  # create terrain feature map
         self.battle_height_map = map.HeightMap(1)  # create height map
@@ -490,6 +490,15 @@ class Mainmenu:
         self.mini_map = battleui.Minimap((self.screen_rect.width, self.screen_rect.height))
         self.battle_ui.add(self.mini_map)
 
+        # Game sprite Effect
+        effect_images = load_images(self.main_dir, ["sprite", "effect"], load_order=False)
+        # images = []
+        # for images in imgsold:
+        # x, y = images.get_width(), images.get_height()
+        # images = pygame.transform.scale(images, (int(x ), int(y / 2)))
+        # images.append(images)
+        rangeattack.RangeArrow.images = [effect_images["arrow.png"]]
+
         # Time bar ui
         self.time_ui = battleui.TimeUI((0, 0), battle_ui_image["timebar.png"])  # TODO change later
         self.time_number = battleui.Timer(self.time_ui.rect.topleft)  # time number on time ui
@@ -505,7 +514,6 @@ class Mainmenu:
                             battleui.UIButton((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]), battle_ui_image["timeinc.png"],
                                               "increase")]  # time increase button
         self.battle_ui.add(*self.time_button, self.scale_ui)
-
 
         # Unit editor
         editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
@@ -535,12 +543,6 @@ class Mainmenu:
 
         self.tick_box.add(*self.filter_tick_box)
 
-        self.input_ui, self.input_ok_button, self.input_cancel_button, \
-        self.input_box, self.confirm_ui = make_input_box(self.main_dir, self.screen_scale, self.screen_rect, load_base_button(self.main_dir))
-
-        self.input_button = (self.input_ok_button, self.input_cancel_button)
-        self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
-        self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
 
         self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0, self.leader_stat),
                                uniteditor.PreviewLeader(1, 0, 1, self.leader_stat),
@@ -548,9 +550,100 @@ class Mainmenu:
                                uniteditor.PreviewLeader(1, 0, 3, self.leader_stat)]  # list of preview leader for unit editor
         self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
 
-        # Other ui in battle
-        battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
+        # user input popup ui
+        self.input_ui, self.input_ok_button, self.input_cancel_button, \
+        self.input_box, self.confirm_ui = make_input_box(self.main_dir, self.screen_scale, self.screen_rect, load_base_button(self.main_dir))
 
+        self.input_button = (self.input_ok_button, self.input_cancel_button)
+        self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
+        self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
+
+        ui_image = load_images(self.main_dir, ["tactical", "ui", "battle_ui"], load_order=False)
+        icon_image = load_images(self.main_dir, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
+
+        # Army select list ui
+        self.unit_selector = battleui.ArmySelect((0, 0), ui_image["unit_select_box.png"])
+        self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number)
+        self.battle_ui.add(self.unit_selector)
+        self.select_scroll = battleui.UIScroller(self.unit_selector.rect.topright, ui_image["unit_select_box.png"].get_height(),
+                                                 self.unit_selector.max_row_show)  # scroller for unit select ui
+        self.battle_ui.add(self.select_scroll)
+
+        self.command_ui = battleui.CommandBar(image=ui_image["command_box.png"],
+                                              icon=icon_image)  # Left top command ui with leader and unit behavious button
+        self.command_ui.change_pos((ui_image["command_box.png"].get_size()[0] / 2,
+                                    (ui_image["command_box.png"].get_size()[1] / 2) + self.unit_selector.image.get_height()))
+        self.ui_updater.add(self.command_ui)
+
+        # Load all image of ui and icon from folder
+        icon_image = load_images(self.main_dir, ["ui", "battle_ui", "topbar_icon"], load_order=False)
+
+        self.col_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 26), ui_image["colsplit_button.png"],
+                                                  0)  # unit split by column button
+        self.row_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 56), ui_image["rowsplit_button.png"],
+                                                  1)  # unit split by row button
+        self.button_ui.add(self.col_split_button)
+        self.button_ui.add(self.row_split_button)
+
+        self.decimation_button = battleui.UIButton((self.command_ui.pos[0] + 100, self.command_ui.pos[1] + 56), ui_image["decimation.png"], 1)
+
+        # Right top bar ui that show rough information of selected battalions
+        self.unitstat_ui = battleui.TopBar(image=ui_image["topbar.png"], icon=icon_image)
+        self.unitstat_ui.change_pos((self.screen_rect.width - ui_image["topbar.png"].get_size()[0] / 2, ui_image["topbar.png"].get_size()[1] / 2))
+        self.unitstat_ui.unit_state_text = self.state_text
+
+
+        self.inspect_ui_pos = [self.unitstat_ui.rect.bottomleft[0] - self.icon_sprite_width / 1.25,
+                               self.unitstat_ui.rect.bottomleft[1] - self.icon_sprite_height / 3]
+
+        # Unit inspect information ui
+        battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
+        self.inspect_button = battleui.UIButton((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1), ui_image["army_inspect_button.png"],
+                                                1)  # unit inspect open/close button
+        self.button_ui.add(self.inspect_button)
+        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
+        self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
+
+        self.inspect_ui = battleui.InspectUI(image=ui_image["army_inspect.png"])  # inspect ui that show subnit in selected unit
+        self.inspect_ui.change_pos((self.screen_rect.width - ui_image["army_inspect.png"].get_size()[0] / 2, ui_image["topbar.png"].get_size()[1] * 4))
+        self.ui_updater.add(self.inspect_ui)
+        # v Subunit shown in inspect ui
+        width, height = self.inspect_ui_pos[0], self.inspect_ui_pos[1]
+        sub_unit_number = 0  # Number of subunit based on the position in row and column
+        imgsize = (self.icon_sprite_width, self.icon_sprite_height)
+        self.inspect_subunit = []
+        for this_subunit in list(range(0, 64)):
+            width += imgsize[0]
+            self.inspect_subunit.append(battleui.InspectSubunit((width, height)))
+            sub_unit_number += 1
+            if sub_unit_number == 8:  # Reach the last subunit in the row, go to the next one
+                width = self.inspect_ui_pos[0]
+                height += imgsize[1]
+                sub_unit_number = 0
+
+        # Behaviour button that once click switch to other mode for subunit behaviour
+        skill_condition_button = [ui_image["skillcond_0.png"], ui_image["skillcond_1.png"], ui_image["skillcond_2.png"], ui_image["skillcond_3.png"]]
+        shoot_condition_button = [ui_image["fire_0.png"], ui_image["fire_1.png"]]
+        behaviour_button = [ui_image["hold_0.png"], ui_image["hold_1.png"], ui_image["hold_2.png"]]
+        range_condition_button = [ui_image["minrange_0.png"], ui_image["minrange_1.png"]]
+        arc_condition_button = [ui_image["arc_0.png"], ui_image["arc_1.png"], ui_image["arc_2.png"]]
+        run_condition_button = [ui_image["runtoggle_0.png"], ui_image["runtoggle_1.png"]]
+        melee_condition_button = [ui_image["meleeform_0.png"], ui_image["meleeform_1.png"], ui_image["meleeform_2.png"]]
+        self.switch_button = [battleui.SwitchButton((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96), skill_condition_button),
+                              # skill condition button
+                              battleui.SwitchButton((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96), shoot_condition_button),
+                              # fire at will button
+                              battleui.SwitchButton((self.command_ui.pos[0], self.command_ui.pos[1] + 96), behaviour_button),  # behaviour button
+                              battleui.SwitchButton((self.command_ui.pos[0] + 40, self.command_ui.pos[1] + 96), range_condition_button),
+                              # shoot range button
+                              battleui.SwitchButton((self.command_ui.pos[0] - 125, self.command_ui.pos[1] + 96), arc_condition_button),
+                              # arc_shot button
+                              battleui.SwitchButton((self.command_ui.pos[0] + 80, self.command_ui.pos[1] + 96), run_condition_button),
+                              # toggle run button
+                              battleui.SwitchButton((self.command_ui.pos[0] + 120, self.command_ui.pos[1] + 96),
+                                                    melee_condition_button)]  # toggle melee mode
+
+        # Other ui in battle
         self.battle_done_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
                                                    battle_ui_image["end_box.png"], battle_ui_image["result_box.png"])
         self.battle_done_button = battleui.UIButton((self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8),
@@ -563,14 +656,17 @@ class Mainmenu:
         self.event_log, self.trooplog_button, self.eventlog_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
         self.button_ui.add(self.eventlog_button)
         subunit.Subunit.event_log = self.event_log  # Assign event_log to subunit class to broadcast event to the log
+        self.battle_ui.add(self.log_scroll)
 
         self.battle_menu, self.battle_menu_button, self.esc_option_menu_button, self.esc_slider_menu, \
         self.esc_value_box = make_esc_menu(self.main_dir, self.screen_rect, self.mixer_volume)
 
         self.troop_card_ui, self.troop_card_button, self.terrain_check, self.button_name_popup, self.terrain_check, self.button_name_popup, \
         self.leader_popup, self.effect_popup = make_popup_ui(self.main_dir, self.screen_rect, battle_ui_image)
+        self.troop_card_ui.change_pos((self.screen_rect.width - self.troop_card_ui.image.get_size()[0] / 2,
+                                       (self.unitstat_ui.image.get_size()[1] * 2.5) + self.troop_card_ui.image.get_size()[1]))
         self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
-        self.game_ui.add(self.troop_card_ui)
+        self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
         self.change_genre(self.genre)
@@ -604,16 +700,9 @@ class Mainmenu:
             self.genre = self.genre_list[genre].lower()
         else:
             self.genre = genre.lower()
-        global script_other
-        if self.genre == "tactical":
-            from gamescript.tactical import script_other
-            script_other.load_game_data(self)  # obtain self stat data and create lore book object
-
-        elif self.genre == "arcade":
-            from gamescript.arcade import script_other
-            script_other.load_game_data(self)
 
         subunit.change_subunit_genre(self.genre)
+        unit.change_unit_genre(self.genre)
         battle.change_battle_genre(self.genre)
 
         self.genre_change_box.changetext(self.genre.capitalize())

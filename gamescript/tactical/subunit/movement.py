@@ -2,9 +2,9 @@ import math
 import random
 import pygame
 
-from gamescript import script_common
+from gamescript.common import utility
 
-rotation_xy = script_common.rotation_xy
+rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
 

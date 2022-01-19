@@ -6,7 +6,8 @@ import pygame
 import pygame.freetype
 import pygame.freetype
 import pyperclip
-from gamescript import map, script_common
+from gamescript import map
+from gamescript.common import utility
 
 terrain_colour = map.terrain_colour
 feature_colour = map.feature_colour
@@ -345,7 +346,7 @@ class MapDescription(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def change_text(self, text):
-        make_long_text = script_common.make_long_text
+        make_long_text = utility.make_long_text
         self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
         make_long_text(self.image, text, (int(20 * self.screen_scale[0]), int(20 * self.screen_scale[1])), self.font)
 
@@ -364,7 +365,7 @@ class SourceDescription(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def change_text(self, text):
-        make_long_text = script_common.make_long_text
+        make_long_text = utility.make_long_text
         self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
         make_long_text(self.image, text, (int(15 * self.screen_scale[0]), int(20 * self.screen_scale[1])), self.font)
 

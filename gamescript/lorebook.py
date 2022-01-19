@@ -1,7 +1,7 @@
 import pygame
 import pygame.freetype
 
-from gamescript import script_common
+from gamescript.common import utility
 
 class Lorebook(pygame.sprite.Sprite):
     concept_stat = None
@@ -187,7 +187,7 @@ class Lorebook(pygame.sprite.Sprite):
 
     def page_design(self):
         """Lore book format position of the text"""
-        make_long_text = script_common.make_long_text
+        make_long_text = utility.make_long_text
 
         stat = self.stat_data[self.subsection]
         if self.section != 4:  # other sections
@@ -243,12 +243,12 @@ class Lorebook(pygame.sprite.Sprite):
                     else:
                         if "FULLIMAGE:" in text:  # full image to whole two pages
                             filename = text[10:].split("\\")[-1]
-                            text_surface = script_common.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
+                            text_surface = utility.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
                             text_surface = pygame.transform.scale(text_surface, (self.image.get_width(), self.image.get_height()))
                             text_rect = description_surface.get_rect(topleft=(0, 0))
                         else:
                             filename = text[6:].split("\\")[-1]
-                            text_surface = script_common.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
+                            text_surface = utility.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                             text_rect = description_surface.get_rect(topleft=(col, row))
                     self.image.blit(text_surface, text_rect)
 
@@ -433,12 +433,12 @@ class Lorebook(pygame.sprite.Sprite):
                         else:
                             if "FULLIMAGE:" in text:
                                 filename = text[10:].split("\\")[-1]
-                                text_surface = script_common.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
+                                text_surface = utility.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
                                 text_surface = pygame.transform.scale(text_surface, (self.image.get_width(), self.image.get_height()))
                                 text_rect = description_surface.get_rect(topleft=(0, 0))
                             else:
                                 filename = text[6:].split("\\")[-1]
-                                text_surface = script_common.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
+                                text_surface = utility.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
                                 text_rect = description_surface.get_rect(topleft=(col, row))
                         self.image.blit(text_surface, text_rect)
 

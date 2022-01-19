@@ -501,7 +501,7 @@ def make_popup_ui(main_dir, screen_rect, battle_ui_image):
     popup.TerrainPopup.images = list(load_images(main_dir, ["ui", "popup_ui", "terrain_check"], load_order=False).values())
     popup.TerrainPopup.screen_rect = screen_rect
 
-    troop_card_ui = battleui.GameUI(image=battle_ui_image["troop_card.png"], icon="", ui_type="troopcard")
+    troop_card_ui = battleui.TroopCard(image=battle_ui_image["troop_card.png"], icon="")
 
     # Button related to subunit card and command
     troop_card_button = [battleui.UIButton((0, 0), battle_ui_image["troopcard_button1.png"], 0),

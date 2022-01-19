@@ -3,15 +3,15 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript import script_common, rangeattack
+from gamescript import rangeattack
+from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
-from types import MethodType
 
 infinity = float("inf")
-rotation_xy = script_common.rotation_xy
+rotation_xy = utility.rotation_xy
 
 
 def change_subunit_genre(genre):
@@ -44,7 +44,7 @@ class Subunit(pygame.sprite.Sprite):
     status_list = None
     max_zoom = 10  # max zoom allow
 
-    set_rotate = script_common.set_rotate
+    set_rotate = utility.set_rotate
 
     # method that change based on genre
     add_weapon_stat = None
@@ -1287,10 +1287,6 @@ class Subunit(pygame.sprite.Sprite):
         self.combat_move_queue = path  # add path into combat movement queue
         if len(self.combat_move_queue) < 1:  # simply try walk to target anyway if pathfinder return empty
             self.combat_move_queue = [self.close_target.base_pos]
-        # print("operations:", runs, "path length:", len(path))
-        # print(grid.grid_str(path=path, start=start, end=end))
-        # print(self.combat_move_queue)
-        # print(self.base_pos, self.close_target.base_pos, self.game_id, start_point, int_base_pos[0] - start_point[0], int_base_pos[1] - start_point[1])
         # ^ End path finding
 
     def add_trait(self):
