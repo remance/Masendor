@@ -433,7 +433,8 @@ class ListBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image, layer=14):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self)
-        self.image = image
+        self.image = image.copy()
+        self.name_list_start = (self.image.get_width(), self.image.get_height())
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
@@ -540,31 +541,6 @@ class MapOptionBox(pygame.sprite.Sprite):
             # ^ end enactment
 
         self.rect = self.image.get_rect(topright=pos)
-
-
-class SourceName(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, box, pos, name, text_size=16, layer=14):
-        self._layer = layer
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
-        self.image = pygame.Surface((box.image.get_width(), int(25 * screen_scale[1])))  # black corner
-        self.image.fill((0, 0, 0))
-
-        # v White body square
-        small_image = pygame.Surface((box.image.get_width() - int(2 * screen_scale[0]), int(23 * screen_scale[1])))
-        small_image.fill((255, 255, 255))
-        small_rect = small_image.get_rect(topleft=(int(1 * screen_scale[0]), int(1 * screen_scale[1])))
-        self.image.blit(small_image, small_rect)
-        # ^ End white body
-
-        # v Source name text
-        text_surface = self.font.render(str(name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(midleft=(int(3 * screen_scale[0]), self.image.get_height() / 2))
-        self.image.blit(text_surface, text_rect)
-        # ^ End source text
-
-        self.pos = pos
-        self.rect = self.image.get_rect(topleft=self.pos)
 
 
 class MapShow(pygame.sprite.Sprite):

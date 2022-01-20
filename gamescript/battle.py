@@ -207,6 +207,7 @@ class Battle:
 
         self.state_text = main.state_text
 
+        self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
         self.sprite_width = main.icon_sprite_width
         self.sprite_height = main.icon_sprite_height
         self.collide_distance = self.sprite_height / 10  # distance to check collision
@@ -356,8 +357,8 @@ class Battle:
         self.time_number.start_setup(self.weather_current)
 
         # v Create the battle map
-        self.camera_pos = pygame.Vector2(500, 500)  # Camera pos at the current zoom, start at center of map
-        self.base_camera_pos = pygame.Vector2(500, 500)  # Camera pos at furthest zoom for recalculate sprite pos after zoom
+        self.camera_pos = pygame.Vector2(500 * self.screen_scale[0], 500 * self.screen_scale[1])  # Camera pos at the current zoom, start at center of map
+        self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0], 500 * self.screen_scale[1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camera_scale = 1  # Camera zoom
         camera.Camera.screen_rect = self.screen_rect
         self.camera = camera.Camera(self.camera_pos, self.camera_scale)
@@ -493,13 +494,13 @@ class Battle:
         self.leader_now = []  # clear leader list in command ui
 
     def camera_fix(self):
-        if self.base_camera_pos[0] > 999:  # camera cannot go further than 999 x
-            self.base_camera_pos[0] = 999
+        if self.base_camera_pos[0] > self.max_camera[0]:  # camera cannot go further than 999 x
+            self.base_camera_pos[0] = self.max_camera[0]
         elif self.base_camera_pos[0] < 0:  # camera cannot go less than 0 x
             self.base_camera_pos[0] = 0
 
-        if self.base_camera_pos[1] > 999:  # same for y
-            self.base_camera_pos[1] = 999
+        if self.base_camera_pos[1] > self.max_camera[1]:  # same for y
+            self.base_camera_pos[1] = self.max_camera[1]
         elif self.base_camera_pos[1] < 0:
             self.base_camera_pos[1] = 0
 
@@ -1770,7 +1771,6 @@ class Battle:
                                                                     self.preview_authority(self.leader_now)
                                                         unit_dict = self.convert_slot_dict("test")
                                                         if unit_dict is not None and unit_dict['test'][-1] == "0":
-                                                            print(unit_dict)
                                                             self.warning_msg.warning([self.warning_msg.multifaction_warn])
                                                             self.battle_ui.add(self.warning_msg)
 
@@ -2108,8 +2108,8 @@ class Battle:
                                 sprite_two = self.all_subunit_list[two]
                                 if sprite_one.unit != sprite_two.unit:  # collide with subunit in other unit
                                     if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
-                                        sprite_one.fullmerge.append(sprite_two)
-                                        sprite_two.fullmerge.append(sprite_one)
+                                        sprite_one.full_merge.append(sprite_two)
+                                        sprite_two.full_merge.append(sprite_one)
 
                                     if sprite_one.front_pos.distance_to(sprite_two.base_pos) < self.front_distance:  # first subunit collision
                                         if sprite_one.team != sprite_two.team:  # enemy team
@@ -2139,8 +2139,8 @@ class Battle:
                                 else:  # collide with subunit in same unit
                                     if sprite_one.front_pos.distance_to(sprite_two.base_pos) < self.front_distance:  # first subunit collision
                                         if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
-                                            sprite_one.fullmerge.append(sprite_two)
-                                            sprite_two.fullmerge.append(sprite_one)
+                                            sprite_one.full_merge.append(sprite_two)
+                                            sprite_two.full_merge.append(sprite_one)
 
                                         if sprite_one.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
                                                 sprite_two.state in (2, 4, 6, 10, 11, 12, 13):

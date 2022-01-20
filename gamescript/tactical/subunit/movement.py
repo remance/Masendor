@@ -119,12 +119,11 @@ def move_logic(self, dt, parent_state, collide_list):
                     else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                         move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                         self.base_pos += move  # adjust base position according to movement
-                        self.pos = self.base_pos * self.zoom
-                        self.rect.center = self.pos  # no need to do list
                     if len(self.combat_move_queue) > 0 and self.base_pos.distance_to(
                             pygame.Vector2(self.combat_move_queue[0])) < 0.1:  # reach the current queue point, remove from queue
                         self.combat_move_queue = self.combat_move_queue[1:]
 
+                    self.change_pos_scale()
                     self.make_front_pos()
                     self.make_pos_range()
 

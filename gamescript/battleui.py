@@ -442,23 +442,25 @@ class SelectedSquad(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class Minimap(pygame.sprite.Sprite):
-    def __init__(self, pos):
+class MiniMap(pygame.sprite.Sprite):
+    def __init__(self, pos, screen_scale):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
+        self.screen_scale = screen_scale
 
-        self.team2_dot = pygame.Surface((8, 8))  # dot for team2 subunit
-        self.team2_dot.fill((0, 0, 0))  # black corner
-        self.team1_dot = pygame.Surface((8, 8))  # dot for team1 subunit
-        self.team1_dot.fill((0, 0, 0))  # black corner
-        team2 = pygame.Surface((6, 6))  # size 6x6
+        team2_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team2 subunit
+        team2_dot.fill((0, 0, 0))  # black corner
+        team1_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team1 subunit
+        team1_dot.fill((0, 0, 0))  # black corner
+        team2 = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))  # size 6x6
         team2.fill((255, 0, 0))  # red rect
-        team1 = pygame.Surface((6, 6))
+        team1 = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
         team1.fill((0, 0, 255))  # blue rect
-        rect = self.team2_dot.get_rect(topleft=(1, 1))
-        self.team2_dot.blit(team2, rect)
-        self.team1_dot.blit(team1, rect)
+        rect = team2_dot.get_rect(center=(team2_dot.get_width() / 2, team2_dot.get_height() / 2))
+        team2_dot.blit(team2, rect)
+        team1_dot.blit(team1, rect)
+        self.dot_images = (team1_dot, team2_dot)
         self.team1_pos = []
         self.team2_pos = []
 
@@ -466,9 +468,10 @@ class Minimap(pygame.sprite.Sprite):
 
     def draw_image(self, image, camera):
         self.image = image
-        scale_width = self.image.get_width() / 5
-        scale_height = self.image.get_height() / 5
-        self.dim = pygame.Vector2(scale_width, scale_height)
+        size = (300 * self.screen_scale[0], 300 * self.screen_scale[1])  # default minimap size is 300 x 300
+        self.map_scale_width = 1000 / size[0]
+        self.map_scale_height = 1000 / size[1]
+        self.dim = pygame.Vector2(size[0], size[1])
         self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
         self.image_original = self.image.copy()
         self.camera_border = [camera.image.get_width(), camera.image.get_height()]
@@ -483,16 +486,15 @@ class Minimap(pygame.sprite.Sprite):
             self.team2_pos = team2_pos_list.values()
             self.camera_pos = camera_pos
             self.image = self.image_original.copy()
-            for team1 in team1_pos_list.values():
-                scaled_pos = team1 / 5
-                rect = self.team1_dot.get_rect(center=scaled_pos)
-                self.image.blit(self.team1_dot, rect)
-            for team2 in team2_pos_list.values():
-                scaled_pos = team2 / 5
-                rect = self.team2_dot.get_rect(center=scaled_pos)
-                self.image.blit(self.team2_dot, rect)
-            pygame.draw.rect(self.image, (0, 0, 0), (camera_pos[1][0] / 5 / view_mode, camera_pos[1][1] / 5 / view_mode,
-                                                     self.camera_border[0] * 10 / view_mode / 50, self.camera_border[1] * 10 / view_mode / 50), 2)
+            for index, team in enumerate([team1_pos_list, team2_pos_list]):
+                for pos in team.values():
+                    scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
+                    rect = self.dot_images[index].get_rect(center=scaled_pos)
+                    self.image.blit(self.dot_images[index], rect)
+            pygame.draw.rect(self.image, (0, 0, 0), ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / view_mode,
+                                                     (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / view_mode,
+                                                     (self.camera_border[0] / self.screen_scale[0] / view_mode) / self.map_scale_width,
+                                                     (self.camera_border[1] / self.screen_scale[1] / view_mode) / self.map_scale_height), 2)
 
 
 class EventLog(pygame.sprite.Sprite):

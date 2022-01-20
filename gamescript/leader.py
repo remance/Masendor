@@ -3,7 +3,7 @@ import pygame.freetype
 
 
 class Leader(pygame.sprite.Sprite):
-    gamebattle = None
+    battle = None
 
     def __init__(self, leader_id, position, army_position, unit, leader_stat):
         self._layer = 15
@@ -71,7 +71,7 @@ class Leader(pygame.sprite.Sprite):
             if leader.unit.commander:  ## become army commander
                 whicharmy = leader.battle.team1_unit  # team1
                 if leader.unit.team == 2:  # team2
-                    whicharmy = self.gamebattle.team2_unit
+                    whicharmy = self.battle.team2_unit
                 for army in whicharmy:
                     army.team_commander = leader
                     army.auth_recal()
@@ -95,17 +95,17 @@ class Leader(pygame.sprite.Sprite):
             subunit.morale_regen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 
         if self.commander:  # reduce morale to whole army if commander destroyed from the melee_dmg (leader destroyed cal is in leader.py)
-            self.gamebattle.drama_text.queue.append(str(self.name) + " is " + eventtext[self.state])
+            self.battle.drama_text.queue.append(str(self.name) + " is " + eventtext[self.state])
             eventmapid = "ld0"  # read ld0 event log for special log when team 1 commander destroyed, not used for other leader
-            whicharmy = self.gamebattle.team1_unit
+            whicharmy = self.battle.team1_unit
             if self.parentunit.team == 2:
-                whicharmy = self.gamebattle.team2_unit
+                whicharmy = self.battle.team2_unit
                 eventmapid = "ld1"  # read ld1 event log for special log when team 2 commander destroyed, not used for other leader
 
             if self.originalcommander and self.state == 100:
-                self.gamebattle.event_log.add_log([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
+                self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2], eventmapid)
             else:
-                self.gamebattle.event_log.add_log([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2])
+                self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + eventtext[self.state]], [0, 1, 2])
 
             for army in whicharmy:
                 for subunit in army.subunit_sprite:
@@ -113,7 +113,7 @@ class Leader(pygame.sprite.Sprite):
                     subunit.morale_regen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
 
         else:
-            self.gamebattle.event_log.add_log([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])
+            self.battle.event_log.add_log([0, str(self.name) + " is " + eventtext[self.state]], [0, 2])
 
         # v change army position of all leader in that unit
         for index, leader in enumerate(self.parentunit.leader):
@@ -140,7 +140,7 @@ class Leader(pygame.sprite.Sprite):
         self.combat = 0
 
         pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)  # draw dead cross on leader image
-        self.gamebattle.setup_unit_icon()
+        self.battle.setup_unit_icon()
         self.parentunit.leader_change = True  # initiate leader change stat recalculation for unit
 
     def gamestart(self):

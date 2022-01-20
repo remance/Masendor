@@ -247,8 +247,6 @@ class Mainmenu:
         menu.TeamCoa.containers = self.team_coa
         menu.ArmyStat.containers = self.army_stat
 
-        menu.SourceName.containers = self.source_namegroup, self.main_ui
-
         menu.TickBox.containers = self.tick_box
 
         lorebook.SubsectionList.containers = self.lore_name_list
@@ -478,7 +476,7 @@ class Mainmenu:
 
         self.status_images, self.role_images, self.trait_images, self.skill_images = load_icon_data(self.main_dir, self.screen_scale)
 
-        self.mini_map = battleui.Minimap((self.screen_rect.width, self.screen_rect.height))
+        self.mini_map = battleui.MiniMap((self.screen_rect.width, self.screen_rect.height), self.screen_scale)
         self.battle_ui.add(self.mini_map)
 
         # Game sprite Effect
@@ -549,38 +547,39 @@ class Mainmenu:
         self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
 
-        ui_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui"], load_order=False)
-        icon_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
+        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui"], load_order=False)
+        genre_icon_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
 
         # Army select list ui
-        self.unit_selector = battleui.ArmySelect((0, 0), ui_image["unit_select_box.png"])
+        self.unit_selector = battleui.ArmySelect((0, 0), genre_battle_ui_image["unit_select_box.png"])
         self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number)
         self.battle_ui.add(self.unit_selector)
-        self.select_scroll = battleui.UIScroller(self.unit_selector.rect.topright, ui_image["unit_select_box.png"].get_height(),
+        self.select_scroll = battleui.UIScroller(self.unit_selector.rect.topright, genre_battle_ui_image["unit_select_box.png"].get_height(),
                                                  self.unit_selector.max_row_show)  # scroller for unit select ui
         self.battle_ui.add(self.select_scroll)
 
-        self.command_ui = battleui.CommandBar(image=ui_image["command_box.png"],
-                                              icon=icon_image)  # Left top command ui with leader and unit behavious button
-        self.command_ui.change_pos((ui_image["command_box.png"].get_size()[0] / 2,
-                                    (ui_image["command_box.png"].get_size()[1] / 2) + self.unit_selector.image.get_height()))
+        self.command_ui = battleui.CommandBar(image=genre_battle_ui_image["command_box.png"],
+                                              icon=genre_icon_image)  # Left top command ui with leader and unit behavious button
+        self.command_ui.change_pos((genre_battle_ui_image["command_box.png"].get_size()[0] / 2,
+                                    (genre_battle_ui_image["command_box.png"].get_size()[1] / 2) + self.unit_selector.image.get_height()))
         self.ui_updater.add(self.command_ui)
 
         # Load all image of ui and icon from folder
-        icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"], load_order=False)
+        genre_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"], load_order=False)
 
-        self.col_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 26), ui_image["colsplit_button.png"],
+        self.col_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 26), genre_battle_ui_image["colsplit_button.png"],
                                                   0)  # unit split by column button
-        self.row_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 56), ui_image["rowsplit_button.png"],
+        self.row_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 56), genre_battle_ui_image["rowsplit_button.png"],
                                                   1)  # unit split by row button
         self.button_ui.add(self.col_split_button)
         self.button_ui.add(self.row_split_button)
 
-        self.decimation_button = battleui.UIButton((self.command_ui.pos[0] + 100, self.command_ui.pos[1] + 56), ui_image["decimation.png"], 1)
+        self.decimation_button = battleui.UIButton((self.command_ui.pos[0] + 100, self.command_ui.pos[1] + 56), genre_battle_ui_image["decimation.png"], 1)
 
         # Right top bar ui that show rough information of selected battalions
-        self.unitstat_ui = battleui.TopBar(image=ui_image["topbar.png"], icon=icon_image)
-        self.unitstat_ui.change_pos((self.screen_rect.width - ui_image["topbar.png"].get_size()[0] / 2, ui_image["topbar.png"].get_size()[1] / 2))
+        self.unitstat_ui = battleui.TopBar(image=battle_ui_image["topbar.png"], icon=genre_icon_image)
+        self.unitstat_ui.change_pos((self.screen_rect.width - self.unitstat_ui.image.get_width() / 2,
+                                     self.unitstat_ui.image.get_height() / 2))
         self.unitstat_ui.unit_state_text = self.state_text
 
 
@@ -589,14 +588,15 @@ class Mainmenu:
 
         # Unit inspect information ui
         battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
-        self.inspect_button = battleui.UIButton((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1), ui_image["army_inspect_button.png"],
+        self.inspect_button = battleui.UIButton((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1), genre_battle_ui_image["army_inspect_button.png"],
                                                 1)  # unit inspect open/close button
         self.button_ui.add(self.inspect_button)
         self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
         self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
 
-        self.inspect_ui = battleui.InspectUI(image=ui_image["army_inspect.png"])  # inspect ui that show subnit in selected unit
-        self.inspect_ui.change_pos((self.screen_rect.width - ui_image["army_inspect.png"].get_size()[0] / 2, ui_image["topbar.png"].get_size()[1] * 4))
+        self.inspect_ui = battleui.InspectUI(image=genre_battle_ui_image["army_inspect.png"])  # inspect ui that show subnit in selected unit
+        self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
+                                    self.unitstat_ui.image.get_height() + (self.inspect_ui.image.get_height() / 2)))
         self.ui_updater.add(self.inspect_ui)
         # v Subunit shown in inspect ui
         width, height = self.inspect_ui_pos[0], self.inspect_ui_pos[1]
@@ -613,13 +613,13 @@ class Mainmenu:
                 sub_unit_number = 0
 
         # Behaviour button that once click switch to other mode for subunit behaviour
-        skill_condition_button = [ui_image["skillcond_0.png"], ui_image["skillcond_1.png"], ui_image["skillcond_2.png"], ui_image["skillcond_3.png"]]
-        shoot_condition_button = [ui_image["fire_0.png"], ui_image["fire_1.png"]]
-        behaviour_button = [ui_image["hold_0.png"], ui_image["hold_1.png"], ui_image["hold_2.png"]]
-        range_condition_button = [ui_image["minrange_0.png"], ui_image["minrange_1.png"]]
-        arc_condition_button = [ui_image["arc_0.png"], ui_image["arc_1.png"], ui_image["arc_2.png"]]
-        run_condition_button = [ui_image["runtoggle_0.png"], ui_image["runtoggle_1.png"]]
-        melee_condition_button = [ui_image["meleeform_0.png"], ui_image["meleeform_1.png"], ui_image["meleeform_2.png"]]
+        skill_condition_button = [genre_battle_ui_image["skillcond_0.png"], genre_battle_ui_image["skillcond_1.png"], genre_battle_ui_image["skillcond_2.png"], genre_battle_ui_image["skillcond_3.png"]]
+        shoot_condition_button = [genre_battle_ui_image["fire_0.png"], genre_battle_ui_image["fire_1.png"]]
+        behaviour_button = [genre_battle_ui_image["hold_0.png"], genre_battle_ui_image["hold_1.png"], genre_battle_ui_image["hold_2.png"]]
+        range_condition_button = [genre_battle_ui_image["minrange_0.png"], genre_battle_ui_image["minrange_1.png"]]
+        arc_condition_button = [genre_battle_ui_image["arc_0.png"], genre_battle_ui_image["arc_1.png"], genre_battle_ui_image["arc_2.png"]]
+        run_condition_button = [genre_battle_ui_image["runtoggle_0.png"], genre_battle_ui_image["runtoggle_1.png"]]
+        melee_condition_button = [genre_battle_ui_image["meleeform_0.png"], genre_battle_ui_image["meleeform_1.png"], genre_battle_ui_image["meleeform_2.png"]]
         self.switch_button = [battleui.SwitchButton((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96), skill_condition_button),
                               # skill condition button
                               battleui.SwitchButton((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96), shoot_condition_button),
@@ -654,8 +654,8 @@ class Mainmenu:
 
         self.troop_card_ui, self.troop_card_button, self.terrain_check, self.button_name_popup, self.terrain_check, self.button_name_popup, \
         self.leader_popup, self.effect_popup = make_popup_ui(self.main_dir, self.screen_rect, self.screen_scale, battle_ui_image)
-        self.troop_card_ui.change_pos((self.screen_rect.width - self.troop_card_ui.image.get_size()[0] / 2,
-                                       (self.unitstat_ui.image.get_size()[1] * 2.5) + self.troop_card_ui.image.get_size()[1]))
+        self.troop_card_ui.change_pos((self.screen_rect.width - self.troop_card_ui.image.get_width() / 2,
+                                       (self.inspect_ui.image.get_height() * 2.5) + self.troop_card_ui.image.get_height() / 2))
         self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
@@ -663,6 +663,7 @@ class Mainmenu:
         self.change_genre(self.genre)
         self.battle_game = battle.Battle(self, self.window_style)
         subunit.Subunit.battle = self.battle_game
+        leader.Leader.battle = self.battle_game
         start_pos = [(self.screen_rect.width / 2) - (self.icon_sprite_width * 5),
                      (self.screen_rect.height / 2) - (self.icon_sprite_height * 4)]
         self.make_unit_slot(0, 0, range(0, 64), start_pos)  # make player custom unit slot
@@ -1118,9 +1119,8 @@ class Mainmenu:
                             self.source_scale = [""]
                             self.source_text = [""]
 
-                        setup_list(self.screen_scale, menu.SourceName, self.current_source_row, self.source_name_list,
-                                   self.source_namegroup,
-                                   self.source_list_box, self.main_ui)
+                        setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
+                                   self.source_namegroup, self.source_list_box, self.main_ui)
 
                         self.source_scroll = battleui.UIScroller(self.source_list_box.rect.topright,
                                                                  self.source_list_box.image.get_height(),

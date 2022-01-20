@@ -344,7 +344,7 @@ class Subunit(pygame.sprite.Sprite):
             self.combat_move_queue = []
             self.base_target = self.base_pos  # base_target to move
             self.command_target = self.base_pos  # actual base_target outside of combat
-            self.pos = (self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * self.zoom  # pos is for showing on screen
+            self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)  # pos is for showing on screen
 
             self.image_height = (self.image.get_height() - 1) / 20  # get real half height of circle sprite
 
@@ -389,8 +389,7 @@ class Subunit(pygame.sprite.Sprite):
     def change_pos_scale(self):
         """Change position variable to new camera scale"""
         self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)
-        print(self.pos)
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect.center = self.pos
 
     def use_skill(self, which_skill):
         if which_skill == 0:  # charge skill need to separate since charge power will be used only for charge skill
