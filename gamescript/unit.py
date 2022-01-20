@@ -545,8 +545,8 @@ class Unit(pygame.sprite.Sprite):
         # ^ End assign commander
 
         self.auth_recal()
-        self.command_buff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
-                             (self.leader[0].cavcommand - 5) * 0.1]  # unit leader command buff
+        self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
+                             (self.leader[0].cav_command - 5) * 0.1]  # unit leader command buff
 
         for subunit in subunit_group:
             self.sprite_array = np.where(self.sprite_array == subunit.game_id, subunit, self.sprite_array)
@@ -644,8 +644,8 @@ class Unit(pygame.sprite.Sprite):
                 # v Recal stat involve leader if one destroyed
                 if self.leader_change:
                     self.auth_recal()
-                    self.command_buff = [(self.leader[0].meleecommand - 5) * 0.1, (self.leader[0].rangecommand - 5) * 0.1,
-                                         (self.leader[0].cavcommand - 5) * 0.1]
+                    self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
+                                         (self.leader[0].cav_command - 5) * 0.1]
                     self.leader_change = False
                 # ^ End recal stat when leader destroyed
 

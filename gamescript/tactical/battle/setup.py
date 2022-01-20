@@ -119,7 +119,7 @@ def add_new_unit(gamebattle, who, addunitlist=True):
             foundcount2 += 1
     # ^ End generate subunit array
 
-    for index, this_subunit in enumerate(who.subunit_sprite):  # reset leader subunitpos
+    for index, this_subunit in enumerate(who.subunit_sprite):  # reset leader subunit_pos
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 

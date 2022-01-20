@@ -314,9 +314,11 @@ class Mainmenu:
 
         menu.ArmyStat.image = battle_select_image["stat.png"]
 
-        self.map_description = menu.DescriptionBox(battle_select_image["map_description.png"], self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
+        self.map_description = menu.DescriptionBox(battle_select_image["map_description.png"], self.screen_scale,
+                                                   (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
         self.map_show = menu.MapShow(self.main_dir, self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 3))
-        self.source_description = menu.DescriptionBox(battle_select_image["source_description.png"], self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
+        self.source_description = menu.DescriptionBox(battle_select_image["source_description.png"], self.screen_scale,
+                                                      (self.screen_rect.width / 2, self.screen_rect.height / 1.3), text_size=24)
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = menu.MenuButton(self.screen_scale, image_list, pos=(self.screen_rect.width - image_list[0].get_width(), bottom_height),
@@ -649,8 +651,12 @@ class Mainmenu:
         subunit.Subunit.event_log = self.event_log  # Assign event_log to subunit class to broadcast event to the log
         self.battle_ui.add(self.log_scroll)
 
-        self.battle_menu, self.battle_menu_button, self.esc_option_menu_button, self.esc_slider_menu, \
-        self.esc_value_box = make_esc_menu(self.main_dir, self.screen_rect, self.screen_scale, self.master_volume)
+        esc_menu_dict = make_esc_menu(self.main_dir, self.screen_rect, self.screen_scale, self.master_volume)
+        self.battle_menu = esc_menu_dict["battle_menu"]
+        self.battle_menu_button = esc_menu_dict["battle_menu_button"]
+        self.esc_option_menu_button = esc_menu_dict["esc_option_menu_button"]
+        self.esc_slider_menu = esc_menu_dict["esc_slider_menu"]
+        self.esc_value_box = esc_menu_dict["esc_value_box"]
 
         self.troop_card_ui, self.troop_card_button, self.terrain_check, self.button_name_popup, self.terrain_check, self.button_name_popup, \
         self.leader_popup, self.effect_popup = make_popup_ui(self.main_dir, self.screen_rect, self.screen_scale, battle_ui_image)

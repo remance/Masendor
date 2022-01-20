@@ -186,8 +186,8 @@ def split_unit(battle, who, how):
     original_leader = [who.leader[0], who.leader[2], who.leader[3], leader.Leader(1, 0, 3, who, battle.leader_stat)]
     for index, this_leader in enumerate(original_leader):  # Also change army position of all leader in that unit
         this_leader.army_position = index  # Change army position to new one
-        this_leader.img_position = this_leader.base_img_position[this_leader.army_position]
-        this_leader.rect = this_leader.image.get_rect(center=this_leader.img_position)
+        this_leader.image_position = this_leader.base_image_position[this_leader.army_position]
+        this_leader.rect = this_leader.image.get_rect(center=this_leader.image_position)
     team_commander = who.team_commander
     who.team_commander = team_commander
     who.leader = original_leader
@@ -216,9 +216,9 @@ def split_unit(battle, who, how):
     for index, this_leader in enumerate(new_unit.leader):  # Change army position of all leader in new unit
         this_leader.unit = new_unit  # Set leader unit to new one
         this_leader.army_position = index  # Change army position to new one
-        this_leader.img_position = this_leader.base_img_position[this_leader.army_position]  # Change image pos
-        this_leader.rect = this_leader.image.get_rect(center=this_leader.img_position)
-        this_leader.poschangestat(this_leader)  # Change stat based on new army position
+        this_leader.image_position = this_leader.base_image_position[this_leader.army_position]  # Change image pos
+        this_leader.rect = this_leader.image.get_rect(center=this_leader.image_position)
+        this_leader.pos_change_stat(this_leader)  # Change stat based on new army position
 
     add_new_unit(battle, new_unit)
     # ^ End making new unit

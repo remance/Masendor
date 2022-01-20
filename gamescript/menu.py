@@ -288,7 +288,8 @@ class MenuIcon(pygame.sprite.Sprite):
 
 
 class ValueBox(pygame.sprite.Sprite):
-    def __init__(self, image, pos, value, text_size=30):
+    def __init__(self, image, pos, value, text_size=26):
+        self._layer = 26
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("timesnewroman", text_size)
         self.pos = pos
@@ -484,6 +485,7 @@ class NameList(pygame.sprite.Sprite):
             self.selected = True
             self.image = self.selected_image.copy()
 
+
 class TickBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""
@@ -562,7 +564,7 @@ class MapShow(pygame.sprite.Sprite):
         team2.fill((255, 0, 0))  # red rect
         team1 = pygame.Surface((8 * self.screen_scale[1], 8 * self.screen_scale[1]))
         team1.fill((0, 0, 255))  # blue rect
-        rect = self.team2_dot.get_rect(topleft=(2 * self.screen_scale[0] , 2 * self.screen_scale[1]))
+        rect = self.team2_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
         self.team2_dot.blit(team2, rect)
         self.team1_dot.blit(team1, rect)
 

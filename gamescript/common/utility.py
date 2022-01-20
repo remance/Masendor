@@ -387,11 +387,11 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     input_ui = menu.InputUI(screen_scale, input_ui_image,
                                  (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
     input_ok_button = menu.MenuButton(screen_scale, image_list,
-                                           pos=(input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.7),
+                                           pos=(input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.2),
                                                 input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
                                            text="Confirm", layer=31)
     input_cancel_button = menu.MenuButton(screen_scale, image_list,
-                                               pos=(input_ui.rect.midright[0] - (image_list[0].get_width() / 1.7),
+                                               pos=(input_ui.rect.midright[0] - (image_list[0].get_width() / 1.2),
                                                     input_ui.rect.midright[1] + (image_list[0].get_height() / 1.3)),
                                                text="Cancel", layer=31)
 
@@ -483,17 +483,18 @@ def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
         menu.EscButton(button_image, (menu_rect_center0, menu_rect_center1 + 100), text="Desktop", size=14)]
 
     esc_option_menu_button = [
-        menu.EscButton(button_image, (menu_rect_center0 - 50, menu_rect_center1 + 70), text="Confirm", size=14),
-        menu.EscButton(button_image, (menu_rect_center0 + 50, menu_rect_center1 + 70), text="Apply", size=14),
-        menu.EscButton(button_image, (menu_rect_center0 + 150, menu_rect_center1 + 70), text="Cancel", size=14)]
+        menu.EscButton(button_image, (menu_rect_center0 - button_image["0.png"].get_width() * 1.5, menu_rect_center1 * 1.3), text="Confirm", size=14),
+        menu.EscButton(button_image, (menu_rect_center0, menu_rect_center1 * 1.3), text="Apply", size=13),
+        menu.EscButton(button_image, (menu_rect_center0 + button_image["0.png"].get_width() * 1.5, menu_rect_center1 * 1.3), text="Cancel", size=14)]
 
     esc_menu_images = load_images(main_dir, screen_scale, ["ui", "battlemenu_ui", "slider"], load_order=False)
     esc_slider_menu = [menu.SliderMenu([esc_menu_images["scroller_box.png"], esc_menu_images["scroller.png"]],
                                        [esc_menu_images["scoll_button_normal.png"], esc_menu_images["scoll_button_click.png"]],
-                                       (menu_rect_center0 * 1.1, menu_rect_center1), mixer_volume, 0)]
-    esc_value_box = [menu.ValueBox(esc_menu_images["value.png"], (battle_menu.rect.topright[0] * 1.2, menu_rect_center1), mixer_volume)]
+                                       (menu_rect_center0, menu_rect_center1), mixer_volume, 0)]
+    esc_value_box = [menu.ValueBox(esc_menu_images["value.png"], (battle_menu.rect.topright[0] * 1.08, menu_rect_center1), mixer_volume)]
 
-    return battle_menu, battle_menu_button, esc_option_menu_button, esc_slider_menu, esc_value_box
+    return {"battle_menu": battle_menu, "battle_menu_button": battle_menu_button, "esc_option_menu_button": esc_option_menu_button,
+            "esc_slider_menu": esc_slider_menu, "esc_value_box": esc_value_box}
 
 
 def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):

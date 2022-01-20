@@ -610,7 +610,7 @@ class Subunit(pygame.sprite.Sprite):
                 elif self.weight > 30:  # Medium weight subunit has trouble travel through water and will sink and progressively lose troops
                     self.status_effect[101] = self.status_list[101].copy()  # Sinking
 
-                elif self.weight < 30:  # Light weight subunit has no trouble travel through water
+                elif self.weight < 30:  # Lightweight subunit has no trouble travel through water
                     self.status_effect[104] = self.status_list[104].copy()  # Swimming
 
             if 2 in map_feature_mod[11]:  # Rot type terrain
@@ -638,7 +638,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.accuracy = self.accuracy * cal_status["Accuracy Effect"]
                 self.shoot_range = self.shoot_range * cal_status["Range Effect"]
                 self.reload = self.reload / cal_status[
-                    "Reload Effect"]  # different than other modifier the higher mod reduce reload time (decrease stat)
+                    "Reload Effect"]  # different from other modifier the higher mod reduce reload time (decrease stat)
                 self.charge = self.charge * cal_status["Charge Effect"]
                 self.charge_def = self.charge_def + cal_status["Charge Defence Bonus"]
                 self.hp_regen += cal_status["HP Regeneration Bonus"]
@@ -664,7 +664,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.bonus_morale_dmg += cal_status["Morale Damage"]
                 self.bonus_stamina_dmg += cal_status["Stamina Damage"]
-                if cal_status["Enemy Status"] != [0]:  # Apply inflict status effect to enemy from skill to inflict list
+                if cal_status["Enemy Status"] != [0]:  # Apply status effect to enemy from skill to inflict list
                     for effect in cal_status["Enemy Status"]:
                         if effect != 0:
                             self.inflict_status[effect] = cal_status["Area of Effect"]
@@ -713,7 +713,7 @@ class Subunit(pygame.sprite.Sprite):
             elif temp_reach < 0:
                 if self.temp_count > temp_reach:
                     self.temp_count -= (100 - self.cold_res) / 100 * self.timer  # decrease temperature, rate depends on cold resistance
-            else:  # temp_reach is 0, subunit temp revert back to 0
+            else:  # temp_reach is 0, subunit temp revert to 0
                 if self.temp_count > 0:
                     self.temp_count -= (1 + self.heat_res) / 100 * self.timer  # revert faster with higher resist
                 else:
@@ -859,7 +859,7 @@ class Subunit(pygame.sprite.Sprite):
         self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)
         self.height = self.height_map.get_height(self.base_pos)
 
-    def update(self, weather, new_dt, zoom, combat_timer, mousepos, mouseup):
+    def update(self, weather, new_dt, zoom, combat_timer, mouse_pos, mouse_up):
         if self.last_zoom != zoom:  # camera zoom is changed
             self.last_zoom = zoom
             self.zoom = zoom  # save scale
@@ -867,11 +867,11 @@ class Subunit(pygame.sprite.Sprite):
 
         if self.unit_health > 0:  # only run these when not dead
             # v Mouse collision detection
-            if self.battle.game_state == 1 or (
-                    self.battle.game_state == 2 and self.battle.unit_build_slot not in self.battle.battle_ui):
-                if self.rect.collidepoint(mousepos):
+            if self.battle.game_state == "battle" or (
+                    self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui):
+                if self.rect.collidepoint(mouse_pos):
                     self.battle.last_mouseover = self.unit  # last mouse over on this unit
-                    if mouseup and self.battle.ui_click is False:
+                    if mouse_up and self.battle.ui_click is False:
                         self.battle.last_selected = self.unit  # become last selected unit
                         if self.unit.selected is False:
                             self.unit.just_selected = True
@@ -961,7 +961,7 @@ class Subunit(pygame.sprite.Sprite):
                                         if self not in self.battle.combat_path_queue:
                                             self.battle.combat_path_queue.append(self)
 
-                                    else:  # no target to fight move back to command pos first)
+                                    else:  # no target to fight move back to command pos first
                                         self.base_target = self.attack_target.base_pos
                                         self.new_angle = self.set_rotate()
 
@@ -1028,13 +1028,13 @@ class Subunit(pygame.sprite.Sprite):
                         self.state = 0  # Default state at idle
                         if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \
                                 self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
-                            self.state = 11  # can shoot if have magazine_left and in shoot range, enter range combat state
+                            self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
 
                     elif self.magazine_left > 0 and self.unit.fire_at_will == 0 and \
                             (self.state == 0 or (self.state not in (95, 96, 97, 98, 99) and
                                                  parent_state in (1, 2, 3, 4, 5, 6) and self.shoot_move)):  # Fire at will
                         if self.unit.near_target != {} and self.attack_target is None:
-                            self.find_shooting_target(parent_state)  # shoot nearest target
+                            self.find_shooting_target(parent_state)  # shoot the nearest target
 
                 if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
                     self.reload_time += dt

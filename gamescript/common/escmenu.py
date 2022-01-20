@@ -30,7 +30,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
             self.battle_menu.change_mode(0)
         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.esc_option_menu_button,
                               *self.esc_slider_menu, *self.esc_value_box)
-        self.game_state = self.previous_gamestate
+        self.game_state = self.previous_game_state
 
     elif self.battle_menu.mode == 0:  # gamestart esc menu
         for button in self.battle_menu_button:
@@ -39,7 +39,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                 if mouse_up:  # click on button
                     button.image = button.images[2]  # change button image to clicked one
                     if button.text == "Resume":  # resume self
-                        self.game_state = self.previous_gamestate  # resume battle gameplay state
+                        self.game_state = self.previous_game_state  # resume battle gameplay state
                         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                               *self.esc_value_box)  # remove menu sprite
 
@@ -117,5 +117,5 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
         lorecommand = lorebook_process(self, uidraw, mouse_up, mouse_leftdown, mouse_scrollup, mouse_scrolldown, esc_press)
         if esc_press or lorecommand == "exit":
             self.battle_menu.change_mode(0)  # change menu back to default 0
-            self.game_state = self.previous_gamestate  # resume gameplay
+            self.game_state = self.previous_game_state  # resume gameplay
     return command
