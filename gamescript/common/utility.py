@@ -258,38 +258,38 @@ def make_encyclopedia_ui(main_dir, ruleset_folder, screen_scale, screen_rect):
         lore_button_images[image] = pygame.transform.scale(lore_button_images[image], (int(lore_button_images[image].get_width() * screen_scale[0]),
                                                    int(lore_button_images[image].get_height() * screen_scale[1])))
     lore_button_ui = [
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5),
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() / 2),
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["concept.png"], 0, 13),  # concept section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 2,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 1.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["history.png"], 1, 13),  # history section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 3,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 2.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["faction.png"], 2, 13),  # faction section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 4,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 3.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["troop.png"], 3, 13),  # troop section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 5,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 4.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["equipment.png"], 4, 13),  # troop equipment section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 6,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 5.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["status.png"], 5, 13),  # troop status section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 7,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 6.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["skill.png"], 6, 13),  # troop skill section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 8,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 7.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["property.png"], 7, 13),  # troop property section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 9,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 8.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
                           lore_button_images["leader.png"], 8, 13),  # leader section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 10,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 9.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)), lore_button_images["terrain.png"], 9, 13),  # terrain section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 11,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 10.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)), lore_button_images["weather.png"], 10, 13),  # weather section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() + 5) * 13,
+        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 11.5,
                           encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)), lore_button_images["close.png"], "close", 13),  # close button
         battleui.UIButton((encyclopedia.rect.bottomleft[0] + (lore_button_images["previous.png"].get_width()),
                            encyclopedia.rect.bottomleft[1] - lore_button_images["previous.png"].get_height()),
@@ -387,12 +387,12 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     input_ui = menu.InputUI(screen_scale, input_ui_image,
                                  (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
     input_ok_button = menu.MenuButton(screen_scale, image_list,
-                                           pos=(input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.5),
-                                                input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.5)),
+                                           pos=(input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.7),
+                                                input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
                                            text="Confirm", layer=31)
     input_cancel_button = menu.MenuButton(screen_scale, image_list,
-                                               pos=(input_ui.rect.midright[0] - (image_list[0].get_width() / 1.5),
-                                                    input_ui.rect.midright[1] + (image_list[0].get_height() / 1.5)),
+                                               pos=(input_ui.rect.midright[0] - (image_list[0].get_width() / 1.7),
+                                                    input_ui.rect.midright[1] + (image_list[0].get_height() / 1.3)),
                                                text="Cancel", layer=31)
 
     input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get_width())  # user text input box
@@ -731,9 +731,10 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
 
     for index, item in enumerate(show_list):
         if index >= current_row:
-            item_group.add(item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item,
-                                      layer=layer))  # add new subsection sprite to group
-            row += (30 * screen_scale[1])  # next row
+            new_item = item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item,
+                                      layer=layer)
+            item_group.add(new_item)  # add new subsection sprite to group
+            row += (new_item.font.get_height() * 1.4 * screen_scale[1])  # next row
             if len(item_group) > box.max_show:
                 break  # will not generate more than space allowed
 

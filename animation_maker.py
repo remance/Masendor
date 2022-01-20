@@ -40,7 +40,7 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
 frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part
+# TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part, colorise effect
 
 
 def apply_colour(surface, colour=None):

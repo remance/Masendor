@@ -167,7 +167,6 @@ class Mainmenu:
         self.subsection_name = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lore_name_list
 
         # battle select menu
-        self.map_listbox = pygame.sprite.Group()  # ui box for map list
         self.map_namegroup = pygame.sprite.Group()  # map name list group
         self.team_coa = pygame.sprite.Group()  # team coat of arm that also act as team selection icon
         self.army_stat = pygame.sprite.Group()  # ui box that show army stat in preset battle preparation screen
@@ -179,10 +178,8 @@ class Mainmenu:
         self.value_box = pygame.sprite.Group()  # value number and box in esc menu option
 
         # unit editor
-        self.troop_listbox = pygame.sprite.Group()  # ui box for troop name list
         self.troop_namegroup = pygame.sprite.Group()  # troop name list group
         self.filter_box = pygame.sprite.Group()
-        self.popup_listbox = pygame.sprite.Group()
         self.popup_namegroup = pygame.sprite.Group()
         self.unit_edit_border = pygame.sprite.Group()  # border that appear when selected sub-subunit
         self.preview_leader = pygame.sprite.Group()  # just to make preview leader class has containers
@@ -246,7 +243,6 @@ class Mainmenu:
         menu.SliderMenu.containers = self.menu_slider, self.slider_menu
         menu.ValueBox.containers = self.value_box
 
-        menu.ListBox.containers = self.map_listbox, self.troop_listbox, self.popup_listbox
         menu.NameList.containers = self.map_namegroup
         menu.TeamCoa.containers = self.team_coa
         menu.ArmyStat.containers = self.army_stat
@@ -320,9 +316,9 @@ class Mainmenu:
 
         menu.ArmyStat.image = battle_select_image["stat.png"]
 
-        self.map_description = menu.MapDescription(battle_select_image["map_description.png"], self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
+        self.map_description = menu.DescriptionBox(battle_select_image["map_description.png"], self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
         self.map_show = menu.MapShow(self.main_dir, self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 3))
-        self.source_description = menu.SourceDescription(battle_select_image["source_description.png"], self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
+        self.source_description = menu.DescriptionBox(battle_select_image["source_description.png"], self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = menu.MenuButton(self.screen_scale, image_list, pos=(self.screen_rect.width - image_list[0].get_width(), bottom_height),
@@ -340,7 +336,7 @@ class Mainmenu:
         self.map_scroll = battleui.UIScroller(self.map_listbox.rect.topright, self.map_listbox.image.get_height(),
                                               self.map_listbox.max_show, layer=14)  # scroll bar for map list
 
-        self.source_list_box = menu.SourceListBox(self.screen_scale, (0, 0), battle_select_image["top_box.png"])  # source list ui box
+        self.source_list_box = menu.ListBox(self.screen_scale, (0, 0), battle_select_image["top_box.png"])  # source list ui box
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.screen_rect.width, 0), battle_select_image["top_box.png"],
                                                 0)  # ui box for battle option during preparation screen
 
@@ -388,6 +384,7 @@ class Mainmenu:
         subdirectories = [x for x in genre_folder.iterdir() if x.is_dir()]
         subdirectories = [str(folder_name).split("\\")[-1].capitalize() for folder_name in subdirectories]
         subdirectories.remove("__pycache__")
+        subdirectories.remove("Common")
         self.genre_list = subdirectories  # map name list for map selection list
 
         box_image = load_image(self.main_dir, self.screen_scale, "genre_box.png", "ui\\mainmenu_ui")

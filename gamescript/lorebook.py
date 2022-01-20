@@ -30,7 +30,7 @@ class Lorebook(pygame.sprite.Sprite):
     race_list = None
     state_text = None
 
-    def __init__(self, main_dir, screen_scale, screen_rect, image, textsize=17):
+    def __init__(self, main_dir, screen_scale, screen_rect, image, textsize=24):
         """ Lorebook section: 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill,
         7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark"""
         self.main_dir = main_dir
@@ -40,9 +40,8 @@ class Lorebook(pygame.sprite.Sprite):
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", int(textsize * self.screen_scale[1]))
-        self.font_header = pygame.font.SysFont("oldenglishtext", int(40 * self.screen_scale[1]))
-        self.image = pygame.transform.scale(image, (int(image.get_width() * self.screen_scale[0]),
-                                                    int(image.get_height() * self.screen_scale[1])))
+        self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
+        self.image = image
         self.image_original = self.image.copy()
         self.leader_list = self.leader_stat.leader_list
         self.section = 0
@@ -75,7 +74,7 @@ class Lorebook(pygame.sprite.Sprite):
             (self.trait_stat, None), (self.leader_list, self.leader_lore), (self.terrain_stat, None),
             (self.weather_stat, None))
         self.current_subsection_row = 0
-        self.max_subsection_show = 21
+        self.max_subsection_show = 19
         self.log_size = 0
         self.page = 0
         self.max_page = 0
@@ -179,9 +178,8 @@ class Lorebook(pygame.sprite.Sprite):
         for index, item in enumerate(self.subsection_list):
             if index >= self.current_subsection_row:
                 listgroup.add(
-                    SubsectionName([self.screen_scale[0], self.screen_scale[1]], (pos[0] + column, pos[1] + row), item,
-                                             loop_list[index]))  # add new subsection sprite to group
-                row += (30 * self.screen_scale[1])  # next row
+                    SubsectionName(self.screen_scale, (pos[0] + column, pos[1] + row), item, loop_list[index]))  # add new subsection sprite to group
+                row += (41 * self.screen_scale[1])  # next row
                 if len(listgroup) > self.max_subsection_show:
                     break  # will not generate more than space allowed
 
@@ -208,22 +206,22 @@ class Lorebook(pygame.sprite.Sprite):
         name = stat[0]
         description = stat[-1]
         text_surface = self.font_header.render(str(name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(10 * self.screen_scale[1])))
+        text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
         self.image.blit(text_surface, text_rect)  # add name of item to the top of page
 
         if self.portrait is not None:
             portrait_rect = self.portrait.get_rect(
-                topleft=(int(20 * self.screen_scale[0]), int(60 * self.screen_scale[1])))
+                topleft=(int(30 * self.screen_scale[0]), int(90 * self.screen_scale[1])))
             self.image.blit(self.portrait, portrait_rect)
 
-        description_surface = pygame.Surface((int(300 * self.screen_scale[0]), int(350 * self.screen_scale[1])), pygame.SRCALPHA)
-        description_rect = description_surface.get_rect(topleft=(int(180 * self.screen_scale[1]), int(60 * self.screen_scale[0])))
+        description_surface = pygame.Surface((int(410 * self.screen_scale[0]), int(370 * self.screen_scale[1])), pygame.SRCALPHA)
+        description_rect = description_surface.get_rect(topleft=(int(190 * self.screen_scale[1]), int(70 * self.screen_scale[0])))
         make_long_text(description_surface, description, (int(5 * self.screen_scale[1]), int(5 * self.screen_scale[0])),
                        self.font)
         self.image.blit(description_surface, description_rect)
 
         if self.page == 0:
-            row = 350 * self.screen_scale[1]
+            row = 420 * self.screen_scale[1]
             col = 60 * self.screen_scale[0]
 
             # concept, history, faction section is simply for processed and does not need specific column read
@@ -234,30 +232,30 @@ class Lorebook(pygame.sprite.Sprite):
                     # blit text
                     if "IMAGE:" not in text:
                         text_surface = pygame.Surface(
-                            (int(400 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
+                            (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
                         text_rect = description_surface.get_rect(topleft=(col, row))
                         make_long_text(text_surface, str(text),
-                                       (int(5 * self.screen_scale[1]), int(5 * self.screen_scale[0])), self.font)
+                                       (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
 
                     # blit image instead of text
                     else:
                         if "FULLIMAGE:" in text:  # full image to whole two pages
                             filename = text[10:].split("\\")[-1]
-                            text_surface = utility.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
+                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[10:].replace(filename, ""))
                             text_surface = pygame.transform.scale(text_surface, (self.image.get_width(), self.image.get_height()))
                             text_rect = description_surface.get_rect(topleft=(0, 0))
                         else:
                             filename = text[6:].split("\\")[-1]
-                            text_surface = utility.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
+                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[6:].replace(filename, ""))
                             text_rect = description_surface.get_rect(topleft=(col, row))
                     self.image.blit(text_surface, text_rect)
 
                     row += (200 * self.screen_scale[1])
-                    if row >= 600 * self.screen_scale[1]:  # continue drawing on the right page after reaching the end of left page
+                    if row >= 750 * self.screen_scale[1]:  # continue drawing on the right page after reaching the end of left page
                         if col == 520 * self.screen_scale[0]:  # already on the right page
                             break
                         else:
-                            col = 520 * self.screen_scale[0]
+                            col = 650 * self.screen_scale[0]
                             row = 50 * self.screen_scale[1]
 
             # more complex section
@@ -408,22 +406,22 @@ class Lorebook(pygame.sprite.Sprite):
                             text_surface = self.font.render(create_text, True, (0, 0, 0))
                             text_rect = text_surface.get_rect(topleft=(col, row))
                             self.image.blit(text_surface, text_rect)
-                            row += (25 * self.screen_scale[1])
-                            if row >= 600 * self.screen_scale[1]:
-                                col = 520 * self.screen_scale[0]
+                            row += (30 * self.screen_scale[1])
+                            if row >= 750 * self.screen_scale[1]:
+                                col = 650 * self.screen_scale[0]
                                 row = 50 * self.screen_scale[1]
 
         else:  # lore page, the paragraph can be in text or image (IMAGE:)
             if self.lore_data is not None and self.max_page != 0:
                 lore = self.lore_data[self.subsection][(self.page - 1) * 4:]
-                row = 400 * self.screen_scale[1]
+                row = 420 * self.screen_scale[1]
                 col = 60 * self.screen_scale[0]
                 for index, text in enumerate(lore):
                     if text != "":
 
                         # blit paragraph of text
                         if "IMAGE:" not in text:
-                            text_surface = pygame.Surface((400 * self.screen_scale[0], 300 * self.screen_scale[1]),
+                            text_surface = pygame.Surface((500 * self.screen_scale[0], 300 * self.screen_scale[1]),
                                                           pygame.SRCALPHA)
                             make_long_text(text_surface, text, (5 * self.screen_scale[0], 5 * self.screen_scale[1]),
                                            self.font)
@@ -433,21 +431,21 @@ class Lorebook(pygame.sprite.Sprite):
                         else:
                             if "FULLIMAGE:" in text:
                                 filename = text[10:].split("\\")[-1]
-                                text_surface = utility.load_image(self.main_dir, filename, text[10:].replace(filename, ""))
+                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[10:].replace(filename, ""))
                                 text_surface = pygame.transform.scale(text_surface, (self.image.get_width(), self.image.get_height()))
                                 text_rect = description_surface.get_rect(topleft=(0, 0))
                             else:
                                 filename = text[6:].split("\\")[-1]
-                                text_surface = utility.load_image(self.main_dir, filename, text[6:].replace(filename, ""))
+                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[6:].replace(filename, ""))
                                 text_rect = description_surface.get_rect(topleft=(col, row))
                         self.image.blit(text_surface, text_rect)
 
-                        row += (200 * self.screen_scale[1])
+                        row += (280 * self.screen_scale[1])
                         if row >= 600 * self.screen_scale[1]:
-                            if col == 550 * self.screen_scale[0]:
+                            if col == 650 * self.screen_scale[0]:
                                 break
                             else:
-                                col = 550 * self.screen_scale[0]
+                                col = 650 * self.screen_scale[0]
                                 row = 50 * self.screen_scale[1]
 
 
@@ -455,21 +453,20 @@ class SubsectionList(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image):
         self._layer = 23
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[0]),
-                                                    int(image.get_height() * screen_scale[1])))
+        self.image = image
         self.rect = self.image.get_rect(topright=pos)
 
 
 class SubsectionName(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, name, subsection, text_size=16):
+    def __init__(self, screen_scale, pos, name, subsection, text_size=28):
         self._layer = 24
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
-        self.image = pygame.Surface((int(180 * screen_scale[0]), int(25 * screen_scale[1])))  # black corner
+        self.image = pygame.Surface((int(240 * screen_scale[0]), int(40 * screen_scale[1])))  # black corner
         self.image.fill((0, 0, 0))
 
         # v White body square
-        small_image = pygame.Surface((int(178 * screen_scale[0]), int(23 * screen_scale[1])))
+        small_image = pygame.Surface((int(230 * screen_scale[0]), int(34 * screen_scale[1])))
         small_image.fill((255, 255, 255))
         small_rect = small_image.get_rect(topleft=(int(1 * screen_scale[0]), int(1 * screen_scale[1])))
         self.image.blit(small_image, small_rect)
