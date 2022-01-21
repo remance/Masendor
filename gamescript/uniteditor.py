@@ -140,7 +140,7 @@ class UnitBuildSlot(pygame.sprite.Sprite):
 
 class WarningMsg(pygame.sprite.Sprite):
     eightsubunit_warn = "- Require at least 8 sub-units for both test and employment"
-    mainleader_warn = "- Require a gamestart leader for both test and employment"
+    mainleader_warn = "- Require a start_set leader for both test and employment"
     emptyrowcol_warn = "- Empty row or column will be removed when employed"
     duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leader option enable"
     multifaction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"

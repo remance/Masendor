@@ -5,6 +5,7 @@ import pygame.freetype
 from gamescript import map
 from gamescript.common import utility
 
+
 class UIButton(pygame.sprite.Sprite):
     def __init__(self, pos, image, event=None, layer=11):
         self._layer = layer
@@ -294,7 +295,7 @@ class CommandBar(pygame.sprite.Sprite):
             self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
             if who.commander:  # commander unit use king and queen icon
-                # gamestart general
+                # start_set general
                 self.icon_rect = use_colour[0].get_rect(
                     center=(
                     self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
@@ -923,6 +924,134 @@ class BattleDone(pygame.sprite.Sprite):
                 else:
                     text_surface = self.font.render(text_header[stat_index] + str(this_stat[team]), True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(team_coa_rect[index].midbottom[0],
-                                                        team_coa_rect[index].midbottom[1] + (int(self.height_adjust * 25) * row_number)))
+                                                          team_coa_rect[index].midbottom[1] + (int(self.height_adjust * 25) * row_number)))
                 self.image.blit(text_surface, text_rect)
                 row_number += 1
+
+
+class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
+    def __init__(self, who):
+        """Layer must be called before sprite_init"""
+        self._layer = 4
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.who = who
+        self.pos = self.who.pos
+        self.who.direction_arrow = self
+        self.length_gap = self.who.image.get_height() / 2
+        self.length = self.who.pos.distance_to(self.who.base_target) + self.length_gap
+        self.previous_length = self.length
+        self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
+        self.image.fill((0, 0, 0))
+        # self.image_original = self.image.copy()
+        # pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width()/2, 0),(self.image.get_width()/2,self.image.get_height()), 5)
+        self.image = pygame.transform.rotate(self.image, self.who.angle)
+        self.rect = self.image.get_rect(midbottom=self.who.front_pos)
+
+    def update(self, zoom):
+        self.length = self.who.pos.distance_to(self.who.base_target) + self.length_gap
+        distance = self.who.front_pos.distance_to(self.who.base_target) + self.length_gap
+        if self.length != self.previous_length and distance > 2 and self.who.state != 0:
+            self.pos = self.who.pos
+            self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
+            self.image.fill((0, 0, 0))
+            self.image = pygame.transform.rotate(self.image, self.who.angle)
+            self.rect = self.image.get_rect(midbottom=self.who.front_pos)
+            self.previous_length = self.length
+        elif distance < 2 or self.who.state in (0, 10, 11, 100):
+            self.who.direction_arrow = False
+            self.kill()
+
+
+class TroopNumber(pygame.sprite.Sprite):
+    def __init__(self, screen_scale, who):
+        self._layer = 6
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.screen_scale = screen_scale
+        self.who = who
+        self.text_colour = pygame.Color("blue")
+        if self.who.team == 2:
+            self.text_colour = pygame.Color("red")
+        self.last_true_number_pos = self.who.true_number_pos
+        self.pos = (self.who.true_number_pos[0] * self.screen_scale[0], self.who.true_number_pos[1] * self.screen_scale[1])
+        self.number = self.who.troop_number
+        self.zoom = 0
+
+        self.font = pygame.font.SysFont("timesnewroman", int(22 * self.screen_scale[1]))
+
+        self.image = self.render(str(self.number), self.font, self.text_colour)
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def update(self, *args, **kwargs) -> None:
+        if self.last_true_number_pos != self.who.true_number_pos:  # new position
+            self.pos = (self.who.true_number_pos[0] * self.screen_scale[0], self.who.true_number_pos[1] * self.screen_scale[1])
+            self.rect = self.image.get_rect(topleft=self.pos)
+            self.last_true_number_pos = self.who.true_number_pos
+
+        if self.zoom != args[2]:  # zoom argument
+            self.zoom = int(args[2])
+            zoom = (11 - self.zoom) / 2
+            if zoom < 1:
+                zoom = 1
+            new_font_size = int(60 / zoom * self.screen_scale[1])
+            self.font = pygame.font.SysFont("timesnewroman", new_font_size)
+            self.image = self.render(str(self.number), self.font, self.text_colour)
+            self.rect = self.image.get_rect(topleft=self.pos)
+
+        if self.number != self.who.troop_number:  # new troop number
+            self.number = self.who.troop_number
+            self.image = self.render(str(self.number), self.font, self.text_colour)
+            self.rect = self.image.get_rect(topleft=self.pos)
+
+        if self.who.state == 100:
+            self.kill()
+            self.delete()
+
+    def circle_points(self, r):
+        """Calculate text point to add background"""
+        circle_cache = {}
+        r = int(round(r))
+        if r in circle_cache:
+            return circle_cache[r]
+        x, y, e = r, 0, 1 - r
+        circle_cache[r] = points = []
+        while x >= y:
+            points.append((x, y))
+            y += 1
+            if e < 0:
+                e += 2 * y - 1
+            else:
+                x -= 1
+                e += 2 * (y - x) - 1
+        points += [(y, x) for x, y in points if x > y]
+        points += [(-x, y) for x, y in points if x]
+        points += [(x, -y) for x, y in points if y]
+        points.sort()
+        return points
+
+    def render(self, text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255, 255), opx=2):
+        """Render text with background border"""
+        text_surface = font.render(text, True, gf_colour).convert_alpha()
+        w = text_surface.get_width() + 2 * opx
+        h = font.get_height()
+
+        osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
+        osurf.fill((0, 0, 0, 0))
+
+        surface = osurf.copy()
+
+        osurf.blit(font.render(text, True, o_colour).convert_alpha(), (0, 0))
+
+        for dx, dy in self.circle_points(opx):
+            surface.blit(osurf, (dx + opx, dy + opx))
+
+        surface.blit(text_surface, (opx, opx))
+
+        return surface
+
+    def delete(self, local=False):
+        """delete reference when del is called"""
+        if local:
+            print(locals())
+        else:
+            del self.who

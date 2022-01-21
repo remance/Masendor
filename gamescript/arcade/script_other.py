@@ -204,7 +204,7 @@ def load_game_data(game):
 
     battleui.SelectedSquad.image = topimage[-1]  # subunit border image always the last one
     game.inspect_selected_border = battleui.SelectedSquad((15000, 15000))  # yellow border on selected subnit in inspect ui
-    game.main_ui.remove(game.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
+    game.main_ui.remove(game.inspect_selected_border)  # remove subnit border sprite from start_set menu drawer
 
     # ^ End self ui
 
@@ -626,7 +626,7 @@ def add_new_unit(gamebattle, who, addunitlist=True):
     who.change_pos_scale()  # find new position for troop number text
 
     for this_subunit in who.subunit_sprite:
-        this_subunit.gamestart(this_subunit.zoom)
+        this_subunit.start_set(this_subunit.zoom)
 
     if addunitlist:
         gamebattle.all_unit_list.append(who)
@@ -699,7 +699,7 @@ def splitunit(battle, who, how):
         who.subunit_list, newarmysubunit, newposition = move_leader_subunit(who.leader[1], who.subunit_list,
                                                                             newarmysubunit)
         who.leader[1].subunit_pos = newposition[0] * newposition[1]
-    who.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a gamestart leader sub-unit
+    who.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a start_set leader sub-unit
 
     alreadypick = []
     for this_leader in (who.leader[0], who.leader[2], who.leader[3]):  # move other leader subunit to original one if they are in new one

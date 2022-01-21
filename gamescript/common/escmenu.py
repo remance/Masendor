@@ -31,7 +31,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                               *self.esc_slider_menu, *self.esc_value_box)
         self.game_state = self.previous_game_state
 
-    elif self.battle_menu.mode == "menu":  # gamestart esc menu
+    elif self.battle_menu.mode == "menu":  # start_set esc menu
         for button in self.battle_menu_button:
             if button.rect.collidepoint(self.mouse_pos):
                 button.image = button.images[1]  # change button image to mouse over one
@@ -55,11 +55,11 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
                     elif button.text == "Option":  # open option menu
                         self.battle_menu.change_mode(1)  # change to option menu mode
-                        self.battle_ui.remove(*self.battle_menu_button)  # remove gamestart esc menu button
+                        self.battle_ui.remove(*self.battle_menu_button)  # remove start_set esc menu button
                         self.battle_ui.add(*self.esc_option_menu_button, *self.esc_slider_menu, *self.esc_value_box)
                         self.oldsetting = self.esc_slider_menu[0].value  # Save previous setting for in case of cancel
 
-                    elif button.text == "End Battle":  # back to gamestart menu
+                    elif button.text == "End Battle":  # back to start_set menu
                         self.exit_battle()
                         command = "end_battle"
 
@@ -82,10 +82,10 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
                         editconfig("DEFAULT", "master_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
                                    self.config)  # save to config file
-                        self.battle_menu.change_mode(0)  # go back to gamestart esc menu
+                        self.battle_menu.change_mode(0)  # go back to start_set esc menu
                         self.battle_ui.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
                                               *self.esc_value_box)  # remove option menu sprite
-                        self.battle_ui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
+                        self.battle_ui.add(*self.battle_menu_button)  # add start_set esc menu buttons back
 
                     elif button.text == "Apply":  # apply button, save the setting
                         self.oldsetting = self.master_volume  # save mixer volume
@@ -98,10 +98,10 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
                         self.esc_slider_menu[0].update(self.master_volume, self.esc_value_box[0],
                                                        forced_value=True)  # update slider bar
-                        self.battle_menu.change_mode(0)  # go back to gamestart esc menu
+                        self.battle_menu.change_mode(0)  # go back to start_set esc menu
                         self.battle_ui.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
                                               *self.esc_value_box)  # remove option menu sprite
-                        self.battle_ui.add(*self.battle_menu_button)  # add gamestart esc menu buttons back
+                        self.battle_ui.add(*self.battle_menu_button)  # add start_set esc menu buttons back
 
             else:  # no button currently collided with mouse
                 button.image = button.images[0]  # revert button image back to the idle one

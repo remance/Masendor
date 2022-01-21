@@ -7,7 +7,7 @@ import sys
 
 import pygame
 import pygame.freetype
-from gamescript import camera, map, weather, battleui, menu, subunit, unit, leader
+from gamescript import camera, weather, battleui, menu, subunit, unit, leader
 from gamescript.common import utility, escmenu, editor
 
 from pygame.locals import *
@@ -28,7 +28,7 @@ def change_battle_genre(genre):
         from gamescript.tactical.editor import convert
         from gamescript.tactical.ui import selector
     elif genre == "arcade":
-        from gamescript.arcade.subunit import fight, spawn, movement
+        pass
 
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
@@ -72,7 +72,7 @@ class Battle:
     add_behaviour_ui = None
 
     def __init__(self, main, window_style):
-        # v Get self object/variable from gamestart
+        # v Get self object/variable from start_set
         self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for self battle
         self.main = main
         self.genre = main.genre
@@ -251,7 +251,7 @@ class Battle:
 
         self.battle_done_box = main.battle_done_box
         self.battle_done_button = main.battle_done_button
-        # ^ End load from gamestart
+        # ^ End load from start_set
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
         self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
@@ -261,23 +261,23 @@ class Battle:
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.leader_now = []
-        self.team_troopnumber = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
-        self.last_team_troopnumber = [1, 1, 1]
-        self.start_troopnumber = [0, 0, 0]
-        self.wound_troopnumber = [0, 0, 0]
-        self.death_troopnumber = [0, 0, 0]
-        self.flee_troopnumber = [0, 0, 0]
-        self.capture_troopnumber = [0, 0, 0]
+        self.team_troop_number = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
+        self.last_team_troop_number = [1, 1, 1]
+        self.start_troop_number = [0, 0, 0]
+        self.wound_troop_number = [0, 0, 0]
+        self.death_troop_number = [0, 0, 0]
+        self.flee_troop_number = [0, 0, 0]
+        self.capture_troop_number = [0, 0, 0]
         self.faction_pick = 0
         self.filter_troop = [True, True, True, True]
         self.last_selected = None
         self.before_selected = None
 
-        self.unitsetup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
-                                self.team_coa, self.troop_card_button, self.troop_listbox, self.troop_scroll,
-                                self.troop_namegroup, self.unit_listbox, self.preset_select_border,
-                                self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button,
-                                self.unit_preset_name_scroll)
+        self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
+                                 self.team_coa, self.troop_card_button, self.troop_listbox, self.troop_scroll,
+                                 self.troop_namegroup, self.unit_listbox, self.preset_select_border,
+                                 self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button,
+                                 self.unit_preset_name_scroll)
         self.filter_stuff = (self.filter_box, self.slot_display_button, self.team_change_button, self.deploy_button, self.terrain_change_button,
                              self.feature_change_button, self.weather_change_button, self.filter_tick_box)
 
@@ -412,11 +412,11 @@ class Battle:
         # v initialise starting subunit sprites
         self.mode = mode
         if self.mode == "battle":
-            self.start_troopnumber = [0, 0, 0]
-            self.wound_troopnumber = [0, 0, 0]
-            self.death_troopnumber = [0, 0, 0]
-            self.flee_troopnumber = [0, 0, 0]
-            self.capture_troopnumber = [0, 0, 0]
+            self.start_troop_number = [0, 0, 0]
+            self.wound_troop_number = [0, 0, 0]
+            self.death_troop_number = [0, 0, 0]
+            self.flee_troop_number = [0, 0, 0]
+            self.capture_troop_number = [0, 0, 0]
             self.unit_setup()
         # ^ End start subunit sprite
 
@@ -426,30 +426,6 @@ class Battle:
             if this_ui in self.battle_ui and this_ui.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
                 break
-        return self.click_any
-
-    def unit_icon_mouse_over(self, mouse_up, mouse_right):
-        """process user mouse input on unit icon, left click = select, right click = go to unit position on map"""
-        self.click_any = True
-        if self.game_state == "battle" or (self.game_state == "editor" and self.subunit_build not in self.battle_ui):
-            for icon in self.unit_icon:
-                if icon.rect.collidepoint(self.mouse_pos):
-                    if mouse_up:
-                        self.last_selected = icon.army
-                        self.last_selected.just_selected = True
-                        self.last_selected.selected = True
-
-                        if self.before_selected is None:  # add back the pop up ui so it get shown when click subunit with none selected before
-                            self.battle_ui.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
-                            self.battle_ui.add(self.inspect_button)  # add inspection ui open/close button
-
-                            self.add_behaviour_ui(self.last_selected)
-
-                    elif mouse_right:
-                        self.base_camera_pos = pygame.Vector2(icon.army.base_pos[0] * self.screen_scale[0],
-                                                              icon.army.base_pos[1] * self.screen_scale[1])
-                        self.camera_pos = self.base_camera_pos * self.camera_scale
-                    break
         return self.click_any
 
     def leader_mouse_over(self, mouse_right):  # TODO make it so button and leader popup not show at same time
@@ -552,7 +528,7 @@ class Battle:
             self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
                 center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 50))
 
-            self.battle_ui.remove(self.filter_stuff, self.unitsetup_stuff, self.leader_now, self.button_ui, self.warning_msg)
+            self.battle_ui.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui, self.warning_msg)
             self.battle_ui.add(self.event_log, self.log_scroll, self.eventlog_button, self.time_button)
 
             self.game_speed = 1
@@ -561,9 +537,9 @@ class Battle:
             for this_unit in self.all_unit_list:
                 this_unit.start_set(self.subunit)
             for this_subunit in self.subunit:
-                this_subunit.gamestart(self.camera_scale)
+                this_subunit.start_set(self.camera_scale)
             for this_leader in self.leader_updater:
-                this_leader.gamestart()
+                this_leader.start_set()
             # ^ End starting
 
         elif self.game_state == "editor":  # change to editor state
@@ -594,7 +570,7 @@ class Battle:
 
             self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
 
-            self.battle_ui.add(self.filter_stuff, self.unitsetup_stuff, self.test_button, self.command_ui, self.troop_card_ui, self.leader_now,
+            self.battle_ui.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui, self.troop_card_ui, self.leader_now,
                                self.time_button)
             self.slot_display_button.event = 0  # reset display editor ui button to show
             self.game_speed = 0  # pause battle
@@ -682,8 +658,8 @@ class Battle:
         self.text_input_popup = (None, None)  # no popup asking for user text input state
         self.leader_now = []  # list of showing leader in command ui
         self.current_weather = None
-        self.team_troopnumber = [1, 1, 1]  # reset list of troop number in each team
-        self.last_team_troopnumber = [1, 1, 1]
+        self.team_troop_number = [1, 1, 1]  # reset list of troop number in each team
+        self.last_team_troop_number = [1, 1, 1]
         self.drama_text.queue = []  # reset drama text popup queue
         if self.mode == "uniteditor":
             self.game_state = "editor"  # editor mode
@@ -883,7 +859,7 @@ class Battle:
                     # ^ End drama
 
                     if self.dt > 0:
-                        self.team_troopnumber = [1, 1, 1]  # reset troop count
+                        self.team_troop_number = [1, 1, 1]  # reset troop count
 
                         # v Event log timer
                         if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
@@ -1042,12 +1018,12 @@ class Battle:
                         self.before_selected = None  # reset before selected unit after remove last selected
                         self.remove_unit_ui()
                         if self.game_state == "editor" and self.slot_display_button.event == 0:  # add back ui again for when unit editor ui displayed
-                            self.battle_ui.add(self.unitsetup_stuff, self.leader_now)
+                            self.battle_ui.add(self.unit_setup_stuff, self.leader_now)
                     # ^ End remove
 
                     if self.ui_timer > 1:
-                        self.scale_ui.change_fight_scale(self.team_troopnumber)  # change fight colour scale on time_ui bar
-                        self.last_team_troopnumber = self.team_troopnumber
+                        self.scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar
+                        self.last_team_troop_number = self.team_troop_number
 
                     if self.combat_timer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combat_timer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing
@@ -1098,15 +1074,15 @@ class Battle:
                                 coa_list = [None, None]
                                 for index, coa in enumerate(self.team_coa):
                                     coa_list[index] = coa.image
-                                self.battle_done_box.show_result(coa_list[0], coa_list[1], [self.start_troopnumber, self.team_troopnumber,
-                                                                                            self.wound_troopnumber, self.death_troopnumber,
-                                                                                            self.flee_troopnumber, self.capture_troopnumber])
+                                self.battle_done_box.show_result(coa_list[0], coa_list[1], [self.start_troop_number, self.team_troop_number,
+                                                                                            self.wound_troop_number, self.death_troop_number,
+                                                                                            self.flee_troop_number, self.capture_troop_number])
                                 self.battle_done_button.rect = self.battle_done_button.image.get_rect(center=(self.battle_done_box.rect.midbottom[0],
                                                                                                               self.battle_done_box.rect.midbottom[
                                                                                                                   1] / 1.3))
 
-                        # print('end', self.team_troopnumber, self.last_team_troopnumber, self.start_troopnumber, self.wound_troopnumber,
-                        #       self.death_troopnumber, self.flee_troopnumber, self.capture_troopnumber)
+                        # print('end', self.team_troop_number, self.last_team_troop_number, self.start_troop_number, self.wound_troop_number,
+                        #       self.death_troop_number, self.flee_troop_number, self.capture_troop_number)
                     # ^ End update self time
 
                 elif self.game_state == "menu":  # Complete self pause when open either esc menu or encyclopedia

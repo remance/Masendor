@@ -259,6 +259,8 @@ class Mainmenu:
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui
         battleui.ArmyIcon.containers = self.unit_icon, self.battle_ui
+        battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
+        battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
 
         popup.OneLinePopup.containers = self.buttonname_popup, self.leader_popup
         popup.EffectIconPopup.containers = self.effect_popup
@@ -271,8 +273,6 @@ class Mainmenu:
         weather.SpecialEffect.containers = self.weather_effect, self.battle_ui, self.weather_updater
 
         unit.Unit.containers = self.unit_updater
-        unit.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
-        unit.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
         subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battle_camera
         leader.Leader.containers = self.army_leader, self.leader_updater
         # ^ End assign
@@ -388,7 +388,7 @@ class Mainmenu:
         self.profile_name = self.profile_name
         profile_box_image = load_image(self.main_dir, self.screen_scale, "profile_box.png", "ui\\mainmenu_ui")
         self.profile_box = menu.TextBox(self.screen_scale, profile_box_image, (self.screen_width, 0),
-                                           self.profile_name)  # profile name box at top right of screen at gamestart menu screen
+                                           self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
         # Music player
         if pygame.mixer:
@@ -587,7 +587,7 @@ class Mainmenu:
         self.inspect_button = battleui.UIButton((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1), genre_battle_ui_image["army_inspect_button.png"],
                                                 1)  # unit inspect open/close button
         self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
-        self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
+        self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from start_set menu drawer
 
         self.inspect_ui = battleui.InspectUI(image=genre_battle_ui_image["army_inspect.png"])  # inspect ui that show subnit in selected unit
         self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
@@ -994,7 +994,7 @@ class Mainmenu:
                         self.menu_button.add(*self.editor_button)
                         self.main_ui.add(*self.editor_button)
 
-                    elif self.option_button.event:  # change gamestart menu to option menu
+                    elif self.option_button.event:  # change start_set menu to option menu
                         self.menu_state = "option"
                         self.option_button.event = False
                         self.main_ui.remove(*self.start_menu_ui_only, self.popup_listbox, self.popup_list_scroll,
@@ -1265,7 +1265,7 @@ class Mainmenu:
 
                             break
 
-                    if self.back_button.event or esc_press:  # back to gamestart menu
+                    if self.back_button.event or esc_press:  # back to start_set menu
                         self.back_button.event = False
 
                         self.main_ui.remove(*self.option_icon_list, self.option_menu_slider, self.value_box)

@@ -33,6 +33,8 @@ def destroyed(self, battle, morale_hit=True):
     group.remove(self)
     self.got_killed = True
 
+    self.battle.setup_unit_icon()  # reset army icon (remove dead one)
+
 
 def move_leader_subunit(this_leader, old_army_subunit, new_army_subunit, already_pick=()):
     """old_army_subunit is subunit_list list that the subunit currently in and need to be move out to the new one (new_army_subunit),
@@ -119,7 +121,7 @@ def split_unit(battle, who, how):
         1].subunit.game_id not in new_army_subunit.flat:  # move the left sub-general leader subunit if it not in new one
         who.subunit_list, new_army_subunit, new_position = move_leader_subunit(who.leader[1], who.subunit_list, new_army_subunit)
         who.leader[1].subunit_pos = new_position[0] * new_position[1]
-    who.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a gamestart leader sub-unit
+    who.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a start_set leader sub-unit
 
     already_pick = []
     for this_leader in (who.leader[0], who.leader[2], who.leader[3]):  # move other leader subunit to original one if they are in new one
@@ -224,6 +226,21 @@ def split_unit(battle, who, how):
     # ^ End making new unit
 
 
+def auth_recal(self):
+    """recalculate authority from all alive leaders"""
+    self.authority = (self.leader[0].authority / 2) + (self.leader[1].authority / 4) + \
+                     (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
+    self.leader_social = self.leader[0].social
+    if self.authority > 0:
+        big_army_size = self.subunit_list > 0
+        big_army_size = big_army_size.sum()
+        if big_army_size > 20:  # army size larger than 20 will reduce start_set leader authority
+            self.authority = (self.team_commander.authority / 2) + (self.leader[0].authority / 2 * (100 - big_army_size) / 100) + \
+                             (self.leader[1].authority / 2) + (self.leader[2].authority / 2) + (self.leader[3].authority / 4)
+        else:
+            self.authority = self.authority + (self.team_commander.authority / 2)
+
+
 def skirmish(self):
     # v skirmishing
     if self.hold == 1 and self.state not in (97, 98, 99):
@@ -299,3 +316,23 @@ def retreat(self):
         #                                                         self.battle.enactment)
         #     self.battle.event_log.addlog([0, str(self.leader[0].name) + "'s unit surrender"], [0, 1])
         #     self.battle.setuparmyicon()
+
+
+def switch_faction(self, old_group, new_group, old_pos_list, enactment):
+    """Change army group and game_id when change side"""
+    self.colour = (144, 167, 255)  # team1 colour
+    self.control = True  # TODO need to change later when player can choose team
+
+    if self.team == 2:
+        self.team = 1  # change to team 1
+    else:  # originally team 1, new team would be 2
+        self.team = 2  # change to team 2
+        self.colour = (255, 114, 114)  # team2 colour
+        if enactment is False:
+            self.control = False
+
+    old_group.remove(self)  # remove from old team group
+    new_group.append(self)  # add to new team group
+    old_pos_list.pop(self.game_id)  # remove from old pos list
+    # self.changescale() # reset scale to the current zoom
+    self.icon.change_image(change_side=True)  # change army icon to new team

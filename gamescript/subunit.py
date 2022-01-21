@@ -66,7 +66,7 @@ class Subunit(pygame.sprite.Sprite):
         self.get_height = self.height_map.get_height
 
         self.who_last_select = None
-        self.leader = None  # Leader in the sub-subunit if there is one, got add in leader gamestart
+        self.leader = None  # Leader in the sub-subunit if there is one, got add in leader start_set
         self.board_pos = None  # Used for event log position of subunit (Assigned in battle subunit setup)
         self.walk = False  # currently walking
         self.run = False  # currently running
@@ -277,7 +277,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat["Speed Bonus"]  # finalise base speed with weight and grade bonus
         self.size = stat["Size"]
-        self.battle.start_troopnumber[self.team] += self.troop_number  # add troop number to counter how many troop join battle
+        self.battle.start_troop_number[self.team] += self.troop_number  # add troop number to counter how many troop join battle
         self.description = stat["Description"]  # subunit description for inspect ui
         # if self.hidden
 
@@ -519,7 +519,7 @@ class Subunit(pygame.sprite.Sprite):
         self.morale = self.base_morale
         self.authority = self.unit.authority  # unit total authority
         self.command_buff = self.unit.command_buff[
-                               self.subunit_type] * 100  # command buff from gamestart leader according to this subunit type
+                               self.subunit_type] * 100  # command buff from start_set leader according to this subunit type
         self.discipline = self.base_discipline
         self.attack = self.base_attack
         self.melee_def = self.base_melee_def
@@ -848,7 +848,7 @@ class Subunit(pygame.sprite.Sprite):
         self.pos_range = (range(int(max(0, self.base_pos[0] - (self.image_height - 1))), int(min(1000, self.base_pos[0] + self.image_height))),
                           range(int(max(0, self.base_pos[1] - (self.image_height - 1))), int(min(1000, self.base_pos[1] + self.image_height))))
 
-    def gamestart(self, zoom):
+    def start_set(self, zoom):
         """run once when self start or subunit just get created"""
         self.zoom = zoom
         self.make_front_pos()
@@ -1135,7 +1135,7 @@ class Subunit(pygame.sprite.Sprite):
                             if self.morale < 0:
                                 self.morale = 0  # morale cannot be lower than 0
 
-                        if self.state not in (95, 99) and parent_state not in (10, 99):  # If not missing gamestart leader can replenish morale
+                        if self.state not in (95, 99) and parent_state not in (10, 99):  # If not missing start_set leader can replenish morale
                             self.base_morale += (dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
 
                         if self.base_morale < 0:  # morale cannot be negative
@@ -1177,8 +1177,8 @@ class Subunit(pygame.sprite.Sprite):
                         else:
                             remain = int(remain)
                         wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
-                        self.battle.death_troopnumber[self.team] += self.troop_number - remain - wound
-                        self.battle.wound_troopnumber[self.team] += wound
+                        self.battle.death_troop_number[self.team] += self.troop_number - remain - wound
+                        self.battle.wound_troop_number[self.team] += wound
                         self.troop_number = remain  # Recal number of troop again in case some destroyed from negative regen
 
                     if self.unit_health < 0:
@@ -1193,12 +1193,12 @@ class Subunit(pygame.sprite.Sprite):
                         else:
                             remain = int(remain)
                         wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
-                        self.battle.death_troopnumber[self.team] += self.troop_number - remain - wound
+                        self.battle.death_troop_number[self.team] += self.troop_number - remain - wound
                         if self.state in (98, 99) and len(self.enemy_front) + len(
                                 self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
-                            self.battle.capture_troopnumber[self.team] += wound
+                            self.battle.capture_troop_number[self.team] += wound
                         else:
-                            self.battle.wound_troopnumber[self.team] += wound
+                            self.battle.wound_troop_number[self.team] += wound
                         self.troop_number = remain  # Recal number of troop again in case some destroyed from negative regen
 
                         # v Health bar
@@ -1235,7 +1235,7 @@ class Subunit(pygame.sprite.Sprite):
             if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
-                self.battle.flee_troopnumber[self.team] += self.troop_number  # add number of troop retreat from battle
+                self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
                 self.troop_number = 0
                 self.battle.battle_camera.remove(self)
 

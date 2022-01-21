@@ -29,7 +29,7 @@ def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_rig
 
     elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
         self.click_any = True
-        self.unit_icon_mouse_over(mouse_left_up, mouse_right_up)
+        unit_icon_mouse_over(self, mouse_left_up, mouse_right_up)
 
     elif self.test_button in self.battle_ui and self.test_button.rect.collidepoint(self.mouse_pos):
         self.click_any = True
@@ -550,8 +550,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                         break
 
                 if clicked_slot is not None:
-                    if key_state[pygame.K_LSHIFT] or key_state[
-                        pygame.K_RSHIFT]:  # add all sub-subunit from the first selected
+                    if key_state[pygame.K_LSHIFT] or key_state[pygame.K_RSHIFT]:  # add all sub-subunit from the first selected
                         first_one = None
                         for new_slot in self.subunit_build:
                             if new_slot.game_id <= clicked_slot.game_id:
@@ -718,12 +717,12 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     elif self.slot_display_button.rect.collidepoint(self.mouse_pos):
                         if self.slot_display_button.event == 0:  # hide
                             self.slot_display_button.event = 1
-                            self.battle_ui.remove(self.unitsetup_stuff, self.leader_now)
+                            self.battle_ui.remove(self.unit_setup_stuff, self.leader_now)
                             self.kill_effect_icon()
 
                         elif self.slot_display_button.event == 1:  # show
                             self.slot_display_button.event = 0
-                            self.battle_ui.add(self.unitsetup_stuff, self.leader_now)
+                            self.battle_ui.add(self.unit_setup_stuff, self.leader_now)
 
                     elif self.deploy_button.rect.collidepoint(self.mouse_pos) and self.subunit_build in self.battle_ui:
                         can_deploy = True
@@ -762,13 +761,13 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
                             self.setup_unit_icon()
-                            self.battle_ui.remove(self.unitsetup_stuff, self.leader_now)
+                            self.battle_ui.remove(self.unit_setup_stuff, self.leader_now)
                             for this_unit in self.all_unit_list:
                                 this_unit.start_set(self.subunit)
                             for this_subunit in self.subunit:
-                                this_subunit.gamestart(self.camera_scale)
+                                this_subunit.start_set(self.camera_scale)
                             for this_leader in self.leader_updater:
-                                this_leader.gamestart()
+                                this_leader.start_set()
 
                             for this_unit in self.all_unit_list:
                                 this_unit.user_input(self.battle_mouse_pos[0], False, False, self.last_mouseover, None,
@@ -1033,6 +1032,31 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
                 self.show_map.change_scale(self.camera_scale)
                 if self.game_state == "battle":  # only have delay in battle mode
                     self.map_scale_delay = 0.001
+
+
+def unit_icon_mouse_over(self, mouse_up, mouse_right):
+    """process user mouse input on unit icon, left click = select, right click = go to unit position on map"""
+    self.click_any = True
+    if self.game_state == "battle" or (self.game_state == "editor" and self.subunit_build not in self.battle_ui):
+        for icon in self.unit_icon:
+            if icon.rect.collidepoint(self.mouse_pos):
+                if mouse_up:
+                    self.last_selected = icon.army
+                    self.last_selected.just_selected = True
+                    self.last_selected.selected = True
+
+                    if self.before_selected is None:  # add back the pop up ui so it get shown when click subunit with none selected before
+                        self.battle_ui.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
+                        self.battle_ui.add(self.inspect_button)  # add inspection ui open/close button
+
+                        self.add_behaviour_ui(self.last_selected)
+
+                elif mouse_right:
+                    self.base_camera_pos = pygame.Vector2(icon.army.base_pos[0] * self.screen_scale[0],
+                                                          icon.army.base_pos[1] * self.screen_scale[1])
+                    self.camera_pos = self.base_camera_pos * self.camera_scale
+                break
+    return self.click_any
 
 
 def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down, key_state, key_press):
