@@ -21,9 +21,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
     """
 
     command = None
-
-    if esc_press and self.battle_menu.mode in (0, 1):  # in menu or option
-        if self.battle_menu.mode == 1:  # option menu
+    if esc_press and self.battle_menu.mode in ("menu", "option"):  # in menu or option
+        if self.battle_menu.mode == "option":  # option menu
             self.master_volume = self.oldsetting
             pygame.mixer.music.set_volume(self.master_volume)
             self.esc_slider_menu[0].update(self.master_volume, self.esc_value_box[0], forced_value=True)
@@ -32,7 +31,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                               *self.esc_slider_menu, *self.esc_value_box)
         self.game_state = self.previous_game_state
 
-    elif self.battle_menu.mode == 0:  # gamestart esc menu
+    elif self.battle_menu.mode == "menu":  # gamestart esc menu
         for button in self.battle_menu_button:
             if button.rect.collidepoint(self.mouse_pos):
                 button.image = button.images[1]  # change button image to mouse over one
@@ -61,7 +60,6 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         self.oldsetting = self.esc_slider_menu[0].value  # Save previous setting for in case of cancel
 
                     elif button.text == "End Battle":  # back to gamestart menu
-                        print('test')
                         self.exit_battle()
                         command = "end_battle"
 
@@ -73,7 +71,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
             else:
                 button.image = button.images[0]
 
-    elif self.battle_menu.mode == 1:  # option menu
+    elif self.battle_menu.mode == "option":  # option menu
         for button in self.esc_option_menu_button:  # check if any button get collided with mouse or clicked
             if button.rect.collidepoint(self.mouse_pos):
                 button.image = button.images[1]  # change button image to mouse over one
@@ -113,7 +111,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                 slider.update(self.mouse_pos, self.esc_value_box[0])  # update slider button based on mouse value
                 self.master_volume = float(slider.value / 100)  # for now only music volume slider exist
 
-    elif self.battle_menu.mode == 2:  # Encyclopedia mode
+    elif self.battle_menu.mode == "encyclopedia":  # Encyclopedia mode
         lorecommand = lorebook_process(self, uidraw, mouse_up, mouse_leftdown, mouse_scrollup, mouse_scrolldown, esc_press)
         if esc_press or lorecommand == "exit":
             self.battle_menu.change_mode(0)  # change menu back to default 0

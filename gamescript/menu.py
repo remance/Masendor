@@ -23,7 +23,7 @@ class EscBox(pygame.sprite.Sprite):
         self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
         self.image = list(self.images.values())[0]
         self.rect = self.image.get_rect(center=self.pos)
-        self.mode = 0  # Current menu mode
+        self.mode = "menu"  # Current menu mode
 
     def change_mode(self, mode):
         """Change between 0 menu, 1 option, 2 encyclopedia mode"""

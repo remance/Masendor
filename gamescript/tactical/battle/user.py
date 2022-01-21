@@ -12,11 +12,6 @@ def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_rig
         self.click_any = False
         self.new_unit_click = False
 
-    if self.map_scale_delay > 0:  # player change map scale once before
-        self.map_scale_delay += self.ui_dt
-        if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
-            self.map_scale_delay = 0
-
     if self.terrain_check in self.battle_ui and (
             self.terrain_check.pos != self.mouse_pos or key_state[K_s] or key_state[K_w] or key_state[K_a] or key_state[K_d]):
         self.battle_ui.remove(self.terrain_check)  # remove terrain popup when move mouse or camera
@@ -291,7 +286,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
             self.kill_effect_icon()
 
         if mouse_right_up and self.ui_click is False:  # Unit command
-            self.last_selected.user_input(self.battle_mouse_pos[1], mouse_right_up, double_mouse_right,
+            self.last_selected.user_input(self.battle_mouse_pos[2], mouse_right_up, double_mouse_right,
                                           self.last_mouseover, key_state)
 
         self.before_selected = self.last_selected
@@ -984,12 +979,12 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
                                                   self.popup_listbox, self.current_pop_up_row, self.leader_list,
                                                   self.popup_namegroup, self.battle_ui, layer=19)
 
-    elif self.unit_listbox.rect.collidepoint(self.mouse_pos):  # mouse scroll on unit preset list
+    elif self.unit_listbox in self.battle_ui and self.unit_listbox.rect.collidepoint(self.mouse_pos):  # mouse scroll on unit preset list
         self.current_unit_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.unit_preset_name_scroll,
                                             self.unit_listbox,
                                             self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                                             self.unitpreset_namegroup, self.battle_ui)
-    elif self.troop_listbox.rect.collidepoint(self.mouse_pos):
+    elif self.troop_listbox in self.battle_ui and self.troop_listbox.rect.collidepoint(self.mouse_pos):
         if self.current_list_show == "troop":  # mouse scroll on troop list
             self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.troop_scroll,
                                                  self.troop_listbox, self.current_troop_row, self.troop_list,
@@ -1104,3 +1099,30 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
         else:
             self.kill_effect_icon()
     # ^ End update value
+
+
+
+def add_behaviour_ui(self, who_input, else_check=False):
+    if who_input.control:
+        # self.battle_ui.add(self.button_ui[7])  # add decimation button
+        self.battle_ui.add(*self.switch_button[0:7])  # add unit behaviour change button
+        self.switch_button[0].event = who_input.skill_cond
+        self.switch_button[1].event = who_input.fire_at_will
+        self.switch_button[2].event = who_input.hold
+        self.switch_button[3].event = who_input.use_min_range
+        self.switch_button[4].event = who_input.shoot_mode
+        self.switch_button[5].event = who_input.run_toggle
+        self.switch_button[6].event = who_input.attack_mode
+        self.check_split(who_input)  # check if selected unit can split, if yes draw button
+    elif else_check:
+        if self.row_split_button in self.battle_ui:
+            self.row_split_button.kill()
+        if self.col_split_button in self.battle_ui:
+            self.col_split_button.kill()
+        # self.battle_ui.remove(self.button_ui[7])  # remove decimation button
+        self.battle_ui.remove(*self.switch_button[0:7])  # remove unit behaviour change button
+
+    self.leader_now = who_input.leader
+    self.battle_ui.add(*self.leader_now)  # add leader portrait to draw
+    self.unitstat_ui.value_input(who=who_input, split=self.split_happen)
+    self.command_ui.value_input(who=who_input, split=self.split_happen)

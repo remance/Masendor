@@ -41,6 +41,7 @@ def change_battle_genre(genre):
     Battle.battle_mouse = user.battle_mouse
     Battle.battle_state_mouse = user.battle_state_mouse
     Battle.selected_unit_process = user.selected_unit_process
+    Battle.add_behaviour_ui = user.add_behaviour_ui
 
 
 class Battle:
@@ -68,6 +69,7 @@ class Battle:
     battle_mouse = None
     battle_state_mouse = None
     selected_unit_process = None
+    add_behaviour_ui = None
 
     def __init__(self, main, window_style):
         # v Get self object/variable from gamestart
@@ -447,7 +449,8 @@ class Battle:
                             self.add_behaviour_ui(self.last_selected)
 
                     elif mouse_right:
-                        self.base_camera_pos = pygame.Vector2(icon.army.base_pos[0], icon.army.base_pos[1])
+                        self.base_camera_pos = pygame.Vector2(icon.army.base_pos[0] * self.screen_scale[0],
+                                                              icon.army.base_pos[1] * self.screen_scale[1])
                         self.camera_pos = self.base_camera_pos * self.camera_scale
                     break
         return self.click_any
@@ -520,31 +523,6 @@ class Battle:
             self.base_camera_pos[1] = self.max_camera[1]
         elif self.base_camera_pos[1] < 0:
             self.base_camera_pos[1] = 0
-
-    def add_behaviour_ui(self, who_input, else_check=False):
-        if who_input.control:
-            # self.battle_ui.add(self.button_ui[7])  # add decimation button
-            self.battle_ui.add(*self.switch_button[0:7])  # add unit behaviour change button
-            self.switch_button[0].event = who_input.skill_cond
-            self.switch_button[1].event = who_input.fire_at_will
-            self.switch_button[2].event = who_input.hold
-            self.switch_button[3].event = who_input.use_min_range
-            self.switch_button[4].event = who_input.shoot_mode
-            self.switch_button[5].event = who_input.run_toggle
-            self.switch_button[6].event = who_input.attack_mode
-            self.check_split(who_input)  # check if selected unit can split, if yes draw button
-        elif else_check:
-            if self.row_split_button in self.battle_ui:
-                self.row_split_button.kill()
-            if self.col_split_button in self.battle_ui:
-                self.col_split_button.kill()
-            # self.battle_ui.remove(self.button_ui[7])  # remove decimation button
-            self.battle_ui.remove(*self.switch_button[0:7])  # remove unit behaviour change button
-
-        self.leader_now = who_input.leader
-        self.battle_ui.add(*self.leader_now)  # add leader portrait to draw
-        self.unitstat_ui.value_input(who=who_input, split=self.split_happen)
-        self.command_ui.value_input(who=who_input, split=self.split_happen)
 
     def troop_card_button_click(self, who):
         for button in self.troop_card_button:  # Change subunit card option based on button clicking
@@ -791,7 +769,8 @@ class Battle:
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
         self.battle_mouse_pos = [[0, 0],
-                                 [0, 0]]  # mouse position list in self not screen, the first without zoom and the second with camera zoom adjust
+                                 [0, 0],
+                                 [0, 0]]  # mouse position list in battle map not screen, the first without zoom and the second with camera zoom adjust
         self.unit_selector.current_row = 0
         # ^ End start value
 
@@ -904,15 +883,21 @@ class Battle:
                                            self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
                     # ^ End camera movement
 
+                    if self.map_scale_delay > 0:  # player change map scale once before
+                        self.map_scale_delay += self.ui_dt
+                        if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
+                            self.map_scale_delay = 0
+
                     if self.mouse_timer != 0:  # player click mouse once before
                         self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
                         if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
                             self.mouse_timer = 0
 
-                    self.battle_mouse_pos[0] = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0]) + self.camera_pos[0],
-                                                              self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
-                                                                  1])  # mouse pos on the map based on camera position
+                    self.battle_mouse_pos[0] = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
+                                                              (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[1]))  # mouse pos on the map based on camera position
                     self.battle_mouse_pos[1] = self.battle_mouse_pos[0] / self.camera_scale  # mouse pos on the map at current camera zoom scale
+                    self.battle_mouse_pos[2] = pygame.Vector2(self.battle_mouse_pos[1][0] / self.screen_scale[0],
+                                                              self.battle_mouse_pos[1][1] / self.screen_scale[1])
 
                     if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down:
                         self.battle_mouse(mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state)
@@ -921,9 +906,8 @@ class Battle:
                             self.ui_click = True
                             if mouse_left_up:  # move self camera to position clicked on mini map
                                 self.click_any = True
-                                pos_mask = pygame.Vector2(int(self.mouse_pos[0] - self.mini_map.rect.x),
-                                                          int(self.mouse_pos[1] - self.mini_map.rect.y))
-                                self.base_camera_pos = pos_mask * 5
+                                self.base_camera_pos = pygame.Vector2(int(self.mouse_pos[0] - self.mini_map.rect.x ) * self.screen_scale[0] * self.mini_map.map_scale_width,
+                                                          int(self.mouse_pos[1] - self.mini_map.rect.y) * self.screen_scale[1] * self.mini_map.map_scale_height)
                                 self.camera_pos = self.base_camera_pos * self.camera_scale
                             elif mouse_right_up:  # nothing happen with mouse right
                                 if self.last_selected is not None:

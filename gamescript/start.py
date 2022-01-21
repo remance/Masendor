@@ -500,9 +500,12 @@ class Mainmenu:
         image = pygame.Surface((battle_ui_image["timebar.png"].get_width(), 15))
         self.scale_ui = battleui.ScaleUI(self.time_ui.rect.bottomleft, image)
 
-        self.time_button = [battleui.UIButton((self.time_ui.rect.center[0] - 30, self.time_ui.rect.center[1]), battle_ui_image["pause.png"], "pause"),  # time pause button
-                            battleui.UIButton((self.time_ui.rect.center[0], self.time_ui.rect.center[1]), battle_ui_image["timedec.png"], "decrease"),  # time decrease button
-                            battleui.UIButton((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]), battle_ui_image["timeinc.png"],
+        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui"], load_order=False)
+        genre_icon_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
+
+        self.time_button = [battleui.UIButton((self.time_ui.rect.center[0] - 30, self.time_ui.rect.center[1]), genre_battle_ui_image["pause.png"], "pause"),  # time pause button
+                            battleui.UIButton((self.time_ui.rect.center[0], self.time_ui.rect.center[1]), genre_battle_ui_image["timedec.png"], "decrease"),  # time decrease button
+                            battleui.UIButton((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]), genre_battle_ui_image["timeinc.png"],
                                               "increase")]  # time increase button
         self.battle_ui.add(*self.time_button, self.scale_ui)
 
@@ -548,9 +551,6 @@ class Mainmenu:
         self.input_button = (self.input_ok_button, self.input_cancel_button)
         self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
-
-        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui"], load_order=False)
-        genre_icon_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
 
         # Army select list ui
         self.unit_selector = battleui.ArmySelect((0, 0), genre_battle_ui_image["unit_select_box.png"])

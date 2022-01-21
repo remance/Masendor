@@ -764,8 +764,8 @@ def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, c
 def popout_lorebook(self, section, game_id):
     """open and draw enclycopedia at the specified subsection,
     used for when user right click at icon that has encyclopedia section"""
-    self.game_state = 0
-    self.battle_menu.mode = 2
+    self.game_state = "menu"
+    self.battle_menu.mode = "encyclopedia"
     self.battle_ui.add(self.encyclopedia, self.lore_name_list, self.lore_scroll, *self.lore_button_ui)
 
     self.encyclopedia.change_section(section, self.lore_name_list, self.subsection_name, self.lore_scroll, self.page_button,
