@@ -871,8 +871,9 @@ class Subunit(pygame.sprite.Sprite):
                     self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui):
                 if self.rect.collidepoint(mouse_pos):
                     self.battle.last_mouseover = self.unit  # last mouse over on this unit
-                    if mouse_up and self.battle.ui_click is False:
+                    if mouse_up and self.battle.click_any is False:
                         self.battle.last_selected = self.unit  # become last selected unit
+                        print(self.battle.last_selected.game_id)
                         if self.unit.selected is False:
                             self.unit.just_selected = True
                             self.unit.selected = True

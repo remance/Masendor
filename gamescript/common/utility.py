@@ -60,11 +60,11 @@ def convert_str_time(event):
             event[index].append(item[2])
 
 
-def csv_read(maindir, file, subfolder=(), outputtype=0):
+def csv_read(maindir, file, subfolder=(), output_type=0):
     """output type 0 = dict, 1 = list"""
     main_dir = maindir
     return_output = {}
-    if outputtype == 1:
+    if output_type == 1:
         return_output = []
 
     folder_dir = ""
@@ -78,9 +78,9 @@ def csv_read(maindir, file, subfolder=(), outputtype=0):
             for n, i in enumerate(row):
                 if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
                     row[n] = int(i)
-            if outputtype == 0:
+            if output_type == 0:
                 return_output[row[0]] = row[1:]
-            elif outputtype == 1:
+            elif output_type == 1:
                 return_output.append(row)
         edit_file.close()
     return return_output

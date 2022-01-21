@@ -9,6 +9,8 @@ from pygame.transform import scale
 
 rotationxy = utility.rotation_xy
 
+team_colour = {0: (255, 255, 255), 1: (144, 167, 255), 2: (255, 114, 114)}  # team colour, Neutral, 1, 2
+
 class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
         """Layer must be called before sprite_init"""

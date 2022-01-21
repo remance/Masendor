@@ -8,7 +8,7 @@ from gamescript.common import utility
 class UIButton(pygame.sprite.Sprite):
     def __init__(self, pos, image, event=None, layer=11):
         self._layer = layer
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.pos = pos
         self.image = image
         self.event = event

@@ -10,6 +10,7 @@ from pygame.transform import scale
 class RangeArrow(pygame.sprite.Sprite):
     angle: float
     images = []
+    screen_scale = (1, 1)
     height_map = None
 
     def __init__(self, shooter, shoot_range, max_range, view_mode, hit_cal=True):
@@ -117,7 +118,7 @@ class RangeArrow(pygame.sprite.Sprite):
         # ^ End rotate
 
         self.base_pos = pygame.Vector2(self.shooter.base_pos[0], self.shooter.base_pos[1])
-        self.pos = self.base_pos * view_mode
+        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
         self.rect = self.image.get_rect(midbottom=self.pos)
         self.target = self.base_target * view_mode
 
@@ -179,11 +180,11 @@ class RangeArrow(pygame.sprite.Sprite):
                 if self.arcshot is False:  # direct shot will not be able to shoot pass higher height terrain midway
                     if self.height_map.get_height(self.base_pos) > self.target_height + 20:
                         self.kill()
-                self.pos = self.base_pos * view_mode
+                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
                 self.rect.center = list(int(v) for v in self.pos)
             else:
                 self.base_pos = self.base_target
-                self.pos = self.base_pos * view_mode
+                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
                 self.rect.center = self.pos
 
             self.dmg -= 0.05  # melee_dmg and penetration power drop the longer arrow travel

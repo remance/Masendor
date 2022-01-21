@@ -1,25 +1,53 @@
 import pygame
 
-from gamescript import weather, menu, battleui
+from gamescript import weather, menu, battleui, unit
 from gamescript.common import utility
 
 list_scroll = utility.list_scroll
 setup_list = utility.setup_list
 
+team_colour = unit.team_colour
 
 def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state):
-    if mouse_left_up:
-        self.click_any = False
-        self.new_unit_click = False
-
     if self.terrain_check in self.battle_ui and (
-            self.terrain_check.pos != self.mouse_pos or key_state[K_s] or key_state[K_w] or key_state[K_a] or key_state[K_d]):
+            self.terrain_check.pos != self.mouse_pos or key_state[pygame.K_s] or key_state[pygame.K_w] or key_state[pygame.K_a] or key_state[pygame.K_d]):
         self.battle_ui.remove(self.terrain_check)  # remove terrain popup when move mouse or camera
+
+    if self.mini_map.rect.collidepoint(self.mouse_pos):  # mouse position on mini map
+        self.click_any = True
+        if mouse_left_up:  # move self camera to position clicked on mini map
+            self.base_camera_pos = pygame.Vector2(int(self.mouse_pos[0] - self.mini_map.rect.x) * self.screen_scale[0] * self.mini_map.map_scale_width,
+                                                  int(self.mouse_pos[1] - self.mini_map.rect.y) * self.screen_scale[1] * self.mini_map.map_scale_height)
+            self.camera_pos = self.base_camera_pos * self.camera_scale
+    elif self.select_scroll.rect.collidepoint(self.mouse_pos):  # Must check mouse collide for scroll before unit select ui
+        self.click_any = True
+        if mouse_left_down or mouse_left_up:
+            new_row = self.select_scroll.user_input(self.mouse_pos)
+            if self.unit_selector.current_row != new_row:
+                self.unit_selector.current_row = new_row
+                self.setup_unit_icon()
+
+    elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
+        self.click_any = True
+        self.unit_icon_mouse_over(mouse_left_up, mouse_right_up)
+
+    elif self.test_button in self.battle_ui and self.test_button.rect.collidepoint(self.mouse_pos):
+        self.click_any = True
+        if mouse_left_up:
+            if self.test_button.event == 0:
+                self.test_button.event = 1
+                new_mode = "battle"
+
+            elif self.test_button.event == 1:
+                self.test_button.event = 0
+                new_mode = "editor"
+            self.game_state = new_mode
+            self.change_state()
 
 
 def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down, key_state, key_press):
     if self.log_scroll.rect.collidepoint(self.mouse_pos):  # Must check mouse collide for scroll before event log ui
-        self.ui_click = True
+        self.click_any = True
         if mouse_left_down or mouse_left_up:
             self.click_any = True
             new_row = self.log_scroll.user_input(self.mouse_pos)
@@ -28,50 +56,30 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 self.event_log.recreate_image()
 
     elif self.event_log.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
-        if mouse_left_up:
-            self.click_any = True
-        self.ui_click = True
+        self.click_any = True
 
     elif self.time_ui.rect.collidepoint(self.mouse_pos):  # check mouse collide for time bar ui
-        self.ui_click = True
-        if mouse_left_up:
-            self.click_any = True
+        self.click_any = True
+        for index, button in enumerate(self.time_button):  # Event log button and timer button click
+            if button.rect.collidepoint(self.mouse_pos):
+                if button.event == "pause":  # pause button
+                    self.game_speed = 0
+                elif button.event == "decrease":  # reduce speed button
+                    new_index = self.game_speed_list.index(self.game_speed) - 1
+                    if new_index >= 0:
+                        self.game_speed = self.game_speed_list[new_index]
+                elif button.event == "increase":  # increase speed button
+                    new_index = self.game_speed_list.index(self.game_speed) + 1
+                    if new_index < len(self.game_speed_list):
+                        self.game_speed = self.game_speed_list[new_index]
+                self.speed_number.speed_update(self.game_speed)
+                break
 
-            for index, button in enumerate(self.time_button):  # Event log button and timer button click
-                if button.rect.collidepoint(self.mouse_pos):
-                    if button.event == "pause":  # pause button
-                        self.game_speed = 0
-                    elif button.event == "decrease":  # reduce speed button
-                        new_index = self.game_speed_list.index(self.game_speed) - 1
-                        if new_index >= 0:
-                            self.game_speed = self.game_speed_list[new_index]
-                    elif button.event == "increase":  # increase speed button
-                        new_index = self.game_speed_list.index(self.game_speed) + 1
-                        if new_index < len(self.game_speed_list):
-                            self.game_speed = self.game_speed_list[new_index]
-                    self.speed_number.speed_update(self.game_speed)
-                    break
-
-    elif self.ui_mouse_over():  # check mouse collide for other ui
-        pass
-
-    elif self.button_mouse_over(mouse_right_up):  # check mouse collide for button
-        pass
-
-    elif mouse_right_up and self.last_selected is None and self.ui_click is False:  # draw terrain popup ui when right click at map with no selected unit
-        if 0 <= self.battle_mouse_pos[1][0] <= 999 and \
-                0 <= self.battle_mouse_pos[1][1] <= 999:  # not draw if pos is off the map
-            terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos[1], self.battle_map_base)
-            feature_pop = self.battle_map_feature.feature_mod[feature_pop]
-            height_pop = self.battle_map_height.get_height(self.battle_mouse_pos[1])
-            self.terrain_check.pop(self.mouse_pos, feature_pop, height_pop)
-            self.battle_ui.add(self.terrain_check)
-
-    elif self.ui_click is False:
+    elif self.click_any is False:
         for index, button in enumerate(self.eventlog_button):  # Event log button and timer button click
             if button.rect.collidepoint(self.mouse_pos):
                 if index in (0, 1, 2, 3, 4, 5):  # event_log button
-                    self.ui_click = True
+                    self.click_any = True
                     if mouse_left_up:
                         if button.event in (0, 1, 2, 3):  # change tab mode
                             self.event_log.change_mode(button.event)
@@ -81,22 +89,23 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                             self.event_log.clear_tab(all_tab=True)
                 break
 
+    elif self.ui_mouse_over():  # check mouse collide for other ui
+        pass
+
     # v code that only run when any unit is selected
     if self.last_selected is not None and self.last_selected.state != 100:
-        if self.inspect_button.rect.collidepoint(self.mouse_pos) or (
-                mouse_left_up and self.inspect and self.new_unit_click):  # click on inspect ui open/close button
+        if self.inspect_button.rect.collidepoint(self.mouse_pos) or (self.inspect and self.new_unit_click):  # click on inspect ui open/close button
+            if self.new_unit_click is False:
+                self.click_any = True
             if self.inspect_button.rect.collidepoint(self.mouse_pos):
                 self.button_name_popup.pop(self.mouse_pos, "Inspect Subunit")
                 self.battle_ui.add(self.button_name_popup)
-                if mouse_right_up:
-                    self.ui_click = True  # for some reason the loop mouse check above does not work for inspect button, so it here instead
             if mouse_left_up:
                 if self.inspect is False:  # Add unit inspect ui when left click at ui button or when change subunit with inspect open
                     self.inspect = True
                     self.battle_ui.add(*self.troop_card_button,
                                        self.troop_card_ui, self.inspect_ui)
                     self.subunit_selected = None
-
                     for index, this_subunit in enumerate(self.last_selected.subunit_sprite_array.flat):
                         if this_subunit is not None:
                             self.inspect_subunit[index].add_subunit(this_subunit)
@@ -121,9 +130,11 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                     self.inspect = False
                     self.new_unit_click = False
 
-        elif self.command_ui in self.battle_ui and (
-                self.command_ui.rect.collidepoint(self.mouse_pos) or key_press is not None):  # mouse position on command ui
-            if self.last_selected.control:
+        elif self.command_ui in self.battle_ui:  # mouse position on command ui
+            if (mouse_left_up or mouse_right_up) and self.command_ui.rect.collidepoint(self.mouse_pos):
+                self.click_any = True
+            # and ( or key_press is not None)
+            if self.last_selected.control and mouse_left_up:
                 if self.switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:
                     if mouse_left_up or key_press == pygame.K_g:  # rotate skill condition when clicked
                         self.last_selected.skill_cond += 1
@@ -232,6 +243,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 #         for subunit in self.last_selected.subunit_sprite:
                 #             subunit.status_effect[98] = self.troop_data.status_list[98].copy()
                 #             subunit.unit_health -= round(subunit.unit_health * 0.1)
+
             if self.leader_mouse_over(mouse_right_up):
                 self.battle_ui.remove(self.button_name_popup)
                 pass
@@ -242,8 +254,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
         if self.inspect:  # if inspect ui is open
             if mouse_left_up or mouse_right_up:
                 if self.inspect_ui.rect.collidepoint(self.mouse_pos):  # if mouse pos inside unit ui when click
-                    self.click_any = True  # for avoiding right click or  subunit
-                    self.ui_click = True  # for avoiding clicking subunit under ui
+                    self.click_any = True  # for avoiding clicking subunit under ui
                     for this_subunit in self.inspect_subunit:
                         if this_subunit.rect.collidepoint(
                                 self.mouse_pos) and this_subunit in self.battle_ui:  # Change showing stat to the clicked subunit one
@@ -270,8 +281,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                             break
 
                 elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):  # mouse position in subunit card
-                    self.click_any = True
-                    self.ui_click = True  # for avoiding clicking subunit under ui
+                    self.click_any = True  # for avoiding clicking subunit under ui
                     self.troop_card_button_click(self.subunit_selected.who)
 
             if self.troop_card_ui.option == 2:
@@ -285,11 +295,18 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
         else:
             self.kill_effect_icon()
 
-        if mouse_right_up and self.ui_click is False:  # Unit command
+        if mouse_right_up and self.click_any is False:  # Unit command
             self.last_selected.user_input(self.battle_mouse_pos[2], mouse_right_up, double_mouse_right,
                                           self.last_mouseover, key_state)
 
-        self.before_selected = self.last_selected
+    if mouse_right_up and self.last_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
+        if 0 <= self.battle_mouse_pos[1][0] <= 999 and \
+                0 <= self.battle_mouse_pos[1][1] <= 999:  # not draw if pos is off the map
+            terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos[1], self.battle_map_base)
+            feature_pop = self.battle_map_feature.feature_mod[feature_pop]
+            height_pop = self.battle_map_height.get_height(self.battle_mouse_pos[1])
+            self.terrain_check.pop(self.mouse_pos, feature_pop, height_pop)
+            self.battle_ui.add(self.terrain_check)
 
     # ^ End subunit selected code
 
@@ -299,7 +316,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
     if self.popup_listbox in self.battle_ui and self.popup_listbox.type == "leader" \
             and self.popup_listbox.rect.collidepoint(
         self.mouse_pos):  # this need to be at the top here to prioritise popup click
-        self.ui_click = True
+        self.click_any = True
         for index, name in enumerate(self.popup_namegroup):  # change leader with the new selected one
             if name.rect.collidepoint(self.mouse_pos):
                 if mouse_left_up and (self.show_in_card is not None and self.show_in_card.name != "None"):
@@ -335,7 +352,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     self.popout_lorebook(8, self.current_pop_up_row + index + 1)
 
     elif self.unit_listbox.rect.collidepoint(self.mouse_pos) and self.unit_listbox in self.battle_ui:
-        self.ui_click = True
+        self.click_any = True
         for index, name in enumerate(self.unitpreset_namegroup):
             if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:
                 self.preset_select_border.change_pos(name.rect.topleft)  # change border to one selected
@@ -405,7 +422,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     self.command_ui.value_input(who=self.show_in_card)
 
     elif self.command_ui in self.battle_ui and self.command_ui.rect.collidepoint(self.mouse_pos):
-        self.ui_click = True
+        self.click_any = True
         for leader_index, this_leader in enumerate(self.leader_now):  # loop mouse pos on leader portrait
             if this_leader.rect.collidepoint(self.mouse_pos):
                 army_position = self.leader_level[this_leader.army_position + 4]
@@ -423,7 +440,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                 break
 
     elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):
-        self.ui_click = True
+        self.click_any = True
         if self.show_in_card is not None and mouse_left_up:
             self.troop_card_button_click(self.show_in_card)
 
@@ -440,7 +457,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
         if mouse_left_up or mouse_left_down:
             if self.popup_listbox in self.battle_ui:
                 if self.popup_listbox.rect.collidepoint(self.mouse_pos):
-                    self.ui_click = True
+                    self.click_any = True
                     for index, name in enumerate(self.popup_namegroup):
                         if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # click on name in list
                             if self.popup_listbox.type == "terrain":
@@ -481,7 +498,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             break
 
                 elif self.popup_list_scroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
-                    self.ui_click = True
+                    self.click_any = True
                     self.current_pop_up_row = self.popup_list_scroll.user_input(
                         self.mouse_pos)  # update the scroll and get new current subsection
                     if self.popup_listbox.type == "terrain":
@@ -505,7 +522,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     self.battle_ui.remove(self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
 
             elif self.troop_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-                self.ui_click = True
+                self.click_any = True
                 self.current_troop_row = self.troop_scroll.user_input(
                     self.mouse_pos)  # update the scroll and get new current subsection
                 if self.current_list_show == "troop":
@@ -518,7 +535,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                self.troop_listbox, self.battle_ui)
 
             elif self.unit_preset_name_scroll.rect.collidepoint(self.mouse_pos):
-                self.ui_click = True
+                self.click_any = True
                 self.current_unit_row = self.unit_preset_name_scroll.user_input(
                     self.mouse_pos)  # update the scroll and get new current subsection
                 setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
@@ -528,7 +545,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                 clicked_slot = None
                 for slot in self.subunit_build:  # left click on any sub-subunit slot
                     if slot.rect.collidepoint(self.mouse_pos):
-                        self.ui_click = True
+                        self.click_any = True
                         clicked_slot = slot
                         break
 
@@ -594,7 +611,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
         if mouse_left_up or mouse_right_up:
             if self.subunit_build in self.battle_ui and self.troop_listbox.rect.collidepoint(self.mouse_pos):
-                self.ui_click = True
+                self.click_any = True
                 for index, name in enumerate(self.troop_namegroup):
                     if name.rect.collidepoint(self.mouse_pos):
                         if self.current_list_show == "faction":
@@ -680,7 +697,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                         break
 
             elif self.filter_box.rect.collidepoint(self.mouse_pos):
-                self.ui_click = True
+                self.click_any = True
                 if mouse_left_up:
                     if self.team_change_button.rect.collidepoint(self.mouse_pos):
                         if self.team_change_button.event == 0:
@@ -737,7 +754,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             for slot in self.subunit_build:  # just for grabing current selected team
                                 current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
                                 self.convert_edit_unit((self.team0_unit, self.team1_unit, self.team2_unit)[slot.team],
-                                                       current_preset[self.unit_preset_name], self.team_colour[slot.team],
+                                                       current_preset[self.unit_preset_name], team_colour[slot.team],
                                                        pygame.transform.scale(
                                                            self.coa_list[int(current_preset[self.unit_preset_name][-1])],
                                                            (60, 60)), subunit_game_id)
@@ -781,21 +798,21 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                                self.troop_namegroup,
                                                self.troop_listbox, self.battle_ui)  # setup troop name list
             elif self.terrain_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map terrain button
-                self.ui_click = True
+                self.click_any = True
                 self.popup_list_new_open(self.terrain_change_button.rect.midtop, self.battle_map_base.terrain_list, "terrain")
 
             elif self.feature_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map feature button
-                self.ui_click = True
+                self.click_any = True
                 self.popup_list_new_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list,
                                         "feature")
 
             elif self.weather_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map weather button
-                self.ui_click = True
+                self.click_any = True
                 self.popup_list_new_open(self.weather_change_button.rect.midtop, self.weather_list, "weather")
 
             elif self.unit_delete_button.rect.collidepoint(self.mouse_pos) and mouse_left_up and \
                     self.unit_delete_button in self.battle_ui:  # delete preset button
-                self.ui_click = True
+                self.click_any = True
                 if self.unit_preset_name == "":
                     pass
                 else:
@@ -805,7 +822,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
             elif self.unit_save_button.rect.collidepoint(self.mouse_pos) and mouse_left_up and \
                     self.unit_save_button in self.battle_ui:  # save preset button
-                self.ui_click = True
+                self.click_any = True
                 self.text_input_popup = ("text_input", "save_unit")
 
                 if self.unit_preset_name == "":
@@ -822,7 +839,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
             elif self.team_coa in self.battle_ui:
                 for team in self.team_coa:
                     if team.rect.collidepoint(self.mouse_pos) and mouse_left_up:
-                        self.ui_click = True
+                        self.click_any = True
                         if self.current_list_show == "troop":
                             self.current_troop_row = 0
                             setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_list,
@@ -1028,6 +1045,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                 self.add_behaviour_ui(self.last_selected)
 
             elif self.before_selected != self.last_selected or self.split_happen:  # change subunit information when select other unit
+                print('run')
                 if self.inspect:  # change inspect ui
                     self.new_unit_click = True
                     self.battle_ui.remove(*self.inspect_subunit)
@@ -1058,7 +1076,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                     self.command_ui.value_input(who=self.last_selected, split=self.split_happen)
 
         elif self.game_state == "editor" and self.subunit_build not in self.battle_ui:
-            if (mouse_right_up or mouse_right_down) and self.ui_click is False:  # Unit placement
+            if (mouse_right_up or mouse_right_down) and self.click_any is False:  # Unit placement
                 self.last_selected.placement(self.battle_mouse_pos[1], mouse_right_up, mouse_right_down, double_mouse_right)
 
             if key_state[pygame.K_DELETE]:
@@ -1098,8 +1116,42 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                 self.countdown_skill_icon()
         else:
             self.kill_effect_icon()
+
+    self.before_selected = self.last_selected
     # ^ End update value
 
+
+def camera_process(self, key_state):
+    # v Camera movement
+    if key_state[pygame.K_s] or self.mouse_pos[1] >= self.bottom_corner:  # Camera move down
+        self.base_camera_pos[1] += 4 * (
+                11 - self.camera_scale)  # need "11 -" for converting cameral scale so the further zoom camera move faster
+        self.camera_pos[1] = self.base_camera_pos[1] * self.camera_scale  # resize camera pos
+        self.camera_fix()
+
+    elif key_state[pygame.K_w] or self.mouse_pos[1] <= 5:  # Camera move up
+        self.base_camera_pos[1] -= 4 * (11 - self.camera_scale)
+        self.camera_pos[1] = self.base_camera_pos[1] * self.camera_scale
+        self.camera_fix()
+
+    if key_state[pygame.K_a] or self.mouse_pos[0] <= 5:  # Camera move left
+        self.base_camera_pos[0] -= 4 * (11 - self.camera_scale)
+        self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
+        self.camera_fix()
+
+    elif key_state[pygame.K_d] or self.mouse_pos[0] >= self.right_corner:  # Camera move right
+        self.base_camera_pos[0] += 4 * (11 - self.camera_scale)
+        self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
+        self.camera_fix()
+
+    self.cameraupcorner = (self.camera_pos[0] - self.center_screen[0],
+                           self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
+    # ^ End camera movement
+
+    if self.map_scale_delay > 0:  # player change map scale once before
+        self.map_scale_delay += self.ui_dt
+        if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
+            self.map_scale_delay = 0
 
 
 def add_behaviour_ui(self, who_input, else_check=False):

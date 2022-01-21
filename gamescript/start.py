@@ -59,11 +59,11 @@ stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tire
 
 quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # item quality name
 
+team_colour = unit.team_colour
 
 class Mainmenu:
     leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                     "Advisor")  # Name of leader position in unit, the first 4 is for commander unit
-    team_colour = ((255, 255, 255), (144, 167, 255), (255, 114, 114))  # team colour, Neutral, 1, 2
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
 
@@ -179,10 +179,8 @@ class Mainmenu:
 
         # unit editor
         self.troop_namegroup = pygame.sprite.Group()  # troop name list group
-        self.filter_box = pygame.sprite.Group()
         self.popup_namegroup = pygame.sprite.Group()
         self.unit_edit_border = pygame.sprite.Group()  # border that appear when selected sub-subunit
-        self.preview_leader = pygame.sprite.Group()  # just to make preview leader class has containers
         self.unitpreset_namegroup = pygame.sprite.Group()  # preset name list
         self.subunit_build = pygame.sprite.Group()
 
@@ -217,7 +215,7 @@ class Mainmenu:
 
         self.dead_unit = pygame.sprite.Group()  # dead subunit group
 
-        self.button_ui = pygame.sprite.Group()  # buttons for various ui group
+        self.button_ui = pygame.sprite.Group()  # buttons in battle group
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
         self.switch_button_ui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. unit behaviour setting)
 
@@ -252,15 +250,10 @@ class Mainmenu:
         lorebook.SubsectionList.containers = self.lore_name_list
         lorebook.SubsectionName.containers = self.subsection_name, self.main_ui, self.battle_ui
 
-        battleui.UIButton.containers = self.lore_button_ui
-
         uniteditor.PreviewBox.main_dir = self.main_dir
         uniteditor.PreviewBox.effect_image = load_image(self.main_dir, self.screen_scale, "effect.png", "map")  # map special effect image
-        uniteditor.FilterBox.containers = self.filter_box
-        uniteditor.PreviewLeader.containers = self.preview_leader
 
         # battle containers
-        battleui.UIButton.containers = self.button_ui, self.lore_button_ui
         battleui.SwitchButton.containers = self.switch_button_ui, self.ui_updater
         battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battle_ui
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui
@@ -489,6 +482,7 @@ class Mainmenu:
         # images = pygame.transform.scale(images, (int(x ), int(y / 2)))
         # images.append(images)
         rangeattack.RangeArrow.images = [effect_images["arrow.png"]]
+        rangeattack.RangeArrow.screen_scale = self.screen_scale
 
         # Time bar ui
         self.time_ui = battleui.TimeUI((0, 0), battle_ui_image["timebar.png"])  # TODO change later
@@ -512,7 +506,7 @@ class Mainmenu:
         # Unit editor
         editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
                                      load_image(self.main_dir, self.screen_scale, "name_list.png", "ui\\mapselect_ui"),
-                                     load_base_button(self.main_dir, self.screen_scale), self.scale_ui, self.team_colour)
+                                     load_base_button(self.main_dir, self.screen_scale), self.scale_ui, team_colour)
         self.unit_listbox = editor_dict["unit_listbox"]
         self.unit_preset_name_scroll = editor_dict["unit_preset_name_scroll"]
         self.preset_select_border = editor_dict["preset_select_border"]
@@ -592,7 +586,6 @@ class Mainmenu:
         battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
         self.inspect_button = battleui.UIButton((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1), genre_battle_ui_image["army_inspect_button.png"],
                                                 1)  # unit inspect open/close button
-        self.button_ui.add(self.inspect_button)
         self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
         self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from gamestart menu drawer
 
@@ -647,7 +640,6 @@ class Mainmenu:
         self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
 
         self.event_log, self.trooplog_button, self.eventlog_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
-        self.button_ui.add(self.eventlog_button)
         subunit.Subunit.event_log = self.event_log  # Assign event_log to subunit class to broadcast event to the log
         self.battle_ui.add(self.log_scroll)
 

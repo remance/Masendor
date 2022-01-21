@@ -334,7 +334,7 @@ class MapTitle(pygame.sprite.Sprite):
 
 
 class DescriptionBox(pygame.sprite.Sprite):
-    def __init__(self, image, screen_scale, pos, text_size=28):
+    def __init__(self, image, screen_scale, pos, text_size=26):
         pygame.sprite.Sprite.__init__(self)
         self.screen_scale = screen_scale
         self.text_size = text_size

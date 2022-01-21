@@ -58,7 +58,7 @@ class PreviewLeader(pygame.sprite.Sprite):
 
     def __init__(self, leader_id, subunit_pos, army_position, leader_stat):
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
 
         self.state = 0
         self.subunit = None
@@ -198,6 +198,6 @@ class WarningMsg(pygame.sprite.Sprite):
 class FilterBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect(topleft=pos)

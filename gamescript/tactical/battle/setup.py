@@ -66,11 +66,14 @@ def generate_unit(battle, which_army, row, control, command, colour, coa, subuni
 
 def unit_setup(gamebattle):
     """read unit from unit_pos(source) file and create object with addunit function"""
+
+    from gamescript import unit
+    team_colour = unit.team_colour
+
     main_dir = gamebattle.main_dir
     # defaultunit = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
     # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
 
-    team_colour = gamebattle.team_colour
     team_army = (gamebattle.team0_unit, gamebattle.team1_unit, gamebattle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", gamebattle.ruleset_folder, "map",

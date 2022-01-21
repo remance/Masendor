@@ -20,7 +20,6 @@ load_sound = utility.load_sound
 editconfig = utility.edit_config
 setup_list = utility.setup_list
 
-
 def change_battle_genre(genre):
     if genre == "tactical":
         from gamescript.tactical.battle import setup, user
@@ -42,6 +41,7 @@ def change_battle_genre(genre):
     Battle.battle_state_mouse = user.battle_state_mouse
     Battle.selected_unit_process = user.selected_unit_process
     Battle.add_behaviour_ui = user.add_behaviour_ui
+    Battle.camera_process = user.camera_process
 
 
 class Battle:
@@ -80,7 +80,6 @@ class Battle:
         self.config = main.config
         self.master_volume = main.master_volume
         self.screen_rect = main.screen_rect
-        self.team_colour = main.team_colour
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
         self.event_log = main.event_log
@@ -352,8 +351,8 @@ class Battle:
         # ^ End music play
 
         try:  # get new map event for event log
-            map_event = csv_read("event_log.csv",
-                                 [self.main_dir, "data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 0)
+            map_event = csv_read(self.main_dir, "eventlog.csv",
+                                 ["data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source])
             battleui.EventLog.map_event = map_event
         except Exception:  # can't find any event file
             map_event = {}  # create empty list
@@ -426,14 +425,12 @@ class Battle:
         for this_ui in self.ui_updater:
             if this_ui in self.battle_ui and this_ui.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
-                self.ui_click = True
                 break
         return self.click_any
 
     def unit_icon_mouse_over(self, mouse_up, mouse_right):
         """process user mouse input on unit icon, left click = select, right click = go to unit position on map"""
         self.click_any = True
-        self.ui_click = True
         if self.game_state == "battle" or (self.game_state == "editor" and self.subunit_build not in self.battle_ui):
             for icon in self.unit_icon:
                 if icon.rect.collidepoint(self.mouse_pos):
@@ -453,15 +450,6 @@ class Battle:
                                                               icon.army.base_pos[1] * self.screen_scale[1])
                         self.camera_pos = self.base_camera_pos * self.camera_scale
                     break
-        return self.click_any
-
-    def button_mouse_over(self, mouse_right):
-        """process user mouse input on various ui buttons"""
-        for button in self.button_ui:
-            if button in self.battle_ui and button.rect.collidepoint(self.mouse_pos):
-                self.click_any = True
-                self.ui_click = True  # for avoiding selecting subunit under ui
-                break
         return self.click_any
 
     def leader_mouse_over(self, mouse_right):  # TODO make it so button and leader popup not show at same time
@@ -528,7 +516,6 @@ class Battle:
         for button in self.troop_card_button:  # Change subunit card option based on button clicking
             if button.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
-                self.ui_click = True
                 if self.troop_card_ui.option != button.event:
                     self.troop_card_ui.option = button.event
                     self.troop_card_ui.value_input(who=who, weapon_list=self.all_weapon,
@@ -758,7 +745,6 @@ class Battle:
         self.combat_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
         self.last_mouseover = None  # Which subunit last mouse over
         self.speed_number.speed_update(self.game_speed)
-        self.ui_click = False  # for checking if mouse click is on ui
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
         self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
         self.inspect = False  # For checking if inspect ui is currently open or not
@@ -768,9 +754,8 @@ class Battle:
         self.before_selected = None  # Which unit is selected before
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
-        self.battle_mouse_pos = [[0, 0],
-                                 [0, 0],
-                                 [0, 0]]  # mouse position list in battle map not screen, the first without zoom and the second with camera zoom adjust
+        # mouse position list in battle map not screen, the first without zoom, the second with camera zoom adjust, and the third is after revert screen scale for unit command
+        self.battle_mouse_pos = [[0, 0], [0, 0], [0, 0]]
         self.unit_selector.current_row = 0
         # ^ End start value
 
@@ -796,7 +781,7 @@ class Battle:
             mouse_scroll_up = False
             key_state = pygame.key.get_pressed()
             esc_press = False
-            self.ui_click = False  # reset mouse check on ui, if stay false it mean mouse click is not on any ui
+            self.click_any = False
 
             self.battle_ui.clear(self.screen, self.background)  # Clear sprite before update new one
 
@@ -818,6 +803,7 @@ class Battle:
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
                         mouse_left_up = True
+                        self.new_unit_click = False
                     elif event.button == 3:  # Right Click
                         mouse_right_up = True
                         if self.mouse_timer == 0:
@@ -857,36 +843,7 @@ class Battle:
                     if key_press is not None:
                         self.battle_key_press(key_press)
 
-                    # v Camera movement
-                    if key_state[K_s] or self.mouse_pos[1] >= self.bottom_corner:  # Camera move down
-                        self.base_camera_pos[1] += 4 * (
-                                11 - self.camera_scale)  # need "11 -" for converting cameral scale so the further zoom camera move faster
-                        self.camera_pos[1] = self.base_camera_pos[1] * self.camera_scale  # resize camera pos
-                        self.camera_fix()
-
-                    elif key_state[K_w] or self.mouse_pos[1] <= 5:  # Camera move up
-                        self.base_camera_pos[1] -= 4 * (11 - self.camera_scale)
-                        self.camera_pos[1] = self.base_camera_pos[1] * self.camera_scale
-                        self.camera_fix()
-
-                    if key_state[K_a] or self.mouse_pos[0] <= 5:  # Camera move left
-                        self.base_camera_pos[0] -= 4 * (11 - self.camera_scale)
-                        self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
-                        self.camera_fix()
-
-                    elif key_state[K_d] or self.mouse_pos[0] >= self.right_corner:  # Camera move right
-                        self.base_camera_pos[0] += 4 * (11 - self.camera_scale)
-                        self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
-                        self.camera_fix()
-
-                    self.cameraupcorner = (self.camera_pos[0] - self.center_screen[0],
-                                           self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
-                    # ^ End camera movement
-
-                    if self.map_scale_delay > 0:  # player change map scale once before
-                        self.map_scale_delay += self.ui_dt
-                        if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
-                            self.map_scale_delay = 0
+                    self.camera_process(key_state)
 
                     if self.mouse_timer != 0:  # player click mouse once before
                         self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
@@ -899,47 +856,8 @@ class Battle:
                     self.battle_mouse_pos[2] = pygame.Vector2(self.battle_mouse_pos[1][0] / self.screen_scale[0],
                                                               self.battle_mouse_pos[1][1] / self.screen_scale[1])
 
-                    if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down:
+                    if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
                         self.battle_mouse(mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state)
-
-                        if self.mini_map.rect.collidepoint(self.mouse_pos):  # mouse position on mini map
-                            self.ui_click = True
-                            if mouse_left_up:  # move self camera to position clicked on mini map
-                                self.click_any = True
-                                self.base_camera_pos = pygame.Vector2(int(self.mouse_pos[0] - self.mini_map.rect.x ) * self.screen_scale[0] * self.mini_map.map_scale_width,
-                                                          int(self.mouse_pos[1] - self.mini_map.rect.y) * self.screen_scale[1] * self.mini_map.map_scale_height)
-                                self.camera_pos = self.base_camera_pos * self.camera_scale
-                            elif mouse_right_up:  # nothing happen with mouse right
-                                if self.last_selected is not None:
-                                    self.ui_click = True
-                        elif self.select_scroll.rect.collidepoint(self.mouse_pos):  # Must check mouse collide for scroll before unit select ui
-                            self.ui_click = True
-                            if mouse_left_down or mouse_left_up:
-                                self.click_any = True
-                                new_row = self.select_scroll.user_input(self.mouse_pos)
-                                if self.unit_selector.current_row != new_row:
-                                    self.unit_selector.current_row = new_row
-                                    self.setup_unit_icon()
-
-                        elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
-                            if mouse_left_up:
-                                self.click_any = True
-                            self.ui_click = True
-                            self.unit_icon_mouse_over(mouse_left_up, mouse_right_up)
-
-                        elif self.test_button.rect.collidepoint(self.mouse_pos) and self.test_button in self.battle_ui:
-                            self.ui_click = True
-                            if mouse_left_up:
-                                self.click_any = True
-                                if self.test_button.event == 0:
-                                    self.test_button.event = 1
-                                    new_mode = "battle"
-
-                                elif self.test_button.event == 1:
-                                    self.test_button.event = 0
-                                    new_mode = "editor"
-                                self.game_state = new_mode
-                                self.change_state()
 
                         if self.game_state == "battle":
                             self.battle_state_mouse(mouse_left_up, mouse_right_up, double_mouse_right,
@@ -991,6 +909,7 @@ class Battle:
                             self.weather_event.pop(0)
                             self.show_map.add_effect(self.battle_map_height,
                                                      self.weather_effect_images[self.current_weather.weather_type][self.current_weather.level])
+                            self.show_map.change_scale(self.camera_scale)
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_current = self.weather_event[0][1]
@@ -1117,14 +1036,13 @@ class Battle:
                             run += 1
                     # ^ End melee pathfinding
 
-                    # v Remove the subunit ui when click at empty space
-                    if mouse_left_up and self.click_any is False:  # not click at any unit
-                        if self.last_selected is not None:  # any unit is selected
-                            self.last_selected = None  # reset last_selected
-                            self.before_selected = None  # reset before selected unit after remove last selected
-                            self.remove_unit_ui()
-                            if self.game_state == "editor" and self.slot_display_button.event == 0:  # add back ui again for when unit editor ui displayed
-                                self.battle_ui.add(self.unitsetup_stuff, self.leader_now)
+                    # v Remove the unit ui when click at empty space
+                    if mouse_left_up and self.last_selected is not None and self.click_any is False:  # not click at any unit while has selected unit
+                        self.last_selected = None  # reset last_selected
+                        self.before_selected = None  # reset before selected unit after remove last selected
+                        self.remove_unit_ui()
+                        if self.game_state == "editor" and self.slot_display_button.event == 0:  # add back ui again for when unit editor ui displayed
+                            self.battle_ui.add(self.unitsetup_stuff, self.leader_now)
                     # ^ End remove
 
                     if self.ui_timer > 1:
