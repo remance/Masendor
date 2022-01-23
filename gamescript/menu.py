@@ -100,13 +100,14 @@ class InputUI(pygame.sprite.Sprite):
         self._layer = 30
         pygame.sprite.Sprite.__init__(self)
 
+        self.pos = pos
         self.image = image
 
         self.image_original = self.image.copy()
 
         self.font = pygame.font.SysFont("timesnewroman", int(48 * screen_scale[1]))
 
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
     def change_instruction(self, text):
         self.image = self.image_original.copy()
@@ -121,6 +122,7 @@ class InputBox(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self._layer = 31
         self.font = pygame.font.SysFont("timesnewroman", int(30 * screen_scale[1]))
+        self.pos = pos
         self.image = pygame.Surface((width - 10, int(34 * screen_scale[1])))
         self.image.fill((255, 255, 255))
 
@@ -138,7 +140,7 @@ class InputBox(pygame.sprite.Sprite):
             self.active = False
             self.click_input = click_input
 
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
     def text_start(self, text):
         """Add starting text to input box"""

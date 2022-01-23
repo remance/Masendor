@@ -4,10 +4,15 @@ import os
 import random
 import re
 import time
+import sys
 from pathlib import Path
 
 import pygame
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
+
+current_dir = os.path.split(os.path.abspath(__file__))[0]
+main_dir = current_dir[:current_dir.rfind("\\")+1]
+sys.path.insert(1, main_dir)
 
 from gamescript import readstat, menu, battleui
 from gamescript.common import utility
@@ -18,7 +23,7 @@ load_images = utility.load_images
 load_base_button = utility.load_base_button
 stat_convert = readstat.stat_convert
 
-main_dir = os.path.split(os.path.abspath(__file__))[0]
+
 
 default_sprite_size = (200, 200)
 
@@ -37,10 +42,10 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
                       "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg", "p2_l_foot", "p2_main_weapon", "p2_sub_weapon",
                       "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2", "special_1", "special_2", "special_3", "special_4",
                       "special_5", "size", "frame_property", "animation_property"]  # For csv saving
-frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey"]
+frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation After 1.0: unique, lock?, sample effect, cloth sample, special part, colorise effect
+# TODO animation After 1.0: unique, lock?, cloth sample
 
 
 def apply_colour(surface, colour=None):
@@ -193,6 +198,10 @@ def reload_animation(animation, char):
                 surface = surface.tobytes()
                 surface = pygame.image.fromstring(surface, (frames[frame_index].get_width(), frames[frame_index].get_height()),
                                                   "RGBA")  # convert image back to a pygame surface
+                if "colour" in prop:
+                    colour = prop[prop.rfind("_")+1:]
+                    colour = [int(this_colour) for this_colour in colour.split(",")]
+                    surface = apply_colour(surface, colour)
                 frames[frame_index] = surface
         filmstrip_list[frame_index].add_strip(frames[frame_index])
     animation.reload(frames)
@@ -276,7 +285,6 @@ def anim_del_pool(pool):
                 del pool[direction][animation_name]
             except:
                 pass
-
 
 race_list = []
 race_acro = []
@@ -618,7 +626,7 @@ class Bodyhelper(pygame.sprite.Sprite):
             if check_mouse_pos is not None:
                 for index, rect in enumerate(self.rect_part_list):
                     this_rect = self.rect_part_list[rect]
-                    if "special" not in rect and this_rect is not None and this_rect.collidepoint(check_mouse_pos):
+                    if this_rect is not None and this_rect.collidepoint(check_mouse_pos):
                         click_any = True
                         if shift_press:
                             if list(self.part_pos.keys())[index] not in self.part_selected:
@@ -725,6 +733,20 @@ class NameBox(pygame.sprite.Sprite):
             text_surface = self.font.render(self.text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
             self.image.blit(text_surface, text_rect)
+
+
+class ColourWheel(pygame.sprite.Sprite):
+    def __init__(self, image, pos):
+        self._layer = 30
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def get_colour(self):
+        pos = mouse_pos[0] - self.rect.topleft[0], mouse_pos[1] - self.rect.topleft[1]
+        colour = self.image.get_at(pos)  # get colour at pos
+        return colour
 
 
 class Skeleton:
@@ -1010,7 +1032,10 @@ class Skeleton:
                         self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][
                             bodypart_list[stuff][2]].copy()
                     else:
-                        part_name = stuff[3:]  # remove p1_ or p2_ to get part name
+                        if "p1_" in stuff or "p2_" in stuff:
+                            part_name = stuff[3:]  # remove p1_ or p2_ to get part name
+                        if "special" in stuff:
+                            part_name = "special"
                         if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
                             part_name = part_name[2:]  # remove side
                         self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][part_name][
@@ -1498,13 +1523,13 @@ showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale
 showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
-Joint.images = [pygame.transform.scale(load_image(main_dir, screen_scale, "mainjoint.png", ["animation_maker_ui"]),
+Joint.images = [pygame.transform.scale(load_image(current_dir, screen_scale, "mainjoint.png", ["animation_maker_ui"]),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
-                pygame.transform.scale(load_image(main_dir, screen_scale, "subjoint.png", ["animation_maker_ui"]),
+                pygame.transform.scale(load_image(current_dir, screen_scale, "subjoint.png", ["animation_maker_ui"]),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
 joints = pygame.sprite.Group()
 
-image = pygame.transform.scale(load_image(main_dir, screen_scale, "film.png", ["animation_maker_ui"]),
+image = pygame.transform.scale(load_image(current_dir, screen_scale, "film.png", ["animation_maker_ui"]),
                                (int(100 * screen_scale[0]), int(100 * screen_scale[1])))
 
 Filmstrip.image_original = image
@@ -1531,7 +1556,7 @@ filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_wid
 
 filmstrips.add(*filmstrip_list)
 
-images = load_images(main_dir, screen_scale, ["animation_maker_ui", "helper_parts"])
+images = load_images(current_dir, screen_scale, ["animation_maker_ui", "helper_parts"])
 body_helper_size = (370 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (250 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = Bodyhelper(effect_helper_size, (screen_size[0] / 2, screen_size[1] - (body_helper_size[1] / 2)),
@@ -1543,7 +1568,7 @@ p2_body_helper = Bodyhelper(body_helper_size, (screen_size[0] - (body_helper_siz
                                                screen_size[1] - (body_helper_size[1] / 2)), "p2", list(images.values()))
 helper_list = [p1_body_helper, p2_body_helper, effect_helper]
 
-image = load_image(main_dir, screen_scale, "button.png", ["animation_maker_ui"])
+image = load_image(current_dir, screen_scale, "button.png", ["animation_maker_ui"])
 image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
                                        int(image.get_height() * screen_scale[1])))
 
@@ -1613,8 +1638,7 @@ p2_mouth_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-input_ui_img = load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui")
-input_ui = menu.InputUI(screen_scale, input_ui_img,
+input_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui"),
                         (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
 image_list = load_base_button(main_dir, screen_scale)
@@ -1631,9 +1655,23 @@ input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get
 
 input_ui_popup = (input_ui, input_box, input_ok_button, input_cancel_button)
 
-confirm_ui = menu.InputUI(screen_scale, input_ui_img,
+confirm_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui"),
                           (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
+
+colour_ui = menu.InputUI(screen_scale, load_image(current_dir, screen_scale, "colour.png", "animation_maker_ui"),
+                         (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
+colour_wheel = ColourWheel(load_image(main_dir, screen_scale, "rgb.png", ["sprite"]), (colour_ui.pos[0], colour_ui.pos[1] / 1.5))
+colour_input_box = menu.InputBox(screen_scale, (colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2), input_ui.image.get_width())  # user text input box
+
+colour_ok_button = menu.MenuButton(screen_scale, image_list, pos=(colour_ui.rect.midleft[0] + image_list[0].get_width(),
+                                                                 colour_ui.rect.midleft[1] + (image_list[0].get_height() * 2)),
+                                  text="Confirm", layer=31)
+colour_cancel_button = menu.MenuButton(screen_scale, image_list,
+                                      pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
+                                           colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
+                                      text="Cancel", layer=31)
+colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(main_dir, screen_scale, "unit_presetbox.png", "ui\\mainmenu_ui")
 
@@ -1757,7 +1795,10 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 input_esc = True
             elif text_input_popup[0] == "text_input":
-                input_box.user_input(event, key_press)
+                if input_box in ui:
+                    input_box.user_input(event, key_press)
+                elif colour_input_box in ui:
+                    colour_input_box.user_input(event, key_press)
 
     if pygame.mouse.get_pressed()[0]:  # Hold left click
         mouse_left_down = True
@@ -1766,7 +1807,7 @@ while True:
     elif pygame.mouse.get_pressed()[2]:  # Hold left click
         mouse_right_down = True
 
-    if input_ui not in ui:
+    if input_ui not in ui and colour_ui not in ui:
         if key_press is not None and keypress_delay < 0.1:
             if key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:
                 ctrl_press = True
@@ -1949,9 +1990,13 @@ while True:
                             elif "effect_" in name.name:
                                 if name.name[-1] == "_" or name.name[-1].isdigit():  # effect that need number value
                                     if name.selected is False:
-                                        text_input_popup = ("text_input", "frame_prop_num_" + name.name)
-                                        input_ui.change_instruction("Input Number Value:")
-                                        ui.add(input_ui_popup)
+                                        if "colour" not in name.name:
+                                            text_input_popup = ("text_input", "frame_prop_num_" + name.name)
+                                            input_ui.change_instruction("Input Number Value:")
+                                            ui.add(input_ui_popup)
+                                        else:
+                                            text_input_popup = ("text_input", "frame_prop_colour_" + name.name)
+                                            ui.add(colour_ui_popup)
                                 elif name.selected is False:  # effect that no need input
                                     frame_property_select[current_frame].append(name.name)
                                     setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
@@ -2085,17 +2130,20 @@ while True:
                     elif part_selector.rect.collidepoint(mouse_pos):
                         if direction_part_button.text != "" and race_part_button.text != "":
                             current_part = list(skeleton.animation_part_list[current_frame].keys())[skeleton.part_selected[-1]]
-                            try:
-                                if "p1" in current_part or "p2" in current_part:
-                                    selected_part = current_part[3:]
-                                    if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
-                                        selected_part = selected_part[2:]
-                                    part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selected_part].keys())
-                                elif "effect" in current_part:
-                                    part_list = list(effect_sprite_pool[race_part_button.text][direction_part_button.text].keys())
-                            except KeyError:  # look at weapon next
-                                selected_part = race_part_button.text
-                                part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
+                            # try:
+                            if "p1" in current_part or "p2" in current_part:
+                                selected_part = current_part[3:]
+                                if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
+                                    selected_part = selected_part[2:]
+                                part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selected_part].keys())
+                            elif "effect" in current_part:
+                                part_list = list(effect_sprite_pool[race_part_button.text][direction_part_button.text].keys())
+                            elif "special" in current_part:
+                                part_list = list(
+                                    gen_body_sprite_pool[race_part_button.text][direction_part_button.text]["special"].keys())
+                            # except KeyError:  # look at weapon next
+                            #     selected_part = race_part_button.text
+                            #     part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
                             popup_list_open("part_select", part_selector.rect.topleft, part_list, "bottom")
 
                     elif p1_eye_selector.rect.collidepoint(mouse_pos):
@@ -2273,8 +2321,10 @@ while True:
                 part_selector.change_name("")
     else:  # input box function
         dt = 0
-        if input_ok_button.event or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
+        if (input_ok_button in ui and input_ok_button.event) or (colour_ok_button in ui and colour_ok_button.event) or \
+                key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
             input_ok_button.event = False
+            colour_ok_button.event = False
 
             if text_input_popup[1] == "new_animation":
                 animation_name = input_box.text
@@ -2345,12 +2395,24 @@ while True:
                 setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                            frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-            elif "frame_prop_num" in text_input_popup[1] and input_box.text.isdigit() or ("." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
+            elif "frame_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
                 for name in frame_prop_listbox.namelist[current_frame]:
                     if name in (text_input_popup[1]):
                         index = frame_prop_listbox.namelist[current_frame].index(name)
                         frame_prop_listbox.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + input_box.text
                         frame_property_select[current_frame].append(name[0:name.rfind("_") + 1] + input_box.text)
+                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                                   frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
+                        reload_animation(anim, skeleton)
+                        break
+
+            elif "frame_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
+                    colour_input_box.text.count(",") >= 2:
+                for name in frame_prop_listbox.namelist[current_frame]:
+                    if name in (text_input_popup[1]):
+                        index = frame_prop_listbox.namelist[current_frame].index(name)
+                        frame_prop_listbox.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + colour_input_box.text.replace(" ", "")
+                        frame_property_select[current_frame].append(name[0:name.rfind("_") + 1] + colour_input_box.text.replace(" ", ""))
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                    frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
                         reload_animation(anim, skeleton)
@@ -2370,13 +2432,19 @@ while True:
 
             input_box.text_start("")
             text_input_popup = (None, None)
-            ui.remove(*input_ui_popup)
+            ui.remove(*input_ui_popup, *colour_ui_popup)
 
-        elif input_cancel_button.event or input_esc:
+        elif colour_wheel in ui and mouse_left_up and colour_wheel.rect.collidepoint(mouse_pos):
+            colour = str(colour_wheel.get_colour())
+            colour = colour[1:-1]  # remove bracket ()
+            colour_input_box.text_start(colour[:colour.rfind(",")])  # keep only 3 first colour value not transparent
+
+        elif (input_cancel_button in ui and input_cancel_button.event) or (colour_cancel_button in ui and colour_cancel_button.event) or input_esc:
             input_cancel_button.event = False
+            colour_cancel_button.event = False
             input_box.text_start("")
             text_input_popup = (None, None)
-            ui.remove(*input_ui_popup, *confirm_ui_popup)
+            ui.remove(*input_ui_popup, *confirm_ui_popup, *colour_ui_popup)
 
     ui.update(mouse_pos, mouse_left_up, mouse_left_down, "any")
     anim.play(showroom.image, (0, 0), activate_list)
