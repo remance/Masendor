@@ -37,11 +37,11 @@ class Leader(pygame.sprite.Sprite):
         self.subunit_pos = position  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
         # self.skill = stat
-        self.state = 0  ## 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
+        self.state = 0  # 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
 
         if self.name == "None":  # None leader is considered dead by default, function the same way as dead one
             self.health = 0
-            self.state = 100  ## no leader is same as dead so no need to update
+            self.state = 100  # no leader is same as dead so no need to update
 
         self.unit = unit
         # self.mana = stat

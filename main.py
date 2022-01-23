@@ -8,7 +8,7 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 if __name__ == "__main__":
     try:  # for printing error log when error exception happen
-        runmenu = start.Mainmenu(main_dir)
+        runmenu = start.MainMenu(main_dir)
         runmenu.run()
     except Exception:  # Save error output to txt file
         traceback.print_exc()

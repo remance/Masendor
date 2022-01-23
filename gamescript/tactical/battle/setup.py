@@ -80,8 +80,9 @@ def unit_setup(battle):
     with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
                            battle.mapselected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
         subunit_game_id = 1
-        for row in rd:
+        for row in rd[1:]:  # skip header
             for n, i in enumerate(row):
                 if i.isdigit():
                     row[n] = int(i)

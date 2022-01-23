@@ -61,11 +61,35 @@ quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Pe
 
 team_colour = unit.team_colour
 
-class Mainmenu:
+
+def change_genre(self, genre):
+    """Add new genre module here"""
+    if type(genre) == int:
+        self.genre = self.genre_list[genre].lower()
+    else:
+        self.genre = genre.lower()
+
+    if self.genre == "tactical":
+        from gamescript.tactical.start import begin
+        MainMenu.change_source = begin.change_source
+    elif self.genre == "arcade":
+        from gamescript.arcade.start import begin
+        MainMenu.change_source = begin.change_source
+
+    subunit.change_subunit_genre(self.genre)
+    unit.change_unit_genre(self.genre)
+    battle.change_battle_genre(self.genre)
+
+    self.genre_change_box.change_text(self.genre.capitalize())
+    edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
+
+
+class MainMenu:
     leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
                     "Advisor")  # Name of leader position in unit, the first 4 is for commander unit
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
+    change_genre = change_genre
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
@@ -684,20 +708,6 @@ class Mainmenu:
 
         self.game_intro(self.screen, self.clock, False)  # run intro
 
-    def change_genre(self, genre):
-        """Add new genre module here"""
-        if type(genre) == int:
-            self.genre = self.genre_list[genre].lower()
-        else:
-            self.genre = genre.lower()
-
-        subunit.change_subunit_genre(self.genre)
-        unit.change_unit_genre(self.genre)
-        battle.change_battle_genre(self.genre)
-
-        self.genre_change_box.change_text(self.genre.capitalize())
-        edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
-
     def game_intro(self, screen, clock, intro):
         timer = 0
         # The record is truthful, unbiased, correct and approved by appointed certified historians.
@@ -743,7 +753,7 @@ class Mainmenu:
         self.main_ui.add(*self.start_menu_ui_only)
 
     def read_selected_map_data(self, map_list, file, source=False):
-        if self.menu_state == "presetselect" or self.last_select == "presetselect":
+        if self.menu_state == "preset" or self.last_select == "preset":
             if source:
                 data = csv_read(self.main_dir, file,
                                 ["data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select],
@@ -772,7 +782,7 @@ class Mainmenu:
 
     def make_map(self, map_folder_list, map_list):
         # v Create map preview image
-        if self.menu_state == "presetselect":
+        if self.menu_state == "preset":
             map_images = load_images(self.main_dir, self.screen_scale, ["ruleset", self.ruleset_folder, "map",
                                                      map_folder_list[self.current_map_select]], load_order=False)
         else:
@@ -795,66 +805,6 @@ class Mainmenu:
         # ^ End map description
 
         self.make_team_coa([list(data.values())[1][2], list(data.values())[1][3]], self.main_ui)
-
-    def change_source(self, description_text, scale_value):
-        """Change source description, add new subunit dot, change army stat when select new source"""
-        self.source_description.change_text(description_text)
-        self.main_ui.add(self.source_description)
-
-        openfolder = self.preset_map_folder
-        if self.last_select == "customselect":
-            openfolder = self.custom_map_folder
-        unit_info = self.read_selected_map_data(openfolder, "unit_pos.csv", source=True)
-
-        team1_pos = {row[8]: [int(item) for item in row[8].split(",")] for row in list(unit_info.values()) if
-                     row[15] == 1}
-        team2_pos = {row[8]: [int(item) for item in row[8].split(",")] for row in list(unit_info.values()) if
-                     row[15] == 2}
-        self.map_show.change_mode(1, team1_pos_list=team1_pos, team2_pos_list=team2_pos)
-
-        team1_army = []
-        team2_army = []
-        team1_commander = []
-        team2_commander = []
-        for index, row in enumerate(list(unit_info.values())):
-            if row[15] == 1:
-                list_add = team1_army
-            elif row[15] == 2:
-                list_add = team2_army
-            for small_row in row[0:7]:
-                for item in small_row.split(","):
-                    list_add.append(int(item))
-
-            for item in row[9].split(","):
-                if row[15] == 1:
-                    team1_commander.append(int(item))
-                elif row[15] == 2:
-                    team2_commander.append(int(item))
-
-        team_total_troop = [0, 0]  # total troop number in army
-        troop_type_list = [[0, 0, 0, 0], [0, 0, 0, 0]]  # total number of each troop type
-        leader_name_list = (team1_commander, team2_commander)
-        army_team_list = (team1_pos, team2_pos)  # for finding how many subunit in each team
-
-        army_loop_list = (team1_army, team2_army)
-        for index, team in enumerate(army_loop_list):
-            for this_unit in team:
-                if this_unit != 0:
-                    team_total_troop[index] += int(self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
-                    troop_type = 0
-                    if self.troop_data.troop_list[this_unit]["Troop Class"] in (2, 4):  # range subunit
-                        troop_type += 1  # range weapon and accuracy higher than melee attack
-                    if self.troop_data.troop_list[this_unit]["Troop Class"] in (3, 4, 5, 6, 7):  # cavalry
-                        troop_type += 2
-                    troop_type_list[index][troop_type] += int(
-                        self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
-            troop_type_list[index].append(len(army_team_list[index]))
-
-        army_loop_list = ["{:,}".format(troop) + " Troops" for troop in team_total_troop]
-        army_loop_list = [self.leader_stat.leader_list[leader_name_list[index][0]]["Name"] + ": " + troop for index, troop in enumerate(army_loop_list)]
-
-        for index, army in enumerate(self.army_stat):
-            army.add_stat(troop_type_list[index], army_loop_list[index])
 
     def make_unit_slot(self, game_id, troop_id, range_to_run, start_pos):
         width, height = 0, 0
@@ -955,7 +905,7 @@ class Mainmenu:
                 if self.menu_state == "mainmenu":
 
                     if self.preset_map_button.event:  # preset map list menu
-                        self.menu_state = "presetselect"
+                        self.menu_state = "preset"
                         self.last_select = self.menu_state
                         self.preset_map_button.event = False
                         self.main_ui.remove(*self.start_menu_ui_only, self.popup_listbox, self.popup_list_scroll,
@@ -970,7 +920,7 @@ class Mainmenu:
                         self.main_ui.add(*self.map_select_button, self.map_listbox, self.map_title, self.map_scroll)
 
                     elif self.custom_map_button.event:  # custom map list menu
-                        self.menu_state = "customselect"
+                        self.menu_state = "custom"
                         self.last_select = self.menu_state
                         self.custom_map_button.event = False
                         self.main_ui.remove(*self.start_menu_ui_only, self.popup_listbox, self.popup_list_scroll,
@@ -1046,13 +996,13 @@ class Mainmenu:
                         # else:
                         #     self.main_ui.remove(self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
 
-                elif self.menu_state == "presetselect" or self.menu_state == "customselect":
+                elif self.menu_state == "preset" or self.menu_state == "custom":
                     if mouse_left_up or mouse_left_down:
                         if mouse_left_up:
                             for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
                                 if name.rect.collidepoint(self.mouse_pos):
                                     self.current_map_select = index
-                                    if self.menu_state == "presetselect":  # make new map image
+                                    if self.menu_state == "preset":  # make new map image
                                         self.make_map(self.preset_map_folder, self.preset_map_list)
                                     else:
                                         self.make_map(self.custom_map_folder, self.custom_map_list)
@@ -1101,7 +1051,7 @@ class Mainmenu:
                                 team.change_select(True)
 
                         openfolder = self.preset_map_folder
-                        if self.last_select == "customselect":
+                        if self.last_select == "custom":
                             openfolder = self.custom_map_folder
                         try:
                             self.source_list = self.read_selected_map_data(openfolder, "source.csv")
@@ -1206,7 +1156,7 @@ class Mainmenu:
                                 stuff.kill()
                                 del stuff
 
-                        if self.menu_state == "presetselect":  # regenerate map name list
+                        if self.menu_state == "preset":  # regenerate map name list
                             setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup, self.map_listbox,
                                        self.main_ui)
                         else:
