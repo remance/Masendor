@@ -50,33 +50,25 @@ class BaseMap(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.terrain_colour = terrain_colour
         self.terrain_list = terrain_list
-        # self.image = pygame.surface((0,0))
-        # self.rect = self.image.get_rect(topleft=(0, 0))
 
     def draw_image(self, image):
-        self.image = image
-        self.true_image = self.image.copy()
-        self.image_original = self.image.copy()
+        self.image = image.copy()
 
     def get_terrain(self, pos):
         """get the base terrain at that exact position"""
-        if (0 <= pos[0] <= 999) and (0 <= pos[1] <= 999):
-            terrain = self.true_image.get_at((int(pos[0]), int(pos[1])))  # get colour at pos to obtain the terrain type
-            terrain_index = self.terrain_colour.index(terrain)
-        else:  # for handle terrain checking that clipping off map
-            new_pos = pos
-            if new_pos[0] < 0:
-                new_pos[0] = 0
-            elif new_pos[0] > 999:
-                new_pos[0] = 999
+        new_pos = pos
+        if new_pos[0] < 0:
+            new_pos[0] = 0
+        elif new_pos[0] > 999:
+            new_pos[0] = 999
 
-            if new_pos[1] < 0:
-                new_pos[1] = 0
-            elif new_pos[1] > 999:
-                new_pos[1] = 999
+        if new_pos[1] < 0:
+            new_pos[1] = 0
+        elif new_pos[1] > 999:
+            new_pos[1] = 999
 
-            terrain = self.true_image.get_at((int(new_pos[0]), int(new_pos[1])))
-            terrain_index = 0
+        terrain = self.image.get_at((int(new_pos[0]), int(new_pos[1])))
+        terrain_index = self.terrain_colour.index(terrain)
         return terrain_index
 
 
@@ -88,42 +80,31 @@ class FeatureMap(pygame.sprite.Sprite):
     def __init__(self):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
-        # self.image = pygame.surface((0,0))
         self.feature_colour = feature_colour
         self.feature_list = feaure_list
-        # self.rect = self.image.get_rect(topleft=(0, 0))
 
     def draw_image(self, image):
-        self.image = image
-        self.true_image = self.image.copy()
-        self.image_original = self.image.copy()
+        self.image = image.copy()
 
     def get_feature(self, pos, gamemap):
         """get the terrain feature at that exact position"""
         terrain_index = gamemap.get_terrain(pos)
-        if (0 <= pos[0] <= 999) and (0 <= pos[1] <= 999):
-            feature = self.true_image.get_at((int(pos[0]), int(pos[1])))  # get colour at pos to obtain the terrain type
-            feature_index = None
-            if feature in self.feature_colour:
-                feature_index = self.feature_colour.index(feature)
-                feature_index = (terrain_index * len(self.feature_list)) + feature_index
-        else:
-            new_pos = pos
-            if new_pos[0] < 0:
-                new_pos[0] = 0
-            elif new_pos[0] > 999:
-                new_pos[0] = 999
+        new_pos = pos
+        if new_pos[0] < 0:
+            new_pos[0] = 0
+        elif new_pos[0] > 999:
+            new_pos[0] = 999
 
-            if new_pos[1] < 0:
-                new_pos[1] = 0
-            elif new_pos[1] > 999:
-                new_pos[1] = 999
+        if new_pos[1] < 0:
+            new_pos[1] = 0
+        elif new_pos[1] > 999:
+            new_pos[1] = 999
 
-            feature = self.true_image.get_at((int(new_pos[0]), int(new_pos[1])))  # get colour at pos to obtain the terrain type
-            feature_index = None
-            if feature in self.feature_colour:
-                feature_index = self.feature_colour.index(feature)
-                feature_index = (terrain_index * len(self.feature_list)) + feature_index
+        feature = self.image.get_at((int(new_pos[0]), int(new_pos[1])))  # get colour at pos to obtain the terrain type
+        feature_index = None
+        if feature in self.feature_colour:
+            feature_index = self.feature_colour.index(feature)
+            feature_index = (terrain_index * len(self.feature_list)) + feature_index
         return terrain_index, feature_index
 
 
@@ -138,9 +119,7 @@ class HeightMap(pygame.sprite.Sprite):
         # self.rect = self.image.get_rect(topleft=(0, 0))
 
     def draw_image(self, image):
-        self.image = image
-        self.true_image = self.image.copy()
-        self.image_original = self.image.copy()
+        self.image = image.copy()
         if self.topology:
             data = pygame.image.tostring(self.image.copy(), "RGB")  # convert image to string data for filtering effect
             img = Image.frombytes("RGB", (default_map_width, default_map_height), data)  # use PIL to get image data
@@ -180,7 +159,7 @@ class HeightMap(pygame.sprite.Sprite):
         elif new_pos[1] > 999:
             new_pos[1] = 999
 
-        colour = self.true_image.get_at((int(new_pos[0]), int(new_pos[1])))[2]
+        colour = self.image.get_at((int(new_pos[0]), int(new_pos[1])))[2]
 
         if colour == 0:
             colour = 255
@@ -213,8 +192,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                 self.new_colour_list[row[0]] = row[1:]
 
     def draw_image(self, base_map, feature_map, height_map, place_name, gamebattle, editor_map):
-
-        self.image = feature_map.image.copy()
+        self.image = pygame.Surface((default_map_width, default_map_height))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
         gamebattle.map_move_array = []  # array for pathfinding
