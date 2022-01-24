@@ -1,8 +1,6 @@
 import numpy as np
 import pygame
 
-battle_side_cal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side modifier
-
 
 def destroyed(self, battle, morale_hit=True):
     """remove unit when it dies"""

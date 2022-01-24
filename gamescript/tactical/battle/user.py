@@ -61,7 +61,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
     elif self.time_ui.rect.collidepoint(self.mouse_pos):  # check mouse collide for time bar ui
         self.click_any = True
         for index, button in enumerate(self.time_button):  # Event log button and timer button click
-            if button.rect.collidepoint(self.mouse_pos):
+            if button.rect.collidepoint(self.mouse_pos) and mouse_left_up:
                 if button.event == "pause":  # pause button
                     self.game_speed = 0
                 elif button.event == "decrease":  # reduce speed button
@@ -76,7 +76,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 break
 
     elif self.click_any is False:
-        for index, button in enumerate(self.eventlog_button):  # Event log button and timer button click
+        for index, button in enumerate(self.event_log_button):  # Event log button and timer button click
             if button.rect.collidepoint(self.mouse_pos):
                 if index in (0, 1, 2, 3, 4, 5):  # event_log button
                     self.click_any = True

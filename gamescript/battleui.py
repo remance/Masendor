@@ -7,21 +7,24 @@ from gamescript.common import utility
 
 
 class UIButton(pygame.sprite.Sprite):
-    def __init__(self, pos, image, event=None, layer=11):
+    def __init__(self, image, event=None, layer=11):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self)
-        self.pos = pos
+        self.pos = (0, 0)
         self.image = image
         self.event = event
         self.rect = self.image.get_rect(center=self.pos)
         self.mouse_over = False
 
+    def change_pos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
 
 class SwitchButton(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
+    def __init__(self, image):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = pos
+        self.pos = (0, 0)
         self.images = image
         self.image = self.images[0]
         self.event = 0
@@ -34,6 +37,10 @@ class SwitchButton(pygame.sprite.Sprite):
             self.image = self.images[self.event]
             self.rect = self.image.get_rect(center=self.pos)
             self.last_event = self.event
+
+    def change_pos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
 
 
 class PopupIcon(pygame.sprite.Sprite):
@@ -791,13 +798,13 @@ class Timer(pygame.sprite.Sprite):
 
 
 class TimeUI(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
+    def __init__(self, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
-        self.pos = pos
+        self.pos = (0, 0)
         self.image = image.copy()
         self.image_original = self.image.copy()
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def change_pos(self, pos, time_number, speed_number=None, time_button=None):
         """change position of the ui and related buttons"""
@@ -806,18 +813,18 @@ class TimeUI(pygame.sprite.Sprite):
         time_number.change_pos(self.rect.topleft)
 
 class ScaleUI(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
+    def __init__(self, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.percent_scale = -100
         self.team1_colour = (144, 167, 255)
         self.team2_colour = (255, 114, 114)
         self.font = pygame.font.SysFont("helvetica", 12)
-        self.pos = pos
+        self.pos = (0, 0)
         self.image = image
         self.image_width = self.image.get_width()
         self.image_height = self.image.get_height()
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def change_fight_scale(self, troop_number_list):
         new_percent = round(troop_number_list[1] / (troop_number_list[1] + troop_number_list[2]), 4)
@@ -833,20 +840,24 @@ class ScaleUI(pygame.sprite.Sprite):
             team2_text_rect = team2_text.get_rect(topright=(self.image_width, 0))
             self.image.blit(team2_text, team2_text_rect)
 
+    def change_pos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
+
 
 class SpeedNumber(pygame.sprite.Sprite):
-    def __init__(self, pos, speed, text_size=20):
+    def __init__(self, speed, text_size=20):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
-        self.pos = pos
+        self.pos = (0, 0)
         self.image = pygame.Surface((50, 30), pygame.SRCALPHA)
         self.image_original = self.image.copy()
         self.speed = speed
         self.timer_surface = self.font.render(str(self.speed), True, (0, 0, 0))
         self.timer_rect = self.timer_surface.get_rect(topleft=(3, 3))
         self.image.blit(self.timer_surface, self.timer_rect)
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
     def speed_update(self, new_speed):
         """change speed number text"""
@@ -854,6 +865,10 @@ class SpeedNumber(pygame.sprite.Sprite):
         self.speed = new_speed
         self.timer_surface = self.font.render(str(self.speed), True, (0, 0, 0))
         self.image.blit(self.timer_surface, self.timer_rect)
+
+    def change_pos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
 
 
 class InspectSubunit(pygame.sprite.Sprite):

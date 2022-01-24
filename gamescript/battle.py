@@ -33,6 +33,7 @@ def change_battle_genre(genre):
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
     Battle.unit_setup = setup.unit_setup
+    Battle.setup_battle_ui = setup.setup_battle_ui
     Battle.convert_edit_unit = convert.convert_edit_unit
     Battle.setup_unit_icon = selector.setup_unit_icon
     Battle.battle_mouse_scrolling = user.battle_mouse_scrolling
@@ -64,6 +65,7 @@ class Battle:
     unit_setup = None
     convert_edit_unit = None
     setup_unit_icon = None
+    setup_battle_ui = None
     battle_mouse_scrolling = None
     battle_key_press = None
     battle_mouse = None
@@ -111,7 +113,6 @@ class Battle:
         self.direction_arrows = main.direction_arrows
         self.troop_number_sprite = main.troop_number_sprite
 
-        self.inspect_ui_pos = main.inspect_ui_pos
         self.inspect_subunit = main.inspect_subunit
 
         self.battle_map_base = main.battle_base_map
@@ -125,6 +126,7 @@ class Battle:
         self.button_ui = main.button_ui
         self.subunit_selected_border = main.inspect_selected_border
         self.switch_button = main.switch_button
+        self.decimation_button = main.decimation_button
 
         self.fps_count = main.fps_count
 
@@ -225,10 +227,10 @@ class Battle:
         self.state_text = main.state_text
 
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
-        self.sprite_width = main.icon_sprite_width
-        self.sprite_height = main.icon_sprite_height
-        self.collide_distance = self.sprite_height / 10  # distance to check collision
-        self.front_distance = self.sprite_height / 20  # distance from front side
+        self.icon_sprite_width = main.icon_sprite_width
+        self.icon_sprite_height = main.icon_sprite_height
+        self.collide_distance = self.icon_sprite_height / 10  # distance to check collision
+        self.front_distance = self.icon_sprite_height / 20  # distance from front side
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
 
         self.combat_path_queue = []  # queue of sub-unit to run melee combat pathfiding
@@ -236,7 +238,7 @@ class Battle:
         self.esc_slider_menu = main.esc_slider_menu
         self.esc_value_box = main.esc_value_box
 
-        self.eventlog_button = main.eventlog_button
+        self.event_log_button = main.event_log_button
         self.time_button = main.time_button
         self.command_ui = main.command_ui
         self.troop_card_ui = main.troop_card_ui
@@ -286,7 +288,7 @@ class Battle:
 
         # v Assign default variable to some class
         unit.Unit.battle = self
-        unit.Unit.image_size = (self.sprite_width, self.sprite_height)
+        unit.Unit.image_size = (self.icon_sprite_width, self.icon_sprite_height)
         subunit.Subunit.battle = self
         leader.Leader.battle = self
         # ^ End assign default
@@ -529,7 +531,7 @@ class Battle:
                 center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 50))
 
             self.battle_ui.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui, self.warning_msg)
-            self.battle_ui.add(self.event_log, self.log_scroll, self.eventlog_button, self.time_button)
+            self.battle_ui.add(self.event_log, self.log_scroll, self.event_log_button, self.time_button)
 
             self.game_speed = 1
 
@@ -565,7 +567,7 @@ class Battle:
                                                                                                self.troop_card_ui.rect.topleft[1] + 80))
 
             self.battle_ui.remove(self.event_log, self.log_scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
-                                  self.eventlog_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
+                                  self.event_log_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
                                   self.subunit_selected_border, self.inspect_button, self.switch_button)
 
             self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
@@ -585,6 +587,8 @@ class Battle:
     def exit_battle(self):
         self.battle_ui.clear(self.screen, self.background)  # remove all sprite
         self.battle_camera.clear(self.screen, self.background)  # remove all sprite
+
+        self.setup_battle_ui("remove")  # remove ui from group
 
         self.battle_ui.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                               *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
@@ -653,6 +657,7 @@ class Battle:
     def run_game(self):
         # v Create Starting Values
         self.game_state = "battle"  # battle mode
+        self.setup_battle_ui("add")
         self.current_unit_row = 0
         self.current_troop_row = 0
         self.text_input_popup = (None, None)  # no popup asking for user text input state

@@ -11,6 +11,13 @@ import pygame.freetype
 from gamescript import readstat, map, lorebook, weather, battleui, menu, faction, popup, uniteditor
 
 
+def change_group(item, group, change):
+    if change == "add":
+        group.add(item)
+    elif change == "remove":
+        group.remove(item)
+
+
 def load_image(main_dir, screen_scale, file, subfolder=""):
     """loads an image, prepares it for play"""
     new_subfolder = subfolder
@@ -257,46 +264,49 @@ def make_encyclopedia_ui(main_dir, ruleset_folder, screen_scale, screen_rect):
     for image in lore_button_images:  # scale button image
         lore_button_images[image] = pygame.transform.scale(lore_button_images[image], (int(lore_button_images[image].get_width() * screen_scale[0]),
                                                    int(lore_button_images[image].get_height() * screen_scale[1])))
-    lore_button_ui = [
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() / 2),
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["concept.png"], 0, 13),  # concept section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 1.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["history.png"], 1, 13),  # history section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 2.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["faction.png"], 2, 13),  # faction section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 3.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["troop.png"], 3, 13),  # troop section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 4.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["equipment.png"], 4, 13),  # troop equipment section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 5.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["status.png"], 5, 13),  # troop status section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 6.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["skill.png"], 6, 13),  # troop skill section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 7.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["property.png"], 7, 13),  # troop property section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 8.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)),
-                          lore_button_images["leader.png"], 8, 13),  # leader section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 9.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)), lore_button_images["terrain.png"], 9, 13),  # terrain section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 10.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)), lore_button_images["weather.png"], 10, 13),  # weather section button
-        battleui.UIButton((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 11.5,
-                          encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)), lore_button_images["close.png"], "close", 13),  # close button
-        battleui.UIButton((encyclopedia.rect.bottomleft[0] + (lore_button_images["previous.png"].get_width()),
-                           encyclopedia.rect.bottomleft[1] - lore_button_images["previous.png"].get_height()),
-                          lore_button_images["previous.png"], "previous", 24),  # previous page button
-        battleui.UIButton((encyclopedia.rect.bottomright[0] - (lore_button_images["next.png"].get_width()),
-                           encyclopedia.rect.bottomright[1] - lore_button_images["next.png"].get_height()),
-                          lore_button_images["next.png"], "next", 24)]  # next page button
+    lore_button_ui = [battleui.UIButton(lore_button_images["concept.png"], 0, 13),  # concept section button
+                      battleui.UIButton(lore_button_images["history.png"], 1, 13),  # history section button
+                      battleui.UIButton(lore_button_images["faction.png"], 2, 13),  # faction section button
+                      battleui.UIButton(lore_button_images["troop.png"], 3, 13),  # troop section button
+                      battleui.UIButton(lore_button_images["equipment.png"], 4, 13),  # troop equipment section button
+                      battleui.UIButton(lore_button_images["status.png"], 5, 13),  # troop status section button
+                      battleui.UIButton(lore_button_images["skill.png"], 6, 13),  # troop skill section button
+                      battleui.UIButton(lore_button_images["property.png"], 7, 13),  # troop property section button
+                      battleui.UIButton(lore_button_images["leader.png"], 8, 13),  # leader section button
+                      battleui.UIButton(lore_button_images["terrain.png"], 9, 13),  # terrain section button
+                      battleui.UIButton(lore_button_images["weather.png"], 10, 13),  # weather section button
+                      battleui.UIButton(lore_button_images["close.png"], "close", 13),  # close button
+                      battleui.UIButton(lore_button_images["previous.png"], "previous", 24),  # previous page button
+                      battleui.UIButton(lore_button_images["next.png"], "next", 24)]  # next page button
+
+    lore_button_ui[0].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() / 2),
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[1].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 1.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[2].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 2.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[3].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 3.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[4].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 4.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[5].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 5.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[6].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 6.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[7].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 7.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[8].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 8.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[9].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 9.5,
+                                  encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[10].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 10.5,
+                                   encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[11].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept.png"].get_width() * 1.1) * 11.5,
+                                   encyclopedia.rect.topleft[1] - (lore_button_images["concept.png"].get_height() / 2)))
+    lore_button_ui[12].change_pos((encyclopedia.rect.bottomleft[0] + (lore_button_images["previous.png"].get_width()),
+                                   encyclopedia.rect.bottomleft[1] - lore_button_images["previous.png"].get_height()))
+    lore_button_ui[13].change_pos((encyclopedia.rect.bottomright[0] - (lore_button_images["next.png"].get_width()),
+                                   encyclopedia.rect.bottomright[1] - lore_button_images["next.png"].get_height()))
     page_button = (lore_button_ui[12], lore_button_ui[13])
     lore_scroll = battleui.UIScroller(lore_name_list.rect.topright, lore_name_list.image.get_height(),
                                           encyclopedia.max_subsection_show, layer=25)  # add subsection list scroller
@@ -346,18 +356,20 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
     filter_box = uniteditor.FilterBox(screen_scale, (screen_rect.width / 2.5, 0), box_image)
     image1 = load_image(main_dir, screen_scale, "team1_button.png", "ui\\mainmenu_ui")  # change unit slot to team 1 in editor
     image2 = load_image(main_dir, screen_scale, "team2_button.png", "ui\\mainmenu_ui")  # change unit slot to team 2 in editor
-    team_change_button = battleui.SwitchButton((filter_box.rect.topleft[0] + 220, filter_box.rect.topleft[1] + 30),
-                                               [image1, image2])
+    team_change_button = battleui.SwitchButton([image1, image2])
+    team_change_button.change_pos((filter_box.rect.topleft[0] + 220, filter_box.rect.topleft[1] + 30))
     image1 = load_image(main_dir, screen_scale, "show_button.png", "ui\\mainmenu_ui")  # show unit slot ui in editor
     image2 = load_image(main_dir, screen_scale, "hide_button.png", "ui\\mainmenu_ui")  # hide unit slot ui in editor
-    slot_display_button = battleui.SwitchButton((filter_box.rect.topleft[0] + 80, filter_box.rect.topleft[1] + 30),
-                                                [image1, image2])
+    slot_display_button = battleui.SwitchButton([image1, image2])
+    slot_display_button.change_pos((filter_box.rect.topleft[0] + 80, filter_box.rect.topleft[1] + 30))
     image1 = load_image(main_dir, screen_scale, "deploy_button.png",
                       "ui\\mainmenu_ui")  # deploy unit in unit slot to test map in editor
-    deploy_button = battleui.UIButton((filter_box.rect.topleft[0] + 150, filter_box.rect.topleft[1] + 90), image1, 0)
+    deploy_button = battleui.UIButton(image1, 0)
+    deploy_button.change_pos((filter_box.rect.topleft[0] + 150, filter_box.rect.topleft[1] + 90))
     image1 = load_image(main_dir, screen_scale, "test_button.png", "ui\\mainmenu_ui")  # start test button in editor
     image2 = load_image(main_dir, screen_scale, "end_button.png", "ui\\mainmenu_ui")  # stop test button
-    test_button = battleui.SwitchButton((scale_ui.rect.bottomleft[0] + 55, scale_ui.rect.bottomleft[1] + 25), [image1, image2])  # TODO change later
+    test_button = battleui.SwitchButton([image1, image2])
+    test_button.change_pos((scale_ui.rect.bottomleft[0] + 55, scale_ui.rect.bottomleft[1] + 25))  # TODO change later
     image1 = load_image(main_dir, screen_scale, "tick_box_no.png", "ui\\mainmenu_ui")  # start test button in editor
     image2 = load_image(main_dir, screen_scale, "tick_box_yes.png", "ui\\mainmenu_ui")  # stop test button
     filter_tick_box = [menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.26,
@@ -442,21 +454,14 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
 
 def make_event_log(battle_ui_image, screen_rect):
     event_log = battleui.EventLog(battle_ui_image["event_log.png"], (0, screen_rect.height))
-    troop_log_button = battleui.UIButton((event_log.pos[0] + (battle_ui_image["event_log_button1.png"].get_width() / 2),
-                                         event_log.pos[1] - event_log.image.get_height() - (battle_ui_image["event_log_button1.png"].get_height() / 2)),
-                                         battle_ui_image["event_log_button1.png"], 0)  # war tab log
+    troop_log_button = battleui.UIButton(battle_ui_image["event_log_button1.png"], 0)  # war tab log
 
     event_log_button = [
-        battleui.UIButton((troop_log_button.pos[0] + battle_ui_image["event_log_button1.png"].get_width(),
-                          troop_log_button.pos[1]), battle_ui_image["event_log_button2.png"], 1), # army tab log button
-        battleui.UIButton((troop_log_button.pos[0] + (battle_ui_image["event_log_button1.png"].get_width() * 2), troop_log_button.pos[1]),
-                          battle_ui_image["event_log_button3.png"], 2),  # leader tab log button
-        battleui.UIButton((troop_log_button.pos[0] + (battle_ui_image["event_log_button1.png"].get_width() * 3), troop_log_button.pos[1]),
-                          battle_ui_image["event_log_button4.png"], 3), # subunit tab log button
-        battleui.UIButton((troop_log_button.pos[0] + (battle_ui_image["event_log_button1.png"].get_width() * 5), troop_log_button.pos[1]),
-                          battle_ui_image["event_log_button5.png"], 4), # delete current tab log button
-        battleui.UIButton((troop_log_button.pos[0] + (battle_ui_image["event_log_button1.png"].get_width() * 6), troop_log_button.pos[1]),
-                          battle_ui_image["event_log_button6.png"], 5)] # delete all log button
+        battleui.UIButton(battle_ui_image["event_log_button2.png"], 1), # army tab log button
+        battleui.UIButton(battle_ui_image["event_log_button3.png"], 2),  # leader tab log button
+        battleui.UIButton(battle_ui_image["event_log_button4.png"], 3), # subunit tab log button
+        battleui.UIButton(battle_ui_image["event_log_button5.png"], 4), # delete current tab log button
+        battleui.UIButton(battle_ui_image["event_log_button6.png"], 5)] # delete all log button
 
     event_log_button = [troop_log_button] + event_log_button
     log_scroll = battleui.UIScroller(event_log.rect.topright, battle_ui_image["event_log.png"].get_height(),
@@ -505,14 +510,10 @@ def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
     troop_card_ui = battleui.TroopCard(image=battle_ui_image["troop_card.png"], icon="")
 
     # Button related to subunit card and command
-    troop_card_button = [battleui.UIButton((0, 0), battle_ui_image["troopcard_button1.png"], 0),
-                             # subunit card description button
-                             battleui.UIButton((0, 0), battle_ui_image["troopcard_button2.png"], 1),
-                             # subunit card stat button
-                             battleui.UIButton((0, 0), battle_ui_image["troopcard_button3.png"], 2),
-                             # subunit card skill button
-                             battleui.UIButton((0, 0), battle_ui_image["troopcard_button4.png"],
-                                               3)]  # subunit card equipment button
+    troop_card_button = [battleui.UIButton(battle_ui_image["troopcard_button1.png"], 0),  # subunit card description button
+                         battleui.UIButton(battle_ui_image["troopcard_button2.png"], 1),  # subunit card stat button
+                         battleui.UIButton(battle_ui_image["troopcard_button3.png"], 2),  # subunit card skill button
+                         battleui.UIButton(battle_ui_image["troopcard_button4.png"], 3)]  # subunit card equipment button
 
     terrain_check = popup.TerrainPopup()  # popup box that show terrain information when right click on map
     button_name_popup = popup.OneLinePopup()  # popup box that show name when mouse over

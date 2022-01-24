@@ -305,7 +305,7 @@ edit_file.close()
 
 race_list = race_list[2:]  # remove header and any race
 race_acro = race_acro[2:]
-race_accept = ["human"]  # for now accept only human race
+race_accept = ["human", "horse"]  # for now accept only human race
 
 generic_animation_pool = []
 for direction in direction_list:

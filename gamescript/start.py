@@ -509,23 +509,21 @@ class MainMenu:
         rangeattack.RangeArrow.screen_scale = self.screen_scale
 
         # Time bar ui
-        self.time_ui = battleui.TimeUI((0, 0), battle_ui_image["timebar.png"])  # TODO change later
+        self.time_ui = battleui.TimeUI(battle_ui_image["timebar.png"])
         self.time_number = battleui.Timer(self.time_ui.rect.topleft)  # time number on time ui
-        self.speed_number = battleui.SpeedNumber((self.time_ui.rect.center[0] + 40, self.time_ui.rect.center[1]),
-                                                 1)  # self speed number on the time ui
+        self.speed_number = battleui.SpeedNumber(1)  # self speed number on the time ui
         self.battle_ui.add(self.time_ui, self.time_number, self.speed_number)
 
         image = pygame.Surface((battle_ui_image["timebar.png"].get_width(), 15))
-        self.scale_ui = battleui.ScaleUI(self.time_ui.rect.bottomleft, image)
+        self.scale_ui = battleui.ScaleUI(image)
 
-        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui"], load_order=False)
-        genre_icon_image = load_images(self.main_dir, self.screen_scale, ["tactical", "ui", "battle_ui", "commandbar_icon"], load_order=False)
-
-        self.time_button = [battleui.UIButton((self.time_ui.rect.center[0] - 30, self.time_ui.rect.center[1]), genre_battle_ui_image["pause.png"], "pause"),  # time pause button
-                            battleui.UIButton((self.time_ui.rect.center[0], self.time_ui.rect.center[1]), genre_battle_ui_image["timedec.png"], "decrease"),  # time decrease button
-                            battleui.UIButton((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]), genre_battle_ui_image["timeinc.png"],
+        self.time_button = [battleui.UIButton(battle_ui_image["pause.png"], "pause"),  # time pause button
+                            battleui.UIButton(battle_ui_image["timedec.png"], "decrease"),  # time decrease button
+                            battleui.UIButton(battle_ui_image["timeinc.png"],
                                               "increase")]  # time increase button
-        self.battle_ui.add(*self.time_button, self.scale_ui)
+
+        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui"], load_order=False)
+        genre_icon_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui", "commandbar_icon"], load_order=False)
 
         # Unit editor
         editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
@@ -572,64 +570,37 @@ class MainMenu:
 
         # Army select list ui
         self.unit_selector = battleui.ArmySelect((0, 0), genre_battle_ui_image["unit_select_box.png"])
-        self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number)
-        self.battle_ui.add(self.unit_selector)
         self.select_scroll = battleui.UIScroller(self.unit_selector.rect.topright, genre_battle_ui_image["unit_select_box.png"].get_height(),
                                                  self.unit_selector.max_row_show)  # scroller for unit select ui
-        self.battle_ui.add(self.select_scroll)
 
         self.command_ui = battleui.CommandBar(image=genre_battle_ui_image["command_box.png"],
                                               icon=genre_icon_image)  # Left top command ui with leader and unit behavious button
-        self.command_ui.change_pos((genre_battle_ui_image["command_box.png"].get_size()[0] / 2,
-                                    (genre_battle_ui_image["command_box.png"].get_size()[1] / 2) + self.unit_selector.image.get_height()))
+
         self.ui_updater.add(self.command_ui)
 
         # Load all image of ui and icon from folder
         genre_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"], load_order=False)
 
-        self.col_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 26), genre_battle_ui_image["colsplit_button.png"],
-                                                  0)  # unit split by column button
-        self.row_split_button = battleui.UIButton((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 56), genre_battle_ui_image["rowsplit_button.png"],
-                                                  1)  # unit split by row button
-        self.button_ui.add(self.col_split_button)
-        self.button_ui.add(self.row_split_button)
+        self.col_split_button = battleui.UIButton(genre_battle_ui_image["colsplit_button.png"], 0)  # unit split by column button
+        self.row_split_button = battleui.UIButton(genre_battle_ui_image["rowsplit_button.png"], 1)  # unit split by row button
 
-        self.decimation_button = battleui.UIButton((self.command_ui.pos[0] + 100, self.command_ui.pos[1] + 56), genre_battle_ui_image["decimation.png"], 1)
+        self.decimation_button = battleui.UIButton(genre_battle_ui_image["decimation.png"], 1)
 
         # Right top bar ui that show rough information of selected battalions
         self.unitstat_ui = battleui.TopBar(image=battle_ui_image["topbar.png"], icon=genre_icon_image)
-        self.unitstat_ui.change_pos((self.screen_rect.width - self.unitstat_ui.image.get_width() / 2,
-                                     self.unitstat_ui.image.get_height() / 2))
         self.unitstat_ui.unit_state_text = self.state_text
-
-
-        self.inspect_ui_pos = [self.unitstat_ui.rect.bottomleft[0] - self.icon_sprite_width / 1.25,
-                               self.unitstat_ui.rect.bottomleft[1] - self.icon_sprite_height / 3]
 
         # Unit inspect information ui
         battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
-        self.inspect_button = battleui.UIButton((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1), genre_battle_ui_image["army_inspect_button.png"],
-                                                1)  # unit inspect open/close button
+        self.inspect_button = battleui.UIButton(genre_battle_ui_image["army_inspect_button.png"], 1)  # unit inspect open/close button
         self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
         self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from start_set menu drawer
 
         self.inspect_ui = battleui.InspectUI(image=genre_battle_ui_image["army_inspect.png"])  # inspect ui that show subnit in selected unit
-        self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
-                                    self.unitstat_ui.image.get_height() + (self.inspect_ui.image.get_height() / 2)))
         self.ui_updater.add(self.inspect_ui)
         # v Subunit shown in inspect ui
-        width, height = self.inspect_ui_pos[0], self.inspect_ui_pos[1]
-        sub_unit_number = 0  # Number of subunit based on the position in row and column
-        imgsize = (self.icon_sprite_width, self.icon_sprite_height)
+
         self.inspect_subunit = []
-        for this_subunit in list(range(0, 64)):
-            width += imgsize[0]
-            self.inspect_subunit.append(battleui.InspectSubunit((width, height)))
-            sub_unit_number += 1
-            if sub_unit_number == 8:  # Reach the last subunit in the row, go to the next one
-                width = self.inspect_ui_pos[0]
-                height += imgsize[1]
-                sub_unit_number = 0
 
         # Behaviour button that once click switch to other mode for subunit behaviour
         skill_condition_button = [genre_battle_ui_image["skillcond_0.png"], genre_battle_ui_image["skillcond_1.png"], genre_battle_ui_image["skillcond_2.png"], genre_battle_ui_image["skillcond_3.png"]]
@@ -639,31 +610,25 @@ class MainMenu:
         arc_condition_button = [genre_battle_ui_image["arc_0.png"], genre_battle_ui_image["arc_1.png"], genre_battle_ui_image["arc_2.png"]]
         run_condition_button = [genre_battle_ui_image["runtoggle_0.png"], genre_battle_ui_image["runtoggle_1.png"]]
         melee_condition_button = [genre_battle_ui_image["meleeform_0.png"], genre_battle_ui_image["meleeform_1.png"], genre_battle_ui_image["meleeform_2.png"]]
-        self.switch_button = [battleui.SwitchButton((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96), skill_condition_button),
-                              # skill condition button
-                              battleui.SwitchButton((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96), shoot_condition_button),
-                              # fire at will button
-                              battleui.SwitchButton((self.command_ui.pos[0], self.command_ui.pos[1] + 96), behaviour_button),  # behaviour button
-                              battleui.SwitchButton((self.command_ui.pos[0] + 40, self.command_ui.pos[1] + 96), range_condition_button),
-                              # shoot range button
-                              battleui.SwitchButton((self.command_ui.pos[0] - 125, self.command_ui.pos[1] + 96), arc_condition_button),
-                              # arc_shot button
-                              battleui.SwitchButton((self.command_ui.pos[0] + 80, self.command_ui.pos[1] + 96), run_condition_button),
-                              # toggle run button
-                              battleui.SwitchButton((self.command_ui.pos[0] + 120, self.command_ui.pos[1] + 96),
-                                                    melee_condition_button)]  # toggle melee mode
+        self.switch_button = [battleui.SwitchButton(skill_condition_button),  # skill condition button
+                              battleui.SwitchButton(shoot_condition_button),  # fire at will button
+                              battleui.SwitchButton(behaviour_button),  # behaviour button
+                              battleui.SwitchButton(range_condition_button),  # shoot range button
+                              battleui.SwitchButton(arc_condition_button),  # arc_shot button
+                              battleui.SwitchButton(run_condition_button),  # toggle run button
+                              battleui.SwitchButton(melee_condition_button)]  # toggle melee mode
 
         # Other ui in battle
         self.battle_done_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
                                                    battle_ui_image["end_box.png"], battle_ui_image["result_box.png"])
-        self.battle_done_button = battleui.UIButton((self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8),
-                                                    battle_ui_image["end_button.png"], layer=19)
+        self.battle_done_button = battleui.UIButton(battle_ui_image["end_button.png"], layer=19)
+        self.battle_done_button.change_pos((self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8))
 
         drama.TextDrama.images = load_images(self.main_dir, self.screen_scale, ["ui", "popup_ui", "drama_text"], load_order=False)
         drama.TextDrama.screen_rect = self.screen_rect
         self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
 
-        self.event_log, self.trooplog_button, self.eventlog_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
+        self.event_log, self.troop_log_button, self.event_log_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
         subunit.Subunit.event_log = self.event_log  # Assign event_log to subunit class to broadcast event to the log
         self.battle_ui.add(self.log_scroll)
 
@@ -676,8 +641,6 @@ class MainMenu:
 
         self.troop_card_ui, self.troop_card_button, self.terrain_check, self.button_name_popup, self.terrain_check, self.button_name_popup, \
         self.leader_popup, self.effect_popup = make_popup_ui(self.main_dir, self.screen_rect, self.screen_scale, battle_ui_image)
-        self.troop_card_ui.change_pos((self.screen_rect.width - self.troop_card_ui.image.get_width() / 2,
-                                       (self.inspect_ui.image.get_height() * 2.5) + self.troop_card_ui.image.get_height() / 2))
         self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)

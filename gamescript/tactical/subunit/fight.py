@@ -1,5 +1,8 @@
 import random
+import numpy as np
 
+battle_side_cal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side modifier
+infinity = float("inf")
 
 def change_leader(self, event):
     """Leader change subunit or gone/destroyed, event can be "destroyed" or "broken" """
@@ -183,7 +186,7 @@ def loss_cal(attacker, receiver, dmg, morale_dmg, leader_dmg, dmg_effect, timer_
 
     # v Add red corner to indicate combat
     if receiver.red_border is False:
-        receiver.block.blit(receiver.images[11], receiver.corner_image_rect)
+        receiver.block.blit(receiver.unit_ui_images["ui_squad_combat.png"], receiver.corner_image_rect)
         receiver.red_border = True
     # ^ End red corner
 
