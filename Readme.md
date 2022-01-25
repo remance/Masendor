@@ -93,6 +93,8 @@ Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(wit
 
 0.6.3 - 0.6.5: Arcade mode with function to accept different game mode, custom battle
  
+Arcade Mode: animation, subunit action, console stick, chain of command
+ 
 0.6.6 and 0.6.7: random map generator, True AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 
 0.6.8 and 0.6.9: multiple unit selection/move, also add a border to a selected unit on army selector UI
