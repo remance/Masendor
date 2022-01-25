@@ -42,7 +42,8 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
                       "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg", "p2_l_foot", "p2_main_weapon", "p2_sub_weapon",
                       "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2", "special_1", "special_2", "special_3", "special_4",
                       "special_5", "size", "frame_property", "animation_property"]  # For csv saving
-frame_property_list = ["hold", "turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
+frame_property_list = ["hold", "p1_turret", "p2_turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_",
+                       "effect_grey", "effect_colour_"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
 # TODO animation After 1.0: unique, lock?, cloth sample

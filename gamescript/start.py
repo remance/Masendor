@@ -11,7 +11,7 @@ import pygame
 import pygame.freetype
 import screeninfo
 from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
-from gamescript.common import utility
+from gamescript.common import utility, creation
 from pygame.locals import *
 
 load_image = utility.load_image
@@ -24,19 +24,21 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
-read_terrain_data = utility.read_terrain_data
-read_weather_data = utility.read_weather_data
-read_map_data = utility.read_map_data
-read_faction_data = utility.read_faction_data
-make_encyclopedia_ui = utility.make_encyclopedia_ui
-make_input_box = utility.make_input_box
-make_editor_ui = utility.make_editor_ui
-load_icon_data = utility.load_icon_data
-load_battle_data = utility.load_battle_data
-load_option_menu = utility.load_option_menu
-make_event_log = utility.make_event_log
-make_esc_menu = utility.make_esc_menu
-make_popup_ui = utility.make_popup_ui
+read_terrain_data = creation.read_terrain_data
+read_weather_data = creation.read_weather_data
+read_map_data = creation.read_map_data
+read_faction_data = creation.read_faction_data
+make_encyclopedia_ui = creation.make_encyclopedia_ui
+make_input_box = creation.make_input_box
+make_editor_ui = creation.make_editor_ui
+load_icon_data = creation.load_icon_data
+load_battle_data = creation.load_battle_data
+load_option_menu = creation.load_option_menu
+make_event_log = creation.make_event_log
+make_esc_menu = creation.make_esc_menu
+make_popup_ui = creation.make_popup_ui
+make_time_ui = creation.make_time_ui
+
 version_name = "Dream Decision"
 
 # Will keep leader, subunit, unit and other state as magic number since changing them take too much space, see below for referencing
@@ -509,18 +511,13 @@ class MainMenu:
         rangeattack.RangeArrow.screen_scale = self.screen_scale
 
         # Time bar ui
-        self.time_ui = battleui.TimeUI(battle_ui_image["timebar.png"])
-        self.time_number = battleui.Timer(self.time_ui.rect.topleft)  # time number on time ui
-        self.speed_number = battleui.SpeedNumber(1)  # self speed number on the time ui
+        time_dict = make_time_ui(battle_ui_image)
+        self.time_ui = time_dict["time_ui"]
+        self.time_number = time_dict["time_number"]
+        self.speed_number = time_dict["speed_number"]
+        self.scale_ui = time_dict["scale_ui"]
+        self.time_button = time_dict["time_button"]
         self.battle_ui.add(self.time_ui, self.time_number, self.speed_number)
-
-        image = pygame.Surface((battle_ui_image["timebar.png"].get_width(), 15))
-        self.scale_ui = battleui.ScaleUI(image)
-
-        self.time_button = [battleui.UIButton(battle_ui_image["pause.png"], "pause"),  # time pause button
-                            battleui.UIButton(battle_ui_image["timedec.png"], "decrease"),  # time decrease button
-                            battleui.UIButton(battle_ui_image["timeinc.png"],
-                                              "increase")]  # time increase button
 
         genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui"], load_order=False)
         genre_icon_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui", "commandbar_icon"], load_order=False)
