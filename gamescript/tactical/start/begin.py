@@ -45,7 +45,7 @@ def change_source(self, description_text, scale_value):
                 team_total_troop[index] += int(self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
                 troop_type = 0
                 if self.troop_data.troop_list[this_unit]["Troop Class"] in (2, 4):  # range subunit
-                    troop_type += 1  # range weapon and accuracy higher than melee attack
+                    troop_type += 1  # range weapon and accuracy higher than melee melee_attack
                 if self.troop_data.troop_list[this_unit]["Troop Class"] in (3, 4, 5, 6, 7):  # cavalry
                     troop_type += 2
                 troop_type_list[index][troop_type] += int(

@@ -77,7 +77,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
         self.last_base_pos = self.base_pos
-        self.base_attack_pos = 0  # position of attack base_target
+        self.base_attack_pos = 0  # position of melee_attack base_target
         self.angle = start_angle  # start at this angle
         if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
             self.angle = 0
@@ -107,20 +107,20 @@ class Unit(pygame.sprite.Sprite):
         self.direction_arrow = False
         self.rotate_only = False  # Order unit to rotate to base_target direction
         self.charging = False  # For subunit charge skill activation
-        self.forced_melee = False  # Force unit to melee attack
-        self.attack_place = False  # attack position instead of enemy
+        self.forced_melee = False  # Force unit to melee melee_attack
+        self.attack_place = False  # melee_attack position instead of enemy
         self.forced_march = False
         self.change_faction = False  # For initiating change faction function
         self.run_toggle = 0  # 0 = double right click to run, 1 = only one right click will make unit run
         self.shoot_mode = 0  # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
-        self.attack_mode = 0  # frontline attack, 1 = formation attack, 2 = free for all attack,
+        self.attack_mode = 0  # frontline melee_attack, 1 = formation melee_attack, 2 = free for all melee_attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fire_at_will = 0  # 0 = fire at will, 1 = no fire
         self.retreat_start = False
         self.retreat_way = None
         self.collide = False  # for checking if subunit collide, if yes then stop moving
         self.range_combat_check = False
-        self.attack_target = None  # attack base_target, can be either int or unit object
+        self.attack_target = None  # melee_attack base_target, can be either int or unit object
         self.got_killed = False  # for checking if destroyed() was performed when subunit destroyed yet
         # ^ End behaviour check
 
@@ -559,7 +559,7 @@ class Unit(pygame.sprite.Sprite):
                         self.revert = False  # reset revert order
                         self.process_command(self.base_target, other_command=1)  # reset command base_target state will become 0 idle
 
-                # v Perform range attack, can only enter range attack state after finishing rotate
+                # v Perform range melee_attack, can only enter range melee_attack state after finishing rotate
                 shoot_range = self.max_range
                 if self.use_min_range == 0:  # use minimum range to shoot
                     shoot_range = self.min_range
@@ -571,11 +571,11 @@ class Unit(pygame.sprite.Sprite):
                     self.range_combat_check = True  # set range combat check to start shooting
                 elif self.state == 11 and self.attack_target is not None and self.base_pos.distance_to(self.attack_target.base_pos) > shoot_range \
                         and self.hold == 0 and self.collide is False:  # chase base_target if it go out of range and hold condition not hold
-                    self.state = self.command_state  # set state to attack command state
+                    self.state = self.command_state  # set state to melee_attack command state
                     self.range_combat_check = False  # stop range combat check
                     self.set_target(self.attack_target.base_pos)  # move to new base_target
                     self.new_angle = self.set_rotate()  # also keep rotate to base_target
-                # ^ End range attack state
+                # ^ End range melee_attack state
 
         else:  # destroyed unit
             if self.got_killed is False:
@@ -594,15 +594,15 @@ class Unit(pygame.sprite.Sprite):
     def process_command(self, target_pos, runcommand=False, revert_move=False, enemy=None, other_command=0):
         """Process input order into state and subunit base_target action
         other_command parameter 0 is default command, 1 is natural pause, 2 is order pause"""
-        if other_command == 0:  # move or attack command
+        if other_command == 0:  # move or melee_attack command
             self.state = 1
 
-            if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # attack
-                if self.ammo <= 0 or self.forced_melee:  # no magazine_left to shoot or forced attack command
+            if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # melee_attack
+                if self.ammo <= 0 or self.forced_melee:  # no magazine_left to shoot or forced melee_attack command
                     self.state = 3  # move to melee
                 elif self.ammo > 0:  # have magazine_left to shoot
-                    self.state = 5  # Move to range attack
-                if self.attack_place:  # attack specific location
+                    self.state = 5  # Move to range melee_attack
+                if self.attack_place:  # melee_attack specific location
                     self.set_target(target_pos)
                     # if self.magazine_left > 0:
                     self.base_attack_pos = target_pos

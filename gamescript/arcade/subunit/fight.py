@@ -9,15 +9,43 @@ def change_leader(self, event):
     pass
 
 
+def swap_equipment(self, new_weapon):
+    """Swap weapon, reset base stat"""
+    self.base_melee_def = self.original_melee_def
+    self.base_range_def = self.original_range_def
+    self.skill = self.original_skill
+    self.trait = self.original_trait
+
+    self.base_melee_def += self.weapon_list.weapon_list[new_weapon]["Defense"]
+    self.base_range_def += self.weapon_list.weapon_list[new_weapon]["Defense"]
+
+    self.skill += self.weapon_list.weapon_list[new_weapon]["Skill"]
+    self.trait += self.weapon_list.weapon_list[new_weapon]["Trait"]
+
+    self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
+    if len(self.trait) > 0:
+        self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
+                      x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+        self.add_trait()
+
+    self.skill = {x: self.stat_list.skill_list[x].copy() for x in self.skill if
+                  x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
+    for skill in list(self.skill.keys()):  # remove skill if class mismatch
+        skill_troop_cond = self.skill[skill]["Troop Type"]
+        if skill_troop_cond == 0 or (self.subunit_type == 2 and skill_troop_cond == 2) or (self.subunit_type != 2 and skill_troop_cond != 2):
+            pass
+        else:
+            self.skill.pop(skill)
+
 def complex_dmg_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
-    """Calculate dmg, type 0 is melee attack and will use attacker subunit stat,
-    type that is not 0 will use the type object stat instead (mostly used for range attack)"""
+    """Calculate dmg, type 0 is melee melee_attack and will use attacker subunit stat,
+    type that is not 0 will use the type object stat instead (mostly used for range melee_attack)"""
     who = attacker
     target = defender
 
     height_advantage = who.height - target.height
     if dmg_type != 0:
-        height_advantage = int(height_advantage / 2)  # Range attack use less height advantage
+        height_advantage = int(height_advantage / 2)  # Range melee_attack use less height advantage
     hit += height_advantage
 
     if defence < 0 or who.ignore_def:  # Ignore def trait
@@ -60,8 +88,8 @@ def complex_dmg_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
                     if charge_def_cal < 0:
                         charge_def_cal = 0
                     dmg = dmg + (charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
-            elif who.charge_skill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
-                dmg += sum([random.uniform(who.melee_dmg[0], who.melee_dmg[1]) for x in range(who.melee_speed)])
+            elif who.charge_skill not in who.skill_effect:  # not charging or defend from charge, use melee_attack speed roll
+                dmg += sum([random.uniform(who.melee_dmg[0], who.melee_dmg[1]) for x in range(who.weapon_speed)])
 
             penetrate = who.melee_penetrate / target.armour
             if penetrate > 1:
@@ -121,7 +149,7 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
     """base_target position 0 = Front, 1 = Side, 3 = Rear, attacker_side and target_side is the side attacking and defending respectively"""
     who_luck = random.randint(-50, 50)  # attacker luck
     target_luck = random.randint(-50, 50)  # defender luck
-    who_mod = battle_side_cal[attacker_side]  # attacker attack side modifier
+    who_mod = battle_side_cal[attacker_side]  # attacker melee_attack side modifier
 
     """34 battlemaster full_def or 91 allrounddef status = no flanked penalty"""
     if attacker.full_def or 91 in attacker.status_effect:
@@ -134,7 +162,7 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
     dmg_effect = attacker.front_dmg_effect
     target_dmg_effect = target.front_dmg_effect
 
-    if attacker_side != 0 and who_mod != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
+    if attacker_side != 0 and who_mod != 1:  # if melee_attack or defend from side will use discipline to help reduce penalty a bit
         who_mod = battle_side_cal[attacker_side] + (attacker.discipline / 300)
         dmg_effect = attacker.side_dmg_effect  # use side dmg effect as some skill boost only front dmg
         if who_mod > 1:
@@ -146,10 +174,10 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
         if target_percent > 1:
             target_percent = 1
 
-    who_hit = float(attacker.attack * who_mod) + who_luck
+    who_hit = float(attacker.melee_attack * who_mod) + who_luck
     target_defence = float(target.melee_def * target_percent) + target_luck
 
-    """backstabber ignore def when attack rear side, Oblivious To Unexpected can't defend from rear at all"""
+    """backstabber ignore def when melee_attack rear side, Oblivious To Unexpected can't defend from rear at all"""
     if (attacker.backstab and target_side == 2) or (target.oblivious and target_side == 2) or (
             target.flanker and attacker_side in (1, 3)):  # Apply only for attacker
         target_defence = 0
@@ -167,18 +195,18 @@ def dmg_cal(attacker, target, attacker_side, target_side, status_list, combat_ti
             target_morale_dmg = who_dmg / 10
         loss_cal(target, attacker, target_dmg, target_morale_dmg, target_dmg_effect, timer_mod)  # Inflict dmg to attacker
 
-    # v Attack corner (side) of self with aoe attack
+    # v Attack corner (side) of self with aoe melee_attack
     if attacker.corner_atk:
-        loop_list = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]  # Side attack get (2) front and (5) rear nearby subunit
+        loop_list = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]  # Side melee_attack get (2) front and (5) rear nearby subunit
         if target_side in (0, 2):
-            loop_list = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearby subunit
+            loop_list = target.nearby_subunit_list[0:2]  # Front/rear melee_attack get (0) left and (1) right nearby subunit
         for this_subunit in loop_list:
             if this_subunit != 0 and this_subunit.state != 100:
-                target_hit, target_defence = float(attacker.attack * target_percent) + target_luck, float(
+                target_hit, target_defence = float(attacker.melee_attack * target_percent) + target_luck, float(
                     this_subunit.melee_def * target_percent) + target_luck
                 who_dmg, who_morale_dmg = complex_dmg_cal(attacker, this_subunit, who_hit, target_defence, 0)
                 loss_cal(attacker, this_subunit, who_dmg, who_morale_dmg, dmg_effect, timer_mod)
-    # ^ End attack corner
+    # ^ End melee_attack corner
 
     # Inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy subunit, 4 entire unit
     if attacker.inflict_status != {}:
@@ -194,7 +222,7 @@ def apply_status_to_enemy(status_list, inflict_status, receiver, attacker_side, 
             receiver.status_effect[status[0]] = status_list[status[0]].copy()
             if status[1] == 3:  # apply to corner enemy subunit (left and right of self front enemy subunit)
                 corner_enemy_apply = receiver.nearby_subunit_list[0:2]
-                if receiver_side in (1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
+                if receiver_side in (1, 2):  # melee_attack on left/right side means corner enemy would be from front and rear side of the enemy
                     corner_enemy_apply = [receiver.nearby_subunit_list[2], receiver.nearby_subunit_list[5]]
                 for this_subunit in corner_enemy_apply:
                     if this_subunit != 0:

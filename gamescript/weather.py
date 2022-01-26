@@ -33,7 +33,6 @@ class Weather:
         self.spawn_rate = stat[19] * (self.level + 1)
         self.spawn_angle = stat[20]
         self.speed = stat[21] * (self.level + 1)
-
         image = self.images[(self.weather_type * 3) + self.level]
         cropped = pygame.Surface((image.get_width(), image.get_height()))
         cropped.blit(timeui.image_original, (0, 0), (0, 0, 80, 80))

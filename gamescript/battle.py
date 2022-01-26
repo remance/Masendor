@@ -547,7 +547,7 @@ class Battle:
         elif self.game_state == "editor":  # change to editor state
             self.inspect = False  # reset inspect ui
             self.mini_map.draw_image(self.show_map.true_image, self.camera)  # reset mini_map
-            for arrow in self.range_attacks:  # remove all range attack
+            for arrow in self.range_attacks:  # remove all range melee_attack
                 arrow.kill()
                 del arrow
 
@@ -603,7 +603,7 @@ class Battle:
 
         self.remove_unit_ui()
 
-        for arrow in self.range_attacks:  # remove all range attack
+        for arrow in self.range_attacks:  # remove all range melee_attack
             arrow.kill()
             del arrow
 

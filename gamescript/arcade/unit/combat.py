@@ -78,18 +78,8 @@ def split_unit(**args):
 
 
 def auth_recal(self):
-    """recalculate authority from all alive leaders"""
-    self.authority = (self.leader[0].authority / 2) + (self.leader[1].authority / 4) + \
-                     (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
-    self.leader_social = self.leader[0].social
-    if self.authority > 0:
-        big_army_size = self.subunit_list > 0
-        big_army_size = big_army_size.sum()
-        if big_army_size > 20:  # army size larger than 20 will reduce start_set leader authority
-            self.authority = (self.team_commander.authority / 2) + (self.leader[0].authority / 2 * (100 - big_army_size) / 100) + \
-                             (self.leader[1].authority / 2) + (self.leader[2].authority / 2) + (self.leader[3].authority / 4)
-        else:
-            self.authority = self.authority + (self.team_commander.authority / 2)
+    """Not used in arcade mode since authority calculated from only one leader in the unit"""
+    pass
 
 
 def skirmish(self):
@@ -121,7 +111,7 @@ def chase(self):
     if self.state in (3, 4, 5, 6, 10) and self.command_state in (3, 4, 5, 6) and self.attack_target is not None and self.hold == 0:
         if self.attack_target.state != 100:
             if self.collide is False:
-                self.state = self.command_state  # resume attack command
+                self.state = self.command_state  # resume melee_attack command
                 if self.base_pos.distance_to(self.attack_target.base_pos) < 10:
                     self.set_target(self.attack_target.leader_subunit.base_pos)  # set base_target to cloest enemy's side
                 else:

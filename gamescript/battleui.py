@@ -171,7 +171,7 @@ class TroopCard(pygame.sprite.Sprite):
         position_x = 45  # starting point of text
         self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.max_troop)) + ")",
                       str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
-                      str(who.discipline).split(".")[0], str(who.attack).split(".")[0], str(who.melee_def).split(".")[0],
+                      str(who.discipline).split(".")[0], str(who.melee_attack).split(".")[0], str(who.melee_def).split(".")[0],
                       str(who.range_def).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
                       str(who.accuracy).split(".")[0], str(who.shoot_range).split(".")[0], str(who.magazine_left),
                       str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
@@ -234,7 +234,7 @@ class TroopCard(pygame.sprite.Sprite):
                         weapon_list.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
                     self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
-                text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.melee_speed).split(".")[0] +
+                text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.weapon_speed).split(".")[0] +
                                ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
                 text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
                                ", Penetrate: " + str(who.range_penetrate).split(".")[0]]

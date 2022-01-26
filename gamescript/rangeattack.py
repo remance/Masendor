@@ -123,7 +123,7 @@ class RangeArrow(pygame.sprite.Sprite):
         self.target = self.base_target * view_mode
 
     def range_dmg_cal(self, who, target, target_side, side_percent=(1, 0.3, 0.3, 0)):
-        """Calculate hit_chance and defence chance, side_percent is more punishing than melee attack"""
+        """Calculate hit_chance and defence chance, side_percent is more punishing than melee melee_attack"""
         who_luck = random.randint(-20, 20)  # luck of the attacker subunit
         target_luck = random.randint(-20, 20)  # luck of the defender subunit
 

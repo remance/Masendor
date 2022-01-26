@@ -240,7 +240,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                     if row_pos % 20 == 0 and col_pos % 20 == 0:
                         random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
                         terrain, this_feature = feature_map.get_feature(random_pos, base_map)
-                        feature = self.texture_images[self.load_texture_list.index(self.new_colour_list[this_feature][0].replace(" ", "").lower())]
+                        feature = self.texture_images[self.load_texture_list.index(self.new_colour_list[this_feature][0])]
                         choose = random.randint(0, len(feature) - 1)
                         if this_feature - (terrain * 12) in (0, 1, 4, 5, 7) and \
                                 random.randint(0, 100) < 60:  # reduce special texture in empty terrain like glassland

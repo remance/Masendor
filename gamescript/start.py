@@ -221,7 +221,7 @@ class MainMenu:
         self.leader_updater = pygame.sprite.Group()  # updater for leader objects
         self.ui_updater = pygame.sprite.Group()  # updater for ui objects
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
-        self.effect_updater = pygame.sprite.Group()  # updater for in-self effect objects (e.g. range attack sprite)
+        self.effect_updater = pygame.sprite.Group()  # updater for in-self effect objects (e.g. range melee_attack sprite)
 
         self.team0_unit = pygame.sprite.Group()  # team 0 units group
         self.team1_unit = pygame.sprite.Group()  # team 1 units group

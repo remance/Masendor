@@ -24,11 +24,7 @@ def read_terrain_data(main_dir):
 
     empty_image = load_image(main_dir, (1, 1), "empty.png", "map/texture")  # empty texture image
     map_texture = []
-    texture_folder = []
-    for feature in feature_list:
-        texture_folder.append(feature.replace(" ", "").lower())  # convert terrain feature list to lower case with no space
-    texture_folder = list(set(texture_folder))  # list of terrian folder to load
-    texture_folder = [item for item in texture_folder if item != ""]  # For now remove terrain with no planned name/folder yet
+    texture_folder = [item for item in feature_list if item != ""]  # For now remove terrain with no planned name/folder yet
     for index, folder in enumerate(texture_folder):
         images = load_images(main_dir, (1, 1), ["map", "texture", folder], load_order=False)
         map_texture.append(list(images.values()))
@@ -83,21 +79,32 @@ def read_weather_data(main_dir, screen_scale):
             new_weather_list.append(strength + item)
 
     weather_matter_images = []
-    for weather_sprite in ("0", "1", "2", "3"):  # Load weather matter sprite image
-        images = load_images(main_dir, screen_scale, ["map", "weather", weather_sprite], load_order=False)
-        weather_matter_images.append(list(images.values()))
+    for weather_sprite in weather_list:  # Load weather matter sprite image
+        try:
+            images = load_images(main_dir, screen_scale, ["map", "weather", "matter", weather_sprite], load_order=False)
+            weather_matter_images.append(list(images.values()))
+        except FileNotFoundError:
+            weather_matter_images.append([])
 
     weather_effect_images = []
-    for weather_effect in ("0", "1", "2", "3", "4", "5", "6", "7"):  # Load weather effect sprite image
-        images = load_images(main_dir, screen_scale, ["map", "weather", "effect", weather_effect], load_order=False)
-        # images = []
-        # for images in imagesold:
-        #     images = pygame.transform.scale(images, (screen_rect.width, screen_rect.height))
-        #     images.append(images)
-        weather_effect_images.append(list(images.values()))
+    for weather_effect in weather_list:  # Load weather effect sprite image
+        try:
+            images = load_images(main_dir, screen_scale, ["map", "weather", "effect", weather_effect], load_order=False)
+            weather_effect_images.append(list(images.values()))
+        except FileNotFoundError:
+            weather_effect_images.append([])
 
-    weather_icon = load_images(main_dir, screen_scale, ["map", "weather", "icon"], load_order=False)  # Load weather icon
-    weather.Weather.images = list(weather_icon.values())
+    weather_icon_list = load_images(main_dir, screen_scale, ["map", "weather", "icon"], load_order=False)  # Load weather icon
+    new_weather_icon = []
+    for weather_icon in weather_list:
+        for strength in range(0, 3):
+            new_name = weather_icon + "_" + str(strength) + ".png"
+            for item in weather_icon_list:
+                if new_name == item:
+                    new_weather_icon.append(weather_icon_list[item])
+                    break
+
+    weather.Weather.images = new_weather_icon
     return all_weather, new_weather_list, weather_matter_images, weather_effect_images
 
 

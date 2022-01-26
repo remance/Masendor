@@ -1,6 +1,6 @@
 This folder contains data related to the battle map, terrain and weather.
 
-- texture folder keeps all feature texture file for each terrain feature combination in respective subfolder that will be drawn in slightly random position based on the beatiful map colour. the subfolder name must not have space and be fullname of the combination (e.g.Desert Forest = desertforest). The texture image must be in png file and has transparency channel or the map will look very ugly.
+- texture folder keeps all feature texture file for each terrain feature combination in respective subfolder that will be drawn in slightly random position based on the beatiful map colour. The texture image must be in png file and has transparency channel or the map will look very ugly.
 
 - Colourchange file contain list of new colour in (r,g,b) format for each terrain feature combination used in beautiful map. The game will draw texture by texture using these colours based on base and feature map images.
 
