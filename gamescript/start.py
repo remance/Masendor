@@ -102,7 +102,7 @@ class MainMenu:
         config = configparser.ConfigParser()
         try:
             config.read_file(open("configuration.ini"))  # read config file
-        except Exception:  # Create config file if not found with the default
+        except Exception:  # Create config file if not found with the default or any error reading it.
             genre_folder = Path(os.path.join(self.main_dir, "gamescript"))
             genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
             genre_folder = [str(folder_name).split("\\")[-1].capitalize() for folder_name in genre_folder]
