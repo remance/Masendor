@@ -1,7 +1,16 @@
-Sub-unit action
+Subunit action
 
-the file need to be in this format:
-id,action name, gear/equipment related to the action, animation name to play, list of propoerties 
+There are 2 files for action system in arcade mode: 
+
+- char for animation that use general weapon type
+
+the file need to be in this structure:
+action name, gear/equipment related to the action, animation name to play, list of propoerties 
+
+equipment for list of action that each weapon can perform and based animation name. The animation 
+the file need to be in this structure:
+ID, Name (weapon), Action (animation name that needed to be in animation data, the system will search and match using race, mount, hand, and weapon type in the subunit object in game.), Properties
+
 
 List of action properties:
 "movable": animation can be performed when moving and moving can be initiate during animation
@@ -11,9 +20,9 @@ List of action properties:
 "revert": run animation in revert frame
 "holdfront": weapon do damage during hold like spearwall and pikewall
 "power": start power version and deal no damage during hold
-"timing_": add hold and release timing mechanic (can work with power and block) that improve accuracy, require count time number and release time window (e.g., timing_1.5_2 for start perfectiming 1.5 second after hold and last for 2 seconds) 
+"timing_": add hold and release timing mechanic (can work with power and block) that improve accuracy, require count time number and release time window (e.g., timing_1.5_2 for start perfect timing 1.5 second after hold and last for 2 seconds) 
 "block": use full defence from the weapon and deal no damage when hold
-"parry": will do parry animation after get hit during this animation
+"parry": animation count as blocking and attack with bonus during if got hit by attack
 "aoe": effect deal further aoe damage outside of sprite effect in distance, need distance number after "aoe" (e.g.,aoe10)
 "externaleffect": effect use its own external animation frame instead of the frame assigned in animation sprite, accept only the first frame for starting the effect animation 
 "duration": effect remain in loop for duration, need duration number in second after "duration" (e.g.,duration60)

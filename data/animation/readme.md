@@ -1,7 +1,20 @@
 Animation
 
-the file need to be in this format:
-direction name, filename, base position x, base position y, angle, flip (0=none,1=hori,2=verti,3=both), layer, scale (1 for default)
+This folder contains list of animation for each direction.
+
+The animation file need to be in this structure:
+Animation name, each p1 and p2 parts, effect, special, frame and animation properties
+
+Animation name should be like this 
+
+for general animation
+
+for weapon animation: *race*_*weapon type*_*name*_*animation varient number*/*frame number* (e.g., human_)
+
+Each animation part need to be in this format:
+race/type,direction name, part name, position x, position y, angle, flip (0=none,1=hori,2=verti,3=both), layer, scale (1 for default)
+
+THERE MUST BE NO SPACE BETWEEN COMMA IN ANY VALUE 
 
 The position is based on the default side before any flip (face right for side, corner up and corner down).
 

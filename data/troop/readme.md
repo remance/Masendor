@@ -85,9 +85,34 @@ troop_weapon: list of all sub-units' weapons including artillery weapons. The da
 
 - Travel speed for only range weapon, this is speed of sprite traveling to target
 
+- Hand, number of hand required to use weapon, using both 2 hand and 1 hand at once will consider 1 hand weapon as sheathed weapon
+
+- Type, weapon type used for general animation selection: 
+
++ Body for weapon like fist, knuckle and other similar weapons.
++ One_Blade for sword, axe, dagger, shortsword
++ Two_Blade for greatsword, 
++ Dual_Blade for dual side version of blade weapon
++ One_Crush for hammer, mace
++ Two_Crush for great hammer, great mace
++ One_Chain for weapon that is flexible when attack like flail, whip
++ Two_Chain for
++ One_Polearm for small polearm such as spear
++ Two_Polearm for lance, pike, halberd, glaive, great axe, quarterstaff
++ Dual_Polearm for dual side polearm
++ Bow for all bow type weapon 
++ One_Shoot for pistol like weapon that can be held in one hand like handgun, pistol crossbow
++ Two_Shoot for range weapon with long handle like musket, crossbow
++ Sling for sling
++ Blow for blow weapon
++ Throw for throwing weapon, javelin, throwing axe
++ Shield
+
 - ImageID, the id of weapon image that will be used for sub-unit icon
 
 - List of Ruleset id that armour is available
+
+Weapon Type 
 
 mount_preset: list of all sub-units' mounts. The data structure of mount is as follows;
 
