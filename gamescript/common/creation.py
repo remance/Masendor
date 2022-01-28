@@ -10,6 +10,94 @@ load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
 make_bar_list = utility.make_bar_list
+stat_convert = readstat.stat_convert
+
+direction_list = ("front", "side", "back", "sideup", "sidedown")
+
+
+def load_animation_pool(main_dir):
+    generic_animation_pool = []
+    for direction in direction_list:
+        with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            part_name_header = rd[0]
+            list_column = ["p1_head", "p1_face", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
+                           "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot",
+                           "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
+                           "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
+                           "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2",
+                           "frame_property", "animation_property", "special_1", "special_2", "special_3", "special_4",
+                           "special_5"]  # value in list only
+            list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
+            part_name_header = part_name_header[1:]  # keep only part name for list ref later
+            animation_pool = {}
+            for row_index, row in enumerate(rd):
+                if row_index > 0:
+                    key = row[0].split("/")[0]
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, list_column=list_column)
+                    row = row[1:]
+                    if key in animation_pool:
+                        animation_pool[key].append({part_name_header[item_index]: item for item_index, item in enumerate(row)})
+                    else:
+                        animation_pool[key] = [{part_name_header[item_index]: item for item_index, item in enumerate(row)}]
+            generic_animation_pool.append(animation_pool)
+        edit_file.close()
+
+    skel_joint_list = []
+    for race in ["human", "horse"]:  # TODO change later when has more race
+        for direction in direction_list:
+            with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
+                      mode="r") as edit_file:
+                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+                rd = [row for row in rd]
+                header = rd[0]
+                list_column = ["Position"]  # value in list only
+                list_column = [index for index, item in enumerate(header) if item in list_column]
+                joint_list = {}
+                for row_index, row in enumerate(rd):
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, list_column=list_column)
+                            key = row[0].split("/")[0]
+                        if key in joint_list:
+                            joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
+                        else:
+                            joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
+                skel_joint_list.append(joint_list)
+            edit_file.close()
+
+    weapon_joint_list = []
+    for direction in direction_list:
+        with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", direction + "_joint.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            list_column = ["Position"]  # value in list only
+            list_column = [index for index, item in enumerate(header) if item in list_column]
+            joint_list = {}
+            for row_index, row in enumerate(rd):
+                if row_index > 0:
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, list_column=list_column)
+                        key = row[0].split("/")[0]
+                    position = row[1]
+                    if position == ["center"] or position == [""]:
+                        position = "center"
+                    else:
+                        position = pygame.Vector2(position[0], position[1])
+
+                    if key in joint_list:
+                        joint_list[key].append({row[0]: position})
+                    else:
+                        joint_list[key] = [{row[0]: position}]
+            weapon_joint_list.append(joint_list)
+        edit_file.close()
+
+    return {"generic_animation_pool": generic_animation_pool, "skel_joint_list": skel_joint_list, "weapon_joint_list": weapon_joint_list}
+
 
 def read_terrain_data(main_dir):
     """Read map data and create map texture and their default variables"""
@@ -339,7 +427,8 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     confirm_ui = menu.InputUI(screen_scale, input_ui_image,
                                    (screen_rect.width / 2, screen_rect.height / 2))  # user confirm input ui box popup
 
-    return input_ui, input_ok_button, input_cancel_button, input_box, confirm_ui
+    return {"input_ui": input_ui, "input_ok_button": input_ok_button, "input_cancel_button": input_cancel_button,
+            "input_box": input_box, "confirm_ui": confirm_ui}
 
 
 def load_icon_data(main_dir, screen_scale):
@@ -395,7 +484,7 @@ def make_event_log(battle_ui_image, screen_rect):
                                           event_log.max_row_show)  # event log scroller
     event_log.log_scroll = log_scroll  # Link scroller to ui since it is easier to do here with the current order
 
-    return event_log, troop_log_button, event_log_button, log_scroll
+    return {"event_log": event_log, "troop_log_button": troop_log_button, "event_log_button": event_log_button, "log_scroll": log_scroll}
 
 def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
     """create Esc menu related objects"""
@@ -447,7 +536,9 @@ def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
     leader_popup = popup.OneLinePopup()  # popup box that show leader name when mouse over
     effect_popup = popup.EffectIconPopup()  # popup box that show skill/trait/status name when mouse over
 
-    return troop_card_ui, troop_card_button, terrain_check, button_name_popup, terrain_check, button_name_popup, leader_popup, effect_popup
+    return {"troop_card_ui": troop_card_ui, "troop_card_button": troop_card_button, "terrain_check": terrain_check,
+            "button_name_popup": button_name_popup, "terrain_check": terrain_check, "button_name_popup": button_name_popup,
+            "leader_popup": leader_popup, "effect_popup": effect_popup}
 
 
 def load_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list, mixer_volume):
@@ -479,4 +570,5 @@ def load_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     image = load_image(main_dir, screen_scale, "volume_icon.png", "ui\\mainmenu_ui")
     volume_icon = menu.MenuIcon(image, (volume_slider.pos[0] - (volume_slider.pos[0] / 4.5), volume_slider.pos[1]))
     # End volume change
-    return back_button, resolution_drop, resolution_bar, resolution_icon, volume_slider, value_box, volume_icon
+    return {"back_button": back_button, "resolution_drop": resolution_drop, "resolution_bar": resolution_bar,
+            "resolution_icon": resolution_icon, "volume_slider": volume_slider, "value_box": value_box, "volume_icon": volume_icon}

@@ -23,8 +23,6 @@ load_images = utility.load_images
 load_base_button = utility.load_base_button
 stat_convert = readstat.stat_convert
 
-
-
 default_sprite_size = (200, 200)
 
 screen_size = (1000, 1000)
@@ -42,8 +40,8 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
                       "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg", "p2_l_foot", "p2_main_weapon", "p2_sub_weapon",
                       "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2", "special_1", "special_2", "special_3", "special_4",
                       "special_5", "size", "frame_property", "animation_property"]  # For csv saving
-frame_property_list = ["hold", "p1_turret", "p2_turret", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_",
-                       "effect_grey", "effect_colour_"]
+frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon",
+                       "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
 # TODO animation After 1.0: unique, lock?, cloth sample
@@ -360,6 +358,34 @@ for race in race_list:
                             joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
                 skel_joint_list.append(joint_list)
             edit_file.close()
+
+weapon_joint_list = []
+for direction in direction_list:
+    with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", direction + "_joint.csv"), encoding="utf-8",
+              mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
+        header = rd[0]
+        list_column = ["Position"]  # value in list only
+        list_column = [index for index, item in enumerate(header) if item in list_column]
+        joint_list = {}
+        for row_index, row in enumerate(rd):
+            if row_index > 0:
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, list_column=list_column)
+                    key = row[0].split("/")[0]
+                position = row[1]
+                if position == ["center"] or position == [""]:
+                    position = "center"
+                else:
+                    position = pygame.Vector2(position[0], position[1])
+
+                if key in joint_list:
+                    joint_list[key].append({row[0]: position})
+                else:
+                    joint_list[key] = [{row[0]: position}]
+        weapon_joint_list.append(joint_list)
+    edit_file.close()
 
 with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
           mode="r") as edit_file:
@@ -784,7 +810,7 @@ class Skeleton:
         self.p1_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.weapon = {"p1_main_weapon": "sword", "p1_sub_weapon": "sword", "p2_main_weapon": "sword", "p2_sub_weapon": "sword"}
+        self.weapon = {"p1_main_weapon": "Sword", "p1_sub_weapon": "Sword", "p2_main_weapon": "Sword", "p2_sub_weapon": "Sword"}
         self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0, 1]
         self.random_face()
         self.size = 1  # size scale of sprite
@@ -1057,6 +1083,9 @@ class Skeleton:
                 if part_link in part:  # match part name, p1_head = head in part link
                     main_joint_pos_list[part] = list(skel_joint_list[self.side][part_link][0].values())[0]
                     break
+            if part in self.weapon and self.weapon[part] in weapon_joint_list[self.side]:  # weapon joint
+                    main_joint_pos_list[part] = list(weapon_joint_list[self.side][self.weapon[part]][0].values())[0]
+
         return main_joint_pos_list
 
     def click_part(self, mouse_pos, shift_press, ctrl_press, part=None):
@@ -1186,8 +1215,10 @@ class Skeleton:
                 main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
                 if self.animation_part_list[current_frame][part_index] == []:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
-                    if any(ext in part_index for ext in ["weapon", "effect", "special"]):
+                    if any(ext in part_index for ext in ["effect", "special"]):
                         self.animation_part_list[current_frame][part_index][1] = "center"
+                    elif "weapon" in part_index:
+                        self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
                     else:
                         self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
                 self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
@@ -1422,16 +1453,16 @@ class Skeleton:
             part_rotated = pygame.transform.rotate(part_rotated, angle)  # rotate part sprite
 
         center = pygame.Vector2(part.get_width() / 2, part.get_height() / 2)
-        if main_joint_pos == "center":
-            main_joint_pos = (part.get_width() / 2, part.get_height() / 2)
-        # pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
-        # main_joint_pos = main_joint_pos + pos_different
-        new_center = target  # - pos_different  # find new center point
-        if angle != 0:
-            radians_angle = math.radians(360 - angle)
-            new_center = rotation_xy(target, new_center, radians_angle)  # find new center point with rotation
+        new_target = target  # - pos_different  # find new center point
+        # if "weapon" in list(self.rect_part_list.keys())[part_index] and main_joint_pos != "center":  # only weapon use joint to calculate position
+        #     print(main_joint_pos)
+        #     pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
+        #     new_target = main_joint_pos + pos_different
+        # if angle != 0:
+        #     radians_angle = math.radians(360 - angle)
+        #     new_target = rotation_xy(target, new_target, radians_angle)  # find new center point with rotation
 
-        rect = part_rotated.get_rect(center=new_center)
+        rect = part_rotated.get_rect(center=new_target)
         self.rect_part_list[list(self.rect_part_list.keys())[part_index]] = rect
         surface.blit(part_rotated, rect)
 
@@ -2131,20 +2162,20 @@ while True:
                     elif part_selector.rect.collidepoint(mouse_pos):
                         if direction_part_button.text != "" and race_part_button.text != "":
                             current_part = list(skeleton.animation_part_list[current_frame].keys())[skeleton.part_selected[-1]]
-                            # try:
-                            if "p1" in current_part or "p2" in current_part:
-                                selected_part = current_part[3:]
-                                if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
-                                    selected_part = selected_part[2:]
-                                part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selected_part].keys())
-                            elif "effect" in current_part:
-                                part_list = list(effect_sprite_pool[race_part_button.text][direction_part_button.text].keys())
-                            elif "special" in current_part:
-                                part_list = list(
-                                    gen_body_sprite_pool[race_part_button.text][direction_part_button.text]["special"].keys())
-                            # except KeyError:  # look at weapon next
-                            #     selected_part = race_part_button.text
-                            #     part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
+                            try:
+                                if "p1" in current_part or "p2" in current_part:
+                                    selected_part = current_part[3:]
+                                    if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
+                                        selected_part = selected_part[2:]
+                                    part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selected_part].keys())
+                                elif "effect" in current_part:
+                                    part_list = list(effect_sprite_pool[race_part_button.text][direction_part_button.text].keys())
+                                elif "special" in current_part:
+                                    part_list = list(
+                                        gen_body_sprite_pool[race_part_button.text][direction_part_button.text]["special"].keys())
+                            except KeyError:  # look at weapon next
+                                selected_part = race_part_button.text
+                                part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
                             popup_list_open("part_select", part_selector.rect.topleft, part_list, "bottom")
 
                     elif p1_eye_selector.rect.collidepoint(mouse_pos):

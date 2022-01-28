@@ -24,6 +24,7 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
+load_animation_pool = creation.load_animation_pool
 read_terrain_data = creation.read_terrain_data
 read_weather_data = creation.read_weather_data
 read_map_data = creation.read_map_data
@@ -102,7 +103,7 @@ class MainMenu:
         config = configparser.ConfigParser()
         try:
             config.read_file(open("configuration.ini"))  # read config file
-        except Exception:  # Create config file if not found with the default or any error reading it.
+        except Exception:  # Create config file if not found with the default
             genre_folder = Path(os.path.join(self.main_dir, "gamescript"))
             genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
             genre_folder = [str(folder_name).split("\\")[-1].capitalize() for folder_name in genre_folder]
@@ -141,6 +142,22 @@ class MainMenu:
         self.screen = pygame.display.set_mode(self.screen_rect.size, self.window_style | pygame.RESIZABLE, self.best_depth)
         # ^ End set display
 
+        self.clock = pygame.time.Clock()
+
+        self.loading = load_image(self.main_dir, self.screen_scale, "loading.png", "ui\\mainmenu_ui")
+        self.loading = pygame.transform.scale(self.loading, self.screen_rect.size)
+        self.game_intro(self.screen, self.clock, False)  # run intro
+
+        # v Background image
+        try:
+            bgd_tile = load_image(self.main_dir, self.screen_scale, self.genre + ".png", "ui\\mainmenu_ui")
+        except FileNotFoundError:
+            bgd_tile = load_image(self.main_dir, self.screen_scale, "default.png", "ui\\mainmenu_ui")
+        bgd_tile = pygame.transform.scale(bgd_tile, self.screen_rect.size)
+        self.background = pygame.Surface(self.screen_rect.size)
+        self.background.blit(bgd_tile, (0, 0))
+        # ^ End background
+
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
 
@@ -155,11 +172,11 @@ class MainMenu:
             del custom_unit_preset_list["presetname"]
             self.custom_unit_preset_list = {"New Preset": 0, **custom_unit_preset_list}
         except Exception:
-            with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as csvfile:
-                filewriter = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow(["presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
+            with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as edit_file:
+                file_writer = csv.writer(edit_file, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
+                file_writer.writerow(["presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
                                      "unitline7", "unitline8", "leader", "leaderposition", "faction"])  # create header
-                csvfile.close()
+                edit_file.close()
 
             self.custom_unit_preset_list = {}
 
@@ -184,7 +201,7 @@ class MainMenu:
 
         # game start menu
         self.menu_button = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
-        self.menu_icon = pygame.sprite.Group()  # mostly for option icon like volumne or scren resolution
+        self.menu_icon = pygame.sprite.Group()  # mostly for option icon like volumne or screen resolution
         self.menu_slider = pygame.sprite.Group()
 
         # encyclopedia
@@ -200,7 +217,7 @@ class MainMenu:
         self.tick_box = pygame.sprite.Group()  # option tick box
         # battle related
 
-        # esc option menue
+        # esc option menu
         self.value_box = pygame.sprite.Group()  # value number and box in esc menu option
 
         # unit editor
@@ -389,10 +406,15 @@ class MainMenu:
         self.editor_button = (self.unit_edit_button, self.subunit_create_button, self.editor_back_button)
 
         # Option menu button
-
-        self.back_button, self.resolution_drop, self.resolution_bar, self.resolution_icon, self.volume_slider, self.value_box, \
-        self.volume_icon = load_option_menu(self.main_dir, self.screen_scale, self.screen_rect, self.screen_width, self.screen_height,
+        option_menu_dict = load_option_menu(self.main_dir, self.screen_scale, self.screen_rect, self.screen_width, self.screen_height,
                                             image_list, self.master_volume)
+        self.back_button = option_menu_dict["back_button"]
+        self.resolution_drop = option_menu_dict["resolution_drop"]
+        self.resolution_bar = option_menu_dict["resolution_bar"]
+        self.resolution_icon = option_menu_dict["resolution_icon"]
+        self.volume_slider = option_menu_dict["volume_slider"]
+        self.value_box = option_menu_dict["value_box"]
+        self.volume_icon = option_menu_dict["volume_icon"]
 
         self.option_icon_list = (self.resolution_icon, self.volume_icon)
         self.option_menu_button = (self.back_button, self.resolution_drop)
@@ -468,7 +490,6 @@ class MainMenu:
 
         self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
         self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
-
 
         # v Battle related stuffs
         unit_ui_images = load_images(self.main_dir, self.screen_scale, ["ui", "unit_ui"])
@@ -550,7 +571,6 @@ class MainMenu:
 
         self.tick_box.add(*self.filter_tick_box)
 
-
         self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0, self.leader_stat),
                                uniteditor.PreviewLeader(1, 0, 1, self.leader_stat),
                                uniteditor.PreviewLeader(1, 0, 2, self.leader_stat),
@@ -558,9 +578,12 @@ class MainMenu:
         self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
 
         # user input popup ui
-        self.input_ui, self.input_ok_button, self.input_cancel_button, \
-        self.input_box, self.confirm_ui = make_input_box(self.main_dir, self.screen_scale, self.screen_rect, load_base_button(self.main_dir, self.screen_scale))
-
+        input_ui_dict = make_input_box(self.main_dir, self.screen_scale, self.screen_rect, load_base_button(self.main_dir, self.screen_scale))
+        self.input_ui = input_ui_dict["input_ui"]
+        self.input_ok_button = input_ui_dict["input_ok_button"]
+        self.input_cancel_button = input_ui_dict["input_cancel_button"]
+        self.input_box = input_ui_dict["input_box"]
+        self.confirm_ui = input_ui_dict["confirm_ui"]
         self.input_button = (self.input_ok_button, self.input_cancel_button)
         self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
@@ -625,7 +648,11 @@ class MainMenu:
         drama.TextDrama.screen_rect = self.screen_rect
         self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
 
-        self.event_log, self.troop_log_button, self.event_log_button, self.log_scroll = make_event_log(battle_ui_image, self.screen_rect)
+        event_log_dict = make_event_log(battle_ui_image, self.screen_rect)
+        self.event_log = event_log_dict["event_log"]
+        self.troop_log_button = event_log_dict["troop_log_button"]
+        self.event_log_button = event_log_dict["event_log_button"]
+        self.log_scroll = event_log_dict["log_scroll"]
         subunit.Subunit.event_log = self.event_log  # Assign event_log to subunit class to broadcast event to the log
         self.battle_ui.add(self.log_scroll)
 
@@ -636,11 +663,23 @@ class MainMenu:
         self.esc_slider_menu = esc_menu_dict["esc_slider_menu"]
         self.esc_value_box = esc_menu_dict["esc_value_box"]
 
-        self.troop_card_ui, self.troop_card_button, self.terrain_check, self.button_name_popup, self.terrain_check, self.button_name_popup, \
-        self.leader_popup, self.effect_popup = make_popup_ui(self.main_dir, self.screen_rect, self.screen_scale, battle_ui_image)
+        popup_ui_dict = make_popup_ui(self.main_dir, self.screen_rect, self.screen_scale, battle_ui_image)
+        self.troop_card_ui = popup_ui_dict["troop_card_ui"]
+        self.troop_card_button = popup_ui_dict["troop_card_button"]
+        self.terrain_check = popup_ui_dict["terrain_check"]
+        self.button_name_popup = popup_ui_dict["button_name_popup"]
+        self.terrain_check = popup_ui_dict["terrain_check"]
+        self.button_name_popup = popup_ui_dict["button_name_popup"]
+        self.leader_popup = popup_ui_dict["leader_popup"]
+        self.effect_popup = popup_ui_dict["effect_popup"]
         self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
+
+        animation_dict = load_animation_pool(self.main_dir)
+        self.generic_animation_pool = animation_dict["generic_animation_pool"]
+        self.skel_joint_list = animation_dict["skel_joint_list"]
+        self.weapon_joint_list = animation_dict["weapon_joint_list"]
 
         self.change_genre(self.genre)
         self.battle_game = battle.Battle(self, self.window_style)
@@ -664,9 +703,8 @@ class MainMenu:
         self.choosing_faction = True  # swap list between faction and subunit, always start with choose faction first as true
 
         pygame.mouse.set_visible(True)  # set mouse as visible
-        self.clock = pygame.time.Clock()
 
-        self.game_intro(self.screen, self.clock, False)  # run intro
+        self.run()
 
     def game_intro(self, screen, clock, intro):
         timer = 0
@@ -690,17 +728,10 @@ class MainMenu:
             if timer == 1000:
                 intro = False
 
-        pygame.display.set_caption(version_name + " " + self.genre.capitalize())  # set the self name on program border/tab
+        self.screen.blit(self.loading, (0, 0))  # blit loading screen after intro
+        pygame.display.update()
 
-        # v Background image
-        try:
-            bgd_tile = load_image(self.main_dir, self.screen_scale, self.genre + ".png", "ui\\mainmenu_ui")
-        except FileNotFoundError:
-            bgd_tile = load_image(self.main_dir, self.screen_scale, "default.png", "ui\\mainmenu_ui")
-        bgd_tile = pygame.transform.scale(bgd_tile, self.screen_rect.size)
-        self.background = pygame.Surface(self.screen_rect.size)
-        self.background.blit(bgd_tile, (0, 0))
-        # ^ End background
+        pygame.display.set_caption(version_name + " " + self.genre.capitalize())  # set the self name on program border/tab
 
     def back_mainmenu(self):
         self.menu_state = "mainmenu"
