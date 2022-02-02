@@ -13,6 +13,21 @@ terrain_colour = map.terrain_colour
 feature_colour = map.feature_colour
 
 
+class Cursor(pygame.sprite.Sprite):
+    def __init__(self, images):
+        self.images = images
+        self.pos = (0, 0)
+        self.image = images[0]
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def user_input(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def change_image(self, image):
+        self.image = self.images[image]
+
+
 class EscBox(pygame.sprite.Sprite):
     images = []
     screen_rect = None

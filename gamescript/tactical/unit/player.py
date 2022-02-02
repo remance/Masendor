@@ -1,7 +1,7 @@
 import pygame
 
 
-def user_input(self, pos, mouse_right, double_mouse_right, target, key_state, other_command=0):
+def user_input(self, pos, mouse_left_up, mouse_right_up, double_mouse_right, target, key_state, other_command=0):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
     if self.control and self.state not in (95, 97, 98, 99):
         self.revert = False
@@ -20,7 +20,7 @@ def user_input(self, pos, mouse_right, double_mouse_right, target, key_state, ot
             self.attack_place = True
 
         if self.state != 100:
-            if mouse_right and 1 <= pos[0] < 998 and 1 <= pos[1] < 998:
+            if mouse_right_up and 1 <= pos[0] < 998 and 1 <= pos[1] < 998:
                 if self.state in (10, 96) and target is None:
                     self.process_retreat(pos)  # retreat
                 else:

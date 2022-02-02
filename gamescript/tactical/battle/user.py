@@ -296,7 +296,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
             self.kill_effect_icon()
 
         if mouse_right_up and self.click_any is False:  # Unit command
-            self.last_selected.user_input(self.battle_mouse_pos[2], mouse_right_up, double_mouse_right,
+            self.last_selected.user_input(self.battle_mouse_pos[2], mouse_left_up, mouse_right_up, double_mouse_right,
                                           self.last_mouseover, key_state)
 
     if mouse_right_up and self.last_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
@@ -770,7 +770,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 this_leader.start_set()
 
                             for this_unit in self.all_unit_list:
-                                this_unit.user_input(self.battle_mouse_pos[0], False, False, self.last_mouseover, None,
+                                this_unit.user_input(self.battle_mouse_pos[0], False, False, False, self.last_mouseover, None,
                                                      other_command=1)
                         else:
                             self.warning_msg.warning(warning_list)
@@ -898,7 +898,7 @@ def battle_key_press(self, key_press):
             self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
     elif key_press == pygame.K_SPACE and self.last_selected is not None:
-        self.last_selected.user_input(self.battle_mouse_pos[0], False, False, self.last_mouseover, None, other_command=2)
+        self.last_selected.user_input(self.battle_mouse_pos[0], False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
     # elif key_press == pygame.K_1:

@@ -17,6 +17,7 @@ class Leader(pygame.sprite.Sprite):
 
     # method that change based on genre
     pos_change_stat = None
+    gone = None
 
     def __init__(self, leader_id, position, army_position, unit, leader_stat):
         self._layer = 15
@@ -34,6 +35,8 @@ class Leader(pygame.sprite.Sprite):
         self.social = leader_stat.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
+        self.player = False  # for arcade mode, indicate player character
+
         self.subunit_pos = position  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
         # self.skill = stat
@@ -44,7 +47,7 @@ class Leader(pygame.sprite.Sprite):
             self.state = 100  # no leader is same as dead so no need to update
 
         self.unit = unit
-        # self.mana = stat
+        # self.mana = stat["Mana"]
         self.army_position = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
         self.base_image_position = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
         self.image_position = self.base_image_position[self.army_position]  # image position based on army_position
@@ -59,7 +62,7 @@ class Leader(pygame.sprite.Sprite):
             text_rect = text_image.get_rect(center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))
             self.full_image.blit(text_image, text_rect)
 
-        self.image = pygame.transform.scale(self.full_image, (50, 50))
+        self.image = pygame.transform.scale(self.full_image, (50 * self.battle.screen_scale[0], 50 * self.battle.screen_scale[1]))
         self.rect = self.image.get_rect(center=self.image_position)
         self.image_original = self.image.copy()
 
