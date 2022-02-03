@@ -228,7 +228,7 @@ def create_sprite(self):
     image_original2 = sprite_image.copy()  # original2 for saving original not clicked
     image_original3 = sprite_image.copy()  # original3 for saving original zoom level
 
-    return {"sprite": sprite_image, "original": image_original, "original2": image_original2, "original3": image_original3,
+    return {"image": sprite_image, "original": image_original, "original2": image_original2, "original3": image_original3,
             "block": block, "block_original": block_original, "selected": selected_image, "selected_rect": selected_image_rect,
             "selected_original": selected_image_original, "selected_original2": selected_image_original2,
             "far": far_image, "far_selected": far_selected_image, "health_rect": health_image_rect, "health_block_rect": health_block_rect,

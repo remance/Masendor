@@ -8,7 +8,7 @@ import sys
 import pygame
 import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader
-from gamescript.common import utility, escmenu, editor
+from gamescript.common import utility, escmenu, editor, creation
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -19,6 +19,8 @@ csv_read = utility.csv_read
 load_sound = utility.load_sound
 editconfig = utility.edit_config
 setup_list = utility.setup_list
+
+direction_list = creation.direction_list
 
 def change_battle_genre(genre):
     if genre == "tactical":
@@ -253,6 +255,8 @@ class Battle:
 
         self.battle_done_box = main.battle_done_box
         self.battle_done_button = main.battle_done_button
+
+        self.generic_animation_pool = main.generic_animation_pool
         # ^ End load from start_set
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
@@ -260,6 +264,7 @@ class Battle:
         self.bottom_corner = self.screen_rect.height - (5 * self.screen_scale[1])
         self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
 
+        self.sprite_pool = {}
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.leader_now = []
@@ -413,6 +418,7 @@ class Battle:
 
         # v initialise starting subunit sprites
         self.mode = mode
+
         if self.mode == "battle":
             self.start_troop_number = [0, 0, 0]
             self.wound_troop_number = [0, 0, 0]
@@ -420,6 +426,12 @@ class Battle:
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
             self.unit_setup()
+
+        self.sprite_pool = {}
+        for this_subunit in self.subunit_updater:
+            for direction in direction_list:
+                self.sprite_pool[direction] = {}
+                this_subunit.troop_id
         # ^ End start subunit sprite
 
     def ui_mouse_over(self):
@@ -585,6 +597,8 @@ class Battle:
         self.speed_number.speed_update(self.game_speed)
 
     def exit_battle(self):
+        self.sprite_pool = {}
+
         self.battle_ui.clear(self.screen, self.background)  # remove all sprite
         self.battle_camera.clear(self.screen, self.background)  # remove all sprite
 

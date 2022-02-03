@@ -35,8 +35,6 @@ class Leader(pygame.sprite.Sprite):
         self.social = leader_stat.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
-        self.player = False  # for arcade mode, indicate player character
-
         self.subunit_pos = position  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
         # self.skill = stat

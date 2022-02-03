@@ -27,7 +27,7 @@ def add_unit(subunit_list, position, game_id, colour, unit_leader, leader_stat, 
     return unit
 
 
-def generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id):
+def generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id, troop_list):
     """generate unit data into self object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript import battleui, subunit
@@ -39,19 +39,25 @@ def generate_unit(battle, which_army, row, control, command, colour, coa, subuni
 
     # v Setup subunit in unit to subunit group
     row, column = 0, 0
+    unit_array = np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])  # for unit size overlap check
     max_column = len(this_unit.subunit_list[0])
-    for subunit_number in np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C"):
-        if subunit_number != 0:
-            add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
-                                         this_unit.start_hp, this_unit.start_stamina, battle.unitscale, battle.genre)
-            battle.subunit.add(add_subunit)
-            add_subunit.board_pos = board_pos[army_subunit_index]
-            subunit_number[...] = subunit_game_id
-            this_unit.subunit_sprite_array[row][column] = add_subunit
-            this_unit.subunit_sprite.append(add_subunit)
-            subunit_game_id += 1
-        else:
-            this_unit.subunit_sprite_array[row][column] = None  # replace numpy None with python None
+    for subunit_index, subunit_number in enumerate(np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C")):
+        now_row = int(subunit_index / 5)
+        now_col = subunit_index - (now_row * 5)
+        this_unit.subunit_sprite_array[row][column] = None  # replace numpy None with python None
+        if subunit_number != 0 and unit_array[now_row][now_col] == 0:  # skip if there is already subunit occupy the slot
+            size = troop_list[subunit_number]["Size"]
+            if now_row + size <= 5 and now_col + size <= 5:  # skip if subunti exceed unit size array
+                for row_number in range(now_row, now_row + size):
+                    for col_number in range(now_col, now_col + size):
+                        unit_array[row_number][col_number] = subunit_number
+                add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
+                                             this_unit.start_hp, this_unit.start_stamina, battle.unitscale, battle.genre)
+                battle.subunit.add(add_subunit)
+                subunit_number[...] = subunit_game_id
+                this_unit.subunit_sprite_array[row][column] = add_subunit
+                this_unit.subunit_sprite.append(add_subunit)
+                subunit_game_id += 1
 
         column += 1
         if column == max_column:
@@ -69,8 +75,7 @@ def unit_setup(battle):
     team_colour = unit.team_colour
 
     main_dir = battle.main_dir
-    # default_unit = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-    # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+    # default_unit = np.array([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0], [0,0,0,0,0]])
 
     team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
 
@@ -96,7 +101,7 @@ def unit_setup(battle):
             if len(which_army) == 0:  # First unit is commander
                 command = True
             coa = pygame.transform.scale(battle.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            subunit_game_id = generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id)
+            subunit_game_id = generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id, battle.troop_data.troop_list)
             # ^ End subunit setup
 
     unitfile.close()

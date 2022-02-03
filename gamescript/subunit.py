@@ -3,7 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript.common import utility
+from gamescript.common import utility, animation
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -47,9 +47,11 @@ class Subunit(pygame.sprite.Sprite):
     armour_list = None
     stat_list = None
     status_list = None
+    generic_animation_pool = None
     max_zoom = 10  # max zoom allow
     screen_scale = (1, 1)
 
+    play_animation = animation.play_animation
     set_rotate = utility.set_rotate
 
     # method that change based on genre
@@ -88,8 +90,10 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_target = None  # current target of melee combat
         self.close_target = None  # closet target to move to in melee
         self.attacking = False  # For checking if unit in attacking state or not for using charge skill
-        self.unit = unit  # reference to the parent uit of this subunit
-        self.team = self.unit.team
+
+        self.current_animation = {}  # list of animation frames playing
+        self.animation_queue = []  # list of animation queue
+        self.current_frame = 0
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -100,6 +104,8 @@ class Subunit(pygame.sprite.Sprite):
 
         self.game_id = game_id  # ID of this
         self.troop_id = int(troop_id)  # ID of preset used for this subunit
+        self.unit = unit  # reference to the parent uit of this subunit
+        self.team = self.unit.team
 
         self.red_border = False  # red corner to indicate taking melee_dmg in inspect ui
         self.state = 0  # Current subunit state, similar to unit state
@@ -271,7 +277,7 @@ class Subunit(pygame.sprite.Sprite):
             self.max_troop = self.troop_number  # max number of troop at the start
 
             sprite_dict = self.create_sprite()
-            self.image = sprite_dict["sprite"]
+            self.image = sprite_dict["image"]
             self.image_original = sprite_dict["original"]
             self.image_original2 = sprite_dict["original2"]
             self.image_original3 = sprite_dict["original3"]
@@ -623,6 +629,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.morale_logic(dt, parent_state)
 
                 self.health_stamina_logic(dt)
+
+                # self.play_animation(self.image, position, speed, play_list)
 
             if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
