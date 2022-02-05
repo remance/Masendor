@@ -49,7 +49,7 @@ class Unit(pygame.sprite.Sprite):
     rotate_logic = None
     revert_move = None
 
-    def __init__(self, start_pos, game_id, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
+    def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although unit in code, this is referred as subunit ingame"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)

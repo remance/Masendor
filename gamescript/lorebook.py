@@ -30,6 +30,18 @@ class Lorebook(pygame.sprite.Sprite):
     race_list = None
     state_text = None
 
+    concept_section = 0
+    history_section = 1
+    faction_section = 2
+    troop_section = 3
+    equipment_section = 4
+    status_section = 5
+    skill_section = 6
+    trait_section = 7
+    leader_section = 8
+    terrain_section = 9
+    weather_section = 10
+
     def __init__(self, main_dir, screen_scale, screen_rect, image, textsize=24):
         """ Lorebook section: 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill,
         7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark"""
@@ -52,6 +64,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.current_subsection2 = None  # Subsection lore currently viewing
         self.subsection_list = None
         self.portrait = None
+        self.preview_sprite_original = pygame.Surface((200, 200))
+        self.preview_sprite = self.preview_sprite_original.copy()
 
         # v Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
@@ -143,7 +157,7 @@ class Lorebook(pygame.sprite.Sprite):
             except:
                 pass
 
-        if self.section != 8:  # TODO change this when other sections have portrait
+        if self.section != self.leader_section:  # TODO change this when other sections have portrait
             self.page_design()
         else:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
@@ -188,7 +202,7 @@ class Lorebook(pygame.sprite.Sprite):
         make_long_text = utility.make_long_text
 
         stat = self.stat_data[self.subsection]
-        if self.section != 4:  # other sections
+        if self.section != self.leader_section:  # other sections
             header = self.section_list[self.section][0]["ID"]
             if type(header) == list:  # some data is in list format like lore and concept
                 stat_header = header[1:-2]
@@ -225,7 +239,7 @@ class Lorebook(pygame.sprite.Sprite):
             col = 60 * self.screen_scale[0]
 
             # concept, history, faction section is simply for processed and does not need specific column read
-            if self.section in (0, 1, 2):
+            if self.section in (self.concept_section, self.history_section, self.faction_section):
                 front_text = stat[1:-1]
                 for index, text in enumerate(front_text):
 
@@ -259,18 +273,19 @@ class Lorebook(pygame.sprite.Sprite):
                             row = 50 * self.screen_scale[1]
 
             # more complex section
-            elif self.section in (3, 4, 5, 6, 7, 8, 9, 10):
+            elif self.section in (self.troop_section, self.equipment_section, self.status_section, self.skill_section, self.trait_section,
+                                  self.leader_section, self.terrain_section, self.weather_section):
                 front_text = stat[1:-2]
                 for index, text in enumerate(front_text):
                     if text != "":
-                        if self.section != 4:  # equipment section need to be processed differently
+                        if self.section != self.equipment_section:  # equipment section need to be processed differently
                             create_text = stat_header[index] + ": " + str(text)
                             if stat_header[index] == "ImageID":
                                 # IMAGEID column in other section does not provide information, skip
                                 create_text = ""
                                 pass
 
-                            elif self.section == 3:
+                            elif self.section == self.troop_section:
                                 if stat_header[index] == "Role":  # Replace imageid to subunit role in troop section
                                     role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock",
                                                  5: "Support", 6: "Magic",
@@ -311,7 +326,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     create_text = ""
                                     pass
 
-                            if self.section == 3:  # troop section
+                            if self.section == self.troop_section:  # troop section
                                 if stat_header[index] == "Grade":  # grade text instead of number
                                     create_text = stat_header[index] + ": " + self.unit_grade_stat[text]["Name"]
 
@@ -358,9 +373,8 @@ class Lorebook(pygame.sprite.Sprite):
                                         create_text = ""
                                         pass
 
-                            elif self.section == 6 and (stat_header[index] == "Restriction"
-                                                        or stat_header[
-                                                            index] == "Condition"):  # skill restriction and condition in skill section
+                            elif self.section == self.skill_section and (stat_header[index] == "Restriction" or
+                                                                         stat_header[index] == "Condition"):  # skill restriction and condition in skill section
                                 state_list = ""
                                 if text != "":
                                     for this_text in text:
@@ -371,7 +385,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     create_text = ""
                                     pass
 
-                            elif self.section == 8:  # leader section
+                            elif self.section == self.leader_section:  # leader section
                                 if stat_header[index] in (
                                 "Melee Command", "Range Command", "Cavalry Command", "Combat"):
                                     create_text = stat_header[index] + ": " + self.leader_text[text]

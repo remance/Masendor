@@ -49,7 +49,7 @@ anim_property_list = ["dmgsprite", "interuptrevert"]
 
 def apply_colour(surface, colour=None):
     """Colorise body part sprite"""
-    size = (surface.get_width(), surface.get_height())
+    size = surface.get_size()
     data = pygame.image.tostring(surface, "RGBA")  # convert image to string data for filtering effect
     surface = Image.frombytes("RGBA", size, data)  # use PIL to get image data
     alpha = surface.split()[-1]  # save alpha
@@ -174,8 +174,7 @@ def reload_animation(animation, char):
                             gs_color = (average, average, average, alpha)
                             frames[frame_index].set_at((x, y), gs_color)
                 data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
-                surface = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
-                                          data)  # use PIL to get image data
+                surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
                 alpha = surface.split()[-1]  # save alpha
                 if "blur" in prop:
                     surface = surface.filter(
@@ -187,16 +186,14 @@ def reload_animation(animation, char):
                     enhancer = ImageEnhance.Brightness(surface)
                     surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
                 if "fade" in prop:
-                    empty = pygame.Surface((frames[frame_index].get_width(), frames[frame_index].get_height()), pygame.SRCALPHA)
+                    empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
                     empty.fill((255, 255, 255, 255))
                     empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
-                    empty = Image.frombytes("RGBA", (frames[frame_index].get_width(), frames[frame_index].get_height()),
-                                            empty)  # use PIL to get image data
+                    empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
                     surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
                 surface.putalpha(alpha)  # put back alpha
                 surface = surface.tobytes()
-                surface = pygame.image.fromstring(surface, (frames[frame_index].get_width(), frames[frame_index].get_height()),
-                                                  "RGBA")  # convert image back to a pygame surface
+                surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
                 if "colour" in prop:
                     colour = prop[prop.rfind("_")+1:]
                     colour = [int(this_colour) for this_colour in colour.split(",")]

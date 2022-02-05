@@ -3,6 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
+from gamescript.common import animation
 from gamescript.tactical.subunit import fight
 from pygame.transform import scale
 
@@ -12,6 +13,8 @@ class RangeArrow(pygame.sprite.Sprite):
     images = []
     screen_scale = (1, 1)
     height_map = None
+
+    play_animation = animation.play_animation
 
     def __init__(self, shooter, shoot_range, max_range, view_mode, hit_cal=True):
         self._layer = 7

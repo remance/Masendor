@@ -239,8 +239,8 @@ def read_map_data(main_dir, ruleset_folder):
 
 
 def read_faction_data(main_dir, screen_scale, ruleset_folder):
-    readstat.FactionStat.main_dir = main_dir
-    all_faction = readstat.FactionStat(option=ruleset_folder)
+    readstat.FactionData.main_dir = main_dir
+    all_faction = readstat.FactionData(ruleset_folder)
     images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
                            load_order=False)  # coa_list images list
     coa_list = []
@@ -455,16 +455,16 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
         x, y = images[image].get_width(), images[image].get_height()
         images[image] = pygame.transform.scale(images[image],
                                      (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
-    all_weapon = readstat.WeaponStat(main_dir, images, ruleset)  # Create weapon class
+    all_weapon = readstat.WeaponData(main_dir, images, ruleset)  # Create weapon class
 
     images = load_images(main_dir, screen_scale, ["ui", "unit_ui", "armour"])
-    all_armour = readstat.ArmourStat(main_dir, images, ruleset)  # Create armour class
-    troop_data = readstat.UnitStat(main_dir, ruleset, ruleset_folder)
+    all_armour = readstat.ArmourData(main_dir, images, ruleset)  # Create armour class
+    troop_data = readstat.TroopData(main_dir, ruleset, ruleset_folder)
 
     # v create leader list
     images, order = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False,
                               return_order=True)
-    leader_stat = readstat.LeaderStat(main_dir, images, order, option=ruleset_folder)
+    leader_stat = readstat.LeaderData(main_dir, images, order, ruleset_folder)
     # ^ End leader
     return all_weapon, all_armour, troop_data, leader_stat
 

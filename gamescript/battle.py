@@ -8,7 +8,7 @@ import sys
 import pygame
 import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader
-from gamescript.common import utility, escmenu, editor, creation
+from gamescript.common import utility, escmenu, editor, creation, animation
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -19,6 +19,7 @@ csv_read = utility.csv_read
 load_sound = utility.load_sound
 editconfig = utility.edit_config
 setup_list = utility.setup_list
+make_sprite = animation.make_sprite
 
 direction_list = creation.direction_list
 
@@ -428,10 +429,14 @@ class Battle:
             self.unit_setup()
 
         self.sprite_pool = {}
+        for direction in direction_list:
+            self.sprite_pool[direction] = {}
         for this_subunit in self.subunit_updater:
-            for direction in direction_list:
-                self.sprite_pool[direction] = {}
-                this_subunit.troop_id
+            if this_subunit.troop_id not in self.sprite_pool[direction_list[0]]:
+                for direction in direction_list:
+                    self.sprite_pool[direction][this_subunit.troop_id] = {}
+                    # make_sprite()
+        print(self.sprite_pool)
         # ^ End start subunit sprite
 
     def ui_mouse_over(self):

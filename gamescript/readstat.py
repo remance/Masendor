@@ -43,7 +43,7 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=()):
     return row
 
 
-class WeaponStat:
+class WeaponData:
     def __init__(self, main_dir, images, ruleset):
         """Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.images = list(images.values())
@@ -71,7 +71,7 @@ class WeaponStat:
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
 
 
-class ArmourStat:
+class ArmourData:
     def __init__(self, main_dir, images, ruleset):
         """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
         self.images = images
@@ -99,10 +99,10 @@ class ArmourStat:
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to armour stat
 
 
-class UnitStat:
+class TroopData:
     def __init__(self, main_dir, ruleset, ruleset_folder):
         """Unit stat data read"""
-        # v Unit stat dict
+        # v Troop stat dict
         self.troop_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
                   encoding="utf-8", mode="r") as edit_file:
@@ -122,9 +122,8 @@ class UnitStat:
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
-        # ^ End subunit stat list
 
-        # v Lore of the subunit dict
+        # Lore of the troop
         self.troop_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_lore.csv"),
                   encoding="utf-8", mode="r") as edit_file:
@@ -135,9 +134,19 @@ class UnitStat:
                         row[n] = int(i)
                 self.troop_lore[row[0]] = row[1:]
             edit_file.close()
-        # ^ End subunit lore
 
-        # v Unit status effect dict
+        # Troop sprite
+        self.troop_sprite_list = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_sprite.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            for row_index, row in enumerate(rd):
+                self.troop_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+            edit_file.close()
+
+        # Troop status effect dict
         self.status_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_status.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -166,9 +175,8 @@ class UnitStat:
                     self.status_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                 run += 1
         edit_file.close()
-        # ^ End status effect
 
-        # v Race dict
+        # Race dict
         self.race_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -186,9 +194,8 @@ class UnitStat:
                             row[n] = float(i)
                     self.race_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
-        # ^ End race
 
-        # v Unit grade dict
+        # Troop grade dict
         self.grade_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_grade.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -209,9 +216,8 @@ class UnitStat:
                 self.grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                 run += 1
         edit_file.close()
-        # ^ End subunit grade
 
-        # v Unit skill dict
+        # Troop skill dict
         self.skill_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_skill.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -240,9 +246,8 @@ class UnitStat:
                     self.skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                     run += 1
         edit_file.close()
-        # ^ End subunit skill
 
-        # v Unit trait dict
+        # Troop trait dict
         self.trait_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_trait.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -271,9 +276,8 @@ class UnitStat:
                     self.trait_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                     run += 1
         edit_file.close()
-        # ^ End subunit trait
 
-        # v Unit role dict
+        # Troop role dict
         self.role = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_class.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -283,9 +287,8 @@ class UnitStat:
                         row[n] = int(i)
                 self.role[row[0]] = row[1:]
         edit_file.close()
-        # ^ End subunit role
 
-        # v Unit mount dict
+        # Troop mount dict
         self.mount_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_preset.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -306,9 +309,8 @@ class UnitStat:
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.mount_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
-        # ^ End subunit mount dict
 
-        # v Mount grade dict
+        # Mount grade dict
         self.mount_grade_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_grade.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -326,9 +328,8 @@ class UnitStat:
                 self.mount_grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
                 run += 1
         edit_file.close()
-        # ^ End mount grade
 
-        # v Mount armour dict
+        # Mount armour dict
         self.mount_armour_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_armour.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -351,15 +352,14 @@ class UnitStat:
                             row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                         self.mount_armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
-        # ^ End mount armour
 
 
-class LeaderStat:
-    def __init__(self, main_dir, images, image_order, option):
+class LeaderData:
+    def __init__(self, main_dir, images, image_order, ruleset_folder):
         self.images = images
         self.image_order = image_order
         self.leader_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "leader.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -377,7 +377,7 @@ class LeaderStat:
         edit_file.close()
 
         # v Add common leader to the leader list with game_id + 10000
-        with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -396,7 +396,7 @@ class LeaderStat:
 
         # v Lore of the leader dict
         self.leader_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", str(option), "leader", "leader_lore.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader_lore.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -405,6 +405,17 @@ class LeaderStat:
                 self.leader_lore[row[0]] = row[1:]
             edit_file.close()
         # ^ End leader lore
+
+        # Troop sprite
+        self.leader_sprite_list = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_sprite.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            for row_index, row in enumerate(rd):
+                self.leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+            edit_file.close()
 
         # v Leader class dict
         self.leader_class = {}
@@ -421,14 +432,14 @@ class LeaderStat:
         # ^ End leader class
 
 
-class FactionStat:
+class FactionData:
     images = []
     main_dir = None
 
-    def __init__(self, option):
+    def __init__(self, ruleset_folder):
         """Unit stat data read"""
         self.faction_list = {}
-        with open(os.path.join(self.main_dir, "data", "ruleset", option, "faction", "faction.csv"), encoding="utf-8",
+        with open(os.path.join(self.main_dir, "data", "ruleset", ruleset_folder, "faction", "faction.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]

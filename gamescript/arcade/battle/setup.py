@@ -27,13 +27,13 @@ def add_unit(subunit_list, position, game_id, colour, unit_leader, leader_stat, 
     return unit
 
 
-def generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id, troop_list):
+def generate_unit(battle, which_army, setup_data, control, command, colour, coa, subunit_game_id, troop_list):
     """generate unit data into self object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript import battleui, subunit
-    this_unit = add_unit(np.array([row[1], row[2], row[3], row[4], row[5]]), (row[6][0], row[6][1]), row[0],
-                         colour, row[7], battle.leader_stat, control,
-                         coa, command, row[8], row[9], row[10], row[11])
+    this_unit = add_unit(setup_data[0], np.array([setup_data[1], setup_data[2], setup_data[3], setup_data[4], setup_data[5]]),
+                         (setup_data[6][0], setup_data[6][1]), colour, setup_data[7], battle.leader_stat, control,
+                         coa, command, setup_data[8], setup_data[9], setup_data[10], setup_data[11])
     which_army.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
@@ -51,6 +51,9 @@ def generate_unit(battle, which_army, row, control, command, colour, coa, subuni
                 for row_number in range(now_row, now_row + size):
                     for col_number in range(now_col, now_col + size):
                         unit_array[row_number][col_number] = subunit_number
+                this_subunit_number = subunit_number
+                if this_subunit_number == "H":  # Leader
+                    this_subunit_number = this_subunit_number + str(row[6])
                 add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
                                              this_unit.start_hp, this_unit.start_stamina, battle.unitscale, battle.genre)
                 battle.subunit.add(add_subunit)
