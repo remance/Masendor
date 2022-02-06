@@ -31,7 +31,11 @@ def change_battle_genre(genre):
         from gamescript.tactical.editor import convert
         from gamescript.tactical.ui import selector
     elif genre == "arcade":
-        pass
+        from gamescript.arcade.battle import setup, user
+        from gamescript.arcade.unit import combat
+        from gamescript.arcade.subunit import fight
+        from gamescript.arcade.editor import convert
+        from gamescript.arcade.ui import selector
 
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
@@ -433,10 +437,13 @@ class Battle:
             self.sprite_pool[direction] = {}
         for this_subunit in self.subunit_updater:
             if this_subunit.troop_id not in self.sprite_pool[direction_list[0]]:
-                for direction in direction_list:
+                for index, direction in enumerate(direction_list):
                     self.sprite_pool[direction][this_subunit.troop_id] = {}
-                    # make_sprite()
-        print(self.sprite_pool)
+                    for animation in self.generic_animation_pool[index]:
+                        if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
+                            for frame in range(0, animation):
+                                self.sprite_pool[direction][this_subunit.troop_id][animation] = \
+                                    make_sprite(this_subunit.size, self.generic_animation_pool[index][animation], frame)
         # ^ End start subunit sprite
 
     def ui_mouse_over(self):
