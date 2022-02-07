@@ -21,6 +21,7 @@ rotation_xy = utility.rotation_xy
 load_image = utility.load_image
 load_images = utility.load_images
 load_base_button = utility.load_base_button
+load_textures = utility.load_textures
 stat_convert = readstat.stat_convert
 
 default_sprite_size = (200, 200)
@@ -133,22 +134,6 @@ def popup_list_open(action, new_rect, new_list, ui_type):
     ui.add(popup_listbox, *popup_namegroup, popup_listscroll)
 
     popup_listbox.type = ui_type
-
-
-def load_textures(main_dir, subfolder=None):
-    """loads all body sprite part image"""
-    imgs = {}
-    dir_path = os.path.join(main_dir, "data")
-    if subfolder is not None:
-        for folder in subfolder:
-            dir_path = os.path.join(dir_path, folder)
-
-    loadorderfile = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
-    loadorderfile.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
-    for file in loadorderfile:
-        imgs[file.split(".")[0]] = load_image(main_dir, screen_scale, file, dir_path)
-
-    return imgs
 
 
 def reload_animation(animation, char):
@@ -408,7 +393,7 @@ for race in race_list:
             part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
             subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
             for folder in subdirectories:
-                imgs = load_textures(main_dir, folder)
+                imgs = load_textures(main_dir, screen_scale, folder)
                 gen_body_sprite_pool[race][direction][folder[-1]] = imgs
 
 gen_weapon_sprite_pool = {}
@@ -420,7 +405,7 @@ for folder in subdirectories:
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
         for direction in direction_list:
-            imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
+            imgs = load_textures(main_dir, screen_scale, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
             if direction not in gen_weapon_sprite_pool[folder[-1]]:
                 gen_weapon_sprite_pool[folder[-1]][direction] = imgs
             else:
@@ -434,7 +419,7 @@ for folder in subdirectories:
     part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
-        imgs = load_textures(main_dir, subfolder)
+        imgs = load_textures(main_dir, screen_scale, subfolder)
         effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
 
 

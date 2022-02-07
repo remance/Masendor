@@ -8,11 +8,44 @@ from gamescript.common import utility
 
 load_image = utility.load_image
 load_images = utility.load_images
+load_textures = utility.load_textures
 csv_read = utility.csv_read
 make_bar_list = utility.make_bar_list
 stat_convert = readstat.stat_convert
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
+
+
+def read_colour(main_dir):
+    with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
+              mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
+        header = rd[0]
+        skin_colour_list = {}
+        int_column = ["red", "green", "blue"]  # value in list only
+        int_column = [index for index, item in enumerate(header) if item in int_column]
+        for row_index, row in enumerate(rd):
+            if row_index > 0:
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, int_column=int_column)
+                    key = row[0].split("/")[0]
+                skin_colour_list[key] = row[1:]
+
+    with open(os.path.join(main_dir, "data", "sprite", "generic", "hair_colour_rgb.csv"), encoding="utf-8",
+              mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
+        header = rd[0]
+        hair_colour_list = {}
+        int_column = ["red", "green", "blue"]  # value in list only
+        int_column = [index for index, item in enumerate(header) if item in int_column]
+        for row_index, row in enumerate(rd):
+            if row_index > 0:
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, int_column=int_column)
+                    key = row[0].split("/")[0]
+                hair_colour_list[key] = row[1:]
 
 
 def load_animation_pool(main_dir):
@@ -97,6 +130,53 @@ def load_animation_pool(main_dir):
         edit_file.close()
 
     return {"generic_animation_pool": generic_animation_pool, "skel_joint_list": skel_joint_list, "weapon_joint_list": weapon_joint_list}
+
+
+def load_part_sprite_pool(main_dir, race_list, screen_scale):
+    gen_body_sprite_pool = {}
+    for race in race_list:
+        gen_body_sprite_pool[race] = {}
+        for direction in direction_list:
+            part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
+            try:
+                subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+                gen_body_sprite_pool[race][direction] = {}
+                for folder in subdirectories:
+                    imgs = load_textures(main_dir, screen_scale, folder)
+                    gen_body_sprite_pool[race][direction][folder[-1]] = imgs
+            except FileNotFoundError:
+                pass
+
+    gen_weapon_sprite_pool = {}
+    part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon"))
+    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+    for folder in subdirectories:
+        gen_weapon_sprite_pool[folder[-1]] = {}
+        part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon", folder[-1]))
+        subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
+        for subfolder in subsubdirectories:
+            for direction in direction_list:
+                imgs = load_textures(main_dir, screen_scale, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
+                if direction not in gen_weapon_sprite_pool[folder[-1]]:
+                    gen_weapon_sprite_pool[folder[-1]][direction] = imgs
+                else:
+                    gen_weapon_sprite_pool[folder[-1]][direction].update(imgs)
+
+    return gen_body_sprite_pool, gen_weapon_sprite_pool
+
+
+def load_effect_sprite_pool(main_dir, screen_scale):
+    effect_sprite_pool = {}
+    part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
+    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+    for folder in subdirectories:
+        effect_sprite_pool[folder[-1]] = {}
+        part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
+        subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+        for subfolder in subsubdirectories:
+            imgs = load_textures(main_dir, screen_scale, subfolder)
+            effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
+    return effect_sprite_pool
 
 
 def read_terrain_data(main_dir):
@@ -447,6 +527,7 @@ def load_icon_data(main_dir, screen_scale):
 
     return status_images, role_images, trait_images, skill_images
 
+
 def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
 
     # v create subunit related class
@@ -468,6 +549,7 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
     # ^ End leader
     return all_weapon, all_armour, troop_data, leader_stat
 
+
 def make_event_log(battle_ui_image, screen_rect):
     event_log = battleui.EventLog(battle_ui_image["event_log.png"], (0, screen_rect.height))
     troop_log_button = battleui.UIButton(battle_ui_image["event_log_button1.png"], 0)  # war tab log
@@ -485,6 +567,7 @@ def make_event_log(battle_ui_image, screen_rect):
     event_log.log_scroll = log_scroll  # Link scroller to ui since it is easier to do here with the current order
 
     return {"event_log": event_log, "troop_log_button": troop_log_button, "event_log_button": event_log_button, "log_scroll": log_scroll}
+
 
 def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
     """create Esc menu related objects"""

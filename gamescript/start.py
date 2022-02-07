@@ -39,6 +39,8 @@ make_event_log = creation.make_event_log
 make_esc_menu = creation.make_esc_menu
 make_popup_ui = creation.make_popup_ui
 make_time_ui = creation.make_time_ui
+load_part_sprite_pool = creation.load_part_sprite_pool
+load_effect_sprite_pool = creation.load_effect_sprite_pool
 
 version_name = "Dream Decision"
 
@@ -681,6 +683,11 @@ class MainMenu:
         subunit.Subunit.generic_animation_pool = self.generic_animation_pool
         self.skel_joint_list = animation_dict["skel_joint_list"]
         self.weapon_joint_list = animation_dict["weapon_joint_list"]
+
+        self.gen_body_sprite_pool, self.gen_weapon_sprite_pool = load_part_sprite_pool(self.main_dir,
+                                                                                       [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list], self.screen_scale)
+
+        self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir, self.screen_scale)
 
         self.change_genre(self.genre)
         self.battle_game = battle.Battle(self, self.window_style)

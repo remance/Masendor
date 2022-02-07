@@ -433,17 +433,18 @@ class Battle:
             self.unit_setup()
 
         self.sprite_pool = {}
-        for direction in direction_list:
-            self.sprite_pool[direction] = {}
-        for this_subunit in self.subunit_updater:
-            if this_subunit.troop_id not in self.sprite_pool[direction_list[0]]:
-                for index, direction in enumerate(direction_list):
-                    self.sprite_pool[direction][this_subunit.troop_id] = {}
-                    for animation in self.generic_animation_pool[index]:
-                        if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
-                            for frame in range(0, animation):
-                                self.sprite_pool[direction][this_subunit.troop_id][animation] = \
-                                    make_sprite(this_subunit.size, self.generic_animation_pool[index][animation], frame)
+        # for direction in direction_list:
+        #     self.sprite_pool[direction] = {}
+        # for this_subunit in self.subunit_updater:
+        #     if this_subunit.troop_id not in self.sprite_pool[direction_list[0]]:
+        #         for index, direction in enumerate(direction_list):
+        #             self.sprite_pool[direction][this_subunit.troop_id] = {}
+        #             for animation in self.generic_animation_pool[index]:
+        #                 if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
+        #                     self.sprite_pool[direction][this_subunit.troop_id][animation[:-1]] = {}
+        #                     for frame_num, frame_data in enumerate(self.generic_animation_pool[index][animation]):
+        #                         self.sprite_pool[direction][this_subunit.troop_id][animation[:-1]][frame_num] = \
+        #                             make_sprite(this_subunit.size, frame_data, self.troop_data.troop_sprite_list[str(this_subunit.troop_id)])
         # ^ End start subunit sprite
 
     def ui_mouse_over(self):
