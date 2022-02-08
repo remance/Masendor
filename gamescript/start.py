@@ -684,9 +684,15 @@ class MainMenu:
         self.skel_joint_list = animation_dict["skel_joint_list"]
         self.weapon_joint_list = animation_dict["weapon_joint_list"]
 
-        self.gen_body_sprite_pool, self.gen_weapon_sprite_pool = load_part_sprite_pool(self.main_dir,
-                                                                                       [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list], self.screen_scale)
+        pool_dict = load_part_sprite_pool(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list],
+                                          self.screen_scale)
 
+        self.gen_body_sprite_pool = pool_dict["gen_body_sprite_pool"]
+        self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
+        self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
+
+        print(self.gen_weapon_sprite_pool)
+        print(self.gen_body_sprite_pool)
         self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir, self.screen_scale)
 
         self.change_genre(self.genre)

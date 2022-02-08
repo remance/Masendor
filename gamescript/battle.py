@@ -262,6 +262,9 @@ class Battle:
         self.battle_done_button = main.battle_done_button
 
         self.generic_animation_pool = main.generic_animation_pool
+        self.gen_body_sprite_pool = main.gen_body_sprite_pool
+        self.gen_weapon_sprite_pool = main.gen_weapon_sprite_pool
+        self.effect_sprite_pool = main.effect_sprite_pool
         # ^ End load from start_set
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
@@ -432,7 +435,7 @@ class Battle:
             self.capture_troop_number = [0, 0, 0]
             self.unit_setup()
 
-        self.sprite_pool = {}
+        # self.sprite_pool = {}
         # for direction in direction_list:
         #     self.sprite_pool[direction] = {}
         # for this_subunit in self.subunit_updater:
@@ -441,10 +444,13 @@ class Battle:
         #             self.sprite_pool[direction][this_subunit.troop_id] = {}
         #             for animation in self.generic_animation_pool[index]:
         #                 if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
+        #                     animation_property = self.generic_animation_pool[index][animation][0]["animation_property"].copy()
         #                     self.sprite_pool[direction][this_subunit.troop_id][animation[:-1]] = {}
         #                     for frame_num, frame_data in enumerate(self.generic_animation_pool[index][animation]):
+        #                         sprite_dict = make_sprite(this_subunit.size, frame_data, self.troop_data.troop_sprite_list[str(this_subunit.troop_id)],
+        #                                          self.gen_body_sprite_pool, self.gen_weapon_sprite_pool, self.effect_sprite_pool, animation_property)
         #                         self.sprite_pool[direction][this_subunit.troop_id][animation[:-1]][frame_num] = \
-        #                             make_sprite(this_subunit.size, frame_data, self.troop_data.troop_sprite_list[str(this_subunit.troop_id)])
+        #                             {"sprite": sprite_dict["sprite"], "animation_property": sprite_dict["animation_property"], "frame_property": sprite_dict["frame_property"]}
         # ^ End start subunit sprite
 
     def ui_mouse_over(self):

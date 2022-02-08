@@ -64,7 +64,6 @@ def load_textures(main_dir, screen_scale, subfolder=None):
     if subfolder is not None:
         for folder in subfolder:
             dir_path = os.path.join(dir_path, folder)
-
     load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
     load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
     for file in load_order_file:

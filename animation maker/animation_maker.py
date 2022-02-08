@@ -142,6 +142,8 @@ def reload_animation(animation, char):
     face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
             char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
     head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
+    p1_armour_selector.change_name(skeleton.armour["p1_armour"])
+    p2_armour_selector.change_name(skeleton.armour["p2_armour"])
     for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
         this_text = "Any"
         if face[index] not in (0, 1):
@@ -395,6 +397,30 @@ for race in race_list:
             for folder in subdirectories:
                 imgs = load_textures(main_dir, screen_scale, folder)
                 gen_body_sprite_pool[race][direction][folder[-1]] = imgs
+
+gen_armour_sprite_pool = {}
+for race in race_list:
+    gen_armour_sprite_pool[race] = {}
+    for direction in direction_list:
+        try:
+            part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour"))
+            subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
+            for subfolder in subdirectories:
+                part_subsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1]))
+                subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subsubfolder.iterdir() if x.is_dir()]
+                if subfolder[-1] not in gen_armour_sprite_pool[race]:
+                    gen_armour_sprite_pool[race][subfolder[-1]] = {}
+                for subsubfolder in subsubdirectories:
+                    if subsubfolder[-1] not in gen_armour_sprite_pool[race][subfolder[-1]]:
+                        gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]] = {}
+                    gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction] = {}
+                    body_subsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
+                    body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
+                    for body_folder in body_directories:
+                        imgs = load_textures(main_dir, screen_scale, ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
+                        gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
+        except FileNotFoundError:
+            pass
 
 gen_weapon_sprite_pool = {}
 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon"))
@@ -793,6 +819,7 @@ class Skeleton:
         self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.weapon = {"p1_main_weapon": "Sword", "p1_sub_weapon": "Sword", "p2_main_weapon": "Sword", "p2_sub_weapon": "Sword"}
+        self.armour = {"p1_armour": "None", "p2_armour": "None"}
         self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0, 1]
         self.random_face()
         self.size = 1  # size scale of sprite
@@ -974,7 +1001,7 @@ class Skeleton:
             p1_head_race = bodypart_list["p1_head"][0]
             p1_head_side = bodypart_list["p1_head"][1]
             p1_head = gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy()
-            p1_head_sprite_surface = pygame.Surface((p1_head.get_width(), p1_head.get_height()), pygame.SRCALPHA)
+            p1_head_sprite_surface = pygame.Surface(p1_head.get_size(), pygame.SRCALPHA)
             head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
             p1_head_sprite_surface.blit(p1_head, head_rect)
             p1_face = [gen_body_sprite_pool[p1_head_race][p1_head_side]["eyebrow"][self.p1_eyebrow].copy(),
@@ -994,10 +1021,17 @@ class Skeleton:
             for index, item in enumerate(p1_face):
                 rect = item.get_rect(topleft=(0, 0))
                 p1_head_sprite_surface.blit(item, rect)
+
         except KeyError:  # some head direction show no face
             pass
         except TypeError:  # empty
             pass
+
+        if self.armour["p1_armour"] != "None":
+            armour = self.armour["p1_armour"].split("/")
+            gear_image = gen_armour_sprite_pool[p1_head_race][armour[0]][armour[1]][p1_head_side]["helmet"][bodypart_list["p1_head"][2]].copy()
+            rect = gear_image.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
+            p1_head_sprite_surface.blit(gear_image, rect)
 
         p2_head_sprite_surface = None
         try:
@@ -1027,6 +1061,12 @@ class Skeleton:
             pass
         except TypeError:  # empty
             pass
+
+        if self.armour["p2_armour"] != "None":
+            armour = self.armour["p2_armour"].split("/")
+            gear_image = gen_armour_sprite_pool[p2_head_race][armour[0]][armour[1]][p2_head_side]["helmet"][bodypart_list["p2_head"][2]].copy()
+            rect = gear_image.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
+            p2_head_sprite_surface.blit(gear_image, rect)
 
         self.sprite_image = {key: None for key in self.rect_part_list.keys()}
         except_list = ["eye", "mouth", "head"]  # skip doing these
@@ -1152,6 +1192,17 @@ class Skeleton:
             self.part_name_list[current_frame] = partname_history[current_history]
             self.animation_part_list[current_frame] = animation_history[current_history]
             self.bodypart_list[current_frame] = bodypart_history[current_history]
+
+        elif "armour" in edit_type:
+            if "p1_" in edit_type:
+                self.armour["p1_armour"] = edit_type[10:]
+            elif "p2_" in edit_type:
+                self.armour["p2_armour"] = edit_type[10:]
+            main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+            part = "p1_head"
+            if "p2_" in edit_type:
+                part = "p2_head"
+            self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
@@ -1641,10 +1692,14 @@ race_part_button = Button("", image, (reset_button.image.get_width() / 2,
                                       p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_button.image.get_width(),
                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p1_armour_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 4.2)))
 p1_eye_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
                                                       p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
 p1_mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
                                                         p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
+p2_armour_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
+                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 4.2)))
 p2_eye_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
                                                       p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
 p2_mouth_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
@@ -1891,6 +1946,13 @@ while True:
                                 skeleton.edit_part(mouse_pos, "part_" + name.name)
                             elif popup_listbox.action == "race_select":
                                 skeleton.edit_part(mouse_pos, "race_" + name.name)
+                            elif "armour" in popup_listbox.action:
+                                skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "armour_" + name.name)
+                                reload_animation(anim, skeleton)
+                                if "p1" in popup_listbox.action:
+                                    p1_armour_selector.change_name(name.name)
+                                elif "p2" in popup_listbox.action:
+                                    p2_armour_selector.change_name(name.name)
                             elif "eye" in popup_listbox.action:
                                 skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
                                 reload_animation(anim, skeleton)
@@ -2160,6 +2222,22 @@ while True:
                                 part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
                             popup_list_open("part_select", part_selector.rect.topleft, part_list, "bottom")
 
+                    elif p1_armour_selector.rect.collidepoint(mouse_pos):
+                        armour_part_list = []
+                        for item in list(gen_armour_sprite_pool[skeleton.p1_race].keys()):
+                            for armour in gen_armour_sprite_pool[skeleton.p1_race][item]:
+                                armour_part_list.append(item + "/" + armour)
+                        part_list = ["None"] + armour_part_list
+                        popup_list_open("p1_armour_select", p1_armour_selector.rect.topleft, part_list, "bottom")
+
+                    elif p2_armour_selector.rect.collidepoint(mouse_pos):
+                        armour_part_list = []
+                        for item in list(gen_armour_sprite_pool[skeleton.p2_race].keys()):
+                            for armour in gen_armour_sprite_pool[skeleton.p2_race][item]:
+                                armour_part_list.append(item + "/" + armour)
+                        part_list = ["None"] + armour_part_list
+                        popup_list_open("p2_armour_select", p2_armour_selector.rect.topleft, part_list, "bottom")
+
                     elif p1_eye_selector.rect.collidepoint(mouse_pos):
                         part_list = ["Any"] + list(gen_body_sprite_pool[skeleton.p1_race][direction_list[skeleton.side]]["eye"].keys())
                         popup_list_open("p1_eye_select", p1_eye_selector.rect.topleft, part_list, "bottom")
@@ -2392,7 +2470,7 @@ while True:
                     anim.speed_ms = (500 / new_speed) / 1000
 
             elif text_input_popup[1] == "new_anim_prop":
-                if input_box.text not in anim_prop_listbox:
+                if input_box.text not in anim_prop_listbox.namelist:
                     anim_prop_listbox.namelist.insert(-1, input_box.text)
                 if input_box.text not in anim_property_select:
                     anim_property_select.append(input_box.text)
@@ -2402,7 +2480,7 @@ while True:
                     frame["animation_property"] = anim_property_select
 
             elif text_input_popup[1] == "new_frame_prop":
-                if input_box.text not in frame_prop_listbox:
+                if input_box.text not in frame_prop_listbox.namelist:
                     frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
                 if input_box.text not in frame_property_select[current_frame]:
                     frame_property_select[current_frame].append(input_box.text)
