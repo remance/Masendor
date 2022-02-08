@@ -45,7 +45,7 @@ frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "
                        "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
 anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation After 1.0: unique, lock?, cloth sample
+# TODO animation After 1.0: unique, lock?
 
 
 def apply_colour(surface, colour=None):
@@ -128,17 +128,17 @@ def popup_list_open(action, new_rect, new_list, ui_type):
     setup_list(menu.NameList, 0, new_list, popup_namegroup,
                popup_listbox, ui, layer=19)
 
-    popup_listscroll.pos = popup_listbox.rect.topright  # change position variable
-    popup_listscroll.rect = popup_listscroll.image.get_rect(topleft=popup_listbox.rect.topright)
-    popup_listscroll.change_image(new_row=0, log_size=len(new_list))
-    ui.add(popup_listbox, *popup_namegroup, popup_listscroll)
+    popup_list_scroll.pos = popup_listbox.rect.topright  # change position variable
+    popup_list_scroll.rect = popup_list_scroll.image.get_rect(topleft=popup_listbox.rect.topright)
+    popup_list_scroll.change_image(new_row=0, log_size=len(new_list))
+    ui.add(popup_listbox, *popup_namegroup, popup_list_scroll)
 
     popup_listbox.type = ui_type
 
 
 def reload_animation(animation, char):
     """Reload animation frames"""
-    frames = [pygame.transform.smoothscale(thisimage, showroom.size) for thisimage in char.animation_list if thisimage is not None]
+    frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if this_image is not None]
     face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
             char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
     head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
@@ -213,8 +213,8 @@ def change_animation(new_name):
     animation_name = new_name
     animation_selector.change_name(new_name)
     reload_animation(anim, skeleton)
-    anim_prop_listscroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
-    frame_prop_listscroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
+    anim_prop_list_scroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
+    frame_prop_list_scroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
 
 
 def anim_to_pool(pool, char, new=False, replace=None, duplicate=None):
@@ -566,7 +566,7 @@ class SwitchButton(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
 
 
-class Bodyhelper(pygame.sprite.Sprite):
+class BodyHelper(pygame.sprite.Sprite):
     def __init__(self, size, pos, type, part_images):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -1028,10 +1028,15 @@ class Skeleton:
             pass
 
         if self.armour["p1_armour"] != "None":
-            armour = self.armour["p1_armour"].split("/")
-            gear_image = gen_armour_sprite_pool[p1_head_race][armour[0]][armour[1]][p1_head_side]["helmet"][bodypart_list["p1_head"][2]].copy()
-            rect = gear_image.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
-            p1_head_sprite_surface.blit(gear_image, rect)
+            try:
+                armour = self.armour["p1_armour"].split("/")
+                gear_image = gen_armour_sprite_pool[p1_head_race][armour[0]][armour[1]][p1_head_side]["helmet"][bodypart_list["p1_head"][2]].copy()
+                rect = gear_image.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
+                p1_head_sprite_surface.blit(gear_image, rect)
+            except KeyError:  # skip part that not exist
+                pass
+            except UnboundLocalError:  # for when change animation
+                pass
 
         p2_head_sprite_surface = None
         try:
@@ -1063,10 +1068,15 @@ class Skeleton:
             pass
 
         if self.armour["p2_armour"] != "None":
-            armour = self.armour["p2_armour"].split("/")
-            gear_image = gen_armour_sprite_pool[p2_head_race][armour[0]][armour[1]][p2_head_side]["helmet"][bodypart_list["p2_head"][2]].copy()
-            rect = gear_image.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
-            p2_head_sprite_surface.blit(gear_image, rect)
+            try:
+                armour = self.armour["p2_armour"].split("/")
+                gear_image = gen_armour_sprite_pool[p2_head_race][armour[0]][armour[1]][p2_head_side]["helmet"][bodypart_list["p2_head"][2]].copy()
+                rect = gear_image.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
+                p2_head_sprite_surface.blit(gear_image, rect)
+            except KeyError:  # skip part that not exist
+                pass
+            except UnboundLocalError:  # for when change animation
+                pass
 
         self.sprite_image = {key: None for key in self.rect_part_list.keys()}
         except_list = ["eye", "mouth", "head"]  # skip doing these
@@ -1081,14 +1091,28 @@ class Skeleton:
                         self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][
                             bodypart_list[stuff][2]].copy()
                     else:
+                        new_part_name = stuff
                         if "p1_" in stuff or "p2_" in stuff:
                             part_name = stuff[3:]  # remove p1_ or p2_ to get part name
+                            new_part_name = part_name
                         if "special" in stuff:
                             part_name = "special"
                         if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
-                            part_name = part_name[2:]  # remove side
-                        self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][part_name][
+                            new_part_name = part_name[2:]  # remove side
+                        self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
                             bodypart_list[stuff][2]].copy()
+                        if "p1_" in stuff and self.armour["p1_armour"] != "None":
+                            try:
+                                armour = self.armour["p1_armour"].split("/")
+                                gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][bodypart_list[stuff][1]][part_name][
+                                    bodypart_list[stuff][2]].copy()
+                                rect = gear_image.get_rect(center=(self.sprite_image[stuff].get_width() / 2, self.sprite_image[stuff].get_height() / 2))
+                                self.sprite_image[stuff].blit(gear_image, rect)
+                            except KeyError:  # skip part that not exist
+                                pass
+                            except UnboundLocalError:  # for when change animation
+                                pass
+
                 elif "head" in stuff:
                     if "p1" in stuff:
                         self.sprite_image[stuff] = p1_head_sprite_surface
@@ -1143,7 +1167,7 @@ class Skeleton:
                 self.part_selected = [list(self.rect_part_list.keys()).index(part)]
 
     def edit_part(self, mouse_pos, edit_type):
-        global animation_history, bodypart_history, partname_history, current_history
+        global animation_history, body_part_history, part_name_history, current_history
         key_list = list(self.rect_part_list.keys())
         if edit_type == "default":  # reset to default
             self.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
@@ -1189,9 +1213,9 @@ class Skeleton:
                         self.part_name_list[current_frame][part_index][2] = ""
 
         elif edit_type == "undo" or edit_type == "redo":
-            self.part_name_list[current_frame] = partname_history[current_history]
+            self.part_name_list[current_frame] = part_name_history[current_history]
             self.animation_part_list[current_frame] = animation_history[current_history]
-            self.bodypart_list[current_frame] = bodypart_history[current_history]
+            self.bodypart_list[current_frame] = body_part_history[current_history]
 
         elif "armour" in edit_type:
             if "p1_" in edit_type:
@@ -1199,10 +1223,9 @@ class Skeleton:
             elif "p2_" in edit_type:
                 self.armour["p2_armour"] = edit_type[10:]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-            part = "p1_head"
-            if "p2_" in edit_type:
-                part = "p2_head"
-            self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
+            for part in self.sprite_image:
+                if self.animation_part_list[current_frame][part] is not None:
+                    self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
@@ -1242,9 +1265,9 @@ class Skeleton:
             if self.part_selected != []:
                 part = self.part_selected[-1]
                 part_index = key_list[part]
-                partchange = edit_type[5:]
-                self.bodypart_list[current_frame][part_index][2] = partchange
-                self.part_name_list[current_frame][part_index][2] = partchange
+                part_change = edit_type[5:]
+                self.bodypart_list[current_frame][part_index][2] = part_change
+                self.part_name_list[current_frame][part_index][2] = part_change
                 main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
                 if self.animation_part_list[current_frame][part_index] == []:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
@@ -1260,15 +1283,15 @@ class Skeleton:
             if self.part_selected != []:
                 part = self.part_selected[-1]
                 part_index = key_list[part]
-                partchange = edit_type[5:]
+                part_change = edit_type[5:]
                 if "weapon" in part_index:
-                    self.weapon[part_index] = partchange
+                    self.weapon[part_index] = part_change
                 if self.bodypart_list[current_frame][part_index] is None:
                     self.bodypart_list[current_frame][part_index] = [0, 0, 0]
                     self.part_name_list[current_frame][part_index] = ["", "", ""]
                     self.animation_part_list[current_frame][part_index] = []
-                self.bodypart_list[current_frame][part_index][0] = partchange
-                self.part_name_list[current_frame][part_index][0] = partchange
+                self.bodypart_list[current_frame][part_index][0] = part_change
+                self.part_name_list[current_frame][part_index][0] = part_change
                 try:
                     main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
                     self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
@@ -1445,28 +1468,28 @@ class Skeleton:
             anim_to_pool(current_pool, self, new=True)
 
             # reset history when change frame or create new animation
-            partname_history = partname_history[-1:] + [self.part_name_list[current_frame]]
+            part_name_history = part_name_history[-1:] + [self.part_name_list[current_frame]]
             animation_history = animation_history[-1:] + [self.animation_part_list[current_frame]]
-            bodypart_history = bodypart_history[-1:] + [self.bodypart_list[current_frame]]
+            body_part_history = body_part_history[-1:] + [self.bodypart_list[current_frame]]
             current_history = 0
 
         elif edit_type != "undo" and edit_type != "redo":
             if current_history < len(animation_history) - 1:
-                partname_history = partname_history[:current_history + 1]
+                part_name_history = part_name_history[:current_history + 1]
                 animation_history = animation_history[:current_history + 1]
-                bodypart_history = bodypart_history[:current_history + 1]
+                body_part_history = body_part_history[:current_history + 1]
 
             animation_history.append(
                 {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[current_frame].items()})
-            bodypart_history.append({key: value for key, value in self.bodypart_list[current_frame].items()})
-            partname_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
+            body_part_history.append({key: value for key, value in self.bodypart_list[current_frame].items()})
+            part_name_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
             current_history += 1
 
             if len(animation_history) > 1000:  # save only last 1000 activity
                 new_first = len(animation_history) - 1000
-                partname_history = partname_history[new_first:]
+                part_name_history = part_name_history[new_first:]
                 animation_history = animation_history[new_first:]
-                bodypart_history = bodypart_history[new_first:]
+                body_part_history = body_part_history[new_first:]
                 current_history -= new_first
 
     def part_to_sprite(self, surface, part, part_index, main_joint_pos, target, angle, flip, scale):
@@ -1575,13 +1598,13 @@ keypress_delay = 0
 point_edit = 0
 text_input_popup = (None, None)
 animation_history = []
-bodypart_history = []
-partname_history = []
+body_part_history = []
+part_name_history = []
 current_history = 0
 current_pool = generic_animation_pool
 
 ui = pygame.sprite.LayeredUpdates()
-fakegroup = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
+fake_group = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
 
 showroom_scale = (default_sprite_size[0] * screen_size[0] / 500, default_sprite_size[1] * screen_size[1] / 500)
 showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale[1] / default_sprite_size[1])
@@ -1602,11 +1625,11 @@ filmstrips = pygame.sprite.Group()
 
 Button.containers = ui
 SwitchButton.containers = ui
-Bodyhelper.containers = ui
+BodyHelper.containers = ui
 Joint.containers = joints
 Filmstrip.containers = ui, filmstrips
 NameBox.containers = ui
-menu.MenuButton.containers = fakegroup
+menu.MenuButton.containers = fake_group
 menu.NameList.containers = ui
 popup_listbox = pygame.sprite.Group()
 popup_namegroup = pygame.sprite.Group()
@@ -1624,12 +1647,12 @@ filmstrips.add(*filmstrip_list)
 images = load_images(current_dir, screen_scale, ["animation_maker_ui", "helper_parts"])
 body_helper_size = (370 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (250 * screen_scale[0], 270 * screen_scale[1])
-effect_helper = Bodyhelper(effect_helper_size, (screen_size[0] / 2, screen_size[1] - (body_helper_size[1] / 2)),
+effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 2, screen_size[1] - (body_helper_size[1] / 2)),
                            "effect", [images["smallbox_helper.png"]])
 del images["smallbox_helper.png"]
-p1_body_helper = Bodyhelper(body_helper_size, (body_helper_size[0] / 2,
+p1_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
                                                screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
-p2_body_helper = Bodyhelper(body_helper_size, (screen_size[0] - (body_helper_size[0] / 2),
+p2_body_helper = BodyHelper(body_helper_size, (screen_size[0] - (body_helper_size[0] / 2),
                                                screen_size[1] - (body_helper_size[1] / 2)), "p2", list(images.values()))
 helper_list = [p1_body_helper, p2_body_helper, effect_helper]
 
@@ -1661,8 +1684,8 @@ speed_button = Button("Speed: 1", image, (play_animation_button.pos[0] + play_an
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-pointedit_button = SwitchButton(["Center", "Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
-                                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+point_edit_button = SwitchButton(["Center", "Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
+                                                              filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 3,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 activate_button = SwitchButton(["Enable", "Disable"], image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 4,
@@ -1746,31 +1769,31 @@ box_img = load_image(main_dir, screen_scale, "unit_presetbox.png", "ui\\mainmenu
 
 menu.ListBox.containers = popup_listbox
 popup_listbox = menu.ListBox(screen_scale, (0, 0), box_img, 15)  # popup box need to be in higher layer
-popup_listscroll = battleui.UIScroller(popup_listbox.rect.topright,
-                                       popup_listbox.image.get_height(),
-                                       popup_listbox.max_show,
-                                       layer=14)
+popup_list_scroll = battleui.UIScroller(popup_listbox.rect.topright,
+                                        popup_listbox.image.get_height(),
+                                        popup_listbox.max_show,
+                                        layer=14)
 anim_prop_listbox = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
                                                 (reset_button.image.get_height() * 1.5)), box_img, 8)
 anim_prop_listbox.namelist = anim_property_list + ["Custom"]
 frame_prop_listbox = menu.ListBox(screen_scale, (screen_size[0] - box_img.get_width(), filmstrip_list[0].rect.midbottom[1] +
                                                  (reset_button.image.get_height() * 1.5)), box_img, 8)
 frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
-anim_prop_listscroll = battleui.UIScroller(anim_prop_listbox.rect.topright,
-                                           anim_prop_listbox.image.get_height(),
-                                           anim_prop_listbox.max_show,
-                                           layer=10)
-frame_prop_listscroll = battleui.UIScroller(frame_prop_listbox.rect.topright,
-                                            frame_prop_listbox.image.get_height(),
-                                            frame_prop_listbox.max_show,
+anim_prop_list_scroll = battleui.UIScroller(anim_prop_listbox.rect.topright,
+                                            anim_prop_listbox.image.get_height(),
+                                            anim_prop_listbox.max_show,
                                             layer=10)
+frame_prop_list_scroll = battleui.UIScroller(frame_prop_listbox.rect.topright,
+                                             frame_prop_listbox.image.get_height(),
+                                             frame_prop_listbox.max_show,
+                                             layer=10)
 current_anim_row = 0
 current_frame_row = 0
 frame_property_select = [[] for _ in range(10)]
 anim_property_select = []
-anim_prop_listscroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
-frame_prop_listscroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
-ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_listscroll, frame_prop_listscroll)
+anim_prop_list_scroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
+frame_prop_list_scroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
+ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_list_scroll, frame_prop_list_scroll)
 
 animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
 part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
@@ -1795,8 +1818,8 @@ else:
     skeleton.animation_list = [None] * 10
     skeleton.edit_part(None, "new")
 animation_history.append({key: (value[:] if value is not None else value) for key, value in skeleton.animation_part_list[current_frame].items()})
-bodypart_history.append({key: value for key, value in skeleton.bodypart_list[current_frame].items()})
-partname_history.append({key: value for key, value in skeleton.part_name_list[current_frame].items()})
+body_part_history.append({key: value for key, value in skeleton.bodypart_list[current_frame].items()})
+part_name_history.append({key: value for key, value in skeleton.part_name_list[current_frame].items()})
 
 while True:
     dt = clock.get_time() / 1000
@@ -1847,17 +1870,17 @@ while True:
                 else:  # Mouse scroll down
                     mouse_scroll_down = True
                 if popup_listbox in ui and popup_listbox.rect.collidepoint(mouse_pos):
-                    current_popup_row = list_scroll(popup_listscroll, popup_listbox, current_popup_row, popup_listbox.namelist, popup_namegroup, ui)
+                    current_popup_row = list_scroll(popup_list_scroll, popup_listbox, current_popup_row, popup_listbox.namelist, popup_namegroup, ui)
                 elif skeleton.part_selected != [] and showroom.rect.collidepoint(mouse_pos):
                     if event.button == 4:  # Mouse scroll up
                         skeleton.edit_part(mouse_pos, "scale_up")
                     else:  # Mouse scroll down
                         skeleton.edit_part(mouse_pos, "scale_down")
-                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or anim_prop_listscroll.rect.collidepoint(mouse_pos):
-                    current_anim_row = list_scroll(anim_prop_listscroll, anim_prop_listbox, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup, ui,
+                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or anim_prop_list_scroll.rect.collidepoint(mouse_pos):
+                    current_anim_row = list_scroll(anim_prop_list_scroll, anim_prop_listbox, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup, ui,
                                                    old_list=anim_property_select)
-                elif frame_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_listscroll.rect.collidepoint(mouse_pos):
-                    current_frame_row = list_scroll(frame_prop_listscroll, frame_prop_listbox, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup, ui,
+                elif frame_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_list_scroll.rect.collidepoint(mouse_pos):
+                    current_frame_row = list_scroll(frame_prop_list_scroll, frame_prop_listbox, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup, ui,
                                                     old_list=frame_property_select[current_frame])
 
         elif event.type == pygame.KEYDOWN:
@@ -1976,12 +1999,12 @@ while True:
                             for this_name in popup_namegroup:  # remove name list
                                 this_name.kill()
                                 del this_name
-                            ui.remove(popup_listbox, popup_listscroll)
+                            ui.remove(popup_listbox, popup_list_scroll)
                             current_popup_row = 0  # reset row
 
-                elif popup_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                elif popup_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     popup_click = True
-                    new_row = popup_listscroll.user_input(mouse_pos)
+                    new_row = popup_list_scroll.user_input(mouse_pos)
                     if new_row is not None:
                         current_popup_row = new_row
                         setup_list(menu.NameList, current_popup_row, popup_listbox.namelist, popup_namegroup,
@@ -1991,7 +2014,7 @@ while True:
                     for this_name in popup_namegroup:  # remove name list
                         this_name.kill()
                         del this_name
-                    ui.remove(popup_listbox, popup_listscroll)
+                    ui.remove(popup_listbox, popup_list_scroll)
 
             if popup_click is False:  # button that can be clicked even when animation playing
                 if play_animation_button.rect.collidepoint(mouse_pos):
@@ -2011,12 +2034,12 @@ while True:
                         grid_button.change_option(0)
                         showroom.grid = True
 
-                elif pointedit_button.rect.collidepoint(mouse_pos):
-                    if pointedit_button.current_option == 0:
-                        pointedit_button.change_option(1)  # use center point for edit
+                elif point_edit_button.rect.collidepoint(mouse_pos):
+                    if point_edit_button.current_option == 0:
+                        point_edit_button.change_option(1)  # use center point for edit
                     else:
-                        pointedit_button.change_option(0)  # use joint point for edit
-                    point_edit = pointedit_button.current_option
+                        point_edit_button.change_option(0)  # use joint point for edit
+                    point_edit = point_edit_button.current_option
 
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # remove joint sprite
@@ -2026,15 +2049,15 @@ while True:
                         joint_button.change_option(0)
                         show_joint = True
 
-                elif anim_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = anim_prop_listscroll.user_input(mouse_pos)
+                elif anim_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                    new_row = anim_prop_list_scroll.user_input(mouse_pos)
                     if new_row is not None:
                         current_anim_row = new_row
                         setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                                    anim_prop_listbox, ui, layer=9, old_list=anim_property_select)
 
-                elif frame_prop_listscroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = frame_prop_listscroll.user_input(mouse_pos)
+                elif frame_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                    new_row = frame_prop_list_scroll.user_input(mouse_pos)
                     if new_row is not None:
                         current_frame_row = new_row
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,

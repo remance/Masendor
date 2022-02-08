@@ -438,7 +438,7 @@ class MainMenu:
         self.profile_name = self.profile_name
         profile_box_image = load_image(self.main_dir, self.screen_scale, "profile_box.png", "ui\\mainmenu_ui")
         self.profile_box = menu.TextBox(self.screen_scale, profile_box_image, (self.screen_width, 0),
-                                           self.profile_name)  # profile name box at top right of screen at start_set menu screen
+                                        self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
         # Music player
         if pygame.mixer:
@@ -691,8 +691,6 @@ class MainMenu:
         self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
         self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
 
-        print(self.gen_weapon_sprite_pool)
-        print(self.gen_body_sprite_pool)
         self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir, self.screen_scale)
 
         self.change_genre(self.genre)
