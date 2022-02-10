@@ -20,11 +20,11 @@ The unit_preset data structure is as follows;
 
 - Stat of the sub-unit. The higher the number, the better the unit perform in that aspect.
 
-- Armour is the armour equipment, must be in 3 int number (e.g. 1,1,5 armourid, grade, variant (only for mode with sprite))
+- Armour is the armour equipment, must be in 3 int number (e.g. 1,1 armourid, grade)
 
 - Charge skill is the skill that unit use for charging. It is possible to use other skill than the "charge one" but it may has some unexpected result. Does not accept list number. Use 21 for default charge
 
-- Melee weapon is the melee weapon this sub-unit equipped with, must be in 3 int number (e.g. 1,1,5 weaponid, grade, variant (only for mode with sprite)). The format must be (weaponid,quality). The quality is as follows; 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect
+- Melee weapon is the melee weapon this sub-unit equipped with, must be in 2 int number (e.g. 1,1 weaponid, grade). The format must be (weaponid,quality). The quality is as follows; 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect
 
 - Range weapon is similar to melee weapon but is only used when perform range attack, must be in 3 int number (e.g. 1,1,5 weaponid, grade, variant(only for mode with sprite)). it is acceptable to be unarmed for range weapon, simply put in 1,0. Note that unarmed does not stop sub-unit from doing range attack if it has ammunition.
 

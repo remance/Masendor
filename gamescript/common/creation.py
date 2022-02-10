@@ -46,6 +46,7 @@ def read_colour(main_dir):
                     row = stat_convert(row, n, i, int_column=int_column)
                     key = row[0].split("/")[0]
                 hair_colour_list[key] = row[1:]
+    return skin_colour_list, hair_colour_list
 
 
 def load_animation_pool(main_dir):
@@ -79,7 +80,7 @@ def load_animation_pool(main_dir):
         edit_file.close()
 
     skel_joint_list = []
-    for race in ["human", "horse"]:  # TODO change later when has more race
+    for race in ["Human", "Horse"]:  # TODO change later when has more race
         for direction in direction_list:
             with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
                       mode="r") as edit_file:
@@ -101,7 +102,7 @@ def load_animation_pool(main_dir):
                 skel_joint_list.append(joint_list)
             edit_file.close()
 
-    weapon_joint_list = []
+    weapon_joint_list = {}
     for direction in direction_list:
         with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", direction + "_joint.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -122,11 +123,7 @@ def load_animation_pool(main_dir):
                     else:
                         position = pygame.Vector2(position[0], position[1])
 
-                    if key in joint_list:
-                        joint_list[key].append({row[0]: position})
-                    else:
-                        joint_list[key] = [{row[0]: position}]
-            weapon_joint_list.append(joint_list)
+                    weapon_joint_list[key] = position
         edit_file.close()
 
     return {"generic_animation_pool": generic_animation_pool, "skel_joint_list": skel_joint_list, "weapon_joint_list": weapon_joint_list}

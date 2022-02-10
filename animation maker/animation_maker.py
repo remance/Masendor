@@ -282,13 +282,13 @@ with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="u
         for n, i in enumerate(row):
             if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                 row[n] = float(i)
-        race_list.append(row[1].lower())
+        race_list.append(row[1])
         race_acro.append(row[3])
 edit_file.close()
 
 race_list = race_list[2:]  # remove header and any race
 race_acro = race_acro[2:]
-race_accept = ["human", "horse"]  # for now accept only human race
+race_accept = ["Human", "Horse"]  # for now accept only Human race
 
 generic_animation_pool = []
 for direction in direction_list:
@@ -810,8 +810,8 @@ class Skeleton:
                               "dmg_effect_1": None, "dmg_effect_2": None, "special_1": None, "special_2": None,
                               "special_3": None, "special_4": None, "special_5": None}
         self.part_selected = []
-        self.p1_race = "human"
-        self.p2_race = "human"
+        self.p1_race = "Human"
+        self.p2_race = "Human"
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
         self.p1_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]

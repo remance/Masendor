@@ -41,6 +41,7 @@ make_popup_ui = creation.make_popup_ui
 make_time_ui = creation.make_time_ui
 load_part_sprite_pool = creation.load_part_sprite_pool
 load_effect_sprite_pool = creation.load_effect_sprite_pool
+read_colour = creation.read_colour
 
 version_name = "Dream Decision"
 
@@ -692,6 +693,8 @@ class MainMenu:
         self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
 
         self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir, self.screen_scale)
+
+        self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
 
         self.change_genre(self.genre)
         self.battle_game = battle.Battle(self, self.window_style)
