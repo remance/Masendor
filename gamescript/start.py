@@ -681,7 +681,7 @@ class MainMenu:
 
         animation_dict = load_animation_pool(self.main_dir)
         self.generic_animation_pool = animation_dict["generic_animation_pool"]
-        subunit.Subunit.generic_animation_pool = self.generic_animation_pool
+
         self.skel_joint_list = animation_dict["skel_joint_list"]
         self.weapon_joint_list = animation_dict["weapon_joint_list"]
 

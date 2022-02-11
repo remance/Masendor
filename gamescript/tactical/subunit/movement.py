@@ -44,10 +44,10 @@ def rotate_logic(self, dt):
 
 def rotate(self):
     """rotate sprite image may use when subunit can change direction independently from unit"""
-    self.image = pygame.transform.rotate(self.image_original, self.angle)
+    self.image = pygame.transform.rotate(self.inspect_image_original, self.angle)
     if self.unit.selected and self.state != 100:
-        self.selected_image = pygame.transform.rotate(self.selected_image_original, self.angle)
-        self.image.blit(self.selected_image, self.selected_image_rect)
+        self.selected_inspect_image = pygame.transform.rotate(self.selected_inspect_image_original, self.angle)
+        self.image.blit(self.selected_inspect_image, self.selected_inspect_image_rect)
     self.rect = self.image.get_rect(center=self.pos)
 
 

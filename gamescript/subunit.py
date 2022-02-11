@@ -46,7 +46,7 @@ class Subunit(pygame.sprite.Sprite):
     armour_list = None
     stat_list = None
     status_list = None
-    generic_animation_pool = None
+    animation_sprite_pool = None
     max_zoom = 10  # max zoom allow
     screen_scale = (1, 1)
 
@@ -91,7 +91,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
-        self.current_frame = 0
+        self.show_frame = 0
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -165,6 +165,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_range = 0
         self.weapon_speed = 0
         self.magazine_size = 0
+        self.equiped_weapon = 0
 
         self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
         self.original_discipline = stat["Discipline"] + grade_stat["Discipline Bonus"]  # discipline with grade bonus
@@ -403,32 +404,30 @@ class Subunit(pygame.sprite.Sprite):
             self.image = self.block
             self.pos = start_pos
             self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
-            self.image_original = self.block_original
+            self.inspect_image_original = self.block_original
             self.coa = self.unit.coa
             self.commander = True
 
         self.rect = self.image.get_rect(center=self.pos)
 
     def zoom_scale(self):
-        """camera zoom change and rescale the sprite and position scale"""
-        if self.zoom != 1:
-            self.image_original = self.image_original3.copy()  # reset image for new scale
-            scale_width = self.image_original.get_width() * self.zoom / self.max_zoom
-            scale_height = self.image_original.get_height() * self.zoom / self.max_zoom
-            dim = pygame.Vector2(scale_width, scale_height)
-            self.image = pygame.transform.scale(self.image_original, (int(dim[0]), int(dim[1])))
-
-            if self.unit.selected and self.state != 100:
-                self.selected_image_original = pygame.transform.scale(self.selected_image_original2, (int(dim[0]), int(dim[1])))
-        else:
-            self.image_original = self.far_image.copy()
-            self.image = self.image_original.copy()
-            if self.unit.selected and self.state != 100:
-                self.selected_image_original = self.far_selected_image.copy()
-        self.image_original = self.image.copy()
-        self.image_original2 = self.image.copy()
+        """camera zoom change and rescale the sprite and position scale, sprite closer zoom will be scale in the play animation function instead"""
+        if self.zoom < 5:
+            if self.zoom > 1:
+                self.inspect_image_original = self.inspect_image_original3.copy()  # reset image for new scale
+                dim = pygame.Vector2(self.inspect_image_original.get_width() * self.zoom / self.max_zoom, self.inspect_image_original.get_height() * self.zoom / self.max_zoom)
+                self.image = pygame.transform.scale(self.inspect_image_original, (int(dim[0]), int(dim[1])))
+                if self.unit.selected and self.state != 100:
+                    self.selected_inspect_image_original = pygame.transform.scale(self.selected_inspect_image_original2, (int(dim[0]), int(dim[1])))
+            else:  # furthest zoom
+                self.inspect_image_original = self.far_image.copy()
+                self.image = self.inspect_image_original.copy()
+                if self.unit.selected and self.state != 100:
+                    self.selected_inspect_image_original = self.far_selected_image.copy()
+            self.inspect_image_original = self.image.copy()
+            self.inspect_image_original2 = self.image.copy()
+            self.rotate()
         self.change_pos_scale()
-        self.rotate()
 
     def change_pos_scale(self):
         """Change position variable to new camera scale"""
@@ -611,9 +610,7 @@ class Subunit(pygame.sprite.Sprite):
         pygame.draw.circle(far_selected_image, (0, 0, 0), (far_selected_image.get_width() / 2, far_selected_image.get_height() / 2),
                            far_selected_image.get_width() / 2, 4)
 
-        scale_width = sprite_image.get_width() * 1 / self.max_zoom
-        scale_height = sprite_image.get_height() * 1 / self.max_zoom
-        dim = pygame.Vector2(scale_width, scale_height)
+        dim = pygame.Vector2(sprite_image.get_width() * 1 / self.max_zoom, sprite_image.get_height() * 1 / self.max_zoom)
         far_image = pygame.transform.scale(far_image, (int(dim[0]), int(dim[1])))
         far_selected_image = pygame.transform.scale(far_selected_image, (int(dim[0]), int(dim[1])))
 
@@ -670,6 +667,10 @@ class Subunit(pygame.sprite.Sprite):
             self.last_zoom = zoom
             self.zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
+        if self.zoom > 5:  # TODO add weapon speicifc action condition
+            self.image = pygame.Surface((100, 100), pygame.SRCALPHA)
+            self.current_animation = self.animation_sprite_pool[self.troop_id]["Human_Default/" + str(self.equiped_weapon)]["side"]  # change later
+            self.play_animation(self.image, self.zoom / self.max_zoom, 1, self.current_animation)
 
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
@@ -716,8 +717,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.morale_logic(dt, parent_state)
 
                 self.health_stamina_logic(dt)
-
-                # self.play_animation(self.image, position, speed, play_list)
 
             if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
                                            self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
