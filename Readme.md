@@ -35,7 +35,7 @@ If anyone is interested in another similar game like this, there is an interesti
 
 # How to run/compile
 
-If you want to download the release version to test the game, go to [Release tags](https://github.com/remance/Masendor/releases) and [**download**](https://github.com/remance/Masendor/releases/download/0.6.2.3/Dream.Decision.zip) the zip file. <br>
+If you want to download the release version to test the game, go to [Release](https://github.com/remance/Masendor/releases) tags and [**download**](https://github.com/remance/Masendor/releases/download/0.6.2.3/Dream.Decision.zip) the zip file. <br>
 
 ## Run
 To start testing the game run main.py for the source code or main.exe for the release version. <br>
