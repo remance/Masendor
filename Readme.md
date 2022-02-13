@@ -19,6 +19,8 @@ If anyone is interested in another similar game like this, there is an interesti
 # Index
 
 - [How to run/compile](#how-to-runcompile)
+  - [Run](#run)
+  - [Compile](#compile)
 - [Latest Update](#latest-update)
 - [Key features so far](#key-features-so-far)
   - [History is told by the victor, but sometimes the words of the loser do not fade away](#history-is-told-by-the-victor-but-sometimes-the-words-of-the-loser-do-not-fade-away)
@@ -34,8 +36,12 @@ If anyone is interested in another similar game like this, there is an interesti
 # How to run/compile
 
 If you want to download the release version to test the game, go to [Release tags](https://github.com/remance/Masendor/releases) and [**download**](https://github.com/remance/Masendor/releases/download/0.6.2.3/Dream.Decision.zip) the zip file. <br>
+
+## Run
 To start testing the game run main.py for the source code or main.exe for the release version. <br>
-To compile the source code into exe, I would recommend using main.spec to compile the game. 
+
+## Compile
+To compile the source code into exe, I would recommend using main.spec to compile the game. <br>
 The main.spec compile only main.py so you will need to copy gamescript, data, profile folder manually to the distribute folder after.
 
 Check the [requirements.txt](requirements.txt) file for dependency requirements if running with the python source code. 
