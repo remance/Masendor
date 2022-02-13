@@ -1,4 +1,6 @@
-![alt text](https://github.com/remance/preview/blob/main/pygamelogo.gif?raw=true)
+<div align="center">    
+    <img src="https://github.com/remance/preview/blob/main/pygamelogo.gif?raw=true" alt="Pygame Logo">
+</div>
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.gif?raw=true)
 
