@@ -16,6 +16,21 @@ If anyone is interested in another similar game like this, there is an interesti
 
 ---------------
 
+# Index
+
+- [How to run/compile](#how-to-runcompile)
+- [Latest Update](#latest-update)
+- [Key features so far](#key-features-so-far)
+  - [History is told by the victor, but sometimes the words of the loser do not fade away](#history-is-told-by-the-victor-but-sometimes-the-words-of-the-loser-do-not-fade-away)
+  - [Army is led by more than just a king](#army-is-led-by-more-than-just-a-king)
+  - [Complex troop Statistic System](#complex-troop-statistic-system)
+  - [Custom Unit Creator](#custom-unit-creator)
+  - [Extremely easy map creation](#extremely-easy-map-creation)
+  - [Encyclopedia and stuff](#encyclopedia-and-stuff)
+- [Future Plan](#future-plan)
+
+---
+
 # How to run/compile
 
 If you want to download the release version to test the game, go to release tags (https://github.com/remance/Masendor/releases) and download the zip file. 
