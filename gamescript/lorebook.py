@@ -202,7 +202,7 @@ class Lorebook(pygame.sprite.Sprite):
         make_long_text = utility.make_long_text
 
         stat = self.stat_data[self.subsection]
-        if self.section != self.leader_section:  # other sections
+        if self.section != self.equipment_section:  # other sections
             header = self.section_list[self.section][0]["ID"]
             if type(header) == list:  # some data is in list format like lore and concept
                 stat_header = header[1:-2]

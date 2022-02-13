@@ -66,7 +66,8 @@ class WeaponData:
                     if row_index > 0:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                    self.weapon_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        print(self.weapon_list)
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
 
@@ -115,7 +116,6 @@ class TroopData:
                            "Mount", "Role", "Ruleset"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.troop_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd):
                 if row_index > 0:  # skip convert header row
                     for n, i in enumerate(row):
