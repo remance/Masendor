@@ -1499,11 +1499,11 @@ class Skeleton:
             part_rotated = pygame.transform.scale(part_rotated, (part_rotated.get_width() * scale,
                                                                  part_rotated.get_height() * scale))
         if flip != 0:
-            if flip == 1:
+            if flip == 1:  # horizontal only
                 part_rotated = pygame.transform.flip(part_rotated, True, False)
-            elif flip == 2:
+            elif flip == 2:  # vertical only
                 part_rotated = pygame.transform.flip(part_rotated, False, True)
-            elif flip == 3:
+            elif flip == 3:  # flip both direction
                 part_rotated = pygame.transform.flip(part_rotated, True, True)
         if angle != 0:
             part_rotated = pygame.transform.rotate(part_rotated, angle)  # rotate part sprite

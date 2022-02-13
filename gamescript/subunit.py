@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 import pygame
 import pygame.freetype
@@ -92,6 +93,7 @@ class Subunit(pygame.sprite.Sprite):
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0
+        self.first_time = time.time()
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -253,50 +255,26 @@ class Subunit(pygame.sprite.Sprite):
         self.base_elem_melee = self.original_elem_melee
         self.base_elem_range = self.original_elem_range
 
-        if genre == "tactical":
-            self.add_weapon_stat()
-            if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
-                self.add_mount_stat()
+        self.add_weapon_stat()
+        if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
+            self.add_mount_stat()
 
-            self.last_health_state = 4  # state start at full
-            self.last_stamina_state = 4
+        self.last_health_state = 4  # state start at full
+        self.last_stamina_state = 4
 
-            self.max_stamina = self.stamina
-            self.stamina75 = self.stamina * 0.75
-            self.stamina50 = self.stamina * 0.5
-            self.stamina25 = self.stamina * 0.25
-            self.stamina5 = self.stamina * 0.05
+        self.max_stamina = self.stamina
+        self.stamina75 = self.stamina * 0.75
+        self.stamina50 = self.stamina * 0.5
+        self.stamina25 = self.stamina * 0.25
+        self.stamina5 = self.stamina * 0.05
 
-            self.unit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
-            self.old_unit_health = self.unit_health
-            self.max_health = self.unit_health  # health percentage
-            self.health_list = (self.unit_health * 0.75, self.unit_health * 0.5, self.unit_health * 0.25, 0)
+        self.unit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
+        self.old_unit_health = self.unit_health
+        self.max_health = self.unit_health  # health percentage
+        self.health_list = (self.unit_health * 0.75, self.unit_health * 0.5, self.unit_health * 0.25, 0)
 
-            self.old_last_health, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
-            self.max_troop = self.troop_number  # max number of troop at the start
-
-            # sprite for inspection or far view
-            sprite_dict = self.create_inspect_sprite()
-            self.inspect_image = sprite_dict["image"]
-            self.image = self.inspect_image.copy()
-            self.inspect_image_original = sprite_dict["original"]
-            self.inspect_image_original2 = sprite_dict["original2"]
-            self.inspect_image_original3 = sprite_dict["original3"]
-            self.block = sprite_dict["block"]
-            self.block_original = sprite_dict["block_original"]
-            self.selected_inspect_image = sprite_dict["selected"]
-            self.selected_inspect_image_rect = sprite_dict["selected_rect"]
-            self.selected_inspect_image_original = sprite_dict["selected_original"]
-            self.selected_inspect_image_original2 = sprite_dict["selected_original2"]
-            self.far_image = sprite_dict["far"]
-            self.far_selected_image = sprite_dict["far_selected"]
-            self.health_image_rect = sprite_dict["health_rect"]
-            self.health_block_rect = sprite_dict["health_block_rect"]
-            self.stamina_image_rect = sprite_dict["stamina_rect"]
-            self.stamina_block_rect = sprite_dict["stamina_block_rect"]
-            self.corner_image_rect = sprite_dict["corner_rect"]
-            self.health_image_list = sprite_dict["health_list"]
-            self.stamina_image_list = sprite_dict["stamina_list"]
+        self.old_last_health, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
+        self.max_troop = self.troop_number  # max number of troop at the start
 
         self.trait += self.armour_list.armour_list[self.armour_gear[0]]["Trait"]  # Apply armour trait to subunit
 
@@ -362,6 +340,31 @@ class Subunit(pygame.sprite.Sprite):
         self.corner_atk = False  # cannot melee_attack corner enemy by default
         self.temp_full_def = False
 
+        # sprite for inspection or far view
+        sprite_dict = self.create_inspect_sprite()
+        self.inspect_image = sprite_dict["image"]
+        self.image = self.inspect_image.copy()
+        self.inspect_image_original = sprite_dict["original"]
+        self.inspect_image_original2 = sprite_dict["original2"]
+        self.inspect_image_original3 = sprite_dict["original3"]
+        self.block = sprite_dict["block"]
+        self.block_original = sprite_dict["block_original"]
+        self.selected_inspect_image = sprite_dict["selected"]
+        self.selected_inspect_image_rect = sprite_dict["selected_rect"]
+        self.selected_inspect_image_original = sprite_dict["selected_original"]
+        self.selected_inspect_image_original2 = sprite_dict["selected_original2"]
+        self.far_image = sprite_dict["far"]
+        self.far_selected_image = sprite_dict["far_selected"]
+        self.health_image_rect = sprite_dict["health_rect"]
+        self.health_block_rect = sprite_dict["health_block_rect"]
+        self.stamina_image_rect = sprite_dict["stamina_rect"]
+        self.stamina_block_rect = sprite_dict["stamina_block_rect"]
+        self.corner_image_rect = sprite_dict["corner_rect"]
+        self.health_image_list = sprite_dict["health_list"]
+        self.stamina_image_list = sprite_dict["stamina_list"]
+
+        self.sprite_image = pygame.Surface((100, 100), pygame.SRCALPHA)
+
         if purpose == "battle":
             self.battle.all_subunit_list.append(self)
             if self.team == 1:  # add sprite to team subunit group for collision
@@ -412,7 +415,7 @@ class Subunit(pygame.sprite.Sprite):
 
     def zoom_scale(self):
         """camera zoom change and rescale the sprite and position scale, sprite closer zoom will be scale in the play animation function instead"""
-        if self.zoom < 5:
+        if self.zoom <= 9:
             if self.zoom > 1:
                 self.inspect_image_original = self.inspect_image_original3.copy()  # reset image for new scale
                 dim = pygame.Vector2(self.inspect_image_original.get_width() * self.zoom / self.max_zoom, self.inspect_image_original.get_height() * self.zoom / self.max_zoom)
@@ -577,44 +580,55 @@ class Subunit(pygame.sprite.Sprite):
         self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)
         self.height = self.height_map.get_height(self.base_pos)
 
+        self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
+
+        self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]["r_side"]  # change later
+
+        # self.idle_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]
+        # self.walk_animation = None
+        # self.run_animation = None
+        # self.action1_animation = None
+        # self.action2_animation = None
+        # self.die_animation = None
+
     def create_inspect_sprite(self):
         # v Subunit image sprite
-        image = self.unit_ui_images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
+        ui_image = self.unit_ui_images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
         if self.team == 2:
-            image = self.unit_ui_images["ui_squad_enemy.png"].copy()  # red colour
+            ui_image = self.unit_ui_images["ui_squad_enemy.png"].copy()  # red colour
 
-        sprite_image = pygame.Surface((image.get_width() + 10, image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
-        pygame.draw.circle(sprite_image, self.unit.colour, (sprite_image.get_width() / 2, sprite_image.get_height() / 2), image.get_width() / 2)
+        image = pygame.Surface((ui_image.get_width() + 10, ui_image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
+        pygame.draw.circle(image, self.unit.colour, (image.get_width() / 2, image.get_height() / 2), ui_image.get_width() / 2)
 
         if self.subunit_type == 2:  # cavalry draw line on block
-            pygame.draw.line(image, (0, 0, 0), (0, 0), (image.get_width(), image.get_height()), 2)
+            pygame.draw.line(ui_image, (0, 0, 0), (0, 0), (ui_image.get_width(), ui_image.get_height()), 2)
             radian = 45 * 0.0174532925  # top left
             start = (
-                sprite_image.get_width() / 3 * math.cos(radian),
-                sprite_image.get_width() / 3 * math.sin(radian))  # draw line from 45 degree in circle
+                image.get_width() / 3 * math.cos(radian),
+                image.get_width() / 3 * math.sin(radian))  # draw line from 45 degree in circle
             radian = 225 * 0.0174532925  # bottom right
-            end = (sprite_image.get_width() * -math.cos(radian), sprite_image.get_width() * -math.sin(radian))  # draw line to 225 degree in circle
-            pygame.draw.line(sprite_image, (0, 0, 0), start, end, 2)
+            end = (image.get_width() * -math.cos(radian), image.get_width() * -math.sin(radian))  # draw line to 225 degree in circle
+            pygame.draw.line(image, (0, 0, 0), start, end, 2)
 
-        selected_image = pygame.Surface((image.get_width(), image.get_height()), pygame.SRCALPHA)
-        pygame.draw.circle(selected_image, (255, 255, 255, 150), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2)
-        pygame.draw.circle(selected_image, (0, 0, 0, 255), (image.get_width() / 2, image.get_height() / 2), image.get_width() / 2, 1)
+        selected_image = pygame.Surface((ui_image.get_width(), ui_image.get_height()), pygame.SRCALPHA)
+        pygame.draw.circle(selected_image, (255, 255, 255, 150), (ui_image.get_width() / 2, ui_image.get_height() / 2), ui_image.get_width() / 2)
+        pygame.draw.circle(selected_image, (0, 0, 0, 255), (ui_image.get_width() / 2, ui_image.get_height() / 2), ui_image.get_width() / 2, 1)
         selected_image_original = selected_image.copy()
         selected_image_original2 = selected_image.copy()
         selected_image_rect = selected_image.get_rect(topleft=(0, 0))
 
-        far_image = sprite_image.copy()
+        far_image = image.copy()
         pygame.draw.circle(far_image, (0, 0, 0), (far_image.get_width() / 2, far_image.get_height() / 2),
                            far_image.get_width() / 2, 4)
         far_selected_image = selected_image.copy()
         pygame.draw.circle(far_selected_image, (0, 0, 0), (far_selected_image.get_width() / 2, far_selected_image.get_height() / 2),
                            far_selected_image.get_width() / 2, 4)
 
-        dim = pygame.Vector2(sprite_image.get_width() * 1 / self.max_zoom, sprite_image.get_height() * 1 / self.max_zoom)
+        dim = pygame.Vector2(image.get_width() * 1 / self.max_zoom, image.get_height() * 1 / self.max_zoom)
         far_image = pygame.transform.scale(far_image, (int(dim[0]), int(dim[1])))
         far_selected_image = pygame.transform.scale(far_selected_image, (int(dim[0]), int(dim[1])))
 
-        block = image.copy()  # image shown in inspect ui as square instead of circle
+        block = ui_image.copy()  # image shown in inspect ui as square instead of circle
         # ^ End subunit base sprite
 
         # v health and stamina related
@@ -626,22 +640,22 @@ class Subunit(pygame.sprite.Sprite):
                               self.unit_ui_images["ui_stamina_circle_0.png"]]
 
         health_image = self.unit_ui_images["ui_health_circle_100.png"]
-        health_image_rect = health_image.get_rect(center=sprite_image.get_rect().center)  # for battle sprite
+        health_image_rect = health_image.get_rect(center=image.get_rect().center)  # for battle sprite
         health_block_rect = health_image.get_rect(center=block.get_rect().center)  # for ui sprite
-        sprite_image.blit(health_image, health_image_rect)
+        image.blit(health_image, health_image_rect)
         block.blit(health_image, health_block_rect)
 
         stamina_image = self.unit_ui_images["ui_stamina_circle_100.png"]
-        stamina_image_rect = stamina_image.get_rect(center=sprite_image.get_rect().center)  # for battle sprite
+        stamina_image_rect = stamina_image.get_rect(center=image.get_rect().center)  # for battle sprite
         stamina_block_rect = stamina_image.get_rect(center=block.get_rect().center)  # for ui sprite
-        sprite_image.blit(stamina_image, stamina_image_rect)
+        image.blit(stamina_image, stamina_image_rect)
         block.blit(stamina_image, stamina_block_rect)
         # ^ End health and stamina
 
         # v weapon class icon in middle circle
         image1 = self.weapon_list.images[self.weapon_list.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
-        image1_rect = image1.get_rect(center=sprite_image.get_rect().center)
-        sprite_image.blit(image1, image1_rect)
+        image1_rect = image1.get_rect(center=image.get_rect().center)
+        image.blit(image1, image1_rect)
 
         image1_rect = image1.get_rect(center=block.get_rect().center)
         block.blit(image1, image1_rect)
@@ -651,11 +665,11 @@ class Subunit(pygame.sprite.Sprite):
             center=block.get_rect().center)  # red corner when take melee_dmg shown in image block
         # ^ End weapon icon
 
-        image_original = sprite_image.copy()  # original for rotate
-        image_original2 = sprite_image.copy()  # original2 for saving original not clicked
-        image_original3 = sprite_image.copy()  # original3 for saving original zoom level
+        image_original = image.copy()  # original for rotate
+        image_original2 = image.copy()  # original2 for saving original not clicked
+        image_original3 = image.copy()  # original3 for saving original zoom level
 
-        return {"image": sprite_image, "original": image_original, "original2": image_original2, "original3": image_original3,
+        return {"image": image, "original": image_original, "original2": image_original2, "original3": image_original3,
                 "block": block, "block_original": block_original, "selected": selected_image, "selected_rect": selected_image_rect,
                 "selected_original": selected_image_original, "selected_original2": selected_image_original2,
                 "far": far_image, "far_selected": far_selected_image, "health_rect": health_image_rect, "health_block_rect": health_block_rect,
@@ -667,10 +681,8 @@ class Subunit(pygame.sprite.Sprite):
             self.last_zoom = zoom
             self.zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
-        if self.zoom > 5:  # TODO add weapon speicifc action condition
-            self.image = pygame.Surface((100, 100), pygame.SRCALPHA)
-            self.current_animation = self.animation_sprite_pool[self.troop_id]["Human_Default/" + str(self.equiped_weapon)]["side"]  # change later
-            self.play_animation(self.image, self.zoom / self.max_zoom, 1, self.current_animation)
+        if self.zoom > 9:  # TODO add weapon speicifc action condition
+            self.play_animation(1, 1, self.current_animation)
 
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)

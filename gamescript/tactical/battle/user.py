@@ -1168,8 +1168,8 @@ def camera_process(self, key_state):
         self.camera_pos[0] = self.base_camera_pos[0] * self.camera_scale
         self.camera_fix()
 
-    self.cameraupcorner = (self.camera_pos[0] - self.center_screen[0],
-                           self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
+    self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
+                                  self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
     # ^ End camera movement
 
     if self.map_scale_delay > 0:  # player change map scale once before

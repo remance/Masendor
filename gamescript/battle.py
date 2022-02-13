@@ -397,6 +397,8 @@ class Battle:
                                          500 * self.screen_scale[1])  # Camera pos at the current zoom, start at center of map
         self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
                                               500 * self.screen_scale[1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
+        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
+                                      self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
         self.camera_scale = 1  # Camera zoom
         camera.Camera.screen_rect = self.screen_rect
         self.camera = camera.Camera(self.camera_pos, self.camera_scale)
@@ -460,14 +462,35 @@ class Battle:
                             for weapon_index, weapon in enumerate(weapon_list):  # create animation for each weapon set
                                 if animation + "/" + str(weapon_index) not in self.animation_sprite_pool[this_subunit.troop_id]:
                                     self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)] = {}
-                                self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)][direction] = {}
+                                new_direction = direction
+                                opposite_direction = None  # no opposite direction for front and back
+                                if direction == "side":
+                                    new_direction = "r_side"
+                                    opposite_direction = "l_side"
+                                elif direction == "sideup":
+                                    new_direction = "r_sideup"
+                                    opposite_direction = "l_sideup"
+                                elif direction == "sidedown":
+                                    new_direction = "r_sidedown"
+                                    opposite_direction = "l_sidedown"
+                                self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)][new_direction] = {}
+                                if opposite_direction is not None:
+                                    self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)][opposite_direction] = {}
                                 for frame_num, frame_data in enumerate(self.generic_animation_pool[index][animation]):
                                     sprite_dict = make_sprite(this_subunit.size, frame_data, self.troop_data.troop_sprite_list[str(this_subunit.troop_id)],
                                                               self.gen_body_sprite_pool, self.gen_weapon_sprite_pool, self.gen_armour_sprite_pool,
                                                               self.effect_sprite_pool, animation_property, self.weapon_joint_list, (weapon_index, weapon), armour,
                                                               self.hair_colour_list, self.skin_colour_list)
-                                    self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)][direction][frame_num] = \
-                                        {"sprite": sprite_dict["sprite"], "animation_property": sprite_dict["animation_property"], "frame_property": sprite_dict["frame_property"]}
+
+                                    self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)][new_direction][frame_num] = \
+                                        {"sprite": sprite_dict["sprite"], "animation_property": sprite_dict["animation_property"],
+                                         "frame_property": sprite_dict["frame_property"]}
+                                    if opposite_direction is not None:  # flip sprite for opposite direction
+                                        self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)][opposite_direction][
+                                            frame_num] = {"sprite": pygame.transform.flip(sprite_dict["sprite"].copy(), True, False),
+                                                          "animation_property": sprite_dict["animation_property"],
+                                                          "frame_property": sprite_dict["frame_property"]}
+
         subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         # ^ End start subunit sprite
 
@@ -1086,7 +1109,7 @@ class Battle:
 
                     self.effect_updater.update(self.subunit, self.dt, self.camera_scale)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
-                    self.mini_map.update(self.camera_scale, [self.camera_pos, self.cameraupcorner], self.team1_pos_list, self.team2_pos_list)
+                    self.mini_map.update(self.camera_scale, [self.camera_pos, self.camera_topleft_corner], self.team1_pos_list, self.team2_pos_list)
 
                     self.ui_updater.update()  # update ui
                     self.camera.update(self.camera_pos, self.battle_camera, self.camera_scale)

@@ -13,21 +13,19 @@ rotation_xy = utility.rotation_xy
 default_sprite_size = (200, 200)
 
 
-def play_animation(self, surface, scale, speed, play_list):
-    # if time.time() - self.first_time >= speed:
-    #     if self.show_frame < len(play_list):
-    #         self.show_frame += 1
-    #     self.first_time = time.time()
-    # if self.show_frame > self.end_frame:  # TODO add property
-    #     self.show_frame = self.start_frame
-    #     while self.show_frame < 10 and play_list[self.show_frame] is False:
-    #         self.show_frame += 1
+def play_animation(self, scale, speed, play_list):
+    if time.time() - self.first_time >= speed:
+        if self.show_frame < len(play_list):
+            self.show_frame += 1
+        self.first_time = time.time()
+        if self.show_frame >= len(play_list):  # TODO add property
+            self.show_frame = 0
 
-    image = play_list[int(self.show_frame)]["sprite"].copy()
-    image = pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
-    rect = image.get_rect(topleft=(0, 0))
-    surface.blit(image, rect)
-
+    if scale == 1:
+        self.image = play_list[self.show_frame]["sprite"]
+    else:
+        self.image = play_list[self.show_frame]["sprite"].copy()
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() * scale, self.image.get_height() * scale))
 
 def apply_colour(surface, colour=None, colour_list=None):
     """Colorise body part sprite"""
@@ -201,10 +199,18 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
                     ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
                     main_joint_pos = weapon_joint_list[part_name]
                     if main_joint_pos != "center":
+                        hand_pos = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
+                        if "p2_main" in layer:
+                            hand_pos = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
+                        elif "p1_sub" in layer:
+                            hand_pos = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
+                        elif "p2_sub" in layer:
+                            hand_pos = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
                         pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
                         new_target = main_joint_pos + pos_different
                         if angle != 0:
                             radians_angle = math.radians(360 - angle)
+                            target = hand_pos # use hand pos instead of file
                             new_target = rotation_xy(target, new_target, radians_angle)  # find new center point with rotation
 
             rect = part_rotated.get_rect(center=new_target)
