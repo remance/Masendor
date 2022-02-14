@@ -433,14 +433,20 @@ class Unit(pygame.sprite.Sprite):
 
         self.change_pos_scale()
 
-    def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
+    def update(self, weather, squad_group, dt, zoom, camera, mouse_pos, mouse_up):
         # v Camera zoom change
-        if self.last_zoom != zoom:
-            if self.last_zoom != zoom:  # camera zoom is changed
-                self.last_zoom = zoom
-                self.zoom_change = True
-                self.zoom = 11 - zoom  # save scale
-                self.change_pos_scale()  # update unit sprite according to new scale
+        if self.last_zoom != zoom:  # camera zoom is changed
+            self.zoom_change = True
+            self.zoom = 11 - zoom  # save scale
+            self.change_pos_scale()  # update unit sprite according to new scale
+            for subunit in self.subunit_sprite:
+                if self.zoom == 10:  # show sprite, need to change subunit layer based on position of their position
+                    if subunit.state != 100:
+                        camera.change_layer(subunit, 4)
+                elif self.last_zoom == 10:
+                    if subunit.state != 100:
+                        camera.change_layer(subunit, 4)  # default layer for sbunit
+            self.last_zoom = zoom
         # ^ End zoom
 
         # v Setup frontline again when any subunit destroyed

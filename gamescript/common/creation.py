@@ -129,7 +129,7 @@ def load_animation_pool(main_dir):
     return {"generic_animation_pool": generic_animation_pool, "skel_joint_list": skel_joint_list, "weapon_joint_list": weapon_joint_list}
 
 
-def load_part_sprite_pool(main_dir, race_list, screen_scale):
+def load_part_sprite_pool(main_dir, race_list):
     gen_body_sprite_pool = {}
     for race in race_list:
         gen_body_sprite_pool[race] = {}
@@ -139,7 +139,7 @@ def load_part_sprite_pool(main_dir, race_list, screen_scale):
                 subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
                 gen_body_sprite_pool[race][direction] = {}
                 for folder in subdirectories:
-                    imgs = load_textures(main_dir, screen_scale, folder)
+                    imgs = load_textures(main_dir, folder)
                     gen_body_sprite_pool[race][direction][folder[-1]] = imgs
             except FileNotFoundError:
                 pass
@@ -164,7 +164,7 @@ def load_part_sprite_pool(main_dir, race_list, screen_scale):
                             os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
                         body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
                         for body_folder in body_directories:
-                            imgs = load_textures(main_dir, screen_scale,
+                            imgs = load_textures(main_dir,
                                                  ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
                             gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
             except FileNotFoundError:
@@ -180,7 +180,7 @@ def load_part_sprite_pool(main_dir, race_list, screen_scale):
         for subfolder in subsubdirectories:
             gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
             for direction in direction_list:
-                imgs = load_textures(main_dir, screen_scale, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
+                imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
                 if direction not in gen_weapon_sprite_pool[folder[-1]]:
                     gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction] = imgs
                 else:
@@ -190,7 +190,7 @@ def load_part_sprite_pool(main_dir, race_list, screen_scale):
             "gen_weapon_sprite_pool": gen_weapon_sprite_pool}
 
 
-def load_effect_sprite_pool(main_dir, screen_scale):
+def load_effect_sprite_pool(main_dir):
     effect_sprite_pool = {}
     part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
     subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
@@ -199,7 +199,7 @@ def load_effect_sprite_pool(main_dir, screen_scale):
         part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
         subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
         for subfolder in subsubdirectories:
-            imgs = load_textures(main_dir, screen_scale, subfolder)
+            imgs = load_textures(main_dir, subfolder)
             effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
     return effect_sprite_pool
 

@@ -5,10 +5,15 @@ import time
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
+from gamescript.common.subunit import common_movement
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
+
+rotation_list = common_movement.rotation_list
+rotation_name = common_movement.rotation_name
+rotation_dict = common_movement.rotation_dict
 
 rotation_xy = utility.rotation_xy
 
@@ -376,6 +381,8 @@ class Subunit(pygame.sprite.Sprite):
             self.angle = self.unit.angle
             self.new_angle = self.unit.angle
             self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
+            self.sprite_direction = rotation_dict[min(rotation_list,
+                                                      key=lambda x: abs(x - self.angle))]  # find closest in list of rotation for sprite direction
             self.parent_angle = self.unit.angle  # angle subunit will face when not moving
 
             # v position related
@@ -448,8 +455,6 @@ class Subunit(pygame.sprite.Sprite):
             self.skill_cooldown[which_skill] = skill_stat["Cooldown"]  # add skill cooldown
         self.stamina -= skill_stat["Stamina Cost"]
         # self.skill_cooldown[which_skill] =
-
-    # def receiveskill(self,which_skill):
 
     def check_skill_condition(self):
         """Check which skill can be used, cooldown, condition state, discipline, stamina are checked. charge skill is excepted from this check"""
@@ -682,7 +687,7 @@ class Subunit(pygame.sprite.Sprite):
             self.zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
         if self.zoom > 9:  # TODO add weapon speicifc action condition
-            self.play_animation(1, 1, self.current_animation)
+            self.play_animation(1, 1)
 
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)

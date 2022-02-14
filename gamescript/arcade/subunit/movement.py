@@ -3,18 +3,22 @@ import random
 import pygame
 
 from gamescript.common import utility
+from gamescript.common.subunit import common_movement
 
 rotation_xy = utility.rotation_xy
 infinity = float("inf")
-rotation_list=(-90, -120, -45, 0, 90, 45, 120, 180)
 
+rotation_list = common_movement.rotation_list
+rotation_name = common_movement.rotation_name
+rotation_dict = common_movement.rotation_dict
 
 def rotate_logic(self, dt):
     self.new_angle = min(rotation_list,
                    key=lambda x: abs(x - self.new_angle))  # find closest in list of rotation
 
     self.angle = self.new_angle  # arcade mode doesn't have gradual rotate, subunit can rotate at once
-    self.rotate()  # rotate sprite to new angle
+    if self.zoom != 10:
+        self.rotate()  # rotate sprite to new angle
     self.make_front_pos()  # generate new pos related to side
     self.front_height = self.height_map.get_height(self.front_pos)
 

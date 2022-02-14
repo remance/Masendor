@@ -67,7 +67,6 @@ class WeaponData:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                     self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-        print(self.weapon_list)
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
 

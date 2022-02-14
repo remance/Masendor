@@ -3,10 +3,14 @@ import random
 import pygame
 
 from gamescript.common import utility
+from gamescript.common.subunit import common_movement
 
 rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
+rotation_list = common_movement.rotation_list
+rotation_name = common_movement.rotation_name
+rotation_dict = common_movement.rotation_dict
 
 def rotate_logic(self, dt):
     rotate_cal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
@@ -37,7 +41,10 @@ def rotate_logic(self, dt):
             if self.angle < self.new_angle:
                 self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
 
-    self.rotate()  # rotate sprite to new angle
+    if self.zoom != 10:
+        self.rotate()  # rotate sprite to new angle
+    self.sprite_direction = rotation_dict[min(rotation_list,
+                   key=lambda x: abs(x - self.angle))]  # find closest in list of rotation for sprite direction
     self.make_front_pos()  # generate new pos related to side
     self.front_height = self.height_map.get_height(self.front_pos)
 
