@@ -1,4 +1,6 @@
-![alt text](https://github.com/remance/preview/blob/main/pygamelogo.gif?raw=true)
+<div align="center">    
+    <img src="https://github.com/remance/preview/blob/main/pygamelogo.gif?raw=true" alt="Pygame Logo">
+</div>
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.gif?raw=true)
 
@@ -14,14 +16,35 @@ If anyone is interested in another similar game like this, there is an interesti
 
 ---------------
 
+# Index
+
+- [How to run/compile](#how-to-runcompile)
+  - [Run](#run)
+  - [Compile](#compile)
+- [Latest Update](#latest-update)
+- [Key features so far](#key-features-so-far)
+  - [History is told by the victor, but sometimes the words of the loser do not fade away](#history-is-told-by-the-victor-but-sometimes-the-words-of-the-loser-do-not-fade-away)
+  - [Army is led by more than just a king](#army-is-led-by-more-than-just-a-king)
+  - [Complex troop Statistic System](#complex-troop-statistic-system)
+  - [Custom Unit Creator](#custom-unit-creator)
+  - [Extremely easy map creation](#extremely-easy-map-creation)
+  - [Encyclopedia and stuff](#encyclopedia-and-stuff)
+- [Future Plan](#future-plan)
+
+---
+
 # How to run/compile
 
-If you want to download the release version to test the game, go to release tags (https://github.com/remance/Masendor/releases) and download the zip file. 
-To start testing the game run main.py for the source code or main.exe for the release version. 
-To compile the source code into exe, I would recommend using main.spec to compile the game. 
+If you want to download the release version to test the game, go to [Release](https://github.com/remance/Masendor/releases) tags and [**download**](https://github.com/remance/Masendor/releases/download/0.6.2.3/Dream.Decision.zip) the zip file. <br>
+
+## Run
+To start testing the game run main.py for the source code or main.exe for the release version. <br>
+
+## Compile
+To compile the source code into exe, I would recommend using main.spec to compile the game. <br>
 The main.spec compile only main.py so you will need to copy gamescript, data, profile folder manually to the distribute folder after.
 
-Check the requirements.txt file for dependency requirements if running with the python source code. 
+Check the [requirements.txt](requirements.txt) file for dependency requirements if running with the python source code. 
 Also, the game is now optimised based on the pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
 
 ---------------
@@ -75,7 +98,7 @@ Bored of a simple line formation and want to try making weird unit formation? Th
 Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to use paint or any drawing software (gimp, photoshop, etc.) to create a map.
 Draw the image with the right colour set and the game will convert them into a playable map. Most other map functions are also very easy to create and modify.
 
-Video demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
+[Video](https://www.youtube.com/watch?v=8Omm-o6Dy60) demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
 
 ## Encyclopedia and stuff
 
@@ -89,45 +112,45 @@ This function is going to be a headache to write and research. But hopefully, it
 
 # Future plan
 
-Ver 0.6 Dream Decision: multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
+**Ver 0.6 Dream Decision:** multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-0.6.3 - 0.6.5: Arcade mode with function to accept different game mode, custom battle
+**0.6.3 - 0.6.5:** Arcade mode with function to accept different game mode, custom battle
  
-Arcade Mode: animation, subunit action, console stick, chain of command
+**Arcade Mode:** animation, subunit action, console stick, chain of command
  
-0.6.6 and 0.6.7: random map generator, True AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
+**0.6.6 and 0.6.7:** random map generator, True AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish abbey war  
 
-0.6.8 and 0.6.9: multiple unit selection/move, also add a border to a selected unit on army selector UI
+**0.6.8 and 0.6.9:** multiple unit selection/move, also add a border to a selected unit on army selector UI
 
-Ver 0.7 Future Visionary: in-game custom sub-unit editor, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
+**Ver 0.7 Future Visionary:** in-game custom sub-unit editor, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
 
-Ver 0.8 Authentic Attraction: In-game art, better-looking UI (All hand (and mouse) drawn except for historical image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI (All hand (and mouse) drawn except for historical image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
-Ver 0.9 Gaze of New Life: AI and pathfinding (The most challenging step unless cut corner to the point of braindead AI), final code optimisation before full 1.0
+**Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead AI), final code optimisation before full 1.0
 
-Ver 1 Pax Paradisum: historical battle simulation game, Battle of Waterloo, Battle of Dunsinane, Battle of Yijing, Battle of Jengland
+**Ver 1 Pax Paradisum:** historical battle simulation game, Battle of Waterloo, Battle of Dunsinane, Battle of Yijing, Battle of Jengland
 
-Ver 1 - 1.5: More art, sound effects and in-game music (May need to use royalty-free music but will see) + Ingame Encyclopedia at main menu + more historical battles
+**Ver 1 - 1.5:** More art, sound effects and in-game music (May need to use royalty-free music but will see) + Ingame Encyclopedia at main menu + more historical battles
 
-Ver 1.1: Add dynamic terrain/feature change based on battle effect (damage) and weather, unit mode
+**Ver 1.1:** Add dynamic terrain/feature change based on battle effect (damage) and weather, unit mode
 
-Ver 1.2: Siege battle, more complex unit equipment (main hand/off hand, item), Minor battle: Wolf of Paris
+**Ver 1.2:** Siege battle, more complex unit equipment (main hand/off hand, item), Minor battle: Wolf of Paris
 
-Ver 1.3: Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
+**Ver 1.3:** Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
 
-Ver 1.6: Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main priority in the early battle sample yet), transfer leader, Battle of Gaixia
+**Ver 1.6:** Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main priority in the early battle sample yet), transfer leader, Battle of Gaixia
 
-ver 1.7: leader rapport and effect on authority and control mechanic including surrender and betrayal 
+**ver 1.7:** leader rapport and effect on authority and control mechanic including surrender and betrayal 
 
-Ver 1.8: Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved" formation that player can rotate in battle, swappable squad position
+**Ver 1.8:** Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved" formation that player can rotate in battle, swappable squad position
 
-Ver 1.9: Naval battle
+**Ver 1.9:** Naval battle
 
-Ver 2.0: Multiplayer battle
+**Ver 2.0:** Multiplayer battle
 
-Ver 2.1: Begin working on another ruleset setting
+**Ver 2.1:** Begin working on another ruleset setting
 
-Unforeseeable future: forced march (Moved here from 0.2.7 as this feature won't have much used until the game map become much larger than just a single battlefield), Queue command
+**Unforeseeable future:** forced march (Moved here from 0.2.7 as this feature won't have much used until the game map become much larger than just a single battlefield), Queue command
 
 ---------------
 
