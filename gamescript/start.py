@@ -232,6 +232,7 @@ class MainMenu:
 
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
+        unit.Unit.battle_camera = self.battle_camera
         # the camera layer is as followed 0 = terrain map, 1 = dead unit, 2 = map special feature, 3 = , 4 = subunit, 5 = sub-subunit,
         # 6 = flying subunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
         self.battle_ui = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
@@ -649,7 +650,7 @@ class MainMenu:
 
         drama.TextDrama.images = load_images(self.main_dir, self.screen_scale, ["ui", "popup_ui", "drama_text"], load_order=False)
         drama.TextDrama.screen_rect = self.screen_rect
-        self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
+        self.drama_text = drama.TextDrama(self.screen_scale)  # message at the top of screen that show up for important event
 
         event_log_dict = make_event_log(battle_ui_image, self.screen_rect)
         self.event_log = event_log_dict["event_log"]

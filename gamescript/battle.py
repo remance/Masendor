@@ -1074,7 +1074,7 @@ class Battle:
                                     self.subunit_pos_array[x][y] = 0
 
                     # v Updater
-                    self.unit_updater.update(self.current_weather, self.subunit, self.dt, self.camera_scale, self.battle_camera,
+                    self.unit_updater.update(self.current_weather, self.subunit, self.dt, self.camera_scale,
                                              self.battle_mouse_pos[0], mouse_left_up)
                     self.last_mouseover = None  # reset last unit mouse over
                     self.leader_updater.update()

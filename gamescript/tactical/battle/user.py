@@ -901,10 +901,10 @@ def battle_key_press(self, key_press):
         self.last_selected.user_input(self.battle_mouse_pos[0], False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
-    # elif key_press == pygame.K_1:
-    #     self.drama_text.queue.append("Hello and Welcome to update video")
-    # elif key_press == pygame.K_2:
-    #     self.drama_text.queue.append("Showcase: Just simple clarity update")
+    elif key_press == pygame.K_1:
+        self.drama_text.queue.append("Hello and Welcome to update video")
+    elif key_press == pygame.K_2:
+        self.drama_text.queue.append("Showcase: Very early animation sprite system")
     # elif key_press == pygame.K_3:
     #     self.drama_text.queue.append("Before")
     # elif key_press == pygame.K_4:

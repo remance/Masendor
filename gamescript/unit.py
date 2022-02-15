@@ -35,6 +35,7 @@ class Unit(pygame.sprite.Sprite):
     battle = None
     form_change_timer = 10
     image_size = None
+    battle_camera = None
 
     set_rotate = utility.set_rotate
 
@@ -198,8 +199,14 @@ class Unit(pygame.sprite.Sprite):
 
         # v Grab subunit stat
         not_broken = False
-        for subunit in self.subunit_sprite:
+        # if self.zoom == 1:  # closest zoom
+        pos_dict = {sprite: sprite.base_pos for sprite in self.subunit_sprite}
+        pos_dict = dict(sorted(pos_dict.items(), key=lambda x: x[1][1]))
+
+        for index, subunit in enumerate(pos_dict.keys()):
             if subunit.state != 100:  # only get stat from alive subunit
+                if self.zoom == 1:
+                    self.battle_camera.change_layer(subunit, index + 4)
                 self.troop_number += subunit.troop_number
                 self.stamina += subunit.stamina
                 self.morale += subunit.morale
@@ -397,7 +404,7 @@ class Unit(pygame.sprite.Sprite):
 
     def start_set(self, subunit_group):
         """Setup various variables at the start of battle or when new unit spawn/split"""
-        self.setup_army(False)
+        self.setup_army(battle_start=False)
         self.setup_frontline()
         self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
         self.sprite_array = self.subunit_list
@@ -433,19 +440,16 @@ class Unit(pygame.sprite.Sprite):
 
         self.change_pos_scale()
 
-    def update(self, weather, squad_group, dt, zoom, camera, mouse_pos, mouse_up):
+    def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
         # v Camera zoom change
         if self.last_zoom != zoom:  # camera zoom is changed
             self.zoom_change = True
             self.zoom = 11 - zoom  # save scale
             self.change_pos_scale()  # update unit sprite according to new scale
             for subunit in self.subunit_sprite:
-                if self.zoom == 10:  # show sprite, need to change subunit layer based on position of their position
+                if self.zoom == 1:  # revert back to default layer at other zoom
                     if subunit.state != 100:
-                        camera.change_layer(subunit, 4)
-                elif self.last_zoom == 10:
-                    if subunit.state != 100:
-                        camera.change_layer(subunit, 4)  # default layer for sbunit
+                        self.battle_camera.change_layer(subunit, 4)
             self.last_zoom = zoom
         # ^ End zoom
 
