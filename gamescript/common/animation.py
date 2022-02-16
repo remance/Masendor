@@ -191,7 +191,6 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
             if angle != 0:
                 part_rotated = pygame.transform.rotate(part_rotated, angle)  # rotate part sprite
 
-            center = pygame.Vector2(part_rotated.get_width() / 2, part_rotated.get_height() / 2)
             new_target = target  # - pos_different  # find new center point
 
             if "weapon" in layer:  # only weapon use joint to calculate position
@@ -203,8 +202,8 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
                     ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
                     ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
                     ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
-                    main_joint_pos = weapon_joint_list[part_name]
-                    if main_joint_pos != "center":
+                    main_joint_pos = weapon_joint_list[new_part[0]][part_name]
+                    if main_joint_pos != "center":  # use weapon joint pos and hand pos for weapon position blit
                         hand_pos = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
                         if "p2_main" in layer:
                             hand_pos = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
@@ -212,12 +211,23 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
                             hand_pos = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
                         elif "p2_sub" in layer:
                             hand_pos = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
-                        pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
-                        new_target = main_joint_pos + pos_different
+
+                        # change pos from flip
+                        if flip in (1, 3):  # horizontal flip
+                            hori_diff = image_part.get_width() - main_joint_pos[0]
+                            main_joint_pos = (hori_diff, main_joint_pos[1])
+                        if flip >= 2:  # vertical flip
+                            vert_diff = image_part.get_height() - main_joint_pos[1]
+                            main_joint_pos = (main_joint_pos[0], vert_diff)
+
+                        # change pos from rotation
                         if angle != 0:
-                            radians_angle = math.radians(360 - angle)
-                            target = hand_pos # use hand pos instead of file
-                            new_target = rotation_xy(target, new_target, radians_angle)  # find new center point with rotation
+                            center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
+                            radians_angle = math.radians(angle - 360)  # different from 360 - angle as the animation file use different angle format
+                            main_joint_pos = rotation_xy(center, main_joint_pos, radians_angle)  # find new center point with rotation
+
+                        pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
+                        new_target = hand_pos + pos_different
 
             rect = part_rotated.get_rect(center=new_target)
             surface.blit(part_rotated, rect)

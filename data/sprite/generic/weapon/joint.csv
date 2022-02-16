@@ -1,0 +1,51 @@
+"Name","front","side","back","sideup","sidedown"
+"Unarmed","center","center","center","center","center"
+"Sword","6,36","6,36","6,36","6,36","6,36"
+"Greatsword","6,68","6,68","6,68","6,68","6,68"
+"Shortsword","6,28.5","6,28.5","6,28.5","6,28.5","6,28.5"
+"Dagger","6,21.5","6,21.5","6,21.5","6,21.5","6,21.5"
+"Spear","3,53","3,53","3,53","3,53","3,53"
+"Club",,,,,
+"Mace",,,,,
+"Great Mace",,,,,
+"Flail",,,,,
+"Hammer",,,,,
+"War Hammer",,,,,
+"Handaxe",,"2,34",,,
+"Greataxe","2.5,61","2,70",,,
+"Halberd",,,,,
+"Pike",,"5.5,110",,,
+"Glaive",,,,,
+"Whip",,,,,
+"Quarterstaff",,,,,
+"Sling",,"14,5",,,
+"Blowgun",,,,,
+"Javelin","1,27","1,33",,,
+"Throwing Axe",,,,,
+"Longbow",,,,,
+"Shortbow",,"19.5,58",,,
+"Greatbow",,"19.5,74",,,
+"Light Crossbow",,,,,
+"Heavy Crossbow",,,,,
+"Repeater Crossbow",,,,,
+"Arbalest",,,,,
+"Stone",,,,,
+"Composite Bow",,,,,
+"Matchlock Musket",,,,,
+"Arquebus",,,,,
+"Blunderbuss",,,,,
+"Flintlock Musket",,,,,
+"Flintlock Pistol",,,,,
+"Matchlock Pistol",,,,,
+"Kite Shield","center","center","center","center","center"
+"Buckler","center","center","center","center","center"
+"Round Shield","center","center","center","center","center"
+"Tower Shield","center","center","center","center","center"
+"Heater Shield","center","center","center","center","center"
+"Pavise Shield","center","center","center","center","center"
+"Spiked Shield","center","center","center","center","center"
+"Aspis Shield","center","center","center","center","center"
+"Oval Shield","center","center","center","center","center"
+"Parry Dagger",,,,,
+"Parry Club",,,,,
+"Barrier Shield","center","center","center","center","center"

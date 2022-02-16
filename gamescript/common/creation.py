@@ -103,27 +103,27 @@ def load_animation_pool(main_dir):
             edit_file.close()
 
     weapon_joint_list = {}
-    for direction in direction_list:
-        with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", direction + "_joint.csv"), encoding="utf-8",
+    for direction_index, direction in enumerate(direction_list):
+        weapon_joint_list[direction] = {}
+        with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            list_column = ["Position"]  # value in list only
+            list_column = direction_list  # value in list only
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            joint_list = {}
             for row_index, row in enumerate(rd):
                 if row_index > 0:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column)
                         key = row[0].split("/")[0]
-                    position = row[1]
+                    position = row[direction_index + 1]
                     if position == ["center"] or position == [""]:
                         position = "center"
                     else:
                         position = pygame.Vector2(position[0], position[1])
 
-                    weapon_joint_list[key] = position
+                    weapon_joint_list[direction][key] = position
         edit_file.close()
 
     return {"generic_animation_pool": generic_animation_pool, "skel_joint_list": skel_joint_list, "weapon_joint_list": weapon_joint_list}
