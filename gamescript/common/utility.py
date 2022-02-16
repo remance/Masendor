@@ -57,7 +57,7 @@ def load_images(main_dir, screen_scale, subfolder=None, load_order=True, return_
         return images, load_order_file
 
 
-def load_textures(main_dir, subfolder=None):
+def load_textures(main_dir, subfolder=None, scale=(1, 1)):
     """loads all body sprite part image"""
     imgs = {}
     dir_path = os.path.join(main_dir, "data")
@@ -67,7 +67,7 @@ def load_textures(main_dir, subfolder=None):
     load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
     load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
     for file in load_order_file:
-        imgs[file.split(".")[0]] = load_image(main_dir, (1, 1), file, dir_path)  # no need to scale at this point, will scale when in complete sprite
+        imgs[file.split(".")[0]] = load_image(main_dir, scale, file, dir_path)  # no need to scale at this point, will scale when in complete sprite
 
     return imgs
 

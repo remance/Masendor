@@ -344,13 +344,13 @@ for race in race_list:
             edit_file.close()
 
 weapon_joint_list = []
-for direction in direction_list:
-    with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", direction + "_joint.csv"), encoding="utf-8",
+for direction_index, direction in enumerate(direction_list):
+    with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
               mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         header = rd[0]
-        list_column = ["Position"]  # value in list only
+        list_column = direction_list
         list_column = [index for index, item in enumerate(header) if item in list_column]
         joint_list = {}
         for row_index, row in enumerate(rd):
@@ -358,7 +358,7 @@ for direction in direction_list:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column)
                     key = row[0].split("/")[0]
-                position = row[1]
+                position = row[direction_index + 1]
                 if position == ["center"] or position == [""]:
                     position = "center"
                 else:
@@ -395,7 +395,7 @@ for race in race_list:
             part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
             subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
             for folder in subdirectories:
-                imgs = load_textures(main_dir, screen_scale, folder)
+                imgs = load_textures(main_dir, folder, scale=screen_scale)
                 gen_body_sprite_pool[race][direction][folder[-1]] = imgs
 
 gen_armour_sprite_pool = {}
@@ -417,7 +417,7 @@ for race in race_list:
                     body_subsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
                     body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
                     for body_folder in body_directories:
-                        imgs = load_textures(main_dir, screen_scale, ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
+                        imgs = load_textures(main_dir, ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]], scale=screen_scale)
                         gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
         except FileNotFoundError:
             pass
@@ -431,7 +431,7 @@ for folder in subdirectories:
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
         for direction in direction_list:
-            imgs = load_textures(main_dir, screen_scale, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
+            imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction], scale=screen_scale)
             if direction not in gen_weapon_sprite_pool[folder[-1]]:
                 gen_weapon_sprite_pool[folder[-1]][direction] = imgs
             else:
@@ -445,7 +445,7 @@ for folder in subdirectories:
     part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
-        imgs = load_textures(main_dir, screen_scale, subfolder)
+        imgs = load_textures(main_dir, subfolder, scale=screen_scale)
         effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
 
 
@@ -825,7 +825,7 @@ class Skeleton:
         self.size = 1  # size scale of sprite
         try:
             self.read_animation(list(animation_pool.keys())[0])
-            self.default_sprite_part = {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[0].items()}
+            self.default_sprite_part = {key: (value[:].copy() if value is not None else value) for key, value in self.animation_part_list[0].items()}
             self.default_body_part = {key: value for key, value in self.bodypart_list[0].items()}
             self.default_part_name = {key: value for key, value in self.part_name_list[0].items()}
         except IndexError:  # empty animation file
@@ -1170,7 +1170,7 @@ class Skeleton:
         global animation_history, body_part_history, part_name_history, current_history
         key_list = list(self.rect_part_list.keys())
         if edit_type == "default":  # reset to default
-            self.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
+            self.animation_part_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                        self.default_sprite_part.items()}
             self.bodypart_list[current_frame] = {key: value for key, value in self.default_body_part.items()}
             self.part_name_list[current_frame] = {key: value for key, value in self.default_part_name.items()}
@@ -1190,6 +1190,7 @@ class Skeleton:
             self.part_selected = []
 
         elif edit_type == "paste":  # paste copy part
+            print(copy_part)
             for part in copy_part.keys():
                 self.bodypart_list[current_frame][part] = copy_part[part].copy()
                 self.animation_part_list[current_frame][part] = copy_animation[part].copy()
@@ -1480,7 +1481,7 @@ class Skeleton:
                 body_part_history = body_part_history[:current_history + 1]
 
             animation_history.append(
-                {key: (value[:] if value is not None else value) for key, value in self.animation_part_list[current_frame].items()})
+                {key: (value[:].copy() if value is not None else value) for key, value in self.animation_part_list[current_frame].items()})
             body_part_history.append({key: value for key, value in self.bodypart_list[current_frame].items()})
             part_name_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
             current_history += 1
@@ -1817,7 +1818,7 @@ if animation_name is not None:
 else:
     skeleton.animation_list = [None] * 10
     skeleton.edit_part(None, "new")
-animation_history.append({key: (value[:] if value is not None else value) for key, value in skeleton.animation_part_list[current_frame].items()})
+animation_history.append({key: (value[:].copy() if value is not None else value) for key, value in skeleton.animation_part_list[current_frame].items()})
 body_part_history.append({key: value for key, value in skeleton.bodypart_list[current_frame].items()})
 part_name_history.append({key: value for key, value in skeleton.part_name_list[current_frame].items()})
 
@@ -2352,30 +2353,30 @@ while True:
                                     skeleton.click_part(mouse_pos, True, False, part)
 
                 if copy_press:
-                    copy_part_frame = {key: (value[:] if type(value) == list else value) for key, value in
+                    copy_part_frame = {key: (value[:].copy() if type(value) == list else value) for key, value in
                                        skeleton.bodypart_list[current_frame].items()}
-                    copy_animation_frame = {key: (value[:] if value is not None else value) for key, value in
+                    copy_animation_frame = {key: (value[:].copy() if value is not None else value) for key, value in
                                             skeleton.animation_part_list[current_frame].items()}
-                    copy_name_frame = {key: (value[:] if value is not None else value) for key, value in
+                    copy_name_frame = {key: (value[:].copy() if value is not None else value) for key, value in
                                        skeleton.part_name_list[current_frame].items()}
 
                 elif paste_press:
                     if copy_animation_frame is not None:
-                        skeleton.bodypart_list[current_frame] = {key: (value[:] if type(value) == list else value) for key, value in
+                        skeleton.bodypart_list[current_frame] = {key: (value[:].copy() if type(value) == list else value) for key, value in
                                                                  copy_part_frame.items()}
-                        skeleton.animation_part_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
+                        skeleton.animation_part_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                                        copy_animation_frame.items()}
-                        skeleton.part_name_list[current_frame] = {key: (value[:] if value is not None else value) for key, value in
+                        skeleton.part_name_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                                   copy_name_frame.items()}
                         skeleton.edit_part(mouse_pos, "change")
 
                 elif part_copy_press:
                     if skeleton.part_selected != []:
-                        copy_part = {key: (value[:] if type(value) == list else value) for key, value in
+                        copy_part = {key: (value[:].copy() if type(value) == list else value) for key, value in
                                      skeleton.bodypart_list[current_frame].items()}
-                        copy_animation = {key: (value[:] if value is not None else value) for key, value in
+                        copy_animation = {key: (value[:].copy() if value is not None else value) for key, value in
                                           skeleton.animation_part_list[current_frame].items()}
-                        copy_name = {key: (value[:] if value is not None else value) for key, value in
+                        copy_name = {key: (value[:].copy() if value is not None else value) for key, value in
                                      skeleton.part_name_list[current_frame].items()}
 
                         # keep only selected one
