@@ -43,9 +43,10 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
                       "special_5", "size", "frame_property", "animation_property"]  # For csv saving
 frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon",
                        "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
-anim_property_list = ["dmgsprite", "interuptrevert"]
 
-# TODO animation After 1.0: unique, lock?
+anim_property_list = ["dmgsprite", "interuptrevert"] + frame_property_list
+
+# TODO animation After 1.0: unique, more than two p, at least 10 effect and special, lock?
 
 
 def apply_colour(surface, colour=None):
@@ -1190,7 +1191,6 @@ class Skeleton:
             self.part_selected = []
 
         elif edit_type == "paste":  # paste copy part
-            print(copy_part)
             for part in copy_part.keys():
                 self.bodypart_list[current_frame][part] = copy_part[part].copy()
                 self.animation_part_list[current_frame][part] = copy_animation[part].copy()
@@ -1331,7 +1331,7 @@ class Skeleton:
                             self.animation_part_list[current_frame][part_index][2] = new_point
 
                         elif "move_" in edit_type:  # keyboard move
-                            new_point = self.animation_part_list[current_frame][part_index][2]
+                            new_point = self.animation_part_list[current_frame][part_index][2].copy()
                             if "w" in edit_type:
                                 new_point[1] = new_point[1] - 0.5
                             elif "s" in edit_type:
@@ -1340,7 +1340,7 @@ class Skeleton:
                                 new_point[0] = new_point[0] - 0.5
                             elif "d" in edit_type:
                                 new_point[0] = new_point[0] + 0.5
-                            self.animation_part_list[current_frame][part_index][2] = new_point
+                            self.animation_part_list[current_frame][part_index][2] = new_point.copy()
 
                         elif "tilt_" in edit_type:  # keyboard rotate
                             new_angle = self.animation_part_list[current_frame][part_index][3]
