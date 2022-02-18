@@ -56,6 +56,7 @@ class Subunit(pygame.sprite.Sprite):
     max_zoom = 10  # max zoom allow
     screen_scale = (1, 1)
     subunit_state = None
+    generic_action_data = None
 
     play_animation = animation.play_animation
     set_rotate = utility.set_rotate
@@ -262,6 +263,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_elem_range = self.original_elem_range
 
         self.add_weapon_stat()
+        # self.action_list = {key: item for key, item in self.generic_action_data}
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 

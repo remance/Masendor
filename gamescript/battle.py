@@ -268,6 +268,8 @@ class Battle:
         self.hair_colour_list = main.hair_colour_list
         self.skin_colour_list = main.skin_colour_list
 
+        self.generic_action_data = main.generic_action_data
+
         # ^ End load from start_set
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
@@ -444,19 +446,28 @@ class Battle:
         for this_subunit in self.subunit_updater:
             if this_subunit.troop_id not in self.animation_sprite_pool:
                 self.animation_sprite_pool[this_subunit.troop_id] = {}
+                armour = (self.all_armour.armour_list[this_subunit.armour_gear[0]]["Name"], this_subunit.mount_armour["Name"])
+                weapon_list = ((self.all_weapon.weapon_list[this_subunit.primary_main_weapon[0]]["Name"],
+                                self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Name"]))
+
+                weapon_common_action = (self.generic_action_data[this_subunit.primary_main_weapon[0]]["Common"],
+                                        self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Common"])
+                weapon_attack_action = (self.generic_action_data[this_subunit.primary_main_weapon[0]]["Attack"],
+                                        self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Attack"])
+                if (this_subunit.primary_main_weapon, this_subunit.primary_sub_weapon) != \
+                        (this_subunit.secondary_main_weapon, this_subunit.secondary_sub_weapon):
+                    weapon_list = (weapon_list,
+                                   (self.all_weapon.weapon_list[this_subunit.secondary_main_weapon[0]]["Name"],
+                                    self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Name"]))
+                    weapon_common_action = (weapon_common_action, (self.generic_action_data[this_subunit.secondary_main_weapon[0]]["Common"],
+                                            self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Common"]))
+                    weapon_attack_action = (weapon_attack_action, (self.generic_action_data[this_subunit.secondary_main_weapon[0]]["Attack"],
+                                            self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Attack"]))
+
                 for index, direction in enumerate(direction_list):
                     for animation in self.generic_animation_pool[index]:
                         if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
                             animation_property = self.generic_animation_pool[index][animation][0]["animation_property"].copy()
-                            armour = (self.all_armour.armour_list[this_subunit.armour_gear[0]]["Name"], this_subunit.mount_armour["Name"])
-                            weapon_list = ((self.all_weapon.weapon_list[this_subunit.primary_main_weapon[0]]["Name"],
-                                            self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Name"]))
-                            if (this_subunit.primary_main_weapon, this_subunit.primary_sub_weapon) != \
-                                (this_subunit.secondary_main_weapon, this_subunit.secondary_sub_weapon):
-                                weapon_list = (weapon_list,
-                                               (self.all_weapon.weapon_list[this_subunit.secondary_main_weapon[0]]["Name"],
-                                                self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Name"]))
-
                             for weapon_index, weapon in enumerate(weapon_list):  # create animation for each weapon set
                                 if animation + "/" + str(weapon_index) not in self.animation_sprite_pool[this_subunit.troop_id]:
                                     self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)] = {}

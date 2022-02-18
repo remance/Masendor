@@ -1,4 +1,4 @@
-"ID","Name","Common","Action","Properties"
+"ID","Name","Common","Attack","Properties"
 1,"Unarmed","1hand","punch",
 2,"Sword","1hand","slash",
 3,"Greatsword","2hand","slash","power"

@@ -688,6 +688,7 @@ class MainMenu:
         self.button_ui.add(self.troop_card_button)
 
         self.generic_action_data = load_action(self.main_dir)
+        subunit.Subunit.generic_action_data = self.generic_action_data
         animation_dict = load_animation_pool(self.main_dir)
         self.generic_animation_pool = animation_dict["generic_animation_pool"]
 
