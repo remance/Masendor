@@ -55,6 +55,7 @@ class Subunit(pygame.sprite.Sprite):
     animation_sprite_pool = None
     max_zoom = 10  # max zoom allow
     screen_scale = (1, 1)
+    subunit_state = None
 
     play_animation = animation.play_animation
     set_rotate = utility.set_rotate

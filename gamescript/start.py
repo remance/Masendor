@@ -54,6 +54,7 @@ unit_state_text = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk (M)", 4: "Run
 
 subunit_state_text = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)", 10: "Melee", 11: "Shoot",
                       12: "Walk (S)", 13: "Run (S)", 95: "Disobey", 96: "Flee", 97: "Rest", 98: "Flee", 99: "Broken", 100: "Dead"}
+subunit_state = {key: value.split(" ")[0] for key, value in subunit_state_text.items()}
 
 leader_state_text = {96: "Flee", 97: "POW", 98: "MIA", 99: "WIA", 100: "KIA"}
 
@@ -187,7 +188,11 @@ class MainMenu:
         # if not os.path.exists("\customunit"): # make custom subunit folder if not existed
 
         self.enactment = True
-        self.state_text = unit_state_text
+        self.unit_state_text = unit_state_text
+        self.subunit_state = subunit_state
+        self.leader_state_text = leader_state_text
+        self.morale_state_text = morale_state_text
+        self.stamina_state_text = stamina_state_text
 
         self.map_source = 0  # current selected map source
         self.team_selected = 1
@@ -460,6 +465,7 @@ class MainMenu:
         subunit.Subunit.armour_list = self.all_armour
         subunit.Subunit.stat_list = self.troop_data
         subunit.Subunit.status_list = self.troop_data.status_list
+        subunit.Subunit.subunit_state = self.subunit_state
 
         self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
         self.all_weather, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
@@ -491,7 +497,7 @@ class MainMenu:
         lorebook.Lorebook.race_list = self.troop_data.race_list
         lorebook.Lorebook.screen_rect = self.screen_rect
         lorebook.Lorebook.main_dir = main_dir
-        lorebook.Lorebook.state_text = self.state_text
+        lorebook.Lorebook.unit_state_text = self.unit_state_text
 
         self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
         self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
@@ -613,7 +619,7 @@ class MainMenu:
 
         # Right top bar ui that show rough information of selected battalions
         self.unitstat_ui = battleui.TopBar(image=battle_ui_image["topbar.png"], icon=genre_icon_image)
-        self.unitstat_ui.unit_state_text = self.state_text
+        self.unitstat_ui.unit_state_text = self.unit_state_text
 
         # Unit inspect information ui
         battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one

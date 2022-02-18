@@ -231,8 +231,6 @@ class Battle:
         self.troop_data = main.troop_data
         self.leader_stat = main.leader_stat
 
-        self.state_text = main.state_text
-
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
         self.icon_sprite_width = main.icon_sprite_width
         self.icon_sprite_height = main.icon_sprite_height

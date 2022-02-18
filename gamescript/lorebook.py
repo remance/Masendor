@@ -28,7 +28,7 @@ class Lorebook(pygame.sprite.Sprite):
     leader_class_list = None
     mount_grade_stat = None
     race_list = None
-    state_text = None
+    unit_state_text = None
 
     concept_section = 0
     history_section = 1
@@ -378,7 +378,7 @@ class Lorebook(pygame.sprite.Sprite):
                                 state_list = ""
                                 if text != "":
                                     for this_text in text:
-                                        state_list += self.state_text[this_text] + ", "
+                                        state_list += self.unit_state_text[this_text] + ", "
                                     state_list = state_list[0:-2]  # remove the last ", "
                                     create_text = stat_header[index] + ": " + state_list
                                 else:

@@ -50,7 +50,7 @@ def read_colour(main_dir):
 
 
 def load_action(main_dir):
-    generic_action_data = []
+    generic_action_data = {}
     with open(os.path.join(main_dir, "data", "animation", "action", "generic.csv"), encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
