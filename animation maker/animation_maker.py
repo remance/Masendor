@@ -239,7 +239,6 @@ def anim_to_pool(pool, char, new=False, replace=None, duplicate=None):
 
 def anim_save_pool(pool, pool_name):
     """Save animation pool data"""
-    activate_list
     for index, direction in enumerate(direction_list):
         with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8', newline="") as edit_file:
             filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
@@ -876,8 +875,11 @@ class Skeleton:
             while len(frame_list) < 10:  # add empty item
                 frame_list.append({})
             if new_size:
-                self.size = frame_list[0]['size']  # use only the size from first frame, all frame should be same size
-                if type(self.size) != int:  # in case the row is empty
+                try:
+                    self.size = frame_list[0]['size']  # use only the size from first frame, all frame should be same size
+                except KeyError:
+                    self.size = 1
+                except TypeError:
                     if type(self.size) != float and self.size.isdigit() is False:
                         self.size = 1
                     else:
@@ -1331,7 +1333,8 @@ class Skeleton:
                             self.animation_part_list[current_frame][part_index][2] = new_point
 
                         elif "move_" in edit_type:  # keyboard move
-                            new_point = self.animation_part_list[current_frame][part_index][2].copy()
+                            new_point = [self.animation_part_list[current_frame][part_index][2][0],
+                                         self.animation_part_list[current_frame][part_index][2][1]]
                             if "w" in edit_type:
                                 new_point[1] = new_point[1] - 0.5
                             elif "s" in edit_type:
@@ -1411,7 +1414,8 @@ class Skeleton:
                         elif "delete" in edit_type:
                             self.bodypart_list[current_frame][part_index] = None
                             self.part_name_list[current_frame][part_index] = ["", "", ""]
-                            self.animation_part_list[current_frame][part_index] = []
+                            self.animation_part_list[current_frame][part_index] = None
+                            # print(self.bodypart_list[current_frame], self.part_name_list[current_frame], self.animation_part_list[current_frame])
 
                         elif "layer_" in edit_type:
                             if "up" in edit_type:
@@ -2199,6 +2203,7 @@ while True:
                     elif rename_button.rect.collidepoint(mouse_pos):
                         text_input_popup = ("text_input", "new_name")
                         input_ui.change_instruction("Rename Animation:")
+                        input_box.text_start(animation_name)
                         ui.add(input_ui_popup)
 
                     elif duplicate_button.rect.collidepoint(mouse_pos):
@@ -2300,7 +2305,7 @@ while True:
 
                     elif save_button.rect.collidepoint(mouse_pos):
                         text_input_popup = ("confirm_input", "save_animation")
-                        input_ui.change_instruction("Save Current Animation?")
+                        input_ui.change_instruction("Save All Animation?")
                         ui.add(input_ui_popup)
 
                     elif delete_button.rect.collidepoint(mouse_pos):

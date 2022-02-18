@@ -29,3 +29,4 @@ List of action properties:
 "nodmg": effect deal no dmg and will not check in code
 "dmgsprite": whole sprite can cause damage instead of a single point
 "skip_": skip specific frames from playing use same indexing as list (e.g.skip_0_4_8 for skiping first, fourth, and eight frame)
+"p(number)_fix_main_weapon" or "p(number)_fix_sub_weapon": Use center point instead weapon joint positon and place them at the specified position instead of automatically at user's hand (main = right hand, sub = left hand)

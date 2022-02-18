@@ -24,6 +24,7 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
+load_action = creation.load_action
 load_animation_pool = creation.load_animation_pool
 read_terrain_data = creation.read_terrain_data
 read_weather_data = creation.read_weather_data
@@ -680,6 +681,7 @@ class MainMenu:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
+        self.generic_action_data = load_action(self.main_dir)
         animation_dict = load_animation_pool(self.main_dir)
         self.generic_animation_pool = animation_dict["generic_animation_pool"]
 

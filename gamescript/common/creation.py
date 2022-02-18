@@ -49,6 +49,21 @@ def read_colour(main_dir):
     return skin_colour_list, hair_colour_list
 
 
+def load_action(main_dir):
+    generic_action_data = []
+    with open(os.path.join(main_dir, "data", "animation", "action", "generic.csv"), encoding="utf-8", mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
+        part_name_header = rd[0]
+        for row_index, row in enumerate(rd):
+            if row_index > 0:
+                key = int(row[0])
+                row = row[1:]
+                generic_action_data[key] = {part_name_header[item_index]: item for item_index, item in enumerate(row)}
+
+    return generic_action_data
+
+
 def load_animation_pool(main_dir):
     generic_animation_pool = []
     for direction in direction_list:
