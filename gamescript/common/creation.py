@@ -54,13 +54,12 @@ def load_action(main_dir):
     with open(os.path.join(main_dir, "data", "animation", "action", "generic.csv"), encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
-        part_name_header = rd[0]
+        part_name_header = rd[0][1:]
         for row_index, row in enumerate(rd):
             if row_index > 0:
                 key = row[0]
                 row = row[1:]
                 generic_action_data[key] = {part_name_header[item_index]: item for item_index, item in enumerate(row)}
-
     return generic_action_data
 
 

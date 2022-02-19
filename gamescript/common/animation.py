@@ -114,6 +114,7 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
                 sprite_image = sprite_pool[part_name][troop_sprite_list[weapon_part]][body_part_list[0]][body_part_list[1]].copy()
         else:
             new_part_name = part
+            part_name = part
             if "p1_" in part or "p2_" in part:
                 part_name = part[3:]  # remove p1_ or p2_ to get part name
                 new_part_name = part_name
@@ -166,7 +167,7 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
         elif "weapon" in layer:
             new_part.insert(2, "Dummy")  # insert dummy value for weapon list so can use indexing similar as other part
             image_part = generate_body(layer, part[0:2], troop_sprite_list, weapon_sprite_pool, weapon=weapon)
-        elif "effect" in layer:
+        elif "effect" in layer and "dmg" not in layer:
             image_part = generate_body(layer, part[0:3], troop_sprite_list, effect_sprite_pool)
         else:  # other body part
             image_part = generate_body(layer, part[0:3], troop_sprite_list, body_sprite_pool, armour_sprite_pool=armour_sprite_pool,
