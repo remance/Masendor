@@ -167,14 +167,8 @@ class InputBox(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
 
-    def user_input(self, event, keypress):
+    def user_input(self, event, key_press):
         """register user keyboard and mouse input"""
-        # if self.clickinput and event.type == pygame.MOUSEBUTTONDOWN:  # only for text box that require click will activate
-        #     if self.rect.collidepoint(event.pos):
-        #         # Toggle the active variable.
-        #         self.active = not self.active
-        #     else:
-        #         self.active = False
         if event.type == pygame.KEYDOWN and self.active:  # text input
             self.image = self.image_original.copy()
             if event.key == pygame.K_BACKSPACE:
@@ -196,7 +190,7 @@ class InputBox(pygame.sprite.Sprite):
                 self.current_pos -= 1
                 if self.current_pos < 0:
                     self.current_pos = 0
-            elif keypress[pygame.K_LCTRL] or keypress[pygame.K_RCTRL]:
+            elif key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:
                 if event.key == pygame.K_c:
                     pyperclip.copy(self.text)
                 elif event.key == pygame.K_v:
