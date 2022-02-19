@@ -1772,13 +1772,14 @@ colour_cancel_button = menu.MenuButton(screen_scale, image_list,
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(main_dir, screen_scale, "unit_presetbox.png", "ui\\mainmenu_ui")
+big_box_img = load_image(main_dir, screen_scale, "biglistbox.png", "ui\\mainmenu_ui")
 
 menu.ListBox.containers = popup_listbox
-popup_listbox = menu.ListBox(screen_scale, (0, 0), box_img, 15)  # popup box need to be in higher layer
+popup_listbox = menu.ListBox(screen_scale, (0, 0), big_box_img, 16)  # popup box need to be in higher layer
 popup_list_scroll = battleui.UIScroller(popup_listbox.rect.topright,
                                         popup_listbox.image.get_height(),
                                         popup_listbox.max_show,
-                                        layer=14)
+                                        layer=18)
 anim_prop_listbox = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
                                                 (reset_button.image.get_height() * 1.5)), box_img, 8)
 anim_prop_listbox.namelist = anim_property_list + ["Custom"]
