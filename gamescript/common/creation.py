@@ -57,7 +57,7 @@ def load_action(main_dir):
         part_name_header = rd[0]
         for row_index, row in enumerate(rd):
             if row_index > 0:
-                key = int(row[0])
+                key = row[0]
                 row = row[1:]
                 generic_action_data[key] = {part_name_header[item_index]: item for item_index, item in enumerate(row)}
 

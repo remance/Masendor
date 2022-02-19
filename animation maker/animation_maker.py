@@ -898,10 +898,6 @@ class Skeleton:
                                 if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
                                     link_list[part] = [pose[part][2], pose[part][3]]
                                     bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
-                            elif any(ext in part for ext in ["effect", "special"]):
-                                if pose[part][1] in effect_sprite_pool[pose[part][1]][pose[part][0]]:
-                                    link_list[part] = [pose[part][2], pose[part][3]]
-                                    bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
                             else:
                                 link_list[part] = [pose[part][3], pose[part][4]]
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
@@ -935,8 +931,13 @@ class Skeleton:
                                                  link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
                             part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
                         else:
-                            sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
-                                                 pose[part][6], pose[part][7], pose[part][8]]
+                            if any(ext in part for ext in ["effect", "special"]):
+                                sprite_part[part] = [self.sprite_image[part],
+                                                     (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
+                                                     link_list[part], pose[part][5], pose[part][6], pose[part][7], pose[part][8]]
+                            else:
+                                sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
+                                                     pose[part][6], pose[part][7], pose[part][8]]
                             part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
                 pose_layer_list = self.make_layer_list(sprite_part)
                 self.animation_part_list[index] = sprite_part

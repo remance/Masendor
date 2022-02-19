@@ -450,26 +450,25 @@ class Battle:
                 weapon_list = ((self.all_weapon.weapon_list[this_subunit.primary_main_weapon[0]]["Name"],
                                 self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Name"]))
 
-                weapon_common_action = (self.generic_action_data[this_subunit.primary_main_weapon[0]]["Common"],
-                                        self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Common"])
-                weapon_attack_action = (self.generic_action_data[this_subunit.primary_main_weapon[0]]["Attack"],
-                                        self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Attack"])
+                weapon_common_action = (self.generic_action_data[[0][0]]["Common"], self.generic_action_data[weapon_list[0][1]]["Common"])
+                weapon_attack_action = (self.generic_action_data[weapon_list[0][0]]["Attack"], self.generic_action_data[weapon_list[0][1]]["Attack"])
                 if (this_subunit.primary_main_weapon, this_subunit.primary_sub_weapon) != \
                         (this_subunit.secondary_main_weapon, this_subunit.secondary_sub_weapon):
-                    weapon_list = (weapon_list,
+                    subunit_weapon_list = (weapon_list,
                                    (self.all_weapon.weapon_list[this_subunit.secondary_main_weapon[0]]["Name"],
                                     self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Name"]))
-                    weapon_common_action = (weapon_common_action, (self.generic_action_data[this_subunit.secondary_main_weapon[0]]["Common"],
-                                            self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Common"]))
-                    weapon_attack_action = (weapon_attack_action, (self.generic_action_data[this_subunit.secondary_main_weapon[0]]["Attack"],
-                                            self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Attack"]))
+                    weapon_common_action = (self.generic_action_data[weapon_list[1][0]]["Common"],
+                                            self.generic_action_data[weapon_list[1][1]]["Common"])
+                    weapon_attack_action = (weapon_attack_action, (self.generic_action_data[weapon_list[1][0]]["Attack"],
+                                            self.all_weapon.weapon_list[weapon_list[1][1]]["Attack"]))
 
                 for index, direction in enumerate(direction_list):
                     for animation in self.generic_animation_pool[index]:
                         if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
                             animation_property = self.generic_animation_pool[index][animation][0]["animation_property"].copy()
-                            for weapon_index, weapon in enumerate(weapon_list):  # create animation for each weapon set
-                                if animation + "/" + str(weapon_index) not in self.animation_sprite_pool[this_subunit.troop_id]:
+                            for weapon_index, weapon in enumerate(subunit_weapon_list):  # create animation for each weapon set
+                                if animation + "/" + str(weapon_index) not in self.animation_sprite_pool[this_subunit.troop_id] and \
+                                    weapon_common_action[weapon_index] and ():
                                     self.animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_index)] = {}
                                 new_direction = direction
                                 opposite_direction = None  # no opposite direction for front and back
