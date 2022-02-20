@@ -14,11 +14,13 @@ default_sprite_size = (200, 200)
 
 
 def play_animation(self, scale, speed):
+    done = False
     if time.time() - self.first_time >= speed:
         if self.show_frame < len(self.current_animation):
             self.show_frame += 1
         self.first_time = time.time()
         if self.show_frame >= len(self.current_animation):  # TODO add property
+            done = True
             self.show_frame = 0
 
     if scale == 1:
@@ -26,6 +28,8 @@ def play_animation(self, scale, speed):
     else:
         self.image = self.current_animation[self.show_frame]["sprite"].copy()
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * scale, self.image.get_height() * scale))
+    return done
+
 
 def apply_colour(surface, colour=None, colour_list=None):
     """Colorise body part sprite"""

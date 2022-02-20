@@ -9,24 +9,24 @@ class Lorebook(pygame.sprite.Sprite):
     history_stat = None
     history_lore = None
     faction_lore = None
-    unit_stat = None
-    unit_lore = None
-    armour_stat = None
-    weapon_stat = None
+    troop_list = None
+    troop_lore = None
+    armour_data = None
+    weapon_data = None
     mount_stat = None
     mount_armour_stat = None
     status_stat = None
     skill_stat = None
     trait_stat = None
-    leader_stat = None
+    leader_data = None
     leader_lore = None
     terrain_stat = None
     landmark_stat = None
     weather_stat = None
-    unit_grade_stat = None
-    unit_class_list = None
+    troop_grade_list = None
+    troop_class_list = None
     leader_class_list = None
-    mount_grade_stat = None
+    mount_grade_list = None
     race_list = None
     unit_state_text = None
 
@@ -55,7 +55,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
         self.image = image
         self.image_original = self.image.copy()
-        self.leader_list = self.leader_stat.leader_list
+        self.leader_list = self.leader_data.leader_list
         self.section = 0
         self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section Start with 1 instead of 0
         self.stat_data = None  # for getting the section stat data
@@ -83,7 +83,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.section_list = (
             (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore), (self.faction_lore, None),
-            (self.unit_stat, self.unit_lore),
+            (self.troop_list, self.troop_lore),
             (self.equipment_stat, None), (self.status_stat, None), (self.skill_stat, None),
             (self.trait_stat, None), (self.leader_list, self.leader_lore), (self.terrain_stat, None),
             (self.weather_stat, None))
@@ -162,9 +162,9 @@ class Lorebook(pygame.sprite.Sprite):
         else:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
                 image_name = str(self.subsection) + ".png"
-                self.portrait = self.leader_stat.images[image_name].copy()  # get leader portrait based on subsection number
+                self.portrait = self.leader_data.images[image_name].copy()  # get leader portrait based on subsection number
             except:
-                self.portrait = self.leader_stat.images["9999999.png"].copy()  # Use Unknown leader image if there is none in list
+                self.portrait = self.leader_data.images["9999999.png"].copy()  # Use Unknown leader image if there is none in list
                 font = pygame.font.SysFont("timesnewroman", 300)
                 text_image = font.render(str(self.subsection), True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
@@ -328,7 +328,7 @@ class Lorebook(pygame.sprite.Sprite):
 
                             if self.section == self.troop_section:  # troop section
                                 if stat_header[index] == "Grade":  # grade text instead of number
-                                    create_text = stat_header[index] + ": " + self.unit_grade_stat[text]["Name"]
+                                    create_text = stat_header[index] + ": " + self.troop_grade_list[text]["Name"]
 
                                 elif "Weapon" in stat_header[index]:  # weapon text with quality
                                     quality_text = (
@@ -344,13 +344,13 @@ class Lorebook(pygame.sprite.Sprite):
                                         # + ", Base Armour: " + str( self.armour_stat[text[0]][1])
 
                                 elif stat_header[index] == "Unit Type":
-                                    create_text = stat_header[index] + ": " + self.unit_class_list[text]["Name"]
+                                    create_text = stat_header[index] + ": " + self.troop_class_list[text]["Name"]
 
                                 elif stat_header[index] == "Race":
                                     create_text = stat_header[index] + ": " + self.race_list[text]["Name"]
 
                                 elif stat_header[index] == "Mount":  # mount text with grade
-                                    create_text = stat_header[index] + ": " + self.mount_grade_stat[text[1]]["Name"] + " " + \
+                                    create_text = stat_header[index] + ": " + self.mount_grade_list[text[1]]["Name"] + " " + \
                                                   self.mount_stat[text[0]]["Name"] + "//" + self.mount_armour_stat[text[2]]["Name"]
                                     if self.mount_stat[text[0]]["Name"] == "None":
                                         create_text = ""

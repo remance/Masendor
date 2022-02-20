@@ -175,7 +175,6 @@ class Battle:
         self.custom_unit_preset_list = main.custom_unit_preset_list
         self.unit_listbox = main.unit_listbox
         self.troop_scroll = main.troop_scroll
-        self.faction_list = main.faction_list
         self.popup_list_scroll = main.popup_list_scroll
         self.team_coa = main.team_coa
         self.unit_preset_name_scroll = main.unit_preset_name_scroll
@@ -218,11 +217,11 @@ class Battle:
 
         self.feature_mod = main.feature_mod
 
-        self.all_faction = main.all_faction
+        self.faction_data = main.faction_data
         self.coa_list = main.coa_list
 
-        self.all_weapon = main.all_weapon
-        self.all_armour = main.all_armour
+        self.weapon_data = main.weapon_data
+        self.armour_data = main.armour_data
 
         self.status_images = main.status_images
         self.role_images = main.role_images
@@ -230,7 +229,7 @@ class Battle:
         self.skill_images = main.skill_images
 
         self.troop_data = main.troop_data
-        self.leader_stat = main.leader_stat
+        self.leader_data = main.leader_data
 
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
         self.icon_sprite_width = main.icon_sprite_width

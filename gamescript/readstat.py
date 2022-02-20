@@ -457,3 +457,4 @@ class FactionData:
                             row[n] = [int(i)]
                 self.faction_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
+        self.faction_name_list = [item["Name"] for item in self.faction_list.values()][1:]

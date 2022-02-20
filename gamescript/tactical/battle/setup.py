@@ -113,7 +113,7 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
     this_unit = add_unit(setup_data[0], (setup_data[9][0], setup_data[9][1]),
                          np.array([setup_data[1], setup_data[2], setup_data[3], setup_data[4], setup_data[5],
                                    setup_data[6], setup_data[7], setup_data[8]]),
-                         colour, setup_data[10] + setup_data[11], battle.leader_stat, control,
+                         colour, setup_data[10] + setup_data[11], battle.leader_data, control,
                          coa, command, setup_data[13], setup_data[14], setup_data[15], setup_data[16])
     which_army.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army

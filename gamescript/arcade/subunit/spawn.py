@@ -15,29 +15,29 @@ def add_weapon_stat(self):
     self.base_range = [0, 0, 0, 0]
     self.arrow_speed = [0, 0, 0, 0]
     for index, weapon in enumerate([self.primary_main_weapon, self.primary_sub_weapon, self.secondary_main_weapon, self.secondary_sub_weapon]):
-        self.weapon_speed = self.weapon_list.weapon_list[weapon[0]]["Speed"]
-        if self.weapon_list.weapon_list[weapon[0]]["Magazine"]:  # melee weapon if no ammo
-            self.melee_dmg[index][0] = self.weapon_list.weapon_list[weapon[0]]["Minimum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]]
-            self.melee_dmg[index][1] = self.weapon_list.weapon_list[weapon[0]]["Maximum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]]
+        self.weapon_speed = self.weapon_data.weapon_data[weapon[0]]["Speed"]
+        if self.weapon_data.weapon_data[weapon[0]]["Magazine"]:  # melee weapon if no ammo
+            self.melee_dmg[index][0] = self.weapon_data.weapon_data[weapon[0]]["Minimum Damage"] * \
+                                       self.weapon_data.quality[weapon[1]]
+            self.melee_dmg[index][1] = self.weapon_data.weapon_data[weapon[0]]["Maximum Damage"] * \
+                                       self.weapon_data.quality[weapon[1]]
 
-            self.melee_penetrate[index] = self.weapon_list.weapon_list[weapon[0]]["Armour Penetration"] * \
-                                    self.weapon_list.quality[weapon[1]]
+            self.melee_penetrate[index] = self.weapon_data.weapon_data[weapon[0]]["Armour Penetration"] * \
+                                          self.weapon_data.quality[weapon[1]]
         else:
-            self.range_dmg[index][0] = self.weapon_list.weapon_list[weapon[0]]["Minimum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]]
-            self.range_dmg[index][1] = self.weapon_list.weapon_list[weapon[0]]["Maximum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]]
+            self.range_dmg[index][0] = self.weapon_data.weapon_data[weapon[0]]["Minimum Damage"] * \
+                                       self.weapon_data.quality[weapon[1]]
+            self.range_dmg[index][1] = self.weapon_data.weapon_data[weapon[0]]["Maximum Damage"] * \
+                                       self.weapon_data.quality[weapon[1]]
 
-            self.range_penetrate[index] = self.weapon_list.weapon_list[weapon[0]]["Armour Penetration"] * \
-                                    self.weapon_list.quality[weapon[1]]
-            self.magazine_size[index] = self.weapon_list.weapon_list[weapon[0]][
+            self.range_penetrate[index] = self.weapon_data.weapon_data[weapon[0]]["Armour Penetration"] * \
+                                          self.weapon_data.quality[weapon[1]]
+            self.magazine_size[index] = self.weapon_data.weapon_data[weapon[0]][
                 "Magazine"]  # can shoot how many times before have to reload
-            self.base_range[index] = self.weapon_list.weapon_list[weapon[0]]["Range"] * self.weapon_list.quality[weapon[1]]
-            self.arrow_speed[index] = self.weapon_list.weapon_list[weapon[0]]["Travel Speed"]  # travel speed of range melee_attack
+            self.base_range[index] = self.weapon_data.weapon_data[weapon[0]]["Range"] * self.weapon_data.quality[weapon[1]]
+            self.arrow_speed[index] = self.weapon_data.weapon_data[weapon[0]]["Travel Speed"]  # travel speed of range melee_attack
 
-        self.weight += self.weapon_list.weapon_list[weapon[0]]["Weight"]
+        self.weight += self.weapon_data.weapon_data[weapon[0]]["Weight"]
 
 
 def add_mount_stat(self):

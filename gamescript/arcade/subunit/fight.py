@@ -18,20 +18,20 @@ def swap_equipment(self, new_weapon):
     self.skill = self.original_skill
     self.trait = self.original_trait
 
-    self.base_melee_def += self.weapon_list.weapon_list[new_weapon]["Defense"]
-    self.base_range_def += self.weapon_list.weapon_list[new_weapon]["Defense"]
+    self.base_melee_def += self.weapon_data.weapon_data[new_weapon]["Defense"]
+    self.base_range_def += self.weapon_data.weapon_data[new_weapon]["Defense"]
 
-    self.skill += self.weapon_list.weapon_list[new_weapon]["Skill"]
-    self.trait += self.weapon_list.weapon_list[new_weapon]["Trait"]
+    self.skill += self.weapon_data.weapon_data[new_weapon]["Skill"]
+    self.trait += self.weapon_data.weapon_data[new_weapon]["Trait"]
 
     self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
     if len(self.trait) > 0:
-        self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
-                      x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+        self.trait = {x: self.troop_data.trait_list[x] for x in self.trait if
+                      x in self.troop_data.trait_list}  # Any trait not available in ruleset will be ignored
         self.add_trait()
 
-    self.skill = {x: self.stat_list.skill_list[x].copy() for x in self.skill if
-                  x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
+    self.skill = {x: self.troop_data.skill_list[x].copy() for x in self.skill if
+                  x != 0 and x in self.troop_data.skill_list}  # grab skill stat into dict
     for skill in list(self.skill.keys()):  # remove skill if class mismatch
         skill_troop_cond = self.skill[skill]["Troop Type"]
         if skill_troop_cond == 0 or (self.subunit_type == 2 and skill_troop_cond == 2) or (self.subunit_type != 2 and skill_troop_cond != 2):

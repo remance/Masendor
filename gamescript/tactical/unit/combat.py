@@ -129,8 +129,8 @@ def split_unit(battle, who, how):
             this_leader.subunit_pos = new_position[0] * new_position[1]
             already_pick.append(new_position)
 
-    new_leader = [who.leader[1], leader.Leader(1, 0, 1, who, battle.leader_stat), leader.Leader(1, 0, 2, who, battle.leader_stat),
-                 leader.Leader(1, 0, 3, who, battle.leader_stat)]  # create new leader list for new unit
+    new_leader = [who.leader[1], leader.Leader(1, 0, 1, who, battle.leader_data), leader.Leader(1, 0, 2, who, battle.leader_data),
+                  leader.Leader(1, 0, 3, who, battle.leader_data)]  # create new leader list for new unit
 
     who.subunit_position_list = []
 
@@ -183,7 +183,7 @@ def split_unit(battle, who, how):
     # ^ End reset position
 
     # v Change the original unit stat and sprite
-    original_leader = [who.leader[0], who.leader[2], who.leader[3], leader.Leader(1, 0, 3, who, battle.leader_stat)]
+    original_leader = [who.leader[0], who.leader[2], who.leader[3], leader.Leader(1, 0, 3, who, battle.leader_data)]
     for index, this_leader in enumerate(original_leader):  # Also change army position of all leader in that unit
         this_leader.army_position = index  # Change army position to new one
         this_leader.image_position = this_leader.base_image_position[this_leader.army_position]

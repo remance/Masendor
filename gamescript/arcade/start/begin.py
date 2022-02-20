@@ -53,7 +53,7 @@ def change_source(self, description_text, scale_value):
         troop_type_list[index].append(len(army_team_list[index]))
 
     army_loop_list = ["{:,}".format(troop) + " Troops" for troop in team_total_troop]
-    army_loop_list = [self.leader_stat.leader_list[leader_name_list[index][0]]["Name"] + ": " + troop for index, troop in enumerate(army_loop_list)]
+    army_loop_list = [self.leader_data.leader_list[leader_name_list[index][0]]["Name"] + ": " + troop for index, troop in enumerate(army_loop_list)]
 
     for index, army in enumerate(self.army_stat):
         army.add_stat(troop_type_list[index], army_loop_list[index])

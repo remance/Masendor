@@ -64,7 +64,7 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
         current_preset.append(leader_pos_list)
 
         faction = []  # generate faction list that can use this unit
-        faction_list = self.all_faction.faction_list.copy()
+        faction_list = self.faction_data.faction_name_list.copy()
         del faction_list["ID"]
         del faction_list[0]
         faction_count = dict.fromkeys(faction_list.keys(), 0)  # dict of faction occurrence count
@@ -80,8 +80,8 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
                         if int(this_item) < 10000 and int(this_item) in faction_item[1]["Leader"]:
                             faction_count[faction_item[0]] += 1
                         elif int(this_item) >= 10000:
-                            if faction_item[0] == self.leader_stat.leader_list[int(this_item)]["Faction"] or \
-                                    self.leader_stat.leader_list[int(this_item)]["Faction"] == 0:
+                            if faction_item[0] == self.leader_data.leader_list[int(this_item)]["Faction"] or \
+                                    self.leader_data.leader_list[int(this_item)]["Faction"] == 0:
                                 faction_count[faction_item[0]] += 1
 
         for item in faction_count.items():  # find faction of this unit
@@ -134,8 +134,8 @@ def filter_troop_list(self):
     if self.faction_pick != 0:
         self.troop_list = [item[1]["Name"] for item in self.troop_data.troop_list.items()
                            if item[1]["Name"] == "None" or
-                           item[0] in self.all_faction.faction_list[self.faction_pick]["Troop"]]
-        self.troop_index_list = [0] + self.all_faction.faction_list[self.faction_pick]["Troop"]
+                           item[0] in self.faction_data.faction_name_list[self.faction_pick]["Troop"]]
+        self.troop_index_list = [0] + self.faction_data.faction_name_list[self.faction_pick]["Troop"]
 
     else:  # pick all faction
         self.troop_list = [item[0] for item in self.troop_data.troop_list.values()][1:]

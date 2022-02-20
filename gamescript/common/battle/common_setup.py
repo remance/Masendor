@@ -12,9 +12,9 @@ def create_sprite_pool(self, direction_list):  # TODO maybe add body pos and siz
     for this_subunit in self.subunit_updater:
         if this_subunit.troop_id not in animation_sprite_pool:
             animation_sprite_pool[this_subunit.troop_id] = {}
-            armour = (self.all_armour.armour_list[this_subunit.armour_gear[0]]["Name"], this_subunit.mount_armour["Name"])
-            subunit_weapon_list = [(self.all_weapon.weapon_list[this_subunit.primary_main_weapon[0]]["Name"],
-                                    self.all_weapon.weapon_list[this_subunit.primary_sub_weapon[0]]["Name"])]
+            armour = (self.armour_data.armour_list[this_subunit.armour_gear[0]]["Name"], this_subunit.mount_armour["Name"])
+            subunit_weapon_list = [(self.weapon_data.weapon_list[this_subunit.primary_main_weapon[0]]["Name"],
+                                    self.weapon_data.weapon_list[this_subunit.primary_sub_weapon[0]]["Name"])]
 
             weapon_common_action = [(self.generic_action_data[subunit_weapon_list[0][0]]["Common"],
                                      self.generic_action_data[subunit_weapon_list[0][1]]["Common"])]
@@ -23,8 +23,8 @@ def create_sprite_pool(self, direction_list):  # TODO maybe add body pos and siz
             if (this_subunit.primary_main_weapon, this_subunit.primary_sub_weapon) != \
                     (this_subunit.secondary_main_weapon, this_subunit.secondary_sub_weapon):
                 subunit_weapon_list = [subunit_weapon_list[0],
-                                       (self.all_weapon.weapon_list[this_subunit.secondary_main_weapon[0]]["Name"],
-                                        self.all_weapon.weapon_list[this_subunit.secondary_sub_weapon[0]]["Name"])]
+                                       (self.weapon_data.weapon_list[this_subunit.secondary_main_weapon[0]]["Name"],
+                                        self.weapon_data.weapon_list[this_subunit.secondary_sub_weapon[0]]["Name"])]
                 weapon_common_action = [weapon_common_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Common"],
                                                                   self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
                 weapon_attack_action = [(weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],

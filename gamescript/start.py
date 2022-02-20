@@ -458,12 +458,12 @@ class MainMenu:
             pygame.mixer.music.play(-1)
         # ^ End Main menu
 
-        self.all_faction, self.coa_list, self.faction_list = read_faction_data(main_dir, self.screen_scale, self.ruleset_folder)
-        self.all_weapon, self.all_armour, self.troop_data, self.leader_stat = load_battle_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
+        self.faction_data, self.coa_list = read_faction_data(main_dir, self.screen_scale, self.ruleset_folder)
+        self.weapon_data, self.armour_data, self.troop_data, self.leader_data = load_battle_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
         subunit.Subunit.screen_scale = self.screen_scale
-        subunit.Subunit.weapon_list = self.all_weapon
-        subunit.Subunit.armour_list = self.all_armour
-        subunit.Subunit.stat_list = self.troop_data
+        subunit.Subunit.weapon_data = self.weapon_data
+        subunit.Subunit.armour_data = self.armour_data
+        subunit.Subunit.troop_data = self.troop_data
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 
@@ -475,25 +475,25 @@ class MainMenu:
             main_dir, self.ruleset_folder)
 
         # Encyclopedia
-        lorebook.Lorebook.faction_lore = self.all_faction.faction_list
-        lorebook.Lorebook.unit_stat = self.troop_data.troop_list
+        lorebook.Lorebook.faction_lore = self.faction_data.faction_list
+        lorebook.Lorebook.troop_list = self.troop_data.troop_list
         lorebook.Lorebook.troop_lore = self.troop_data.troop_lore
-        lorebook.Lorebook.armour_stat = self.all_armour.armour_list
-        lorebook.Lorebook.weapon_stat = self.all_weapon.weapon_list
+        lorebook.Lorebook.armour_stat = self.armour_data.armour_list
+        lorebook.Lorebook.weapon_stat = self.weapon_data.weapon_list
         lorebook.Lorebook.mount_stat = self.troop_data.mount_list
         lorebook.Lorebook.mount_armour_stat = self.troop_data.mount_armour_list
         lorebook.Lorebook.status_stat = self.troop_data.status_list
         lorebook.Lorebook.skill_stat = self.troop_data.skill_list
         lorebook.Lorebook.trait_stat = self.troop_data.trait_list
-        lorebook.Lorebook.leader_stat = self.leader_stat
-        lorebook.Lorebook.leader_lore = self.leader_stat.leader_lore
+        lorebook.Lorebook.leader_data = self.leader_data
+        lorebook.Lorebook.leader_lore = self.leader_data.leader_lore
         lorebook.Lorebook.terrain_stat = self.feature_mod
         lorebook.Lorebook.weather_stat = self.all_weather
         lorebook.Lorebook.landmark_stat = None
-        lorebook.Lorebook.unit_grade_stat = self.troop_data.grade_list
-        lorebook.Lorebook.unit_class_list = self.troop_data.role
-        lorebook.Lorebook.leader_class_list = self.leader_stat.leader_class
-        lorebook.Lorebook.mount_grade_stat = self.troop_data.mount_grade_list
+        lorebook.Lorebook.troop_grade_list = self.troop_data.grade_list
+        lorebook.Lorebook.troop_class_list = self.troop_data.role
+        lorebook.Lorebook.leader_class_list = self.leader_data.leader_class
+        lorebook.Lorebook.mount_grade_list = self.troop_data.mount_grade_list
         lorebook.Lorebook.race_list = self.troop_data.race_list
         lorebook.Lorebook.screen_rect = self.screen_rect
         lorebook.Lorebook.main_dir = main_dir
@@ -582,10 +582,10 @@ class MainMenu:
 
         self.tick_box.add(*self.filter_tick_box)
 
-        self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0, self.leader_stat),
-                               uniteditor.PreviewLeader(1, 0, 1, self.leader_stat),
-                               uniteditor.PreviewLeader(1, 0, 2, self.leader_stat),
-                               uniteditor.PreviewLeader(1, 0, 3, self.leader_stat)]  # list of preview leader for unit editor
+        self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0, self.leader_data),
+                               uniteditor.PreviewLeader(1, 0, 1, self.leader_data),
+                               uniteditor.PreviewLeader(1, 0, 2, self.leader_data),
+                               uniteditor.PreviewLeader(1, 0, 3, self.leader_data)]  # list of preview leader for unit editor
         self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
 
         # user input popup ui
@@ -788,11 +788,11 @@ class MainMenu:
             team1_set_pos = (self.screen_rect.width / 2 - (400 * self.screen_scale[0]), self.screen_rect.height / 3)
         # position = self.map_show[0].get_rect()
         self.team_coa.add(menu.TeamCoa(self.screen_scale, team1_set_pos, self.coa_list[data[0]],
-                                       1, self.all_faction.faction_list[data[0]]["Name"]))  # team 1
+                                       1, self.faction_data.faction_list[data[0]]["Name"]))  # team 1
 
         if one_team is False:
             self.team_coa.add(menu.TeamCoa(self.screen_scale, (self.screen_rect.width / 2 + (400 * self.screen_scale[0]), self.screen_rect.height / 3),
-                                           self.coa_list[data[1]], 2, self.all_faction.faction_list[data[1]]["Name"]))  # team 2
+                                           self.coa_list[data[1]], 2, self.faction_data.faction_list[data[1]]["Name"]))  # team 2
         ui_class.add(self.team_coa)
 
     def make_map(self, map_folder_list, map_list):

@@ -32,7 +32,7 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript import battleui, subunit
     this_unit = add_unit(setup_data[0], np.array([setup_data[1], setup_data[2], setup_data[3], setup_data[4], setup_data[5]]),
-                         (setup_data[6][0], setup_data[6][1]), colour, setup_data[7], battle.leader_stat, control,
+                         (setup_data[6][0], setup_data[6][1]), colour, setup_data[7], battle.leader_data, control,
                          coa, command, setup_data[8], setup_data[9], setup_data[10], setup_data[11])
     which_army.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army

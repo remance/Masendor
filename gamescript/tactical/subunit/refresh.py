@@ -491,3 +491,14 @@ def charge_logic(self, parent_state):
         if self.charge_momentum <= 1:
             self.unit.charging = False
             self.charge_momentum = 1
+
+
+def pick_animation(self):
+    state_name = self.subunit_state[self.state]
+    # if self.state not in (0, 10, 11):
+    #     self.current_animation = self.sprite_pool[self.race_name + "_"+ state_name + "_" + str(self.equiped_weapon)][self.sprite_direction]
+    #     state_name
+    # if self.state in (1, 3, 5):
+    #     self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)][self.sprite_direction]
+    # elif self.state in (2, 4, 6):
+    #     self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)][self.sprite_direction]

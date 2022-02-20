@@ -11,33 +11,33 @@ def add_weapon_stat(self):
     arrow_speed = []
 
     for index, weapon in enumerate([self.primary_main_weapon, self.primary_sub_weapon, self.secondary_main_weapon, self.secondary_sub_weapon]):
-        if self.weapon_list.weapon_list[weapon[0]]["Range"] == 0:  # melee weapon if range 0
-            self.melee_dmg[0] += self.weapon_list.weapon_list[weapon[0]]["Minimum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]] / (index + 1)
-            self.melee_dmg[1] += self.weapon_list.weapon_list[weapon[0]]["Maximum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]] / (index + 1)
+        if self.weapon_data.weapon_list[weapon[0]]["Range"] == 0:  # melee weapon if range 0
+            self.melee_dmg[0] += self.weapon_data.weapon_list[weapon[0]]["Minimum Damage"] * \
+                                 self.weapon_data.quality[weapon[1]] / (index + 1)
+            self.melee_dmg[1] += self.weapon_data.weapon_list[weapon[0]]["Maximum Damage"] * \
+                                 self.weapon_data.quality[weapon[1]] / (index + 1)
 
-            self.melee_penetrate += self.weapon_list.weapon_list[weapon[0]]["Armour Penetration"] * \
-                                    self.weapon_list.quality[weapon[1]] / (index + 1)
-            self.weapon_speed += self.weapon_list.weapon_list[weapon[0]]["Speed"] / (index + 1)
+            self.melee_penetrate += self.weapon_data.weapon_list[weapon[0]]["Armour Penetration"] * \
+                                    self.weapon_data.quality[weapon[1]] / (index + 1)
+            self.weapon_speed += self.weapon_data.weapon_list[weapon[0]]["Speed"] / (index + 1)
         else:
-            self.range_dmg[0] += self.weapon_list.weapon_list[weapon[0]]["Minimum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]]
-            self.range_dmg[1] += self.weapon_list.weapon_list[weapon[0]]["Maximum Damage"] * \
-                                 self.weapon_list.quality[weapon[1]]
+            self.range_dmg[0] += self.weapon_data.weapon_list[weapon[0]]["Minimum Damage"] * \
+                                 self.weapon_data.quality[weapon[1]]
+            self.range_dmg[1] += self.weapon_data.weapon_list[weapon[0]]["Maximum Damage"] * \
+                                 self.weapon_data.quality[weapon[1]]
 
-            self.range_penetrate += self.weapon_list.weapon_list[weapon[0]]["Armour Penetration"] * \
-                                    self.weapon_list.quality[weapon[1]] / (index + 1)
-            self.magazine_size += self.weapon_list.weapon_list[weapon[0]][
+            self.range_penetrate += self.weapon_data.weapon_list[weapon[0]]["Armour Penetration"] * \
+                                    self.weapon_data.quality[weapon[1]] / (index + 1)
+            self.magazine_size += self.weapon_data.weapon_list[weapon[0]][
                 "Magazine"]  # can shoot how many times before have to reload
-            weapon_reload += self.weapon_list.weapon_list[weapon[0]]["Speed"] * (index + 1)
-            base_range.append(self.weapon_list.weapon_list[weapon[0]]["Range"] * self.weapon_list.quality[weapon[1]])
-            arrow_speed.append(self.weapon_list.weapon_list[weapon[0]]["Travel Speed"])  # travel speed of range melee_attack
-        self.base_melee_def += self.weapon_list.weapon_list[weapon[0]]["Defense"] / (index + 1)
-        self.base_range_def += self.weapon_list.weapon_list[weapon[0]]["Defense"] / (index + 1)
-        self.skill += self.weapon_list.weapon_list[weapon[0]]["Skill"]
-        self.trait += self.weapon_list.weapon_list[weapon[0]]["Trait"]
-        self.weight += self.weapon_list.weapon_list[weapon[0]]["Weight"]
+            weapon_reload += self.weapon_data.weapon_list[weapon[0]]["Speed"] * (index + 1)
+            base_range.append(self.weapon_data.weapon_list[weapon[0]]["Range"] * self.weapon_data.quality[weapon[1]])
+            arrow_speed.append(self.weapon_data.weapon_list[weapon[0]]["Travel Speed"])  # travel speed of range melee_attack
+        self.base_melee_def += self.weapon_data.weapon_list[weapon[0]]["Defense"] / (index + 1)
+        self.base_range_def += self.weapon_data.weapon_list[weapon[0]]["Defense"] / (index + 1)
+        self.skill += self.weapon_data.weapon_list[weapon[0]]["Skill"]
+        self.trait += self.weapon_data.weapon_list[weapon[0]]["Trait"]
+        self.weight += self.weapon_data.weapon_list[weapon[0]]["Weight"]
 
         self.weapon_speed = int(self.weapon_speed)
         if self.melee_penetrate < 0:

@@ -38,6 +38,7 @@ def change_subunit_genre(genre):
     Subunit.player_interact = refresh.player_interact
     Subunit.status_update = refresh.status_update
     Subunit.morale_logic = refresh.morale_logic
+    Subunit.pick_animation = refresh.pick_animation
     Subunit.health_stamina_logic = refresh.health_stamina_logic
     Subunit.charge_logic = refresh.charge_logic
 
@@ -48,9 +49,9 @@ class Subunit(pygame.sprite.Sprite):
     base_map = None  # base map
     feature_map = None  # feature map
     height_map = None  # height map
-    weapon_list = None
-    armour_list = None
-    stat_list = None
+    weapon_data = None
+    armour_data = None
+    troop_data = None
     status_list = None
     animation_sprite_pool = None
     max_zoom = 10  # max zoom allow
@@ -126,24 +127,25 @@ class Subunit(pygame.sprite.Sprite):
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
 
         # v Setup troop original stat before applying trait, gear and other stuffs
-        stat = self.stat_list.troop_list[self.troop_id].copy()
+        stat = self.troop_data.troop_list[self.troop_id].copy()
         self.name = stat["Name"]  # name according to the preset
         self.grade = stat["Grade"]  # training level/class grade
         self.race = stat["Race"]  # creature race
+        self.race_name = self.troop_data.race_list[stat["Race"]]["Name"]
         self.original_trait = stat["Trait"]  # trait list from preset
-        self.original_trait = self.original_trait + self.stat_list.grade_list[self.grade]["Trait"]  # add trait from grade
+        self.original_trait = self.original_trait + self.troop_data.grade_list[self.grade]["Trait"]  # add trait from grade
         skill = stat["Skill"]  # skill list according to the preset
         self.skill_cooldown = {}
         self.cost = stat["Cost"]
-        grade_stat = self.stat_list.grade_list[self.grade]
+        grade_stat = self.troop_data.grade_list[self.grade]
         self.grade_name = grade_stat["Name"]
         self.original_melee_attack = stat["Melee Attack"] + grade_stat["Melee Attack Bonus"]  # base melee melee_attack with grade bonus
         self.original_melee_def = stat["Melee Defence"] + grade_stat["Defence Bonus"]  # base melee defence with grade bonus
         self.original_range_def = stat["Ranged Defence"] + grade_stat["Defence Bonus"]  # base range defence with grade bonus
         self.armour_gear = stat["Armour"]  # armour equipment
         self.original_armour = 0  # TODO change when has race or something
-        self.base_armour = self.armour_list.armour_list[self.armour_gear[0]]["Armour"] \
-                           * self.armour_list.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
+        self.base_armour = self.armour_data.armour_list[self.armour_gear[0]]["Armour"] \
+                           * self.armour_data.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
         self.original_accuracy = stat["Accuracy"] + grade_stat["Accuracy Bonus"]
         self.original_sight = stat["Sight"]  # base sight range
         self.magazine_left = stat["Ammunition"]  # amount of ammunition
@@ -162,9 +164,9 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
 
-        self.mount = self.stat_list.mount_list[stat["Mount"][0]]  # mount this subunit use
-        self.mount_grade = self.stat_list.mount_grade_list[stat["Mount"][1]]
-        self.mount_armour = self.stat_list.mount_armour_list[stat["Mount"][2]]
+        self.mount = self.troop_data.mount_list[stat["Mount"][0]]  # mount this subunit use
+        self.mount_grade = self.troop_data.mount_grade_list[stat["Mount"][1]]
+        self.mount_armour = self.troop_data.mount_armour_list[stat["Mount"][2]]
 
         self.weight = 0
         self.melee_dmg = [0, 0]
@@ -244,8 +246,8 @@ class Subunit(pygame.sprite.Sprite):
         self.base_melee_def = self.original_melee_def
         self.base_range_def = self.original_range_def
         # armour stat is calculated from based armour * quality
-        self.base_armour = self.original_armour + (self.armour_list.armour_list[self.armour_gear[0]]["Armour"]
-                                                   * self.armour_list.quality[self.armour_gear[1]])
+        self.base_armour = self.original_armour + (self.armour_data.armour_list[self.armour_gear[0]]["Armour"]
+                                                   * self.armour_data.quality[self.armour_gear[1]])
         self.base_speed = self.original_speed
         self.base_accuracy = self.original_accuracy
         self.base_sight = self.original_sight
@@ -284,23 +286,23 @@ class Subunit(pygame.sprite.Sprite):
         self.old_last_health, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
         self.max_troop = self.troop_number  # max number of troop at the start
 
-        self.trait += self.armour_list.armour_list[self.armour_gear[0]]["Trait"]  # Apply armour trait to subunit
+        self.trait += self.armour_data.armour_list[self.armour_gear[0]]["Trait"]  # Apply armour trait to subunit
 
         self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
         if len(self.trait) > 0:
-            self.trait = {x: self.stat_list.trait_list[x] for x in self.trait if
-                          x in self.stat_list.trait_list}  # Any trait not available in ruleset will be ignored
+            self.trait = {x: self.troop_data.trait_list[x] for x in self.trait if
+                          x in self.troop_data.trait_list}  # Any trait not available in ruleset will be ignored
             self.add_trait()
 
-        self.skill = {x: self.stat_list.skill_list[x].copy() for x in self.skill if
-                      x != 0 and x in self.stat_list.skill_list}  # grab skill stat into dict
+        self.skill = {x: self.troop_data.skill_list[x].copy() for x in self.skill if
+                      x != 0 and x in self.troop_data.skill_list}  # grab skill stat into dict
         for skill in list(self.skill.keys()):  # remove skill if class mismatch
             skill_troop_cond = self.skill[skill]["Troop Type"]
             if skill_troop_cond != 0 and self.subunit_type != skill_troop_cond:
                 self.skill.pop(skill)
 
         # v Weight calculation
-        self.weight += self.armour_list.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour
+        self.weight += self.armour_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
         # ^ End weight cal
@@ -590,7 +592,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
 
-        self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]["r_side"]  # change later
+        self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)][self.sprite_direction]  # change later
 
         # self.idle_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]
         # self.walk_animation = None
@@ -661,7 +663,7 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End health and stamina
 
         # v weapon class icon in middle circle
-        image1 = self.weapon_list.images[self.weapon_list.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
+        image1 = self.weapon_data.images[self.weapon_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
         image1_rect = image1.get_rect(center=image.get_rect().center)
         image.blit(image1, image1_rect)
 
@@ -690,7 +692,10 @@ class Subunit(pygame.sprite.Sprite):
             self.zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
         if self.zoom > 9:  # TODO add weapon speicifc action condition
-            self.play_animation(1, 1)
+            done = self.play_animation(1, 1)
+            if done:
+                self.pick_animation()
+
 
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)

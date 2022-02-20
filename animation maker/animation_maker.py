@@ -693,7 +693,10 @@ class BodyHelper(pygame.sprite.Sprite):
                         stat[1] = new_change[index]
                 stat[2] = str(stat[2])
                 if len(stat) > 3:
-                    stat[3] = str([stat[3][0], stat[3][1]])
+                    try:
+                        stat[3] = str([[stat[3][0], stat[3][1]]])
+                    except TypeError:
+                        stat[3] = str([0, 0])
                     for index, change in enumerate(["F", "FH", "FV", "FHV"]):
                         if stat[5] == index:
                             stat[5] = change
@@ -895,8 +898,8 @@ class Skeleton:
                     if pose[part] != [0] and "property" not in part and part != "size":
                         if "eye" not in part and "mouth" not in part:
                             if "weapon" in part:
+                                link_list[part] = [pose[part][2], pose[part][3]]
                                 if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
-                                    link_list[part] = [pose[part][2], pose[part][3]]
                                     bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
                             else:
                                 link_list[part] = [pose[part][3], pose[part][4]]
@@ -926,10 +929,15 @@ class Skeleton:
                 for part in part_name_header:
                     if part in pose and pose[part] != [0] and any(ext in part for ext in except_list) is False:
                         if "weapon" in part:
-                            sprite_part[part] = [self.sprite_image[part],
-                                                 (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
-                                                 link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
-                            part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                            try:
+                                sprite_part[part] = [self.sprite_image[part],
+                                                     (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
+                                                     link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
+                                part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                            except AttributeError:  # return None, sprite not existed.
+                                sprite_part[part] = [self.sprite_image[part], (0, 0),
+                                                     link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
+                                part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
                         else:
                             if any(ext in part for ext in ["effect", "special"]):
                                 sprite_part[part] = [self.sprite_image[part],
@@ -969,8 +977,9 @@ class Skeleton:
         if empty is False:
             for index, layer in enumerate(pose_layer_list):
                 part = self.animation_part_list[frame][layer]
-                image = self.part_to_sprite(image, part[0], list(self.animation_part_list[frame].keys()).index(layer),
-                                            part[1], part[2], part[3], part[4], part[6])
+                if part[0] is not None:
+                    image = self.part_to_sprite(image, part[0], list(self.animation_part_list[frame].keys()).index(layer),
+                                                part[1], part[2], part[3], part[4], part[6])
         return image
 
     def create_joint(self, pose_layer_list):
@@ -1334,8 +1343,11 @@ class Skeleton:
                             self.animation_part_list[current_frame][part_index][2] = new_point
 
                         elif "move_" in edit_type:  # keyboard move
-                            new_point = [self.animation_part_list[current_frame][part_index][2][0],
-                                         self.animation_part_list[current_frame][part_index][2][1]]
+                            try:
+                                new_point = [self.animation_part_list[current_frame][part_index][2][0],
+                                             self.animation_part_list[current_frame][part_index][2][1]]
+                            except TypeError:  # None position
+                                new_point = [0, 0]
                             if "w" in edit_type:
                                 new_point[1] = new_point[1] - 0.5
                             elif "s" in edit_type:
