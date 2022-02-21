@@ -37,7 +37,7 @@ def create_sprite_pool(self, direction_list):  # TODO maybe add body pos and siz
                         for weapon_index, weapon in enumerate(weapon_set):
                             # first check if animation is common weapon type specific and match with weapon, then check if it is attack specific
                             if (any(ext in weapon_common_type_list for ext in animation) is False or weapon_common_action[weapon_set_index][weapon_index] in animation) and \
-                                (any(ext in weapon_attack_type_list for ext in animation) is False or (weapon_common_action[weapon_set_index][weapon_index] in animation and ("main", "sub")[weapon_index] in animation)):
+                                (any(ext in weapon_attack_type_list for ext in animation) is False or (weapon_attack_action[weapon_set_index][weapon_index] in animation and ("main", "sub")[weapon_index] in animation)):
                                 if animation + "/" + str(weapon_set_index) not in animation_sprite_pool[this_subunit.troop_id]:
                                     animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_set_index)] = {}
                                 for index, direction in enumerate(direction_list):

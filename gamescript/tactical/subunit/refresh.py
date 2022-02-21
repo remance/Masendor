@@ -12,7 +12,6 @@ def player_interact(self, mouse_pos, mouse_left_up):
             self.battle.last_mouseover = self.unit  # last mouse over on this unit
             if mouse_left_up and self.battle.click_any is False:
                 self.battle.last_selected = self.unit  # become last selected unit
-                print(self.battle.last_selected.game_id)
                 if self.unit.selected is False:
                     self.unit.just_selected = True
                     self.unit.selected = True
@@ -495,9 +494,9 @@ def charge_logic(self, parent_state):
 
 def pick_animation(self):
     state_name = self.subunit_state[self.state]
-    # if self.state not in (0, 10, 11):
-    #     self.current_animation = self.sprite_pool[self.race_name + "_"+ state_name + "_" + str(self.equiped_weapon)][self.sprite_direction]
-    #     state_name
+    if self.state not in (0, 10, 11):
+        self.current_animation = {key: value for key, value in self.sprite_pool.items() if self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + state_name + "/" + str(self.equiped_weapon) in key}
+        self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
     # if self.state in (1, 3, 5):
     #     self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)][self.sprite_direction]
     # elif self.state in (2, 4, 6):

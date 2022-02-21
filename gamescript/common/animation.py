@@ -13,21 +13,22 @@ rotation_xy = utility.rotation_xy
 default_sprite_size = (200, 200)
 
 
-def play_animation(self, scale, speed):
+def play_animation(self, speed, dt, scale=1):
     done = False
-    if time.time() - self.first_time >= speed:
-        if self.show_frame < len(self.current_animation):
+    self.animation_timer += dt
+    current_animation = self.current_animation[self.sprite_direction]
+    if self.animation_timer >= speed:
+        if self.show_frame < len(current_animation):
             self.show_frame += 1
-        self.first_time = time.time()
-        if self.show_frame >= len(self.current_animation):  # TODO add property
+        self.animation_timer = 0
+        if self.show_frame >= len(current_animation):  # TODO add property
             done = True
             self.show_frame = 0
 
     if scale == 1:
-        self.image = self.current_animation[self.show_frame]["sprite"]
+        self.image = current_animation[self.show_frame]["sprite"]
     else:
-        self.image = self.current_animation[self.show_frame]["sprite"].copy()
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() * scale, self.image.get_height() * scale))
+        self.image = pygame.transform.scale(current_animation[self.show_frame]["sprite"].copy(), (self.image.get_width() * scale, self.image.get_height() * scale))
     return done
 
 
@@ -71,12 +72,12 @@ def generate_head(p, animation_part_list, body_part_list, troop_sprite_list, poo
         head_rect = head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
         head_sprite_surface.blit(head, head_rect)
         face = [pool[head_race][head_side]["eyebrow"][troop_sprite_list[p + "_eyebrow"][0]].copy(),
-                   grab_face_part(pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], troop_sprite_list[p + "_eye"][0]),
-                   pool[head_race][head_side]["beard"][troop_sprite_list[p + "_beard"][0]].copy(),
-                   grab_face_part(pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], troop_sprite_list[p + "_mouth"])]
+                grab_face_part(pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], troop_sprite_list[p + "_eye"][0]),
+                pool[head_race][head_side]["beard"][troop_sprite_list[p + "_beard"][0]].copy(),
+                grab_face_part(pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], troop_sprite_list[p + "_mouth"])]
 
-        # if skin != "white":
-        #     face[0] = self.apply_colour(face[0], skin_colour)
+    # if skin != "white":
+    #     face[0] = self.apply_colour(face[0], skin_colour)
 
         face[0] = apply_colour(face[0], troop_sprite_list[p + "_hair"][1], hair_colour_list)
         face[1] = apply_colour(face[1], troop_sprite_list[p + "_eye"][1], hair_colour_list)
@@ -228,8 +229,12 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
                         # change pos from rotation
                         if angle != 0:
                             center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
-                            radians_angle = math.radians(angle - 360)  # different from 360 - angle as the animation file use different angle format
-                            main_joint_pos = rotation_xy(center, main_joint_pos, radians_angle)  # find new center point with rotation
+
+                            # new_angle = abs(360 - angle)  # convert angle
+                            radians_angle = math.radians(360 - angle)
+                            if angle < 0:  # negative angle (rotate to left side)
+                                radians_angle = math.radians(-angle)
+                            main_joint_pos = rotation_xy(main_joint_pos, center, radians_angle)  # find new center point with rotation
 
                         pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
                         new_target = hand_pos + pos_different

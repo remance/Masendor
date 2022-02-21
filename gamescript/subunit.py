@@ -101,7 +101,7 @@ class Subunit(pygame.sprite.Sprite):
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0
-        self.first_time = time.time()
+        self.animation_timer = 0
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -163,6 +163,11 @@ class Subunit(pygame.sprite.Sprite):
         self.primary_sub_weapon = stat["Primary Sub Weapon"]
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
+
+        self.main_weapon_name = (self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
+                                 self.weapon_data.weapon_list[self.secondary_sub_weapon[0]]["Name"])
+        self.sub_weapon_name = (self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
+                                 self.weapon_data.weapon_list[self.secondary_sub_weapon[0]]["Name"])
 
         self.mount = self.troop_data.mount_list[stat["Mount"][0]]  # mount this subunit use
         self.mount_grade = self.troop_data.mount_grade_list[stat["Mount"][1]]
@@ -265,7 +270,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_elem_range = self.original_elem_range
 
         self.add_weapon_stat()
-        # self.action_list = {key: item for key, item in self.generic_action_data}
+        self.action_list = {key: value for key, value in self.generic_action_data.items() if key in self.main_weapon_name or key in self.sub_weapon_name}
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
@@ -592,7 +597,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
 
-        self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)][self.sprite_direction]  # change later
+        self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]  # change later
 
         # self.idle_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]
         # self.walk_animation = None
@@ -686,21 +691,19 @@ class Subunit(pygame.sprite.Sprite):
                 "stamina_rect": stamina_image_rect, "stamina_block_rect": stamina_block_rect,
                 "corner_rect": corner_image_rect, "health_list": health_image_list, "stamina_list": stamina_image_list}
 
-    def update(self, weather, new_dt, zoom, combat_timer, mouse_pos, mouse_left_up):
+    def update(self, weather, dt, zoom, combat_timer, mouse_pos, mouse_left_up):
         if self.last_zoom != zoom:  # camera zoom is changed
             self.last_zoom = zoom
             self.zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
-        if self.zoom > 9:  # TODO add weapon speicifc action condition
-            done = self.play_animation(1, 1)
-            if done:
-                self.pick_animation()
-
 
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
-            dt = new_dt
+            if self.zoom > 9:  # TODO add weapon speicifc action condition
+                done = self.play_animation(0.5, dt)
+                if done:
+                    self.pick_animation()
             if dt > 0:  # only run these when self not pause
                 self.timer += dt
 
