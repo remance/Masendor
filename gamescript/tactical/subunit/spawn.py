@@ -4,6 +4,8 @@ import numpy as np
 
 import pygame
 
+genre_sprite_size = (100, 100)
+
 def add_weapon_stat(self):
     """Combine weapon stat"""
     weapon_reload = 0

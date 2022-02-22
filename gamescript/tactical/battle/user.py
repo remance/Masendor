@@ -904,7 +904,7 @@ def battle_key_press(self, key_press):
     elif key_press == pygame.K_1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_2:
-        self.drama_text.queue.append("Showcase: Very early animation sprite system")
+        self.drama_text.queue.append("Showcase: Walk and run animation sample")
     # elif key_press == pygame.K_3:
     #     self.drama_text.queue.append("Before")
     # elif key_press == pygame.K_4:

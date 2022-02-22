@@ -442,7 +442,7 @@ class Battle:
             self.capture_troop_number = [0, 0, 0]
             self.unit_setup()
 
-        self.animation_sprite_pool = self.create_sprite_pool(direction_list)
+        self.animation_sprite_pool = self.create_sprite_pool(direction_list, (150, 150), self.screen_scale)
 
         subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         # ^ End start subunit sprite

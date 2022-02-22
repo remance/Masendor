@@ -5,7 +5,7 @@ from gamescript.common import animation
 make_sprite = animation.make_sprite
 
 
-def create_sprite_pool(self, direction_list):  # TODO maybe add body pos and size for check collide?
+def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  # TODO maybe add body pos and size for check collide?
     animation_sprite_pool = {}
     weapon_common_type_list = list(set(["_" + value["Common"] + "_" for value in self.generic_action_data.values()]))  # list of all common type animation set
     weapon_attack_type_list = list(set(["_" + value["Attack"] + "_" for value in self.generic_action_data.values()]))  # list of all attack set
@@ -61,7 +61,7 @@ def create_sprite_pool(self, direction_list):  # TODO maybe add body pos and siz
                                                                   self.gen_body_sprite_pool, self.gen_weapon_sprite_pool, self.gen_armour_sprite_pool,
                                                                   self.effect_sprite_pool, animation_property, self.weapon_joint_list,
                                                                   (weapon_set_index, weapon_set), armour,
-                                                                  self.hair_colour_list, self.skin_colour_list)
+                                                                  self.hair_colour_list, self.skin_colour_list, genre_sprite_size, screen_scale)
 
                                         animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_set_index)][new_direction][
                                             frame_num] = \

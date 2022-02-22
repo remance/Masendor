@@ -151,13 +151,15 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
 
 
 def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
-                weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list):
+                weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size, screen_scale):
     frame_property = animation_part_list["frame_property"]
 
-    surface = pygame.Surface(default_sprite_size, pygame.SRCALPHA)  # default size will scale down later
+    surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ["eye", "mouth", "size", "property"]
-    pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and any(ext in k for ext in except_list) is False}  # layer list
+    pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and
+                       any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
+    pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and "weapon" in k})
     pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
     for index, layer in enumerate(pose_layer_list):
         part = animation_part_list[layer]
@@ -201,48 +203,45 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
 
             if "weapon" in layer:  # only weapon use joint to calculate position
                 part_name = weapon[1][0]  # main weapon
-                if "sub" in part:
+                if "sub" in layer:
                     part_name = weapon[1][1]  # sub weapon
                 check_prop = frame_property + animation_property
+                center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
                 if ("p1_main" in layer and "p1_fix_main_weapon" not in check_prop) or \
                     ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
                     ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
                     ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
-                    main_joint_pos = weapon_joint_list[new_part[0]][part_name]
-                    if main_joint_pos != "center":  # use weapon joint pos and hand pos for weapon position blit
-                        hand_pos = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
-                        if "p2_main" in layer:
-                            hand_pos = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
-                        elif "p1_sub" in layer:
-                            hand_pos = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
-                        elif "p2_sub" in layer:
-                            hand_pos = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
 
-                        # change pos from flip
-                        if flip in (1, 3):  # horizontal flip
-                            hori_diff = image_part.get_width() - main_joint_pos[0]
-                            main_joint_pos = (hori_diff, main_joint_pos[1])
-                        if flip >= 2:  # vertical flip
-                            vert_diff = image_part.get_height() - main_joint_pos[1]
-                            main_joint_pos = (main_joint_pos[0], vert_diff)
+                    target = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
+                    if "p2_main" in layer:
+                        target = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
+                    elif "p1_sub" in layer:
+                        target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
+                    elif "p2_sub" in layer:
+                        target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
+                    new_target = target
 
-                        # change pos from rotation
-                        if angle != 0:
-                            center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
+                if weapon_joint_list[new_part[0]][part_name] != "center":  # use weapon joint pos and hand pos for weapon position blit
+                    main_joint_pos = [weapon_joint_list[new_part[0]][part_name][0], weapon_joint_list[new_part[0]][part_name][1]]
 
-                            # new_angle = abs(360 - angle)  # convert angle
-                            radians_angle = math.radians(360 - angle)
-                            if angle < 0:  # negative angle (rotate to left side)
-                                radians_angle = math.radians(-angle)
-                            main_joint_pos = rotation_xy(main_joint_pos, center, radians_angle)  # find new center point with rotation
+                    # change pos from flip
+                    if flip in (1, 3):  # horizontal flip
+                        hori_diff = image_part.get_width() - main_joint_pos[0]
+                        main_joint_pos = (hori_diff, main_joint_pos[1])
+                    if flip >= 2:  # vertical flip
+                        vert_diff = image_part.get_height() - main_joint_pos[1]
+                        main_joint_pos = (main_joint_pos[0], vert_diff)
 
-                        pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
-                        new_target = hand_pos + pos_different
+                    pos_different = center - main_joint_pos  # find distance between image center and connect point main_joint_pos
+                    new_target = new_target + pos_different
+                    if angle != 0:
+                        radians_angle = math.radians(360 - angle)
+                        if angle < 0:
+                            radians_angle = math.radians(-angle)
+                        new_target = rotation_xy(target, new_target, radians_angle)  # find new center point with rotation
 
             rect = part_rotated.get_rect(center=new_target)
             surface.blit(part_rotated, rect)
-
-    surface = pygame.transform.scale(surface, (default_sprite_size[0] * size, default_sprite_size[1] * size))
 
     for prop in (frame_property + animation_property):
         if "effect" in prop:
@@ -285,5 +284,7 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
                 frame_property.remove(prop)
             if prop in animation_property:
                 animation_property.remove(prop)
+
+    surface = pygame.transform.scale(surface, (genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))  # change to whatever genre specific size
 
     return {"sprite": surface, "animation_property": animation_property, "frame_property": frame_property}
