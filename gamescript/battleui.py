@@ -165,7 +165,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
-    def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
+    def value_input(self, who, weapon_data="", armour_data="", button="", change_option=0, split=False):
         make_long_text = utility.make_long_text
         position = 15  # starting row
         position_x = 45  # starting point of text
@@ -228,26 +228,26 @@ class TroopCard(pygame.sprite.Sprite):
 
                 # v Equipment text
                 text_value = [
-                    self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
-                    self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.primary_sub_weapon[0]]["Name"]),
+                    self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
+                    self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
                     self.quality_text[who.secondary_main_weapon[1]] + " " + str(
-                        weapon_list.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
-                    self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_list.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
+                        weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
+                    self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
                 text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.weapon_speed).split(".")[0] +
                                ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
                 text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
                                ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
 
-                text_value += [str(armour_list.armour_list[who.armour_gear[0]]["Name"]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
-                               str(armour_list.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                text_value += [str(armour_data.armour_list[who.armour_gear[0]]["Name"]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
+                               str(armour_data.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
 
                 if "None" not in who.mount:  # if mount is not the None mount id 1
-                    armour_text = "//" + who.mount_armour[0]
-                    if "None" in who.mount_armour[0]:
+                    armour_text = "//" + who.mount_armour["Name"]
+                    if "None" in who.mount_armour["Name"]:
                         armour_text = ""
-                    text_value.insert(3, "Mount:" + who.mount_grade[0] + " " + who.mount[0] + armour_text)
+                    text_value.insert(3, "Mount:" + who.mount_grade["Name"] + " " + who.mount["Name"] + armour_text)
                 # ^ End equipment text
 
                 for text in text_value:
@@ -274,9 +274,14 @@ class CommandBar(pygame.sprite.Sprite):
         self.option = 0
         self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
 
-        self.icon_rect = self.icon["authority.png"].get_rect(
+        self.inspect_pos = ((self.image.get_width() / 2.1, self.image.get_height() / 2.5),  # general
+                            (self.image.get_width() / 3.5, self.image.get_height() / 1.6),  # left sub general
+                            (self.image.get_width() / 1.5, self.image.get_height() / 1.6),  # right sub general
+                            (self.image.get_width() / 2.1, self.image.get_height() / 1.2))  # advisor
+
+        icon_rect = self.icon["authority.png"].get_rect(
             center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-        self.image.blit(self.icon["authority.png"], self.icon_rect)
+        self.image.blit(self.icon["authority.png"], icon_rect)
         self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
                       self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
         self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
@@ -290,6 +295,11 @@ class CommandBar(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
+        self.leader_pos = ((self.inspect_pos[0][0] + self.rect.topleft[0], self.inspect_pos[0][1] + self.rect.topleft[1]),
+                           (self.inspect_pos[1][0] + self.rect.topleft[0], self.inspect_pos[1][1] + self.rect.topleft[1]),
+                           (self.inspect_pos[2][0] + self.rect.topleft[0], self.inspect_pos[2][1] + self.rect.topleft[1]),
+                           (self.inspect_pos[3][0] + self.rect.topleft[0], self.inspect_pos[3][1] + self.rect.topleft[1]))
+
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
         for this_button in button:
             this_button.draw(self.image)
@@ -302,36 +312,31 @@ class CommandBar(pygame.sprite.Sprite):
             self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
             if who.commander:  # commander unit use king and queen icon
-                # start_set general
-                self.icon_rect = use_colour[0].get_rect(
-                    center=(
-                    self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
-                self.image.blit(use_colour[0], self.icon_rect)
+                # start_set general as king
+                icon_rect = use_colour[0].get_rect(midbottom=self.inspect_pos[0])
+                self.image.blit(use_colour[0], icon_rect)
 
-                # sub commander/strategist role
-                self.icon_rect = use_colour[1].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
-                self.image.blit(use_colour[1], self.icon_rect)
+                # sub commander/strategist role as queen
+                icon_rect = use_colour[1].get_rect(midbottom=self.inspect_pos[3])
+                self.image.blit(use_colour[1], icon_rect)
 
             else:  # the rest use rook and bishop
-                # general
-                self.icon_rect = use_colour[2].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 45))
-                self.image.blit(use_colour[2], self.icon_rect)
+                # general as rook
+                icon_rect = use_colour[2].get_rect(
+                    midbottom=(self.image.get_width() / 2.1, self.image.get_height() / 2.5))
+                self.image.blit(use_colour[2], icon_rect)
 
-                # sub general/special advisor role
-                self.icon_rect = use_colour[5].get_rect(
-                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 2.1, self.image.get_rect()[1] + 140))
-                self.image.blit(use_colour[5], self.icon_rect)
+                # sub general/special advisor role as bishop
+                icon_rect = use_colour[5].get_rect(midbottom=self.inspect_pos[3])
+                self.image.blit(use_colour[5], icon_rect)
 
-            self.icon_rect = use_colour[3].get_rect(center=(  # left sub general
-                self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 3.1,
-                self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
-            self.image.blit(use_colour[3], self.icon_rect)
-            self.icon_rect = use_colour[0].get_rect(center=(  # right sub general
-                self.image.get_rect()[0] - 10 + self.image.get_size()[0] / 1.4,
-                self.image.get_rect()[1] - 10 + self.image.get_size()[1] / 2.2))
-            self.image.blit(use_colour[4], self.icon_rect)
+            # left sub general as knight
+            icon_rect = use_colour[3].get_rect(midbottom=self.inspect_pos[1])
+            self.image.blit(use_colour[3], icon_rect)
+
+            # right sub general as knight
+            icon_rect = use_colour[0].get_rect(midbottom=self.inspect_pos[2])
+            self.image.blit(use_colour[4], icon_rect)
 
             self.image_original2 = self.image.copy()
 
@@ -476,7 +481,7 @@ class MiniMap(pygame.sprite.Sprite):
 
     def draw_image(self, image, camera):
         self.image = image
-        size = (300 * self.screen_scale[0], 300 * self.screen_scale[1])  # default minimap size is 300 x 300
+        size = (200 * self.screen_scale[0], 200 * self.screen_scale[1])  # default minimap size is 200 x 200
         self.map_scale_width = 1000 / size[0]
         self.map_scale_height = 1000 / size[1]
         self.dim = pygame.Vector2(size[0], size[1])

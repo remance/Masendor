@@ -115,8 +115,8 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                     self.subunit_selected_border.pop(self.subunit_selected.pos)
                     self.battle_ui.add(self.subunit_selected_border)
-                    self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_list=self.weapon_data,
-                                                   armour_list=self.armour_data,
+                    self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
+                                                   armour_data=self.armour_data,
                                                    split=self.split_happen)
 
                     if self.troop_card_ui.option == 2:  # blit skill icon is previous mode is skill
@@ -266,8 +266,8 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                                         self.subunit_selected.who.name) + " in " +
                                      self.subunit_selected.who.unit.leader[0].name + "'s unit is selected"], [3])
                                 self.battle_ui.add(self.subunit_selected_border)
-                                self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_list=self.weapon_data,
-                                                               armour_list=self.armour_data, split=self.split_happen)
+                                self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
+                                                               armour_data=self.armour_data, split=self.split_happen)
 
                                 if self.troop_card_ui.option == 2:
                                     self.trait_skill_blit()
@@ -332,8 +332,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     self.leader_now[self.selected_leader].change_subunit(self.show_in_card)
                     self.show_in_card.leader = self.leader_now[self.selected_leader]
                     self.preview_authority(self.leader_now)
-                    self.troop_card_ui.value_input(who=self.show_in_card, weapon_list=self.weapon_data,
-                                                   armour_list=self.armour_data, change_option=1)
+                    self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                                                   armour_data=self.armour_data, change_option=1)
                     unit_dict = self.convert_slot_dict("test")
                     if unit_dict is not None:
                         warn_list = []
@@ -397,8 +397,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     self.battle_ui.add(*self.leader_now)  # add leader portrait to draw
                     self.show_in_card = slot
                     self.command_ui.value_input(who=self.show_in_card)
-                    self.troop_card_ui.value_input(who=self.show_in_card, weapon_list=self.weapon_data,
-                                                   armour_list=self.armour_data)  # update subunit card on selected subunit
+                    self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                                                   armour_data=self.armour_data)  # update subunit card on selected subunit
                     if self.troop_card_ui.option == 2:
                         self.trait_skill_blit()
                         self.effect_icon_blit()
@@ -482,8 +482,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                             if self.show_in_card is not None:  # reset subunit card as well
                                 self.command_ui.value_input(who=self.show_in_card)
-                                self.troop_card_ui.value_input(who=self.show_in_card, weapon_list=self.weapon_data,
-                                                               armour_list=self.armour_data,
+                                self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                                                               armour_data=self.armour_data,
                                                                change_option=1)
                                 if self.troop_card_ui.option == 2:
                                     self.trait_skill_blit()
@@ -601,8 +601,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             self.battle_ui.add(*self.leader_now)  # add leader portrait to draw
                             self.show_in_card = slot
                             self.command_ui.value_input(who=self.show_in_card)
-                            self.troop_card_ui.value_input(who=self.show_in_card, weapon_list=self.weapon_data,
-                                                           armour_list=self.armour_data)  # update subunit card on selected subunit
+                            self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                                                           armour_data=self.armour_data)  # update subunit card on selected subunit
                             if self.troop_card_ui.option == 2:
                                 self.trait_skill_blit()
                                 self.effect_icon_blit()
@@ -675,8 +675,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                             self.show_in_card = slot
                                             self.preview_authority(self.leader_now)
                                             self.troop_card_ui.value_input(who=self.show_in_card,
-                                                                           weapon_list=self.weapon_data,
-                                                                           armour_list=self.armour_data)  # update subunit card on selected subunit
+                                                                           weapon_data=self.weapon_data,
+                                                                           armour_data=self.armour_data)  # update subunit card on selected subunit
                                             if self.troop_card_ui.option == 2:
                                                 self.trait_skill_blit()
                                                 self.effect_icon_blit()
@@ -1045,7 +1045,7 @@ def unit_icon_mouse_over(self, mouse_up, mouse_right):
                     self.last_selected.just_selected = True
                     self.last_selected.selected = True
 
-                    if self.before_selected is None:  # add back the pop up ui so it get shown when click subunit with none selected before
+                    if self.before_selected is None:  # add back the pop up ui, so it gets shown when click subunit with none selected before
                         self.battle_ui.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
                         self.battle_ui.add(self.inspect_button)  # add inspection ui open/close button
 
@@ -1069,7 +1069,6 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                 self.add_behaviour_ui(self.last_selected)
 
             elif self.before_selected != self.last_selected or self.split_happen:  # change subunit information when select other unit
-                print('run')
                 if self.inspect:  # change inspect ui
                     self.new_unit_click = True
                     self.battle_ui.remove(*self.inspect_subunit)
@@ -1084,8 +1083,8 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
                     self.subunit_selected_border.pop(self.subunit_selected.pos)
                     self.battle_ui.add(self.subunit_selected_border)
-                    self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_list=self.weapon_data,
-                                                   armour_list=self.armour_data,
+                    self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
+                                                   armour_data=self.armour_data,
                                                    split=self.split_happen)
                 self.battle_ui.remove(*self.leader_now)
 
@@ -1130,7 +1129,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
     # v Update value of the clicked subunit every 1.1 second
     if self.game_state == "battle" and self.inspect and ((self.ui_timer >= 1.1 and self.troop_card_ui.option != 0) or
                                                          self.before_selected != self.last_selected):
-        self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_list=self.weapon_data, armour_list=self.armour_data,
+        self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data, armour_data=self.armour_data,
                                        split=self.split_happen)
         if self.troop_card_ui.option == 2:  # skill and status effect card
             self.countdown_skill_icon()

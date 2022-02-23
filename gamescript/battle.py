@@ -8,7 +8,8 @@ import sys
 import pygame
 import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader
-from gamescript.common import utility, escmenu, editor, creation
+from gamescript.common import utility, escmenu, editor
+from gamescript.common.start import creation
 from gamescript.common.battle import common_setup
 
 from pygame.locals import *
@@ -47,6 +48,7 @@ def change_battle_genre(genre):
     Battle.battle_key_press = user.battle_key_press
     Battle.battle_mouse = user.battle_mouse
     Battle.battle_state_mouse = user.battle_state_mouse
+    Battle.editor_state_mouse = user.editor_state_mouse
     Battle.selected_unit_process = user.selected_unit_process
     Battle.add_behaviour_ui = user.add_behaviour_ui
     Battle.camera_process = user.camera_process
@@ -78,6 +80,7 @@ class Battle:
     battle_key_press = None
     battle_mouse = None
     battle_state_mouse = None
+    editor_state_mouse = None
     selected_unit_process = None
     add_behaviour_ui = None
 
@@ -434,6 +437,8 @@ class Battle:
         # v initialise starting subunit sprites
         self.mode = mode
 
+        self.setup_battle_ui("add")
+
         if self.mode == "battle":
             self.start_troop_number = [0, 0, 0]
             self.wound_troop_number = [0, 0, 0]
@@ -495,7 +500,8 @@ class Battle:
 
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
-        self.battle_ui.remove(*self.ui_updater, self.troop_card_button, self.inspect_button, self.col_split_button, self.row_split_button)
+        self.battle_ui.remove(*self.ui_updater, self.troop_card_button, self.inspect_button, self.col_split_button,
+                              self.row_split_button, self.unitstat_ui)
         self.kill_effect_icon()
         self.battle_ui.remove(*self.switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
         self.inspect = False  # inspect ui close
@@ -521,8 +527,8 @@ class Battle:
                 self.click_any = True
                 if self.troop_card_ui.option != button.event:
                     self.troop_card_ui.option = button.event
-                    self.troop_card_ui.value_input(who=who, weapon_list=self.all_weapon,
-                                                   armour_list=self.all_armour,
+                    self.troop_card_ui.value_input(who=who, weapon_data=self.weapon_data,
+                                                   armour_data=self.armour_data,
                                                    change_option=1, split=self.split_happen)
 
                     if self.troop_card_ui.option == 2:
@@ -546,14 +552,19 @@ class Battle:
                 center=self.command_ui.pos)  # change leader ui position back
             self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(
                 center=self.troop_card_ui.pos)  # change subunit card position back
+
             self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(
-                center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 10))
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[0].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 3)))  # description button
             self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(
-                center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] - 70))
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[1].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width())))  # stat button
             self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(
-                center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] - 30))
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[2].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width()) * 2))  # skill button
             self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
-                center=(self.troop_card_ui.pos[0] - 152, self.troop_card_ui.pos[1] + 50))
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[3].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
             self.battle_ui.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui, self.warning_msg)
             self.battle_ui.add(self.event_log, self.log_scroll, self.event_log_button, self.time_button)
@@ -582,14 +593,17 @@ class Battle:
             self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(bottomright=(self.screen_rect.width,
                                                                                      self.screen_rect.height))  # troop info card ui
             self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(
-                topleft=(self.troop_card_ui.rect.topleft[0],  # description button
-                         self.troop_card_ui.rect.topleft[1] + 120))
-            self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(topleft=(self.troop_card_ui.rect.topleft[0],  # stat button
-                                                                                               self.troop_card_ui.rect.topleft[1]))
-            self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(topleft=(self.troop_card_ui.rect.topleft[0],  # skill button
-                                                                                               self.troop_card_ui.rect.topleft[1] + 40))
-            self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(topleft=(self.troop_card_ui.rect.topleft[0],  # equipment button
-                                                                                               self.troop_card_ui.rect.topleft[1] + 80))
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[0].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 3)))  # description button
+            self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[1].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width())))  # stat button
+            self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[2].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width()) * 2))  # skill button
+            self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
+                center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[3].image.get_width() / 2),
+                        self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
             self.battle_ui.remove(self.event_log, self.log_scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
                                   self.event_log_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
@@ -666,7 +680,7 @@ class Battle:
 
             for this_leader in self.preview_leader:
                 this_leader.change_subunit(None)  # remove subunit link in leader
-                this_leader.change_preview_leader(1, self.leader_stat)
+                this_leader.change_preview_leader(1, self.leader_data)
 
             del self.current_weather
 
@@ -676,7 +690,7 @@ class Battle:
                               1:]  # reset troop filter back to all faction
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
-            self.leader_list = [item[0] for item in self.leader_stat.leader_list.values()][
+            self.leader_list = [item[0] for item in self.leader_data.leader_list.values()][
                                1:]  # generate leader name list)
 
             self.leader_now = []
@@ -684,7 +698,6 @@ class Battle:
     def run_game(self):
         # v Create Starting Values
         self.game_state = "battle"  # battle mode
-        self.setup_battle_ui("add")
         self.current_unit_row = 0
         self.current_troop_row = 0
         self.text_input_popup = (None, None)  # no popup asking for user text input state
@@ -699,7 +712,7 @@ class Battle:
             self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][1:]  # generate troop name list
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
-            self.leader_list = [item["Name"] for item in self.leader_stat.leader_list.values()][1:]  # generate leader name list
+            self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:]  # generate leader name list
 
             setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                        self.unitpreset_namegroup, self.unit_listbox, self.battle_ui)  # setup preset army list

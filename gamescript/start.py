@@ -11,7 +11,8 @@ import pygame
 import pygame.freetype
 import screeninfo
 from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
-from gamescript.common import utility, creation
+from gamescript.common import utility
+from gamescript.common.start import creation
 from pygame.locals import *
 
 load_image = utility.load_image
@@ -624,10 +625,10 @@ class MainMenu:
         # Unit inspect information ui
         battleui.SelectedSquad.image = battle_ui_image["ui_subunit_clicked.png"]  # subunit border image always the last one
         self.inspect_button = battleui.UIButton(genre_battle_ui_image["army_inspect_button.png"], 1)  # unit inspect open/close button
-        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subnit in inspect ui
-        self.main_ui.remove(self.inspect_selected_border)  # remove subnit border sprite from start_set menu drawer
+        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subunit in inspect ui
+        self.main_ui.remove(self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
 
-        self.inspect_ui = battleui.InspectUI(image=genre_battle_ui_image["army_inspect.png"])  # inspect ui that show subnit in selected unit
+        self.inspect_ui = battleui.InspectUI(image=genre_battle_ui_image["army_inspect.png"])  # inspect ui that show subunit in selected unit
         self.ui_updater.add(self.inspect_ui)
         # v Subunit shown in inspect ui
 

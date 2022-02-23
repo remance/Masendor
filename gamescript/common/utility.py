@@ -180,7 +180,7 @@ def trait_skill_blit(self):
 
     for trait in self.troop_card_ui.value2[0]:
         self.skill_icon.add(
-            battleui.SkillCardIcon(self.trait_images[0], (position[0], position[1]), 0,
+            battleui.SkillCardIcon(self.trait_images["0.png"], (position[0], position[1]), 0,
                                    game_id=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= screen_rect.width:
@@ -193,7 +193,7 @@ def trait_skill_blit(self):
 
     for skill in self.troop_card_ui.value2[1]:
         self.skill_icon.add(
-            battleui.SkillCardIcon(self.skill_images[0], (position[0], position[1]), 1,
+            battleui.SkillCardIcon(self.skill_images["0.png"], (position[0], position[1]), 1,
                                    game_id=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= screen_rect.width:
@@ -213,7 +213,7 @@ def effect_icon_blit(self):
         icon.kill()
 
     for status in self.troop_card_ui.value2[4]:
-        self.effect_icon.add(battleui.SkillCardIcon(self.status_images[0], (position[0], position[1]), 4, game_id=status))
+        self.effect_icon.add(battleui.SkillCardIcon(self.status_images["0.png"], (position[0], position[1]), 4, game_id=status))
         position[0] += 40
         if position[0] >= screen_rect.width:
             position[1] += 30
@@ -227,9 +227,9 @@ def countdown_skill_icon(self):
             cd = 0
             active_time = 0
             if skill.game_id in self.troop_card_ui.value2[2]:
-                cd = int(self.troop_card_ui.value2[2][skill.game_id])
+                cd = int(self.troop_card_ui.value2[2][skill.game_id]["Cooldown"])
             if skill.game_id in self.troop_card_ui.value2[3]:
-                active_time = int(self.troop_card_ui.value2[3][skill.game_id][3])
+                active_time = int(self.troop_card_ui.value2[3][skill.game_id]["Duration"])
             skill.icon_change(cd, active_time)
     # for effect in self.effect_icon:
     #     cd = 0

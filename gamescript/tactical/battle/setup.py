@@ -29,8 +29,8 @@ def setup_battle_ui(self, change):
         self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
                                     self.unitstat_ui.image.get_height() + (self.inspect_ui.image.get_height() / 2)))
 
-        self.troop_card_ui.change_pos((self.screen_rect.width - self.troop_card_ui.image.get_width() / 2,
-                                       (self.inspect_ui.image.get_height() * 2.5) + self.troop_card_ui.image.get_height() / 2))
+        self.troop_card_ui.change_pos((self.inspect_ui.rect.bottomleft[0] + self.troop_card_ui.image.get_width() / 2,
+                                       (self.inspect_ui.rect.bottomleft[1] + self.troop_card_ui.image.get_height() / 2)))
 
         self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number)
         self.time_button[0].change_pos((self.time_ui.rect.center[0] - 30, self.time_ui.rect.center[1]))  # time pause button
@@ -69,7 +69,7 @@ def setup_battle_ui(self, change):
                                              self.event_log_button[0].pos[1]))  # delete all log button
 
         inspect_ui_pos = [self.unitstat_ui.rect.bottomleft[0] - self.icon_sprite_width / 1.25,
-                               self.unitstat_ui.rect.bottomleft[1] - self.icon_sprite_height / 3]
+                               self.unitstat_ui.rect.bottomleft[1]]
         width, height = inspect_ui_pos[0], inspect_ui_pos[1]
         sub_unit_number = 0  # Number of subunit based on the position in row and column
         imgsize = (self.icon_sprite_width, self.icon_sprite_height)
@@ -91,7 +91,8 @@ def setup_battle_ui(self, change):
     change_group(self.scale_ui, self.battle_ui, change)
 
 
-def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, control, coa, command, start_angle, start_hp, start_stamina, team):
+def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, control, coa, command, start_angle, start_hp, start_stamina,
+             team, leader_pos):
     """Create unit object into the battle and leader of the unit"""
     from gamescript import unit, leader
     old_subunit_list = subunit_list[~np.all(subunit_list == 0, axis=1)]  # remove whole empty column in subunit list
@@ -99,14 +100,14 @@ def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, 
     unit = unit.Unit(game_id, position, subunit_list, colour, control, coa, command, abs(360 - start_angle), start_hp, start_stamina, team)
 
     # add leader
-    unit.leader = [leader.Leader(leader_list[0], leader_list[4], 0, unit, leader_stat),
-                   leader.Leader(leader_list[1], leader_list[5], 1, unit, leader_stat),
-                   leader.Leader(leader_list[2], leader_list[6], 2, unit, leader_stat),
-                   leader.Leader(leader_list[3], leader_list[7], 3, unit, leader_stat)]
+    unit.leader = [leader.Leader(leader_list[0], leader_list[4], 0, unit, leader_stat, leader_pos),
+                   leader.Leader(leader_list[1], leader_list[5], 1, unit, leader_stat, leader_pos),
+                   leader.Leader(leader_list[2], leader_list[6], 2, unit, leader_stat, leader_pos),
+                   leader.Leader(leader_list[3], leader_list[7], 3, unit, leader_stat, leader_pos)]
     return unit
 
 
-def generate_unit(battle, which_army, setup_data, control, command, colour, coa, subunit_game_id):
+def generate_unit(battle, which_army, setup_data, control, command, colour, coa, subunit_game_id, leader_pos):
     """generate unit data into self object
     row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
     from gamescript import battleui, subunit
@@ -114,7 +115,7 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
                          np.array([setup_data[1], setup_data[2], setup_data[3], setup_data[4], setup_data[5],
                                    setup_data[6], setup_data[7], setup_data[8]]),
                          colour, setup_data[10] + setup_data[11], battle.leader_data, control,
-                         coa, command, setup_data[13], setup_data[14], setup_data[15], setup_data[16])
+                         coa, command, setup_data[13], setup_data[14], setup_data[15], setup_data[16], leader_pos)
     which_army.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
@@ -157,8 +158,8 @@ def unit_setup(battle):
     team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
-                           battle.mapselected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+                           battle.mapselected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
+        rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         subunit_game_id = 1
         for row in rd[1:]:  # skip header
@@ -179,10 +180,10 @@ def unit_setup(battle):
             if len(which_army) == 0:  # First unit is commander
                 command = True
             coa = pygame.transform.scale(battle.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            subunit_game_id = generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id)
+            subunit_game_id = generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id, battle.command_ui.leader_pos)
             # ^ End subunit setup
 
-    unitfile.close()
+    unit_file.close()
 
 
 def add_new_unit(battle, who, add_unit_list=True):

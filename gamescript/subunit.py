@@ -597,7 +597,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
 
-        self.current_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]  # change later
+        self.pick_animation()
 
         # self.idle_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]
         # self.walk_animation = None
@@ -700,7 +700,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
-            if self.zoom > 9:  # TODO add weapon speicifc action condition
+            if self.zoom > 9:  # TODO add weapon specific action condition
                 done = self.play_animation(0.5, dt)
                 if done:
                     self.pick_animation()

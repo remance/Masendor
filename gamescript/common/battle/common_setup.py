@@ -31,13 +31,13 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
                                                                    self.generic_action_data[subunit_weapon_list[1][1]]["Attack"]))]
 
             for animation in self.generic_animation_pool[0]:  # just use whatever side in the list for finding animation name for now
-                if self.troop_data.race_list[this_subunit.race]["Name"] in animation:  # grab race animation
+                if this_subunit.race_name in animation:  # grab race animation
                     animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                     for weapon_set_index, weapon_set in enumerate(subunit_weapon_list):  # create animation for each weapon set
                         for weapon_index, weapon in enumerate(weapon_set):
                             # first check if animation is common weapon type specific and match with weapon, then check if it is attack specific
-                            if (any(ext in weapon_common_type_list for ext in animation) is False or weapon_common_action[weapon_set_index][weapon_index] in animation) and \
-                                (any(ext in weapon_attack_type_list for ext in animation) is False or (weapon_attack_action[weapon_set_index][weapon_index] in animation and ("main", "sub")[weapon_index] in animation)):
+                            if (any(ext in animation for ext in weapon_common_type_list) is False or weapon_common_action[weapon_set_index][weapon_index] in animation) and \
+                                (any(ext in animation for ext in weapon_attack_type_list) is False or (weapon_attack_action[weapon_set_index][weapon_index] in animation and ("main", "sub")[weapon_index] in animation)):
                                 if animation + "/" + str(weapon_set_index) not in animation_sprite_pool[this_subunit.troop_id]:
                                     animation_sprite_pool[this_subunit.troop_id][animation + "/" + str(weapon_set_index)] = {}
                                 for index, direction in enumerate(direction_list):

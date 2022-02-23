@@ -285,6 +285,7 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
             if prop in animation_property:
                 animation_property.remove(prop)
 
-    surface = pygame.transform.scale(surface, (genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))  # change to whatever genre specific size
+    # change to whatever genre's specific size
+    surface = pygame.transform.scale(surface, (genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
 
     return {"sprite": surface, "animation_property": animation_property, "frame_property": frame_property}

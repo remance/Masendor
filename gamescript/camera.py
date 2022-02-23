@@ -22,7 +22,4 @@ class Camera:
             surface_x, surface_y = surface.rect.left, surface.rect.top
             surface_w, surface_h = surface.image.get_rect().size
             rect = pygame.Rect(surface_x - camera_x, surface_y - camera_y, surface_w, surface_h)  # get rect that shown inside camera
-            # try:
-            #     print(rect, surface.game_id, surface_x, camera_x)
-            # except: pass
             self.image.blit(surface.image, rect)

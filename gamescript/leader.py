@@ -19,7 +19,7 @@ class Leader(pygame.sprite.Sprite):
     pos_change_stat = None
     gone = None
 
-    def __init__(self, leader_id, position, army_position, unit, leader_stat):
+    def __init__(self, leader_id, position, army_position, unit, leader_stat, leader_pos):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
@@ -47,8 +47,7 @@ class Leader(pygame.sprite.Sprite):
         self.unit = unit
         # self.mana = stat["Mana"]
         self.army_position = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
-        self.base_image_position = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
-        self.image_position = self.base_image_position[self.army_position]  # image position based on army_position
+        self.image_position = leader_pos[self.army_position]  # image position based on army_position in command ui
 
         try:  # Put leader image into leader slot
             image_name = str(leader_id) + ".png"
@@ -60,8 +59,8 @@ class Leader(pygame.sprite.Sprite):
             text_rect = text_image.get_rect(center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))
             self.full_image.blit(text_image, text_rect)
 
-        self.image = pygame.transform.scale(self.full_image, (50 * self.battle.screen_scale[0], 50 * self.battle.screen_scale[1]))
-        self.rect = self.image.get_rect(center=self.image_position)
+        self.image = pygame.transform.scale(self.full_image.copy(), (75 * self.battle.screen_scale[0], 75 * self.battle.screen_scale[1]))
+        self.rect = self.image.get_rect(midbottom=self.image_position)
         self.image_original = self.image.copy()
 
         self.bad_morale = (20, 30)  # other position morale lost
