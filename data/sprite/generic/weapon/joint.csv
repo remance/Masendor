@@ -1,26 +1,26 @@
 "Name","front","side","back","sideup","sidedown"
 "Unarmed","center","center","center","center","center"
-"Sword","6,36","6,36","6,36","6,36","6,36"
-"Greatsword","6,68","6,68","6,68","6,68","6,68"
-"Shortsword","6,28.5","6,28.5","6,28.5","6,28.5","6,28.5"
-"Dagger","6,21.5","6,21.5","6,21.5","6,21.5","6,21.5"
-"Spear","3,53","3,53","3,53","3,53","3,53"
+"Sword","7,4","7,4","3,4","7,4","7,4"
+"Greatsword","6,12","6,12","6,12","6,12","6,12"
+"Shortsword","6,5","6,5","6,5","6,5","6,5"
+"Dagger","7,3","7,3","7,3","7,3","7,3"
+"Spear","4,9","4,9","4,9","4,9","4,9"
 "Club",,,,,
 "Mace",,,,,
 "Great Mace",,,,,
 "Flail",,,,,
 "Hammer",,,,,
 "War Hammer",,,,,
-"Handaxe",,"2,34",,,
-"Greataxe","2.5,61","2,70",,,
+"Handaxe",,"2,6",,,
+"Greataxe","16,11","16,11",,,
 "Halberd",,,,,
-"Pike",,"5.5,110",,,
+"Pike",,"3,12",,,
 "Glaive",,,,,
 "Whip",,,,,
 "Quarterstaff",,,,,
 "Sling",,"14,5",,,
 "Blowgun",,,,,
-"Javelin","1,27","1,33",,,
+"Javelin","1,7","1,7",,,
 "Throwing Axe",,,,,
 "Longbow",,,,,
 "Shortbow",,"19.5,58",,,
