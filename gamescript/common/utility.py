@@ -64,10 +64,13 @@ def load_textures(main_dir, subfolder=None, scale=(1, 1)):
     if subfolder is not None:
         for folder in subfolder:
             dir_path = os.path.join(dir_path, folder)
-    load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
-    load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
-    for file in load_order_file:
-        imgs[file.split(".")[0]] = load_image(main_dir, scale, file, dir_path)  # no need to scale at this point, will scale when in complete sprite
+    try:
+        load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
+        load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
+        for file in load_order_file:
+            imgs[file.split(".")[0]] = load_image(main_dir, scale, file, dir_path)  # no need to scale at this point, will scale when in complete sprite
+    except FileNotFoundError:
+        pass
 
     return imgs
 
