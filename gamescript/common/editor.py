@@ -64,7 +64,8 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
         current_preset.append(leader_pos_list)
 
         faction = []  # generate faction list that can use this unit
-        faction_list = self.faction_data.faction_name_list.copy()
+        faction_list = self.faction_data.faction_list.copy()
+        print(faction_list)
         del faction_list["ID"]
         del faction_list[0]
         faction_count = dict.fromkeys(faction_list.keys(), 0)  # dict of faction occurrence count

@@ -54,9 +54,9 @@ class PreviewBox(pygame.sprite.Sprite):
 
 
 class PreviewLeader(pygame.sprite.Sprite):
-    base_img_position = [(134, 185), (80, 235), (190, 235), (134, 283)]  # leader image position in command ui
+    leader_pos = None
 
-    def __init__(self, leader_id, subunit_pos, army_position, leader_stat):
+    def __init__(self, leader_id, subunit_pos, army_position):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self)
 
@@ -67,27 +67,26 @@ class PreviewLeader(pygame.sprite.Sprite):
 
         self.subunit_pos = subunit_pos  # Squad position is the index of subunit in subunit sprite loop
         self.army_position = army_position  # position in the unit (e.g. general or sub-general)
-        self.img_position = self.base_img_position[self.army_position]  # image position based on army_position
 
-        self.change_preview_leader(leader_id, leader_stat)
-
-    def change_preview_leader(self, leader_id, leader_stat):
+    def change_preview_leader(self, leader_id, leader_data):
         self.leader_id = leader_id  # leader_id is only used as reference to the leader data
 
-        stat = leader_stat.leader_list[leader_id]
+        stat = leader_data.leader_list[leader_id]
 
         self.name = stat["Name"]
         self.authority = stat["Authority"]
-        self.social = leader_stat.leader_class[stat["Social Class"]]
+        self.social = leader_data.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
         try:  # Put leader image into leader slot
             image_name = str(leader_id) + ".png"
-            self.full_image = leader_stat.images[image_name].copy()
+            self.full_image = leader_data.images[image_name].copy()
         except:  # Use Unknown leader image if there is none in list
-            self.full_image = leader_stat.images["9999999.png"].copy()
+            self.full_image = leader_data.images["9999999.png"].copy()
 
         self.image = pygame.transform.scale(self.full_image, (50, 50))  # TODO change scale number
+        self.img_position = self.leader_pos[self.army_position]  # image position based on army_position
+
         self.rect = self.image.get_rect(center=self.img_position)
         self.image_original = self.image.copy()
 

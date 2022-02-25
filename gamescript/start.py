@@ -583,10 +583,10 @@ class MainMenu:
 
         self.tick_box.add(*self.filter_tick_box)
 
-        self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0, self.leader_data),
-                               uniteditor.PreviewLeader(1, 0, 1, self.leader_data),
-                               uniteditor.PreviewLeader(1, 0, 2, self.leader_data),
-                               uniteditor.PreviewLeader(1, 0, 3, self.leader_data)]  # list of preview leader for unit editor
+        self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0),
+                               uniteditor.PreviewLeader(1, 0, 1),
+                               uniteditor.PreviewLeader(1, 0, 2),
+                               uniteditor.PreviewLeader(1, 0, 3)]  # list of preview leader for unit editor
         self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
 
         # user input popup ui

@@ -530,7 +530,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                self.troop_namegroup,
                                self.troop_listbox, self.battle_ui)
                 elif self.current_list_show == "faction":
-                    setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_name_list,
+                    setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_data.faction_name_list,
                                self.troop_namegroup,
                                self.troop_listbox, self.battle_ui)
 
@@ -841,11 +841,11 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                         self.click_any = True
                         if self.current_list_show == "troop":
                             self.current_troop_row = 0
-                            setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_name_list,
+                            setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_data.faction_name_list,
                                        self.troop_namegroup,
                                        self.troop_listbox, self.battle_ui)
                             self.troop_scroll.change_image(new_row=self.current_troop_row,
-                                                           log_size=len(self.faction_name_list))  # change troop scroll image
+                                                           log_size=len(self.faction_data.faction_name_list))  # change troop scroll image
                             self.current_list_show = "faction"
 
 
@@ -1007,7 +1007,7 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
                                                  self.troop_namegroup, self.battle_ui)
         elif self.current_list_show == "faction":  # mouse scroll on faction list
             self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.troop_scroll,
-                                                 self.troop_listbox, self.current_troop_row, self.faction_name_list,
+                                                 self.troop_listbox, self.current_troop_row, self.faction_data.faction_name_list,
                                                  self.troop_namegroup, self.battle_ui)
 
     elif self.map_scale_delay == 0:  # Scrolling in self map to zoom

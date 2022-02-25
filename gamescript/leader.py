@@ -14,12 +14,13 @@ def change_leader_genre(genre):
 
 class Leader(pygame.sprite.Sprite):
     battle = None
+    leader_pos = None
 
     # method that change based on genre
     pos_change_stat = None
     gone = None
 
-    def __init__(self, leader_id, position, army_position, unit, leader_stat, leader_pos):
+    def __init__(self, leader_id, position, army_position, unit, leader_stat):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
@@ -47,7 +48,7 @@ class Leader(pygame.sprite.Sprite):
         self.unit = unit
         # self.mana = stat["Mana"]
         self.army_position = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
-        self.image_position = leader_pos[self.army_position]  # image position based on army_position in command ui
+        self.image_position = self.leader_pos[self.army_position]  # image position based on army_position in command ui
 
         try:  # Put leader image into leader slot
             image_name = str(leader_id) + ".png"

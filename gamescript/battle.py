@@ -7,7 +7,7 @@ import sys
 
 import pygame
 import pygame.freetype
-from gamescript import camera, weather, battleui, menu, subunit, unit, leader
+from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor
 from gamescript.common import utility, escmenu, editor
 from gamescript.common.start import creation
 from gamescript.common.battle import common_setup
@@ -438,6 +438,8 @@ class Battle:
         self.mode = mode
 
         self.setup_battle_ui("add")
+        uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
+        leader.Leader.leader_pos = self.command_ui.leader_pos
 
         if self.mode == "battle":
             self.start_troop_number = [0, 0, 0]
@@ -446,6 +448,9 @@ class Battle:
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
             self.unit_setup()
+        else:
+            for this_leader in self.preview_leader:
+                this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
 
         self.animation_sprite_pool = self.create_sprite_pool(direction_list, (150, 150), self.screen_scale)
 
