@@ -20,11 +20,11 @@ class Leader(pygame.sprite.Sprite):
     pos_change_stat = None
     gone = None
 
-    def __init__(self, leader_id, position, army_position, unit, leader_stat):
+    def __init__(self, leader_id, position, army_position, unit, leader_data):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
-        stat = leader_stat.leader_list[leader_id]
+        stat = leader_data.leader_list[leader_id]
         self.leader_id = leader_id  # Different from self id, leader_id is only used as reference to the data
         self.name = stat["Name"]
         self.health = stat["Health"]
@@ -33,7 +33,7 @@ class Leader(pygame.sprite.Sprite):
         self.range_command = stat["Range Command"]
         self.cav_command = stat["Cavalry Command"]
         self.combat = stat["Combat"] * 2
-        self.social = leader_stat.leader_class[stat["Social Class"]]
+        self.social = leader_data.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
         self.subunit_pos = position  # Squad position is the index of subunit in subunit sprite loop
@@ -52,9 +52,9 @@ class Leader(pygame.sprite.Sprite):
 
         try:  # Put leader image into leader slot
             image_name = str(leader_id) + ".png"
-            self.full_image = leader_stat.images[image_name].copy()
+            self.full_image = leader_data.images[image_name].copy()
         except:  # Use Unknown leader image if there is none in list
-            self.full_image = leader_stat.images["9999999.png"].copy()
+            self.full_image = leader_data.images["9999999.png"].copy()
             font = pygame.font.SysFont("timesnewroman", 300)
             text_image = font.render(str(self.leader_id), True, pygame.Color("white"))
             text_rect = text_image.get_rect(center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))

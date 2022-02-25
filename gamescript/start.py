@@ -469,7 +469,7 @@ class MainMenu:
         subunit.Subunit.subunit_state = self.subunit_state
 
         self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
-        self.all_weather, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
+        self.weather_data, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
             self.main_dir, self.screen_scale)
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
@@ -479,18 +479,18 @@ class MainMenu:
         lorebook.Lorebook.faction_lore = self.faction_data.faction_list
         lorebook.Lorebook.troop_list = self.troop_data.troop_list
         lorebook.Lorebook.troop_lore = self.troop_data.troop_lore
-        lorebook.Lorebook.armour_stat = self.armour_data.armour_list
-        lorebook.Lorebook.weapon_stat = self.weapon_data.weapon_list
-        lorebook.Lorebook.mount_stat = self.troop_data.mount_list
-        lorebook.Lorebook.mount_armour_stat = self.troop_data.mount_armour_list
-        lorebook.Lorebook.status_stat = self.troop_data.status_list
-        lorebook.Lorebook.skill_stat = self.troop_data.skill_list
-        lorebook.Lorebook.trait_stat = self.troop_data.trait_list
+        lorebook.Lorebook.armour_list = self.armour_data.armour_list
+        lorebook.Lorebook.weapon_list = self.weapon_data.weapon_list
+        lorebook.Lorebook.mount_list = self.troop_data.mount_list
+        lorebook.Lorebook.mount_armour_list = self.troop_data.mount_armour_list
+        lorebook.Lorebook.status_list = self.troop_data.status_list
+        lorebook.Lorebook.skill_list = self.troop_data.skill_list
+        lorebook.Lorebook.trait_list = self.troop_data.trait_list
         lorebook.Lorebook.leader_data = self.leader_data
         lorebook.Lorebook.leader_lore = self.leader_data.leader_lore
-        lorebook.Lorebook.terrain_stat = self.feature_mod
-        lorebook.Lorebook.weather_stat = self.all_weather
-        lorebook.Lorebook.landmark_stat = None
+        lorebook.Lorebook.feature_mod = self.feature_mod
+        lorebook.Lorebook.weather_data = self.weather_data
+        lorebook.Lorebook.landmark_data = None
         lorebook.Lorebook.troop_grade_list = self.troop_data.grade_list
         lorebook.Lorebook.troop_class_list = self.troop_data.role
         lorebook.Lorebook.leader_class_list = self.leader_data.leader_class

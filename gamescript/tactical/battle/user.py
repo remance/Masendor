@@ -478,7 +478,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 self.weather_change_button.change_text(self.weather_list[index])
                                 del self.current_weather
                                 self.current_weather = weather.Weather(self.time_ui, self.weather_type + 1,
-                                                                       self.weather_strength, self.all_weather)
+                                                                       self.weather_strength, self.weather_data)
 
                             if self.show_in_card is not None:  # reset subunit card as well
                                 self.command_ui.value_input(who=self.show_in_card)
@@ -620,14 +620,10 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 self.faction_pick = index
                                 self.filter_troop_list()
                                 if index != 0:  # pick faction
-                                    self.leader_list = [item[1]["Name"] for this_index, item in
-                                                        enumerate(self.leader_data.leader_list.items())
+                                    self.leader_list = [item[1]["Name"] for this_index, item in enumerate(self.leader_data.leader_list.items())
                                                         if this_index > 0 and (item[1]["Name"] == "None" or
-                                                                               (item[0] >= 10000 and item[1]["Faction"] in (
-                                                                                   0, index)) or
-                                                                               item[0] in
-                                                                               self.faction_data.faction_name_list[index][
-                                                                                   "Leader"])]
+                                                                               (item[0] >= 10000 and item[1]["Faction"] in (0, index)) or
+                                                                               item[0] in self.faction_data.faction_list[index]["Leader"])]
 
                                 else:  # pick all faction
                                     self.leader_list = self.leader_list = [item[0] for item in

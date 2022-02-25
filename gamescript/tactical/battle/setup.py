@@ -38,6 +38,8 @@ def setup_battle_ui(self, change):
         self.time_button[2].change_pos((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]))  # time increase button
 
         self.scale_ui.change_pos(self.time_ui.rect.bottomleft)
+        self.test_button.change_pos((self.scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
+                                    self.scale_ui.rect.bottomleft[1] + (self.test_button.image.get_height() / 2)))
 
         self.speed_number.change_pos(self.time_ui.rect.center)  # self speed number on the time ui
 

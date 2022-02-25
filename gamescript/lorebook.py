@@ -11,18 +11,18 @@ class Lorebook(pygame.sprite.Sprite):
     faction_lore = None
     troop_list = None
     troop_lore = None
-    armour_data = None
-    weapon_data = None
-    mount_stat = None
-    mount_armour_stat = None
-    status_stat = None
-    skill_stat = None
-    trait_stat = None
+    armour_list = None
+    weapon_list = None
+    mount_list = None
+    mount_armour_list = None
+    status_list = None
+    skill_list = None
+    trait_list = None
     leader_data = None
     leader_lore = None
-    terrain_stat = None
-    landmark_stat = None
-    weather_stat = None
+    feature_mod = None
+    landmark_data = None
+    weather_data = None
     troop_grade_list = None
     troop_class_list = None
     leader_class_list = None
@@ -71,7 +71,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.equipment_stat = {}
         run = 1
         self.equipment_last_index = []
-        for stat_list in (self.weapon_stat, self.armour_stat, self.mount_stat, self.mount_armour_stat):
+        for stat_list in (self.weapon_list, self.armour_list, self.mount_list, self.mount_armour_list):
             for index in stat_list:
                 if index != "ID":
                     self.equipment_stat[run] = stat_list[index]
@@ -84,9 +84,9 @@ class Lorebook(pygame.sprite.Sprite):
         self.section_list = (
             (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore), (self.faction_lore, None),
             (self.troop_list, self.troop_lore),
-            (self.equipment_stat, None), (self.status_stat, None), (self.skill_stat, None),
-            (self.trait_stat, None), (self.leader_list, self.leader_lore), (self.terrain_stat, None),
-            (self.weather_stat, None))
+            (self.equipment_stat, None), (self.status_list, None), (self.skill_list, None),
+            (self.trait_list, None), (self.leader_list, self.leader_lore), (self.feature_mod, None),
+            (self.weather_data, None))
         self.current_subsection_row = 0
         self.max_subsection_show = 19
         self.log_size = 0
@@ -306,8 +306,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 trait_list = ""
                                 if text != [0]:
                                     for this_text in text:
-                                        if this_text in self.trait_stat:  # in case user put in trait not existed in ruleset
-                                            trait_list += self.trait_stat[this_text][0] + ", "
+                                        if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
+                                            trait_list += self.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]
                                     create_text = stat_header[index] + ": " + trait_list
                                 else:
@@ -318,8 +318,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 status_list = ""
                                 if text != [0]:
                                     for this_text in text:
-                                        if this_text in self.status_stat:  # in case user put in trait not existed in ruleset
-                                            status_list += self.status_stat[this_text]["Name"] + ", "
+                                        if this_text in self.status_list:  # in case user put in trait not existed in ruleset
+                                            status_list += self.status_list[this_text]["Name"] + ", "
                                     status_list = status_list[0:-2]
                                     create_text = stat_header[index] + ": " + status_list
                                 else:
@@ -334,14 +334,14 @@ class Lorebook(pygame.sprite.Sprite):
                                     quality_text = (
                                     "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
                                     create_text = stat_header[index] + ": " + quality_text[text[1]] + " " + \
-                                                  self.weapon_stat[text[0]]["Name"]
+                                                  self.weapon_list[text[0]]["Name"]
 
                                 elif stat_header[index] == "Armour":  # armour text with quality
                                     quality_text = (
                                     "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
                                     create_text = stat_header[index] + ": " + quality_text[text[1]] + " " + \
-                                                  self.armour_stat[text[0]]["Name"] \
-                                        # + ", Base Armour: " + str( self.armour_stat[text[0]][1])
+                                                  self.armour_list[text[0]]["Name"] \
+                                        # + ", Base Armour: " + str( self.armour_list[text[0]][1])
 
                                 elif stat_header[index] == "Unit Type":
                                     create_text = stat_header[index] + ": " + self.troop_class_list[text]["Name"]
@@ -351,22 +351,22 @@ class Lorebook(pygame.sprite.Sprite):
 
                                 elif stat_header[index] == "Mount":  # mount text with grade
                                     create_text = stat_header[index] + ": " + self.mount_grade_list[text[1]]["Name"] + " " + \
-                                                  self.mount_stat[text[0]]["Name"] + "//" + self.mount_armour_stat[text[2]]["Name"]
-                                    if self.mount_stat[text[0]]["Name"] == "None":
+                                                  self.mount_list[text[0]]["Name"] + "//" + self.mount_armour_list[text[2]]["Name"]
+                                    if self.mount_list[text[0]]["Name"] == "None":
                                         create_text = ""
                                         pass
 
                                 elif stat_header[index] == "Abilities" or stat_header[index] == "Charge Skill":  # skill text instead of number
                                     skill_list = ""
                                     if stat_header[index] == "Charge Skill":
-                                        if text in self.skill_stat:  # only include skill if exist in ruleset
-                                            skill_list += self.skill_stat[text]["Name"]
+                                        if text in self.skill_list:  # only include skill if exist in ruleset
+                                            skill_list += self.skill_list[text]["Name"]
                                         create_text = stat_header[index] + ": " + skill_list
                                         # + ", Base Speed: " + str(speed)  # add subunit speed after
                                     elif text != [0]:
                                         for this_text in text:
-                                            if this_text in self.skill_stat:  # only include skill in ruleset
-                                                skill_list += self.skill_stat[this_text]["Name"] + ", "
+                                            if this_text in self.skill_list:  # only include skill in ruleset
+                                                skill_list += self.skill_list[this_text]["Name"] + ", "
                                         skill_list = skill_list[0:-2]
                                         create_text = stat_header[index] + ": " + skill_list
                                     else:
@@ -408,8 +408,8 @@ class Lorebook(pygame.sprite.Sprite):
                                 trait_list = ""
                                 if text != [0]:
                                     for this_text in text:
-                                        if this_text in self.trait_stat:  # in case user put in trait not existed in ruleset
-                                            trait_list += self.trait_stat[this_text][0] + ", "
+                                        if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
+                                            trait_list += self.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]
                                     create_text = new_header[index] + ": " + trait_list
                                 else:

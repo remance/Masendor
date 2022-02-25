@@ -10,7 +10,7 @@ import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor
 from gamescript.common import utility, escmenu, editor
 from gamescript.common.start import creation
-from gamescript.common.battle import common_setup
+from gamescript.common.battle import common_setup, common_update, common_user
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -55,9 +55,6 @@ def change_battle_genre(genre):
 
 
 class Battle:
-    trait_skill_blit = utility.trait_skill_blit
-    effect_icon_blit = utility.effect_icon_blit
-    countdown_skill_icon = utility.countdown_skill_icon
     kill_effect_icon = utility.kill_effect_icon
     popout_lorebook = utility.popout_lorebook
     popup_list_new_open = utility.popup_list_open
@@ -68,6 +65,13 @@ class Battle:
     preview_authority = editor.preview_authority
     filter_troop_list = editor.filter_troop_list
     create_sprite_pool = common_setup.create_sprite_pool
+    trait_skill_blit = common_update.trait_skill_blit
+    effect_icon_blit = common_update.effect_icon_blit
+    countdown_skill_icon = common_update.countdown_skill_icon
+    ui_mouse_over = common_user.ui_mouse_over
+    leader_mouse_over = common_user.leader_mouse_over
+    effect_icon_mouse_over = common_user.effect_icon_mouse_over
+    troop_card_button_click = common_user.troop_card_button_click
 
     # method that change based on genre
     split_unit = None
@@ -213,7 +217,7 @@ class Battle:
         self.subsection_name = main.subsection_name
         self.page_button = main.page_button
 
-        self.all_weather = main.all_weather
+        self.weather_data = main.weather_data
         self.weather_matter_images = main.weather_matter_images
         self.weather_effect_images = main.weather_effect_images
         self.weather_list = main.weather_list
@@ -457,52 +461,6 @@ class Battle:
         subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         # ^ End start subunit sprite
 
-    def ui_mouse_over(self):
-        """mouse over ui that is not subunit card and unitbox (topbar and commandbar)"""
-        for this_ui in self.ui_updater:
-            if this_ui in self.battle_ui and this_ui.rect.collidepoint(self.mouse_pos):
-                self.click_any = True
-                break
-        return self.click_any
-
-    def leader_mouse_over(self, mouse_right):  # TODO make it so button and leader popup not show at same time
-        """process user mouse input on leader portrait in command ui"""
-        leader_mouse_over = False
-        for this_leader in self.leader_now:
-            if this_leader.rect.collidepoint(self.mouse_pos):
-                if this_leader.unit.commander:
-                    army_position = self.leader_level[this_leader.army_position]
-                else:
-                    army_position = self.leader_level[this_leader.army_position + 4]
-
-                self.leader_popup.pop(self.mouse_pos, army_position + ": " + this_leader.name)  # popup leader name when mouse over
-                self.battle_ui.add(self.leader_popup)
-                leader_mouse_over = True
-
-                if mouse_right:
-                    self.popout_lorebook(8, this_leader.leader_id)
-                break
-        return leader_mouse_over
-
-    def effect_icon_mouse_over(self, icon_list, mouse_right):
-        effect_mouse_over = False
-        for icon in icon_list:
-            if icon.rect.collidepoint(self.mouse_pos):
-                check_value = self.troop_card_ui.value2[icon.icon_type]
-                self.effect_popup.pop(self.mouse_pos, check_value[icon.game_id])
-                self.battle_ui.add(self.effect_popup)
-                effect_mouse_over = True
-                if mouse_right:
-                    if icon.icon_type == 0:  # Trait
-                        section = 7
-                    elif icon.icon_type == 1:  # Skill
-                        section = 6
-                    else:
-                        section = 5  # Status effect
-                    self.popout_lorebook(section, icon.game_id)
-                break
-        return effect_mouse_over
-
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
         self.battle_ui.remove(*self.ui_updater, self.troop_card_button, self.inspect_button, self.col_split_button,
@@ -525,24 +483,6 @@ class Battle:
             self.base_camera_pos[1] = self.max_camera[1]
         elif self.base_camera_pos[1] < 0:
             self.base_camera_pos[1] = 0
-
-    def troop_card_button_click(self, who):
-        for button in self.troop_card_button:  # Change subunit card option based on button clicking
-            if button.rect.collidepoint(self.mouse_pos):
-                self.click_any = True
-                if self.troop_card_ui.option != button.event:
-                    self.troop_card_ui.option = button.event
-                    self.troop_card_ui.value_input(who=who, weapon_data=self.weapon_data,
-                                                   armour_data=self.armour_data,
-                                                   change_option=1, split=self.split_happen)
-
-                    if self.troop_card_ui.option == 2:
-                        self.trait_skill_blit()
-                        self.effect_icon_blit()
-                        self.countdown_skill_icon()
-                    else:
-                        self.kill_effect_icon()
-                break
 
     def change_state(self):
         self.previous_game_state = self.game_state
@@ -731,7 +671,7 @@ class Battle:
             self.feature_terrain = 0
             self.weather_type = 4
             self.weather_strength = 0
-            self.current_weather = weather.Weather(self.time_ui, self.weather_type, self.weather_strength, self.all_weather)
+            self.current_weather = weather.Weather(self.time_ui, self.weather_type, self.weather_strength, self.weather_data)
             self.show_in_card = None  # current sub-subunit showing in subunit card
 
             self.main.make_team_coa([0], ui_class=self.battle_ui, one_team=True,
@@ -928,10 +868,10 @@ class Battle:
                             this_weather = self.weather_event[0]
 
                             if this_weather[0] != 0:
-                                self.current_weather = weather.Weather(self.time_ui, this_weather[0], this_weather[2], self.all_weather)
+                                self.current_weather = weather.Weather(self.time_ui, this_weather[0], this_weather[2], self.weather_data)
                             else:  # Random weather
                                 self.current_weather = weather.Weather(self.time_ui, random.randint(0, 11), random.randint(0, 2),
-                                                                       self.all_weather)
+                                                                       self.weather_data)
                             self.weather_event.pop(0)
                             self.show_map.add_effect(self.battle_map_height,
                                                      self.weather_effect_images[self.current_weather.weather_type][self.current_weather.level])
@@ -1129,9 +1069,6 @@ class Battle:
                                 self.battle_done_button.rect = self.battle_done_button.image.get_rect(center=(self.battle_done_box.rect.midbottom[0],
                                                                                                               self.battle_done_box.rect.midbottom[
                                                                                                                   1] / 1.3))
-
-                        # print('end', self.team_troop_number, self.last_team_troop_number, self.start_troop_number, self.wound_troop_number,
-                        #       self.death_troop_number, self.flee_troop_number, self.capture_troop_number)
                     # ^ End update self time
 
                 elif self.game_state == "menu":  # Complete self pause when open either esc menu or encyclopedia
