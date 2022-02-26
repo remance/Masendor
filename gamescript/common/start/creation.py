@@ -4,7 +4,7 @@ import pygame
 from pathlib import Path
 
 from gamescript import weather, battleui, lorebook, menu, uniteditor, readstat, popup, map
-from gamescript.common import utility
+from gamescript.common import utility, animation
 
 load_image = utility.load_image
 load_images = utility.load_images
@@ -12,6 +12,7 @@ load_textures = utility.load_textures
 csv_read = utility.csv_read
 make_bar_list = utility.make_bar_list
 stat_convert = readstat.stat_convert
+make_sprite = animation.make_sprite
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
@@ -693,3 +694,78 @@ def load_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     # End volume change
     return {"back_button": back_button, "resolution_drop": resolution_drop, "resolution_bar": resolution_bar,
             "resolution_icon": resolution_icon, "volume_slider": volume_slider, "value_box": value_box, "volume_icon": volume_icon}
+
+
+def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  # TODO maybe add body pos and size for check collide?
+    animation_sprite_pool = {}  # TODO need to add for subunit creator
+    weapon_common_type_list = list(set(["_" + value["Common"] + "_" for value in self.generic_action_data.values()]))  # list of all common type animation set
+    weapon_attack_type_list = list(set(["_" + value["Attack"] + "_" for value in self.generic_action_data.values()]))  # list of all attack set
+    for subunit_id, this_subunit in self.troop_data.troop_list.items():
+        if subunit_id not in animation_sprite_pool and subunit_id not in (0, "ID"):  # skip header and None troop
+            animation_sprite_pool[subunit_id] = {}
+            primary_main_weapon = this_subunit["Primary Main Weapon"][0]
+            primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
+            secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
+            secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
+            armour = (self.armour_data.armour_list[this_subunit["Armour"][0]]["Name"],
+                      self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
+            subunit_weapon_list = [(self.weapon_data.weapon_list[primary_main_weapon]["Name"],
+                                    self.weapon_data.weapon_list[primary_sub_weapon]["Name"])]
+
+            weapon_common_action = [(self.generic_action_data[subunit_weapon_list[0][0]]["Common"],
+                                     self.generic_action_data[subunit_weapon_list[0][1]]["Common"])]
+            weapon_attack_action = [(self.generic_action_data[subunit_weapon_list[0][0]]["Attack"],
+                                     self.generic_action_data[subunit_weapon_list[0][1]]["Attack"])]
+            if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
+                subunit_weapon_list = [subunit_weapon_list[0],
+                                       (self.weapon_data.weapon_list[secondary_main_weapon]["Name"],
+                                        self.weapon_data.weapon_list[secondary_sub_weapon]["Name"])]
+                weapon_common_action = [weapon_common_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Common"],
+                                                                  self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
+                weapon_attack_action = [(weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],
+                                                                   self.generic_action_data[subunit_weapon_list[1][1]]["Attack"]))]
+
+            for animation in self.generic_animation_pool[0]:  # just use whatever side in the list for finding animation name for now
+                if self.troop_data.race_list[this_subunit["Race"]]["Name"] in animation:  # grab race animation
+                    animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
+                    for weapon_set_index, weapon_set in enumerate(subunit_weapon_list):  # create animation for each weapon set
+                        for weapon_index, weapon in enumerate(weapon_set):
+                            # first check if animation is common weapon type specific and match with weapon, then check if it is attack specific
+                            if (any(ext in animation for ext in weapon_common_type_list) is False or weapon_common_action[weapon_set_index][weapon_index] in animation) and \
+                                (any(ext in animation for ext in weapon_attack_type_list) is False or (weapon_attack_action[weapon_set_index][weapon_index] in animation and ("main", "sub")[weapon_index] in animation)):
+                                if animation + "/" + str(weapon_set_index) not in animation_sprite_pool[subunit_id]:
+                                    animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)] = {}
+                                for index, direction in enumerate(direction_list):
+                                    new_direction = direction
+                                    opposite_direction = None  # no opposite direction for front and back
+                                    if direction == "side":
+                                        new_direction = "r_side"
+                                        opposite_direction = "l_side"
+                                    elif direction == "sideup":
+                                        new_direction = "r_sideup"
+                                        opposite_direction = "l_sideup"
+                                    elif direction == "sidedown":
+                                        new_direction = "r_sidedown"
+                                        opposite_direction = "l_sidedown"
+                                    animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][new_direction] = {}
+                                    if opposite_direction is not None:
+                                        animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][opposite_direction] = {}
+                                    for frame_num, frame_data in enumerate(self.generic_animation_pool[index][animation]):
+                                        sprite_dict = make_sprite(this_subunit["Size"], frame_data,
+                                                                  self.troop_data.troop_sprite_list[str(subunit_id)],
+                                                                  self.gen_body_sprite_pool, self.gen_weapon_sprite_pool, self.gen_armour_sprite_pool,
+                                                                  self.effect_sprite_pool, animation_property, self.weapon_joint_list,
+                                                                  (weapon_set_index, weapon_set), armour,
+                                                                  self.hair_colour_list, self.skin_colour_list, genre_sprite_size, screen_scale)
+
+                                        animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][new_direction][
+                                            frame_num] = \
+                                            {"sprite": sprite_dict["sprite"], "animation_property": sprite_dict["animation_property"],
+                                             "frame_property": sprite_dict["frame_property"]}
+                                        if opposite_direction is not None:  # flip sprite for opposite direction
+                                            animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][
+                                                opposite_direction][
+                                                frame_num] = {"sprite": pygame.transform.flip(sprite_dict["sprite"].copy(), True, False),
+                                                              "animation_property": sprite_dict["animation_property"],
+                                                              "frame_property": sprite_dict["frame_property"]}
+    return animation_sprite_pool

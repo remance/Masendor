@@ -15,6 +15,8 @@ from gamescript.common import utility
 from gamescript.common.start import creation
 from pygame.locals import *
 
+direction_list = creation.direction_list
+
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
@@ -99,6 +101,7 @@ class MainMenu:
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
     change_genre = change_genre
+    create_sprite_pool = creation.create_sprite_pool
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
@@ -459,49 +462,7 @@ class MainMenu:
             pygame.mixer.music.play(-1)
         # ^ End Main menu
 
-        self.faction_data, self.coa_list = read_faction_data(main_dir, self.screen_scale, self.ruleset_folder)
-        self.weapon_data, self.armour_data, self.troop_data, self.leader_data = load_battle_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
-        subunit.Subunit.screen_scale = self.screen_scale
-        subunit.Subunit.weapon_data = self.weapon_data
-        subunit.Subunit.armour_data = self.armour_data
-        subunit.Subunit.troop_data = self.troop_data
-        subunit.Subunit.status_list = self.troop_data.status_list
-        subunit.Subunit.subunit_state = self.subunit_state
-
-        self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
-        self.weather_data, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
-            self.main_dir, self.screen_scale)
-
-        self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
-            main_dir, self.ruleset_folder)
-
-        # Encyclopedia
-        lorebook.Lorebook.faction_lore = self.faction_data.faction_list
-        lorebook.Lorebook.troop_list = self.troop_data.troop_list
-        lorebook.Lorebook.troop_lore = self.troop_data.troop_lore
-        lorebook.Lorebook.armour_list = self.armour_data.armour_list
-        lorebook.Lorebook.weapon_list = self.weapon_data.weapon_list
-        lorebook.Lorebook.mount_list = self.troop_data.mount_list
-        lorebook.Lorebook.mount_armour_list = self.troop_data.mount_armour_list
-        lorebook.Lorebook.status_list = self.troop_data.status_list
-        lorebook.Lorebook.skill_list = self.troop_data.skill_list
-        lorebook.Lorebook.trait_list = self.troop_data.trait_list
-        lorebook.Lorebook.leader_data = self.leader_data
-        lorebook.Lorebook.leader_lore = self.leader_data.leader_lore
-        lorebook.Lorebook.feature_mod = self.feature_mod
-        lorebook.Lorebook.weather_data = self.weather_data
-        lorebook.Lorebook.landmark_data = None
-        lorebook.Lorebook.troop_grade_list = self.troop_data.grade_list
-        lorebook.Lorebook.troop_class_list = self.troop_data.role
-        lorebook.Lorebook.leader_class_list = self.leader_data.leader_class
-        lorebook.Lorebook.mount_grade_list = self.troop_data.mount_grade_list
-        lorebook.Lorebook.race_list = self.troop_data.race_list
-        lorebook.Lorebook.screen_rect = self.screen_rect
-        lorebook.Lorebook.main_dir = main_dir
-        lorebook.Lorebook.unit_state_text = self.unit_state_text
-
-        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
-        self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
+        self.change_ruleset()
 
         # v Battle related stuffs
         unit_ui_images = load_images(self.main_dir, self.screen_scale, ["ui", "unit_ui"])
@@ -688,24 +649,6 @@ class MainMenu:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
-        self.generic_action_data = load_action(self.main_dir)
-        subunit.Subunit.generic_action_data = self.generic_action_data
-        animation_dict = load_animation_pool(self.main_dir)
-        self.generic_animation_pool = animation_dict["generic_animation_pool"]
-
-        self.skel_joint_list = animation_dict["skel_joint_list"]
-        self.weapon_joint_list = animation_dict["weapon_joint_list"]
-
-        pool_dict = load_part_sprite_pool(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
-
-        self.gen_body_sprite_pool = pool_dict["gen_body_sprite_pool"]
-        self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
-        self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
-
-        self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir)
-
-        self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
-
         self.change_genre(self.genre)
         self.battle_game = battle.Battle(self, self.window_style)
         subunit.Subunit.battle = self.battle_game
@@ -730,6 +673,72 @@ class MainMenu:
         pygame.mouse.set_visible(True)  # set mouse as visible
 
         self.run()
+
+    def change_ruleset(self):
+
+        self.faction_data, self.coa_list = read_faction_data(self.main_dir, self.screen_scale, self.ruleset_folder)
+        self.weapon_data, self.armour_data, self.troop_data, self.leader_data = load_battle_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
+        subunit.Subunit.screen_scale = self.screen_scale
+        subunit.Subunit.weapon_data = self.weapon_data
+        subunit.Subunit.armour_data = self.armour_data
+        subunit.Subunit.troop_data = self.troop_data
+        subunit.Subunit.status_list = self.troop_data.status_list
+        subunit.Subunit.subunit_state = self.subunit_state
+
+        self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
+        self.weather_data, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
+            self.main_dir, self.screen_scale)
+
+        self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
+            self.main_dir, self.ruleset_folder)
+
+        # Encyclopedia
+        lorebook.Lorebook.faction_lore = self.faction_data.faction_list
+        lorebook.Lorebook.troop_list = self.troop_data.troop_list
+        lorebook.Lorebook.troop_lore = self.troop_data.troop_lore
+        lorebook.Lorebook.armour_list = self.armour_data.armour_list
+        lorebook.Lorebook.weapon_list = self.weapon_data.weapon_list
+        lorebook.Lorebook.mount_list = self.troop_data.mount_list
+        lorebook.Lorebook.mount_armour_list = self.troop_data.mount_armour_list
+        lorebook.Lorebook.status_list = self.troop_data.status_list
+        lorebook.Lorebook.skill_list = self.troop_data.skill_list
+        lorebook.Lorebook.trait_list = self.troop_data.trait_list
+        lorebook.Lorebook.leader_data = self.leader_data
+        lorebook.Lorebook.leader_lore = self.leader_data.leader_lore
+        lorebook.Lorebook.feature_mod = self.feature_mod
+        lorebook.Lorebook.weather_data = self.weather_data
+        lorebook.Lorebook.landmark_data = None
+        lorebook.Lorebook.troop_grade_list = self.troop_data.grade_list
+        lorebook.Lorebook.troop_class_list = self.troop_data.role
+        lorebook.Lorebook.leader_class_list = self.leader_data.leader_class
+        lorebook.Lorebook.mount_grade_list = self.troop_data.mount_grade_list
+        lorebook.Lorebook.race_list = self.troop_data.race_list
+        lorebook.Lorebook.screen_rect = self.screen_rect
+        lorebook.Lorebook.main_dir = self.main_dir
+        lorebook.Lorebook.unit_state_text = self.unit_state_text
+
+        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
+        self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
+
+        self.generic_action_data = load_action(self.main_dir)
+        subunit.Subunit.generic_action_data = self.generic_action_data
+        animation_dict = load_animation_pool(self.main_dir)
+        self.generic_animation_pool = animation_dict["generic_animation_pool"]
+
+        self.skel_joint_list = animation_dict["skel_joint_list"]
+        self.weapon_joint_list = animation_dict["weapon_joint_list"]
+
+        pool_dict = load_part_sprite_pool(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
+
+        self.gen_body_sprite_pool = pool_dict["gen_body_sprite_pool"]
+        self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
+        self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
+
+        self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir)
+
+        self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
+
+        self.animation_sprite_pool = self.create_sprite_pool(direction_list, (150, 150), self.screen_scale)
 
     def game_intro(self, screen, clock, intro):
         timer = 0

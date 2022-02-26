@@ -1783,7 +1783,7 @@ colour_cancel_button = menu.MenuButton(screen_scale, image_list,
                                       text="Cancel", layer=31)
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
-box_img = load_image(main_dir, screen_scale, "unit_presetbox.png", "ui\\mainmenu_ui")
+box_img = load_image(current_dir, screen_scale, "property_box.png", "animation_maker_ui")
 big_box_img = load_image(main_dir, screen_scale, "biglistbox.png", "ui\\mainmenu_ui")
 
 menu.ListBox.containers = popup_listbox

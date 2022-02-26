@@ -798,8 +798,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
             elif self.feature_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map feature button
                 self.click_any = True
-                self.popup_list_new_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list,
-                                        "feature")
+                self.popup_list_new_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list, "feature")
 
             elif self.weather_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map weather button
                 self.click_any = True

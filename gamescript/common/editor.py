@@ -65,7 +65,6 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
 
         faction = []  # generate faction list that can use this unit
         faction_list = self.faction_data.faction_list.copy()
-        print(faction_list)
         del faction_list["ID"]
         del faction_list[0]
         faction_count = dict.fromkeys(faction_list.keys(), 0)  # dict of faction occurrence count
@@ -133,7 +132,6 @@ def preview_authority(self, leader_list):
 def filter_troop_list(self):
     """Filter troop list based on faction picked and type filter"""
     if self.faction_pick != 0:
-        print(self.troop_data.troop_list.values())
         self.troop_list = [value["Name"] for key, value in self.troop_data.troop_list.items()
                            if value["Name"] == "None" or
                            key in self.faction_data.faction_list[self.faction_pick]["Troop"]]

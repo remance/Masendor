@@ -22,8 +22,6 @@ load_sound = utility.load_sound
 editconfig = utility.edit_config
 setup_list = utility.setup_list
 
-direction_list = creation.direction_list
-
 def change_battle_genre(genre):
     if genre == "tactical":
         from gamescript.tactical.battle import setup, user
@@ -64,7 +62,6 @@ class Battle:
     convert_slot_dict = editor.convert_slot_dict
     preview_authority = editor.preview_authority
     filter_troop_list = editor.filter_troop_list
-    create_sprite_pool = common_setup.create_sprite_pool
     trait_skill_blit = common_update.trait_skill_blit
     effect_icon_blit = common_update.effect_icon_blit
     countdown_skill_icon = common_update.countdown_skill_icon
@@ -276,6 +273,7 @@ class Battle:
         self.skin_colour_list = main.skin_colour_list
 
         self.generic_action_data = main.generic_action_data
+        self.animation_sprite_pool = main.animation_sprite_pool
 
         # ^ End load from start_set
 
@@ -284,7 +282,6 @@ class Battle:
         self.bottom_corner = self.screen_rect.height - (5 * self.screen_scale[1])
         self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
 
-        self.sprite_pool = {}
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.leader_now = []
@@ -456,8 +453,6 @@ class Battle:
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
 
-        self.animation_sprite_pool = self.create_sprite_pool(direction_list, (150, 150), self.screen_scale)
-
         subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         # ^ End start subunit sprite
 
@@ -569,7 +564,6 @@ class Battle:
         self.speed_number.speed_update(self.game_speed)
 
     def exit_battle(self):
-        self.sprite_pool = {}
 
         self.battle_ui.clear(self.screen, self.background)  # remove all sprite
         self.battle_camera.clear(self.screen, self.background)  # remove all sprite
