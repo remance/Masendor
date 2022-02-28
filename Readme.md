@@ -10,7 +10,7 @@ There is no main name for the game but rather the name will be based on a major 
 
 For video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
-For any suggestion or bugs report feel free to put them on repo issues, the channel's youtube video or write it here (no login needed): https://freesuggestionbox.com/pub/ybjkdfb
+For any suggestion or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues), the channel's [YouTube video](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw) or write it [here](https://freesuggestionbox.com/pub/ybjkdfb) (no login needed): https://freesuggestionbox.com/pub/ybjkdfb
 
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
@@ -58,7 +58,10 @@ Animation maker for arcade mode.
 
 # Key features so far
 
-The current state of the game and code performance/readibility: ![alt text](https://github.com/remance/preview/blob/main/gamestate.png?raw=true)
+The current state of the game and code performance/readibility:
+<br>
+<br>
+![alt text](https://github.com/remance/preview/blob/main/gamestate.png?raw=true)
 
 Meaning: The update is going well and steady.
 
@@ -140,7 +143,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 **Ver 1.6:** Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main priority in the early battle sample yet), transfer leader, Battle of Gaixia
 
-**ver 1.7:** leader rapport and effect on authority and control mechanic including surrender and betrayal 
+**Ver 1.7:** leader rapport and effect on authority and control mechanic including surrender and betrayal 
 
 **Ver 1.8:** Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved" formation that player can rotate in battle, swappable squad position
 
