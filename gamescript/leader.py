@@ -36,7 +36,7 @@ class Leader(pygame.sprite.Sprite):
         self.social = leader_data.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
-        self.subunit_pos = position  # Squad position is the index of subunit in subunit sprite loop
+        self.subunit_pos = int(position)  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
         # self.skill = stat
         self.state = 0  # 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead

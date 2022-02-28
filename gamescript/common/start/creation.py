@@ -457,8 +457,7 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
                                 box_image)  # box for showing unit preset list
     unit_preset_name_scroll = battleui.UIScroller(unit_listbox.rect.topright, unit_listbox.image.get_height(),
                                                  unit_listbox.max_show, layer=14)  # preset name scroll
-    preset_select_border = uniteditor.SelectedPresetBorder(unit_listbox.image.get_width() - int(15 * screen_scale[0]),
-                                                           int(25 * screen_scale[1]))
+    preset_select_border = uniteditor.SelectedPresetBorder((unit_listbox.image.get_width() * 0.96, int(30 * screen_scale[1])))
 
     troop_listbox = menu.ListBox(screen_scale, (screen_rect.width / 1.19, 0), listbox_image)
 

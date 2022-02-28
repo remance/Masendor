@@ -274,7 +274,6 @@ class MainMenu:
 
         self.button_ui = pygame.sprite.Group()  # buttons in battle group
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
-        self.switch_button_ui = pygame.sprite.Group()  # button that switch image based on current setting (e.g. unit behaviour setting)
 
         self.buttonname_popup = pygame.sprite.Group()  # button name pop up ui when mouse over button
         self.leader_popup = pygame.sprite.Group()  # leader name pop up ui when mouse over leader image in command ui
@@ -311,7 +310,7 @@ class MainMenu:
         uniteditor.PreviewBox.effect_image = load_image(self.main_dir, self.screen_scale, "effect.png", "map")  # map special effect image
 
         # battle containers
-        battleui.SwitchButton.containers = self.switch_button_ui, self.ui_updater
+        battleui.SwitchButton.containers = self.ui_updater
         battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battle_ui
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui

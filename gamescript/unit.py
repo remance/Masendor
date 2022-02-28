@@ -432,8 +432,7 @@ class Unit(pygame.sprite.Sprite):
         for subunit in self.subunit_sprite:  # generate start position of each subunit
             subunit.base_pos = unit_top_left + subunit.unit_position
             subunit.base_pos = pygame.Vector2(rotation_xy(self.base_pos, subunit.base_pos, self.radians_angle))
-            subunit.pos = subunit.base_pos * subunit.zoom
-            subunit.rect.center = subunit.pos
+            subunit.zoom_scale()
             subunit.base_target = subunit.base_pos
             subunit.command_target = subunit.base_pos  # rotate according to sprite current rotation
             subunit.make_front_pos()
@@ -695,7 +694,7 @@ class Unit(pygame.sprite.Sprite):
             new_target = unit_topleft + subunit.unit_position
             subunit.base_pos = pygame.Vector2(
                 rotation_xy(self.base_pos, new_target, self.radians_angle))  # rotate according to sprite current rotation
-            subunit.pos = subunit.base_pos * subunit.zoom  # pos is for showing on screen
+            subunit.zoom_scale()
             subunit.angle = self.angle
             subunit.rotate()
 

@@ -102,11 +102,11 @@ class PreviewLeader(pygame.sprite.Sprite):
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):
-    def __init__(self, width, height):
+    def __init__(self, size):
         self._layer = 16
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((width + 1, height + 1), pygame.SRCALPHA)
-        pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 6)
+        self.image = pygame.Surface((size[0] + 1, size[1] + 1), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 3)
         self.rect = self.image.get_rect(topleft=(0, 0))
 
     def change_pos(self, pos):

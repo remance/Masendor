@@ -296,15 +296,15 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
             self.kill_effect_icon()
 
         if mouse_right_up and self.click_any is False:  # Unit command
-            self.last_selected.user_input(self.battle_mouse_pos[2], mouse_left_up, mouse_right_up, double_mouse_right,
+            self.last_selected.user_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right,
                                           self.last_mouseover, key_state)
 
     if mouse_right_up and self.last_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
-        if 0 <= self.battle_mouse_pos[1][0] <= 999 and \
-                0 <= self.battle_mouse_pos[1][1] <= 999:  # not draw if pos is off the map
-            terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos[1], self.battle_map_base)
+        if 0 <= self.battle_mouse_pos[0] <= 999 and \
+                0 <= self.battle_mouse_pos[1] <= 999:  # not draw if pos is off the map
+            terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos, self.battle_map_base)
             feature_pop = self.battle_map_feature.feature_mod[feature_pop]
-            height_pop = self.battle_map_height.get_height(self.battle_mouse_pos[1])
+            height_pop = self.battle_map_height.get_height(self.battle_mouse_pos)
             self.terrain_check.pop(self.mouse_pos, feature_pop, height_pop)
             self.battle_ui.add(self.terrain_check)
 
@@ -368,13 +368,13 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                     leader_pos_list = [int(item) if item.isdigit() else item
                                        for item in arraylist[9].split(",")]
 
-                    for unit_index, item in enumerate(unit_list):  # change all slot to whatever save in the selected preset
-                        for slot in self.subunit_build:
-                            if slot.game_id == unit_index:
-                                slot.__init__(item, slot.game_id, self.unit_build_slot, slot.pos,
-                                              100, 100, [1, 1], self.genre, "edit")
-                                slot.kill()
-                                break
+                    for slot_index, slot in enumerate(self.subunit_build):  # change all slot to whatever save in the selected preset
+                        slot.kill()
+                        slot.__init__(unit_list[slot_index], slot.game_id, self.unit_build_slot, slot.pos,
+                                      100, 100, [1, 1], self.genre, "edit")  # TODO init cause issue
+                        slot.kill()
+                        self.subunit_build.add(slot)
+                        self.battle_ui.add(slot)
 
                     for leader_index, item in enumerate(leader_who_list):
                         self.preview_leader[leader_index].leader = None
@@ -408,8 +408,11 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                 else:  # new preset
                     self.unit_preset_name = ""
                     for slot in self.subunit_build:  # reset all sub-subunit slot
+                        slot.kill()
                         slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre, "edit")
                         slot.kill()
+                        self.subunit_build.add(slot)
+                        self.battle_ui.add(slot)
                         slot.leader = None  # remove leader link in
 
                     for this_leader in self.preview_leader:
@@ -652,17 +655,21 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                     if slot.selected:
                                         if key_state[pygame.K_LSHIFT]:  # change all sub-subunit in army
                                             for new_slot in self.subunit_build:
-                                                if new_slot.army_id == slot.army_id:
-                                                    slot.__init__(self.troop_index_list[index + self.current_troop_row],
-                                                                  new_slot.game_id, self.unit_build_slot, slot.pos,
-                                                                  100, 100, [1, 1], self.genre, "edit")
-                                                    slot.kill()
-
+                                                slot.kill()
+                                                slot.__init__(self.troop_index_list[index + self.current_troop_row],
+                                                              new_slot.game_id, self.unit_build_slot, slot.pos,
+                                                              100, 100, [1, 1], self.genre, "edit")
+                                                slot.kill()
+                                                self.subunit_build.add(slot)
+                                                self.battle_ui.add(slot)
                                         else:
+                                            slot.kill()
                                             slot.__init__(self.troop_index_list[index + self.current_troop_row],
                                                           slot.game_id, self.unit_build_slot, slot.pos,
                                                           100, 100, [1, 1], self.genre, "edit")
                                             slot.kill()
+                                            self.subunit_build.add(slot)
+                                            self.battle_ui.add(slot)
 
                                         if slot.name != "None":  # update information of subunit that just got changed
                                             self.battle_ui.remove(*self.leader_now)
@@ -704,9 +711,16 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                         self.unit_build_slot.team = self.team_change_button.event + 1
 
                         for slot in self.subunit_build:
+                            show = False
+                            if slot in self.battle_ui:
+                                show = True
+                            slot.kill()
                             slot.__init__(slot.troop_id, slot.game_id, self.unit_build_slot, slot.pos,
                                           100, 100, [1, 1], self.genre, "edit")
                             slot.kill()
+                            self.subunit_build.add(slot)
+                            if show:  # currently has ui showing
+                                self.battle_ui.add(slot)
                             self.command_ui.value_input(
                                 who=slot)  # loop valueinput so it change team correctly
 
@@ -739,14 +753,14 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             if len(self.all_unit_index) > 0:
                                 unit_game_id = self.all_unit_index[-1] + 1
                             current_preset = self.convert_slot_dict(self.unit_preset_name,
-                                                                    [str(int(self.base_camera_pos[0])),
-                                                                     str(int(self.base_camera_pos[1]))], unit_game_id)
+                                                                    [str(int(self.base_camera_pos[0] / self.screen_scale[0])),
+                                                                     str(int(self.base_camera_pos[1] / self.screen_scale[1]))], unit_game_id)
                             subunit_game_id = 0
                             if len(self.subunit) > 0:
                                 for this_subunit in self.subunit:
                                     subunit_game_id = this_subunit.game_id
                                 subunit_game_id = subunit_game_id + 1
-                            for slot in self.subunit_build:  # just for grabing current selected team
+                            for slot in self.subunit_build:  # just for grabbing current selected team
                                 current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
                                 self.convert_edit_unit((self.team0_unit, self.team1_unit, self.team2_unit)[slot.team],
                                                        current_preset[self.unit_preset_name], team_colour[slot.team],
@@ -766,7 +780,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 this_leader.start_set()
 
                             for this_unit in self.all_unit_list:
-                                this_unit.user_input(self.battle_mouse_pos[0], False, False, False, self.last_mouseover, None,
+                                this_unit.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
                                                      other_command=1)
                         else:
                             self.warning_msg.warning(warning_list)
@@ -893,7 +907,7 @@ def battle_key_press(self, key_press):
             self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
     elif key_press == pygame.K_SPACE and self.last_selected is not None:
-        self.last_selected.user_input(self.battle_mouse_pos[0], False, False, False, self.last_mouseover, None, other_command=2)
+        self.last_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_1:
@@ -1095,7 +1109,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
         elif self.game_state == "editor" and self.subunit_build not in self.battle_ui:
             if (mouse_right_up or mouse_right_down) and self.click_any is False:  # Unit placement
-                self.last_selected.placement(self.battle_mouse_pos[1], mouse_right_up, mouse_right_down, double_mouse_right)
+                self.last_selected.placement(self.command_mouse_pos, mouse_right_up, mouse_right_down, double_mouse_right)
 
             if key_state[pygame.K_DELETE]:
                 for this_unit in self.troop_number_sprite:

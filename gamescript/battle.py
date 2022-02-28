@@ -458,10 +458,8 @@ class Battle:
 
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
-        self.battle_ui.remove(*self.ui_updater, self.troop_card_button, self.inspect_button, self.col_split_button,
-                              self.row_split_button, self.unitstat_ui)
-        self.kill_effect_icon()
-        self.battle_ui.remove(*self.switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
+        self.battle_ui.remove(self.inspect_ui, self.command_ui, self.troop_card_ui, self.troop_card_button, self.inspect_button, self.col_split_button,
+                              self.row_split_button, self.unitstat_ui, *self.switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
         self.inspect = False  # inspect ui close
         self.battle_ui.remove(*self.leader_now)  # remove leader image from command ui
         self.subunit_selected = None  # reset subunit selected
@@ -528,7 +526,7 @@ class Battle:
                 del arrow
 
             for this_unit in self.all_unit_list:  # reset all unit state
-                this_unit.user_input(self.battle_mouse_pos[0], False, False, False, self.last_mouseover, None, other_command=2)
+                this_unit.user_input(self.battle_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
             self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(bottomright=(self.screen_rect.width,
                                                                                      self.screen_rect.height))  # troop info card ui
@@ -614,7 +612,10 @@ class Battle:
                     del item
 
             for slot in self.subunit_build:  # reset all sub-subunit slot
+                slot.kill()
                 slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre, "edit")
+                slot.kill()
+                self.subunit_build.add(slot)
                 slot.leader = None  # remove leader link in
 
             for this_leader in self.preview_leader:
@@ -625,12 +626,10 @@ class Battle:
 
             self.faction_pick = 0
             self.filter_troop = [True, True, True, True]
-            self.troop_list = [item[0] for item in self.troop_data.troop_list.values()][
-                              1:]  # reset troop filter back to all faction
+            self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][1:] # reset troop filter back to all faction
             self.troop_index_list = list(range(0, len(self.troop_list) + 1))
 
-            self.leader_list = [item[0] for item in self.leader_data.leader_list.values()][
-                               1:]  # generate leader name list)
+            self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:] # generate leader name list)
 
             self.leader_now = []
 
@@ -715,7 +714,9 @@ class Battle:
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
         # mouse position list in battle map not screen, the first without zoom, the second with camera zoom adjust, and the third is after revert screen scale for unit command
-        self.battle_mouse_pos = [[0, 0], [0, 0], [0, 0]]
+        self.base_mouse_pos = [0, 0]
+        self.battle_mouse_pos = [0, 0]
+        self.command_mouse_pos = [0, 0]
         self.unit_selector.current_row = 0
         # ^ End start value
 
@@ -810,11 +811,11 @@ class Battle:
                         if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
                             self.mouse_timer = 0
 
-                    self.battle_mouse_pos[0] = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
+                    self.base_mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
                                                               (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[1]))  # mouse pos on the map based on camera position
-                    self.battle_mouse_pos[1] = self.battle_mouse_pos[0] / self.camera_scale  # mouse pos on the map at current camera zoom scale
-                    self.battle_mouse_pos[2] = pygame.Vector2(self.battle_mouse_pos[1][0] / self.screen_scale[0],
-                                                              self.battle_mouse_pos[1][1] / self.screen_scale[1])
+                    self.battle_mouse_pos = self.base_mouse_pos / self.camera_scale  # mouse pos on the map at current camera zoom scale
+                    self.command_mouse_pos = pygame.Vector2(self.battle_mouse_pos[0] / self.screen_scale[0],
+                                                              self.battle_mouse_pos[1] / self.screen_scale[1])  # with screen scale
 
                     if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
                         self.battle_mouse(mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state)
@@ -980,11 +981,11 @@ class Battle:
 
                     # v Updater
                     self.unit_updater.update(self.current_weather, self.subunit, self.dt, self.camera_scale,
-                                             self.battle_mouse_pos[0], mouse_left_up)
+                                             self.base_mouse_pos, mouse_left_up)
                     self.last_mouseover = None  # reset last unit mouse over
                     self.leader_updater.update()
                     self.subunit_updater.update(self.current_weather, self.dt, self.camera_scale, self.combat_timer,
-                                                self.battle_mouse_pos[0], mouse_left_up)
+                                                self.base_mouse_pos, mouse_left_up)
 
                     # v Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
                     if len(self.combat_path_queue) > 0:
