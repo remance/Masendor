@@ -4,7 +4,7 @@
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.gif?raw=true)
 
-# Educational and historical wargame simulation made with [Pygame](https://github.com/pygame/pygame. 
+# Educational and historical wargame simulation made with [Pygame](https://github.com/pygame/pygame). 
 
 There is no main name for the game but rather the name will be based on a major update. 
 
