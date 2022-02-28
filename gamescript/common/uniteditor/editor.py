@@ -16,6 +16,10 @@ def editor_map_change(self, base_colour, feature_colour):
     self.mini_map.draw_image(self.show_map.true_image, self.camera)
     self.show_map.change_scale(self.camera_scale)
 
+    for subunit in self.subunit_build:
+        subunit.terrain, subunit.feature = subunit.get_feature((500, 500), self.battle_map_base)
+        subunit.height = self.battle_map_height.get_height((500,500))
+
 
 def save_preset(self):
     with open(os.path.join("profile", "unitpreset", str(self.ruleset), "custom_unitpreset.csv"), "w", encoding='utf-8', newline="") as csvfile:

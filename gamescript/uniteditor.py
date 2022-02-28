@@ -138,11 +138,11 @@ class UnitBuildSlot(pygame.sprite.Sprite):
 
 
 class WarningMsg(pygame.sprite.Sprite):
-    eightsubunit_warn = "- Require at least 8 sub-units for both test and employment"
-    mainleader_warn = "- Require a start_set leader for both test and employment"
-    emptyrowcol_warn = "- Empty row or column will be removed when employed"
-    duplicateleader_warn = "- Duplicated leader will be removed with No Duplicated leader option enable"
-    multifaction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"
+    min_subunit_warn = "- Require at least 8 sub-units for both test and employment"
+    min_leader_warn = "- Require a leader for both test and employment"
+    empty_rowcol_warn = "- Empty row or column will be removed when employed"
+    duplicate_leader_warn = "- Duplicated leader will be removed with No Duplicated leader option enable"
+    multi_faction_warn = "- Leaders or subunits from multiple factions will not be usable with No Multiple Faction option enable"
 
     def __init__(self, screen_scale, pos):
         self._layer = 18
@@ -151,8 +151,14 @@ class WarningMsg(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", int(20 * self.screen_scale[1]))
         self.rowcount = 0
         self.warning_log = []
-        self.fix_width = int(230 * screen_scale[1])
+        self.fix_width = int(230 * screen_scale[0])
         self.pos = pos
+        self.image = pygame.Surface((self.fix_width, int(22 * self.screen_scale[1]) * self.rowcount))
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def change_pos(self, pos):
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def warning(self, warn_list):
         self.warning_log = []
@@ -191,7 +197,6 @@ class WarningMsg(pygame.sprite.Sprite):
             text_rect = text_surface.get_rect(topleft=(5, row))
             self.image.blit(text_surface, text_rect)
             row += 20  # Whitespace between text row
-        self.rect = self.image.get_rect(topleft=self.pos)
 
 
 class FilterBox(pygame.sprite.Sprite):

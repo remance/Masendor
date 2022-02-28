@@ -479,11 +479,11 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
                                            layer=14)
 
     box_image = load_image(main_dir, screen_scale, "map_change.png", "ui\\mainmenu_ui")
-    terrain_change_button = menu.TextBox(screen_scale, box_image, (screen_rect.width / 3, screen_rect.height),
+    terrain_change_button = menu.TextBox(screen_scale, box_image.copy(), (screen_rect.width / 3, screen_rect.height - box_image.get_height()),
                                                                 "Temperate")  # start with temperate terrain
-    feature_change_button = menu.TextBox(screen_scale, box_image, (screen_rect.width / 2, screen_rect.height),
+    feature_change_button = menu.TextBox(screen_scale, box_image.copy(), (screen_rect.width / 2, screen_rect.height - box_image.get_height()),
                                                                 "Plain")  # start with plain feature
-    weather_change_button = menu.TextBox(screen_scale, box_image, (screen_rect.width / 1.5, screen_rect.height),
+    weather_change_button = menu.TextBox(screen_scale, box_image.copy(), (screen_rect.width / 1.5, screen_rect.height - box_image.get_height()),
                                                                 "Light Sunny")  # start with light sunny
     box_image = load_image(main_dir, screen_scale, "filter_box.png", "ui\\mainmenu_ui")  # filter box ui in editor
     filter_box = uniteditor.FilterBox(screen_scale, (screen_rect.width / 2.5, 0), box_image)
@@ -513,7 +513,7 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
                                                    filter_box.rect.bottomright[1] / 8), image1, image2, "meleecav"),
                        menu.TickBox(screen_scale, (filter_box.rect.bottomright[0] / 1.11,
                                                    filter_box.rect.bottomright[1] / 1.7), image1, image2, "rangecav")]
-    warning_msg = uniteditor.WarningMsg(screen_scale, (test_button.rect.bottomleft[0], test_button.rect.bottomleft[1]))
+    warning_msg = uniteditor.WarningMsg(screen_scale, test_button.rect.bottomleft)
 
     unit_build_slot = uniteditor.UnitBuildSlot(1, colour[0])
 

@@ -8,8 +8,9 @@ import sys
 import pygame
 import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor
-from gamescript.common import utility, escmenu, editor
+from gamescript.common import utility, escmenu
 from gamescript.common.start import creation
+from gamescript.common.uniteditor import editor
 from gamescript.common.battle import common_setup, common_update, common_user
 
 from pygame.locals import *
@@ -27,13 +28,13 @@ def change_battle_genre(genre):
         from gamescript.tactical.battle import setup, user
         from gamescript.tactical.unit import combat
         from gamescript.tactical.subunit import fight
-        from gamescript.tactical.editor import convert
+        from gamescript.tactical.uniteditor import convert
         from gamescript.tactical.ui import selector
     elif genre == "arcade":
         from gamescript.arcade.battle import setup, user
         from gamescript.arcade.unit import combat
         from gamescript.arcade.subunit import fight
-        from gamescript.arcade.editor import convert
+        from gamescript.arcade.uniteditor import convert
         from gamescript.arcade.ui import selector
 
     Battle.split_unit = combat.split_unit
@@ -548,7 +549,6 @@ class Battle:
                                   self.subunit_selected_border, self.inspect_button, self.switch_button)
 
             self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
-
             self.battle_ui.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui, self.troop_card_ui, self.leader_now,
                                self.time_button)
             self.slot_display_button.event = 0  # reset display editor ui button to show
@@ -598,13 +598,9 @@ class Battle:
         if self.mode == "uniteditor":
             self.show_in_card = None
 
-            self.battle_ui.remove(self.unit_delete_button, self.unit_save_button, self.troop_listbox,
-                                  self.team_change_button, self.troop_scroll, self.team_coa, self.unit_listbox,
-                                  self.unit_preset_name_scroll, self.filter_box, self.team_change_button,
-                                  self.slot_display_button, self.test_button, self.deploy_button, self.troop_card_button,
-                                  self.terrain_change_button, self.feature_change_button, self.weather_change_button,
-                                  self.subunit_build, self.leader_now, self.preset_select_border,
+            self.battle_ui.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
                                   self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
+
 
             for group in self.troop_namegroup, self.unit_edit_border, self.unitpreset_namegroup:
                 for item in group:  # remove name list
@@ -668,7 +664,7 @@ class Battle:
             self.show_in_card = None  # current sub-subunit showing in subunit card
 
             self.main.make_team_coa([0], ui_class=self.battle_ui, one_team=True,
-                                    team1_set_pos=(self.troop_listbox.rect.midleft[0] - int((200 * self.screen_scale[0]) / 2),
+                                    team1_set_pos=(self.troop_listbox.rect.midleft[0] - int((300 * self.screen_scale[0]) / 2),
                                                    self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
 
             self.troop_scroll.change_image(new_row=self.current_troop_row, log_size=len(self.troop_list))  # change troop scroll image
@@ -1093,7 +1089,7 @@ class Battle:
 
                             self.save_preset()
                         else:
-                            self.warning_msg.warning([self.warning_msg.eightsubunit_warn])
+                            self.warning_msg.warning([self.warning_msg.min_subunit_warn])
                             self.battle_ui.add(self.warning_msg)
 
                     elif self.text_input_popup[1] == "delete_preset":
