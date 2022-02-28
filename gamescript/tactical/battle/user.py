@@ -1,6 +1,6 @@
 import pygame
 
-from gamescript import weather, menu, battleui, unit
+from gamescript import weather, menu, battleui, unit, map
 from gamescript.common import utility
 
 list_scroll = utility.list_scroll
@@ -341,9 +341,9 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                         leader_list = [item for item in leader_list if 1 < item < 10000]
                         leader_list_set = set(leader_list)
                         if len(leader_list) != len(leader_list_set):  # unit has duplicate unique leader
-                            warn_list.append(self.warning_msg.duplicateleader_warn)
+                            warn_list.append(self.warning_msg.duplicate_leader_warn)
                         if unit_dict['test'][-1] == "0":  # unit has leader/unit of multi faction
-                            warn_list.append(self.warning_msg.multifaction_warn)
+                            warn_list.append(self.warning_msg.multi_faction_warn)
                         if len(warn_list) > 0:
                             self.warning_msg.warning(warn_list)
                             self.battle_ui.add(self.warning_msg)
@@ -691,7 +691,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                             self.preview_authority(self.leader_now)
                                 unit_dict = self.convert_slot_dict("test")
                                 if unit_dict is not None and unit_dict['test'][-1] == "0":
-                                    self.warning_msg.warning([self.warning_msg.multifaction_warn])
+                                    self.warning_msg.warning([self.warning_msg.multi_faction_warn])
                                     self.battle_ui.add(self.warning_msg)
 
                             elif mouse_right_up:  # open encyclopedia
@@ -722,7 +722,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             if show:  # currently has ui showing
                                 self.battle_ui.add(slot)
                             self.command_ui.value_input(
-                                who=slot)  # loop valueinput so it change team correctly
+                                who=slot)  # loop value input so it changes team correctly
 
                     elif self.slot_display_button.rect.collidepoint(self.mouse_pos):
                         if self.slot_display_button.event == 0:  # hide
@@ -743,10 +743,10 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 subunit_count += 1
                         if subunit_count < 8:
                             can_deploy = False
-                            warning_list.append(self.warning_msg.eightsubunit_warn)
+                            warning_list.append(self.warning_msg.min_subunit_warn)
                         if self.leader_now == [] or self.preview_leader[0].name == "None":
                             can_deploy = False
-                            warning_list.append(self.warning_msg.mainleader_warn)
+                            warning_list.append(self.warning_msg.min_leader_warn)
 
                         if can_deploy:
                             unit_game_id = 0
