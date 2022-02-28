@@ -10,7 +10,7 @@ There is no main name for the game but rather the name will be based on a major 
 
 For video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
-For any suggestion or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues), the channel's [YouTube video](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw) or write it [here](https://freesuggestionbox.com/pub/ybjkdfb) (no login needed): https://freesuggestionbox.com/pub/ybjkdfb
+For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues) page, the channel's [YouTube video](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw) or write it [here](https://freesuggestionbox.com/pub/ybjkdfb) (no login needed): https://freesuggestionbox.com/pub/ybjkdfb
 
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
@@ -38,13 +38,13 @@ If anyone is interested in another similar game like this, there is an interesti
 If you want to download the release version to test the game, go to [Release](https://github.com/remance/Masendor/releases) tags and [**download**](https://github.com/remance/Masendor/releases/download/0.6.2.3/Dream.Decision.zip) the zip file. <br>
 
 ## Run
-To start testing the game run main.py for the source code or main.exe for the release version. <br>
+To start testing the game run `main.py` for the source code or `main.exe` for the release version. <br>
 
 ## Compile
-To compile the source code into exe, I would recommend using main.spec to compile the game. <br>
-The main.spec compile only main.py so you will need to copy gamescript, data, profile folder manually to the distribute folder after.
+To compile the source code into exe, I would recommend using `main.spec` to compile the game. <br>
+The `main.spec` compile only `main.py` so you will need to copy gamescript, data, profile folder manually to the distribute folder after.
 
-Check the [requirements.txt](requirements.txt) file for dependency requirements if running with the python source code. 
+Check the [`requirements.txt`](requirements.txt) file for dependency requirements if running with the python source code.<br>
 Also, the game is now optimised based on the pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
 
 ---------------
@@ -71,16 +71,15 @@ Meaning: The update is going well and steady.
 
 > 14th October 1066 AD, King Harold Godwinson intercepted William the Bastard’s force at Senlac Ridge, Hastings. The rightful king of England refused to cover in a castle before the pretender and bravely marched his army to crush the enemy head-on.
 
-Have you ever find it weird that most historical games follow only a specific version of the story? Even a single battle may have more than one side of the story.
-For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.
+Have you ever find it weird that most historical games follow only a specific version of the story? Even a single battle may have more than one side of the story.<br>
+For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.<br>
 Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the story tone, army composition, size, even formation and possibly more. 
 
 ![alt text](https://github.com/remance/preview/blob/main/source.gif?raw=true)
 
 ## Army is led by more than just a king
 
-So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people
-that participated in the battle.
+So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people that participated in the battle.
 
 ![alt text](https://github.com/remance/preview/blob/main/leader.gif?raw=true)
 
@@ -98,7 +97,7 @@ Bored of a simple line formation and want to try making weird unit formation? Th
 
 ## Extremely easy map creation
 
-Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to use paint or any drawing software (gimp, photoshop, etc.) to create a map.
+Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to use paint or any drawing software (gimp, photoshop, etc.) to create a map.<br>
 Draw the image with the right colour set and the game will convert them into a playable map. Most other map functions are also very easy to create and modify.
 
 [Video](https://www.youtube.com/watch?v=8Omm-o6Dy60) demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
@@ -157,5 +156,5 @@ This function is going to be a headache to write and research. But hopefully, it
 
 ---------------
 
-For those who have read this far, thank you for your interest in the game. To be honest, every single update begins with how do I even start with this. 
+For those who have read this far, thank you for your interest in the game. To be honest, every single update begins with how do I even start with this.<br>
 I start developing this game with zero knowledge in video game development let alone how to use pygame. I start learning how to use pygame by tinkering with alien.py in pygame examples folder and keep testing/changing it until it becomes what you can see right now (I keep most video updates on youtube which show the progress of improvement almost from the start). All of the plan I list for the future is the same. I have no idea how to do it, the only thing I have is the picture of what I want to make it look like. Nevertheless, it is fun figuring stuff out and don't let the lack of knowledge stop you from making your own game :P. 
