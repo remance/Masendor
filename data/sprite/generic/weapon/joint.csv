@@ -1,8 +1,8 @@
 "Name","front","side","back","sideup","sidedown"
 "Unarmed","center","center","center","center","center"
-"Sword","7,4","7,4","3,4","7,4","7,4"
-"Greatsword","6,12","6,12","6,12","6,12","6,12"
-"Shortsword","6,5","6,5","6,5","6,5","6,5"
+"Sword","1.5,3.5","7,4","2,2","4,21","3,3"
+"Greatsword","6,12","6,12","3,8","10,43","9,6"
+"Shortsword","3,3","6,5","3,3","5,20","4,3"
 "Dagger","7,3","7,3","7,3","7,3","7,3"
 "Spear","4,9","4,9","4,9","4,9","4,9"
 "Club",,,,,
@@ -20,7 +20,7 @@
 "Quarterstaff",,,,,
 "Sling",,"14,5",,,
 "Blowgun",,,,,
-"Javelin","1,7","1,7",,,
+"Javelin",,"1,7","2,14",,
 "Throwing Axe",,,,,
 "Longbow",,,,,
 "Shortbow",,"19.5,58",,,

@@ -67,6 +67,8 @@ class PreviewLeader(pygame.sprite.Sprite):
 
         self.subunit_pos = subunit_pos  # Squad position is the index of subunit in subunit sprite loop
         self.army_position = army_position  # position in the unit (e.g. general or sub-general)
+        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
+
 
     def change_preview_leader(self, leader_id, leader_data):
         self.leader_id = leader_id  # leader_id is only used as reference to the leader data
@@ -87,7 +89,7 @@ class PreviewLeader(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.full_image, (50, 50))  # TODO change scale number
         self.img_position = self.leader_pos[self.army_position]  # image position based on army_position
 
-        self.rect = self.image.get_rect(center=self.img_position)
+        self.rect = self.image.get_rect(midbottom=self.img_position)
         self.image_original = self.image.copy()
 
         self.commander = False  # army commander
