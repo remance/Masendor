@@ -372,7 +372,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
         self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
 
     def change_number(self, number):
-        """Change number more than thousand to K digit e.g. 1k = 1000"""
+        """Change number more than a thousand to K digit e.g. 1k = 1000"""
         return str(round(number / 1000, 1)) + "K"
 
     def icon_change(self, cooldown, active_timer):
@@ -426,8 +426,7 @@ class FPScount(pygame.sprite.Sprite):
         self.image_original = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
         self.rect = self.image.get_rect(center=(30, 110))
-        fps = "60"
-        fps_text = self.font.render(fps, True, pygame.Color("blue"))
+        fps_text = self.font.render("60", True, pygame.Color("blue"))
         self.text_rect = fps_text.get_rect(center=(25, 25))
 
     def fps_show(self, clock):

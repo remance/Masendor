@@ -1028,11 +1028,11 @@ class Skeleton:
             p1_face[1] = apply_colour(p1_face[1], self.p1_eye_colour)
 
             p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
-            p1_head_sprite_surface.blit(p1_head, head_rect)
+            rect = p1_head.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
+            p1_head_sprite_surface.blit(p1_head, rect)
 
             for index, item in enumerate(p1_face):
-                rect = item.get_rect(topleft=(0, 0))
+                rect = item.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
                 p1_head_sprite_surface.blit(item, rect)
 
         except KeyError:  # some head direction show no face
@@ -1069,11 +1069,11 @@ class Skeleton:
             p2_face[2] = apply_colour(p2_face[2], self.p2_hair_colour)
             p2_face[1] = apply_colour(p2_face[1], self.p2_eye_colour)
             p2_head_sprite_surface = pygame.Surface((p2_face[2].get_width(), p2_face[2].get_height()), pygame.SRCALPHA)
-            head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
-            p2_head_sprite_surface.blit(p2_head, head_rect)
+            rect = p2_head.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
+            p2_head_sprite_surface.blit(p2_head, rect)
 
             for index, item in enumerate(p2_face):
-                rect = item.get_rect(topleft=(0, 0))
+                rect = item.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
                 p2_head_sprite_surface.blit(item, rect)
         except KeyError:  # some head direction show no face
             pass
