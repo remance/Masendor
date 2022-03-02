@@ -151,7 +151,7 @@ def reload_animation(animation, char):
             this_text = face[index]
         selector.change_name(head_text[index] + str(this_text))
     for frame_index in range(0, 10):
-        for prop in frame_property_select[frame_index]:
+        for prop in frame_property_select[frame_index] + anim_property_select:
             if "effect" in prop:
                 if "grey" in prop:  # not work with just convert L for some reason
                     width, height = frames[frame_index].get_size()
@@ -1483,7 +1483,7 @@ class Skeleton:
             if edit_type == "new":
                 for index, frame in enumerate(self.frame_list):  # reset all empty like the first frame
                     self.frame_list[index] = {key: value for key, value in list(self.frame_list[0].items())}
-            anim_to_pool(current_pool, self, new=True)
+                anim_to_pool(current_pool, self, new=True)
 
             # reset history when change frame or create new animation
             part_name_history = part_name_history[-1:] + [self.part_name_list[current_frame]]
@@ -2082,56 +2082,61 @@ while True:
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                    frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-                elif anim_prop_listbox.rect.collidepoint(mouse_pos):  # click on animation property list
-                    for index, name in enumerate(anim_prop_namegroup):
+                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_listbox.rect.collidepoint(mouse_pos):
+                    namegroup = anim_prop_namegroup   # click on animation property list
+                    listbox = anim_prop_listbox
+                    select_list = anim_property_select
+                    namelist = listbox.namelist
+                    naming = "anim"
+                    if frame_prop_listbox.rect.collidepoint(mouse_pos):  # click on frame property list
+                        namegroup = frame_prop_namegroup
+                        listbox = frame_prop_listbox
+                        select_list = frame_property_select[current_frame]
+                        namelist = listbox.namelist[current_frame]
+                        naming = "frame"
+
+                    for index, name in enumerate(namegroup):
                         if name.rect.collidepoint(mouse_pos):
                             if name.name == "Custom":
                                 text_input_popup = ("text_input", "new_anim_prop")
-                                input_ui.change_instruction("Custom Anim Prop:")
-                                ui.add(input_ui_popup)
-                            else:
-                                name.select()
-                                if name.selected:
-                                    anim_property_select.append(name.name)
-                                else:
-                                    anim_property_select.remove(name.name)
-                                for frame in skeleton.frame_list:
-                                    frame["animation_property"] = anim_property_select
-
-                elif frame_prop_listbox.rect.collidepoint(mouse_pos):  # click on frame property list
-                    for index, name in enumerate(frame_prop_namegroup):
-                        if name.rect.collidepoint(mouse_pos):
-                            if name.name == "Custom":
-                                text_input_popup = ("text_input", "new_frame_prop")
-                                input_ui.change_instruction("Custom Frame Prop:")
+                                input_ui.change_instruction("Custom Property:")
                                 ui.add(input_ui_popup)
                             elif "effect_" in name.name:
                                 if name.name[-1] == "_" or name.name[-1].isdigit():  # effect that need number value
                                     if name.selected is False:
                                         if "colour" not in name.name:
-                                            text_input_popup = ("text_input", "frame_prop_num_" + name.name)
+                                            text_input_popup = ("text_input", naming + "_prop_num_" + name.name)
                                             input_ui.change_instruction("Input Number Value:")
                                             ui.add(input_ui_popup)
                                         else:
-                                            text_input_popup = ("text_input", "frame_prop_colour_" + name.name)
+                                            text_input_popup = ("text_input", naming + "_prop_colour_" + name.name)
                                             ui.add(colour_ui_popup)
                                 elif name.selected is False:  # effect that no need input
-                                    frame_property_select[current_frame].append(name.name)
-                                    setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                               frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
+                                    select_list.append(name.name)
+                                    setup_list(menu.NameList, current_frame_row, namelist, namegroup,
+                                               listbox, ui, layer=9, old_list=select_list)
                                     reload_animation(anim, skeleton)
                                 if name.selected:
                                     name.select()
-                                    frame_property_select[current_frame].remove(name.name)
-                                    skeleton.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
+                                    select_list.remove(name.name)
+                                    if anim_prop_listbox.rect.collidepoint(mouse_pos):
+                                        for frame in skeleton.frame_list:
+                                            frame["animation_property"] = select_list
+                                    else:
+                                        skeleton.frame_list[current_frame]["frame_property"] = select_list
                                     reload_animation(anim, skeleton)
+
                             else:
                                 name.select()
                                 if name.selected:
-                                    frame_property_select[current_frame].append(name.name)
+                                    select_list.append(name.name)
                                 else:
-                                    frame_property_select[current_frame].remove(name.name)
-                                skeleton.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
+                                    select_list.remove(name.name)
+                                if anim_prop_listbox.rect.collidepoint(mouse_pos):
+                                    for frame in skeleton.frame_list:
+                                        frame["animation_property"] = select_list
+                                else:
+                                    skeleton.frame_list[current_frame]["frame_property"] = select_list
 
         if play_animation:
             current_frame = int(anim.show_frame)
@@ -2530,18 +2535,27 @@ while True:
                 setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                            frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-            elif "frame_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
-                for name in frame_prop_listbox.namelist[current_frame]:
+            elif "_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
+                namegroup = anim_prop_namegroup  # click on animation property list
+                listbox = anim_prop_listbox
+                namelist = listbox.namelist
+                select_list = anim_property_select
+                if "frame" in text_input_popup[1]:  # click on frame property list
+                    namegroup = frame_prop_namegroup
+                    listbox = frame_prop_listbox
+                    namelist = listbox.namelist[current_frame]
+                    select_list = frame_property_select[current_frame]
+                for name in namelist:
                     if name in (text_input_popup[1]):
-                        index = frame_prop_listbox.namelist[current_frame].index(name)
-                        frame_prop_listbox.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + input_box.text
-                        frame_property_select[current_frame].append(name[0:name.rfind("_") + 1] + input_box.text)
-                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                   frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
+                        index = namelist.index(name)
+                        namelist[index] = name[0:name.rfind("_") + 1] + input_box.text
+                        select_list.append(name[0:name.rfind("_") + 1] + input_box.text)
+                        setup_list(menu.NameList, current_frame_row, namelist, namegroup,
+                                   listbox, ui, layer=9, old_list=select_list)
                         reload_animation(anim, skeleton)
                         break
 
-            elif "frame_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
+            elif "_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
                     colour_input_box.text.count(",") >= 2:
                 for name in frame_prop_listbox.namelist[current_frame]:
                     if name in (text_input_popup[1]):
