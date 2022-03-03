@@ -1688,17 +1688,20 @@ export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2))
 
 play_animation_button = SwitchButton(["Play", "Stop"], image,
-                                     (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+                                     (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)))
 joint_button = SwitchButton(["Joint:ON", "Joint:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
                                                                filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 grid_button = SwitchButton(["Grid:ON", "Grid:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
                                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-
-copy_button = Button("Copy", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
-                                     filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-paste_button = Button("Paste", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
-                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-speed_button = Button("Speed: 1", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 2,
+all_copy_button = Button("Copy A", image, (play_animation_button.pos[0] - (play_animation_button.image.get_width() * 2),
+                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+all_paste_button = Button("Paste A", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
+                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+frame_copy_button = Button("Copy F", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
+                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+frame_paste_button = Button("Paste F", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 2,
+                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+speed_button = Button("Speed: 1", image, (screen_size[1] / 2,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
@@ -1719,9 +1722,9 @@ flip_hori_button = Button("Flip H", image, (reset_button.pos[0] + reset_button.i
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + (reset_button.image.get_width() * 2),
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-part_copy_button = Button("Copy", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
+part_copy_button = Button("Copy P", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-part_paste_button = Button("Paste", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
+part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 p1_all_button = Button("P1 All", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
                                          p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
@@ -1822,6 +1825,7 @@ shift_press = False
 anim = Animation(500, True)
 skeleton = Skeleton()
 skeleton.animation_list = []
+copy_list = []  # list of copied animation frames
 direction = 1
 activate_list = [False] * 10
 direction_button.change_text(direction_list[direction])
@@ -2155,10 +2159,28 @@ while True:
                         input_ui.change_instruction("Input Speed Number Value:")
                         ui.add(input_ui_popup)
 
-                    elif copy_button.rect.collidepoint(mouse_pos):
+                    elif all_copy_button.rect.collidepoint(mouse_pos):
+                        copy_list = []
+                        for frame in skeleton.frame_list:
+                            frame_item = {}
+                            for key, value in frame.items():
+                                if type(value) != list:
+                                    frame_item[key] = value
+                                else:
+                                    frame_item[key] = value.copy()
+                            copy_list.append(frame_item)
+
+                    elif all_paste_button.rect.collidepoint(mouse_pos):
+                        if copy_list != []:
+                            for frame_index, frame in enumerate(copy_list):
+                                skeleton.frame_list[frame_index] = {key: value.copy() if type(value) == list else value for key, value in frame.items()}
+                            skeleton.read_animation(animation_name, old=True)
+                            reload_animation(anim, skeleton)
+
+                    elif frame_copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
 
-                    elif paste_button.rect.collidepoint(mouse_pos):
+                    elif frame_paste_button.rect.collidepoint(mouse_pos):
                         paste_press = True
 
                     elif part_copy_button.rect.collidepoint(mouse_pos):
