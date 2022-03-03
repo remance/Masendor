@@ -46,7 +46,7 @@ frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "
 
 anim_property_list = ["dmgsprite", "interuptrevert"] + frame_property_list
 
-# TODO animation After 1.0: unique, more than two p, at least 10 effect and special, lock?
+# TODO: unique, more than two p, at least 10 effect and special, lock?
 
 
 def apply_colour(surface, colour=None):
@@ -901,6 +901,8 @@ class Skeleton:
                                 link_list[part] = [pose[part][2], pose[part][3]]
                                 if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
                                     bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                                else:
+                                    bodypart_list[part] = [self.weapon[part], pose[part][0], 0]
                             else:
                                 link_list[part] = [pose[part][3], pose[part][4]]
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
@@ -1194,7 +1196,7 @@ class Skeleton:
 
         elif edit_type == "clear":  # clear whole strip
             for part in self.part_name_list[current_frame]:
-                self.bodypart_list[current_frame][part] = None
+                self.bodypart_list[current_frame][part] = [0, 0, 0]
                 self.part_name_list[current_frame][part] = ["", "", ""]
                 self.animation_part_list[current_frame][part] = []
             self.part_selected = []
@@ -1425,7 +1427,7 @@ class Skeleton:
                             self.animation_part_list[current_frame][part_index][4] = 0
 
                         elif "delete" in edit_type:
-                            self.bodypart_list[current_frame][part_index] = None
+                            self.bodypart_list[current_frame][part_index] = [0, 0, 0]
                             self.part_name_list[current_frame][part_index] = ["", "", ""]
                             self.animation_part_list[current_frame][part_index] = None
                             # print(self.bodypart_list[current_frame], self.part_name_list[current_frame], self.animation_part_list[current_frame])
