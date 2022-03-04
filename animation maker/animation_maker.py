@@ -117,7 +117,7 @@ def list_scroll(scroll, listbox, current_row, name_list, name_group, ui_object, 
     return current_row
 
 
-def popup_list_open(action, new_rect, new_list, ui_type):
+def popup_list_open(action, new_rect, new_list, ui_type, current_row=0):
     """Move popup_listbox and scroll sprite to new location and create new name list based on type"""
 
     if ui_type == "top":
@@ -126,12 +126,12 @@ def popup_list_open(action, new_rect, new_list, ui_type):
         popup_listbox.rect = popup_listbox.image.get_rect(bottomleft=new_rect)
     popup_listbox.namelist = new_list
     popup_listbox.action = action
-    setup_list(menu.NameList, 0, new_list, popup_namegroup,
+    setup_list(menu.NameList, current_row, new_list, popup_namegroup,
                popup_listbox, ui, layer=19)
 
     popup_list_scroll.pos = popup_listbox.rect.topright  # change position variable
     popup_list_scroll.rect = popup_list_scroll.image.get_rect(topleft=popup_listbox.rect.topright)
-    popup_list_scroll.change_image(new_row=0, log_size=len(new_list))
+    popup_list_scroll.change_image(new_row=current_row, log_size=len(new_list))
     ui.add(popup_listbox, *popup_namegroup, popup_list_scroll)
 
     popup_listbox.type = ui_type
@@ -2363,7 +2363,8 @@ while True:
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
                         popup_list_open("animation_select", animation_selector.rect.bottomleft,
-                                        [item for item in current_pool[direction]], "top")
+                                        [item for item in current_pool[direction]], "top", list(current_pool[direction].keys()).index(animation_name))
+                        current_popup_row = list(current_pool[direction].keys()).index(animation_name)
 
                     else:  # click on other stuff
                         for strip_index, strip in enumerate(filmstrips):  # click on frame film list
