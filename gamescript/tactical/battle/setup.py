@@ -24,7 +24,7 @@ def setup_battle_ui(self, change):
     if change == "add":
         self.unitstat_ui.change_pos((self.screen_rect.width - self.unitstat_ui.image.get_width() / 2,
                                      self.unitstat_ui.image.get_height() / 2))
-        self.inspect_button.change_pos((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1))
+        self.inspect_button.change_pos((self.unitstat_ui.rect.topright[0] - (self.inspect_button.image.get_width() / 2), self.unitstat_ui.pos[1]))
 
         self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
                                     self.unitstat_ui.image.get_height() + (self.inspect_ui.image.get_height() / 2)))
@@ -33,9 +33,11 @@ def setup_battle_ui(self, change):
                                        (self.inspect_ui.rect.bottomleft[1] + self.troop_card_ui.image.get_height() / 2)))
 
         self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number)
-        self.time_button[0].change_pos((self.time_ui.rect.center[0] - 30, self.time_ui.rect.center[1]))  # time pause button
+        self.time_button[0].change_pos((self.time_ui.rect.center[0] - self.time_button[0].image.get_width(),
+                                        self.time_ui.rect.center[1]))  # time pause button
         self.time_button[1].change_pos((self.time_ui.rect.center[0], self.time_ui.rect.center[1]))  # time decrease button
-        self.time_button[2].change_pos((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]))  # time increase button
+        self.time_button[2].change_pos((self.time_ui.rect.midright[0] - self.time_button[2].image.get_width() * 2,
+                                        self.time_ui.rect.center[1]))  # time increase button
 
         self.scale_ui.change_pos(self.time_ui.rect.bottomleft)
         self.test_button.change_pos((self.scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
@@ -46,17 +48,28 @@ def setup_battle_ui(self, change):
 
         self.command_ui.change_pos((self.command_ui.image.get_size()[0] / 2,
                                     (self.command_ui.image.get_size()[1] / 2) + self.unit_selector.image.get_height()))
-        self.col_split_button.change_pos((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 26))
-        self.row_split_button.change_pos((self.command_ui.pos[0] - 115, self.command_ui.pos[1] + 56))
-        self.decimation_button.change_pos((self.command_ui.pos[0] + 100, self.command_ui.pos[1] + 56))
 
-        self.switch_button[0].change_pos((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96))  # skill condition button
-        self.switch_button[1].change_pos((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96))  # fire at will button
-        self.switch_button[2].change_pos((self.command_ui.pos[0], self.command_ui.pos[1] + 96))  # behaviour button
-        self.switch_button[3].change_pos((self.command_ui.pos[0] + 40, self.command_ui.pos[1] + 96))  # shoot range button
-        self.switch_button[4].change_pos((self.command_ui.pos[0] - 125, self.command_ui.pos[1] + 96))  # arc_shot button
-        self.switch_button[5].change_pos((self.command_ui.pos[0] + 80, self.command_ui.pos[1] + 96))  # toggle run button
-        self.switch_button[6].change_pos((self.command_ui.pos[0] + 120, self.command_ui.pos[1] + 96))  # toggle melee mode
+        self.col_split_button.change_pos((self.command_ui.rect.midleft[0] + (self.col_split_button.image.get_width() / 2),
+                                          self.command_ui.rect.midleft[1]))
+        self.row_split_button.change_pos((self.command_ui.rect.midleft[0] + (self.row_split_button.image.get_width() / 2),
+                                          self.command_ui.rect.midleft[1] + (self.col_split_button.image.get_height() * 3)))
+        self.decimation_button.change_pos((self.command_ui.rect.midleft[0] + (self.decimation_button.image.get_width() / 2),
+                                           self.command_ui.rect.midleft[1] + (self.decimation_button.image.get_height() * 2)))
+
+        self.switch_button[0].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[0].image.get_width()),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[0].image.get_height() / 2)))  # skill condition button
+        self.switch_button[1].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[1].image.get_width() * 2),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[1].image.get_height() / 2)))  # fire at will button
+        self.switch_button[2].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[2].image.get_width() * 3),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[2].image.get_height() / 2)))  # behaviour button
+        self.switch_button[3].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[3].image.get_width() * 4),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[3].image.get_height() / 2)))  # shoot range button
+        self.switch_button[4].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[4].image.get_width() * 5),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[4].image.get_height() / 2)))  # arc_shot button
+        self.switch_button[5].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[5].image.get_width() * 6),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[5].image.get_height() / 2)))  # toggle run button
+        self.switch_button[6].change_pos((self.command_ui.rect.bottomleft[0] + (self.switch_button[6].image.get_width() * 7),
+                                          self.command_ui.rect.bottomleft[1] - (self.switch_button[6].image.get_height() / 2)))  # toggle melee mode
 
         self.event_log_button[0].change_pos((self.event_log.pos[0] + (self.event_log_button[0].image.get_width() / 2),
                                              self.event_log.pos[1] - self.event_log.image.get_height() - (self.event_log_button[0].image.get_height() / 2)))
@@ -72,7 +85,7 @@ def setup_battle_ui(self, change):
                                              self.event_log_button[0].pos[1]))  # delete all log button
 
         inspect_ui_pos = [self.unitstat_ui.rect.bottomleft[0] - self.icon_sprite_width / 1.25,
-                               self.unitstat_ui.rect.bottomleft[1]]
+                          self.unitstat_ui.rect.bottomleft[1]]
         width, height = inspect_ui_pos[0], inspect_ui_pos[1]
         sub_unit_number = 0  # Number of subunit based on the position in row and column
         imgsize = (self.icon_sprite_width, self.icon_sprite_height)

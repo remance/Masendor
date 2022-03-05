@@ -140,54 +140,55 @@ def popup_list_open(action, new_rect, new_list, ui_type, current_row=0):
 def reload_animation(animation, char):
     """Reload animation frames"""
     frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if this_image is not None]
-    face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
-            char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
-    head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
-    p1_armour_selector.change_name(skeleton.armour["p1_armour"])
-    p2_armour_selector.change_name(skeleton.armour["p2_armour"])
-    for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
-        this_text = "Any"
-        if face[index] not in (0, 1):
-            this_text = face[index]
-        selector.change_name(head_text[index] + str(this_text))
-    for frame_index in range(0, 10):
-        for prop in frame_property_select[frame_index] + anim_property_select:
-            if "effect" in prop:
-                if "grey" in prop:  # not work with just convert L for some reason
-                    width, height = frames[frame_index].get_size()
-                    for x in range(width):
-                        for y in range(height):
-                            red, green, blue, alpha = frames[frame_index].get_at((x, y))
-                            average = (red + green + blue) // 3
-                            gs_color = (average, average, average, alpha)
-                            frames[frame_index].set_at((x, y), gs_color)
-                data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
-                surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
-                alpha = surface.split()[-1]  # save alpha
-                if "blur" in prop:
-                    surface = surface.filter(
-                        ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
-                if "contrast" in prop:
-                    enhancer = ImageEnhance.Contrast(surface)
-                    surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
-                if "brightness" in prop:
-                    enhancer = ImageEnhance.Brightness(surface)
-                    surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
-                if "fade" in prop:
-                    empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
-                    empty.fill((255, 255, 255, 255))
-                    empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
-                    empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
-                    surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
-                surface.putalpha(alpha)  # put back alpha
-                surface = surface.tobytes()
-                surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
-                if "colour" in prop:
-                    colour = prop[prop.rfind("_")+1:]
-                    colour = [int(this_colour) for this_colour in colour.split(",")]
-                    surface = apply_colour(surface, colour)
-                frames[frame_index] = surface
-        filmstrip_list[frame_index].add_strip(frames[frame_index])
+    if len(char.frame_list[current_frame]) > 1:  # has stuff to load
+        face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
+                char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
+        head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
+        p1_armour_selector.change_name(skeleton.armour["p1_armour"])
+        p2_armour_selector.change_name(skeleton.armour["p2_armour"])
+        for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+            this_text = "Any"
+            if face[index] not in (0, 1):
+                this_text = face[index]
+            selector.change_name(head_text[index] + str(this_text))
+        for frame_index in range(0, 10):
+            for prop in frame_property_select[frame_index] + anim_property_select:
+                if "effect" in prop:
+                    if "grey" in prop:  # not work with just convert L for some reason
+                        width, height = frames[frame_index].get_size()
+                        for x in range(width):
+                            for y in range(height):
+                                red, green, blue, alpha = frames[frame_index].get_at((x, y))
+                                average = (red + green + blue) // 3
+                                gs_color = (average, average, average, alpha)
+                                frames[frame_index].set_at((x, y), gs_color)
+                    data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
+                    surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
+                    alpha = surface.split()[-1]  # save alpha
+                    if "blur" in prop:
+                        surface = surface.filter(
+                            ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
+                    if "contrast" in prop:
+                        enhancer = ImageEnhance.Contrast(surface)
+                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
+                    if "brightness" in prop:
+                        enhancer = ImageEnhance.Brightness(surface)
+                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
+                    if "fade" in prop:
+                        empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
+                        empty.fill((255, 255, 255, 255))
+                        empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
+                        empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
+                        surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
+                    surface.putalpha(alpha)  # put back alpha
+                    surface = surface.tobytes()
+                    surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
+                    if "colour" in prop:
+                        colour = prop[prop.rfind("_")+1:]
+                        colour = [int(this_colour) for this_colour in colour.split(",")]
+                        surface = apply_colour(surface, colour)
+                    frames[frame_index] = surface
+            filmstrip_list[frame_index].add_strip(frames[frame_index])
     animation.reload(frames)
     for helper in helper_list:
         helper.stat1 = char.part_name_list[current_frame]
@@ -1430,7 +1431,6 @@ class Skeleton:
                             self.bodypart_list[current_frame][part_index] = [0, 0, 0]
                             self.part_name_list[current_frame][part_index] = ["", "", ""]
                             self.animation_part_list[current_frame][part_index] = None
-                            # print(self.bodypart_list[current_frame], self.part_name_list[current_frame], self.animation_part_list[current_frame])
 
                         elif "layer_" in edit_type:
                             if "up" in edit_type:

@@ -282,10 +282,16 @@ class CommandBar(pygame.sprite.Sprite):
         icon_rect = self.icon["authority.png"].get_rect(
             center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
         self.image.blit(self.icon["authority.png"], icon_rect)
-        self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
-                      self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
-        self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
-                      self.icon["red_knight_right.png"], self.icon["red_bishop.png"]]  # team 2 black chess head
+        try:
+            self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
+                          self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
+            self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
+                          self.icon["red_knight_right.png"], self.icon["red_bishop.png"]]  # team 2 black chess head
+        except KeyError:
+            self.white = [self.icon["king.png"], self.icon["queen.png"], self.icon["rook.png"],
+                          self.icon["knight.png"], self.icon["knight.png"], self.icon["bishop.png"]]  # team 1 white chess head
+            self.black = [self.icon["king.png"], self.icon["queen.png"], self.icon["rook.png"], self.icon["knight.png"],
+                          self.icon["knight.png"], self.icon["bishop.png"]]  # team 2 black chess head
         self.last_auth = 0
 
         self.image_original = self.image.copy()

@@ -566,7 +566,7 @@ class MainMenu:
                                                  self.unit_selector.max_row_show)  # scroller for unit select ui
 
         self.command_ui = battleui.CommandBar(image=genre_battle_ui_image["command_box.png"],
-                                              icon=genre_icon_image)  # Left top command ui with leader and unit behavious button
+                                              icon=genre_icon_image)  # Left top command ui with leader and unit behaviours button
 
         self.ui_updater.add(self.command_ui)
 
