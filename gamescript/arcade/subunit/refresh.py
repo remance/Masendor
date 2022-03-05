@@ -490,3 +490,20 @@ def charge_logic(self, parent_state):
         if self.charge_momentum <= 1:
             self.unit.charging = False
             self.charge_momentum = 1
+
+
+def pick_animation(self):
+    # try:
+    if self.state not in (10, 11):
+        state_name = self.subunit_state[self.state]
+        animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + state_name + "/" + str(self.equiped_weapon)
+        self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
+        self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
+    # else:
+    #     pass
+        # animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + self.action_list[self.main_weapon_name[0]]["Attack"] + "/" + str(
+        #     self.equiped_weapon)
+    # self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
+    # self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
+    # except:  # animation not found, use default
+    #     self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equiped_weapon)]
