@@ -24,7 +24,7 @@ def setup_battle_ui(self, change):
     if change == "add":
         self.unitstat_ui.change_pos((self.screen_rect.width - self.unitstat_ui.image.get_width() / 2,
                                      self.unitstat_ui.image.get_height() / 2))
-        self.inspect_button.change_pos((self.unitstat_ui.rect.topright[0] - (self.inspect_button.image.get_width() / 2), self.unitstat_ui.pos[1]))
+        self.inspect_button.change_pos((self.unitstat_ui.rect.topleft[0] - (self.inspect_button.image.get_width() / 2), self.unitstat_ui.pos[1]))
 
         self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
                                     self.unitstat_ui.image.get_height() + (self.inspect_ui.image.get_height() / 2)))

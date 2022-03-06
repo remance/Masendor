@@ -90,6 +90,7 @@ def change_genre(self, genre):
     subunit.change_subunit_genre(self.genre)
     unit.change_unit_genre(self.genre)
     battle.change_battle_genre(self.genre)
+    leader.change_leader_genre(self.genre)
 
     self.genre_change_box.change_text(self.genre.capitalize())
     edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)

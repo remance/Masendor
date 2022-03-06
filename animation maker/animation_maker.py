@@ -1691,7 +1691,7 @@ delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2
 
 play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)))
-joint_button = SwitchButton(["Joint:ON", "Joint:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
+joint_button = SwitchButton(["Joint:OFF", "Joint:ON"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
                                                                filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 grid_button = SwitchButton(["Grid:ON", "Grid:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
                                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))

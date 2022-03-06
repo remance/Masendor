@@ -14,9 +14,9 @@ team_colour = {0: (255, 255, 255), 1: (144, 167, 255), 2: (255, 114, 114)}  # te
 def change_unit_genre(genre):
     """Change game genre and add appropriate method to subunit class"""
     if genre == "tactical":
-        from gamescript.tactical.unit import combat, mobalise, player
+        from gamescript.tactical.unit import combat, mobalise, player, update
     elif genre == "arcade":
-        from gamescript.arcade.unit import combat, mobalise, player
+        from gamescript.arcade.unit import combat, mobalise, player, update
 
     Unit.skirmish = combat.skirmish
     Unit.chase = combat.chase
@@ -27,6 +27,7 @@ def change_unit_genre(genre):
     Unit.user_input = player.user_input
     Unit.rotate_logic = mobalise.rotate_logic
     Unit.revert_move = mobalise.revert_move
+    Unit.selection = update.selection
 
 
 class Unit(pygame.sprite.Sprite):
@@ -49,6 +50,7 @@ class Unit(pygame.sprite.Sprite):
     user_input = None
     rotate_logic = None
     revert_move = None
+    selection = None
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although unit in code, this is referred as subunit ingame"""
@@ -478,17 +480,7 @@ class Unit(pygame.sprite.Sprite):
         if self.state != 100:
             self.ally_pos_list[self.game_id] = self.base_pos  # update current position to team position list
 
-            if self.just_selected:  # add highlight to subunit in selected unit
-                for subunit in self.subunit_sprite:
-                    subunit.zoom_scale()
-                self.just_selected = False
-
-            elif self.selected and self.battle.last_selected != self:  # no longer selected
-                self.selected = False
-                for subunit in self.subunit_sprite:  # remove highlight
-                    subunit.image_inspect_original = subunit.inspect_image_original2.copy()
-                    subunit.rotate()
-                    subunit.selected = False
+            self.selection()
 
             if dt > 0:  # Set timer for complex calculation that cannot happen every loop as it drop too much fps
                 self.timer += dt

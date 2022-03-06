@@ -704,8 +704,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
             animation_sprite_pool[subunit_id] = {}
             primary_main_weapon = this_subunit["Primary Main Weapon"][0]
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
-            secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
-            secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
+            secondary_main_weapon = this_subunit["Secondary Main Weapon"][1]
+            secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][1]
             armour = (self.armour_data.armour_list[this_subunit["Armour"][0]]["Name"],
                       self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
             subunit_weapon_list = [(self.weapon_data.weapon_list[primary_main_weapon]["Name"],
@@ -721,8 +721,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
                                         self.weapon_data.weapon_list[secondary_sub_weapon]["Name"])]
                 weapon_common_action = [weapon_common_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Common"],
                                                                   self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
-                weapon_attack_action = [(weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],
-                                                                   self.generic_action_data[subunit_weapon_list[1][1]]["Attack"]))]
+                weapon_attack_action = [weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],
+                                                                   self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
 
             for animation in self.generic_animation_pool[0]:  # just use whatever side in the list for finding animation name for now
                 if self.troop_data.race_list[this_subunit["Race"]]["Name"] in animation:  # grab race animation
@@ -731,7 +731,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
                         for weapon_index, weapon in enumerate(weapon_set):
                             # first check if animation is common weapon type specific and match with weapon, then check if it is attack specific
                             if (any(ext in animation for ext in weapon_common_type_list) is False or weapon_common_action[weapon_set_index][weapon_index] in animation) and \
-                                (any(ext in animation for ext in weapon_attack_type_list) is False or (weapon_attack_action[weapon_set_index][weapon_index] in animation and ("main", "sub")[weapon_index] in animation)):
+                                (any(ext in animation for ext in weapon_attack_type_list) is False or (weapon_attack_action[weapon_set_index][weapon_index] in animation and ("Main", "Sub")[weapon_index] in animation)):
                                 if animation + "/" + str(weapon_set_index) not in animation_sprite_pool[subunit_id]:
                                     animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)] = {}
                                 for index, direction in enumerate(direction_list):
