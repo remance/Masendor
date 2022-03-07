@@ -2069,10 +2069,10 @@ while True:
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # remove joint sprite
                         joint_button.change_option(1)
-                        show_joint = False
+                        show_joint = True
                     else:  # stop animation
                         joint_button.change_option(0)
-                        show_joint = True
+                        show_joint = False
 
                 elif anim_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     new_row = anim_prop_list_scroll.user_input(mouse_pos)
