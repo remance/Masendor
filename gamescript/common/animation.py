@@ -84,11 +84,11 @@ def generate_head(p, animation_part_list, body_part_list, troop_sprite_list, poo
         face[2] = apply_colour(face[2], troop_sprite_list[p + "_beard"][1], hair_colour_list)
 
         head_sprite_surface = pygame.Surface((face[0].get_width(), face[0].get_height()), pygame.SRCALPHA)
-        head_rect = head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
-        head_sprite_surface.blit(head, head_rect)
+        rect = head.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+        head_sprite_surface.blit(head, rect)
 
         for index, item in enumerate(face):
-            rect = item.get_rect(topleft=(0, 0))
+            rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
             head_sprite_surface.blit(item, rect)
     except KeyError:  # some head direction show no face
         pass

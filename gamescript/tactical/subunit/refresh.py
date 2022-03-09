@@ -4,6 +4,7 @@ import random
 import math
 import pygame
 infinity = float("inf")
+equip_set = ("Main", "Sub")
 
 
 def player_interact(self, mouse_pos, mouse_left_up):
@@ -449,7 +450,7 @@ def health_stamina_logic(self, dt):
             for index, health in enumerate(self.health_list):
                 if self.unit_health > health:
                     if self.last_health_state != abs(4 - index):
-                        self.image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
+                        self.inspect_image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
                         self.block_original.blit(self.health_image_list[index + 1], self.health_block_rect)
                         self.block.blit(self.block_original, self.corner_image_rect)
                         self.last_health_state = abs(4 - index)
@@ -466,7 +467,7 @@ def health_stamina_logic(self, dt):
             if self.stamina >= stamina:
                 if self.last_stamina_state != abs(4 - index):
                     # if index != 3:
-                    self.image_original3.blit(self.stamina_image_list[index + 6], self.stamina_image_rect)
+                    self.inspect_image_original3.blit(self.stamina_image_list[index + 6], self.stamina_image_rect)
                     self.zoom_scale()
                     self.block_original.blit(self.stamina_image_list[index + 6], self.stamina_block_rect)
                     self.block.blit(self.block_original, self.corner_image_rect)
@@ -495,17 +496,16 @@ def charge_logic(self, parent_state):
 
 
 def pick_animation(self):
-    # try:
-    if self.state not in (10, 11):
-        state_name = self.subunit_state[self.state]
-        animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + state_name + "/" + str(self.equiped_weapon)
+    try:
+        if self.state == 10:
+            equip = random.randint(0, 1)
+            weapon = self.weapon_name[random.randint(0, 1)][equip]
+            animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
+        else:
+            state_name = self.subunit_state[self.state]
+            animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equiped_weapon)  #TODO change when add change equip
+
         self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
-    # else:
-    #     pass
-        # animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + self.action_list[self.main_weapon_name[0]]["Attack"] + "/" + str(
-        #     self.equiped_weapon)
-    # self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
-    # self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
-    # except:  # animation not found, use default
-    #     self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equiped_weapon)]
+    except:  # animation not found, use default
+        self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equiped_weapon)]

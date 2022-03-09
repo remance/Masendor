@@ -1,6 +1,6 @@
 "Name","front","side","back","sideup","sidedown"
 "Unarmed","center","center","center","center","center"
-"Sword","1.5,3.5","7,4","2,2","4,21","3,3"
+"Sword","2,2","7,4","2,2","4,21","3,3"
 "Greatsword","6,12","6,12","3,8","10,43","9,6"
 "Shortsword","3,3","6,5","3,3","5,20","4,3"
 "Dagger","7,3","7,3","7,3","7,3","7,3"

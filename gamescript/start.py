@@ -90,6 +90,7 @@ def change_genre(self, genre):
     subunit.change_subunit_genre(self.genre)
     unit.change_unit_genre(self.genre)
     battle.change_battle_genre(self.genre)
+    leader.change_leader_genre(self.genre)
 
     self.genre_change_box.change_text(self.genre.capitalize())
     edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
@@ -566,7 +567,7 @@ class MainMenu:
                                                  self.unit_selector.max_row_show)  # scroller for unit select ui
 
         self.command_ui = battleui.CommandBar(image=genre_battle_ui_image["command_box.png"],
-                                              icon=genre_icon_image)  # Left top command ui with leader and unit behavious button
+                                              icon=genre_icon_image)  # Left top command ui with leader and unit behaviours button
 
         self.ui_updater.add(self.command_ui)
 

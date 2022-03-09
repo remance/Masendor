@@ -46,7 +46,7 @@ frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "
 
 anim_property_list = ["dmgsprite", "interuptrevert"] + frame_property_list
 
-# TODO animation After 1.0: unique, more than two p, at least 10 effect and special, lock?
+# TODO: unique, more than two p, at least 10 effect and special, lock?
 
 
 def apply_colour(surface, colour=None):
@@ -117,7 +117,7 @@ def list_scroll(scroll, listbox, current_row, name_list, name_group, ui_object, 
     return current_row
 
 
-def popup_list_open(action, new_rect, new_list, ui_type):
+def popup_list_open(action, new_rect, new_list, ui_type, current_row=0):
     """Move popup_listbox and scroll sprite to new location and create new name list based on type"""
 
     if ui_type == "top":
@@ -126,12 +126,12 @@ def popup_list_open(action, new_rect, new_list, ui_type):
         popup_listbox.rect = popup_listbox.image.get_rect(bottomleft=new_rect)
     popup_listbox.namelist = new_list
     popup_listbox.action = action
-    setup_list(menu.NameList, 0, new_list, popup_namegroup,
+    setup_list(menu.NameList, current_row, new_list, popup_namegroup,
                popup_listbox, ui, layer=19)
 
     popup_list_scroll.pos = popup_listbox.rect.topright  # change position variable
     popup_list_scroll.rect = popup_list_scroll.image.get_rect(topleft=popup_listbox.rect.topright)
-    popup_list_scroll.change_image(new_row=0, log_size=len(new_list))
+    popup_list_scroll.change_image(new_row=current_row, log_size=len(new_list))
     ui.add(popup_listbox, *popup_namegroup, popup_list_scroll)
 
     popup_listbox.type = ui_type
@@ -140,54 +140,55 @@ def popup_list_open(action, new_rect, new_list, ui_type):
 def reload_animation(animation, char):
     """Reload animation frames"""
     frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if this_image is not None]
-    face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
-            char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
-    head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
-    p1_armour_selector.change_name(skeleton.armour["p1_armour"])
-    p2_armour_selector.change_name(skeleton.armour["p2_armour"])
-    for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
-        this_text = "Any"
-        if face[index] not in (0, 1):
-            this_text = face[index]
-        selector.change_name(head_text[index] + str(this_text))
-    for frame_index in range(0, 10):
-        for prop in frame_property_select[frame_index]:
-            if "effect" in prop:
-                if "grey" in prop:  # not work with just convert L for some reason
-                    width, height = frames[frame_index].get_size()
-                    for x in range(width):
-                        for y in range(height):
-                            red, green, blue, alpha = frames[frame_index].get_at((x, y))
-                            average = (red + green + blue) // 3
-                            gs_color = (average, average, average, alpha)
-                            frames[frame_index].set_at((x, y), gs_color)
-                data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
-                surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
-                alpha = surface.split()[-1]  # save alpha
-                if "blur" in prop:
-                    surface = surface.filter(
-                        ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
-                if "contrast" in prop:
-                    enhancer = ImageEnhance.Contrast(surface)
-                    surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
-                if "brightness" in prop:
-                    enhancer = ImageEnhance.Brightness(surface)
-                    surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
-                if "fade" in prop:
-                    empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
-                    empty.fill((255, 255, 255, 255))
-                    empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
-                    empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
-                    surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
-                surface.putalpha(alpha)  # put back alpha
-                surface = surface.tobytes()
-                surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
-                if "colour" in prop:
-                    colour = prop[prop.rfind("_")+1:]
-                    colour = [int(this_colour) for this_colour in colour.split(",")]
-                    surface = apply_colour(surface, colour)
-                frames[frame_index] = surface
-        filmstrip_list[frame_index].add_strip(frames[frame_index])
+    if len(char.frame_list[current_frame]) > 1:  # has stuff to load
+        face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
+                char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
+        head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
+        p1_armour_selector.change_name(skeleton.armour["p1_armour"])
+        p2_armour_selector.change_name(skeleton.armour["p2_armour"])
+        for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+            this_text = "Any"
+            if face[index] not in (0, 1):
+                this_text = face[index]
+            selector.change_name(head_text[index] + str(this_text))
+        for frame_index in range(0, 10):
+            for prop in frame_property_select[frame_index] + anim_property_select:
+                if "effect" in prop:
+                    if "grey" in prop:  # not work with just convert L for some reason
+                        width, height = frames[frame_index].get_size()
+                        for x in range(width):
+                            for y in range(height):
+                                red, green, blue, alpha = frames[frame_index].get_at((x, y))
+                                average = (red + green + blue) // 3
+                                gs_color = (average, average, average, alpha)
+                                frames[frame_index].set_at((x, y), gs_color)
+                    data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
+                    surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
+                    alpha = surface.split()[-1]  # save alpha
+                    if "blur" in prop:
+                        surface = surface.filter(
+                            ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
+                    if "contrast" in prop:
+                        enhancer = ImageEnhance.Contrast(surface)
+                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
+                    if "brightness" in prop:
+                        enhancer = ImageEnhance.Brightness(surface)
+                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
+                    if "fade" in prop:
+                        empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
+                        empty.fill((255, 255, 255, 255))
+                        empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
+                        empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
+                        surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
+                    surface.putalpha(alpha)  # put back alpha
+                    surface = surface.tobytes()
+                    surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
+                    if "colour" in prop:
+                        colour = prop[prop.rfind("_")+1:]
+                        colour = [int(this_colour) for this_colour in colour.split(",")]
+                        surface = apply_colour(surface, colour)
+                    frames[frame_index] = surface
+            filmstrip_list[frame_index].add_strip(frames[frame_index])
     animation.reload(frames)
     for helper in helper_list:
         helper.stat1 = char.part_name_list[current_frame]
@@ -901,6 +902,8 @@ class Skeleton:
                                 link_list[part] = [pose[part][2], pose[part][3]]
                                 if pose[part][1] in gen_weapon_sprite_pool[self.weapon[part]][pose[part][0]]:
                                     bodypart_list[part] = [self.weapon[part], pose[part][0], pose[part][1]]
+                                else:
+                                    bodypart_list[part] = [self.weapon[part], pose[part][0], 0]
                             else:
                                 link_list[part] = [pose[part][3], pose[part][4]]
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
@@ -1028,11 +1031,11 @@ class Skeleton:
             p1_face[1] = apply_colour(p1_face[1], self.p1_eye_colour)
 
             p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
-            p1_head_sprite_surface.blit(p1_head, head_rect)
+            rect = p1_head.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
+            p1_head_sprite_surface.blit(p1_head, rect)
 
             for index, item in enumerate(p1_face):
-                rect = item.get_rect(topleft=(0, 0))
+                rect = item.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
                 p1_head_sprite_surface.blit(item, rect)
 
         except KeyError:  # some head direction show no face
@@ -1069,11 +1072,11 @@ class Skeleton:
             p2_face[2] = apply_colour(p2_face[2], self.p2_hair_colour)
             p2_face[1] = apply_colour(p2_face[1], self.p2_eye_colour)
             p2_head_sprite_surface = pygame.Surface((p2_face[2].get_width(), p2_face[2].get_height()), pygame.SRCALPHA)
-            head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
-            p2_head_sprite_surface.blit(p2_head, head_rect)
+            rect = p2_head.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
+            p2_head_sprite_surface.blit(p2_head, rect)
 
             for index, item in enumerate(p2_face):
-                rect = item.get_rect(topleft=(0, 0))
+                rect = item.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
                 p2_head_sprite_surface.blit(item, rect)
         except KeyError:  # some head direction show no face
             pass
@@ -1194,7 +1197,7 @@ class Skeleton:
 
         elif edit_type == "clear":  # clear whole strip
             for part in self.part_name_list[current_frame]:
-                self.bodypart_list[current_frame][part] = None
+                self.bodypart_list[current_frame][part] = [0, 0, 0]
                 self.part_name_list[current_frame][part] = ["", "", ""]
                 self.animation_part_list[current_frame][part] = []
             self.part_selected = []
@@ -1425,10 +1428,9 @@ class Skeleton:
                             self.animation_part_list[current_frame][part_index][4] = 0
 
                         elif "delete" in edit_type:
-                            self.bodypart_list[current_frame][part_index] = None
+                            self.bodypart_list[current_frame][part_index] = [0, 0, 0]
                             self.part_name_list[current_frame][part_index] = ["", "", ""]
                             self.animation_part_list[current_frame][part_index] = None
-                            # print(self.bodypart_list[current_frame], self.part_name_list[current_frame], self.animation_part_list[current_frame])
 
                         elif "layer_" in edit_type:
                             if "up" in edit_type:
@@ -1483,7 +1485,7 @@ class Skeleton:
             if edit_type == "new":
                 for index, frame in enumerate(self.frame_list):  # reset all empty like the first frame
                     self.frame_list[index] = {key: value for key, value in list(self.frame_list[0].items())}
-            anim_to_pool(current_pool, self, new=True)
+                anim_to_pool(current_pool, self, new=True)
 
             # reset history when change frame or create new animation
             part_name_history = part_name_history[-1:] + [self.part_name_list[current_frame]]
@@ -1688,17 +1690,20 @@ export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2))
 
 play_animation_button = SwitchButton(["Play", "Stop"], image,
-                                     (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-joint_button = SwitchButton(["Joint:ON", "Joint:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
+                                     (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)))
+joint_button = SwitchButton(["Joint:OFF", "Joint:ON"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
                                                                filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 grid_button = SwitchButton(["Grid:ON", "Grid:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
                                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-
-copy_button = Button("Copy", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
-                                     filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-paste_button = Button("Paste", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
-                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
-speed_button = Button("Speed: 1", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 2,
+all_copy_button = Button("Copy A", image, (play_animation_button.pos[0] - (play_animation_button.image.get_width() * 2),
+                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+all_paste_button = Button("Paste A", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
+                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+frame_copy_button = Button("Copy F", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
+                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+frame_paste_button = Button("Paste F", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 2,
+                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+speed_button = Button("Speed: 1", image, (screen_size[1] / 2,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
@@ -1719,9 +1724,9 @@ flip_hori_button = Button("Flip H", image, (reset_button.pos[0] + reset_button.i
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + (reset_button.image.get_width() * 2),
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-part_copy_button = Button("Copy", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
+part_copy_button = Button("Copy P", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-part_paste_button = Button("Paste", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
+part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
                                             p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 p1_all_button = Button("P1 All", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
                                          p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
@@ -1822,6 +1827,7 @@ shift_press = False
 anim = Animation(500, True)
 skeleton = Skeleton()
 skeleton.animation_list = []
+copy_list = []  # list of copied animation frames
 direction = 1
 activate_list = [False] * 10
 direction_button.change_text(direction_list[direction])
@@ -2063,10 +2069,10 @@ while True:
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # remove joint sprite
                         joint_button.change_option(1)
-                        show_joint = False
+                        show_joint = True
                     else:  # stop animation
                         joint_button.change_option(0)
-                        show_joint = True
+                        show_joint = False
 
                 elif anim_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     new_row = anim_prop_list_scroll.user_input(mouse_pos)
@@ -2082,56 +2088,61 @@ while True:
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                                    frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-                elif anim_prop_listbox.rect.collidepoint(mouse_pos):  # click on animation property list
-                    for index, name in enumerate(anim_prop_namegroup):
+                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_listbox.rect.collidepoint(mouse_pos):
+                    namegroup = anim_prop_namegroup   # click on animation property list
+                    listbox = anim_prop_listbox
+                    select_list = anim_property_select
+                    namelist = listbox.namelist
+                    naming = "anim"
+                    if frame_prop_listbox.rect.collidepoint(mouse_pos):  # click on frame property list
+                        namegroup = frame_prop_namegroup
+                        listbox = frame_prop_listbox
+                        select_list = frame_property_select[current_frame]
+                        namelist = listbox.namelist[current_frame]
+                        naming = "frame"
+
+                    for index, name in enumerate(namegroup):
                         if name.rect.collidepoint(mouse_pos):
                             if name.name == "Custom":
                                 text_input_popup = ("text_input", "new_anim_prop")
-                                input_ui.change_instruction("Custom Anim Prop:")
-                                ui.add(input_ui_popup)
-                            else:
-                                name.select()
-                                if name.selected:
-                                    anim_property_select.append(name.name)
-                                else:
-                                    anim_property_select.remove(name.name)
-                                for frame in skeleton.frame_list:
-                                    frame["animation_property"] = anim_property_select
-
-                elif frame_prop_listbox.rect.collidepoint(mouse_pos):  # click on frame property list
-                    for index, name in enumerate(frame_prop_namegroup):
-                        if name.rect.collidepoint(mouse_pos):
-                            if name.name == "Custom":
-                                text_input_popup = ("text_input", "new_frame_prop")
-                                input_ui.change_instruction("Custom Frame Prop:")
+                                input_ui.change_instruction("Custom Property:")
                                 ui.add(input_ui_popup)
                             elif "effect_" in name.name:
                                 if name.name[-1] == "_" or name.name[-1].isdigit():  # effect that need number value
                                     if name.selected is False:
                                         if "colour" not in name.name:
-                                            text_input_popup = ("text_input", "frame_prop_num_" + name.name)
+                                            text_input_popup = ("text_input", naming + "_prop_num_" + name.name)
                                             input_ui.change_instruction("Input Number Value:")
                                             ui.add(input_ui_popup)
                                         else:
-                                            text_input_popup = ("text_input", "frame_prop_colour_" + name.name)
+                                            text_input_popup = ("text_input", naming + "_prop_colour_" + name.name)
                                             ui.add(colour_ui_popup)
                                 elif name.selected is False:  # effect that no need input
-                                    frame_property_select[current_frame].append(name.name)
-                                    setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                               frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
+                                    select_list.append(name.name)
+                                    setup_list(menu.NameList, current_frame_row, namelist, namegroup,
+                                               listbox, ui, layer=9, old_list=select_list)
                                     reload_animation(anim, skeleton)
                                 if name.selected:
                                     name.select()
-                                    frame_property_select[current_frame].remove(name.name)
-                                    skeleton.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
+                                    select_list.remove(name.name)
+                                    if anim_prop_listbox.rect.collidepoint(mouse_pos):
+                                        for frame in skeleton.frame_list:
+                                            frame["animation_property"] = select_list
+                                    else:
+                                        skeleton.frame_list[current_frame]["frame_property"] = select_list
                                     reload_animation(anim, skeleton)
+
                             else:
                                 name.select()
                                 if name.selected:
-                                    frame_property_select[current_frame].append(name.name)
+                                    select_list.append(name.name)
                                 else:
-                                    frame_property_select[current_frame].remove(name.name)
-                                skeleton.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
+                                    select_list.remove(name.name)
+                                if anim_prop_listbox.rect.collidepoint(mouse_pos):
+                                    for frame in skeleton.frame_list:
+                                        frame["animation_property"] = select_list
+                                else:
+                                    skeleton.frame_list[current_frame]["frame_property"] = select_list
 
         if play_animation:
             current_frame = int(anim.show_frame)
@@ -2150,10 +2161,28 @@ while True:
                         input_ui.change_instruction("Input Speed Number Value:")
                         ui.add(input_ui_popup)
 
-                    elif copy_button.rect.collidepoint(mouse_pos):
+                    elif all_copy_button.rect.collidepoint(mouse_pos):
+                        copy_list = []
+                        for frame in skeleton.frame_list:
+                            frame_item = {}
+                            for key, value in frame.items():
+                                if type(value) != list:
+                                    frame_item[key] = value
+                                else:
+                                    frame_item[key] = value.copy()
+                            copy_list.append(frame_item)
+
+                    elif all_paste_button.rect.collidepoint(mouse_pos):
+                        if copy_list != []:
+                            for frame_index, frame in enumerate(copy_list):
+                                skeleton.frame_list[frame_index] = {key: value.copy() if type(value) == list else value for key, value in frame.items()}
+                            skeleton.read_animation(animation_name, old=True)
+                            reload_animation(anim, skeleton)
+
+                    elif frame_copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
 
-                    elif paste_button.rect.collidepoint(mouse_pos):
+                    elif frame_paste_button.rect.collidepoint(mouse_pos):
                         paste_press = True
 
                     elif part_copy_button.rect.collidepoint(mouse_pos):
@@ -2334,7 +2363,8 @@ while True:
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
                         popup_list_open("animation_select", animation_selector.rect.bottomleft,
-                                        [item for item in current_pool[direction]], "top")
+                                        [item for item in current_pool[direction]], "top", list(current_pool[direction].keys()).index(animation_name))
+                        current_popup_row = list(current_pool[direction].keys()).index(animation_name)
 
                     else:  # click on other stuff
                         for strip_index, strip in enumerate(filmstrips):  # click on frame film list
@@ -2530,18 +2560,27 @@ while True:
                 setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
                            frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
 
-            elif "frame_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
-                for name in frame_prop_listbox.namelist[current_frame]:
+            elif "_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):
+                namegroup = anim_prop_namegroup  # click on animation property list
+                listbox = anim_prop_listbox
+                namelist = listbox.namelist
+                select_list = anim_property_select
+                if "frame" in text_input_popup[1]:  # click on frame property list
+                    namegroup = frame_prop_namegroup
+                    listbox = frame_prop_listbox
+                    namelist = listbox.namelist[current_frame]
+                    select_list = frame_property_select[current_frame]
+                for name in namelist:
                     if name in (text_input_popup[1]):
-                        index = frame_prop_listbox.namelist[current_frame].index(name)
-                        frame_prop_listbox.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + input_box.text
-                        frame_property_select[current_frame].append(name[0:name.rfind("_") + 1] + input_box.text)
-                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                   frame_prop_listbox, ui, layer=9, old_list=frame_property_select[current_frame])
+                        index = namelist.index(name)
+                        namelist[index] = name[0:name.rfind("_") + 1] + input_box.text
+                        select_list.append(name[0:name.rfind("_") + 1] + input_box.text)
+                        setup_list(menu.NameList, current_frame_row, namelist, namegroup,
+                                   listbox, ui, layer=9, old_list=select_list)
                         reload_animation(anim, skeleton)
                         break
 
-            elif "frame_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
+            elif "_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
                     colour_input_box.text.count(",") >= 2:
                 for name in frame_prop_listbox.namelist[current_frame]:
                     if name in (text_input_popup[1]):

@@ -164,10 +164,10 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
 
-        self.main_weapon_name = (self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
-                                 self.weapon_data.weapon_list[self.secondary_sub_weapon[0]]["Name"])
-        self.sub_weapon_name = (self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
-                                 self.weapon_data.weapon_list[self.secondary_sub_weapon[0]]["Name"])
+        self.weapon_name = ((self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
+                             self.weapon_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
+                            (self.weapon_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
+                             self.weapon_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
         self.mount = self.troop_data.mount_list[stat["Mount"][0]]  # mount this subunit use
         self.mount_grade = self.troop_data.mount_grade_list[stat["Mount"][1]]
@@ -270,7 +270,8 @@ class Subunit(pygame.sprite.Sprite):
         self.base_elem_range = self.original_elem_range
 
         self.add_weapon_stat()
-        self.action_list = {key: value for key, value in self.generic_action_data.items() if key in self.main_weapon_name or key in self.sub_weapon_name}
+        self.action_list = {key: value for key, value in self.generic_action_data.items() if key in self.weapon_name[0] or key in self.weapon_name[1]}
+
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
@@ -432,7 +433,7 @@ class Subunit(pygame.sprite.Sprite):
 
     def zoom_scale(self):
         """camera zoom change and rescale the sprite and position scale, sprite closer zoom will be scale in the play animation function instead"""
-        if self.zoom <= 9:
+        if self.zoom != self.max_zoom:
             if self.zoom > 1:
                 self.inspect_image_original = self.inspect_image_original3.copy()  # reset image for new scale
                 dim = pygame.Vector2(self.inspect_image_original.get_width() * self.zoom / self.max_zoom, self.inspect_image_original.get_height() * self.zoom / self.max_zoom)
@@ -680,11 +681,11 @@ class Subunit(pygame.sprite.Sprite):
             center=block.get_rect().center)  # red corner when take melee_dmg shown in image block
         # ^ End weapon icon
 
-        image_original = image.copy()  # original for rotate
-        image_original2 = image.copy()  # original2 for saving original not clicked
-        image_original3 = image.copy()  # original3 for saving original zoom level
+        inspect_image_original = image.copy()  # original for rotate
+        inspect_image_original2 = image.copy()  # original2 for saving original not clicked
+        inspect_image_original3 = image.copy()  # original3 for saving original zoom level
 
-        return {"image": image, "original": image_original, "original2": image_original2, "original3": image_original3,
+        return {"image": image, "original": inspect_image_original, "original2": inspect_image_original2, "original3": inspect_image_original3,
                 "block": block, "block_original": block_original, "selected": selected_image, "selected_rect": selected_image_rect,
                 "selected_original": selected_image_original, "selected_original2": selected_image_original2,
                 "far": far_image, "far_selected": far_selected_image, "health_rect": health_image_rect, "health_block_rect": health_block_rect,
@@ -692,18 +693,23 @@ class Subunit(pygame.sprite.Sprite):
                 "corner_rect": corner_image_rect, "health_list": health_image_list, "stamina_list": stamina_image_list}
 
     def update(self, weather, dt, zoom, combat_timer, mouse_pos, mouse_left_up):
+        recreate_rect = False
         if self.last_zoom != zoom:  # camera zoom is changed
             self.last_zoom = zoom
             self.zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
+            recreate_rect = True
+
+        if self.zoom == self.max_zoom:  # TODO add weapon specific action condition
+            done = self.play_animation(0.5, dt)
+            if done and self.state != 100:
+                self.pick_animation()
+            if recreate_rect:
+                self.rect = self.image.get_rect(center=self.pos)
 
         if self.unit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
-            if self.zoom > 9:  # TODO add weapon specific action condition
-                done = self.play_animation(0.5, dt)
-                if done:
-                    self.pick_animation()
             if dt > 0:  # only run these when self not pause
                 self.timer += dt
 

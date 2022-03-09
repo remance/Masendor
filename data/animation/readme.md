@@ -7,9 +7,9 @@ Animation name, each p1 and p2 parts, effect, special, frame and animation prope
 
 Animation name should be like this 
 
-for general animation
+for general animation "race name"_"animation name"_"animation varient number"/"frame number"  (e.g., human_walk_0/0)
 
-for weapon animation: *race*_*weapon type*_*name*_*animation varient number*/*frame number* (e.g., human_)
+for weapon animation: "weapon type"_"hand variation either Main or Sub"_"name"_"animation varient number"/"frame number"  (e.g., human_Main_1hand_Slash/1)
 
 Each animation part need to be in this format:
 race/type,direction name, part name, position x, position y, angle, flip (0=none,1=hori,2=verti,3=both), layer, scale (1 for default)
