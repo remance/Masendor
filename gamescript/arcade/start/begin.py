@@ -7,10 +7,10 @@ def change_source(self, description_text, scale_value):
     if self.last_select == "custom":
         openfolder = self.custom_map_folder
     unit_info = self.read_selected_map_data(openfolder, "unit_pos.csv", source=True)
-
-    team1_pos = {row[5]: [int(item) for item in row[8].split(",")] for row in list(unit_info.values()) if
+    print(list(unit_info.values())[1:])
+    team1_pos = {row[5]: [int(item) for item in row[5].split(",")] for row in list(unit_info.values()) if
                  row[12] == 1}
-    team2_pos = {row[5]: [int(item) for item in row[8].split(",")] for row in list(unit_info.values()) if
+    team2_pos = {row[5]: [int(item) for item in row[5].split(",")] for row in list(unit_info.values()) if
                  row[12] == 2}
     self.map_show.change_mode(1, team1_pos_list=team1_pos, team2_pos_list=team2_pos)
 
@@ -25,31 +25,29 @@ def change_source(self, description_text, scale_value):
             list_add = team2_army
         for small_row in row[0:5]:
             for item in small_row.split(","):
-                list_add.append(int(item))
+                list_add.append(item)
 
-        for item in row[9].split(","):
-            if row[12] == 1:
-                team1_commander.append(int(item))
-            elif row[12] == 2:
-                team2_commander.append(int(item))
+        if row[12] == 1:
+            team1_commander.append(row[6])
+        elif row[12] == 2:
+            team2_commander.append(row[6])
 
     team_total_troop = [0, 0]  # total troop number in army
     troop_type_list = [[0, 0, 0, 0], [0, 0, 0, 0]]  # total number of each troop type
     leader_name_list = (team1_commander, team2_commander)
     army_team_list = (team1_pos, team2_pos)  # for finding how many subunit in each team
-
     army_loop_list = (team1_army, team2_army)
     for index, team in enumerate(army_loop_list):
         for this_unit in team:
-            if this_unit != 0:
-                team_total_troop[index] += int(self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
+            if this_unit != "h" and int(this_unit) != 0:
+                team_total_troop[index] += int(self.troop_data.troop_list[int(this_unit)]["Troop"] * scale_value[index])
                 troop_type = 0
-                if self.troop_data.troop_list[this_unit]["Troop Class"] in (2, 4):  # range subunit
+                if self.troop_data.troop_list[int(this_unit)]["Troop Class"] in (2, 4):  # range subunit
                     troop_type += 1  # range weapon and accuracy higher than melee melee_attack
-                if self.troop_data.troop_list[this_unit]["Troop Class"] in (3, 4, 5, 6, 7):  # cavalry
+                if self.troop_data.troop_list[int(this_unit)]["Troop Class"] in (3, 4, 5, 6, 7):  # cavalry
                     troop_type += 2
                 troop_type_list[index][troop_type] += int(
-                    self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
+                    self.troop_data.troop_list[int(this_unit)]["Troop"] * scale_value[index])
         troop_type_list[index].append(len(army_team_list[index]))
 
     army_loop_list = ["{:,}".format(troop) + " Troops" for troop in team_total_troop]

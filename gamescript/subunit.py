@@ -223,7 +223,6 @@ class Subunit(pygame.sprite.Sprite):
         self.special_status = []
 
         # vv Set up trait variable
-
         self.arc_shot = False
         self.anti_inf = False
         self.anti_cav = False

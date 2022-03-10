@@ -4,6 +4,11 @@ import os
 import numpy as np
 import pygame
 
+from gamescript import battleui
+from gamescript.common import utility
+
+change_group = utility.change_group
+
 letter_board = ("a", "b", "c", "d", "e")  # letter according to subunit position in inspect ui similar to chess board
 number_board = ("5", "4", "3", "2", "1")  # same as above
 board_pos = []

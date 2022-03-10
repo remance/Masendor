@@ -232,7 +232,8 @@ class TextBox(pygame.sprite.Sprite):
 
 
 class MenuButton(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, images, pos, menu_state="any", text="", size=28, layer=1):
+    ui_updater = None
+    def __init__(self, screen_scale, images, pos, text="", size=28, layer=1):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
@@ -255,10 +256,9 @@ class MenuButton(pygame.sprite.Sprite):
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
-        self.menu_state = menu_state
 
-    def update(self, mouse_pos, mouse_up, mouse_down, menu_state):
-        if self.menu_state == menu_state or self.menu_state == "any":
+    def update(self, mouse_pos, mouse_up, mouse_down):
+        if self in self.ui_updater:
             self.mouse_over = False
             self.image = self.button_normal_image
             if self.rect.collidepoint(mouse_pos):
