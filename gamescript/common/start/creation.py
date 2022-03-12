@@ -456,13 +456,13 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
     unit_listbox = menu.ListBox(screen_scale, (0, screen_rect.height / 2.2),
                                 box_image)  # box for showing unit preset list
     unit_preset_name_scroll = battleui.UIScroller(unit_listbox.rect.topright, unit_listbox.image.get_height(),
-                                                 unit_listbox.max_show, layer=14)  # preset name scroll
+                                                  unit_listbox.max_row_show, layer=14)  # preset name scroll
     preset_select_border = uniteditor.SelectedPresetBorder((unit_listbox.image.get_width() * 0.96, int(30 * screen_scale[1])))
 
     troop_listbox = menu.ListBox(screen_scale, (screen_rect.width / 1.19, 0), listbox_image)
 
     troop_scroll = battleui.UIScroller(troop_listbox.rect.topright, troop_listbox.image.get_height(),
-                                       troop_listbox.max_show, layer=14)
+                                       troop_listbox.max_row_show, layer=14)
 
     unit_delete_button = menu.MenuButton(screen_scale, image_list,
                                               pos=(image_list[0].get_width() / 2, bottom_height),
@@ -474,9 +474,9 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
 
     popup_listbox = menu.ListBox(screen_scale, (0, 0), box_image, 15)  # popup box need to be in higher layer
     popup_list_scroll = battleui.UIScroller(popup_listbox.rect.topright,
-                                           popup_listbox.image.get_height(),
-                                           popup_listbox.max_show,
-                                           layer=14)
+                                            popup_listbox.image.get_height(),
+                                            popup_listbox.max_row_show,
+                                            layer=14)
 
     box_image = load_image(main_dir, screen_scale, "map_change.png", "ui\\mainmenu_ui")
     terrain_change_button = menu.TextBox(screen_scale, box_image.copy(), (screen_rect.width / 3, screen_rect.height - box_image.get_height()),

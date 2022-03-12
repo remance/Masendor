@@ -5,7 +5,7 @@ def setup_unit_icon(self):
     start_column = 25
     column = start_column
     unit_list = self.team1_unit
-    if self.playerteam == 2:
+    if self.player_team == 2:
         unit_list = self.team2_unit
     if self.enactment:  # include another team unit icon as well in enactment mode
         unit_list = self.all_unit_list
@@ -27,7 +27,7 @@ def setup_unit_icon(self):
 
     for index, unit in enumerate(unit_list):  # add unit icon for drawing according to appropriated current row
         if index >= current_index:
-            self.unit_icon.add(battleui.ArmyIcon((column, row), unit))
+            self.unit_icon.add(battleui.UnitIcon((column, row), unit))
             column += 40
             if column > 250:
                 row += 50

@@ -48,8 +48,6 @@ read_colour = creation.read_colour
 
 version_name = "Dream Decision"
 
-# Will keep leader, subunit, unit and other state as magic number since changing them take too much space, see below for referencing
-
 unit_state_text = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)",
                    7: "Walk (F)", 8: "Run (F)", 10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
                    69: "Partying", 95: "Disobey", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
@@ -68,6 +66,9 @@ stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tire
                       7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}  # unit stamina state name
 
 quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # item quality name
+
+leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
+                "Advisor")  # Name of leader position in unit, the first 4 is for commander unit
 
 team_colour = unit.team_colour
 
@@ -110,8 +111,6 @@ def change_genre(self, genre):
     self.background.blit(bgd_tile, (0, 0))
 
 class MainMenu:
-    leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "General", "Sub-General", "Sub-General",
-                    "Advisor")  # Name of leader position in unit, the first 4 is for commander unit
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
     change_genre = change_genre
@@ -119,6 +118,7 @@ class MainMenu:
     main_menu_process = interact.main_menu_process
     map_select_process = interact.map_select_process
     team_select_process = interact.team_select_process
+    option_menu_process = interact.option_menu_process
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
@@ -204,18 +204,19 @@ class MainMenu:
         self.leader_state_text = leader_state_text
         self.morale_state_text = morale_state_text
         self.stamina_state_text = stamina_state_text
+        self.leader_level = leader_level
 
         self.map_source = 0  # current selected map source
         self.team_selected = 1
         self.current_popup_row = 0
 
-        # v Decorate the self window
+        # Decorate the self window
         # icon = load_image(self.main_dir, "sword.jpg")
         # icon = pygame.transform.scale(icon, (32, 32))
         # pygame.display.set_icon(icon)
-        # ^ End decorate
 
-        # v Initialise groups and objects
+        # Initialise groups and objects
+
         # main drawer for ui
         self.main_ui = pygame.sprite.LayeredUpdates()  # sprite drawer group
 
@@ -296,9 +297,8 @@ class MainMenu:
         self.unit_icon = pygame.sprite.Group()  # unit icon object group in unit selector ui
         self.weather_matter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite
         self.weather_effect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
-        # ^ End initialise
 
-        # v Assign containers
+        # Assign containers
         menu.MenuButton.containers = self.menu_button
         menu.MenuButton.ui_updater = self.main_ui
         menu.MenuIcon.containers = self.menu_icon
@@ -322,7 +322,7 @@ class MainMenu:
         battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui, self.battle_ui
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui
-        battleui.ArmyIcon.containers = self.unit_icon, self.battle_ui
+        battleui.UnitIcon.containers = self.unit_icon, self.battle_ui
         battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
 
@@ -339,9 +339,8 @@ class MainMenu:
         unit.Unit.containers = self.unit_updater
         subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battle_camera
         leader.Leader.containers = self.army_leader, self.leader_updater
-        # ^ End assign
 
-        # v Main menu related stuff
+        # Main menu related stuff
         image_list = load_base_button(self.main_dir, self.screen_scale)
         self.preset_map_button = menu.MenuButton(self.screen_scale, image_list,
                                                  pos=(self.screen_rect.width / 2, self.screen_rect.height - (image_list[0].get_height() * 8.5)),
@@ -369,13 +368,17 @@ class MainMenu:
 
         self.map_title = menu.MapTitle(self.screen_scale, (self.screen_rect.width / 2, 0))
 
-        menu.ArmyStat.image = battle_select_image["stat.png"]
-
         self.map_description = menu.DescriptionBox(battle_select_image["map_description.png"], self.screen_scale,
                                                    (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
         self.map_show = menu.MapShow(self.main_dir, self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 3))
         self.source_description = menu.DescriptionBox(battle_select_image["source_description.png"], self.screen_scale,
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3), text_size=24)
+
+        self.char_select_box = battleui.UnitSelector((self.screen_rect.width / 2, self.screen_rect.height / 1.3),
+                                                     battle_select_image["char_select.png"])
+        self.char_pick_scroll = battleui.UIScroller(self.char_select_box.rect.topright,
+                                                    self.char_select_box.image.get_height(),
+                                                    self.char_select_box.max_row_show, layer=14)  # scroll bar for char pick
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = menu.MenuButton(self.screen_scale, image_list, pos=(self.screen_rect.width - image_list[0].get_width(), bottom_height),
@@ -392,7 +395,7 @@ class MainMenu:
         self.map_listbox = menu.ListBox(self.screen_scale, (self.screen_rect.width / 25, self.screen_rect.height / 20),
                                         battle_select_image["name_list.png"])
         self.map_scroll = battleui.UIScroller(self.map_listbox.rect.topright, self.map_listbox.image.get_height(),
-                                              self.map_listbox.max_show, layer=14)  # scroll bar for map list
+                                              self.map_listbox.max_row_show, layer=14)  # scroll bar for map list
 
         self.source_list_box = menu.ListBox(self.screen_scale, (0, 0), battle_select_image["top_box.png"])  # source list ui box
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.screen_rect.width, 0), battle_select_image["top_box.png"],
@@ -572,7 +575,7 @@ class MainMenu:
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
 
         # Army select list ui
-        self.unit_selector = battleui.ArmySelect((0, 0), genre_battle_ui_image["unit_select_box.png"])
+        self.unit_selector = battleui.UnitSelector((0, 0), genre_battle_ui_image["unit_select_box.png"])
         self.select_scroll = battleui.UIScroller(self.unit_selector.rect.topright, genre_battle_ui_image["unit_select_box.png"].get_height(),
                                                  self.unit_selector.max_row_show)  # scroller for unit select ui
 
@@ -906,7 +909,7 @@ class MainMenu:
 
             if self.text_input_popup[0] is not None:  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
-                    button.update(self.mouse_pos, mouse_left_up, mouse_left_down, "any")
+                    button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
 
                 if self.input_ok_button.event or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
                     self.input_ok_button.event = False
@@ -965,53 +968,7 @@ class MainMenu:
                         pygame.mixer.music.play(-1)
 
                 elif self.menu_state == "option":
-                    for bar in self.resolution_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
-                        if bar.event:
-                            bar.event = False
-
-                            self.resolution_drop.change_state(bar.text)  # change button value based on new selected value
-                            resolution_change = bar.text.split()
-                            self.new_screen_width = resolution_change[0]
-                            self.new_screen_height = resolution_change[2]
-
-                            edit_config("DEFAULT", "screen_width", self.new_screen_width, "configuration.ini",
-                                        self.config)
-                            edit_config("DEFAULT", "screen_height", self.new_screen_height, "configuration.ini",
-                                        self.config)
-                            self.screen = pygame.display.set_mode(self.screen_rect.size,
-                                                                  self.window_style | pygame.RESIZABLE, self.best_depth)
-
-                            self.menu_button.remove(self.resolution_bar)
-
-                            break
-
-                    if self.back_button.event or esc_press:  # back to start_set menu
-                        self.back_button.event = False
-
-                        self.main_ui.remove(*self.option_icon_list, self.option_menu_slider, self.value_box)
-
-                        self.back_mainmenu()
-
-                    if mouse_left_up or mouse_left_down:
-                        self.main_ui.remove(self.resolution_bar)
-
-                        if self.resolution_drop.rect.collidepoint(self.mouse_pos):  # click on resolution bar
-                            if self.resolution_bar in self.main_ui:  # remove the bar list if click again
-                                self.main_ui.remove(self.resolution_bar)
-                                self.menu_button.remove(self.resolution_bar)
-                            else:  # add bar list
-                                self.main_ui.add(self.resolution_bar)
-                                self.menu_button.add(self.resolution_bar)
-
-                        elif self.volume_slider.rect.collidepoint(self.mouse_pos) and (
-                                mouse_left_down or mouse_left_up):  # mouse click on slider bar
-                            self.volume_slider.user_input(self.mouse_pos,
-                                                      self.value_box[0])  # update slider button based on mouse value
-                            self.master_volume = float(
-                                self.volume_slider.value / 100)  # for now only music volume slider exist
-                            edit_config("DEFAULT", "master_volume", str(self.volume_slider.value), "configuration.ini",
-                                        self.config)
-                            pygame.mixer.music.set_volume(self.master_volume)
+                    self.option_menu_process(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "encyclopedia":
                     command = self.lorebook_process(self.main_ui, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)

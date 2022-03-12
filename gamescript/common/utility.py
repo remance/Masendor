@@ -218,8 +218,8 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
     row = 5 * screen_scale[1]
     column = 5 * screen_scale[0]
     pos = box.rect.topleft
-    if current_row > len(show_list) - box.max_show:
-        current_row = len(show_list) - box.max_show
+    if current_row > len(show_list) - box.max_row_show:
+        current_row = len(show_list) - box.max_row_show
 
     if len(item_group) > 0:  # remove previous sprite in the group before generate new one
         for stuff in item_group:
@@ -232,7 +232,7 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
                                       layer=layer)
             item_group.add(new_item)  # add new subsection sprite to group
             row += (new_item.font.get_height() * 1.4 * screen_scale[1])  # next row
-            if len(item_group) > box.max_show:
+            if len(item_group) > box.max_row_show:
                 break  # will not generate more than space allowed
 
         ui_class.add(*item_group)
@@ -249,7 +249,7 @@ def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, c
 
     elif mouse_scroll_down:
         current_row += 1
-        if current_row + box.max_show - 1 < len(name_list):
+        if current_row + box.max_row_show - 1 < len(name_list):
             setup_list(screen_scale, menu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
             scroll.change_image(new_row=current_row, log_size=len(name_list))
         else:

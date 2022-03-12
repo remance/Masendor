@@ -708,7 +708,7 @@ class UIScroller(pygame.sprite.Sprite):
             return self.current_row
 
 
-class ArmySelect(pygame.sprite.Sprite):
+class UnitSelector(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
@@ -721,26 +721,34 @@ class ArmySelect(pygame.sprite.Sprite):
         self.log_size = 0
 
 
-class ArmyIcon(pygame.sprite.Sprite):
-    def __init__(self, pos, army):
+class UnitIcon(pygame.sprite.Sprite):
+    def __init__(self, pos, unit, size):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.army = army  # link army object so when click can correctly select or go to position
-        army.icon = self  # link this icon to army object, mostly for when it gets killed so can easily remove from list
-        self.pos = pos  # position on army selector ui
-        self.leader_image = self.army.leader[0].image.copy()  # get leader image
-        self.leader_image = pygame.transform.scale(self.leader_image, (int(self.leader_image.get_width() / 1.5),
-                                                                       int(self.leader_image.get_height() / 1.5)))  # scale leader image to fit the icon
-        self.image = pygame.Surface((self.leader_image.get_width() + 4, self.leader_image.get_height() + 4))  # create image black corner block
-        self.image.fill((0, 0, 0))  # fill black corner
-        center_image = pygame.Surface((self.leader_image.get_width() + 2, self.leader_image.get_height() + 2))  # create image block
-        center_image.fill((144, 167, 255))  # fill colour according to team, blue for team 1
-        if self.army.team == 2:
-            center_image.fill((255, 114, 114))  # red colour for team 2
-        image_rect = center_image.get_rect(topleft=(1, 1))
-        self.image.blit(center_image, image_rect)  # blit colour block into border image
-        self.leader_image_rect = self.leader_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(self.leader_image, self.leader_image_rect)  # blit leader image
+        self.unit = unit  # link unit object so when click can correctly select or go to position
+        unit.icon = self  # link this icon to unit object, mostly for when it gets killed so can easily remove from list
+        self.pos = pos  # position on unit selector ui
+        self.selected = False
+
+        self.leader_image = self.unit.leader[0].image.copy()  # get leader image
+        self.leader_image = pygame.transform.scale(self.leader_image, size)  # scale leader image to fit the icon
+        self.not_selected_image = pygame.Surface((self.leader_image.get_width() + 4, self.leader_image.get_height() + 4))  # create image black corner block
+        self.selected_image = self.not_selected_image.copy()
+        self.selected_image.fill((0, 0, 0))  # fill gold corner
+        self.not_selected_image.fill((0, 0, 0))  # fill black corner
+
+        for image in (self.not_selected_image, self.selected_image):  # add team colour and leader image
+            center_image = pygame.Surface((self.leader_image.get_width() + 2, self.leader_image.get_height() + 2))  # create image block
+            center_image.fill((144, 167, 255))  # fill colour according to team, blue for team 1
+            if self.unit.team == 2:
+                center_image.fill((255, 114, 114))  # red colour for team 2
+            image_rect = center_image.get_rect(topleft=(1, 1))
+            image.blit(center_image, image_rect)  # blit colour block into border image
+            self.leader_image_rect = self.leader_image.get_rect(center=(self.not_selected_image.get_width() / 2,
+                                                                        self.not_selected_image.get_height() / 2))
+            image.blit(self.leader_image, self.leader_image_rect)  # blit leader image
+
+        self.image = self.not_selected_image
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_pos(self, pos):
@@ -752,19 +760,27 @@ class ArmyIcon(pygame.sprite.Sprite):
         """For changing side"""
         if change_side:
             self.image.fill((144, 167, 255))
-            if self.army.team == 2:
+            if self.unit.team == 2:
                 self.image.fill((255, 114, 114))
             self.image.blit(self.leader_image, self.leader_image_rect)
         if new_image is not None:
             self.leader_image = new_image
             self.image.blit(self.leader_image, self.leader_image_rect)
 
+    def selection(self):
+        if self.selected:
+            self.selected = False
+            self.image = self.not_selected_image
+        else:
+            self.selected = True
+            self.image = self.selected_image
+
     def delete(self, local=False):
         """delete reference when del is called"""
         if local:
             print(locals())
         else:
-            del self.army
+            del self.unit
 
 
 class Timer(pygame.sprite.Sprite):

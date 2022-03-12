@@ -6,6 +6,9 @@ from gamescript.common import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
+edit_config = utility.edit_config
+load_image = utility.load_image
+
 
 def main_menu_process(self, mouse_left_up):
 
@@ -105,6 +108,56 @@ def main_menu_process(self, mouse_left_up):
         #     self.main_ui.remove(self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
 
 
+def option_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+    for bar in self.resolution_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
+        if bar.event:
+            bar.event = False
+
+            self.resolution_drop.change_state(bar.text)  # change button value based on new selected value
+            resolution_change = bar.text.split()
+            self.new_screen_width = resolution_change[0]
+            self.new_screen_height = resolution_change[2]
+
+            edit_config("DEFAULT", "screen_width", self.new_screen_width, "configuration.ini",
+                        self.config)
+            edit_config("DEFAULT", "screen_height", self.new_screen_height, "configuration.ini",
+                        self.config)
+            self.screen = pygame.display.set_mode(self.screen_rect.size,
+                                                  self.window_style | pygame.RESIZABLE, self.best_depth)
+
+            self.menu_button.remove(self.resolution_bar)
+
+            break
+
+    if self.back_button.event or esc_press:  # back to start_set menu
+        self.back_button.event = False
+
+        self.main_ui.remove(*self.option_icon_list, self.option_menu_slider, self.value_box)
+
+        self.back_mainmenu()
+
+    if mouse_left_up or mouse_left_down:
+        self.main_ui.remove(self.resolution_bar)
+
+        if self.resolution_drop.rect.collidepoint(self.mouse_pos):  # click on resolution bar
+            if self.resolution_bar in self.main_ui:  # remove the bar list if click again
+                self.main_ui.remove(self.resolution_bar)
+                self.menu_button.remove(self.resolution_bar)
+            else:  # add bar list
+                self.main_ui.add(self.resolution_bar)
+                self.menu_button.add(self.resolution_bar)
+
+        elif self.volume_slider.rect.collidepoint(self.mouse_pos) and (
+                mouse_left_down or mouse_left_up):  # mouse click on slider bar
+            self.volume_slider.user_input(self.mouse_pos,
+                                          self.value_box[0])  # update slider button based on mouse value
+            self.master_volume = float(
+                self.volume_slider.value / 100)  # for now only music volume slider exist
+            edit_config("DEFAULT", "master_volume", str(self.volume_slider.value), "configuration.ini",
+                        self.config)
+            pygame.mixer.music.set_volume(self.master_volume)
+
+
 def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if mouse_left_up or mouse_left_down:
         if mouse_left_up:
@@ -144,7 +197,7 @@ def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mo
 
         self.back_mainmenu()
 
-    elif self.select_button.event:  # select this map, go to prepare setup
+    elif self.select_button.event:  # select this map, go to team/source selection screen
         self.current_source_row = 0
         self.menu_state = "team_select"
         self.select_button.event = False
@@ -156,52 +209,7 @@ def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mo
             stuff.kill()
             del stuff
 
-        for team in self.team_coa:
-            if self.team_selected == team.team:
-                team.change_select(True)
-
-        openfolder = self.preset_map_folder
-        if self.last_select == "custom":
-            openfolder = self.custom_map_folder
-        try:
-            self.source_list = self.read_selected_map_data(openfolder, "source.csv")
-            self.source_name_list = [value[0] for value in list(self.source_list.values())[1:]]
-            self.source_scale_text = [value[1] for value in list(self.source_list.values())[1:]]
-            self.source_scale = [(float(value[2]), float(value[3]), float(value[4]), float(value[5]))
-                                 for value in
-                                 list(self.source_list.values())[1:]]
-            self.source_text = [value[-1] for value in list(self.source_list.values())[1:]]
-        except Exception:  # no source.csv make empty list
-            self.source_name_list = [""]
-            self.source_scale_text = [""]
-            self.source_scale = [""]
-            self.source_text = [""]
-
-        setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
-                   self.source_namegroup, self.source_list_box, self.main_ui)
-
-        self.source_scroll = battleui.UIScroller(self.source_list_box.rect.topright,
-                                                 self.source_list_box.image.get_height(),
-                                                 self.source_list_box.max_show,
-                                                 layer=16)  # scroll bar for source list
-
-        for index, team in enumerate(self.team_coa):
-            if index == 0:
-                self.army_stat.add(
-                    menu.ArmyStat(self.screen_scale,
-                                  (team.rect.bottomleft[0], self.screen_rect.height / 1.5)))  # left army stat
-            else:
-                self.army_stat.add(
-                    menu.ArmyStat(self.screen_scale,
-                                  (team.rect.bottomright[0], self.screen_rect.height / 1.5)))  # right army stat
-
-        self.change_source([self.source_scale_text[self.map_source], self.source_text[self.map_source]],
-                           self.source_scale[self.map_source])
-
-        self.menu_button.add(*self.team_select_button)
-        self.main_ui.add(*self.team_select_button, self.map_option_box, self.enactment_tick_box,
-                         self.source_list_box,
-                         self.source_scroll, self.army_stat)
+        change_to_source_selection(self)
 
 
 def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
@@ -281,9 +289,99 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.menu_button.add(*self.map_select_button)
         self.main_ui.add(*self.map_select_button, self.map_listbox, self.map_scroll, self.map_description)
 
+    elif self.start_button.event:  # start battle button
+        self.start_button.event = False
+        start_battle(self)
+
+    elif self.select_button.event:  # go to character select screen
+        self.menu_state = "char_select"
+        self.select_button.event = False
+
+        self.main_ui.remove(*self.map_select_button, self.map_listbox, self.map_scroll, self.map_description)
+        self.menu_button.remove(*self.map_select_button)
+
+        for stuff in self.map_namegroup:  # remove map name item
+            stuff.kill()
+            del stuff
+
+        for team in self.team_coa:
+            if self.team_selected == team.team:
+                team.change_select(True)
+
+        self.army_stat.add(menu.ArmyStat(self.screen_scale, (team.rect.bottomleft[0], self.screen_rect.height / 1.5),
+                                         load_image(self.main_dir, self.screen_scale,
+                                                    "char_stat.png", "ui\\mapselect_ui")))  # char stat
+        self.army_stat.add(menu.ArmyStat(self.screen_scale, (team.rect.bottomright[0], self.screen_rect.height / 1.5),
+                                         load_image(self.main_dir, self.screen_scale,
+                                                    "char_stat.png", "ui\\mapselect_ui")))  # troop stat
+
+def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+    if self.map_back_button.event or esc_press:  # go back to team/source selection screen
+        self.current_source_row = 0
+        self.menu_state = "team_select"
+        self.select_button.event = False
+
+        self.main_ui.remove(*self.map_select_button, self.map_listbox, self.map_scroll, self.map_description)
+        self.menu_button.remove(*self.map_select_button)
+
+        change_to_source_selection(self)
+
     elif self.start_button.event:  # start self button
         self.start_button.event = False
         start_battle(self)
+
+
+def change_to_source_selection(self):
+    for team in self.team_coa:
+        if self.team_selected == team.team:
+            team.change_select(True)
+
+    openfolder = self.preset_map_folder
+    if self.last_select == "custom":
+        openfolder = self.custom_map_folder
+    try:
+        self.source_list = self.read_selected_map_data(openfolder, "source.csv")
+        self.source_name_list = [value[0] for value in list(self.source_list.values())[1:]]
+        self.source_scale_text = [value[1] for value in list(self.source_list.values())[1:]]
+        self.source_scale = [(float(value[2]), float(value[3]), float(value[4]), float(value[5]))
+                             for value in
+                             list(self.source_list.values())[1:]]
+        self.source_text = [value[-1] for value in list(self.source_list.values())[1:]]
+    except Exception:  # no source.csv make empty list
+        self.source_name_list = [""]
+        self.source_scale_text = [""]
+        self.source_scale = [""]
+        self.source_text = [""]
+
+    setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
+               self.source_namegroup, self.source_list_box, self.main_ui)
+
+    self.source_scroll = battleui.UIScroller(self.source_list_box.rect.topright,
+                                             self.source_list_box.image.get_height(),
+                                             self.source_list_box.max_row_show,
+                                             layer=16)  # scroll bar for source list
+
+    for index, team in enumerate(self.team_coa):
+        if index == 0:
+            self.army_stat.add(
+                menu.ArmyStat(self.screen_scale,
+                              (team.rect.bottomleft[0], self.screen_rect.height / 1.5),
+                              load_image(self.main_dir, self.screen_scale, "stat.png",
+                                         "ui\\mapselect_ui")))  # left army stat
+        else:
+            self.army_stat.add(
+                menu.ArmyStat(self.screen_scale,
+                              (team.rect.bottomright[0], self.screen_rect.height / 1.5),
+                              load_image(self.main_dir, self.screen_scale, "stat.png",
+                                         "ui\\mapselect_ui")))  # right army stat
+
+    self.change_source([self.source_scale_text[self.map_source], self.source_text[self.map_source]],
+                       self.source_scale[self.map_source])
+
+    self.menu_button.add(*self.team_select_button)
+    self.main_ui.add(*self.team_select_button, self.map_option_box, self.enactment_tick_box,
+                     self.source_list_box,
+                     self.source_scroll, self.army_stat)
 
 
 def start_battle(self):
@@ -298,3 +396,4 @@ def start_battle(self):
     pygame.mixer.music.load(self.music_list[0])
     pygame.mixer.music.play(-1)
     gc.collect()  # collect no longer used object in previous battle from memory
+

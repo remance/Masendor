@@ -171,7 +171,7 @@ def unit_setup(battle):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
 
             control = False
-            if battle.playerteam == row[11]:  # player can control only his team or both in enactment mode
+            if battle.player_team == row[11]:  # player can control only his team or both in enactment mode
                 control = True
 
             colour = team_colour[row[11]]

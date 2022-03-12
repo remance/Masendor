@@ -25,7 +25,7 @@ def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_rig
             new_row = self.select_scroll.user_input(self.mouse_pos)
             if self.unit_selector.current_row != new_row:
                 self.unit_selector.current_row = new_row
-                self.setup_unit_icon()
+                self.setup_unit_icon(self.unit_selector, self.unit_icon)
 
     elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
         self.click_any = True
@@ -222,7 +222,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                         self.battle_ui.remove(*self.leader_now)
                         self.leader_now = self.last_selected.leader
                         self.battle_ui.add(*self.leader_now)
-                        self.setup_unit_icon()
+                        self.setup_unit_icon(self.unit_selector, self.unit_icon)
 
                 elif self.row_split_button in self.battle_ui and self.row_split_button.rect.collidepoint(self.mouse_pos):
                     self.button_name_popup.pop(self.mouse_pos, "Split by Middle Row")
@@ -234,7 +234,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                         self.battle_ui.remove(*self.leader_now)
                         self.leader_now = self.last_selected.leader
                         self.battle_ui.add(*self.leader_now)
-                        self.setup_unit_icon()
+                        self.setup_unit_icon(self.unit_selector, self.unit_icon)
 
                 # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
                 #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
@@ -770,7 +770,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 break
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
-                            self.setup_unit_icon()
+                            self.setup_unit_icon(self.unit_selector, self.unit_icon)
                             self.battle_ui.remove(self.unit_setup_stuff, self.leader_now)
                             for this_unit in self.all_unit_list:
                                 this_unit.start_set(self.subunit)
@@ -972,12 +972,12 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
             if self.unit_selector.current_row < 0:
                 self.unit_selector.current_row = 0
             else:
-                self.setup_unit_icon()
+                self.setup_unit_icon(self.unit_selector, self.unit_icon)
                 self.select_scroll.change_image(new_row=self.unit_selector.current_row)
         elif mouse_scroll_down:
             self.unit_selector.current_row += 1
             if self.unit_selector.current_row < self.unit_selector.log_size:
-                self.setup_unit_icon()
+                self.setup_unit_icon(self.unit_selector, self.unit_icon)
                 self.select_scroll.change_image(new_row=self.unit_selector.current_row)
             else:
                 self.unit_selector.current_row -= 1
@@ -1132,7 +1132,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                 self.last_selected.kill()
                 self.all_unit_list.remove(self.last_selected)
                 self.all_unit_index.remove(self.last_selected.game_id)
-                self.setup_unit_icon()
+                self.setup_unit_icon(self.unit_selector, self.unit_icon)
                 self.last_selected = None
 
     # v Update value of the clicked subunit every 1.1 second

@@ -406,9 +406,8 @@ class TeamCoa(pygame.sprite.Sprite):
 
 
 class ArmyStat(pygame.sprite.Sprite):
-    image = None
 
-    def __init__(self, screen_scale, pos):
+    def __init__(self, screen_scale, pos, image):
         self._layer = 1
 
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -416,7 +415,7 @@ class ArmyStat(pygame.sprite.Sprite):
         self.leader_font = pygame.font.SysFont("helvetica", int(36 * screen_scale[1]))
         self.font = pygame.font.SysFont("helvetica", int(32 * screen_scale[1]))
 
-        self.image_original = self.image.copy()
+        self.image_original = image.copy()
         self.image = self.image_original.copy()
 
         self.type_number_pos = ((self.image.get_width() / 5, self.image.get_height() / 3),  # infantry melee
@@ -427,11 +426,24 @@ class ArmyStat(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
 
-    def add_stat(self, troop_number, leader):
+    def add_army_stat(self, troop_number, leader_name):
         """troop_number need to be in list format as follows:[total,melee infantry, range infantry, cavalry, range cavalry]"""
         self.image = self.image_original.copy()
 
-        text_surface = self.font.render(str(leader), True, (0, 0, 0))
+        text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
+        text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
+        self.image.blit(text_surface, text_rect)
+
+        for index, text in enumerate(troop_number):
+            text_surface = self.font.render("{:,}".format(text), True, (0, 0, 0))
+            text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
+            self.image.blit(text_surface, text_rect)
+
+    def add_leader_stat(self, troop_number, leader_name, leader_image):
+        """For character select screen"""
+        self.image = self.image_original.copy()
+
+        text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
         self.image.blit(text_surface, text_rect)
 
@@ -451,7 +463,7 @@ class ListBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
         image_height = int(28 * screen_scale[1])
-        self.max_show = int(
+        self.max_row_show = int(
             self.image.get_height() / (image_height + (6 * screen_scale[1])))  # max number of map on list can be shown
 
 

@@ -12,6 +12,7 @@ from gamescript.common import utility, escmenu
 from gamescript.common.start import creation
 from gamescript.common.uniteditor import editor
 from gamescript.common.battle import common_setup, common_update, common_user
+from gamescript.common.ui import selector
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -29,13 +30,13 @@ def change_battle_genre(genre):
         from gamescript.tactical.unit import combat
         from gamescript.tactical.subunit import fight
         from gamescript.tactical.uniteditor import convert
-        from gamescript.tactical.ui import selector
+        # from gamescript.tactical.ui import selector
     elif genre == "arcade":
         from gamescript.arcade.battle import setup, user
         from gamescript.arcade.unit import combat
         from gamescript.arcade.subunit import fight
         from gamescript.arcade.uniteditor import convert
-        from gamescript.arcade.ui import selector
+        # from gamescript.arcade.ui import selector
 
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
@@ -326,7 +327,7 @@ class Battle:
         self.mapselected = map_selected  # map folder name
         self.source = str(source)
         self.unitscale = unit_scale
-        self.playerteam = team_selected  # player selected team
+        self.player_team = team_selected  # player selected team
 
         # v load the sound effects
         # boom_sound = load_sound("boom.wav")
@@ -716,7 +717,7 @@ class Battle:
         self.unit_selector.current_row = 0
         # ^ End start value
 
-        self.setup_unit_icon()
+        self.setup_unit_icon(self.unit_selector, self.unit_icon)
         self.select_scroll.change_image(new_row=self.unit_selector.current_row)
 
         self.effect_updater.update(self.all_unit_list, self.dt, self.camera_scale)
@@ -1069,7 +1070,7 @@ class Battle:
 
             elif self.text_input_popup != (None, None):  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
-                    button.update(self.mouse_pos, mouse_left_up, mouse_left_down, "any")
+                    button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
 
                 if self.input_ok_button.event:
                     self.input_ok_button.event = False
