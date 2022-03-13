@@ -448,7 +448,7 @@ def make_time_ui(battle_ui_image):
     return {"time_ui": time_ui, "time_number": time_number, "speed_number": speed_number, "scale_ui": scale_ui, "time_button": time_button}
 
 
-def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_list, scale_ui, colour):
+def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_list, scale_ui, colour, updater):
     """Create army editor ui and button"""
 
     bottom_height = screen_rect.height - image_list[0].get_height()
@@ -464,13 +464,11 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
     troop_scroll = battleui.UIScroller(troop_listbox.rect.topright, troop_listbox.image.get_height(),
                                        troop_listbox.max_row_show, layer=14)
 
-    unit_delete_button = menu.MenuButton(screen_scale, image_list,
-                                              pos=(image_list[0].get_width() / 2, bottom_height),
-                                              text="Delete")
+    unit_delete_button = menu.MenuButton(screen_scale, image_list, (image_list[0].get_width() / 2, bottom_height),
+                                         updater, text="Delete")
     unit_save_button = menu.MenuButton(screen_scale, image_list,
-                                            pos=((screen_rect.width - (screen_rect.width - (image_list[0].get_width() * 1.7))),
-                                                 bottom_height),
-                                            text="Save")
+                                       ((screen_rect.width - (screen_rect.width - (image_list[0].get_width() * 1.7))),
+                                                 bottom_height), updater, text="Save")
 
     popup_listbox = menu.ListBox(screen_scale, (0, 0), box_image, 15)  # popup box need to be in higher layer
     popup_list_scroll = battleui.UIScroller(popup_listbox.rect.topright,
@@ -532,13 +530,13 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     input_ui = menu.InputUI(screen_scale, input_ui_image,
                                  (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
     input_ok_button = menu.MenuButton(screen_scale, image_list,
-                                           pos=(input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.2),
-                                                input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
-                                           text="Confirm", layer=31)
+                                      (input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.2),
+                                       input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
+                                      text="Confirm", layer=31)
     input_cancel_button = menu.MenuButton(screen_scale, image_list,
-                                               pos=(input_ui.rect.midright[0] - (image_list[0].get_width() / 1.2),
-                                                    input_ui.rect.midright[1] + (image_list[0].get_height() / 1.3)),
-                                               text="Cancel", layer=31)
+                                          (input_ui.rect.midright[0] - (image_list[0].get_width() / 1.2),
+                                           input_ui.rect.midright[1] + (image_list[0].get_height() / 1.3)),
+                                          text="Cancel", layer=31)
 
     input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get_width())  # user text input box
 
@@ -662,9 +660,10 @@ def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
             "leader_popup": leader_popup, "effect_popup": effect_popup}
 
 
-def load_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list, mixer_volume):
+def load_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list, mixer_volume, updater):
     # v Create option menu button and icon
-    back_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.2), text="BACK")
+    back_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.2),
+                                  updater, text="BACK")
 
     # Resolution changing bar that fold out the list when clicked
     image = load_image(main_dir, screen_scale, "drop_normal.jpg", "ui\\mainmenu_ui")
@@ -672,10 +671,9 @@ def load_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     image3 = load_image(main_dir, screen_scale, "drop_click.jpg", "ui\\mainmenu_ui")
     image_list = [image, image2, image3]
     resolution_drop = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 2.3),
-                                             text=str(screen_width) + " x " + str(screen_height), size=30)
+                                      updater, text=str(screen_width) + " x " + str(screen_height), size=30)
     resolution_list = ["1920 x 1080", "1600 x 900", "1366 x 768", "1280 x 720", "1024 x 768"]
-    resolution_bar = make_bar_list(main_dir, screen_scale, list_to_do=resolution_list,
-                                        menu_image=resolution_drop)
+    resolution_bar = make_bar_list(main_dir, screen_scale, resolution_list, resolution_drop, updater)
     image = load_image(main_dir, screen_scale, "resolution_icon.png", "ui\\mainmenu_ui")
     resolution_icon = menu.MenuIcon(image, (resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5), resolution_drop.pos[1]))
     # End resolution

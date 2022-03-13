@@ -18,7 +18,7 @@ def setup_unit_icon(self):
     if self.unit_selector.current_row > self.unit_selector.log_size - 1:
         self.unit_selector.current_row = self.unit_selector.log_size - 1
         current_index = int(self.unit_selector.current_row * self.unit_selector.max_column_show)
-        self.select_scroll.change_image(new_row=self.unit_selector.current_row)
+        self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
 
     if len(self.unit_icon) > 0:  # Remove all old icon first before making new list
         for icon in self.unit_icon:
@@ -34,4 +34,4 @@ def setup_unit_icon(self):
                 column = start_column
             if row > 100:
                 break  # do not draw for the third row
-    self.select_scroll.change_image(log_size=self.unit_selector.log_size)
+    self.unit_selector_scroll.change_image(log_size=self.unit_selector.log_size)

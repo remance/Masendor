@@ -437,8 +437,8 @@ def apply_status_to_enemy(status_list, inflict_status, receiver, attacker_side, 
 
 
 def die(self):
-    self.image_original3.blit(self.health_image_list[5], self.health_image_rect)  # blit white hp bar
-    self.block_original.blit(self.health_image_rect[5], self.health_block_rect)
+    self.inspect_image_original3.blit(self.health_image_list[4], self.health_image_rect)  # blit white hp bar
+    self.block_original.blit(self.health_image_list[4], self.health_block_rect)
     self.zoom_scale()
     self.last_health_state = 0
     self.skill_cooldown = {}  # remove all cooldown

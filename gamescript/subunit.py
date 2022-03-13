@@ -82,7 +82,6 @@ class Subunit(pygame.sprite.Sprite):
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, genre, purpose="battle"):
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
-
         self.get_feature = self.feature_map.get_feature
         self.get_height = self.height_map.get_height
 
@@ -186,7 +185,7 @@ class Subunit(pygame.sprite.Sprite):
         self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
         self.original_discipline = stat["Discipline"] + grade_stat["Discipline Bonus"]  # discipline with grade bonus
         self.mental = stat["Mental"] + grade_stat["Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-        self.troop_number = stat["Troop"] * unit_scale[self.team - 1] * start_hp / 100  # number of starting troop, team -1 to become list index
+        self.troop_number = stat["Troop"] * unit_scale[self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
         self.original_speed = 50  # All infantry has base speed at 50
         self.subunit_type = stat["Troop Class"] - 1  # 0 is melee infantry and 1 is range for command buff
         self.feature_mod = 1  # the starting column in terrain bonus of infantry

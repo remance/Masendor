@@ -143,7 +143,7 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
             y += word_height  # start on new row
 
 
-def make_bar_list(main_dir, screen_scale, list_to_do, menu_image):
+def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     """Make a drop down bar list option button"""
     bar_list = []
     image = load_image(main_dir, screen_scale, "bar_normal.jpg", "ui\\mainmenu_ui")
@@ -151,8 +151,9 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image):
     image3 = image2
     for index, bar in enumerate(list_to_do):
         bar_image = (image.copy(), image2.copy(), image3.copy())
-        bar = menu.MenuButton(screen_scale, images=bar_image,
-                              pos=(menu_image.pos[0], menu_image.pos[1] + image.get_height() * (index + 1)), text=bar)
+        bar = menu.MenuButton(screen_scale, bar_image,
+                              (menu_image.pos[0], menu_image.pos[1] + image.get_height() * (index + 1)),
+                              updater, text=bar)
         bar_list.append(bar)
     return bar_list
 
@@ -262,11 +263,11 @@ def popout_lorebook(self, section, game_id):
     used for when user right click at icon that has encyclopedia section"""
     self.game_state = "menu"
     self.battle_menu.mode = "encyclopedia"
-    self.battle_ui.add(self.encyclopedia, self.lore_name_list, self.lore_scroll, *self.lore_button_ui)
+    self.battle_ui_updater.add(self.encyclopedia, self.lore_name_list, self.lore_scroll, *self.lore_button_ui)
 
     self.encyclopedia.change_section(section, self.lore_name_list, self.subsection_name, self.lore_scroll, self.page_button,
-                                 self.battle_ui)
-    self.encyclopedia.change_subsection(game_id, self.page_button, self.battle_ui)
+                                     self.battle_ui_updater)
+    self.encyclopedia.change_subsection(game_id, self.page_button, self.battle_ui_updater)
     self.lore_scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
 
 
@@ -280,15 +281,15 @@ def popup_list_open(self, new_rect, new_list, ui_type):
         self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=new_rect)
 
     setup_list(self.screen_scale, menu.NameList, 0, new_list, self.popup_namegroup,
-               self.popup_listbox, self.battle_ui, layer=19)
+               self.popup_listbox, self.battle_ui_updater, layer=19)
 
     self.popup_list_scroll.pos = self.popup_listbox.rect.topright  # change position variable
     self.popup_list_scroll.rect = self.popup_list_scroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
     self.popup_list_scroll.change_image(new_row=0, log_size=len(new_list))
 
     if ui_type == "genre":
-        self.main_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)
+        self.main_ui_updater.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)
     else:
-        self.battle_ui.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)  # add the option list to screen
+        self.battle_ui_updater.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)  # add the option list to screen
 
     self.popup_listbox.type = ui_type
