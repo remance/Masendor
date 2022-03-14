@@ -315,6 +315,8 @@ class Battle:
         leader.Leader.battle = self
         # ^ End assign default
 
+        self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
+
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
@@ -322,12 +324,14 @@ class Battle:
         """Setup stuff when start new battle"""
         self.ruleset = ruleset  # current ruleset used
         self.ruleset_folder = ruleset_folder  # the folder of rulseset used
-        self.mapselected = map_selected  # map folder name
+        self.map_selected = map_selected  # map folder name
         self.source = str(source)
         self.unit_scale = unit_scale
         self.player_team = team_selected  # player selected team
         self.player_team_check = self.player_team  # for indexing dict of unit
-        if enactment:
+        self.enactment = enactment  # enactment mod, control both team
+
+        if self.enactment:
             self.player_team_check = "all"
 
         # v load the sound effects
@@ -338,7 +342,7 @@ class Battle:
         # v Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                          ["data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source], 1)
+                                          ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.source], 1)
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -356,7 +360,7 @@ class Battle:
             self.musiclist = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
             try:
                 self.music_event = csv_read(self.main_dir, "musicevent.csv",
-                                            ["data", "ruleset", self.ruleset_folder, "map", self.mapselected], 1)
+                                            ["data", "ruleset", self.ruleset_folder, "map", self.map_selected], 1)
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
                     utility.convert_str_time(self.music_event)
@@ -379,7 +383,7 @@ class Battle:
 
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog.csv",
-                                 ["data", "ruleset", self.ruleset_folder, "map", self.mapselected, self.source])
+                                 ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.source])
             battleui.EventLog.map_event = map_event
         except Exception:  # can't find any event file
             map_event = {}  # create empty list
@@ -411,7 +415,7 @@ class Battle:
         self.camera = camera.Camera(self.camera_pos, self.camera_scale)
 
         if map_selected is not None:
-            images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.mapselected], load_order=False)
+            images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.map_selected], load_order=False)
             self.battle_map_base.draw_image(images["base.png"])
             self.battle_map_feature.draw_image(images["feature.png"])
             self.battle_map_height.draw_image(images["height.png"])
@@ -424,10 +428,6 @@ class Battle:
         else:  # for unit editor mode, create empty temperate glass map
             self.editor_map_change((166, 255, 107), (181, 230, 29))
         # ^ End create battle map
-
-        self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
-
-        self.enactment = enactment  # enactment mod, control both team
 
         self.team0_pos_list = {}  # team 0 unit position
         self.team1_pos_list = {}  # team 1 unit position
@@ -600,7 +600,7 @@ class Battle:
         self.battle_ui_updater.remove(self.drama_text)
 
         if self.mode == "uniteditor":
-            self.show_in_card = None
+            self.subunit_in_card = None
 
             self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
                                           self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
@@ -665,7 +665,7 @@ class Battle:
             self.weather_type = 4
             self.weather_strength = 0
             self.current_weather = weather.Weather(self.time_ui, self.weather_type, self.weather_strength, self.weather_data)
-            self.show_in_card = None  # current sub-subunit showing in subunit card
+            self.subunit_in_card = None  # current sub-subunit showing in subunit card
 
             self.main.make_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
                                     team1_set_pos=(self.troop_listbox.rect.midleft[0] - int((300 * self.screen_scale[0]) / 2),
@@ -713,10 +713,10 @@ class Battle:
         self.before_selected = None  # Which unit is selected before
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
-        # mouse position list in battle map not screen, the first without zoom, the second with camera zoom adjust, and the third is after revert screen scale for unit command
-        self.base_mouse_pos = [0, 0]
-        self.battle_mouse_pos = [0, 0]
-        self.command_mouse_pos = [0, 0]
+
+        self.base_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
+        self.battle_mouse_pos = [0, 0]  # with camera zoom adjust
+        self.command_mouse_pos = [0, 0]  # with zoom but no revert screen scale for unit command
         self.unit_selector.current_row = 0
         # ^ End start value
 
@@ -755,8 +755,8 @@ class Battle:
 
                 elif event.type == self.SONG_END:  # change music track
                     pygame.mixer.music.unload()
-                    self.pickmusic = random.randint(0, len(self.music_current) - 1)
-                    pygame.mixer.music.load(self.musiclist[self.music_current[self.pickmusic]])
+                    self.picked_music = random.randint(0, len(self.music_current) - 1)
+                    pygame.mixer.music.load(self.musiclist[self.music_current[self.picked_music]])
                     pygame.mixer.music.play(fade_ms=100)
 
                 elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:  # open/close menu
@@ -813,7 +813,7 @@ class Battle:
                             self.mouse_timer = 0
 
                     self.base_mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
-                                                              (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[1]))  # mouse pos on the map based on camera position
+                                                         (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[1]))  # mouse pos on the map based on camera position
                     self.battle_mouse_pos = self.base_mouse_pos / self.camera_scale  # mouse pos on the map at current camera zoom scale
                     self.command_mouse_pos = pygame.Vector2(self.battle_mouse_pos[0] / self.screen_scale[0],
                                                               self.battle_mouse_pos[1] / self.screen_scale[1])  # with screen scale
@@ -912,8 +912,8 @@ class Battle:
                         if len(self.music_schedule) > 0 and self.time_number.time_number >= self.music_schedule[0]:
                             pygame.mixer.music.unload()
                             self.music_current = self.music_event[0].copy()
-                            self.pickmusic = random.randint(0, len(self.music_current) - 1)
-                            pygame.mixer.music.load(self.musiclist[self.music_current[self.pickmusic]])
+                            self.picked_music = random.randint(0, len(self.music_current) - 1)
+                            pygame.mixer.music.load(self.musiclist[self.music_current[self.picked_music]])
                             pygame.mixer.music.play(fade_ms=100)
                             self.music_schedule = self.music_schedule[1:]
                             self.music_event = self.music_event[1:]

@@ -84,11 +84,13 @@ def change_genre(self, genre):
         from gamescript.tactical.start import begin, interact
         from gamescript.tactical import genre
         self.team_select_button = (self.start_button, self.map_back_button)  # tactical mode has no char select screen
+        self.battle_game.genre = self.genre
 
     elif self.genre == "arcade":
         from gamescript.arcade.start import begin, interact
         from gamescript.arcade import genre
         self.team_select_button = (self.map_select_button, self.map_back_button)
+        self.battle_game.genre = self.genre
 
     MainMenu.read_source = interact.read_source
 
@@ -119,6 +121,7 @@ class MainMenu:
     map_select_process = common_interact.map_select_process
     team_select_process = common_interact.team_select_process
     option_menu_process = common_interact.option_menu_process
+    char_select_process = common_interact.char_select_process
     change_source = common_interact.change_source
 
     def __init__(self, main_dir):
@@ -374,7 +377,7 @@ class MainMenu:
         self.source_description = menu.DescriptionBox(battle_select_image["source_description.png"], self.screen_scale,
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3), text_size=24)
 
-        self.char_select_box = battleui.UnitSelector((self.screen_rect.width / 2, self.screen_rect.height / 1.3),
+        self.char_select_box = battleui.UnitSelector((self.screen_rect.width / 5, self.screen_rect.height / 1.5),
                                                      battle_select_image["char_select.png"])
         self.char_select_scroll = battleui.UIScroller(self.char_select_box.rect.topright,
                                                       self.char_select_box.image.get_height(),
@@ -388,9 +391,12 @@ class MainMenu:
         self.map_back_button = menu.MenuButton(self.screen_scale, image_list,
                                                (self.screen_rect.width - (self.screen_rect.width - image_list[0].get_width()), bottom_height),
                                                self.main_ui_updater, text="Back")
+        self.char_back_button = menu.MenuButton(self.screen_scale, image_list,
+                                               (self.screen_rect.width - (self.screen_rect.width - image_list[0].get_width()), bottom_height),
+                                               self.main_ui_updater, text="Back")
         self.map_select_button = (self.select_button, self.map_back_button)
         self.team_select_button = (self.start_button, self.map_back_button)
-        self.char_select_button = (self.start_button, self.map_back_button)
+        self.char_select_button = (self.start_button, self.char_back_button)
 
         self.map_listbox = menu.ListBox(self.screen_scale, (self.screen_rect.width / 25, self.screen_rect.height / 20),
                                         battle_select_image["name_list.png"])
@@ -665,8 +671,8 @@ class MainMenu:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
-        self.change_genre(self.genre)
         self.battle_game = battle.Battle(self, self.window_style)
+        self.change_genre(self.genre)
         subunit.Subunit.battle = self.battle_game
         leader.Leader.battle = self.battle_game
         start_pos = [(self.screen_rect.width / 2) - (self.icon_sprite_width * 5),
@@ -953,8 +959,7 @@ class MainMenu:
                     self.team_select_process(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "char_select":
-                    pass
-                    # self.char_select_process()
+                    self.char_select_process(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":
                     if self.editor_back_button.event or esc_press:

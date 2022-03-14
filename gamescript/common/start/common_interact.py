@@ -3,11 +3,13 @@ import pygame
 
 from gamescript import menu, battleui
 from gamescript.common import utility
+from gamescript.common.ui import selector
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 edit_config = utility.edit_config
 load_image = utility.load_image
+setup_unit_icon = selector.setup_unit_icon
 
 
 def main_menu_process(self, mouse_left_up):
@@ -211,17 +213,7 @@ def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mo
 def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if mouse_left_up or mouse_left_down:
         if mouse_left_up:
-            for this_team in self.team_coa:  # User select any team by clicking on coat of arm
-                if this_team.rect.collidepoint(self.mouse_pos):
-                    self.team_selected = this_team.team
-                    this_team.change_select(True)
-
-                    # Reset team selected on team user not currently selected
-                    for this_team2 in self.team_coa:
-                        if self.team_selected != this_team2.team and this_team2.selected:
-                            this_team2.change_select(False)
-                    break
-
+            make_team_coa(self)
             for index, name in enumerate(self.source_namegroup):  # user select source
                 if name.rect.collidepoint(self.mouse_pos):  # click on source name
                     self.map_source = index
@@ -294,37 +286,43 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.select_button.event = False
         self.char_select_row = 0
 
-        self.main_ui_updater.remove(*self.map_select_button, self.map_listbox, self.map_scroll, self.map_description)
+        self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.enactment_tick_box,
+                                    self.source_list_box, self.source_scroll, self.source_description, self.army_stat)
         self.menu_button.remove(*self.map_select_button)
 
-        for stuff in self.map_namegroup:  # remove map name item
-            stuff.kill()
-            del stuff
+        for group in (self.map_namegroup, self.team_coa):  # remove no longer related sprites in group
+            for stuff in group:
+                stuff.kill()
+                del stuff
 
-        setup_unit_icon
+        # setup_unit_icon()
 
         self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
-                                               (self.screen_rect.center[0] / 1.5, self.screen_rect.height / 1.5),
+                                               (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
                                                load_image(self.main_dir, self.screen_scale,
                                                           "char_stat.png", "ui\\mapselect_ui"))  # char stat
         self.char_stat["troop"] = menu.ArmyStat(self.screen_scale,
-                                                (self.screen_rect.center[0] * 1.5, self.screen_rect.height / 1.5),
+                                                (self.screen_rect.center[0] * 1.6, self.screen_rect.height / 2.5),
                                                 load_image(self.main_dir, self.screen_scale,
                                                            "char_stat.png", "ui\\mapselect_ui"))  # troop stat
 
-        self.main_ui_updater.add(self.start_button, self.char_select_box, self.char_select_scroll, list(self.char_stat.values()))
-        self.menu_button.add(self.start_button)
+        self.main_ui_updater.add(self.char_select_box, self.char_select_scroll,
+                                 list(self.char_stat.values()), *self.char_select_button)
+        self.menu_button.add(*self.char_select_button)
 
 def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
-    if self.map_back_button.event or esc_press:  # go back to team/source selection screen
+    if self.char_back_button.event or esc_press:  # go back to team/source selection screen
         self.current_source_row = 0
         self.menu_state = "team_select"
         self.select_button.event = False
 
-        self.main_ui_updater.remove(*self.map_select_button, self.map_listbox, self.map_scroll, self.map_description)
-        self.menu_button.remove(*self.map_select_button)
+        self.main_ui_updater.remove(self.char_select_box, self.char_select_scroll,
+                                 list(self.char_stat.values()), *self.char_select_button)
+        self.menu_button.remove(*self.char_select_button)
 
         change_to_source_selection(self)
+
+        make_team_coa(self)
 
     elif self.start_button.event:  # start self button
         self.start_button.event = False
@@ -340,8 +338,8 @@ def change_source(self, scale_value, team_army, team_commander):
 
     for index, team in team_army.items():
         for this_unit in team:
-            if this_unit != 0:
-                team_total_troop[index] += int(self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
+            if this_unit != 0 and type(this_unit) != str:
+                team_total_troop[index] += self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index]
                 troop_type = 0
                 if self.troop_data.troop_list[this_unit]["Troop Class"] in (2, 4):  # range subunit
                     troop_type += 1  # range weapon and accuracy higher than melee melee_attack
@@ -407,16 +405,26 @@ def change_to_source_selection(self):
 
     self.menu_button.add(*self.team_select_button)
     self.main_ui_updater.add(*self.team_select_button, self.map_option_box, self.enactment_tick_box,
-                             self.source_list_box,
-                             self.source_scroll, self.army_stat)
+                             self.source_list_box, self.source_scroll, self.army_stat)
+
+
+def make_team_coa(self):
+    for this_team in self.team_coa:  # User select any team by clicking on coat of arm
+        if this_team.rect.collidepoint(self.mouse_pos):
+            self.team_selected = this_team.team
+            this_team.change_select(True)
+
+            # Reset team selected on team user not currently selected
+            for this_team2 in self.team_coa:
+                if self.team_selected != this_team2.team and this_team2.selected:
+                    this_team2.change_select(False)
+            break
 
 
 def start_battle(self):
     self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
-                                      self.enactment,
-                                      self.preset_map_folder[self.current_map_select],
-                                      self.map_source,
-                                      self.source_scale[self.map_source], "battle")
+                                      self.enactment, self.preset_map_folder[self.current_map_select],
+                                      self.map_source, self.source_scale[self.map_source], "battle")
     self.battle_game.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

@@ -319,20 +319,20 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
         self.click_any = True
         for index, name in enumerate(self.popup_namegroup):  # change leader with the new selected one
             if name.rect.collidepoint(self.mouse_pos):
-                if mouse_left_up and (self.show_in_card is not None and self.show_in_card.name != "None"):
-                    if self.show_in_card.leader is not None and \
-                            self.leader_now[self.show_in_card.leader.army_position].name != "None":  # remove old leader
-                        self.leader_now[self.show_in_card.leader.army_position].change_preview_leader(1, self.leader_data)
-                        self.leader_now[self.show_in_card.leader.army_position].change_subunit(None)
+                if mouse_left_up and (self.subunit_in_card is not None and self.subunit_in_card.name != "None"):
+                    if self.subunit_in_card.leader is not None and \
+                            self.leader_now[self.subunit_in_card.leader.army_position].name != "None":  # remove old leader
+                        self.leader_now[self.subunit_in_card.leader.army_position].change_preview_leader(1, self.leader_data)
+                        self.leader_now[self.subunit_in_card.leader.army_position].change_subunit(None)
 
                     true_index = [index for index, value in
                                   enumerate(list(self.leader_data.leader_list.values())) if value["Name"] == name.name][0]
                     true_index = list(self.leader_data.leader_list.keys())[true_index]
                     self.leader_now[self.selected_leader].change_preview_leader(true_index, self.leader_data)
-                    self.leader_now[self.selected_leader].change_subunit(self.show_in_card)
-                    self.show_in_card.leader = self.leader_now[self.selected_leader]
+                    self.leader_now[self.selected_leader].change_subunit(self.subunit_in_card)
+                    self.subunit_in_card.leader = self.leader_now[self.selected_leader]
                     self.preview_authority(self.leader_now)
-                    self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                    self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
                                                    armour_data=self.armour_data, change_option=1)
                     unit_dict = self.convert_slot_dict("test")
                     if unit_dict is not None:
@@ -395,9 +395,9 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                     self.leader_now = [this_leader for this_leader in self.preview_leader]
                     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
-                    self.show_in_card = slot
-                    self.command_ui.value_input(who=self.show_in_card)
-                    self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                    self.subunit_in_card = slot
+                    self.command_ui.value_input(who=self.subunit_in_card)
+                    self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
                                                    armour_data=self.armour_data)  # update subunit card on selected subunit
                     if self.troop_card_ui.option == 2:
                         self.trait_skill_blit()
@@ -421,8 +421,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                     self.leader_now = [this_leader for this_leader in self.preview_leader]
                     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
-                    self.show_in_card = slot
-                    self.command_ui.value_input(who=self.show_in_card)
+                    self.subunit_in_card = slot
+                    self.command_ui.value_input(who=self.subunit_in_card)
 
     elif self.command_ui in self.battle_ui_updater and self.command_ui.rect.collidepoint(self.mouse_pos):
         self.click_any = True
@@ -444,8 +444,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
     elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):
         self.click_any = True
-        if self.show_in_card is not None and mouse_left_up:
-            self.troop_card_button_click(self.show_in_card)
+        if self.subunit_in_card is not None and mouse_left_up:
+            self.troop_card_button_click(self.subunit_in_card)
 
         if self.troop_card_ui.option == 2:
             for icon_list in (self.effect_icon, self.skill_icon):
@@ -483,9 +483,9 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 self.current_weather = weather.Weather(self.time_ui, self.weather_type + 1,
                                                                        self.weather_strength, self.weather_data)
 
-                            if self.show_in_card is not None:  # reset subunit card as well
-                                self.command_ui.value_input(who=self.show_in_card)
-                                self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                            if self.subunit_in_card is not None:  # reset subunit card as well
+                                self.command_ui.value_input(who=self.subunit_in_card)
+                                self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
                                                                armour_data=self.armour_data,
                                                                change_option=1)
                                 if self.troop_card_ui.option == 2:
@@ -602,9 +602,9 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             self.battle_ui_updater.remove(*self.leader_now)
                             self.leader_now = [this_leader for this_leader in self.preview_leader]
                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
-                            self.show_in_card = slot
-                            self.command_ui.value_input(who=self.show_in_card)
-                            self.troop_card_ui.value_input(who=self.show_in_card, weapon_data=self.weapon_data,
+                            self.subunit_in_card = slot
+                            self.command_ui.value_input(who=self.subunit_in_card)
+                            self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
                                                            armour_data=self.armour_data)  # update subunit card on selected subunit
                             if self.troop_card_ui.option == 2:
                                 self.trait_skill_blit()
@@ -675,9 +675,9 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                             self.battle_ui_updater.remove(*self.leader_now)
                                             self.leader_now = [this_leader for this_leader in self.preview_leader]
                                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
-                                            self.show_in_card = slot
+                                            self.subunit_in_card = slot
                                             self.preview_authority(self.leader_now)
-                                            self.troop_card_ui.value_input(who=self.show_in_card,
+                                            self.troop_card_ui.value_input(who=self.subunit_in_card,
                                                                            weapon_data=self.weapon_data,
                                                                            armour_data=self.armour_data)  # update subunit card on selected subunit
                                             if self.troop_card_ui.option == 2:

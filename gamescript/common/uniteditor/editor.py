@@ -128,7 +128,7 @@ def preview_authority(self, leader_list):
     for slot in self.subunit_build:
         slot.authority = authority
 
-    if self.show_in_card is not None:
+    if self.subunit_in_card is not None:
         self.command_ui.value_input(who=self.unit_build_slot)
     # ^ End cal authority
 

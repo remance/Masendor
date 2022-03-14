@@ -160,7 +160,7 @@ def unit_setup(battle):
     team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
-                           battle.mapselected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
+                           battle.map_selected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunit_game_id = 1
         for row in rd:

@@ -269,7 +269,6 @@ class MenuButton(pygame.sprite.Sprite):
                     self.image = self.button_click_image
 
     def change_state(self, text):
-        print(text)
         if text != "":
             img0 = self.image_original0.copy()
             img1 = self.image_original1.copy()
@@ -414,8 +413,10 @@ class ArmyStat(pygame.sprite.Sprite):
         self._layer = 1
         pygame.sprite.Sprite.__init__(self)
 
+        self.font_size = int(32 * screen_scale[1])
+
         self.leader_font = pygame.font.SysFont("helvetica", int(36 * screen_scale[1]))
-        self.font = pygame.font.SysFont("helvetica", int(32 * screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", self.font_size)
 
         self.image_original = image.copy()
         self.image = self.image_original.copy()
@@ -441,7 +442,7 @@ class ArmyStat(pygame.sprite.Sprite):
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
 
-    def add_leader_stat(self, troop_number, leader_name, leader_image):
+    def add_leader_stat(self, leader_name, leader_image, leader_stat):
         """For character select screen"""
         self.image = self.image_original.copy()
 
@@ -449,10 +450,15 @@ class ArmyStat(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
         self.image.blit(text_surface, text_rect)
 
-        for index, text in enumerate(troop_number):
-            text_surface = self.font.render("{:,}".format(text), True, (0, 0, 0))
-            text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
+        leader_rect = leader_image.get_rect(topright=self.rect.topright)
+        self.image.blit(leader_image, leader_rect)
+        row = leader_rect.bottomleft[1]
+        column = text_rect.bottomleft[0]
+        for text in leader_stat:
+            text_surface = self.font.render(format(text), True, (0, 0, 0))
+            text_rect = text_surface.get_rect(midleft=(row, column))
             self.image.blit(text_surface, text_rect)
+            row += self.font_size * 1.2
 
 
 class ListBox(pygame.sprite.Sprite):
