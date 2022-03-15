@@ -4,6 +4,11 @@ import os
 import numpy as np
 import pygame
 
+from gamescript import battleui
+from gamescript.common import utility
+
+change_group = utility.change_group
+
 letter_board = ("a", "b", "c", "d", "e")  # letter according to subunit position in inspect ui similar to chess board
 number_board = ("5", "4", "3", "2", "1")  # same as above
 board_pos = []
@@ -77,13 +82,13 @@ def setup_battle_ui(self, change):
                 height += imgsize[1]
                 sub_unit_number = 0
 
-    change_group(self.unit_selector, self.battle_ui, change)
-    change_group(self.select_scroll, self.battle_ui, change)
+    change_group(self.unit_selector, self.battle_ui_updater, change)
+    change_group(self.unit_selector_scroll, self.battle_ui_updater, change)
 
     change_group(self.col_split_button, self.button_ui, change)
     change_group(self.row_split_button, self.button_ui, change)
-    change_group(self.time_button, self.battle_ui, change)
-    change_group(self.scale_ui, self.battle_ui, change)
+    change_group(self.time_button, self.battle_ui_updater, change)
+    change_group(self.scale_ui, self.battle_ui_updater, change)
 
 
 def add_unit(subunit_list, position, game_id, colour, unit_leader, leader_stat, control, coa, command, start_angle, start_hp, start_stamina, team):
@@ -127,7 +132,7 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
                 if this_subunit_number == "H":  # Leader
                     this_subunit_number = this_subunit_number + str(row[6])
                 add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
-                                             this_unit.start_hp, this_unit.start_stamina, battle.unitscale, battle.genre)
+                                              this_unit.start_hp, this_unit.start_stamina, battle.unit_scale, battle.genre)
                 battle.subunit.add(add_subunit)
                 subunit_number[...] = subunit_game_id
                 this_unit.subunit_sprite_array[row][column] = add_subunit
@@ -155,7 +160,7 @@ def unit_setup(battle):
     team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
-                           battle.mapselected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
+                           battle.map_selected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
         rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
         subunit_game_id = 1
         for row in rd:
@@ -166,7 +171,7 @@ def unit_setup(battle):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
 
             control = False
-            if battle.playerteam == row[11]:  # player can control only his team or both in enactment mode
+            if battle.player_team == row[11]:  # player can control only his team or both in enactment mode
                 control = True
 
             colour = team_colour[row[11]]

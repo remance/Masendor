@@ -98,13 +98,13 @@ def setup_battle_ui(self, change):
                 height += imgsize[1]
                 sub_unit_number = 0
 
-    change_group(self.unit_selector, self.battle_ui, change)
-    change_group(self.select_scroll, self.battle_ui, change)
+    change_group(self.unit_selector, self.battle_ui_updater, change)
+    change_group(self.unit_selector_scroll, self.battle_ui_updater, change)
 
     change_group(self.col_split_button, self.button_ui, change)
     change_group(self.row_split_button, self.button_ui, change)
-    change_group(self.time_button, self.battle_ui, change)
-    change_group(self.scale_ui, self.battle_ui, change)
+    change_group(self.time_button, self.battle_ui_updater, change)
+    change_group(self.scale_ui, self.battle_ui_updater, change)
 
 
 def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, control, coa, command, start_angle, start_hp, start_stamina,
@@ -141,7 +141,7 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
     for subunit_number in np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C"):
         if subunit_number != 0:
             add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
-                                         this_unit.start_hp, this_unit.start_stamina, battle.unitscale, battle.genre)
+                                          this_unit.start_hp, this_unit.start_stamina, battle.unit_scale, battle.genre)
             battle.subunit.add(add_subunit)
             add_subunit.board_pos = board_pos[army_subunit_index]
             subunit_number[...] = subunit_game_id
@@ -174,7 +174,8 @@ def unit_setup(battle):
     team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
-                           battle.mapselected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
+                           battle.map_selected, battle.source,
+                           battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
         rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         subunit_game_id = 1
@@ -186,7 +187,7 @@ def unit_setup(battle):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
 
             control = False
-            if battle.playerteam == row[16] or battle.enactment:  # player can control only his team or both in enactment mode
+            if battle.player_team == row[16] or battle.enactment:  # player can control only his team or both in enactment mode
                 control = True
 
             colour = team_colour[row[16]]

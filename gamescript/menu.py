@@ -232,13 +232,14 @@ class TextBox(pygame.sprite.Sprite):
 
 
 class MenuButton(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, images, pos, menu_state="any", text="", size=28, layer=1):
+    def __init__(self, screen_scale, images, pos, updater=None, text="", size=28, layer=1):
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.button_normal_image = images[0].copy()
         self.button_over_image = images[1].copy()
         self.button_click_image = images[2].copy()
+        self.updater = updater
         self.text = text
         self.font = pygame.font.SysFont("timesnewroman", int(size * screen_scale[1]))
         self.image_original0 = self.button_normal_image.copy()
@@ -255,10 +256,9 @@ class MenuButton(pygame.sprite.Sprite):
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
-        self.menu_state = menu_state
 
-    def update(self, mouse_pos, mouse_up, mouse_down, menu_state):
-        if self.menu_state == menu_state or self.menu_state == "any":
+    def update(self, mouse_pos, mouse_up, mouse_down):
+        if self.updater is None or self in self.updater:
             self.mouse_over = False
             self.image = self.button_normal_image
             if self.rect.collidepoint(mouse_pos):
@@ -279,6 +279,9 @@ class MenuButton(pygame.sprite.Sprite):
             self.images[0].blit(text_surface, text_rect)
             self.images[1].blit(text_surface, text_rect)
             self.images[2].blit(text_surface, text_rect)
+            self.button_normal_image = self.images[0].copy()
+            self.button_over_image = self.images[1].copy()
+            self.button_click_image = self.images[2].copy()
         self.rect = self.images[0].get_rect(center=self.pos)
         self.event = False
 
@@ -406,17 +409,16 @@ class TeamCoa(pygame.sprite.Sprite):
 
 
 class ArmyStat(pygame.sprite.Sprite):
-    image = None
-
-    def __init__(self, screen_scale, pos):
+    def __init__(self, screen_scale, pos, image):
         self._layer = 1
+        pygame.sprite.Sprite.__init__(self)
 
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font_size = int(32 * screen_scale[1])
 
         self.leader_font = pygame.font.SysFont("helvetica", int(36 * screen_scale[1]))
-        self.font = pygame.font.SysFont("helvetica", int(32 * screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", self.font_size)
 
-        self.image_original = self.image.copy()
+        self.image_original = image.copy()
         self.image = self.image_original.copy()
 
         self.type_number_pos = ((self.image.get_width() / 5, self.image.get_height() / 3),  # infantry melee
@@ -427,11 +429,11 @@ class ArmyStat(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
 
-    def add_stat(self, troop_number, leader):
+    def add_army_stat(self, troop_number, leader_name):
         """troop_number need to be in list format as follows:[total,melee infantry, range infantry, cavalry, range cavalry]"""
         self.image = self.image_original.copy()
 
-        text_surface = self.font.render(str(leader), True, (0, 0, 0))
+        text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
         self.image.blit(text_surface, text_rect)
 
@@ -439,6 +441,24 @@ class ArmyStat(pygame.sprite.Sprite):
             text_surface = self.font.render("{:,}".format(text), True, (0, 0, 0))
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
+
+    def add_leader_stat(self, leader_name, leader_image, leader_stat):
+        """For character select screen"""
+        self.image = self.image_original.copy()
+
+        text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
+        text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
+        self.image.blit(text_surface, text_rect)
+
+        leader_rect = leader_image.get_rect(topright=self.rect.topright)
+        self.image.blit(leader_image, leader_rect)
+        row = leader_rect.bottomleft[1]
+        column = text_rect.bottomleft[0]
+        for text in leader_stat:
+            text_surface = self.font.render(format(text), True, (0, 0, 0))
+            text_rect = text_surface.get_rect(midleft=(row, column))
+            self.image.blit(text_surface, text_rect)
+            row += self.font_size * 1.2
 
 
 class ListBox(pygame.sprite.Sprite):
@@ -451,7 +471,7 @@ class ListBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
         image_height = int(28 * screen_scale[1])
-        self.max_show = int(
+        self.max_row_show = int(
             self.image.get_height() / (image_height + (6 * screen_scale[1])))  # max number of map on list can be shown
 
 
@@ -557,6 +577,10 @@ class MapOptionBox(pygame.sprite.Sprite):
 
 
 class MapShow(pygame.sprite.Sprite):
+    colour = {0: (50, 50, 50), 1: (0, 0, 255), 2: (255, 0, 0)}
+    selected_colour = {0: (100, 100, 100), 1: (100, 100, 255), 2: (255, 100, 100)}
+    team_dot = {team: {True: None, False: None} for team in colour.keys()}
+
     def __init__(self, main_dir, screen_scale, pos):
         self.main_dir = main_dir
         pygame.sprite.Sprite.__init__(self)
@@ -565,21 +589,28 @@ class MapShow(pygame.sprite.Sprite):
         self.pos = pos
         self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         self.image.fill((0, 0, 0))  # draw black colour for black corner
-        # pygame.draw.rect(self.image, self.colour, (2, 2, self.widthbox - 3, self.heightbox - 3)) # draw block colour
 
-        self.team2_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team2 subunit
-        self.team2_dot.fill((0, 0, 0))  # black corner
-        self.team1_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team1 subunit
-        self.team1_dot.fill((0, 0, 0))  # black corner
-        team2 = pygame.Surface((8 * self.screen_scale[0],  8 * self.screen_scale[1]))  # size 6x6
-        team2.fill((255, 0, 0))  # red rect
-        team1 = pygame.Surface((8 * self.screen_scale[1], 8 * self.screen_scale[1]))
-        team1.fill((0, 0, 255))  # blue rect
-        rect = self.team2_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
-        self.team2_dot.blit(team2, rect)
-        self.team1_dot.blit(team1, rect)
+        dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team subunit
+        dot.fill((0, 0, 0))  # black corner
+        colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
+        rect = dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
 
-        self.new_colour_list = {}
+        for team, colour in self.colour.items():
+            new_dot = colour_dot.copy()
+            new_dot.fill(colour)
+            add_dot = dot.copy()
+            add_dot.blit(new_dot, rect)
+            self.team_dot[team][False] = add_dot
+
+        for team, colour in self.selected_colour.items():
+            new_selected_dot = colour_dot.copy()
+            new_selected_dot.fill
+            new_dot.fill(colour)
+            add_dot = dot.copy()
+            add_dot.blit(new_dot, rect)
+            self.team_dot[team][True] = add_dot
+
+        self.new_colour_list = {}  # terrain and feature map colour
         with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -616,17 +647,18 @@ class MapShow(pygame.sprite.Sprite):
         self.image.blit(map_image, image_rect)
         self.image_original = self.image.copy()
 
-    def change_mode(self, mode, team1_pos_list=None, team2_pos_list=None):
+    def change_mode(self, mode, team_pos_list=None, selected=None):
         """map mode: 0 = map without army dot, 1 = with army dot"""
         self.image = self.image_original.copy()
         if mode == 1:
-            for team1 in team1_pos_list.values():
-                scaled_pos = pygame.Vector2(team1[0] * ((440 * self.screen_scale[0]) / 1000), team1[1] * ((440 * self.screen_scale[1]) / 1000))
-                rect = self.team1_dot.get_rect(center=scaled_pos)
-                self.image.blit(self.team1_dot, rect)
-            for team2 in team2_pos_list.values():
-                scaled_pos = pygame.Vector2(team2[0] * ((440 * self.screen_scale[0]) / 1000), team2[1] * ((440 * self.screen_scale[1]) / 1000))
-                rect = self.team2_dot.get_rect(center=scaled_pos)
-                self.image.blit(self.team2_dot, rect)
+            for team, pos_list in team_pos_list.items():
+                for pos in pos_list:
+                    select = False
+                    if pos == selected:
+                        select = True
+                    scaled_pos = pygame.Vector2(pos[0] * ((440 * self.screen_scale[0]) / 1000),
+                                                pos[1] * ((440 * self.screen_scale[1]) / 1000))
+                    rect = self.team_dot[team][select].get_rect(center=scaled_pos)
+                    self.image.blit(self.team_dot[team][select], rect)
 
         self.rect = self.image.get_rect(center=self.pos)

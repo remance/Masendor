@@ -1,7 +1,7 @@
 def ui_mouse_over(self):
     """mouse over ui that is not subunit card and unitbox (topbar and commandbar)"""
     for this_ui in self.ui_updater:
-        if this_ui in self.battle_ui and this_ui.rect.collidepoint(self.mouse_pos):
+        if this_ui in self.battle_ui_updater and this_ui.rect.collidepoint(self.mouse_pos):
             self.click_any = True
             break
     return self.click_any
@@ -18,7 +18,7 @@ def leader_mouse_over(self, mouse_right):  # TODO make it so button and leader p
                 army_position = self.leader_level[this_leader.army_position + 4]
 
             self.leader_popup.pop(self.mouse_pos, army_position + ": " + this_leader.name)  # popup leader name when mouse over
-            self.battle_ui.add(self.leader_popup)
+            self.battle_ui_updater.add(self.leader_popup)
             leader_mouse_over = True
 
             if mouse_right:
@@ -33,7 +33,7 @@ def effect_icon_mouse_over(self, icon_list, mouse_right):
         if icon.rect.collidepoint(self.mouse_pos):
             check_value = self.troop_card_ui.value2[icon.icon_type]
             self.effect_popup.pop(self.mouse_pos, check_value[icon.game_id])
-            self.battle_ui.add(self.effect_popup)
+            self.battle_ui_updater.add(self.effect_popup)
             effect_mouse_over = True
             if mouse_right:
                 if icon.icon_type == 0:  # Trait

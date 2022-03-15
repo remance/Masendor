@@ -1,8 +1,5 @@
 import pygame
 
-from gamescript.common.ui import selector
-
-setup_unit_icon = selector.setup_unit_icon
 
 def pos_change_stat(self, leader):
     """Change stat that related to army position such as in leader dead event"""
@@ -91,6 +88,5 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
     self.combat = 0
 
     pygame.draw.line(self.image, (150, 20, 20), (5, 5), (45, 35), 5)  # draw dead cross on leader image
-    setup_unit_icon(self.battle.unit_selector, self.battle.unit_icon,
-                    self.battle.team_unit_dict[self.battle.player_team_check], self.battle.unit_selector_scroll)
+    self.battle.setup_unit_icon()
     self.unit.leader_change = True  # initiate leader change stat recalculation for unit

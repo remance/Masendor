@@ -6,7 +6,7 @@ infinity = float("inf")
 
 def player_interact(self, mouse_pos, mouse_left_up):
     # v Mouse collision detection
-    if self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui:
+    if self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui_updater:
         if self.rect.collidepoint(mouse_pos):
             self.battle.last_mouseover = self.unit  # last mouse over on this unit
             if mouse_left_up and self.battle.click_any is False:
