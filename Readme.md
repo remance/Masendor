@@ -75,7 +75,7 @@ Have you ever find it weird that most historical games follow only a specific ve
 For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog.<br>
 Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more than 1 source of information that dictates the story tone, army composition, size, even formation and possibly more. 
 
-![alt text](https://github.com/remance/preview/blob/main/source.gif?raw=true)
+![Image showing information about the Battle of Hastings](https://github.com/remance/preview/blob/main/source.gif?raw=true)
 
 ## Army is led by more than just a king
 
@@ -89,7 +89,7 @@ A lot of simplified soldier statistics yet complexly interchange together that a
 
 ![alt text](https://github.com/remance/preview/blob/main/troop.gif?raw=true)
 
-## Custom unit creator
+## Custom Unit Creator
 
 Bored of a simple line formation and want to try making weird unit formation? There is a custom unit editor that provides a complete freedom unit design. The custom units can be used in custom battles.
 
@@ -112,7 +112,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 ---------------
 
-# Future plan
+# Future Plan
 
 **Ver 0.6 Dream Decision:** multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
 
