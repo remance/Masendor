@@ -97,7 +97,7 @@ Bored of a simple line formation and want to try making weird unit formation? Th
 
 ## Extremely easy map creation
 
-Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to use paint or any drawing software (gimp, photoshop, etc.) to create a map.<br>
+Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to use MS Paint or any drawing software ([GIMP](https://www.gimp.org/), [Adobe Photoshop](https://www.adobe.com/products/photoshop.html), etc.) to create a map.<br>
 Draw the image with the right colour set and the game will convert them into a playable map. Most other map functions are also very easy to create and modify.
 
 [Video](https://www.youtube.com/watch?v=8Omm-o6Dy60) demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
