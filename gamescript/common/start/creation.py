@@ -3,7 +3,7 @@ import os
 import pygame
 from pathlib import Path
 
-from gamescript import weather, battleui, lorebook, menu, uniteditor, readstat, popup, map
+from gamescript import weather, battleui, lorebook, menu, uniteditor, statdata, popup, map
 from gamescript.common import utility, animation
 
 load_image = utility.load_image
@@ -11,7 +11,7 @@ load_images = utility.load_images
 load_textures = utility.load_textures
 csv_read = utility.csv_read
 make_bar_list = utility.make_bar_list
-stat_convert = readstat.stat_convert
+stat_convert = statdata.stat_convert
 make_sprite = animation.make_sprite
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
@@ -359,8 +359,8 @@ def read_map_data(main_dir, ruleset_folder):
 
 
 def read_faction_data(main_dir, screen_scale, ruleset_folder):
-    readstat.FactionData.main_dir = main_dir
-    faction_data = readstat.FactionData(ruleset_folder)
+    statdata.FactionData.main_dir = main_dir
+    faction_data = statdata.FactionData(ruleset_folder)
     images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
                            load_order=False)  # coa_list images list
     coa_list = []
@@ -572,16 +572,16 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
         x, y = images[image].get_width(), images[image].get_height()
         images[image] = pygame.transform.scale(images[image],
                                      (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
-    weapon_data = readstat.WeaponData(main_dir, images, ruleset)  # Create weapon class
+    weapon_data = statdata.WeaponData(main_dir, images, ruleset)  # Create weapon class
 
     images = load_images(main_dir, screen_scale, ["ui", "unit_ui", "armour"])
-    armour_data = readstat.ArmourData(main_dir, images, ruleset)  # Create armour class
-    troop_data = readstat.TroopData(main_dir, ruleset, ruleset_folder)
+    armour_data = statdata.ArmourData(main_dir, images, ruleset)  # Create armour class
+    troop_data = statdata.TroopData(main_dir, ruleset, ruleset_folder)
 
     # v create leader list
     images, order = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False,
                               return_order=True)
-    leader_data = readstat.LeaderData(main_dir, images, order, ruleset_folder)
+    leader_data = statdata.LeaderData(main_dir, images, order, ruleset_folder)
     # ^ End leader
     return weapon_data, armour_data, troop_data, leader_data
 

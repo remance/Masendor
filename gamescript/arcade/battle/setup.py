@@ -145,23 +145,21 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
             row += 1
         army_subunit_index += 1
 
-    return subunit_game_id
 
-
-def unit_setup(battle):
+def unit_setup(self):
     """read unit from unit_pos(source) file and create object with addunit function"""
 
     from gamescript import unit
     team_colour = unit.team_colour
 
-    main_dir = battle.main_dir
+    main_dir = self.main_dir
     # default_unit = np.array([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0], [0,0,0,0,0]])
 
-    team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
+    team_army = (self.team0_unit, self.team1_unit, self.team2_unit)
 
-    with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
-                           battle.map_selected, battle.source, battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unitfile:
-        rd = csv.reader(unitfile, quoting=csv.QUOTE_ALL)
+    with open(os.path.join(main_dir, "data", "ruleset", self.ruleset_folder, "map",
+                           self.map_selected, self.source, self.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
+        rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
         subunit_game_id = 1
         for row in rd:
             for n, i in enumerate(row):
@@ -171,7 +169,7 @@ def unit_setup(battle):
                     row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
 
             control = False
-            if battle.player_team == row[11]:  # player can control only his team or both in enactment mode
+            if self.player_team == row[11]:  # player can control only his team or both in enactment mode
                 control = True
 
             colour = team_colour[row[11]]
@@ -180,11 +178,11 @@ def unit_setup(battle):
             command = False  # Not commander unit by default
             if len(which_army) == 0:  # First unit is commander
                 command = True
-            coa = pygame.transform.scale(battle.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            subunit_game_id = generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id, battle.troop_data.troop_list)
+            coa = pygame.transform.scale(self.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
+            generate_unit(self, which_army, row, control, command, colour, coa, subunit_game_id, self.troop_data.troop_list)
             # ^ End subunit setup
 
-    unitfile.close()
+    unit_file.close()
 
 
 def add_new_unit(battle, who, add_unit_list=True):

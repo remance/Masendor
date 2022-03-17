@@ -9,19 +9,19 @@ mod_column is column that need to be converted to float only
 """
 
 
-def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=()):
-    if mod_column != [] and n in mod_column:
+def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=(), float_column=()):
+    if n in mod_column:
         if i == "":
             row[n] = 1.0
         else:
             row[n] = float(i) / 100  # Need to be float for percentage cal
 
-    elif list_column != [] and n in list_column:
+    elif n in list_column:
         if "," in i:
             if "." in i:
-                row[n] = [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in row[n].split(",")]
+                row[n] = [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")]
             else:
-                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
+                row[n] = [int(item) if item.isdigit() else item for item in i.split(",")]
         elif i.isdigit():
             if "." in i:
                 row[n] = [float(i)]
@@ -30,9 +30,14 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), int_column=()):
         else:
             row[n] = [i]
 
-    elif int_column != [] and n in int_column:
+    elif n in int_column:
         if i != "" and re.search("[a-zA-Z]", i) is None:
             row[n] = int(i)
+        elif i == "":
+            row[n] = 0
+    elif n in float_column:
+        if i != "" and re.search("[a-zA-Z]", i) is None:
+            row[n] = float(i)
         elif i == "":
             row[n] = 0
     else:

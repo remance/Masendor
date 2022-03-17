@@ -271,6 +271,8 @@ class MainMenu:
         self.team1_unit = pygame.sprite.Group()  # team 1 units group
         self.team2_unit = pygame.sprite.Group()  # team 2 units group
 
+        self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
+
         self.team0_subunit = pygame.sprite.Group()  # team 0 units group
         self.team1_subunit = pygame.sprite.Group()  # team 1 units group
         self.team2_subunit = pygame.sprite.Group()  # team 2 units group
@@ -377,11 +379,11 @@ class MainMenu:
         self.source_description = menu.DescriptionBox(battle_select_image["source_description.png"], self.screen_scale,
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3), text_size=24)
 
-        self.char_select_box = battleui.UnitSelector((self.screen_rect.width / 5, self.screen_rect.height / 1.5),
-                                                     battle_select_image["char_select.png"])
-        self.char_select_scroll = battleui.UIScroller(self.char_select_box.rect.topright,
-                                                      self.char_select_box.image.get_height(),
-                                                      self.char_select_box.max_row_show, layer=14)  # scroll bar for char pick
+        self.char_selector = battleui.UnitSelector((self.screen_rect.width / 5, self.screen_rect.height / 1.5),
+                                                   battle_select_image["char_select.png"])
+        self.char_selector_scroll = battleui.UIScroller(self.char_selector.rect.topright,
+                                                        self.char_selector.image.get_height(),
+                                                        self.char_selector.max_row_show, layer=14)  # scroll bar for char pick
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = menu.MenuButton(self.screen_scale, image_list, (self.screen_rect.width - image_list[0].get_width(), bottom_height),
@@ -762,6 +764,8 @@ class MainMenu:
 
         self.animation_sprite_pool = self.create_sprite_pool(direction_list, (150, 150), self.screen_scale)
 
+        subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
+
     def game_intro(self, screen, clock, intro):
         timer = 0
         # The record is truthful, unbiased, correct and approved by appointed certified historians.
@@ -845,13 +849,13 @@ class MainMenu:
         # ^ End map title
 
         # v Create map description
-        data = self.read_selected_map_data(map_folder_list, "info.csv")
-        description = [list(data.values())[1][0], list(data.values())[1][1]]
+        self.map_data = self.read_selected_map_data(map_folder_list, "info.csv")
+        description = [list(self.map_data.values())[1][0], list(self.map_data.values())[1][1]]
         self.map_description.change_text(description)
         self.main_ui_updater.add(self.map_description)
         # ^ End map description
 
-        self.make_team_coa([list(data.values())[1][2], list(data.values())[1][3]], self.main_ui_updater)
+        self.make_team_coa([list(self.map_data.values())[1][2], list(self.map_data.values())[1][3]], self.main_ui_updater)
 
     def make_unit_slot(self, game_id, troop_id, range_to_run, start_pos):
         width, height = 0, 0
@@ -959,7 +963,8 @@ class MainMenu:
                     self.team_select_process(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "char_select":
-                    self.char_select_process(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+                    self.char_select_process(mouse_left_up, mouse_left_down, mouse_scroll_up,
+                                             mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":
                     if self.editor_back_button.event or esc_press:

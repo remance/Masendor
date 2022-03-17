@@ -123,15 +123,16 @@ def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, 
     return unit
 
 
-def generate_unit(battle, which_army, setup_data, control, command, colour, coa, subunit_game_id):
-    """generate unit data into self object
-    row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
+def generate_unit(self, which_army, setup_data, control, command, colour, coa, subunit_game_id):
+    """generate unit data into self object"""
     from gamescript import battleui, subunit
-    this_unit = add_unit(setup_data[0], (setup_data[9][0], setup_data[9][1]),
-                         np.array([setup_data[1], setup_data[2], setup_data[3], setup_data[4], setup_data[5],
-                                   setup_data[6], setup_data[7], setup_data[8]]),
-                         colour, setup_data[10] + setup_data[11], battle.leader_data, control,
-                         coa, command, setup_data[13], setup_data[14], setup_data[15], setup_data[16])
+    print(setup_data)
+    this_unit = add_unit(setup_data["ID"], (setup_data["POS"][0], setup_data["POS"][1]),
+                         np.array([setup_data["Row 1"], setup_data["Row 2"], setup_data["Row 3"], setup_data["Row 4"], 
+                                   setup_data["Row 5"], setup_data["Row 6"], setup_data["Row 7"], setup_data["Row 8"]]),
+                         colour, setup_data["Leader"] + setup_data["Leader Position"], self.leader_data, control,
+                         coa, command, setup_data["Angle"], setup_data["Start Health"], setup_data["Start Stamina"],
+                         setup_data["Team"])
     which_army.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
@@ -141,8 +142,8 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
     for subunit_number in np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C"):
         if subunit_number != 0:
             add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
-                                          this_unit.start_hp, this_unit.start_stamina, battle.unit_scale, battle.genre)
-            battle.subunit.add(add_subunit)
+                                          this_unit.start_hp, this_unit.start_stamina, self.unit_scale, self.genre)
+            self.subunit.add(add_subunit)
             add_subunit.board_pos = board_pos[army_subunit_index]
             subunit_number[...] = subunit_game_id
             this_unit.subunit_sprite_array[row][column] = add_subunit
@@ -156,51 +157,7 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
             column = 0
             row += 1
         army_subunit_index += 1
-    battle.troop_number_sprite.add(battleui.TroopNumber(battle.screen_scale, this_unit))  # create troop number text sprite
-
-    return subunit_game_id
-
-
-def unit_setup(battle):
-    """read unit from unit_pos(source) file and create object with addunit function"""
-
-    from gamescript import unit
-    team_colour = unit.team_colour
-
-    main_dir = battle.main_dir
-    # default_unit = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-    # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-
-    team_army = (battle.team0_unit, battle.team1_unit, battle.team2_unit)
-
-    with open(os.path.join(main_dir, "data", "ruleset", battle.ruleset_folder, "map",
-                           battle.map_selected, battle.source,
-                           battle.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
-        rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        subunit_game_id = 1
-        for row in rd[1:]:  # skip header
-            for n, i in enumerate(row):
-                if i.isdigit():
-                    row[n] = int(i)
-                if n in range(1, 12):
-                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
-
-            control = False
-            if battle.player_team == row[16] or battle.enactment:  # player can control only his team or both in enactment mode
-                control = True
-
-            colour = team_colour[row[16]]
-            which_army = team_army[row[16]]
-
-            command = False  # Not commander unit by default
-            if len(which_army) == 0:  # First unit is commander
-                command = True
-            coa = pygame.transform.scale(battle.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            subunit_game_id = generate_unit(battle, which_army, row, control, command, colour, coa, subunit_game_id)
-            # ^ End subunit setup
-
-    unit_file.close()
+    self.troop_number_sprite.add(battleui.TroopNumber(self.screen_scale, this_unit))  # create troop number text sprite
 
 
 def add_new_unit(battle, who, add_unit_list=True):

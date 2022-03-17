@@ -4,10 +4,10 @@ import pygame
 
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 
-from gamescript import readstat
+from gamescript import statdata
 from gamescript.common import utility
 
-stat_convert = readstat.stat_convert
+stat_convert = statdata.stat_convert
 rotation_xy = utility.rotation_xy
 
 default_sprite_size = (200, 200)

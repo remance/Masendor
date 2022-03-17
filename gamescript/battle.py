@@ -39,7 +39,7 @@ def change_battle_genre(genre):
 
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
-    Battle.unit_setup = setup.unit_setup
+    Battle.generate_unit = setup.generate_unit
     Battle.setup_battle_ui = setup.setup_battle_ui
     Battle.convert_edit_unit = convert.convert_edit_unit
     Battle.battle_mouse_scrolling = user.battle_mouse_scrolling
@@ -69,11 +69,12 @@ class Battle:
     leader_mouse_over = common_user.leader_mouse_over
     effect_icon_mouse_over = common_user.effect_icon_mouse_over
     troop_card_button_click = common_user.troop_card_button_click
+    unit_setup = common_setup.unit_setup
 
     # method that change based on genre
     split_unit = None
     check_split = None
-    unit_setup = None
+    generate_unit = None
     convert_edit_unit = None
     setup_battle_ui = None
     battle_mouse_scrolling = None
@@ -458,7 +459,6 @@ class Battle:
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
 
-        subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         # ^ End start subunit sprite
 
     def remove_unit_ui(self):
