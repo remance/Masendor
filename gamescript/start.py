@@ -12,6 +12,7 @@ import screeninfo
 from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
 from gamescript.common import utility
 from gamescript.common.start import creation, common_interact
+from gamescript.common.battle import common_setup
 from pygame.locals import *
 
 direction_list = creation.direction_list
@@ -122,7 +123,9 @@ class MainMenu:
     team_select_process = common_interact.team_select_process
     option_menu_process = common_interact.option_menu_process
     char_select_process = common_interact.char_select_process
+    game_creator_process = common_interact.game_creator_process
     change_source = common_interact.change_source
+    unit_setup = common_setup.unit_setup
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
@@ -967,18 +970,8 @@ class MainMenu:
                                              mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":
-                    if self.editor_back_button.event or esc_press:
-                        self.editor_back_button.event = False
-                        self.back_mainmenu()
-
-                    elif self.unit_edit_button.event:
-                        self.unit_edit_button.event = False
-                        self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1), "uniteditor")
-                        self.battle_game.run_game()
-                        pygame.mixer.music.unload()
-                        pygame.mixer.music.set_endevent(self.SONG_END)
-                        pygame.mixer.music.load(self.music_list[0])
-                        pygame.mixer.music.play(-1)
+                    self.game_creator_process(mouse_left_up, mouse_left_down, mouse_scroll_up,
+                                              mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "option":
                     self.option_menu_process(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)

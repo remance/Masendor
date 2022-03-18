@@ -81,46 +81,46 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
     return animation_sprite_pool
 
 
-def unit_setup(self):
+def unit_setup(self, team_army):
     """read unit from unit_pos(source) file and create object with addunit function"""
     from gamescript import unit
     team_colour = unit.team_colour
 
     main_dir = self.main_dir
-    # default_unit = np.array([[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-    # [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-
-    team_army = (self.team0_unit, self.team1_unit, self.team2_unit)
 
     with open(os.path.join(main_dir, "data", "ruleset", self.ruleset_folder, "map",
-                           self.map_selected, self.source,
+                           self.map_selected, str(self.map_source),
                            self.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
         rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
         header = rd[0]
         int_column = ["ID", "Faction", "Team"]  # value int only
-        list_column = ["Row 1", "Row 2", "Row 3", "Row 4", "Row 5", "Row 6", "Row 7", "Row 8",
+        list_column = ["Row 1", "Row 2", "Row 3", "Row 4", "Row 5", "Row 6", "Row 7", "Row 8", "Row 9", "Row 10",
                        "POS", "Leader", "Leader Position"]  # value in list only
-        float_column = ["Angle", "Start Health", "Start Stamina"]
+        float_column = ["Angle", "Start Health", "Start Stamina"]  # value in float
         int_column = [index for index, item in enumerate(header) if item in int_column]
         list_column = [index for index, item in enumerate(header) if item in list_column]
         float_column = [index for index, item in enumerate(header) if item in float_column]
         subunit_game_id = 1
-        for row in rd[1:]:  # skip header
-            for n, i in enumerate(row):
-                row = stat_convert(row, n, i, list_column=list_column, int_column=int_column, float_column=float_column)
-            row = {header[index]: stuff for index, stuff in enumerate(row)}
+        for this_unit in rd[1:]:  # skip header
+            for n, i in enumerate(this_unit):
+                this_unit = stat_convert(this_unit, n, i, list_column=list_column, int_column=int_column, float_column=float_column)
+            this_unit = {header[index]: stuff for index, stuff in enumerate(this_unit)}
             control = False
-            if self.player_team == row["Team"] or self.enactment:  # player can control only his team or both in enactment mode
+            if self.team_selected == this_unit["Team"] or self.enactment:  # player can control only his team or both in enactment mode
                 control = True
-            colour = team_colour[row["Team"]]
-            which_army = team_army[row["Team"]]
+
+            colour = team_colour[this_unit["Team"]]
+            if type(team_army) == list or type(team_army) == tuple:
+                which_army = team_army[this_unit["Team"]]
+            else:  # for character selection
+                which_army = team_army
 
             command = False  # Not commander unit by default
             if len(which_army) == 0:  # First unit is commander
                 command = True
-            coa = pygame.transform.scale(self.coa_list[row["Faction"]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            self.generate_unit(which_army, row, control, command, colour, coa, subunit_game_id)
+            coa = pygame.transform.scale(self.coa_list[this_unit["Faction"]], (60, 60))  # get coa_list image and scale smaller to fit ui
+            self.generate_unit(which_army, this_unit, control, command, colour, coa, subunit_game_id)
             # ^ End subunit setup
 
     unit_file.close()

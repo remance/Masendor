@@ -321,15 +321,16 @@ class Battle:
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
-    def prepare_new_game(self, ruleset, ruleset_folder, team_selected, enactment, map_selected, source, unit_scale, mode):
+    def prepare_new_game(self, ruleset, ruleset_folder, team_selected, enactment, map_selected,
+                         map_source, unit_scale, mode):
         """Setup stuff when start new battle"""
         self.ruleset = ruleset  # current ruleset used
         self.ruleset_folder = ruleset_folder  # the folder of rulseset used
         self.map_selected = map_selected  # map folder name
-        self.source = str(source)
+        self.map_source = str(map_source)
         self.unit_scale = unit_scale
-        self.player_team = team_selected  # player selected team
-        self.player_team_check = self.player_team  # for indexing dict of unit
+        self.team_selected = team_selected  # player selected team
+        self.player_team_check = self.team_selected  # for indexing dict of unit
         self.enactment = enactment  # enactment mod, control both team
 
         if self.enactment:
@@ -343,7 +344,7 @@ class Battle:
         # v Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                          ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.source], 1)
+                                          ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source], 1)
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
         except Exception:  # If no weather found use default light sunny weather start at 9.00
@@ -384,7 +385,7 @@ class Battle:
 
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog.csv",
-                                 ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.source])
+                                 ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source])
             battleui.EventLog.map_event = map_event
         except Exception:  # can't find any event file
             map_event = {}  # create empty list
@@ -454,7 +455,7 @@ class Battle:
             self.death_troop_number = [0, 0, 0]
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
-            self.unit_setup()
+            self.unit_setup((self.team0_unit, self.team1_unit, self.team2_unit))
         else:
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)

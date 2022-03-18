@@ -104,19 +104,22 @@ def add_unit(subunit_list, position, game_id, colour, unit_leader, leader_stat, 
     return unit
 
 
-def generate_unit(battle, which_army, setup_data, control, command, colour, coa, subunit_game_id, troop_list):
-    """generate unit data into self object
-    row[1:9] is subunit troop id array, row[9][0] is leader id and row[9][1] is position of sub-unt the leader located in"""
+def generate_unit(self, which_army, setup_data, control, command, colour, coa, subunit_game_id, troop_list):
+    """generate unit"""
     from gamescript import battleui, subunit
-    this_unit = add_unit(setup_data[0], np.array([setup_data[1], setup_data[2], setup_data[3], setup_data[4], setup_data[5]]),
-                         (setup_data[6][0], setup_data[6][1]), colour, setup_data[7], battle.leader_data, control,
-                         coa, command, setup_data[8], setup_data[9], setup_data[10], setup_data[11])
+    this_unit = add_unit(setup_data["ID"], setup_data["POS"],
+                         np.array([setup_data["Row 1"], setup_data["Row 2"], setup_data["Row 3"], setup_data["Row 4"],
+                                   setup_data["Row 5"]]),
+                         colour, setup_data["Leader"] + setup_data["Leader Position"], self.leader_data, control,
+                         coa, command, setup_data["Angle"], setup_data["Start Health"], setup_data["Start Stamina"],
+                         setup_data["Team"])
     which_army.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
     # v Setup subunit in unit to subunit group
     row, column = 0, 0
-    unit_array = np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])  # for unit size overlap check
+    unit_array = np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])  # for unit size overlap check
     max_column = len(this_unit.subunit_list[0])
     for subunit_index, subunit_number in enumerate(np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C")):
         now_row = int(subunit_index / 5)
@@ -129,11 +132,11 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
                     for col_number in range(now_col, now_col + size):
                         unit_array[row_number][col_number] = subunit_number
                 this_subunit_number = subunit_number
-                if this_subunit_number == "H":  # Leader
+                if this_subunit_number == "h":  # Leader
                     this_subunit_number = this_subunit_number + str(row[6])
                 add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
-                                              this_unit.start_hp, this_unit.start_stamina, battle.unit_scale, battle.genre)
-                battle.subunit.add(add_subunit)
+                                              this_unit.start_hp, this_unit.start_stamina, self.unit_scale, self.genre)
+                self.subunit.add(add_subunit)
                 subunit_number[...] = subunit_game_id
                 this_unit.subunit_sprite_array[row][column] = add_subunit
                 this_unit.subunit_sprite.append(add_subunit)
@@ -146,84 +149,5 @@ def generate_unit(battle, which_army, setup_data, control, command, colour, coa,
         army_subunit_index += 1
 
 
-def unit_setup(self):
-    """read unit from unit_pos(source) file and create object with addunit function"""
-
-    from gamescript import unit
-    team_colour = unit.team_colour
-
-    main_dir = self.main_dir
-    # default_unit = np.array([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0], [0,0,0,0,0]])
-
-    team_army = (self.team0_unit, self.team1_unit, self.team2_unit)
-
-    with open(os.path.join(main_dir, "data", "ruleset", self.ruleset_folder, "map",
-                           self.map_selected, self.source, self.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
-        rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
-        subunit_game_id = 1
-        for row in rd:
-            for n, i in enumerate(row):
-                if i.isdigit():
-                    row[n] = int(i)
-                if n in range(1, 6):  # column that need to be in list format
-                    row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
-
-            control = False
-            if self.player_team == row[11]:  # player can control only his team or both in enactment mode
-                control = True
-
-            colour = team_colour[row[11]]
-            which_army = team_army[row[11]]
-
-            command = False  # Not commander unit by default
-            if len(which_army) == 0:  # First unit is commander
-                command = True
-            coa = pygame.transform.scale(self.coa_list[row[12]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            generate_unit(self, which_army, row, control, command, colour, coa, subunit_game_id, self.troop_data.troop_list)
-            # ^ End subunit setup
-
-    unit_file.close()
-
-
-def add_new_unit(battle, who, add_unit_list=True):
-    from gamescript import battleui
-    # generate subunit sprite array for inspect ui
-    who.subunit_sprite_array = np.empty((5, 5), dtype=object)  # array of subunit object(not index)
-    found_count = 0  # for subunit_sprite index
-    found_count2 = 0  # for positioning
-    for row in range(0, len(who.subunit_list)):
-        for column in range(0, len(who.subunit_list[0])):
-            if who.subunit_list[row][column] != 0:
-                who.subunit_sprite_array[row][column] = who.subunit_sprite[found_count]
-                who.subunit_sprite[found_count].unit_position = (who.subunit_position_list[found_count2][0] / 10,
-                                                                 who.subunit_position_list[found_count2][1] / 10)  # position in unit sprite
-                found_count += 1
-            else:
-                who.subunit_sprite_array[row][column] = None
-            found_count2 += 1
-    # ^ End generate subunit array
-
-    for index, this_subunit in enumerate(who.subunit_sprite):  # reset leader subunit_pos
-        if this_subunit.leader is not None:
-            this_subunit.leader.subunit_pos = index
-
-    who.zoom = 11 - battle.camera_scale
-    who.new_angle = who.angle
-
-    who.start_set(battle.subunit)
-    who.set_target(who.front_pos)
-
-    number_pos = (who.base_pos[0] - who.base_width_box,
-                  (who.base_pos[1] + who.base_height_box))
-    who.number_pos = who.rotation_xy(who.base_pos, number_pos, who.radians_angle)
-    who.change_pos_scale()  # find new position for troop number text
-
-    for this_subunit in who.subunit_sprite:
-        this_subunit.start_set(this_subunit.zoom)
-
-    if add_unit_list:
-        battle.all_unit_list.append(who)
-        battle.all_unit_index.append(who.game_id)
-
-    number_spite = battleui.TroopNumber(battle.screen_scale, who)
-    battle.troop_number_sprite.add(number_spite)
+def split_new_unit(self):
+    pass

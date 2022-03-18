@@ -5,7 +5,7 @@ def setup_unit_icon(self):
     start_column = 25
     column = start_column
     unit_list = self.team1_unit
-    if self.player_team == 2:
+    if self.team_selected == 2:
         unit_list = self.team2_unit
     if self.enactment:  # include another team unit icon as well in enactment mode
         unit_list = self.all_unit_list

@@ -92,7 +92,7 @@ def split_unit(battle, who, how):
     from gamescript.tactical.battle import setup
 
     move_leader_subunit = fight.move_leader_subunit
-    add_new_unit = setup.add_new_unit
+    add_new_unit = setup.split_new_unit
 
     if how == 0:  # split by row
         new_army_subunit = np.array_split(who.subunit_list, 2)[1]

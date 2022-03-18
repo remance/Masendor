@@ -107,13 +107,13 @@ def setup_battle_ui(self, change):
     change_group(self.scale_ui, self.battle_ui_updater, change)
 
 
-def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, control, coa, command, start_angle, start_hp, start_stamina,
+def add_unit(game_id, pos, subunit_list, colour, leader_list, leader_stat, control, coa, command, start_angle, start_hp, start_stamina,
              team):
     """Create unit object into the battle and leader of the unit"""
     from gamescript import unit, leader
     old_subunit_list = subunit_list[~np.all(subunit_list == 0, axis=1)]  # remove whole empty column in subunit list
     subunit_list = old_subunit_list[:, ~np.all(old_subunit_list == 0, axis=0)]  # remove whole empty row in subunit list
-    unit = unit.Unit(game_id, position, subunit_list, colour, control, coa, command, abs(360 - start_angle), start_hp, start_stamina, team)
+    unit = unit.Unit(game_id, pos, subunit_list, colour, control, coa, command, abs(360 - start_angle), start_hp, start_stamina, team)
 
     # add leader
     unit.leader = [leader.Leader(leader_list[0], leader_list[4], 0, unit, leader_stat),
@@ -124,10 +124,9 @@ def add_unit(game_id, position, subunit_list, colour, leader_list, leader_stat, 
 
 
 def generate_unit(self, which_army, setup_data, control, command, colour, coa, subunit_game_id):
-    """generate unit data into self object"""
+    """generate unit"""
     from gamescript import battleui, subunit
-    print(setup_data)
-    this_unit = add_unit(setup_data["ID"], (setup_data["POS"][0], setup_data["POS"][1]),
+    this_unit = add_unit(setup_data["ID"], setup_data["POS"],
                          np.array([setup_data["Row 1"], setup_data["Row 2"], setup_data["Row 3"], setup_data["Row 4"], 
                                    setup_data["Row 5"], setup_data["Row 6"], setup_data["Row 7"], setup_data["Row 8"]]),
                          colour, setup_data["Leader"] + setup_data["Leader Position"], self.leader_data, control,
@@ -160,7 +159,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
     self.troop_number_sprite.add(battleui.TroopNumber(self.screen_scale, this_unit))  # create troop number text sprite
 
 
-def add_new_unit(battle, who, add_unit_list=True):
+def split_new_unit(self, who, add_unit_list=True):
     from gamescript import battleui
     # generate subunit sprite array for inspect ui
     who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
@@ -182,10 +181,10 @@ def add_new_unit(battle, who, add_unit_list=True):
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 
-    who.zoom = 11 - battle.camera_scale
+    who.zoom = 11 - self.camera_scale
     who.new_angle = who.angle
 
-    who.start_set(battle.subunit)
+    who.start_set(self.subunit)
     who.set_target(who.front_pos)
 
     number_pos = (who.base_pos[0] - who.base_width_box,
@@ -197,8 +196,8 @@ def add_new_unit(battle, who, add_unit_list=True):
         this_subunit.start_set(this_subunit.zoom)
 
     if add_unit_list:
-        battle.all_unit_list.append(who)
-        battle.all_unit_index.append(who.game_id)
+        self.all_unit_list.append(who)
+        self.all_unit_index.append(who.game_id)
 
-    number_spite = battleui.TroopNumber(battle.screen_scale, who)
-    battle.troop_number_sprite.add(number_spite)
+    number_spite = battleui.TroopNumber(self.screen_scale, who)
+    self.troop_number_sprite.add(number_spite)

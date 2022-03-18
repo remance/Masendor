@@ -17,6 +17,10 @@ def main_menu_process(self, mouse_left_up):
     if self.preset_map_button.event:  # preset map list menu
         self.menu_state = "preset_map"
         self.last_select = self.menu_state
+
+        self.current_map_select = 0
+        self.map_selected = self.preset_map_folder[self.current_map_select]
+
         self.preset_map_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_listbox, self.popup_list_scroll,
                                     *self.popup_namegroup)
@@ -32,6 +36,10 @@ def main_menu_process(self, mouse_left_up):
     elif self.custom_map_button.event:  # custom map list menu
         self.menu_state = "custom"
         self.last_select = self.menu_state
+
+        self.current_map_select = 0
+        self.map_selected = self.custom_map_folder[self.current_map_select]
+
         self.custom_map_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_listbox, self.popup_list_scroll,
                                     *self.popup_namegroup)
@@ -162,8 +170,10 @@ def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mo
                 if name.rect.collidepoint(self.mouse_pos):
                     self.current_map_select = index
                     if self.menu_state == "preset_map":  # make new map image
+                        self.map_selected = self.preset_map_folder[self.current_map_select]
                         self.make_preview_map(self.preset_map_folder, self.preset_map_list)
                     else:
+                        self.map_selected = self.custom_map_folder[self.current_map_select]
                         self.make_preview_map(self.custom_map_folder, self.custom_map_list)
                     break
 
@@ -182,7 +192,6 @@ def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mo
     if self.map_back_button.event or esc_press:
         self.map_back_button.event = False
         self.current_map_row = 0
-        self.current_map_select = 0
 
         self.main_ui_updater.remove(self.map_listbox, self.map_show, self.map_scroll, self.map_description,
                                     self.team_coa, self.map_title)
@@ -297,9 +306,12 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         team_army, team_leader = self.read_source(
             [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
 
-        self.preview_char = []
+        for char in self.preview_char:
+            char.delete()
+            char.kill()
+            del char
 
-        generate_unit(self, which_army, row, control, command, colour, coa, subunit_game_id, self.troop_data.troop_list)
+        self.unit_setup(self.preview_char)
 
         setup_unit_icon(self.char_selector, self.unit_icon,
                                      self.team_unit_dict[self.player_team_check], self.char_selector_scroll)
@@ -318,6 +330,21 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.menu_button.add(*self.char_select_button)
 
 
+def game_creator_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+    if self.editor_back_button.event or esc_press:
+        self.editor_back_button.event = False
+        self.back_mainmenu()
+
+    elif self.unit_edit_button.event:
+        self.unit_edit_button.event = False
+        self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1),
+                                          "uniteditor")
+        self.battle_game.run_game()
+        pygame.mixer.music.unload()
+        pygame.mixer.music.set_endevent(self.SONG_END)
+        pygame.mixer.music.load(self.music_list[0])
+        pygame.mixer.music.play(-1)
+
 def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.char_back_button.event or esc_press:  # go back to team/source selection screen
         self.current_source_row = 0
@@ -334,9 +361,13 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
         self.make_team_coa([list(self.map_data.values())[1][2], list(self.map_data.values())[1][3]], self.main_ui_updater)
 
-    elif self.start_button.event:  # start self button
+    elif self.start_button.event:  # start battle button
         self.start_button.event = False
-        self.preview_char = []
+        for char in self.preview_char:
+            char.delete()
+            char.kill()
+            del char
+
         start_battle(self)
 
     elif self.char_selector.rect.collidepoint(self.mouse_pos):
@@ -436,7 +467,7 @@ def change_team_coa(self):
 
 def start_battle(self):
     self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
-                                      self.enactment, self.preset_map_folder[self.current_map_select],
+                                      self.enactment, self.map_selected,
                                       self.map_source, self.source_scale[self.map_source], "battle")
     self.battle_game.run_game()
     pygame.mixer.music.unload()
