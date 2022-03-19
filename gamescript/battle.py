@@ -1,4 +1,3 @@
-import csv
 import datetime
 import glob
 import os
@@ -13,6 +12,7 @@ from gamescript.common.start import creation
 from gamescript.common.uniteditor import editor
 from gamescript.common.battle import common_setup, common_update, common_user
 from gamescript.common.ui import selector, escmenu
+from gamescript.common.unit import common_generate
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -25,21 +25,22 @@ editconfig = utility.edit_config
 setup_list = utility.setup_list
 setup_unit_icon = selector.setup_unit_icon
 
+
 def change_battle_genre(genre):
     if genre == "tactical":
         from gamescript.tactical.battle import setup, user
-        from gamescript.tactical.unit import combat
+        from gamescript.tactical.unit import combat, generate
         from gamescript.tactical.subunit import fight
         from gamescript.tactical.uniteditor import convert
     elif genre == "arcade":
         from gamescript.arcade.battle import setup, user
-        from gamescript.arcade.unit import combat
+        from gamescript.arcade.unit import combat, generate
         from gamescript.arcade.subunit import fight
         from gamescript.arcade.uniteditor import convert
 
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
-    Battle.generate_unit = setup.generate_unit
+    Battle.generate_unit = generate.generate_unit
     Battle.setup_battle_ui = setup.setup_battle_ui
     Battle.convert_edit_unit = convert.convert_edit_unit
     Battle.battle_mouse_scrolling = user.battle_mouse_scrolling
@@ -69,7 +70,7 @@ class Battle:
     leader_mouse_over = common_user.leader_mouse_over
     effect_icon_mouse_over = common_user.effect_icon_mouse_over
     troop_card_button_click = common_user.troop_card_button_click
-    unit_setup = common_setup.unit_setup
+    unit_setup = common_generate.unit_setup
 
     # method that change based on genre
     split_unit = None
@@ -298,6 +299,17 @@ class Battle:
         self.last_selected = None
         self.before_selected = None
 
+        self.team0_pos_list = {}  # team 0 unit position
+        self.team1_pos_list = {}  # team 1 unit position
+        self.team2_pos_list = {}  # same for team 2
+
+        self.all_unit_list = []  # list of every unit in self alive
+        self.all_unit_index = []  # list of every unit index alive
+
+        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.all_unit_list}
+
+        self.all_subunit_list = []  # list of all subunit alive in self
+
         self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
                                  self.team_coa, self.troop_card_button, self.troop_listbox, self.troop_scroll,
                                  self.troop_namegroup, self.unit_listbox, self.preset_select_border,
@@ -431,18 +443,18 @@ class Battle:
             self.editor_map_change((166, 255, 107), (181, 230, 29))
         # ^ End create battle map
 
-        self.team0_pos_list = {}  # team 0 unit position
-        self.team1_pos_list = {}  # team 1 unit position
-        self.team2_pos_list = {}  # same for team 2
+        self.team0_pos_list = {}
+        self.team1_pos_list = {}
+        self.team2_pos_list = {}
 
-        self.all_unit_list = []  # list of every unit in self alive
-        self.all_unit_index = []  # list of every unit index alive
+        self.all_unit_list = []
+        self.all_unit_index = []
 
         self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.all_unit_list}
 
-        self.all_subunit_list = []  # list of all subunit alive in self
+        self.all_subunit_list = []
 
-        # v initialise starting subunit sprites
+        # initialise starting subunit sprites
         self.mode = mode
 
         self.setup_battle_ui("add")
@@ -455,12 +467,10 @@ class Battle:
             self.death_troop_number = [0, 0, 0]
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
-            self.unit_setup((self.team0_unit, self.team1_unit, self.team2_unit))
+            self.unit_setup((self.team0_unit, self.team1_unit, self.team2_unit), self.troop_data.troop_list)
         else:
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
-
-        # ^ End start subunit sprite
 
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
@@ -594,7 +604,9 @@ class Battle:
         self.all_unit_list = []
         self.all_unit_index = []
         self.combat_path_queue = []
-        self.team0_pos_list, self.team1_pos_list, self.team2_pos_list = {}, {}, {}
+        self.team0_pos_list = {}
+        self.team1_pos_list = {}
+        self.team2_pos_list = {}
         self.before_selected = None
 
         self.drama_timer = 0  # reset drama text popup
@@ -1016,7 +1028,8 @@ class Battle:
 
                     self.effect_updater.update(self.subunit, self.dt, self.camera_scale)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
-                    self.mini_map.update(self.camera_scale, [self.camera_pos, self.camera_topleft_corner], self.team1_pos_list, self.team2_pos_list)
+                    self.mini_map.update(self.camera_scale, [self.camera_pos, self.camera_topleft_corner],
+                                         self.team1_pos_list, self.team2_pos_list)
 
                     self.ui_updater.update()  # update ui
                     self.camera.update(self.camera_pos, self.battle_camera, self.camera_scale)

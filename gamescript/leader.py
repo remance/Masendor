@@ -20,7 +20,7 @@ class Leader(pygame.sprite.Sprite):
     pos_change_stat = None
     gone = None
 
-    def __init__(self, leader_id, position, army_position, unit, leader_data):
+    def __init__(self, leader_id, subunit_pos, army_position, unit, leader_data):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
@@ -36,7 +36,7 @@ class Leader(pygame.sprite.Sprite):
         self.social = leader_data.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
-        self.subunit_pos = int(position)  # Squad position is the index of subunit in subunit sprite loop
+        self.subunit_pos = int(subunit_pos)  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
         # self.skill = stat
         self.state = 0  # 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
@@ -69,8 +69,6 @@ class Leader(pygame.sprite.Sprite):
         self.original_commander = False  # the first army commander at the start of battle
 
     def start_set(self):
-        row = int(self.subunit_pos / 8)
-        column = self.subunit_pos - (row * 8)
         self.subunit = self.unit.subunit_sprite[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
         if self.army_position == 0:  # unit leader

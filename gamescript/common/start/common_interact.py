@@ -311,7 +311,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
             char.kill()
             del char
 
-        self.unit_setup(self.preview_char)
+        self.unit_setup(self.preview_char, self.troop_data.troop_list)
 
         setup_unit_icon(self.char_selector, self.unit_icon,
                                      self.team_unit_dict[self.player_team_check], self.char_selector_scroll)

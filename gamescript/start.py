@@ -13,6 +13,7 @@ from gamescript import map, weather, lorebook, drama, battleui, popup, menu, ran
 from gamescript.common import utility
 from gamescript.common.start import creation, common_interact
 from gamescript.common.battle import common_setup
+from gamescript.common.unit import common_generate
 from pygame.locals import *
 
 direction_list = creation.direction_list
@@ -84,16 +85,19 @@ def change_genre(self, genre):
     if self.genre == "tactical":
         from gamescript.tactical.start import begin, interact
         from gamescript.tactical import genre
+        from gamescript.tactical.unit import generate
         self.team_select_button = (self.start_button, self.map_back_button)  # tactical mode has no char select screen
         self.battle_game.genre = self.genre
 
     elif self.genre == "arcade":
         from gamescript.arcade.start import begin, interact
         from gamescript.arcade import genre
+        from gamescript.arcade.unit import generate
         self.team_select_button = (self.map_select_button, self.map_back_button)
         self.battle_game.genre = self.genre
 
     MainMenu.read_source = interact.read_source
+    MainMenu.generate_unit = generate.generate_unit
 
     self.char_select = genre.char_select
     subunit.change_subunit_genre(self.genre)
@@ -125,7 +129,7 @@ class MainMenu:
     char_select_process = common_interact.char_select_process
     game_creator_process = common_interact.game_creator_process
     change_source = common_interact.change_source
-    unit_setup = common_setup.unit_setup
+    unit_setup = common_generate.unit_setup
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
