@@ -338,7 +338,7 @@ def game_creator_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, 
     elif self.unit_edit_button.event:
         self.unit_edit_button.event = False
         self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1),
-                                          "uniteditor")
+                                          "unit_editor")
         self.battle_game.run_game()
         pygame.mixer.music.unload()
         pygame.mixer.music.set_endevent(self.SONG_END)

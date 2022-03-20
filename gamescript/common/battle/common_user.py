@@ -47,7 +47,6 @@ def effect_icon_mouse_over(self, icon_list, mouse_right):
     return effect_mouse_over
 
 
-
 def troop_card_button_click(self, who):
     for button in self.troop_card_button:  # Change subunit card option based on button clicking
         if button.rect.collidepoint(self.mouse_pos):

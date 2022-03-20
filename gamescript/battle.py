@@ -88,7 +88,7 @@ class Battle:
 
     def __init__(self, main, window_style):
         # v Get self object/variable from start_set
-        self.mode = None  # battle map mode can be "uniteditor" for unit editor or "battle" for self battle
+        self.mode = None  # battle map mode can be "unit_editor" for unit editor or "battle" for self battle
         self.main = main
         self.genre = main.genre
 
@@ -612,7 +612,7 @@ class Battle:
         self.drama_timer = 0  # reset drama text popup
         self.battle_ui_updater.remove(self.drama_text)
 
-        if self.mode == "uniteditor":
+        if self.mode == "unit_editor":
             self.subunit_in_card = None
 
             self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
@@ -657,7 +657,7 @@ class Battle:
         self.team_troop_number = [1, 1, 1]  # reset list of troop number in each team
         self.last_team_troop_number = [1, 1, 1]
         self.drama_text.queue = []  # reset drama text popup queue
-        if self.mode == "uniteditor":
+        if self.mode == "unit_editor":
             self.game_state = "editor"  # editor mode
 
             self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][1:]  # generate troop name list
