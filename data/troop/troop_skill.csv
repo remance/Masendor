@@ -82,8 +82,8 @@
 81,"Inferno Trail Arrow",0,1,3,20,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,,,0,0,0,3,0,1,2,
 82,"Fire Arrow",0,1,1,30,60,11,11,,40,0,,,,,,,,,0,0,0,0,0,,70,,0,0,0,1,0,1,0,"A fire arrow tactic is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale."
 83,"Whistle Arrow",0,1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,0,2,32,0,0,"Whistle arrow by itself does little to no physical damage. The sound, though, does have a superstitious belief attached to it."
-84,"Curse Arrow",0,1,1,20,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,,,0,0,0,5,19,0,2,
-85,"Smoke Arrow",0,1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,0,0,62,0,2,
+84,"Curse Arrow",0,1,1,20,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,,,0,0,0,5,19,0,2,"Nothing is more vicious than a guided curse."
+85,"Smoke Arrow",0,1,3,10,100,11,11,,40,0,,,,,,,,,0,0,0,0,0,,10,,0,0,0,0,62,0,2,"Useful for either support or distraction but will last only for a short while."
 86,"Magic Arrow",0,1,1,30,100,11,11,,60,0,,,,,,,,,0,0,0,0,0,,150,,0,0,0,0,0,5,2,
 87,"Fireblast Arrow",0,1,3,30,100,11,11,,50,0,,,,,,,,,0,0,0,0,0,,50,,0,0,0,2,0,1,2,"Exploding arrow is nothing short of innovative engineering between the new and the old."
 88,"Unwavering Resolve",0,0,1,30,120,10,10,,55,0,,,,,,,,,0,0,0,80,0,,,,0,0,0,0,0,0,0,"Never give up, never surrender!"

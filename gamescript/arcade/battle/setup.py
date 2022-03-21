@@ -31,8 +31,7 @@ def setup_battle_ui(self, change):
 
         # self.speed_number.change_pos(self.time_ui.rect.center)  # self speed number on the time ui
 
-        self.command_ui.change_pos((self.command_ui.image.get_size()[0] / 2,
-                                    (self.command_ui.image.get_size()[1] / 2) + self.unit_selector.image.get_height()))
+        self.command_ui.change_pos((self.command_ui.image.get_size()[0] / 2, (self.command_ui.image.get_size()[1] / 2)))
 
         # self.switch_button[0].change_pos((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96))  # skill condition button
         # self.switch_button[1].change_pos((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96))  # fire at will button

@@ -433,6 +433,8 @@ class MainMenu:
         self.source_scale = [""]
         self.source_text = [""]
 
+        self.unit_scale = 1
+
         # Unit and subunit editor button in game start menu
 
         self.unit_edit_button = menu.MenuButton(self.screen_scale, image_list,
@@ -599,8 +601,9 @@ class MainMenu:
 
         self.command_ui = battleui.CommandBar(image=genre_battle_ui_image["command_box.png"],
                                               icon=genre_icon_image)  # Left top command ui with leader and unit behaviours button
-
         self.ui_updater.add(self.command_ui)
+        uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
+        leader.Leader.leader_pos = self.command_ui.leader_pos
 
         # Load all image of ui and icon from folder
         genre_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"], load_order=False)
@@ -713,6 +716,7 @@ class MainMenu:
         subunit.Subunit.weapon_data = self.weapon_data
         subunit.Subunit.armour_data = self.armour_data
         subunit.Subunit.troop_data = self.troop_data
+        subunit.Subunit.leader_data = self.leader_data
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 

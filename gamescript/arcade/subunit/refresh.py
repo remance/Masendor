@@ -496,7 +496,7 @@ def pick_animation(self):
     # try:
     if self.state not in (10, 11):
         state_name = self.subunit_state[self.state]
-        animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + state_name + "/" + str(self.equiped_weapon)
+        animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)
         self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
     # else:

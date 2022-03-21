@@ -700,6 +700,9 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
     for subunit_id, this_subunit in self.troop_data.troop_list.items():
         if subunit_id not in animation_sprite_pool and subunit_id not in (0, "ID"):  # skip header and None troop
             animation_sprite_pool[subunit_id] = {}
+
+            this_subunit["Size"] = self.troop_data.race_list[this_subunit["Race"]]["Size"]  # TODO add mount
+
             primary_main_weapon = this_subunit["Primary Main Weapon"][0]
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
             secondary_main_weapon = this_subunit["Secondary Main Weapon"][1]

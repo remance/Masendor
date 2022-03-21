@@ -345,6 +345,7 @@ def game_creator_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, 
         pygame.mixer.music.load(self.music_list[0])
         pygame.mixer.music.play(-1)
 
+
 def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.char_back_button.event or esc_press:  # go back to team/source selection screen
         self.current_source_row = 0
@@ -373,8 +374,11 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
     elif self.char_selector.rect.collidepoint(self.mouse_pos):
         pass
 
+
 def change_source(self, scale_value, team_army, team_commander):
     """change army stat when select new source"""
+
+    self.unit_scale = scale_value
 
     team_total_troop = {key: 0 for key in team_army.keys()}  # total troop number in army
     troop_type_list = {key: [0, 0, 0, 0] for key in team_army.keys()}  # total number of each troop type

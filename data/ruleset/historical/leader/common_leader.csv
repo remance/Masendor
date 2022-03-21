@@ -1,26 +1,26 @@
 "ID","Name","Race","Health","Authority","Melee Command","Range Command","Cavalry Command","Combat","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Skill","Trait","Faction","Description"
-10000,"Huscarl Captain",0,1000,30,7,4,3,6,3,,,,,,,,,2,"A captain of the fame Huscarl warriors who are one of the fiercest infantries in Europe. Loyal to the king he swear an oath to, this Huscarl captain will fight to the death along with his troop."
-10001,"Thane",0,1000,40,4,4,2,5,4,,,,,,,,,2,"Saxon thane (or thegn) is the landowner, which is considered to be a minor noble title in Saxon England. Thanes are responsible for governing their local land and raising the militia (fyrd) to respond to the call of war by their king. After the Norman invasion, William the Conqueror replace Saxon political structure with Norman's one and integrate the thane class to Norman knight class."
-10002,"Minor Noble",0,1000,50,4,3,4,5,4,,,,,,,,,0,"In the time of inefficient record, it is impossible to keep track the name of every person who was the leader of the army units let alone participated in the battle. History oftentimes remembers only the major nobles who were the top in the chain of command, but it is important to know that no army can be led by such a few individuals even for an organised mass. These minor nobles were one of such people that often joined their lord army as a minor leader or warrior."
-10003,"Noble",0,1000,60,5,5,5,5,4,,,,,,,,,0,"Not even an important noble would be assuredly recorded in the chronicle of a battle in the time of pre-industrialisation period. The majority of battles in world history did not have historians to record the event or its existence as the well-known battles we know today, some may even be lost to the flow time, accident or intentional erasing. These unnamed nobles still without a doubt aided their sovereign as commanders of the contingent in the battle."
-10004,"Knight",0,1000,30,6,3,6,6,3,,,,,,,,,0,"A Knight is more than just a warrior. Honour and chivalry in warfare are what differentiate us from mere animals for even in conflicts against the most hated enemy we fought with civility."
-10005,"Warlord",0,1000,70,6,6,6,5,5,,,,,,,,,0,"In chaotic time only those who can wage war the best are often the winner. A Warlord, as the name suggests, sees warfare as their opportunity to seize power. Let those who know war best lead an army into battle."
-10006,"Count",0,1000,60,5,5,5,5,4,,,,,,,,,0,
-10007,"Duke",0,1000,70,5,5,5,5,4,,,,,,,,,0,
-10008,"Baron",0,1000,50,5,5,5,5,4,,,,,,,,,0,
-10009,"Bishop",0,1000,65,5,3,3,5,4,,,,,,,,,0,
-10010,"Priest",0,1000,60,3,1,1,3,2,,,,,,,,,0,
-10011,"Captain",0,1000,25,4,4,4,5,3,,,,,,,,,0,
-10012,"General",0,1000,50,6,6,6,5,3,,,,,,,,,0,
-10013,"Lord",0,1000,60,5,5,5,5,4,,,,,,,,,0,
-10014,"Royalty",0,1000,70,5,5,5,5,5,,,,,,,,,0,
-10015,"Commander",0,1000,60,7,7,7,5,4,,,,,,,,,0,
-10016,"Hero",0,1000,90,7,6,6,7,6,,,,,,,,,0,"Sometimes a presence of a single person can decide to course of battle. These people are often referred to as Hero in the book of history. A Hero leads their followers by example, the men will fight valiantly when the person they love and respect fight alongside them."
-10017,"Champion",0,1000,75,7,4,5,6,4,,,,,,,,,0,"A champion can represent the might of an army just as well as thousands of men. Why waste lives when a battle can end with a single death?"
-10018,"Warrior",0,1000,25,5,3,4,5,3,,,,,,,,,0,
-10019,"Guard",0,1000,30,4,4,3,5,3,,,,,,,,,0,
-10020,"Admiral",0,1000,40,6,7,2,5,3,,,,,,,,,0,
-10021,"Mercenary Captain",0,1000,35,5,6,3,5,1,,,,,,,,,0,
+10000,"Huscarl Captain",0,1000,30,7,4,3,6,3,"14,4","41,4","1,3","1,3","5,4,1","1,0,1",,,2,"A captain of the fame Huscarl warriors who are one of the fiercest infantries in Europe. Loyal to the king he swear an oath to, this Huscarl captain will fight to the death along with his troop."
+10001,"Thane",0,1000,40,4,4,2,5,4,"2,4","1,3","1,3","1,3","5,4,1","2,3,1",,,2,"Saxon thane (or thegn) is the landowner, which is considered to be a minor noble title in Saxon England. Thanes are responsible for governing their local land and raising the militia (fyrd) to respond to the call of war by their king. After the Norman invasion, William the Conqueror replace Saxon political structure with Norman's one and integrate the thane class to Norman knight class."
+10002,"Minor Noble",0,1000,50,4,3,4,5,4,"2,4","1,3","1,3","1,3","5,4,1","2,3,1",,,0,"In the time of inefficient record, it is impossible to keep track the name of every person who was the leader of the army units let alone participated in the battle. History oftentimes remembers only the major nobles who were the top in the chain of command, but it is important to know that no army can be led by such a few individuals even for an organised mass. These minor nobles were one of such people that often joined their lord army as a minor leader or warrior."
+10003,"Noble",0,1000,60,5,5,5,5,4,"2,4","1,3","1,3","1,3","5,4,1","2,3,1",,,0,"Not even an important noble would be assuredly recorded in the chronicle of a battle in the time of pre-industrialisation period. The majority of battles in world history did not have historians to record the event or its existence as the well-known battles we know today, some may even be lost to the flow time, accident or intentional erasing. These unnamed nobles still without a doubt aided their sovereign as commanders of the contingent in the battle."
+10004,"Knight",0,1000,30,6,3,6,6,3,"2,3","1,3","1,3","1,3","5,4,1","2,3,1",,,0,"A Knight is more than just a warrior. Honour and chivalry in warfare are what differentiate us from mere animals for even in conflicts against the most hated enemy we fought with civility."
+10005,"Warlord",0,1000,70,6,6,6,5,5,,,"1,3","1,3","5,4,1","2,3,1",,,0,"In chaotic time only those who can wage war the best are often the winner. A Warlord, as the name suggests, sees warfare as their opportunity to seize power. Let those who know war best lead an army into battle."
+10006,"Count",0,1000,60,5,5,5,5,4,,,"1,3","1,3","5,4,1","2,3,1",,,0,
+10007,"Duke",0,1000,70,5,5,5,5,4,,,"1,3","1,3","5,4,1",,,,0,
+10008,"Baron",0,1000,50,5,5,5,5,4,,,"1,3","1,3","5,4,1",,,,0,
+10009,"Bishop",0,1000,65,5,3,3,5,4,,,"1,3","1,3","5,4,1",,,,0,
+10010,"Priest",0,1000,60,3,1,1,3,2,,,"1,3","1,3","5,4,1",,,,0,
+10011,"Captain",0,1000,25,4,4,4,5,3,,,"1,3","1,3","5,4,1",,,,0,
+10012,"General",0,1000,50,6,6,6,5,3,,,"1,3","1,3","5,4,1",,,,0,
+10013,"Lord",0,1000,60,5,5,5,5,4,,,"1,3","1,3","5,4,1",,,,0,
+10014,"Royalty",0,1000,70,5,5,5,5,5,,,"1,3","1,3","5,4,1",,,,0,
+10015,"Commander",0,1000,60,7,7,7,5,4,,,"1,3","1,3","5,4,1",,,,0,
+10016,"Hero",0,1000,90,7,6,6,7,6,,,"1,3","1,3","5,4,1",,,,0,"Sometimes a presence of a single person can decide to course of battle. These people are often referred to as Hero in the book of history. A Hero leads their followers by example, the men will fight valiantly when the person they love and respect fight alongside them."
+10017,"Champion",0,1000,75,7,4,5,6,4,,,"1,3","1,3","5,4,1",,,,0,"A champion can represent the might of an army just as well as thousands of men. Why waste lives when a battle can end with a single death?"
+10018,"Warrior",0,1000,25,5,3,4,5,3,,,"1,3","1,3","5,4,1",,,,0,
+10019,"Guard",0,1000,30,4,4,3,5,3,,,"1,3","1,3","5,4,1",,,,0,
+10020,"Admiral",0,1000,40,6,7,2,5,3,,,"1,3","1,3","5,4,1",,,,0,
+10021,"Mercenary Captain",0,1000,35,5,6,3,5,1,,,"1,3","1,3","5,4,1",,,,0,
 10022,"Mercenary",0,1000,25,3,3,2,5,1,,,,,,,,,0,
 10023,"Citizen",0,1000,20,2,2,1,3,2,,,,,,,,,0,"It is hard to tell what can a simple Citizen accomplish in battle let alone warfare. Maybe they are a hidden gem waiting to be polished or simply a nuisance?"
 10024,"Slave",0,1000,10,2,1,0,2,0,,,,,,,,,0,"Slave revolt can signal the end of an empire. Even those with the worst malnutrition can fight if their lives are upon it. Nevertheless, expect nothing too extravagant. "

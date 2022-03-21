@@ -294,6 +294,11 @@ class CommandBar(pygame.sprite.Sprite):
                           self.icon["knight.png"], self.icon["bishop.png"]]  # team 2 black chess head
         self.last_auth = 0
 
+        self.leader_pos = ((self.inspect_pos[0][0], self.inspect_pos[0][1]),
+                           (self.inspect_pos[1][0], self.inspect_pos[1][1]),
+                           (self.inspect_pos[2][0], self.inspect_pos[2][1]),
+                           (self.inspect_pos[3][0], self.inspect_pos[3][1]))
+
         self.image_original = self.image.copy()
 
     def change_pos(self, pos):

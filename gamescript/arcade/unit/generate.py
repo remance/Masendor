@@ -20,7 +20,7 @@ def add_unit(game_id, pos, subunit_list, colour, leader_list, leader_stat, contr
                      abs(360 - start_angle), start_hp, start_stamina, team)
 
     # add leader
-    unit.leader = [leader.Leader(leader_list[0], leader_list[1], 0, unit, leader_stat)]
+    unit.leader = [leader.Leader(leader_list[0][0], leader_list[1], 0, unit, leader_stat)]
     return unit
 
 
@@ -36,9 +36,8 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
                 break
             elif stuff != "0":
                 leader_position += 1
-    leader_position = []
     this_unit = add_unit(setup_data["ID"], setup_data["POS"], subunit_array,
-                         colour, (setup_data["Leader"] + [leader_position]), self.leader_data, control,
+                         colour, (setup_data["Leader"], leader_position), self.leader_data, control,
                          coa, command, setup_data["Angle"], setup_data["Start Health"], setup_data["Start Stamina"],
                          setup_data["Team"])
     which_army.add(this_unit)
@@ -54,15 +53,18 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
         now_col = subunit_index - (now_row * 5)
         this_unit.subunit_sprite_array[row][column] = None  # replace numpy None with python None
         if subunit_number != 0 and unit_array[now_row][now_col] == 0:  # skip if there is already subunit occupy the slot
-            size = troop_list[subunit_number]["Size"]
+            if "h" not in subunit_number:
+                size = int(troop_list[int(subunit_number)]["Size"])
+            else:
+                size = 1  # TODO change when there is way to check leader size
             if now_row + size <= 5 and now_col + size <= 5:  # skip if subunti exceed unit size array
                 for row_number in range(now_row, now_row + size):
                     for col_number in range(now_col, now_col + size):
-                        unit_array[row_number][col_number] = subunit_number
-                this_subunit_number = subunit_number
+                        unit_array[row_number][col_number] = 1
+                this_subunit_number = str(subunit_number)
                 if this_subunit_number == "h":  # Leader
-                    this_subunit_number = this_subunit_number + str(row[6])
-                add_subunit = subunit.Subunit(subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
+                    this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
+                add_subunit = subunit.Subunit(this_subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
                                               this_unit.start_hp, this_unit.start_stamina, self.unit_scale, self.genre)
                 self.subunit.add(add_subunit)
                 subunit_number[...] = subunit_game_id
