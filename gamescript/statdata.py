@@ -383,7 +383,7 @@ class LeaderData:
                 self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
-        # v Add common leader to the leader list with game_id + 10000
+        # Add common leader to the leader list with game_id + 10000
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
@@ -399,9 +399,8 @@ class LeaderData:
                     row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
                 self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
-        # ^ End common leader
 
-        # v Lore of the leader dict
+        # Lore of the leader dict
         self.leader_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader_lore.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -411,9 +410,8 @@ class LeaderData:
                         row[n] = int(i)
                 self.leader_lore[row[0]] = row[1:]
             edit_file.close()
-        # ^ End leader lore
 
-        # Troop sprite
+        # Leader sprite
         self.leader_sprite_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
@@ -424,7 +422,7 @@ class LeaderData:
                 self.leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
-        # v Leader class dict
+        # Leader class dict
         self.leader_class = {}
         with open(os.path.join(main_dir, "data", "leader", "leader_class.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -436,7 +434,6 @@ class LeaderData:
                         row[n] = int(i)
                 self.leader_class[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
-        # ^ End leader class
 
 
 class FactionData:

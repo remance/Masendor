@@ -10,6 +10,7 @@ setup_unit_icon = selector.setup_unit_icon
 
 team_colour = unit.team_colour
 
+
 def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state):
     if self.terrain_check in self.battle_ui_updater and (
             self.terrain_check.pos != self.mouse_pos or key_state[pygame.K_s] or key_state[pygame.K_w] or key_state[pygame.K_a] or key_state[pygame.K_d]):

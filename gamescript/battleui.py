@@ -728,7 +728,7 @@ class UnitSelector(pygame.sprite.Sprite):
 
 class UnitIcon(pygame.sprite.Sprite):
     def __init__(self, pos, unit, size):
-        self._layer = 10
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.unit = unit  # link unit object so when click can correctly select or go to position
         unit.icon = self  # link this icon to unit object, mostly for when it gets killed so can easily remove from list
@@ -737,20 +737,23 @@ class UnitIcon(pygame.sprite.Sprite):
 
         self.leader_image = self.unit.leader[0].image.copy()  # get leader image
         self.leader_image = pygame.transform.scale(self.leader_image, size)  # scale leader image to fit the icon
-        self.not_selected_image = pygame.Surface((self.leader_image.get_width() + 4, self.leader_image.get_height() + 4))  # create image black corner block
+        self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
+                                                  self.leader_image.get_height() + (self.leader_image.get_height() / 7)))  # create image black corner block
         self.selected_image = self.not_selected_image.copy()
-        self.selected_image.fill((0, 0, 0))  # fill gold corner
+        self.selected_image.fill((200, 200, 0))  # fill gold corner
         self.not_selected_image.fill((0, 0, 0))  # fill black corner
 
         for image in (self.not_selected_image, self.selected_image):  # add team colour and leader image
-            center_image = pygame.Surface((self.leader_image.get_width() + 2, self.leader_image.get_height() + 2))  # create image block
+            center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
+                                           self.leader_image.get_height() + (self.leader_image.get_height() / 14)))  # create image block
             center_image.fill((144, 167, 255))  # fill colour according to team, blue for team 1
             if self.unit.team == 2:
                 center_image.fill((255, 114, 114))  # red colour for team 2
-            image_rect = center_image.get_rect(topleft=(1, 1))
+            image_rect = center_image.get_rect(center=((image.get_width() / 2),
+                                                        (image.get_height() / 2)))
             image.blit(center_image, image_rect)  # blit colour block into border image
-            self.leader_image_rect = self.leader_image.get_rect(center=(self.not_selected_image.get_width() / 2,
-                                                                        self.not_selected_image.get_height() / 2))
+            self.leader_image_rect = self.leader_image.get_rect(center=(image.get_width() / 2,
+                                                                        image.get_height() / 2))
             image.blit(self.leader_image, self.leader_image_rect)  # blit leader image
 
         self.image = self.not_selected_image

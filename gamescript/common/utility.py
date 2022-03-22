@@ -293,3 +293,16 @@ def popup_list_open(self, new_rect, new_list, ui_type):
         self.battle_ui_updater.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)  # add the option list to screen
 
     self.popup_listbox.type = ui_type
+
+
+def clean_group_object(groups):
+    for group in groups:
+        if type(group) == pygame.sprite.Group or type(group) == list or type(group) == tuple:
+            for stuff in group:
+                stuff.delete()
+                stuff.kill()
+                del stuff
+        else:
+            group.delete()
+            group.kill()
+            del group

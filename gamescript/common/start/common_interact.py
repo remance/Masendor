@@ -9,6 +9,7 @@ setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 edit_config = utility.edit_config
 load_image = utility.load_image
+clean_group_object = utility.clean_group_object
 setup_unit_icon = selector.setup_unit_icon
 
 
@@ -117,6 +118,22 @@ def main_menu_process(self, mouse_left_up):
         #     self.main_ui.remove(self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
 
 
+def game_creator_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+    if self.editor_back_button.event or esc_press:
+        self.editor_back_button.event = False
+        self.back_mainmenu()
+
+    elif self.unit_edit_button.event:
+        self.unit_edit_button.event = False
+        self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1),
+                                          "unit_editor")
+        self.battle_game.run_game()
+        pygame.mixer.music.unload()
+        pygame.mixer.music.set_endevent(self.SONG_END)
+        pygame.mixer.music.load(self.music_list[0])
+        pygame.mixer.music.play(-1)
+
+
 def option_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.back_button.event or esc_press:  # back to start_set menu
         self.back_button.event = False
@@ -162,6 +179,7 @@ def option_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                                                               self.window_style | pygame.RESIZABLE, self.best_depth)
                         break
                 self.main_ui_updater.remove(self.resolution_bar)
+
 
 def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if mouse_left_up or mouse_left_down:
@@ -293,6 +311,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.menu_state = "char_select"
         self.select_button.event = False
         self.char_select_row = 0
+        self.char_selected = 0
 
         self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.enactment_tick_box,
                                     self.source_list_box, self.source_scroll, self.source_description, self.army_stat)
@@ -303,18 +322,18 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                 stuff.kill()
                 del stuff
 
-        team_army, team_leader = self.read_source(
-            [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
+        clean_group_object((self.preview_char, self.unit_icon))
 
-        for char in self.preview_char:
-            char.delete()
-            char.kill()
-            del char
+        team_selected = self.team_selected
+        if self.enactment:
+            team_selected = None
+        self.unit_setup(self.preview_char, self.troop_data.troop_list, specific_team=team_selected)
 
-        self.unit_setup(self.preview_char, self.troop_data.troop_list)
+        setup_unit_icon(self.char_selector, self.unit_icon, self.preview_char, self.char_selector_scroll, icon_scale=1)
 
-        setup_unit_icon(self.char_selector, self.unit_icon,
-                                     self.team_unit_dict[self.player_team_check], self.char_selector_scroll)
+        for index, icon in enumerate(self.unit_icon):  # select first char
+            icon.selection()
+            break
 
         self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
                                                (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
@@ -330,22 +349,6 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.menu_button.add(*self.char_select_button)
 
 
-def game_creator_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
-    if self.editor_back_button.event or esc_press:
-        self.editor_back_button.event = False
-        self.back_mainmenu()
-
-    elif self.unit_edit_button.event:
-        self.unit_edit_button.event = False
-        self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, 1, True, None, 1, (1, 1, 1, 1),
-                                          "unit_editor")
-        self.battle_game.run_game()
-        pygame.mixer.music.unload()
-        pygame.mixer.music.set_endevent(self.SONG_END)
-        pygame.mixer.music.load(self.music_list[0])
-        pygame.mixer.music.play(-1)
-
-
 def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.char_back_button.event or esc_press:  # go back to team/source selection screen
         self.current_source_row = 0
@@ -356,7 +359,7 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                                     list(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
-        self.preview_char = []
+        clean_group_object((self.preview_char, self.unit_icon))
 
         change_to_source_selection(self)
 
@@ -364,15 +367,31 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
     elif self.start_button.event:  # start battle button
         self.start_button.event = False
-        for char in self.preview_char:
-            char.delete()
-            char.kill()
-            del char
+        clean_group_object((self.preview_char, self.unit_icon))
 
         start_battle(self)
 
-    elif self.char_selector.rect.collidepoint(self.mouse_pos):
-        pass
+    elif self.char_selector_scroll.rect.collidepoint(self.mouse_pos):
+        if mouse_left_down or mouse_left_up:
+            new_row = self.char_selector_scroll.user_input(self.mouse_pos)
+            if self.char_selector.current_row != new_row:
+                self.char_selector.current_row = new_row
+                setup_unit_icon(self.char_selector, self.unit_icon, self.preview_char,
+                                self.char_selector_scroll, icon_scale=1)
+
+    elif self.char_selector.rect.collidepoint(self.mouse_pos) and mouse_left_up:
+        for index, icon in enumerate(self.unit_icon):
+            if icon.rect.collidepoint(self.mouse_pos):
+                for other_icon in self.unit_icon:
+                    if other_icon.selected:  # unselected all others first
+                        other_icon.selection()
+                icon.selection()
+                self.char_selected = index
+                break
+
+                # if self.before_selected is None:  # add back the pop up ui, so it gets shown when click subunit with none selected before
+                #     self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
+                #     self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
 
 
 def change_source(self, scale_value, team_army, team_commander):

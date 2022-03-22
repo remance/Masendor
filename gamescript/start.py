@@ -219,6 +219,7 @@ class MainMenu:
 
         self.map_source = 0  # current selected map source
         self.team_selected = 1
+        self.char_selected = 0
         self.current_popup_row = 0
 
         # Decorate the self window
@@ -334,7 +335,7 @@ class MainMenu:
         battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui_updater, self.battle_ui_updater
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
-        battleui.UnitIcon.containers = self.unit_icon, self.battle_ui_updater
+        battleui.UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
 

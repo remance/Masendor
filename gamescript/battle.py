@@ -23,6 +23,7 @@ csv_read = utility.csv_read
 load_sound = utility.load_sound
 editconfig = utility.edit_config
 setup_list = utility.setup_list
+clean_group_object = utility.clean_group_object
 setup_unit_icon = selector.setup_unit_icon
 
 
@@ -586,13 +587,9 @@ class Battle:
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                       *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
 
-        for group in (self.subunit, self.army_leader, self.team0_unit, self.team1_unit, self.team2_unit,
+        clean_group_object((self.subunit, self.army_leader, self.team0_unit, self.team1_unit, self.team2_unit,
                       self.unit_icon, self.troop_number_sprite,
-                      self.inspect_subunit):  # remove all reference from battle object
-            for stuff in group:
-                stuff.delete()
-                stuff.kill()
-                del stuff
+                      self.inspect_subunit))  # remove all reference from battle object
 
         self.remove_unit_ui()
 

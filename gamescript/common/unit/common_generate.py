@@ -7,7 +7,7 @@ import pygame
 from gamescript.statdata import stat_convert
 
 
-def unit_setup(self, team_army, troop_list):
+def unit_setup(self, team_army, troop_list, specific_team=None):
     """read unit from unit_pos file"""
     from gamescript import unit
     team_colour = unit.team_colour
@@ -32,21 +32,22 @@ def unit_setup(self, team_army, troop_list):
             for n, i in enumerate(this_unit):
                 this_unit = stat_convert(this_unit, n, i, list_column=list_column, int_column=int_column, float_column=float_column)
             this_unit = {header[index]: stuff for index, stuff in enumerate(this_unit)}
-            control = False
-            if self.team_selected == this_unit["Team"] or self.enactment:  # player can control only his team or both in enactment mode
-                control = True
+            if specific_team is None or specific_team == this_unit["Team"]:
+                control = False
+                if self.team_selected == this_unit["Team"] or self.enactment:
+                    control = True
 
-            colour = team_colour[this_unit["Team"]]
-            if type(team_army) == list or type(team_army) == tuple:
-                which_army = team_army[this_unit["Team"]]
-            else:  # for character selection
-                which_army = team_army
+                colour = team_colour[this_unit["Team"]]
+                if type(team_army) == list or type(team_army) == tuple:
+                    which_army = team_army[this_unit["Team"]]
+                else:  # for character selection
+                    which_army = team_army
 
-            command = False  # Not commander unit by default
-            if len(which_army) == 0:  # First unit is commander
-                command = True
-            coa = pygame.transform.scale(self.coa_list[this_unit["Faction"]], (60, 60))  # get coa_list image and scale smaller to fit ui
-            self.generate_unit(which_army, this_unit, control, command, colour, coa, subunit_game_id, troop_list)
-            # ^ End subunit setup
+                command = False  # Not commander unit by default
+                if len(which_army) == 0:  # First unit is commander
+                    command = True
+                coa = pygame.transform.scale(self.coa_list[this_unit["Faction"]], (60, 60))  # get coa_list image and scale smaller to fit ui
+                self.generate_unit(which_army, this_unit, control, command, colour, coa, subunit_game_id, troop_list)
+                # ^ End subunit setup
 
     unit_file.close()
