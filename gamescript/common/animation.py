@@ -150,8 +150,9 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
     return sprite_image
 
 
-def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
-                weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size, screen_scale):
+def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool, armour_sprite_pool,
+                effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size,
+                screen_scale):
     frame_property = animation_part_list["frame_property"]
 
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
@@ -215,10 +216,16 @@ def make_sprite(size, animation_part_list, troop_sprite_list, body_sprite_pool, 
                     target = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
                     if "p2_main" in layer:
                         target = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
-                    elif "p1_sub" in layer:
-                        target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
-                    elif "p2_sub" in layer:
-                        target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
+                    elif "sub" in animation_name and ("2hand" in animation_name or "2pole" in animation_name):  # put sub weapon on back instead for two handed weapon
+                        if "p1_sub" in layer:
+                            target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_body"][4])
+                        elif "p2_sub" in layer:
+                            target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_body"][4])
+                    else:
+                        if "p1_sub" in layer:
+                            target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
+                        elif "p2_sub" in layer:
+                            target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
                     new_target = target
 
                 if weapon_joint_list[new_part[0]][part_name] != "center":  # use weapon joint pos and hand pos for weapon position blit

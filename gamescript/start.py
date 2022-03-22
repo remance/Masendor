@@ -99,6 +99,7 @@ def change_genre(self, genre):
     MainMenu.read_source = interact.read_source
     MainMenu.generate_unit = generate.generate_unit
 
+    self.genre_sprite_size = genre.genre_sprite_size
     self.char_select = genre.char_select
     subunit.change_subunit_genre(self.genre)
     unit.change_unit_genre(self.genre)
@@ -476,7 +477,9 @@ class MainMenu:
         self.genre_change_box = menu.TextBox(self.screen_scale, box_image, (box_image.get_width(), 0),
                                              self.genre.capitalize())  # genre box ui
 
-        self.char_select = False  # will be changed in genre_change function depending on selected genre
+        # will be changed in genre_change function depending on selected genre
+        self.char_select = False
+        self.genre_sprite_size = (200, 200)
 
         # Profile box
         self.profile_name = self.profile_name
@@ -774,7 +777,7 @@ class MainMenu:
 
         self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
 
-        self.animation_sprite_pool = self.create_sprite_pool(direction_list, (150, 150), self.screen_scale)
+        self.animation_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale)
 
         subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
 

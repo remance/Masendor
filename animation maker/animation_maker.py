@@ -14,7 +14,7 @@ current_dir = os.path.split(os.path.abspath(__file__))[0]
 main_dir = current_dir[:current_dir.rfind("\\")+1]
 sys.path.insert(1, main_dir)
 
-from gamescript import readstat, menu, battleui
+from gamescript import statdata, menu, battleui
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -22,7 +22,7 @@ load_image = utility.load_image
 load_images = utility.load_images
 load_base_button = utility.load_base_button
 load_textures = utility.load_textures
-stat_convert = readstat.stat_convert
+stat_convert = statdata.stat_convert
 
 default_sprite_size = (200, 200)
 
@@ -2620,7 +2620,7 @@ while True:
             text_input_popup = (None, None)
             ui.remove(*input_ui_popup, *confirm_ui_popup, *colour_ui_popup)
 
-    ui.update(mouse_pos, mouse_left_up, mouse_left_down, "any")
+    ui.update(mouse_pos, mouse_left_up, mouse_left_down)
     anim.play(showroom.image, (0, 0), activate_list)
     for strip_index, strip in enumerate(filmstrips):
         if strip_index == current_frame:

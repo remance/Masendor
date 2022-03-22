@@ -751,7 +751,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale):  
                                     if opposite_direction is not None:
                                         animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][opposite_direction] = {}
                                     for frame_num, frame_data in enumerate(self.generic_animation_pool[index][animation]):
-                                        sprite_dict = make_sprite(this_subunit["Size"], frame_data,
+                                        sprite_dict = make_sprite(animation, this_subunit["Size"], frame_data,
                                                                   self.troop_data.troop_sprite_list[str(subunit_id)],
                                                                   self.gen_body_sprite_pool, self.gen_weapon_sprite_pool, self.gen_armour_sprite_pool,
                                                                   self.effect_sprite_pool, animation_property, self.weapon_joint_list,
