@@ -330,9 +330,11 @@ class MapTitle(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("oldenglishtext", int(70 * screen_scale[1]))
         self.screen_scale = screen_scale
         self.pos = pos
+        self.name = ""
 
     def change_name(self, name):
-        text_surface = self.font.render(str(name), True, (0, 0, 0))
+        self.name = name
+        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
         self.image = pygame.Surface((int(text_surface.get_width() + (20 * self.screen_scale[0])),
                                      int(text_surface.get_height() + (20 * self.screen_scale[1]))))
         self.image.fill((0, 0, 0))
@@ -442,21 +444,27 @@ class ArmyStat(pygame.sprite.Sprite):
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
 
-    def add_leader_stat(self, leader_name, leader_image, leader_stat):
+    def add_leader_stat(self, leader):
         """For character select screen"""
         self.image = self.image_original.copy()
-
+        leader_name = leader.name
+        leader_image = leader.full_image
+        leader_stat = {"Health: ": leader.health, "Authority: ": leader.authority,
+                       "Melee Command: ": leader.melee_command, "Range Command: ": leader.range_command,
+                       "Cavalry Command: ": leader.cav_command, "Combat: ": leader.combat,
+                       "Social Class: ": leader.social["Leader Social Class"]}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
+        text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
         self.image.blit(text_surface, text_rect)
 
-        leader_rect = leader_image.get_rect(topright=self.rect.topright)
+        leader_rect = leader_image.get_rect(topright=(self.image.get_width() - (leader_image.get_width() / 10),
+                                                      leader_image.get_height() / 10))
         self.image.blit(leader_image, leader_rect)
-        row = leader_rect.bottomleft[1]
+        row = text_rect.bottomleft[1]
         column = text_rect.bottomleft[0]
-        for text in leader_stat:
-            text_surface = self.font.render(format(text), True, (0, 0, 0))
-            text_rect = text_surface.get_rect(midleft=(row, column))
+        for key, value in leader_stat.items():
+            text_surface = self.font.render(format(key + str(value)), True, (0, 0, 0))
+            text_rect = text_surface.get_rect(topleft=(column, row))
             self.image.blit(text_surface, text_rect)
             row += self.font_size * 1.2
 

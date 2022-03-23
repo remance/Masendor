@@ -324,6 +324,15 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
         clean_group_object((self.preview_char, self.unit_icon))
 
+        self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
+                                               (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
+                                               load_image(self.main_dir, self.screen_scale,
+                                                          "char_stat.png", "ui\\mapselect_ui"))  # char stat
+        self.char_stat["troop"] = menu.ArmyStat(self.screen_scale,
+                                                (self.screen_rect.center[0] * 1.6, self.screen_rect.height / 2.5),
+                                                load_image(self.main_dir, self.screen_scale,
+                                                           "char_stat.png", "ui\\mapselect_ui"))  # troop stat
+
         team_selected = self.team_selected
         if self.enactment:
             team_selected = None
@@ -333,16 +342,9 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
         for index, icon in enumerate(self.unit_icon):  # select first char
             icon.selection()
+            self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
+            self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
             break
-
-        self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
-                                               (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
-                                               load_image(self.main_dir, self.screen_scale,
-                                                          "char_stat.png", "ui\\mapselect_ui"))  # char stat
-        self.char_stat["troop"] = menu.ArmyStat(self.screen_scale,
-                                                (self.screen_rect.center[0] * 1.6, self.screen_rect.height / 2.5),
-                                                load_image(self.main_dir, self.screen_scale,
-                                                           "char_stat.png", "ui\\mapselect_ui"))  # troop stat
 
         self.main_ui_updater.add(self.char_selector, self.char_selector_scroll,
                                  list(self.char_stat.values()), *self.char_select_button)
@@ -363,7 +365,8 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
         change_to_source_selection(self)
 
-        self.make_team_coa([list(self.map_data.values())[1][2], list(self.map_data.values())[1][3]], self.main_ui_updater)
+        self.make_team_coa([self.map_data[self.map_title.name]["Team 1"],
+                            self.map_data[self.map_title.name]["Team 2"]], self.main_ui_updater)
 
     elif self.start_button.event:  # start battle button
         self.start_button.event = False
@@ -386,12 +389,49 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                     if other_icon.selected:  # unselected all others first
                         other_icon.selection()
                 icon.selection()
+                self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
+                self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
                 self.char_selected = index
                 break
 
                 # if self.before_selected is None:  # add back the pop up ui, so it gets shown when click subunit with none selected before
                 #     self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
                 #     self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
+
+
+def read_source(self, description_text):
+    """Change source description and add new subunit dot when select new source"""
+    self.source_description.change_text(description_text)
+    self.main_ui_updater.add(self.source_description)
+
+    openfolder = self.preset_map_folder
+    if self.last_select == "custom":
+        openfolder = self.custom_map_folder
+    unit_info = self.read_selected_map_data(openfolder, "unit_pos.csv", source=True)
+
+    self.team_pos = {row["Team"]: [] for row in list(unit_info.values())}
+    for row in list(unit_info.values()):
+        self.team_pos[row["Team"]].append([int(item) for item in row["POS"].split(",")])
+
+    self.map_show.change_mode(1, team_pos_list=self.team_pos)
+
+    team_army = {row["Team"]: [] for row in list(unit_info.values())[1:]}
+    team_leader = {row["Team"]: [] for row in list(unit_info.values())[1:]}
+    for row in list(unit_info.values())[1:]:
+        for small_row in [value for key, value in row.items() if "Row" in key]:
+            for item in small_row.split(","):
+                if item.isdigit():
+                    team_army[row["Team"]].append(int(item))
+                else:
+                    team_army[row["Team"]].append(item)
+            # print(row["Leader"], type(row["Leader"]))
+            if type(row["Leader"]) == str and "," in row["Leader"]:
+                for item in row["Leader"].split(","):
+                    team_leader[row["Team"]].append(int(item))
+            else:
+                team_leader[row["Team"]].append(int(row["Leader"]))
+
+    return team_army, team_leader
 
 
 def change_source(self, scale_value, team_army, team_commander):
@@ -434,11 +474,12 @@ def change_to_source_selection(self):
         openfolder = self.custom_map_folder
     try:
         self.source_list = self.read_selected_map_data(openfolder, "source.csv")
-        self.source_name_list = [value[0] for value in list(self.source_list.values())[1:]]
-        self.source_scale_text = [value[1] for value in list(self.source_list.values())[1:]]
-        self.source_scale = [{0: float(value[2]), 1: float(value[3]), 2: float(value[4]), 3: float(value[5])}
-                             for value in list(self.source_list.values())[1:]]
-        self.source_text = [value[-1] for value in list(self.source_list.values())[1:]]
+        self.source_name_list = [value["Source"] for value in list(self.source_list.values())]
+        self.source_scale_text = [value["Number Text"] for value in list(self.source_list.values())]
+        self.source_scale = [{0: float(value["Team 0 Scale"]), 1: float(value["Team 1 Scale"]),
+                              2: float(value["Team 2 Scale"]), 3: float(value["Team 3 Scale"])}
+                             for value in list(self.source_list.values())]
+        self.source_text = [value["Description"] for value in list(self.source_list.values())]
     except Exception:  # no source.csv make empty list
         self.source_name_list = [""]
         self.source_scale_text = [""]

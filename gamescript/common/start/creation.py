@@ -335,7 +335,7 @@ def read_map_data(main_dir, ruleset_folder):
         with open(os.path.join(str(file_map), "info.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[0] != "name":
+                if row[0] != "Name":
                     preset_map_list.append(row[0])
         edit_file.close()
 
@@ -351,7 +351,7 @@ def read_map_data(main_dir, ruleset_folder):
         with open(os.path.join(str(file_map), "info.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
-                if row[0] != "name":
+                if row[0] != "Name":
                     custom_map_list.append(row[0])
         edit_file.close()
 

@@ -53,9 +53,9 @@ class Leader(pygame.sprite.Sprite):
         try:  # Put leader image into leader slot
             image_name = str(leader_id) + ".png"
             self.full_image = leader_data.images[image_name].copy()
-        except:  # Use Unknown leader image if there is none in list
+        except KeyError:  # Use Unknown leader image if there is none in list
             self.full_image = leader_data.images["9999999.png"].copy()
-            font = pygame.font.SysFont("timesnewroman", 300)
+            font = pygame.font.SysFont("timesnewroman", 50)
             text_image = font.render(str(self.leader_id), True, pygame.Color("white"))
             text_rect = text_image.get_rect(center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))
             self.full_image.blit(text_image, text_rect)
