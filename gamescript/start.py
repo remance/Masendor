@@ -96,7 +96,6 @@ def change_genre(self, genre):
         self.team_select_button = (self.map_select_button, self.map_back_button)
         self.battle_game.genre = self.genre
 
-    MainMenu.read_source = interact.read_source
     MainMenu.generate_unit = generate.generate_unit
 
     self.genre_sprite_size = genre.genre_sprite_size
@@ -129,6 +128,7 @@ class MainMenu:
     option_menu_process = common_interact.option_menu_process
     char_select_process = common_interact.char_select_process
     game_creator_process = common_interact.game_creator_process
+    read_source = common_interact.read_source
     change_source = common_interact.change_source
     unit_setup = common_generate.unit_setup
 
@@ -222,6 +222,7 @@ class MainMenu:
         self.team_selected = 1
         self.char_selected = 0
         self.current_popup_row = 0
+        self.team_pos = {}  # for saving preview map unit pos
 
         # Decorate the self window
         # icon = load_image(self.main_dir, "sword.jpg")
@@ -829,6 +830,9 @@ class MainMenu:
                                 ["data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select]])
         else:
             data = csv_read(file, [self.main_dir, "data", "ruleset", self.ruleset_folder, "map/custom", map_list[self.current_map_select]])
+        header = list(data.values())[0]
+        del data[list(data.keys())[0]]  # remove header from dict
+        data = {key: {header[index]: value[index] for index, value2 in enumerate(value)} for key, value in data.items()}
         return data
 
     def make_team_coa(self, data, ui_class, one_team=False, team1_set_pos=None):
@@ -865,12 +869,14 @@ class MainMenu:
 
         # v Create map description
         self.map_data = self.read_selected_map_data(map_folder_list, "info.csv")
-        description = [list(self.map_data.values())[1][0], list(self.map_data.values())[1][1]]
+        description = [self.map_data[map_list[self.current_map_select]]["Description 1"],
+                       self.map_data[map_list[self.current_map_select]]["Description 2"]]
         self.map_description.change_text(description)
         self.main_ui_updater.add(self.map_description)
         # ^ End map description
 
-        self.make_team_coa([list(self.map_data.values())[1][2], list(self.map_data.values())[1][3]], self.main_ui_updater)
+        self.make_team_coa([self.map_data[self.map_title.name]["Team 1"],
+                            self.map_data[self.map_title.name]["Team 2"]], self.main_ui_updater)
 
     def make_unit_slot(self, game_id, troop_id, range_to_run, start_pos):
         width, height = 0, 0

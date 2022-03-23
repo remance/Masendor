@@ -5,7 +5,7 @@ import time
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_movement
+from gamescript.common.subunit import common_fight, common_movement
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -64,6 +64,8 @@ class Subunit(pygame.sprite.Sprite):
 
     play_animation = animation.play_animation
     set_rotate = utility.set_rotate
+    use_skill = common_fight.use_skill
+    check_skill_condition = common_fight.check_skill_condition
 
     # method that change based on genre
     add_weapon_stat = None
@@ -502,29 +504,6 @@ class Subunit(pygame.sprite.Sprite):
         self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)
         self.rect.center = self.pos
 
-    def use_skill(self, which_skill):
-        if which_skill == 0:  # charge skill need to separate since charge power will be used only for charge skill
-            skill_stat = self.skill[list(self.skill)[0]].copy()  # get skill stat
-            self.skill_effect[self.charge_skill] = skill_stat  # add stat to skill effect
-            self.skill_cooldown[self.charge_skill] = skill_stat["Cooldown"]  # add skill cooldown
-        else:  # other skill
-            skill_stat = self.skill[which_skill].copy()  # get skill stat
-            self.skill_effect[which_skill] = skill_stat  # add stat to skill effect
-            self.skill_cooldown[which_skill] = skill_stat["Cooldown"]  # add skill cooldown
-        self.stamina -= skill_stat["Stamina Cost"]
-        # self.skill_cooldown[which_skill] =
-
-    def check_skill_condition(self):
-        """Check which skill can be used, cooldown, condition state, discipline, stamina are checked. charge skill is excepted from this check"""
-        if self.skill_cond == 1 and self.stamina_state < 50:  # reserve 50% stamina, don't use any skill
-            self.available_skill = []
-        elif self.skill_cond == 2 and self.stamina_state < 25:  # reserve 25% stamina, don't use any skill
-            self.available_skill = []
-        else:  # check all skill
-            self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
-                                    and self.state in self.skill[skill]["Condition"] and self.discipline >= self.skill[skill][
-                                        "Discipline Requirement"]
-                                    and self.stamina > self.skill[skill]["Stamina Cost"] and skill != self.charge_skill]
 
     def find_nearby_subunit(self):
         """Find nearby friendly squads in the same unit for applying buff"""

@@ -28,7 +28,7 @@ def setup_unit_icon(selector, unit_group, unit_list, select_scroll, icon_scale=0
                                                                    int(unit.leader[0].image.get_height() * icon_scale)))
                 unit_group.add(new_icon)
                 column += new_icon.image.get_width() * 1.2
-                if column > selector.rect.topright[0] - (new_icon.image.get_width() / 2):
+                if column > selector.rect.topright[0] - new_icon.image.get_width():
                     row += new_icon.image.get_height() * 1.5
                     column = start_column
                 if row > selector.rect.bottomright[1] - (new_icon.image.get_height() / 2):
