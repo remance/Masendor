@@ -16,7 +16,7 @@ def change_leader(self, event):
             if this_subunit != 0 and this_subunit.state not in check_state and this_subunit.leader is None:
                 this_subunit.leader = self.leader
                 self.leader.subunit = this_subunit
-                for index, subunit2 in enumerate(self.unit.subunit_sprite):  # loop to find new subunit pos based on new subunit_sprite list
+                for index, subunit2 in enumerate(self.unit.subunits):  # loop to find new subunit pos based on new subunit_sprite list
                     if subunit2 == self.leader.subunit:
                         self.leader.subunit_pos = index
                         if self.unit_leader:  # set leader subunit to new one
@@ -29,7 +29,7 @@ def change_leader(self, event):
                 break
 
         if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in unit
-            for index, this_subunit in enumerate(self.unit.subunit_sprite):
+            for index, this_subunit in enumerate(self.unit.subunits):
                 if this_subunit.state not in check_state and this_subunit.leader is None:
                     this_subunit.leader = self.leader
                     self.leader.subunit = this_subunit
@@ -78,10 +78,10 @@ def attack_logic(self, dt, combat_timer, parent_state):
             if self.charge_momentum == 1 and (
                     self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1:  # melee_attack to the nearest target instead
                 if self.melee_target is None and self.unit.attack_target is not None:
-                    self.melee_target = self.unit.attack_target.subunit_sprite[0]
+                    self.melee_target = self.unit.attack_target.subunits[0]
                 if self.melee_target is not None:
                     if self.close_target is None:  # movement queue is empty regenerate new one
-                        self.close_target = self.find_close_target(self.melee_target.unit.subunit_sprite)  # find new close target
+                        self.close_target = self.find_close_target(self.melee_target.unit.subunits)  # find new close target
 
                         if self.close_target is not None:  # found target to fight
                             if self not in self.battle.combat_path_queue:
@@ -431,7 +431,7 @@ def apply_status_to_enemy(status_list, inflict_status, receiver, attacker_side, 
                     if this_subunit != 0:
                         this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
         elif status[1] == 3:  # whole unit aoe
-            for this_subunit in receiver.unit.subunit_sprite:
+            for this_subunit in receiver.unit.subunits:
                 if this_subunit.state != 100:
                     this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
 
@@ -452,7 +452,7 @@ def die(self):
     if self in self.battle.battle_camera:
         self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
     self.battle.all_subunit_list.remove(self)
-    self.unit.subunit_sprite.remove(self)
+    self.unit.subunits.remove(self)
 
     for subunit in self.unit.subunit_list.flat:  # remove from index array
         if subunit == self.game_id:

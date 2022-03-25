@@ -24,7 +24,7 @@ def user_input(self, pos, mouse_left_up, mouse_right_up, double_mouse_right, tar
                 if self.state in (10, 96) and target is None:
                     self.process_retreat(pos)  # retreat
                 else:
-                    for subunit in self.subunit_sprite:
+                    for subunit in self.subunits:
                         subunit.attacking = True
                     # if self.state == 10:
                     if key_state is not None and (key_state[pygame.K_LSHIFT] or key_state[pygame.K_RSHIFT]):

@@ -1,4 +1,4 @@
-def setup_unit_icon(selector, unit_group, unit_list, select_scroll, icon_scale=0.55):
+def setup_unit_icon(selector, unit_group, unit_list, select_scroll, icon_scale=0.6):
     """Setup unit selection list in unit selector ui top left of screen"""
     from gamescript import battleui
     current_index = int(selector.current_row * selector.max_column_show)  # the first index of current row

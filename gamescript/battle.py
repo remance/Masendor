@@ -140,7 +140,7 @@ class Battle:
         self.log_scroll = main.log_scroll
         self.button_ui = main.button_ui
         self.subunit_selected_border = main.inspect_selected_border
-        self.switch_button = main.switch_button
+        self.behaviour_switch_button = main.behaviour_switch_button
         self.decimation_button = main.decimation_button
 
         self.fps_count = main.fps_count
@@ -335,7 +335,7 @@ class Battle:
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, enactment, map_selected,
-                         map_source, unit_scale, mode):
+                         map_source, unit_scale, mode, char_selected=None):
         """Setup stuff when start new battle"""
         self.ruleset = ruleset  # current ruleset used
         self.ruleset_folder = ruleset_folder  # the folder of rulseset used
@@ -476,7 +476,7 @@ class Battle:
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
         self.battle_ui_updater.remove(self.inspect_ui, self.command_ui, self.troop_card_ui, self.troop_card_button, self.inspect_button, self.col_split_button,
-                                      self.row_split_button, self.unitstat_ui, *self.switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
+                                      self.row_split_button, self.unitstat_ui, *self.behaviour_switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
         self.inspect = False  # inspect ui close
         self.battle_ui_updater.remove(*self.leader_now)  # remove leader image from command ui
         self.subunit_selected = None  # reset subunit selected
@@ -562,7 +562,7 @@ class Battle:
 
             self.battle_ui_updater.remove(self.event_log, self.log_scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
                                           self.event_log_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
-                                          self.subunit_selected_border, self.inspect_button, self.switch_button)
+                                          self.subunit_selected_border, self.inspect_button, self.behaviour_switch_button)
 
             self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
             self.battle_ui_updater.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui, self.troop_card_ui, self.leader_now,

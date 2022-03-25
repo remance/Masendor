@@ -356,7 +356,7 @@ def apply_status_to_enemy(status_list, inflict_status, receiver, attacker_side, 
                     if this_subunit != 0:
                         this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
         elif status[1] == 3:  # whole unit aoe
-            for this_subunit in receiver.unit.subunit_sprite:
+            for this_subunit in receiver.unit.subunits:
                 if this_subunit.state != 100:
                     this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
 
@@ -377,7 +377,7 @@ def die(self):
     if self in self.battle.battle_camera:
         self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
     self.battle.all_subunit_list.remove(self)
-    self.unit.subunit_sprite.remove(self)
+    self.unit.subunits.remove(self)
 
     for subunit in self.unit.subunit_list.flat:  # remove from index array
         if subunit == self.game_id:

@@ -425,8 +425,6 @@ class Subunit(pygame.sprite.Sprite):
         self.health_image_list = sprite_dict["health_list"]
         self.stamina_image_list = sprite_dict["stamina_list"]
 
-        self.sprite_image = pygame.Surface((100, 100), pygame.SRCALPHA)
-
         if purpose == "battle":
             self.battle.all_subunit_list.append(self)
             if self.team == 1:  # add sprite to team subunit group for collision
@@ -634,7 +632,7 @@ class Subunit(pygame.sprite.Sprite):
         # self.die_animation = None
 
     def create_inspect_sprite(self):
-        # v Subunit image sprite
+        # v Subunit image sprite in inspect ui and far zoom
         ui_image = self.unit_ui_images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
         if self.team == 2:
             ui_image = self.unit_ui_images["ui_squad_enemy.png"].copy()  # red colour
@@ -696,11 +694,13 @@ class Subunit(pygame.sprite.Sprite):
 
         # v weapon class icon in middle circle
         image1 = self.weapon_data.images[self.weapon_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
-        image1_rect = image1.get_rect(center=image.get_rect().center)
-        image.blit(image1, image1_rect)
+        image_rect = image1.get_rect(center=image.get_rect().center)
+        if self.unit_leader:  # add crown image first
+            image2 = self.weapon_data.images[-1]
+            image.blit(image2, image_rect)
+        image.blit(image1, image_rect)
 
-        image1_rect = image1.get_rect(center=block.get_rect().center)
-        block.blit(image1, image1_rect)
+        block.blit(image1, image_rect)
         block_original = block.copy()
 
         corner_image_rect = self.unit_ui_images["ui_squad_combat.png"].get_rect(

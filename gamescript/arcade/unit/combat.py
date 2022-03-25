@@ -16,14 +16,14 @@ def destroyed(self, battle, morale_hit=True):
     if morale_hit:
         if self.commander:  # more morale penalty if the unit is a command unit
             for army in group:
-                for this_subunit in army.subunit_sprite:
+                for this_subunit in army.subunits:
                     this_subunit.base_morale -= 30
 
         for this_army in enemy_group:  # get bonus authority to the another army
             this_army.authority += 5
 
         for this_army in group:  # morale dmg to every subunit in army when allied unit destroyed
-            for this_subunit in this_army.subunit_sprite:
+            for this_subunit in this_army.subunits:
                 this_subunit.base_morale -= 20
 
     battle.all_unit_list.remove(self)
@@ -45,7 +45,7 @@ def move_leader_subunit(this_leader, old_army_subunit, new_army_subunit, already
 
     while place_done is False:
         if this_leader.subunit.unit.subunit_list.flat[new_row * new_place] != 0:
-            for this_subunit in this_leader.subunit.unit.subunit_sprite:
+            for this_subunit in this_leader.subunit.unit.subunits:
                 if this_subunit.game_id == this_leader.subunit.unit.subunit_list.flat[new_row * new_place]:
                     if this_subunit.leader is not None or (new_row, new_place) in already_pick:
                         new_place += 1

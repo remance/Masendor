@@ -110,7 +110,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                     self.battle_ui_updater.add(*self.troop_card_button,
                                                self.troop_card_ui, self.inspect_ui)
                     self.subunit_selected = None
-                    for index, this_subunit in enumerate(self.last_selected.subunit_sprite_array.flat):
+                    for index, this_subunit in enumerate(self.last_selected.subunits_array.flat):
                         if this_subunit is not None:
                             self.inspect_subunit[index].add_subunit(this_subunit)
                             self.battle_ui_updater.add(self.inspect_subunit[index])
@@ -139,81 +139,81 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 self.click_any = True
             # and ( or key_press is not None)
             if self.last_selected.control and mouse_left_up:
-                if self.switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:
+                if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:
                     if mouse_left_up or key_press == pygame.K_g:  # rotate skill condition when clicked
                         self.last_selected.skill_cond += 1
                         if self.last_selected.skill_cond > 3:
                             self.last_selected.skill_cond = 0
-                        self.switch_button[0].event = self.last_selected.skill_cond
-                    if self.switch_button[0].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[0].event = self.last_selected.skill_cond
+                    if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Free Skill Use", "Conserve 50% Stamina", "Conserve 25% stamina", "Forbid Skill")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[0].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[0].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.switch_button[1].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_f:
+                elif self.behaviour_switch_button[1].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_f:
                     if mouse_left_up or key_press == pygame.K_f:  # rotate fire at will condition when clicked
                         self.last_selected.fire_at_will += 1
                         if self.last_selected.fire_at_will > 1:
                             self.last_selected.fire_at_will = 0
-                        self.switch_button[1].event = self.last_selected.fire_at_will
-                    if self.switch_button[1].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[1].event = self.last_selected.fire_at_will
+                    if self.behaviour_switch_button[1].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Fire at will", "Hold fire until order")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[1].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[1].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.switch_button[2].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_h:
+                elif self.behaviour_switch_button[2].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_h:
                     if mouse_left_up or key_press == pygame.K_h:  # rotate hold condition when clicked
                         self.last_selected.hold += 1
                         if self.last_selected.hold > 2:
                             self.last_selected.hold = 0
-                        self.switch_button[2].event = self.last_selected.hold
-                    if self.switch_button[2].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[2].event = self.last_selected.hold
+                    if self.behaviour_switch_button[2].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Aggressive", "Skirmish/Scout", "Hold Ground")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[2].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[2].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.switch_button[3].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
+                elif self.behaviour_switch_button[3].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
                     if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
                         self.last_selected.use_min_range += 1
                         if self.last_selected.use_min_range > 1:
                             self.last_selected.use_min_range = 0
-                        self.switch_button[3].event = self.last_selected.use_min_range
-                    if self.switch_button[3].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[3].event = self.last_selected.use_min_range
+                    if self.behaviour_switch_button[3].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Minimum Shoot Range", "Maximum Shoot range")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[3].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[3].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.switch_button[4].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
+                elif self.behaviour_switch_button[4].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
                     if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
                         self.last_selected.shoot_mode += 1
                         if self.last_selected.shoot_mode > 2:
                             self.last_selected.shoot_mode = 0
-                        self.switch_button[4].event = self.last_selected.shoot_mode
-                    if self.switch_button[4].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[4].event = self.last_selected.shoot_mode
+                    if self.behaviour_switch_button[4].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Both Arc and Direct Shot", "Only Arc Shot", "Only Direct Shot")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[4].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[4].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.switch_button[5].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
+                elif self.behaviour_switch_button[5].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
                     if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
                         self.last_selected.run_toggle += 1
                         if self.last_selected.run_toggle > 1:
                             self.last_selected.run_toggle = 0
-                        self.switch_button[5].event = self.last_selected.run_toggle
-                    if self.switch_button[5].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[5].event = self.last_selected.run_toggle
+                    if self.behaviour_switch_button[5].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Toggle Walk", "Toggle Run")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[5].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[5].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.switch_button[6].rect.collidepoint(self.mouse_pos):  # or key_press == pygame.K_j
+                elif self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # or key_press == pygame.K_j
                     if mouse_left_up:  # or key_press == pygame.K_j  # rotate min range condition when clicked
                         self.last_selected.attack_mode += 1
                         if self.last_selected.attack_mode > 2:
                             self.last_selected.attack_mode = 0
-                        self.switch_button[6].event = self.last_selected.attack_mode
-                    if self.switch_button[6].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
+                        self.behaviour_switch_button[6].event = self.last_selected.attack_mode
+                    if self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Frontline Attack Only", "Keep Formation", "All Out Attack")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.switch_button[6].event])
+                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[6].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
                 elif self.col_split_button in self.battle_ui_updater and self.col_split_button.rect.collidepoint(self.mouse_pos):
@@ -1092,7 +1092,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                     self.battle_ui_updater.remove(*self.inspect_subunit)
 
                     self.subunit_selected = None
-                    for index, this_subunit in enumerate(self.last_selected.subunit_sprite_array.flat):
+                    for index, this_subunit in enumerate(self.last_selected.subunits_array.flat):
                         if this_subunit is not None:
                             self.inspect_subunit[index].add_subunit(this_subunit)
                             self.battle_ui_updater.add(self.inspect_subunit[index])
@@ -1126,7 +1126,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                         this_unit.delete()
                         this_unit.kill()
                         del this_unit
-                for this_subunit in self.last_selected.subunit_sprite:
+                for this_subunit in self.last_selected.subunits:
                     this_subunit.delete()
                     self.all_subunit_list.remove(this_subunit)
                     this_subunit.kill()
@@ -1199,14 +1199,14 @@ def camera_process(self, key_state):
 def add_behaviour_ui(self, who_input, else_check=False):
     if who_input.control:
         # self.battle_ui.add(self.button_ui[7])  # add decimation button
-        self.battle_ui_updater.add(*self.switch_button[0:7])  # add unit behaviour change button
-        self.switch_button[0].event = who_input.skill_cond
-        self.switch_button[1].event = who_input.fire_at_will
-        self.switch_button[2].event = who_input.hold
-        self.switch_button[3].event = who_input.use_min_range
-        self.switch_button[4].event = who_input.shoot_mode
-        self.switch_button[5].event = who_input.run_toggle
-        self.switch_button[6].event = who_input.attack_mode
+        self.battle_ui_updater.add(*self.behaviour_switch_button[0:7])  # add unit behaviour change button
+        self.behaviour_switch_button[0].event = who_input.skill_cond
+        self.behaviour_switch_button[1].event = who_input.fire_at_will
+        self.behaviour_switch_button[2].event = who_input.hold
+        self.behaviour_switch_button[3].event = who_input.use_min_range
+        self.behaviour_switch_button[4].event = who_input.shoot_mode
+        self.behaviour_switch_button[5].event = who_input.run_toggle
+        self.behaviour_switch_button[6].event = who_input.attack_mode
         self.check_split(who_input)  # check if selected unit can split, if yes draw button
     elif else_check:
         if self.row_split_button in self.battle_ui_updater:
@@ -1214,7 +1214,7 @@ def add_behaviour_ui(self, who_input, else_check=False):
         if self.col_split_button in self.battle_ui_updater:
             self.col_split_button.kill()
         # self.battle_ui.remove(self.button_ui[7])  # remove decimation button
-        self.battle_ui_updater.remove(*self.switch_button[0:7])  # remove unit behaviour change button
+        self.battle_ui_updater.remove(*self.behaviour_switch_button[0:7])  # remove unit behaviour change button
 
     self.leader_now = who_input.leader
     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw

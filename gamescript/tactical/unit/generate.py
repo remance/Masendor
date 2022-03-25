@@ -48,11 +48,11 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
             self.subunit.add(add_subunit)
             add_subunit.board_pos = board_pos[army_subunit_index]
             subunit_number[...] = subunit_game_id
-            this_unit.subunit_sprite_array[row][column] = add_subunit
-            this_unit.subunit_sprite.append(add_subunit)
+            this_unit.subunits_array[row][column] = add_subunit
+            this_unit.subunits.append(add_subunit)
             subunit_game_id += 1
         else:
-            this_unit.subunit_sprite_array[row][column] = None  # replace numpy None with python None
+            this_unit.subunits_array[row][column] = None  # replace numpy None with python None
 
         column += 1
         if column == max_column:
@@ -65,22 +65,22 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
 def split_new_unit(self, who, add_unit_list=True):
     from gamescript import battleui
     # generate subunit sprite array for inspect ui
-    who.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
+    who.subunits_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
     found_count = 0  # for subunit_sprite index
     found_count2 = 0  # for positioning
     for row in range(0, len(who.subunit_list)):
         for column in range(0, len(who.subunit_list[0])):
             if who.subunit_list[row][column] != 0:
-                who.subunit_sprite_array[row][column] = who.subunit_sprite[found_count]
-                who.subunit_sprite[found_count].unit_position = (who.subunit_position_list[found_count2][0] / 10,
-                                                                 who.subunit_position_list[found_count2][1] / 10)  # position in unit sprite
+                who.subunits_array[row][column] = who.subunits[found_count]
+                who.subunits[found_count].unit_position = (who.subunit_position_list[found_count2][0] / 10,
+                                                           who.subunit_position_list[found_count2][1] / 10)  # position in unit sprite
                 found_count += 1
             else:
-                who.subunit_sprite_array[row][column] = None
+                who.subunits_array[row][column] = None
             found_count2 += 1
     # ^ End generate subunit array
 
-    for index, this_subunit in enumerate(who.subunit_sprite):  # reset leader subunit_pos
+    for index, this_subunit in enumerate(who.subunits):  # reset leader subunit_pos
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 
@@ -95,7 +95,7 @@ def split_new_unit(self, who, add_unit_list=True):
     who.number_pos = who.rotation_xy(who.base_pos, number_pos, who.radians_angle)
     who.change_pos_scale()  # find new position for troop number text
 
-    for this_subunit in who.subunit_sprite:
+    for this_subunit in who.subunits:
         this_subunit.start_set(this_subunit.zoom)
 
     if add_unit_list:

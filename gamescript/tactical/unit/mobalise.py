@@ -51,5 +51,5 @@ def revert_move(self):
     self.move_rotate = False  # will not rotate to move
     self.revert = True
     new_angle = self.set_rotate()
-    for subunit in self.subunit_sprite:
+    for subunit in self.subunits:
         subunit.new_angle = new_angle

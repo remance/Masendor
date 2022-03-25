@@ -21,11 +21,11 @@ class UIButton(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 class SwitchButton(pygame.sprite.Sprite):
-    def __init__(self, image):
+    def __init__(self, images):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = (0, 0)
-        self.images = image
+        self.images = images
         self.image = self.images[0]
         self.event = 0
         self.rect = self.image.get_rect(center=self.pos)
@@ -40,6 +40,11 @@ class SwitchButton(pygame.sprite.Sprite):
 
     def change_pos(self, pos):
         self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def change_genre(self, images):
+        self.images = images
+        self.image = self.images[0]
         self.rect = self.image.get_rect(center=self.pos)
 
 
@@ -134,7 +139,7 @@ class TopBar(pygame.sprite.Sprite):
 
 
 class TroopCard(pygame.sprite.Sprite):
-    def __init__(self, image, icon, text_size=16):
+    def __init__(self, image, font_size=16):
         from gamescript import start
 
         self.subunit_state_text = start.subunit_state_text
@@ -144,18 +149,17 @@ class TroopCard(pygame.sprite.Sprite):
 
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.font = pygame.font.SysFont("helvetica", font_size)
         self.image = image
-        self.icon = icon
         self.value = [-1, -1]
         self.last_value = 0
         self.option = 0
 
         self.image_original = self.image.copy()
 
-        self.font_head = pygame.font.SysFont("curlz", text_size + 4)
+        self.font_head = pygame.font.SysFont("curlz", font_size + 4)
         self.font_head.set_italic(True)
-        self.font_long = pygame.font.SysFont("helvetica", text_size - 2)
+        self.font_long = pygame.font.SysFont("helvetica", font_size - 2)
         self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
                            "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
                            "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
@@ -198,17 +202,9 @@ class TroopCard(pygame.sprite.Sprite):
             row += 1
             position += 20
             if self.option == 1:  # stat card
-                # self.icon_rect = self.icon[0].get_rect(
-                #     center=(
-                #     self.image.get_rect()[0] + self.image.get_size()[0] -20, self.image.get_rect()[1] + 40))
-                # deletelist = [i for i,x in enumerate(self.value) if x == 0]
-                # if len(deletelist) != 0:
-                #     for i in sorted(deletelist, reverse = True):
-                #         self.value.pop(i)
-                #         text.pop(i)
                 new_value, text = self.value[0:-1], self.front_text[1:]
                 for n, value in enumerate(new_value[1:]):
-                    value = value.replace("inf", "\u221e")
+                    value = value.replace("inf", "\u221e")  # use infinity sign
                     text_surface = self.font.render(text[n] + value, True, (0, 0, 0))
                     text_rect = text_surface.get_rect(
                         midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
@@ -290,8 +286,8 @@ class CommandBar(pygame.sprite.Sprite):
         except KeyError:
             self.white = [self.icon["king.png"], self.icon["queen.png"], self.icon["rook.png"],
                           self.icon["knight.png"], self.icon["knight.png"], self.icon["bishop.png"]]  # team 1 white chess head
-            self.black = [self.icon["king.png"], self.icon["queen.png"], self.icon["rook.png"], self.icon["knight.png"],
-                          self.icon["knight.png"], self.icon["bishop.png"]]  # team 2 black chess head
+            self.black = self.white  # no colour change
+
         self.last_auth = 0
 
         self.leader_pos = ((self.inspect_pos[0][0], self.inspect_pos[0][1]),
@@ -793,7 +789,7 @@ class UnitIcon(pygame.sprite.Sprite):
 
 class Timer(pygame.sprite.Sprite):
     def __init__(self, pos, text_size=20):
-        self._layer = 10
+        self._layer = 11
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
@@ -845,6 +841,9 @@ class TimeUI(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=pos)
         time_number.change_pos(self.rect.topleft)
+        if speed_number is not None:
+            speed_number.change_pos((self.rect.center[0] + int(self.rect.center[0] / 10), self.rect.center[1]))
+
 
 class ScaleUI(pygame.sprite.Sprite):
     def __init__(self, image):

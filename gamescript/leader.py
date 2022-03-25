@@ -32,7 +32,7 @@ class Leader(pygame.sprite.Sprite):
         self.melee_command = stat["Melee Command"]
         self.range_command = stat["Range Command"]
         self.cav_command = stat["Cavalry Command"]
-        self.combat = stat["Combat"] * 2
+        self.combat = stat["Combat"]
         self.social = leader_data.leader_class[stat["Social Class"]]
         self.description = stat["Description"]
 
@@ -69,7 +69,7 @@ class Leader(pygame.sprite.Sprite):
         self.original_commander = False  # the first army commander at the start of battle
 
     def start_set(self):
-        self.subunit = self.unit.subunit_sprite[self.subunit_pos]  # setup subunit that leader belong
+        self.subunit = self.unit.subunits[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
         if self.army_position == 0:  # unit leader
             self.unit.leader_subunit = self.subunit  # TODO add this to when change leader or start_set leader move ot other subunit

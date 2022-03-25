@@ -52,7 +52,7 @@ class RangeArrow(pygame.sprite.Sprite):
             how_long = shoot_range / self.speed  # shooting distance divide arrow speed to find travel time
             target_now = self.shooter.attack_pos
             if self.shooter.attack_target is not None:
-                hit_list = self.shooter.attack_target.subunit_sprite
+                hit_list = self.shooter.attack_target.subunits
                 if len(hit_list) > 0:
                     target_hit = self.shooter.find_close_target(hit_list)
                     target_now = target_hit.base_pos  # base_target is at the enemy position

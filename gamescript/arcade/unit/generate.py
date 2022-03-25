@@ -51,7 +51,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
     for subunit_index, subunit_number in enumerate(np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C")):
         now_row = int(subunit_index / 5)
         now_col = subunit_index - (now_row * 5)
-        this_unit.subunit_sprite_array[row][column] = None  # replace numpy None with python None
+        this_unit.subunits_array[row][column] = None  # replace numpy None with python None
         if subunit_number != 0 and unit_array[now_row][now_col] == 0:  # skip if there is already subunit occupy the slot
             if "h" not in subunit_number:
                 size = int(troop_list[int(subunit_number)]["Size"])
@@ -68,8 +68,8 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
                                               this_unit.start_hp, this_unit.start_stamina, self.unit_scale, self.genre)
                 self.subunit.add(add_subunit)
                 subunit_number[...] = subunit_game_id
-                this_unit.subunit_sprite_array[row][column] = add_subunit
-                this_unit.subunit_sprite.append(add_subunit)
+                this_unit.subunits_array[row][column] = add_subunit
+                this_unit.subunits.append(add_subunit)
                 subunit_game_id += 1
 
         column += 1

@@ -59,8 +59,8 @@ class Unit(pygame.sprite.Sprite):
         self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon
         self.team_commander = None  # commander leader
         self.start_where = []
-        self.subunit_sprite_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
-        self.subunit_sprite = []
+        self.subunits_array = np.empty((8, 8), dtype=object)  # array of subunit object(not index)
+        self.subunits = []
         self.leader = []
         self.leader_subunit = None  # subunit that general is in, get added in leader first update
         self.near_target = {}  # list dict of nearby enemy unit, sorted by distance
@@ -202,7 +202,7 @@ class Unit(pygame.sprite.Sprite):
         # v Grab subunit stat
         not_broken = False
         # if self.zoom == 1:  # closest zoom
-        pos_dict = {sprite: sprite.base_pos for sprite in self.subunit_sprite}
+        pos_dict = {sprite: sprite.base_pos for sprite in self.subunits}
         pos_dict = dict(sorted(pos_dict.items(), key=lambda x: x[1][1]))
 
         for index, subunit in enumerate(pos_dict.keys()):
@@ -275,11 +275,11 @@ class Unit(pygame.sprite.Sprite):
                 if any(subunit != 0 for subunit in who_frontline) is False:  # has completely empty outer row or column, remove them
                     if index == 0:  # front side
                         self.subunit_list = self.subunit_list[1:]
-                        for subunit in self.subunit_sprite:
+                        for subunit in self.subunits:
                             subunit.unit_position = (subunit.unit_position[0], subunit.unit_position[1] - (self.image_size[1] / 8))
                     elif index == 1:  # left side
                         self.subunit_list = np.delete(self.subunit_list, 0, 1)
-                        for subunit in self.subunit_sprite:
+                        for subunit in self.subunits:
                             subunit.unit_position = (subunit.unit_position[0] - (self.image_size[0] / 8), subunit.unit_position[1])
                     elif index == 2:  # right side
                         self.subunit_list = np.delete(self.subunit_list, -1, 1)
@@ -340,18 +340,18 @@ class Unit(pygame.sprite.Sprite):
         for array_index, who_frontline in enumerate(list(self.frontline.values())):
             self.frontline_object[array_index] = self.frontline_object[array_index].tolist()
             for index, stuff in enumerate(who_frontline):
-                for subunit in self.subunit_sprite:
+                for subunit in self.subunits:
                     if subunit.game_id == stuff:
                         self.frontline_object[array_index][index] = subunit
                         break
 
-        for subunit in self.subunit_sprite:  # assign frontline variable to subunit for only front side
+        for subunit in self.subunits:  # assign frontline variable to subunit for only front side
             subunit.frontline = False
             if subunit in self.frontline_object[0]:
                 subunit.frontline = True
 
         self.auth_penalty = 0
-        for subunit in self.subunit_sprite:
+        for subunit in self.subunits:
             if subunit.state != 100:
                 self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit
 
@@ -378,7 +378,7 @@ class Unit(pygame.sprite.Sprite):
             unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
                                           self.base_pos[1] - self.base_height_box)
 
-            for subunit in self.subunit_sprite:  # generate position of each subunit
+            for subunit in self.subunits:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     new_target = unit_topleft + subunit.unit_position
                     if reset_path:
@@ -393,7 +393,7 @@ class Unit(pygame.sprite.Sprite):
             unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
                                           target[1])  # get the top left corner of sprite to generate subunit position
 
-            for subunit in self.subunit_sprite:  # generate position of each subunit
+            for subunit in self.subunits:  # generate position of each subunit
                 if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                     subunit.new_angle = self.new_angle
                     new_target = unit_topleft + subunit.unit_position
@@ -431,7 +431,7 @@ class Unit(pygame.sprite.Sprite):
         unit_top_left = pygame.Vector2(self.base_pos[0] - self.base_width_box,
                                            # get the top left corner of sprite to generate subunit position
                                            self.base_pos[1] - self.base_height_box)
-        for subunit in self.subunit_sprite:  # generate start position of each subunit
+        for subunit in self.subunits:  # generate start position of each subunit
             subunit.base_pos = unit_top_left + subunit.unit_position
             subunit.base_pos = pygame.Vector2(rotation_xy(self.base_pos, subunit.base_pos, self.radians_angle))
             subunit.zoom_scale()
@@ -447,7 +447,7 @@ class Unit(pygame.sprite.Sprite):
             self.zoom_change = True
             self.zoom = 11 - zoom  # save scale
             self.change_pos_scale()  # update unit sprite according to new scale
-            for subunit in self.subunit_sprite:
+            for subunit in self.subunits:
                 if self.zoom == 1:  # revert back to default layer at other zoom
                     if subunit.state != 100:
                         self.battle_camera.change_layer(subunit, 4)
@@ -459,7 +459,7 @@ class Unit(pygame.sprite.Sprite):
             if len(self.subunit_list) > 0 and (len(self.subunit_list) > 1 or any(subunit != 0 for subunit in self.subunit_list[0])):
                 self.setup_frontline()
 
-                for subunit in self.subunit_sprite:
+                for subunit in self.subunits:
                     subunit.base_morale -= (30 * subunit.mental)
                 self.dead_change = False
 
@@ -500,7 +500,7 @@ class Unit(pygame.sprite.Sprite):
                     # v Check if any subunit still fighting, if not change to idle state
                     if self.state == 10:
                         stop_fight = True
-                        for subunit in self.subunit_sprite:
+                        for subunit in self.subunits:
                             if subunit.state == 10:
                                 stop_fight = False
                                 break
@@ -549,7 +549,7 @@ class Unit(pygame.sprite.Sprite):
 
                 if self.state not in (0, 95) and self.front_pos.distance_to(self.command_target) < 1:  # reach destination and not in combat
                     not_halt = False  # check if any subunit in combat
-                    for subunit in self.subunit_sprite:
+                    for subunit in self.subunits:
                         if subunit.state == 10:
                             not_halt = True
                         if subunit.unit_leader and subunit.state != 10:
@@ -584,7 +584,7 @@ class Unit(pygame.sprite.Sprite):
                 self.battle.event_log.add_log([0, str(self.leader[0].name) + "'s unit is destroyed"],
                                               [0, 1])  # put destroyed event in troop and army log
                 self.kill()
-                for subunit in self.subunit_sprite:
+                for subunit in self.subunits:
                     subunit.kill()
 
     def set_target(self, pos):
@@ -682,7 +682,7 @@ class Unit(pygame.sprite.Sprite):
                                       # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
 
-        for subunit in self.subunit_sprite:  # generate position of each subunit
+        for subunit in self.subunits:  # generate position of each subunit
             new_target = unit_topleft + subunit.unit_position
             subunit.base_pos = pygame.Vector2(
                 rotation_xy(self.base_pos, new_target, self.radians_angle))  # rotate according to sprite current rotation
@@ -700,7 +700,7 @@ class Unit(pygame.sprite.Sprite):
             del self.icon
             del self.team_commander
             del self.start_where
-            del self.subunit_sprite
+            del self.subunits
             del self.near_target
             del self.leader
             del self.frontline_object

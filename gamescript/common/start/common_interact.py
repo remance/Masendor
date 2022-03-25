@@ -336,6 +336,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         team_selected = self.team_selected
         if self.enactment:
             team_selected = None
+
         self.unit_setup(self.preview_char, self.troop_data.troop_list, specific_team=team_selected)
 
         setup_unit_icon(self.char_selector, self.unit_icon, self.preview_char, self.char_selector_scroll, icon_scale=1)
@@ -346,8 +347,16 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
             self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
             break
 
+        for index, unit in enumerate(self.preview_char):
+            if index == 0:  # get for adding subunit to preview
+                get_unit = unit
+            for subunit in unit.subunits:
+                subunit.pos = (self.char_stat["troop"].rect.topleft[0] + (subunit.unit_position[0] * subunit.image.get_width() / 5),
+                               self.char_stat["troop"].rect.topleft[1] + ((subunit.unit_position[1] + 4) * subunit.image.get_height() / 5))
+                subunit.rect = subunit.image.get_rect(center=subunit.pos)
+
         self.main_ui_updater.add(self.char_selector, self.char_selector_scroll,
-                                 list(self.char_stat.values()), *self.char_select_button)
+                                 list(self.char_stat.values()), *self.char_select_button, get_unit.subunits)
         self.menu_button.add(*self.char_select_button)
 
 
@@ -361,6 +370,9 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                                     list(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
+        for other_icon in self.unit_icon:
+            self.main_ui_updater.remove(other_icon.unit.subunits)
+
         clean_group_object((self.preview_char, self.unit_icon))
 
         change_to_source_selection(self)
@@ -370,9 +382,8 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
     elif self.start_button.event:  # start battle button
         self.start_button.event = False
-        clean_group_object((self.preview_char, self.unit_icon))
 
-        start_battle(self)
+        start_battle(self, self.char_selected)
 
     elif self.char_selector_scroll.rect.collidepoint(self.mouse_pos):
         if mouse_left_down or mouse_left_up:
@@ -388,15 +399,26 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                 for other_icon in self.unit_icon:
                     if other_icon.selected:  # unselected all others first
                         other_icon.selection()
+                        self.main_ui_updater.remove(other_icon.unit.subunits)
                 icon.selection()
                 self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
                 self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
+
+                self.main_ui_updater.add(icon.unit.subunits)
+
                 self.char_selected = index
                 break
 
-                # if self.before_selected is None:  # add back the pop up ui, so it gets shown when click subunit with none selected before
-                #     self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
-                #     self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
+    elif self.char_stat["troop"].rect.collidepoint(self.mouse_pos):
+        for icon in self.unit_icon:
+            if icon.selected:
+                for subunit in icon.unit.subunits:
+                    if subunit.rect.collidepoint(self.mouse_pos):
+                        self.main_ui_updater.add(self.char_popup)
+                        self.char_popup.pop(self.mouse_pos, subunit.name)
+
+    else:
+        self.main_ui_updater.remove(self.char_popup)
 
 
 def read_source(self, description_text):
@@ -424,7 +446,6 @@ def read_source(self, description_text):
                     team_army[row["Team"]].append(int(item))
                 else:
                     team_army[row["Team"]].append(item)
-            # print(row["Leader"], type(row["Leader"]))
             if type(row["Leader"]) == str and "," in row["Leader"]:
                 for item in row["Leader"].split(","):
                     team_leader[row["Team"]].append(int(item))
@@ -529,10 +550,11 @@ def change_team_coa(self):
             break
 
 
-def start_battle(self):
+def start_battle(self, char_selected=None):
     self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
                                       self.enactment, self.map_selected,
-                                      self.map_source, self.source_scale[self.map_source], "battle")
+                                      self.map_source, self.source_scale[self.map_source], "battle",
+                                      char_selected=char_selected)
     self.battle_game.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

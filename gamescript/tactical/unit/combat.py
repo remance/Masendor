@@ -16,14 +16,14 @@ def destroyed(self, battle, morale_hit=True):
     if morale_hit:
         if self.commander:  # more morale penalty if the unit is a command unit
             for army in group:
-                for this_subunit in army.subunit_sprite:
+                for this_subunit in army.subunits:
                     this_subunit.base_morale -= 30
 
         for this_army in enemy_group:  # get bonus authority to the another army
             this_army.authority += 5
 
         for this_army in group:  # morale dmg to every subunit in army when allied unit destroyed
-            for this_subunit in this_army.subunit_sprite:
+            for this_subunit in this_army.subunits:
                 this_subunit.base_morale -= 20
 
     battle.all_unit_list.remove(self)
@@ -45,7 +45,7 @@ def move_leader_subunit(this_leader, old_army_subunit, new_army_subunit, already
 
     while place_done is False:
         if this_leader.subunit.unit.subunit_list.flat[new_row * new_place] != 0:
-            for this_subunit in this_leader.subunit.unit.subunit_sprite:
+            for this_subunit in this_leader.subunit.unit.subunits:
                 if this_subunit.game_id == this_leader.subunit.unit.subunit_list.flat[new_row * new_place]:
                     if this_subunit.leader is not None or (new_row, new_place) in already_pick:
                         new_place += 1
@@ -146,25 +146,25 @@ def split_unit(battle, who, how):
             subunit_number = 0
 
     # v Sort so the new leader subunit position match what set before
-    subunit_sprite = [this_subunit for this_subunit in who.subunit_sprite if
-                     this_subunit.game_id in new_army_subunit.flat]  # new list of sprite not sorted yet
+    subunit_sprite = [this_subunit for this_subunit in who.subunits if
+                      this_subunit.game_id in new_army_subunit.flat]  # new list of sprite not sorted yet
     new_subunit_sprite = []
     for this_id in new_army_subunit.flat:
         for this_subunit in subunit_sprite:
             if this_id == this_subunit.game_id:
                 new_subunit_sprite.append(this_subunit)
 
-    subunit_sprite = [this_subunit for this_subunit in who.subunit_sprite if
-                     this_subunit.game_id in who.subunit_list.flat]
-    who.subunit_sprite = []
+    subunit_sprite = [this_subunit for this_subunit in who.subunits if
+                      this_subunit.game_id in who.subunit_list.flat]
+    who.subunits = []
     for this_id in who.subunit_list.flat:
         for this_subunit in subunit_sprite:
             if this_id == this_subunit.game_id:
-                who.subunit_sprite.append(this_subunit)
+                who.subunits.append(this_subunit)
     # ^ End sort
 
     # v Reset position of subunit in inspect_ui for both old and new unit
-    for sprite in (who.subunit_sprite, new_subunit_sprite):
+    for sprite in (who.subunits, new_subunit_sprite):
         width, height = 0, 0
         subunit_number = 0
         for this_subunit in sprite:
@@ -208,9 +208,9 @@ def split_unit(battle, who, how):
     whose_army.add(new_unit)
     new_unit.team_commander = team_commander
     new_unit.leader = new_leader
-    new_unit.subunit_sprite = new_subunit_sprite
+    new_unit.subunits = new_subunit_sprite
 
-    for this_subunit in new_unit.subunit_sprite:
+    for this_subunit in new_unit.subunits:
         this_subunit.unit = new_unit
 
     for index, this_leader in enumerate(new_unit.leader):  # Change army position of all leader in new unit

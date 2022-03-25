@@ -429,6 +429,10 @@ class ArmyStat(pygame.sprite.Sprite):
                                 (self.image.get_width() / 1.6, self.image.get_height() / 1.8),  # cav range
                                 (self.image.get_width() / 5, self.image.get_height() / 1.4))  # total subunit
 
+        self.leader_text = (
+            "Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master",
+            "Genius", "Unmatched")
+
         self.rect = self.image.get_rect(center=pos)
 
     def add_army_stat(self, troop_number, leader_name):
@@ -450,8 +454,10 @@ class ArmyStat(pygame.sprite.Sprite):
         leader_name = leader.name
         leader_image = leader.full_image
         leader_stat = {"Health: ": leader.health, "Authority: ": leader.authority,
-                       "Melee Command: ": leader.melee_command, "Range Command: ": leader.range_command,
-                       "Cavalry Command: ": leader.cav_command, "Combat: ": leader.combat,
+                       "Melee Command: ": self.leader_text[leader.melee_command],
+                       "Range Command: ": self.leader_text[leader.range_command],
+                       "Cavalry Command: ": self.leader_text[leader.cav_command],
+                       "Combat Skill: ": self.leader_text[leader.combat],
                        "Social Class: ": leader.social["Leader Social Class"]}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
@@ -584,9 +590,9 @@ class MapOptionBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topright=pos)
 
 
-class MapShow(pygame.sprite.Sprite):
-    colour = {0: (50, 50, 50), 1: (0, 0, 255), 2: (255, 0, 0)}
-    selected_colour = {0: (100, 100, 100), 1: (100, 100, 255), 2: (255, 100, 100)}
+class MapPreview(pygame.sprite.Sprite):
+    colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0)}
+    selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
     team_dot = {team: {True: None, False: None} for team in colour.keys()}
 
     def __init__(self, main_dir, screen_scale, pos):
