@@ -1,7 +1,10 @@
+"""Functions that are performed in subunit update function only for arcade genre"""
+
 import random
 import math
 import pygame
 infinity = float("inf")
+equip_set = ("Main", "Sub")
 
 
 def player_interact(self, mouse_pos, mouse_left_up):
@@ -493,17 +496,16 @@ def charge_logic(self, parent_state):
 
 
 def pick_animation(self):
-    # try:
-    if self.state not in (10, 11):
-        state_name = self.subunit_state[self.state]
-        animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)
+    try:
+        if self.state == 10:
+            equip = random.randint(0, 1)
+            weapon = self.weapon_name[random.randint(0, 1)][equip]
+            animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
+        else:
+            state_name = self.subunit_state[self.state]
+            animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)  #TODO change when add change equip
+
         self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
-    # else:
-    #     pass
-        # animation_name = self.race_name + "_" + self.action_list[self.main_weapon_name[0]]["Common"] + "_" + self.action_list[self.main_weapon_name[0]]["Attack"] + "/" + str(
-        #     self.equiped_weapon)
-    # self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
-    # self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
-    # except:  # animation not found, use default
-    #     self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equiped_weapon)]
+    except:  # animation not found, use default
+        self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equipped_weapon)]

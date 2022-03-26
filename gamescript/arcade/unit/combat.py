@@ -77,11 +77,6 @@ def split_unit(**args):
     pass
 
 
-def auth_recal(self):
-    """Not used in arcade mode since authority calculated from only one leader in the unit"""
-    pass
-
-
 def skirmish(self):
     # v skirmishing  # TODO change to AI related and not auto
     if self.hold == 1 and self.state not in (97, 98, 99):

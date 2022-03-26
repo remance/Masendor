@@ -45,7 +45,7 @@ To compile the source code into exe, I would recommend using `main.spec` to comp
 The `main.spec` compile only `main.py`, so you will need to copy gamescript, data, profile folder manually to the distribute folder after.
 
 Check the [`requirements.txt`](requirements.txt) file for dependency requirements if running with the python source code.<br>
-Also, the game is now optimised based on the pygame 2.0.1 module (much faster than 1.9.6) and python 3.7.9. (may have to use cython later for a huge size battle)
+Also, the game is now optimised based on the pygame 2.0.1 module (much faster than 1.9.6) and python 3.10. (may have to use cython later for a huge size battle)
 
 ---------------
 # Latest Update

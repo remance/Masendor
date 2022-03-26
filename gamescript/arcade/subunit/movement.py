@@ -23,12 +23,6 @@ def rotate_logic(self, dt):
     self.front_height = self.height_map.get_height(self.front_pos)
 
 
-def rotate(self):
-    """rotate sprite image may use when subunit change direction"""
-    self.image = pygame.transform.rotate(self.image_original, self.angle)
-    self.rect = self.image.get_rect(center=self.pos)
-
-
 def move_logic(self, dt, parent_state, collide_list):
     if (self.base_pos != self.base_target or self.charge_momentum > 1):
         no_collide_check = False  # can move if front of unit not collided

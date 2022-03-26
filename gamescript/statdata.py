@@ -124,7 +124,7 @@ class TroopData:
                 if row_index > 0:  # skip convert header row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
-                self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
         # Lore of the troop
@@ -376,7 +376,6 @@ class LeaderData:
                            "Armour", "Mount", "Skill", "Trait"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            self.leader_list["ID"] = {stuff: stuff for stuff in header[1:]}
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
@@ -420,6 +419,16 @@ class LeaderData:
             header = rd[0]
             for row_index, row in enumerate(rd):
                 self.leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+            edit_file.close()
+
+        self.common_leader_sprite_list = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "common_leader_sprite.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            for row_index, row in enumerate(rd):
+                self.common_leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
         # Leader class dict

@@ -84,7 +84,7 @@ def convert_str_time(event):
             event[index].append(item[2])
 
 
-def csv_read(main_dir, file, subfolder=(), output_type=0):
+def csv_read(main_dir, file, subfolder=(), output_type=0, header_key=False):
     """output type 0 = dict, 1 = list"""
     return_output = {}
     if output_type == 1:
@@ -97,13 +97,19 @@ def csv_read(main_dir, file, subfolder=(), output_type=0):
     folder_dir = os.path.join(main_dir, folder_dir)
     with open(folder_dir, encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        for row in rd:
+        rd = [row for row in rd]
+        header = rd[0]
+        for row_index, row in enumerate(rd):
             for n, i in enumerate(row):
                 if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
                     row[n] = int(i)
-            if output_type == 0:
-                return_output[row[0]] = row[1:]
-            elif output_type == 1:
+            if output_type == 0:  # return as dict
+                if header_key:
+                    if row_index > 0:  # skip header row
+                        return_output[row[0]] = {header[index + 1]: item for index, item in enumerate(row[1:])}
+                else:
+                    return_output[row[0]] = row[1:]
+            elif output_type == 1:  # return as list
                 return_output.append(row)
         edit_file.close()
     return return_output

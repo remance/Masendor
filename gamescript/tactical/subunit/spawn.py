@@ -47,12 +47,8 @@ def add_weapon_stat(self):
         if self.range_penetrate < 0:
             self.range_penetrate = 0
 
-        if base_range != []:
-            self.base_range = np.mean(base_range)  # use average range
-        if arrow_speed != []:
-            self.arrow_speed = np.mean(arrow_speed)  # use average speed
-        else:
-            self.arrow_speed = 0
+        if arrow_speed == []:
+            self.arrow_speed = [0]
         self.base_reload = weapon_reload + ((50 - self.base_reload) * weapon_reload / 100)  # final reload speed from weapon and skill
 
 

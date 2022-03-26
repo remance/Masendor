@@ -5,7 +5,7 @@ import time
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_fight, common_movement
+from gamescript.common.subunit import common_fight, common_movement, common_refresh
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -14,8 +14,6 @@ from pygame.transform import scale
 rotation_list = common_movement.rotation_list
 rotation_name = common_movement.rotation_name
 rotation_dict = common_movement.rotation_dict
-
-rotation_xy = utility.rotation_xy
 
 infinity = float("inf")
 
@@ -34,7 +32,6 @@ def change_subunit_genre(genre):
     Subunit.dmg_cal = fight.dmg_cal
     Subunit.change_leader = fight.change_leader
     Subunit.die = fight.die
-    Subunit.rotate = movement.rotate
     Subunit.rotate_logic = movement.rotate_logic
     Subunit.move_logic = movement.move_logic
     Subunit.player_interact = refresh.player_interact
@@ -65,7 +62,9 @@ class Subunit(pygame.sprite.Sprite):
     play_animation = animation.play_animation
     set_rotate = utility.set_rotate
     use_skill = common_fight.use_skill
+    rotate = common_movement.rotate
     check_skill_condition = common_fight.check_skill_condition
+    make_front_pos = common_refresh.make_front_pos
 
     # method that change based on genre
     add_weapon_stat = None
@@ -75,7 +74,6 @@ class Subunit(pygame.sprite.Sprite):
     dmg_cal = None
     change_leader = None
     die = None
-    rotate = None
     rotate_logic = None
     move_logic = None
     player_interact = None
@@ -159,8 +157,8 @@ class Subunit(pygame.sprite.Sprite):
             self.subunit_type = stat["Troop Class"] - 1  # 0 is melee infantry and 1 is range for command buff
 
         else:  # leader character, for game mode that replace subunit with leader
-            self.troop_id = int(troop_id.replace("h", ""))
-            stat = self.leader_data.leader_list[self.troop_id].copy()
+            self.troop_id = troop_id
+            stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
             self.original_melee_attack = (stat["Melee Command"] * stat["Combat"]) + grade_stat[
@@ -451,8 +449,7 @@ class Subunit(pygame.sprite.Sprite):
 
             self.image_height = (self.image.get_height() - 1) / 20  # get real half height of circle sprite
 
-            self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.image_height))  # generate front side position
-            self.front_pos = rotation_xy(self.base_pos, self.front_pos, self.radians_angle)  # rotate the new front side according to sprite rotation
+            self.front_pos = self.make_front_pos()
 
             try:
                 self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)  # get new terrain and feature at each subunit position
@@ -590,12 +587,6 @@ class Subunit(pygame.sprite.Sprite):
             elif unit_state in (2, 4, 6):  # Run and shoot
                 self.state = 13
 
-    def make_front_pos(self):
-        """create new pos for front side of sprite"""
-        self.front_pos = (self.base_pos[0], (self.base_pos[1] - self.image_height))
-
-        self.front_pos = rotation_xy(self.base_pos, self.front_pos, self.radians_angle)
-
     def make_pos_range(self):
         """create range of sprite pos for pathfinding"""
         self.pos_range = (range(int(max(0, self.base_pos[0] - (self.image_height - 1))), int(min(1000, self.base_pos[0] + self.image_height))),
@@ -604,13 +595,15 @@ class Subunit(pygame.sprite.Sprite):
     def start_set(self, zoom):
         """run once when battle start or subunit just get created"""
         self.zoom = zoom
-        self.make_front_pos()
+        self.front_pos = self.make_front_pos()
         self.make_pos_range()
         self.zoom_scale()
         self.find_nearby_subunit()
-        self.status_update()
         self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)
         self.height = self.height_map.get_height(self.base_pos)
+        self.front_height = self.height_map.get_height(self.front_pos)  # terrain height at front position
+        self.grade_social_effect = self.unit.leader_social[self.grade_name]
+        self.status_update()
 
         self.battle.alive_subunit_list.append(self)
         if self.team == 1:  # add sprite to team subunit group for collision

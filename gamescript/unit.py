@@ -23,11 +23,12 @@ def change_unit_genre(genre):
     Unit.destroyed = combat.destroyed  # destroyed script
     Unit.retreat = combat.retreat
     Unit.switch_faction = combat.switch_faction
-    Unit.auth_recal = combat.auth_recal
     Unit.user_input = player.user_input
     Unit.rotate_logic = mobalise.rotate_logic
     Unit.revert_move = mobalise.revert_move
     Unit.selection = update.selection
+    Unit.auth_recal = update.auth_recal
+    Unit.setup_unit = update.setup_unit
 
 
 class Unit(pygame.sprite.Sprite):
@@ -175,7 +176,7 @@ class Unit(pygame.sprite.Sprite):
         # v Set up subunit position list for drawing
         width, height = 0, 0
         subunit_number = 0  # Number of subunit based on the position in row and column
-        for subunit in self.subunit_list.flat:
+        for this_subunit in self.subunit_list.flat:
             width += self.image_size[0]
             self.subunit_position_list.append((width, height))
             subunit_number += 1
@@ -188,77 +189,6 @@ class Unit(pygame.sprite.Sprite):
     def change_pos_scale(self):
         """Change position variable to new camera scale"""
         self.true_number_pos = self.number_pos * (11 - self.zoom)
-
-    def setup_army(self, battle_start=True):
-        """Grab stat from all subunit in the unit"""
-        self.troop_number = 0
-        self.stamina = 0
-        self.morale = 0
-        all_speed = []  # list of subunit speed, use to get the slowest one
-        self.ammo = 0
-        how_many = 0
-        all_shoot_range = []  # list of shoot range, use to get the shortest and longest one
-
-        # v Grab subunit stat
-        not_broken = False
-        # if self.zoom == 1:  # closest zoom
-        pos_dict = {sprite: sprite.base_pos for sprite in self.subunits}
-        pos_dict = dict(sorted(pos_dict.items(), key=lambda x: x[1][1]))
-
-        for index, subunit in enumerate(pos_dict.keys()):
-            if subunit.state != 100:  # only get stat from alive subunit
-                if self.zoom == 1:
-                    self.battle_camera.change_layer(subunit, index + 4)
-                self.troop_number += subunit.troop_number
-                self.stamina += subunit.stamina
-                self.morale += subunit.morale
-                all_speed.append(subunit.speed)
-                self.ammo += subunit.magazine_left
-                if subunit.shoot_range > 0:
-                    all_shoot_range.append(subunit.shoot_range)
-                subunit.skill_cond = self.skill_cond
-                how_many += 1
-                if subunit.state != 99:  # check if unit completely broken
-                    not_broken = True
-        self.troop_number = int(self.troop_number)  # convert to int to prevent float decimal
-
-        if not_broken is False:
-            self.state = 99  # completely broken
-            self.can_split_row = False  # can not split unit
-            self.can_split_col = False
-        # ^ End grab subunit stat
-
-        # v calculate stat for unit related calculation
-        if self.troop_number > 0:
-            self.stamina = self.stamina / how_many  # Average stamina of all subunit
-            self.morale = self.morale / how_many  # Average morale of all subunit
-            self.speed = min(all_speed)  # use the slowest subunit
-            self.walk_speed, self.runs_peed = self.speed / 20, self.speed / 15
-            if self.state in (1, 3, 5):
-                self.rotate_speed = self.walk_speed * 50 / (len(self.subunit_list[0]) * len(
-                    self.subunit_list))  # rotate speed is based on move speed and unit block size (not subunit total number)
-            else:
-                self.rotate_speed = self.runs_peed * 50 / (len(self.subunit_list[0]) * len(self.subunit_list))
-
-            if self.rotate_speed > 20:
-                self.rotate_speed = 20  # state 10 melee combat rotate is auto placement
-            if self.rotate_speed < 1:  # no less than speed 1, it will be too slow or can't rotate with speed 0
-                self.rotate_speed = 1
-
-            if len(all_shoot_range) > 0:
-                self.max_range = max(all_shoot_range)  # Max shoot range of all subunit
-                self.min_range = min(all_shoot_range)  # Min shoot range of all subunit
-            if battle_start is False:  # Only do once when self start
-                self.max_stamina = self.stamina
-                self.max_morale = self.morale
-                self.max_health = self.troop_number
-            self.morale_state = 100
-            self.stamina_state = 100
-            if self.max_morale != float("inf"):
-                self.morale_state = round((self.morale * 100) / self.max_morale)
-            if self.max_stamina != float("inf"):
-                self.stamina_state = round((self.stamina * 100) / self.max_stamina)
-        # ^ End cal stat
 
     def setup_frontline(self):
         """Setup frontline array"""
@@ -406,7 +336,7 @@ class Unit(pygame.sprite.Sprite):
 
     def start_set(self, subunit_group):
         """Setup various variables at the start of battle or when new unit spawn/split"""
-        self.setup_army(battle_start=False)
+        self.setup_unit(battle_start=False)
         self.setup_frontline()
         self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
         self.sprite_array = self.subunit_list
@@ -414,11 +344,11 @@ class Unit(pygame.sprite.Sprite):
 
         # v assign team leader commander to every unit in team if this is commander unit
         if self.commander:
-            which_army = self.battle.team1_unit
+            which_unit = self.battle.team1_unit
             if self.team == 2:  # team2
-                which_army = self.battle.team2_unit
-            for army in which_army:
-                army.team_commander = self.leader[0]
+                which_unit = self.battle.team2_unit
+            for this_unit in which_unit:
+                this_unit.team_commander = self.leader[0]
         # ^ End assign commander
 
         self.auth_recal()
@@ -486,7 +416,7 @@ class Unit(pygame.sprite.Sprite):
                 self.timer += dt
                 self.battle.team_troop_number[self.team] += self.troop_number
                 if self.timer >= 1:
-                    self.setup_army()
+                    self.setup_unit()
 
                     # v Find near enemy base_target
                     self.near_target = {}  # Near base_target is enemy that is nearest

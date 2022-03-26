@@ -62,7 +62,7 @@ def grab_face_part(pool, race, side, part, part_check, part_default):
     return surface
 
 
-def generate_head(p, animation_part_list, body_part_list, troop_sprite_list, pool, armour_pool, armour, hair_colour_list, skin_colour_list):
+def generate_head(p, animation_part_list, body_part_list, sprite_list, pool, armour_pool, armour, hair_colour_list, skin_colour_list):
     head_sprite_surface = None
     try:
         head_race = body_part_list[0]
@@ -71,17 +71,17 @@ def generate_head(p, animation_part_list, body_part_list, troop_sprite_list, poo
         head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
         head_rect = head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
         head_sprite_surface.blit(head, head_rect)
-        face = [pool[head_race][head_side]["eyebrow"][troop_sprite_list[p + "_eyebrow"][0]].copy(),
-                grab_face_part(pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], troop_sprite_list[p + "_eye"][0]),
-                pool[head_race][head_side]["beard"][troop_sprite_list[p + "_beard"][0]].copy(),
-                grab_face_part(pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], troop_sprite_list[p + "_mouth"])]
+        face = [pool[head_race][head_side]["eyebrow"][sprite_list[p + "_eyebrow"][0]].copy(),
+                grab_face_part(pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], sprite_list[p + "_eye"][0]),
+                pool[head_race][head_side]["beard"][sprite_list[p + "_beard"][0]].copy(),
+                grab_face_part(pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], sprite_list[p + "_mouth"])]
 
     # if skin != "white":
     #     face[0] = self.apply_colour(face[0], skin_colour)
 
-        face[0] = apply_colour(face[0], troop_sprite_list[p + "_hair"][1], hair_colour_list)
-        face[1] = apply_colour(face[1], troop_sprite_list[p + "_eye"][1], hair_colour_list)
-        face[2] = apply_colour(face[2], troop_sprite_list[p + "_beard"][1], hair_colour_list)
+        face[0] = apply_colour(face[0], sprite_list[p + "_hair"][1], hair_colour_list)
+        face[1] = apply_colour(face[1], sprite_list[p + "_eye"][1], hair_colour_list)
+        face[2] = apply_colour(face[2], sprite_list[p + "_beard"][1], hair_colour_list)
 
         head_sprite_surface = pygame.Surface((face[0].get_width(), face[0].get_height()), pygame.SRCALPHA)
         rect = head.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
@@ -95,8 +95,8 @@ def generate_head(p, animation_part_list, body_part_list, troop_sprite_list, poo
     except TypeError:  # empty
         pass
 
-    if troop_sprite_list[p + "_head"] != "none":
-        gear_image = armour_pool[head_race][armour][troop_sprite_list[p + "_head"]][head_side]["helmet"][body_part_list[2]]
+    if sprite_list[p + "_head"] != "none":
+        gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]][head_side]["helmet"][body_part_list[2]]
         rect = gear_image.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
         head_sprite_surface.blit(gear_image, rect)
 

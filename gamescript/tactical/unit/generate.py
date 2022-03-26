@@ -84,7 +84,7 @@ def split_new_unit(self, who, add_unit_list=True):
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 
-    who.zoom = 11 - self.camera_scale
+    who.zoom = 11 - self.camera_zoom
     who.new_angle = who.angle
 
     who.start_set(self.subunit)

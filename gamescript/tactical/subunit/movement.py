@@ -49,16 +49,6 @@ def rotate_logic(self, dt):
     self.front_height = self.height_map.get_height(self.front_pos)
 
 
-def rotate(self):
-    """rotate sprite image may use when subunit can change direction independently from unit"""
-    if self.zoom != self.max_zoom:
-        self.image = pygame.transform.rotate(self.inspect_image_original, self.angle)
-        self.rect = self.image.get_rect(center=self.pos)
-    if self.unit.selected and self.state != 100:
-        self.selected_inspect_image = pygame.transform.rotate(self.selected_inspect_image_original, self.angle)
-        self.image.blit(self.selected_inspect_image, self.selected_inspect_image_rect)
-
-
 def move_logic(self, dt, parent_state, collide_list):
     revert_move = True  # revert move check for in case subunit still need to rotate before moving
     if parent_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):

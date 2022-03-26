@@ -14,6 +14,8 @@ from gamescript.common.battle import common_setup, common_update, common_user
 from gamescript.common.ui import selector, escmenu
 from gamescript.common.unit import common_generate
 
+direction_list = creation.direction_list
+
 from pygame.locals import *
 from scipy.spatial import KDTree
 
@@ -28,16 +30,19 @@ setup_unit_icon = selector.setup_unit_icon
 
 
 def change_battle_genre(genre):
+    sys.path.insert(0, "/gamescript/genre/")
     if genre == "tactical":
         from gamescript.tactical.battle import setup, user
         from gamescript.tactical.unit import combat, generate
         from gamescript.tactical.subunit import fight
         from gamescript.tactical.uniteditor import convert
+        from gamescript.tactical import genre
     elif genre == "arcade":
         from gamescript.arcade.battle import setup, user
         from gamescript.arcade.unit import combat, generate
         from gamescript.arcade.subunit import fight
         from gamescript.arcade.uniteditor import convert
+        from gamescript.arcade import genre
 
     Battle.split_unit = combat.split_unit
     Battle.check_split = combat.check_split
@@ -52,6 +57,8 @@ def change_battle_genre(genre):
     Battle.selected_unit_process = user.selected_unit_process
     Battle.add_behaviour_ui = user.add_behaviour_ui
     Battle.camera_process = user.camera_process
+
+    Battle.start_zoom = genre.start_zoom
 
 
 class Battle:
@@ -86,6 +93,9 @@ class Battle:
     editor_state_mouse = None
     selected_unit_process = None
     add_behaviour_ui = None
+
+    # variable that get changed based on genre
+    start_zoom = 1
 
     def __init__(self, main, window_style):
         # v Get self object/variable from start_set
@@ -226,19 +236,10 @@ class Battle:
 
         self.feature_mod = main.feature_mod
 
-        self.faction_data = main.faction_data
-        self.coa_list = main.coa_list
-
-        self.weapon_data = main.weapon_data
-        self.armour_data = main.armour_data
-
         self.status_images = main.status_images
         self.role_images = main.role_images
         self.trait_images = main.trait_images
         self.skill_images = main.skill_images
-
-        self.troop_data = main.troop_data
-        self.leader_data = main.leader_data
 
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
         self.icon_sprite_width = main.icon_sprite_width
@@ -267,25 +268,35 @@ class Battle:
 
         self.battle_done_box = main.battle_done_box
         self.battle_done_button = main.battle_done_button
-
-        self.generic_animation_pool = main.generic_animation_pool
-        self.gen_body_sprite_pool = main.gen_body_sprite_pool
-        self.gen_weapon_sprite_pool = main.gen_weapon_sprite_pool
-        self.gen_armour_sprite_pool = main.gen_armour_sprite_pool
-        self.effect_sprite_pool = main.effect_sprite_pool
-        self.weapon_joint_list = main.weapon_joint_list
-        self.hair_colour_list = main.hair_colour_list
-        self.skin_colour_list = main.skin_colour_list
-
-        self.generic_action_data = main.generic_action_data
-        self.animation_sprite_pool = main.animation_sprite_pool
-
         # ^ End load from start_set
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
         self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
         self.bottom_corner = self.screen_rect.height - (5 * self.screen_scale[1])
         self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
+
+        # data specific to ruleset
+        self.faction_data = None
+        self.coa_list = None
+
+        self.troop_data = None
+        self.leader_data = None
+
+        self.weapon_data = None
+        self.armour_data = None
+
+        self.generic_animation_pool = None
+        self.gen_body_sprite_pool = None
+        self.gen_weapon_sprite_pool = None
+        self.gen_armour_sprite_pool = None
+        self.effect_sprite_pool = None
+        self.weapon_joint_list = None
+
+        self.hair_colour_list = None
+        self.skin_colour_list = None
+
+        self.generic_action_data = None
+        self.animation_sprite_pool = None
 
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
@@ -346,6 +357,27 @@ class Battle:
         self.team_selected = team_selected  # player selected team
         self.player_team_check = self.team_selected  # for indexing dict of unit
         self.enactment = enactment  # enactment mod, control both team
+
+        self.faction_data = self.main.faction_data
+        self.coa_list = self.main.coa_list
+
+        self.troop_data = self.main.troop_data
+        self.leader_data = self.main.leader_data
+
+        self.weapon_data = self.main.weapon_data
+        self.armour_data = self.main.armour_data
+
+        self.generic_animation_pool = self.main.generic_animation_pool
+        self.gen_body_sprite_pool = self.main.gen_body_sprite_pool
+        self.gen_weapon_sprite_pool = self.main.gen_weapon_sprite_pool
+        self.gen_armour_sprite_pool = self.main.gen_armour_sprite_pool
+        self.effect_sprite_pool = self.main.effect_sprite_pool
+        self.weapon_joint_list = self.main.weapon_joint_list
+
+        self.hair_colour_list = self.main.hair_colour_list
+        self.skin_colour_list = self.main.skin_colour_list
+
+        self.generic_action_data = self.main.generic_action_data
 
         if self.enactment:
             self.player_team_check = "all"
@@ -419,18 +451,7 @@ class Battle:
 
         self.time_number.start_setup(self.weather_current)
 
-        # v Create the battle map
-        self.camera_pos = pygame.Vector2(500 * self.screen_scale[0],
-                                         500 * self.screen_scale[1])  # Camera pos at the current zoom, start at center of map
-        self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
-                                              500 * self.screen_scale[1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
-        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
-                                      self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
-        self.camera_scale = 1  # Camera zoom
-        camera.Camera.screen_rect = self.screen_rect
-        self.camera = camera.Camera(self.camera_pos, self.camera_scale)
-
-        if map_selected is not None:
+        if map_selected is not None:  # Create battle map
             images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.map_selected], load_order=False)
             self.battle_map_base.draw_image(images["base.png"])
             self.battle_map_feature.draw_image(images["feature.png"])
@@ -443,7 +464,6 @@ class Battle:
             self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, place_name_map, self, False)
         else:  # for unit editor mode, create empty temperate glass map
             self.editor_map_change((166, 255, 107), (181, 230, 29))
-        # ^ End create battle map
 
         self.team0_pos_list = {}
         self.team1_pos_list = {}
@@ -463,15 +483,37 @@ class Battle:
         leader.Leader.leader_pos = self.command_ui.leader_pos
 
         if self.mode == "battle":
+            self.camera_zoom = self.start_zoom  # Camera zoom
             self.start_troop_number = [0, 0, 0]
             self.wound_troop_number = [0, 0, 0]
             self.death_troop_number = [0, 0, 0]
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
             self.unit_setup((self.team0_unit, self.team1_unit, self.team2_unit), self.troop_data.troop_list)
+
+            self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
+                                                                      self.screen_scale, self.main.leader_sprite)
+
+            subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         else:
+            self.camera_zoom = 1  # always start at furthest zoom for editor
+
+            self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
+                                                                      self.screen_scale, self.main.leader_sprite)
+
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
+
+        # Create the game camera
+        self.camera_pos = pygame.Vector2(500 * self.screen_scale[0],
+                                         500 * self.screen_scale[1])  # Camera pos at the current zoom, start at center of map
+        self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
+                                              500 * self.screen_scale[1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
+        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
+                                      self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
+
+        camera.Camera.screen_rect = self.screen_rect
+        self.camera = camera.Camera(self.camera_pos, self.camera_zoom)
 
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
@@ -530,7 +572,7 @@ class Battle:
             for this_unit in self.alive_unit_list:
                 this_unit.start_set(self.subunit)
             for this_subunit in self.subunit:
-                this_subunit.start_set(self.camera_scale)
+                this_subunit.start_set(self.camera_zoom)
             for this_leader in self.leader_updater:
                 this_leader.start_set()
             # ^ End starting
@@ -733,7 +775,7 @@ class Battle:
                              self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
         self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
 
-        self.effect_updater.update(self.alive_unit_list, self.dt, self.camera_scale)
+        self.effect_updater.update(self.alive_unit_list, self.dt, self.camera_zoom)
 
         # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
@@ -823,7 +865,7 @@ class Battle:
 
                     self.base_mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
                                                          (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[1]))  # mouse pos on the map based on camera position
-                    self.battle_mouse_pos = self.base_mouse_pos / self.camera_scale  # mouse pos on the map at current camera zoom scale
+                    self.battle_mouse_pos = self.base_mouse_pos / self.camera_zoom  # mouse pos on the map at current camera zoom scale
                     self.command_mouse_pos = pygame.Vector2(self.battle_mouse_pos[0] / self.screen_scale[0],
                                                               self.battle_mouse_pos[1] / self.screen_scale[1])  # with screen scale
 
@@ -880,7 +922,7 @@ class Battle:
                             self.weather_event.pop(0)
                             self.show_map.add_effect(self.battle_map_height,
                                                      self.weather_effect_images[self.current_weather.weather_type][self.current_weather.level])
-                            self.show_map.change_scale(self.camera_scale)
+                            self.show_map.change_scale(self.camera_zoom)
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_current = self.weather_event[0][1]
@@ -990,11 +1032,11 @@ class Battle:
                                     self.subunit_pos_array[x][y] = 0
 
                     # v Updater
-                    self.unit_updater.update(self.current_weather, self.subunit, self.dt, self.camera_scale,
+                    self.unit_updater.update(self.current_weather, self.subunit, self.dt, self.camera_zoom,
                                              self.base_mouse_pos, mouse_left_up)
                     self.last_mouseover = None  # reset last unit mouse over
                     self.leader_updater.update()
-                    self.subunit_updater.update(self.current_weather, self.dt, self.camera_scale, self.combat_timer,
+                    self.subunit_updater.update(self.current_weather, self.dt, self.camera_zoom, self.combat_timer,
                                                 self.base_mouse_pos, mouse_left_up)
 
                     # v Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
@@ -1022,13 +1064,13 @@ class Battle:
                     if self.combat_timer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combat_timer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing
 
-                    self.effect_updater.update(self.subunit, self.dt, self.camera_scale)
+                    self.effect_updater.update(self.subunit, self.dt, self.camera_zoom)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
-                    self.mini_map.update(self.camera_scale, [self.camera_pos, self.camera_topleft_corner],
+                    self.mini_map.update(self.camera_zoom, [self.camera_pos, self.camera_topleft_corner],
                                          self.team1_pos_list, self.team2_pos_list)
 
                     self.ui_updater.update()  # update ui
-                    self.camera.update(self.camera_pos, self.battle_camera, self.camera_scale)
+                    self.camera.update(self.camera_pos, self.battle_camera, self.camera_zoom)
                     # ^ End battle updater
 
                     # v Update self time

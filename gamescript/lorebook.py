@@ -41,6 +41,9 @@ class Lorebook(pygame.sprite.Sprite):
     leader_section = 8
     terrain_section = 9
     weather_section = 10
+    quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # text for item quality
+    leader_text = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled",
+                   "Master", "Genius", "Unmatched")
 
     def __init__(self, main_dir, screen_scale, screen_rect, image, textsize=24):
         """ Lorebook section: 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill,
@@ -55,9 +58,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
         self.image = image
         self.image_original = self.image.copy()
-        self.leader_list = self.leader_data.leader_list
         self.section = 0
-        self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section Start with 1 instead of 0
+        self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section
         self.stat_data = None  # for getting the section stat data
         self.lore_data = None  # for getting the section lore data
         self.current_subsection = None  # Subsection stat currently viewing
@@ -67,6 +69,18 @@ class Lorebook(pygame.sprite.Sprite):
         self.preview_sprite_original = pygame.Surface((200, 200))
         self.preview_sprite = self.preview_sprite_original.copy()
 
+        self.equipment_stat = {}
+        self.equipment_last_index = []
+        self.section_list = ()
+
+        self.current_subsection_row = 0
+        self.max_subsection_show = 19
+        self.log_size = 0
+        self.page = 0
+        self.max_page = 0
+        self.rect = self.image.get_rect(center=(self.screen_rect.width / 1.9, self.screen_rect.height / 1.9))
+
+    def change_ruleset(self):
         # v Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
         run = 1
@@ -85,19 +99,8 @@ class Lorebook(pygame.sprite.Sprite):
             (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore), (self.faction_lore, None),
             (self.troop_list, self.troop_lore),
             (self.equipment_stat, None), (self.status_list, None), (self.skill_list, None),
-            (self.trait_list, None), (self.leader_list, self.leader_lore), (self.feature_mod, None),
+            (self.trait_list, None), (self.leader_data.leader_list, self.leader_lore), (self.feature_mod, None),
             (self.weather_data, None))
-        self.current_subsection_row = 0
-        self.max_subsection_show = 19
-        self.log_size = 0
-        self.page = 0
-        self.max_page = 0
-        self.rect = self.image.get_rect(center=(self.screen_rect.width / 1.9, self.screen_rect.height / 1.9))
-        self.quality_text = (
-        "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # text for item quality
-        self.leader_text = (
-            "Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master",
-            "Genius", "Unmatched")
 
     def change_page(self, page, page_button, main_ui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
@@ -202,23 +205,9 @@ class Lorebook(pygame.sprite.Sprite):
         make_long_text = utility.make_long_text
 
         stat = self.stat_data[self.subsection]
-        if self.section != self.equipment_section:  # other sections
-            header = self.section_list[self.section][0]["ID"]
-            if type(header) == list:  # some data is in list format like lore and concept
-                stat_header = header[1:-2]
-            elif type(header) == dict:
-                stat_header = list(header.keys())[1:-2]
-        else:  # equipment section use slightly different stat header
-            stat_header = []
-            for index in self.equipment_stat:
-                if type(index) != int and "ID" in index:
-                    stat_header.append(list(self.equipment_stat[index].keys())[:-2])
-
-        if type(stat) == dict:  # convert to list
-            stat = list(stat.values())
-
-        name = stat[0]
-        description = stat[-1]
+        name = list(stat.values())[0]
+        print(stat)
+        description = stat["Description"]
         text_surface = self.font_header.render(str(name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
         self.image.blit(text_surface, text_rect)  # add name of item to the top of page
@@ -240,158 +229,152 @@ class Lorebook(pygame.sprite.Sprite):
 
             # concept, history, faction section is simply for processed and does not need specific column read
             if self.section in (self.concept_section, self.history_section, self.faction_section):
-                front_text = stat[1:-1]
-                for index, text in enumerate(front_text):
-
-                    # blit text
-                    if "IMAGE:" not in text:
-                        text_surface = pygame.Surface(
-                            (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
-                        text_rect = description_surface.get_rect(topleft=(col, row))
-                        make_long_text(text_surface, str(text),
-                                       (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
-
-                    # blit image instead of text
-                    else:
-                        if "FULLIMAGE:" in text:  # full image to whole two pages
-                            filename = text[10:].split("\\")[-1]
-                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[10:].replace(filename, ""))
-                            text_surface = pygame.transform.scale(text_surface, (self.image.get_width(), self.image.get_height()))
-                            text_rect = description_surface.get_rect(topleft=(0, 0))
-                        else:
-                            filename = text[6:].split("\\")[-1]
-                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[6:].replace(filename, ""))
+                for key, value in stat.items():
+                    if key != "Description":
+                        # blit text
+                        if "IMAGE:" not in value:
+                            text_surface = pygame.Surface(
+                                (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
                             text_rect = description_surface.get_rect(topleft=(col, row))
-                    self.image.blit(text_surface, text_rect)
+                            make_long_text(text_surface, str(value),
+                                           (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
 
-                    row += (200 * self.screen_scale[1])
-                    if row >= 750 * self.screen_scale[1]:  # continue drawing on the right page after reaching the end of left page
-                        if col == 520 * self.screen_scale[0]:  # already on the right page
-                            break
+                        # blit image instead of text
                         else:
-                            col = 650 * self.screen_scale[0]
-                            row = 50 * self.screen_scale[1]
+                            if "FULLIMAGE:" in value:  # full image to whole two pages
+                                filename = value[10:].split("\\")[-1]
+                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[10:].replace(filename, ""))
+                                text_surface = pygame.transform.scale(text_surface, (self.image.get_width(), self.image.get_height()))
+                                text_rect = description_surface.get_rect(topleft=(0, 0))
+                            else:
+                                filename = value[6:].split("\\")[-1]
+                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename, text[6:].replace(filename, ""))
+                                text_rect = description_surface.get_rect(topleft=(col, row))
+                        self.image.blit(text_surface, text_rect)
+
+                        row += (200 * self.screen_scale[1])
+                        if row >= 750 * self.screen_scale[1]:  # continue drawing on the right page after reaching the end of left page
+                            if col == 520 * self.screen_scale[0]:  # already on the right page
+                                break
+                            else:
+                                col = 650 * self.screen_scale[0]
+                                row = 50 * self.screen_scale[1]
 
             # more complex section
             elif self.section in (self.troop_section, self.equipment_section, self.status_section, self.skill_section, self.trait_section,
                                   self.leader_section, self.terrain_section, self.weather_section):
-                front_text = stat[1:-2]
-                for index, text in enumerate(front_text):
-                    if text != "":
+                front_text = {key: value for key, value in stat.items() if key not in ("Name", "Description", "ImageID")}
+                for key, value in front_text.items():
+                    if value != "":
                         if self.section != self.equipment_section:  # equipment section need to be processed differently
-                            create_text = stat_header[index] + ": " + str(text)
-                            if stat_header[index] == "ImageID":
-                                # IMAGEID column in other section does not provide information, skip
-                                create_text = ""
-                                pass
-
-                            elif self.section == self.troop_section:
-                                if stat_header[index] == "Role":  # Replace imageid to subunit role in troop section
+                            create_text = key + ": " + str(value)
+                            if self.section == self.troop_section:
+                                if key == "Role":  # Replace imageid to subunit role in troop section
                                     role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock",
                                                  5: "Support", 6: "Magic",
                                                  7: "Ambusher",
                                                  8: "Sniper", 9: "Recon"}
                                     role = [role_list[item] for item in
-                                            text]  # role is not type, it represents subunit classification from base stat to tell what it excels
+                                            value]  # role is not type, it represents subunit classification from base stat to tell what it excels
                                     create_text = "Specilaised Role: "
                                     if len(role) == 0:
                                         create_text += "None, "
                                     for this_role in role:
                                         create_text += this_role + ", "
                                     create_text = create_text[0:-2]
-                                elif stat_header[index] == "Type":
+                                elif key == "Type":
                                     create_text = ""
                                     pass
-                            elif stat_header[index] == "Properties":  # troop properties list
+                            elif key == "Properties":  # troop properties list
                                 trait_list = ""
-                                if text != [0]:
-                                    for this_text in text:
+                                if value != [0]:
+                                    for this_text in value:
                                         if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
                                             trait_list += self.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]
-                                    create_text = stat_header[index] + ": " + trait_list
+                                    create_text = key + ": " + trait_list
                                 else:
                                     create_text = ""
                                     pass
 
-                            elif stat_header[index] == "Status" or stat_header[index] == "Enemy Status":  # status list
+                            elif key == "Status" or key == "Enemy Status":  # status list
                                 status_list = ""
-                                if text != [0]:
-                                    for this_text in text:
+                                if value != [0]:
+                                    for this_text in value:
                                         if this_text in self.status_list:  # in case user put in trait not existed in ruleset
                                             status_list += self.status_list[this_text]["Name"] + ", "
                                     status_list = status_list[0:-2]
-                                    create_text = stat_header[index] + ": " + status_list
+                                    create_text = key + ": " + status_list
                                 else:
                                     create_text = ""
                                     pass
 
                             if self.section == self.troop_section:  # troop section
-                                if stat_header[index] == "Grade":  # grade text instead of number
-                                    create_text = stat_header[index] + ": " + self.troop_grade_list[text]["Name"]
+                                if key == "Grade":  # grade text instead of number
+                                    create_text = key + ": " + self.troop_grade_list[value]["Name"]
 
-                                elif "Weapon" in stat_header[index]:  # weapon text with quality
+                                elif "Weapon" in key:  # weapon text with quality
                                     quality_text = (
                                     "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = stat_header[index] + ": " + quality_text[text[1]] + " " + \
-                                                  self.weapon_list[text[0]]["Name"]
+                                    create_text = key + ": " + quality_text[value[1]] + " " + \
+                                                  self.weapon_list[value[0]]["Name"]
 
-                                elif stat_header[index] == "Armour":  # armour text with quality
+                                elif key == "Armour":  # armour text with quality
                                     quality_text = (
                                     "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = stat_header[index] + ": " + quality_text[text[1]] + " " + \
-                                                  self.armour_list[text[0]]["Name"] \
+                                    create_text = key + ": " + quality_text[value[1]] + " " + \
+                                                  self.armour_list[value[0]]["Name"] \
                                         # + ", Base Armour: " + str( self.armour_list[text[0]][1])
 
-                                elif stat_header[index] == "Unit Type":
-                                    create_text = stat_header[index] + ": " + self.troop_class_list[text]["Name"]
+                                elif key == "Unit Type":
+                                    create_text = key + ": " + self.troop_class_list[text]["Name"]
 
-                                elif stat_header[index] == "Race":
-                                    create_text = stat_header[index] + ": " + self.race_list[text]["Name"]
+                                elif key == "Race":
+                                    create_text = key + ": " + self.race_list[value]["Name"]
 
-                                elif stat_header[index] == "Mount":  # mount text with grade
-                                    create_text = stat_header[index] + ": " + self.mount_grade_list[text[1]]["Name"] + " " + \
-                                                  self.mount_list[text[0]]["Name"] + "//" + self.mount_armour_list[text[2]]["Name"]
-                                    if self.mount_list[text[0]]["Name"] == "None":
+                                elif key == "Mount":  # mount text with grade
+                                    create_text = key + ": " + self.mount_grade_list[value[1]]["Name"] + " " + \
+                                                  self.mount_list[value[0]]["Name"] + "//" + self.mount_armour_list[value[2]]["Name"]
+                                    if self.mount_list[value[0]]["Name"] == "None":
                                         create_text = ""
                                         pass
 
-                                elif stat_header[index] == "Abilities" or stat_header[index] == "Charge Skill":  # skill text instead of number
+                                elif key == "Abilities" or key == "Charge Skill":  # skill text instead of number
                                     skill_list = ""
-                                    if stat_header[index] == "Charge Skill":
-                                        if text in self.skill_list:  # only include skill if exist in ruleset
-                                            skill_list += self.skill_list[text]["Name"]
-                                        create_text = stat_header[index] + ": " + skill_list
+                                    if key == "Charge Skill":
+                                        if value in self.skill_list:  # only include skill if exist in ruleset
+                                            skill_list += self.skill_list[value]["Name"]
+                                        create_text = key + ": " + skill_list
                                         # + ", Base Speed: " + str(speed)  # add subunit speed after
-                                    elif text != [0]:
-                                        for this_text in text:
+                                    elif value != [0]:
+                                        for this_text in value:
                                             if this_text in self.skill_list:  # only include skill in ruleset
                                                 skill_list += self.skill_list[this_text]["Name"] + ", "
                                         skill_list = skill_list[0:-2]
-                                        create_text = stat_header[index] + ": " + skill_list
+                                        create_text = key + ": " + skill_list
                                     else:
                                         create_text = ""
                                         pass
 
-                            elif self.section == self.skill_section and (stat_header[index] == "Restriction" or
-                                                                         stat_header[index] == "Condition"):  # skill restriction and condition in skill section
+                            elif self.section == self.skill_section and (key == "Restriction" or
+                                                                         key == "Condition"):  # skill restriction and condition in skill section
                                 state_list = ""
-                                if text != "":
-                                    for this_text in text:
+                                if value != "":
+                                    for this_text in value:
                                         state_list += self.unit_state_text[this_text] + ", "
                                     state_list = state_list[0:-2]  # remove the last ", "
-                                    create_text = stat_header[index] + ": " + state_list
+                                    create_text = key + ": " + state_list
                                 else:
                                     create_text = ""
                                     pass
 
                             elif self.section == self.leader_section:  # leader section
-                                if stat_header[index] in (
+                                if key in (
                                 "Melee Command", "Range Command", "Cavalry Command", "Combat"):
-                                    create_text = stat_header[index] + ": " + self.leader_text[text]
+                                    create_text = key + ": " + self.leader_text[value]
 
-                                elif stat_header[index] == "Social Class":
-                                    create_text = stat_header[index] + ": " + self.leader_class_list[text]["Leader Social Class"]
+                                elif key == "Social Class":
+                                    create_text = key + ": " + self.leader_class_list[value]["Leader Social Class"]
 
                         else:  # equipment section, header depends on equipment type
                             for this_index, last_index in enumerate(self.equipment_last_index):
@@ -407,7 +390,7 @@ class Lorebook(pygame.sprite.Sprite):
                             elif new_header[index] == "Properties":
                                 trait_list = ""
                                 if text != [0]:
-                                    for this_text in text:
+                                    for this_text in value:
                                         if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
                                             trait_list += self.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]

@@ -1,4 +1,4 @@
-"""Functions that are performed in subunit update function"""
+"""Functions that are performed in subunit update function only for tactical genre"""
 
 import random
 import math
@@ -85,9 +85,10 @@ def status_update(self, this_weather=None):
         self.melee_attack += weather.melee_atk_buff
         self.melee_def += weather.melee_def_buff
         self.range_def += weather.range_def_buff
-        self.armour += weather.armour_buff
+        # self.armour += weather.armour_buff
         self.speed += weather.speed_buff
         self.accuracy += weather.accuracy_buff
+        self.shoot_range += weather.range_buff
         self.reload += weather.reload_buff
         self.charge += weather.charge_buff
         self.charge_def += weather.charge_def_buff

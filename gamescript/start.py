@@ -34,7 +34,7 @@ read_terrain_data = creation.read_terrain_data
 read_weather_data = creation.read_weather_data
 read_map_data = creation.read_map_data
 read_faction_data = creation.read_faction_data
-make_encyclopedia_ui = creation.make_encyclopedia_ui
+make_encyclopedia_ui = creation.make_encyclopedia
 make_input_box = creation.make_input_box
 make_editor_ui = creation.make_editor_ui
 load_icon_data = creation.load_icon_data
@@ -102,6 +102,7 @@ def change_genre(self, genre):
 
     self.genre_sprite_size = genre.genre_sprite_size
     self.char_select = genre.char_select
+    self.leader_sprite = genre.leader_sprite
     subunit.change_subunit_genre(self.genre)
     unit.change_unit_genre(self.genre)
     battle.change_battle_genre(self.genre)
@@ -111,6 +112,8 @@ def change_genre(self, genre):
     edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
 
     change_genre_ui(self.main_dir, self.screen_scale, self.genre, self.genre_ui_dict)
+
+    self.change_ruleset()
 
     # Background image
     try:
@@ -140,6 +143,11 @@ class MainMenu:
         pygame.init()  # Initialize pygame
 
         self.main_dir = main_dir
+
+        lorebook.Lorebook.main_dir = self.main_dir
+        map.FeatureMap.main_dir = main_dir
+        map.BeautifulMap.main_dir = main_dir
+        uniteditor.PreviewBox.main_dir = self.main_dir
 
         # v Read config file
         config = configparser.ConfigParser()
@@ -335,7 +343,6 @@ class MainMenu:
         lorebook.SubsectionList.containers = self.lore_name_list
         lorebook.SubsectionName.containers = self.subsection_name, self.main_ui_updater, self.battle_ui_updater
 
-        uniteditor.PreviewBox.main_dir = self.main_dir
         uniteditor.PreviewBox.effect_image = load_image(self.main_dir, self.screen_scale, "effect.png", "map")  # map special effect image
 
         # battle containers
@@ -447,6 +454,7 @@ class MainMenu:
 
         # will be changed in genre_change function depending on selected genre
         self.char_select = False
+        self.leader_sprite = False
         self.genre_sprite_size = (200, 200)
 
         # Unit and subunit editor button in game start menu
@@ -504,8 +512,6 @@ class MainMenu:
             pygame.mixer.music.load(self.music_list[0])
             pygame.mixer.music.play(-1)
         # ^ End Main menu
-
-        self.change_ruleset()
 
         # v Battle related stuffs
         unit_ui_images = load_images(self.main_dir, self.screen_scale, ["ui", "unit_ui"])
@@ -664,12 +670,21 @@ class MainMenu:
         self.leader_popup = popup_ui_dict["leader_popup"]
         self.effect_popup = popup_ui_dict["effect_popup"]
         self.char_popup = popup_ui_dict["char_popup"]
-        self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
+        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
+        self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
+
+        self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
+        self.weather_data, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
+            self.main_dir, self.screen_scale)
+
         self.battle_game = battle.Battle(self, self.window_style)
         self.change_genre(self.genre)
+
+        self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
+
         subunit.Subunit.battle = self.battle_game
         leader.Leader.battle = self.battle_game
         start_pos = [(self.screen_rect.width / 2) - (self.icon_sprite_width * 5),
@@ -705,10 +720,6 @@ class MainMenu:
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 
-        self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
-        self.weather_data, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
-            self.main_dir, self.screen_scale)
-
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
             self.main_dir, self.ruleset_folder)
 
@@ -734,11 +745,9 @@ class MainMenu:
         lorebook.Lorebook.mount_grade_list = self.troop_data.mount_grade_list
         lorebook.Lorebook.race_list = self.troop_data.race_list
         lorebook.Lorebook.screen_rect = self.screen_rect
-        lorebook.Lorebook.main_dir = self.main_dir
         lorebook.Lorebook.unit_state_text = self.unit_state_text
 
-        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
-        self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
+        self.encyclopedia.change_ruleset()
 
         self.generic_action_data = load_action(self.main_dir)
         subunit.Subunit.generic_action_data = self.generic_action_data
@@ -758,9 +767,8 @@ class MainMenu:
 
         self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
 
-        self.animation_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale)
-
-        subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
+        self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,
+                                                             self.leader_sprite, preview=True)
 
     def game_intro(self, screen, clock, intro):
         timer = 0
