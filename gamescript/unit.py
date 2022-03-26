@@ -158,8 +158,8 @@ class Unit(pygame.sprite.Sprite):
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
         team_pos_list = (self.battle.team0_pos_list, self.battle.team1_pos_list, self.battle.team2_pos_list)
-        self.battle.all_unit_list.append(self)
-        self.battle.all_unit_index.append(self.game_id)
+        self.battle.alive_unit_list.add(self)
+        self.battle.alive_unit_index.append(self.game_id)
 
         self.team = team  # team
         self.ally_pos_list = team_pos_list[self.team]
@@ -478,7 +478,7 @@ class Unit(pygame.sprite.Sprite):
         # ^ End setup frontline when subunit destroyed
 
         if self.state != 100:
-            self.ally_pos_list[self.game_id] = self.base_pos  # update current position to team position list
+            self.ally_pos_list[self] = self.base_pos  # update current position to team position list
 
             self.selection()
 

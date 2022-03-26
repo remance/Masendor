@@ -299,10 +299,10 @@ def clean_group_object(groups):
     for group in groups:
         if type(group) == pygame.sprite.Group or type(group) == list or type(group) == tuple:
             for stuff in group:
-                stuff.delete()
                 stuff.kill()
+                stuff.delete()
                 del stuff
         else:
-            group.delete()
             group.kill()
+            group.delete()
             del group

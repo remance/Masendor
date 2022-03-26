@@ -118,11 +118,13 @@ class Battle:
         self.team1_unit = main.team1_unit
         self.team2_unit = main.team2_unit
 
+        self.alive_unit_list = main.alive_unit_list
+
         self.team0_subunit = main.team0_subunit
         self.team1_subunit = main.team1_subunit
         self.team2_subunit = main.team2_subunit
         self.subunit = main.subunit
-        self.army_leader = main.army_leader
+        self.leader = main.leader
 
         self.range_attacks = main.range_attacks
         self.direction_arrows = main.direction_arrows
@@ -304,12 +306,11 @@ class Battle:
         self.team1_pos_list = {}  # team 1 unit position
         self.team2_pos_list = {}  # same for team 2
 
-        self.all_unit_list = []  # list of every unit in self alive
-        self.all_unit_index = []  # list of every unit index alive
+        self.alive_unit_index = []  # list of every unit index alive
 
-        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.all_unit_list}
+        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.alive_unit_list}
 
-        self.all_subunit_list = []  # list of all subunit alive in self
+        self.alive_subunit_list = []  # list of all subunit alive in self, need to be in list for collision check
 
         self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
                                  self.team_coa, self.troop_card_button, self.troop_listbox, self.troop_scroll,
@@ -448,12 +449,11 @@ class Battle:
         self.team1_pos_list = {}
         self.team2_pos_list = {}
 
-        self.all_unit_list = []
-        self.all_unit_index = []
+        self.alive_unit_index = []
 
-        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.all_unit_list}
+        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.alive_unit_list}
 
-        self.all_subunit_list = []
+        self.alive_subunit_list = []
 
         # initialise starting subunit sprites
         self.mode = mode
@@ -527,7 +527,7 @@ class Battle:
             self.game_speed = 1
 
             # v Run starting function
-            for this_unit in self.all_unit_list:
+            for this_unit in self.alive_unit_list:
                 this_unit.start_set(self.subunit)
             for this_subunit in self.subunit:
                 this_subunit.start_set(self.camera_scale)
@@ -542,7 +542,7 @@ class Battle:
                 arrow.kill()
                 del arrow
 
-            for this_unit in self.all_unit_list:  # reset all unit state
+            for this_unit in self.alive_unit_list:  # reset all unit state
                 this_unit.user_input(self.battle_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
             self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(bottomright=(self.screen_rect.width,
@@ -587,9 +587,9 @@ class Battle:
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                       *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
 
-        clean_group_object((self.subunit, self.army_leader, self.team0_unit, self.team1_unit, self.team2_unit,
-                      self.unit_icon, self.troop_number_sprite,
-                      self.inspect_subunit))  # remove all reference from battle object
+        clean_group_object((self.subunit, self.leader, self.team0_unit, self.team1_unit, self.team2_unit,
+                            self.unit_icon, self.troop_number_sprite,
+                            self.inspect_subunit))  # remove all reference from battle object
 
         self.remove_unit_ui()
 
@@ -598,8 +598,7 @@ class Battle:
             del arrow
 
         self.subunit_selected = None
-        self.all_unit_list = []
-        self.all_unit_index = []
+        self.alive_unit_index = []
         self.combat_path_queue = []
         self.team0_pos_list = {}
         self.team1_pos_list = {}
@@ -734,7 +733,7 @@ class Battle:
                              self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
         self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
 
-        self.effect_updater.update(self.all_unit_list, self.dt, self.camera_scale)
+        self.effect_updater.update(self.alive_unit_list, self.dt, self.camera_scale)
 
         # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
@@ -929,16 +928,16 @@ class Battle:
                             self.music_event = self.music_event[1:]
                         # ^ End music system
 
-                        for this_unit in self.all_unit_list:
+                        for this_unit in self.alive_unit_list:
                             this_unit.collide = False  # reset collide
 
-                        if len(self.all_subunit_list) > 1:
+                        if len(self.alive_subunit_list) > 1:
                             tree = KDTree(
-                                [sprite.base_pos for sprite in self.all_subunit_list])  # collision loop check, much faster than pygame collide check
+                                [sprite.base_pos for sprite in self.alive_subunit_list])  # collision loop check, much faster than pygame collide check
                             collisions = tree.query_pairs(self.collide_distance)
                             for one, two in collisions:
-                                sprite_one = self.all_subunit_list[one]
-                                sprite_two = self.all_subunit_list[two]
+                                sprite_one = self.alive_subunit_list[one]
+                                sprite_two = self.alive_subunit_list[two]
                                 if sprite_one.unit != sprite_two.unit:  # collide with subunit in other unit
                                     if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
                                         sprite_one.full_merge.append(sprite_two)
@@ -985,7 +984,7 @@ class Battle:
                                             sprite_two.same_front.append(sprite_one)
 
                         self.subunit_pos_array = self.map_move_array.copy()
-                        for this_subunit in self.all_subunit_list:
+                        for this_subunit in self.alive_subunit_list:
                             for y in this_subunit.pos_range[0]:
                                 for x in this_subunit.pos_range[1]:
                                     self.subunit_pos_array[x][y] = 0

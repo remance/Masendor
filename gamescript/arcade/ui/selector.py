@@ -8,7 +8,7 @@ def setup_unit_icon(self):
     if self.team_selected == 2:
         unit_list = self.team2_unit
     if self.enactment:  # include another team unit icon as well in enactment mode
-        unit_list = self.all_unit_list
+        unit_list = self.alive_unit_list
     current_index = int(self.unit_selector.current_row * self.unit_selector.max_column_show)  # the first index of current row
     self.unit_selector.log_size = len(unit_list) / self.unit_selector.max_column_show
 

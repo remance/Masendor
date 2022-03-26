@@ -17,7 +17,7 @@ def setup_battle_ui(self, change):
         self.troop_card_ui.change_pos((self.inspect_ui.rect.bottomleft[0] + self.troop_card_ui.image.get_width() / 2,
                                        (self.inspect_ui.rect.bottomleft[1] + self.troop_card_ui.image.get_height() / 2)))
 
-        self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number, speed_number=self.speed_number)
+        self.time_ui.change_pos(self.unit_selector.rect.topright, self.time_number, speed_number=self.speed_number)
         self.time_button[0].change_pos((self.time_ui.rect.center[0] - self.time_button[0].image.get_width(),
                                         self.time_ui.rect.center[1]))  # time pause button
         self.time_button[1].change_pos((self.time_ui.rect.center[0], self.time_ui.rect.center[1]))  # time decrease button

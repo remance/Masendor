@@ -426,13 +426,6 @@ class Subunit(pygame.sprite.Sprite):
         self.stamina_image_list = sprite_dict["stamina_list"]
 
         if purpose == "battle":
-            self.battle.all_subunit_list.append(self)
-            if self.team == 1:  # add sprite to team subunit group for collision
-                group_collide = self.battle.team1_subunit
-            elif self.team == 2:
-                group_collide = self.battle.team2_subunit
-            group_collide.add(self)
-
             self.angle = self.unit.angle
             self.new_angle = self.unit.angle
             self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
@@ -501,7 +494,6 @@ class Subunit(pygame.sprite.Sprite):
         """Change position variable to new camera scale"""
         self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)
         self.rect.center = self.pos
-
 
     def find_nearby_subunit(self):
         """Find nearby friendly squads in the same unit for applying buff"""
@@ -610,7 +602,7 @@ class Subunit(pygame.sprite.Sprite):
                           range(int(max(0, self.base_pos[1] - (self.image_height - 1))), int(min(1000, self.base_pos[1] + self.image_height))))
 
     def start_set(self, zoom):
-        """run once when self start or subunit just get created"""
+        """run once when battle start or subunit just get created"""
         self.zoom = zoom
         self.make_front_pos()
         self.make_pos_range()
@@ -619,6 +611,13 @@ class Subunit(pygame.sprite.Sprite):
         self.status_update()
         self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)
         self.height = self.height_map.get_height(self.base_pos)
+
+        self.battle.alive_subunit_list.append(self)
+        if self.team == 1:  # add sprite to team subunit group for collision
+            group_collide = self.battle.team1_subunit
+        elif self.team == 2:
+            group_collide = self.battle.team2_subunit
+        group_collide.add(self)
 
         self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
 
@@ -700,6 +699,7 @@ class Subunit(pygame.sprite.Sprite):
             image.blit(image2, image_rect)
         image.blit(image1, image_rect)
 
+        image_rect = image1.get_rect(center=block.get_rect().center)
         block.blit(image1, image_rect)
         block_original = block.copy()
 
@@ -837,17 +837,15 @@ class Subunit(pygame.sprite.Sprite):
             self.combat_move_queue = [self.close_target.base_pos]
         # ^ End path finding
 
-
     def delete(self, local=False):
-        """delete reference when del is called"""
+        """delete reference when function is called"""
+        del self.unit
+        del self.leader
+        del self.who_last_select
+        del self.attack_target
+        del self.melee_target
+        del self.close_target
+        if self in self.battle.combat_path_queue:
+            self.battle.combat_path_queue.remove(self)
         if local:
             print(locals())
-        else:
-            del self.unit
-            del self.leader
-            del self.who_last_select
-            del self.attack_target
-            del self.melee_target
-            del self.close_target
-            if self in self.battle.combat_path_queue:
-                self.battle.combat_path_queue.remove(self)

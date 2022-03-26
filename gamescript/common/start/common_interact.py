@@ -322,8 +322,6 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                 stuff.kill()
                 del stuff
 
-        clean_group_object((self.preview_char, self.unit_icon))
-
         self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
                                                (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
                                                load_image(self.main_dir, self.screen_scale,
@@ -350,7 +348,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         for index, unit in enumerate(self.preview_char):
             if index == 0:  # get for adding subunit to preview
                 get_unit = unit
-            for subunit in unit.subunits:
+            for subunit in unit.subunits:  # change subunit pos to preview box
                 subunit.pos = (self.char_stat["troop"].rect.topleft[0] + (subunit.unit_position[0] * subunit.image.get_width() / 5),
                                self.char_stat["troop"].rect.topleft[1] + ((subunit.unit_position[1] + 4) * subunit.image.get_height() / 5))
                 subunit.rect = subunit.image.get_rect(center=subunit.pos)
@@ -370,10 +368,9 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                                     list(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
-        for other_icon in self.unit_icon:
-            self.main_ui_updater.remove(other_icon.unit.subunits)
-
-        clean_group_object((self.preview_char, self.unit_icon))
+        clean_group_object((self.subunit, self.leader, self.preview_char,
+                            self.unit_icon, self.troop_number_sprite,
+                            self.inspect_subunit))
 
         change_to_source_selection(self)
 
@@ -382,7 +379,6 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
     elif self.start_button.event:  # start battle button
         self.start_button.event = False
-
         start_battle(self, self.char_selected)
 
     elif self.char_selector_scroll.rect.collidepoint(self.mouse_pos):

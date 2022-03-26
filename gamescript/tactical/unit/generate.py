@@ -99,8 +99,8 @@ def split_new_unit(self, who, add_unit_list=True):
         this_subunit.start_set(this_subunit.zoom)
 
     if add_unit_list:
-        self.all_unit_list.append(who)
-        self.all_unit_index.append(who.game_id)
+        self.alive_unit_list.append(who)
+        self.alive_unit_index.append(who.game_id)
 
     number_spite = battleui.TroopNumber(self.screen_scale, who)
     self.troop_number_sprite.add(number_spite)

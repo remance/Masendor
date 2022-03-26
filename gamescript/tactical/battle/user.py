@@ -722,7 +722,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 show = True
                             slot.kill()
                             slot.__init__(slot.troop_id, slot.game_id, self.unit_build_slot, slot.pos,
-                                          100, 100, [1, 1], self.genre, "edit")
+                                          100, 100, self.unit_scale, self.genre, "edit")
                             slot.kill()
                             self.subunit_build.add(slot)
                             if show:  # currently has ui showing
@@ -756,8 +756,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                         if can_deploy:
                             unit_game_id = 0
-                            if len(self.all_unit_index) > 0:
-                                unit_game_id = self.all_unit_index[-1] + 1
+                            if len(self.alive_unit_index) > 0:
+                                unit_game_id = self.alive_unit_index[-1] + 1
                             current_preset = self.convert_slot_dict(self.unit_preset_name,
                                                                     [str(int(self.base_camera_pos[0] / self.screen_scale[0])),
                                                                      str(int(self.base_camera_pos[1] / self.screen_scale[1]))], unit_game_id)
@@ -767,26 +767,27 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                     subunit_game_id = this_subunit.game_id
                                 subunit_game_id = subunit_game_id + 1
                             for slot in self.subunit_build:  # just for grabbing current selected team
-                                current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
+                                current_preset[self.unit_preset_name]["Angle"] = 0
+                                current_preset[self.unit_preset_name]["Start Health"] = 100
+                                current_preset[self.unit_preset_name]["Start Stamina"] = 100
+                                current_preset[self.unit_preset_name]["Team"] = slot.team
                                 self.convert_edit_unit((self.team0_unit, self.team1_unit, self.team2_unit)[slot.team],
                                                        current_preset[self.unit_preset_name], team_colour[slot.team],
-                                                       pygame.transform.scale(
-                                                           self.coa_list[int(current_preset[self.unit_preset_name][-1])],
-                                                           (60, 60)), subunit_game_id)
+                                                       pygame.transform.scale(self.coa_list[int(current_preset[self.unit_preset_name]["Team"])], (60, 60)), subunit_game_id)
                                 break
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
                             setup_unit_icon(self.unit_selector, self.unit_icon,
                                             self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
                             self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
-                            for this_unit in self.all_unit_list:
+                            for this_unit in self.alive_unit_list:
                                 this_unit.start_set(self.subunit)
                             for this_subunit in self.subunit:
                                 this_subunit.start_set(self.camera_scale)
                             for this_leader in self.leader_updater:
                                 this_leader.start_set()
 
-                            for this_unit in self.all_unit_list:
+                            for this_unit in self.alive_unit_list:
                                 this_unit.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
                                                      other_command=1)
                         else:
@@ -1128,7 +1129,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                         del this_unit
                 for this_subunit in self.last_selected.subunits:
                     this_subunit.delete()
-                    self.all_subunit_list.remove(this_subunit)
+                    self.alive_subunit_list.remove(this_subunit)
                     this_subunit.kill()
                     del this_subunit
                 for this_leader in self.last_selected.leader:
@@ -1136,11 +1137,11 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                     this_leader.kill()
                     del this_leader
                 del [self.team0_pos_list, self.team1_pos_list, self.team2_pos_list][self.last_selected.team][
-                    self.last_selected.game_id]
+                    self.last_selected]
                 self.last_selected.delete()
                 self.last_selected.kill()
-                self.all_unit_list.remove(self.last_selected)
-                self.all_unit_index.remove(self.last_selected.game_id)
+                self.alive_unit_list.remove(self.last_selected)
+                self.alive_unit_index.remove(self.last_selected.game_id)
                 setup_unit_icon(self.unit_selector, self.unit_icon,
                                 self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
                 self.last_selected = None

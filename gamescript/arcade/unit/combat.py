@@ -7,11 +7,11 @@ def destroyed(self, battle, morale_hit=True):
     if self.team == 1:
         group = battle.team1_unit
         enemy_group = battle.team2_unit
-        battle.team1_pos_list.pop(self.game_id)
+        battle.team1_pos_list.pop(self)
     else:
         group = battle.team2_unit
         enemy_group = battle.team1_unit
-        battle.team2_pos_list.pop(self.game_id)
+        battle.team2_pos_list.pop(self)
 
     if morale_hit:
         if self.commander:  # more morale penalty if the unit is a command unit
@@ -26,8 +26,8 @@ def destroyed(self, battle, morale_hit=True):
             for this_subunit in this_army.subunits:
                 this_subunit.base_morale -= 20
 
-    battle.all_unit_list.remove(self)
-    battle.all_unit_index.remove(self.game_id)
+    battle.alive_unit_list.remove(self)
+    battle.alive_unit_index.remove(self.game_id)
     group.remove(self)
     self.got_killed = True
 

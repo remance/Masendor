@@ -1,17 +1,21 @@
 import numpy as np
 import pygame
 
+from gamescript.common import utility
+
+rotation_xy = utility.rotation_xy
+
 
 def destroyed(self, battle, morale_hit=True):
     """remove unit when it dies"""
     if self.team == 1:
         group = battle.team1_unit
         enemy_group = battle.team2_unit
-        battle.team1_pos_list.pop(self.game_id)
+        battle.team1_pos_list.pop(self)
     else:
         group = battle.team2_unit
         enemy_group = battle.team1_unit
-        battle.team2_pos_list.pop(self.game_id)
+        battle.team2_pos_list.pop(self)
 
     if morale_hit:
         if self.commander:  # more morale penalty if the unit is a command unit
@@ -26,8 +30,8 @@ def destroyed(self, battle, morale_hit=True):
             for this_subunit in this_army.subunits:
                 this_subunit.base_morale -= 20
 
-    battle.all_unit_list.remove(self)
-    battle.all_unit_index.remove(self.game_id)
+    battle.alive_unit_list.remove(self)
+    battle.alive_unit_index.remove(self.game_id)
     group.remove(self)
     self.got_killed = True
 
@@ -98,21 +102,21 @@ def split_unit(battle, who, how):
         new_army_subunit = np.array_split(who.subunit_list, 2)[1]
         who.subunit_list = np.array_split(who.subunit_list, 2)[0]
         new_pos = pygame.Vector2(who.base_pos[0], who.base_pos[1] + (who.base_height_box / 2))
-        new_pos = who.rotation_xy(who.base_pos, new_pos, who.radians_angle)  # new unit pos (back)
+        new_pos = rotation_xy(who.base_pos, new_pos, who.radians_angle)  # new unit pos (back)
         base_pos = pygame.Vector2(who.base_pos[0], who.base_pos[1] - (who.base_height_box / 2))
-        who.base_pos = who.rotation_xy(who.base_pos, base_pos, who.radians_angle)  # new position for original unit (front)
+        who.base_pos = rotation_xy(who.base_pos, base_pos, who.radians_angle)  # new position for original unit (front)
         who.base_height_box /= 2
 
     else:  # split by column
         new_army_subunit = np.array_split(who.subunit_list, 2, axis=1)[1]
         who.subunit_list = np.array_split(who.subunit_list, 2, axis=1)[0]
         new_pos = pygame.Vector2(who.base_pos[0] + (who.base_width_box / 3.3), who.base_pos[1])  # 3.3 because 2 make new unit position overlap
-        new_pos = who.rotation_xy(who.base_pos, new_pos, who.radians_angle)  # new unit pos (right)
+        new_pos = rotation_xy(who.base_pos, new_pos, who.radians_angle)  # new unit pos (right)
         base_pos = pygame.Vector2(who.base_pos[0] - (who.base_width_box / 2), who.base_pos[1])
-        who.base_pos = who.rotation_xy(who.base_pos, base_pos, who.radians_angle)  # new position for original unit (left)
+        who.base_pos = rotation_xy(who.base_pos, base_pos, who.radians_angle)  # new position for original unit (left)
         who.base_width_box /= 2
         frontpos = (who.base_pos[0], (who.base_pos[1] - who.base_height_box))  # find new front position of unit
-        who.front_pos = who.rotation_xy(who.base_pos, frontpos, who.radians_angle)
+        who.front_pos = rotation_xy(who.base_pos, frontpos, who.radians_angle)
         who.set_target(who.front_pos)
 
     if who.leader[
@@ -200,7 +204,7 @@ def split_unit(battle, who, how):
         whose_army = battle.team1_unit
     else:
         whose_army = battle.team2_unit
-    new_game_id = battle.all_unit_list[-1].game_id + 1
+    new_game_id = battle.alive_unit_list[-1].game_id + 1
 
     new_unit = unit.Unit(start_pos=new_pos, gameid=new_game_id, squadlist=new_army_subunit, colour=who.colour,
                          control=who.control, coa=who.coa_list, commander=False, startangle=who.angle, team=who.team)
@@ -299,7 +303,7 @@ def retreat(self):
             self.retreat_way = (self.base_pos[0] + self.base_width_box, self.base_pos[1])  # find position to retreat
         else:  # rear
             self.retreat_way = (self.base_pos[0], (self.base_pos[1] + self.base_height_box))  # find rear position to retreat
-        self.retreat_way = [self.rotation_xy(self.base_pos, self.retreat_way, self.radians_angle), this_index]
+        self.retreat_way = [rotation_xy(self.base_pos, self.retreat_way, self.radians_angle), this_index]
         base_target = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
 
         self.process_retreat(base_target)

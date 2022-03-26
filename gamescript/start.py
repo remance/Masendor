@@ -279,11 +279,13 @@ class MainMenu:
         self.leader_updater = pygame.sprite.Group()  # updater for leader objects
         self.ui_updater = pygame.sprite.Group()  # updater for ui objects
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
-        self.effect_updater = pygame.sprite.Group()  # updater for in-self effect objects (e.g. range melee_attack sprite)
+        self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
         self.team0_unit = pygame.sprite.Group()  # team 0 units group
         self.team1_unit = pygame.sprite.Group()  # team 1 units group
         self.team2_unit = pygame.sprite.Group()  # team 2 units group
+
+        self.alive_unit_list = pygame.sprite.Group()  # list of every unit in self alive
 
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
 
@@ -293,7 +295,7 @@ class MainMenu:
 
         self.subunit = pygame.sprite.Group()  # all subunits group
 
-        self.army_leader = pygame.sprite.Group()  # all leaders group
+        self.leader = pygame.sprite.Group()  # all leaders group
 
         self.range_attacks = pygame.sprite.Group()  # all range_attacks group and maybe other range effect stuff later
         self.direction_arrows = pygame.sprite.Group()
@@ -357,7 +359,7 @@ class MainMenu:
 
         unit.Unit.containers = self.unit_updater
         subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battle_camera
-        leader.Leader.containers = self.army_leader, self.leader_updater
+        leader.Leader.containers = self.leader, self.leader_updater
 
         # Main menu related stuff
         image_list = load_base_button(self.main_dir, self.screen_scale)

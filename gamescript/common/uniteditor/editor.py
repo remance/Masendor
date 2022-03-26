@@ -38,16 +38,17 @@ def save_preset(self):
 
 
 def convert_slot_dict(self, name, pos=None, add_id=None):
-    current_preset = [[], [], [], [], [], [], [], []]
-    start_item = 0
+    current_preset = {"Row 1": [], "Row 2": [], "Row 3": [], "Row 4": [],
+                      "Row 5": [], "Row 6": [], "Row 7": [], "Row 8": [], }
+    start_item = 8
     subunit_count = 0
     for slot in self.subunit_build:  # add subunit troop id
-        current_preset[int(start_item / 8)].append(str(slot.troop_id))
+        current_preset["Row " + str(int(start_item / 8))].append(str(slot.troop_id))
         start_item += 1
         if slot.troop_id != 0:
             subunit_count += 1
     if pos is not None:
-        current_preset.append(pos)
+        current_preset["POS"] = pos
 
     if subunit_count > 0:
         leader_list = []
@@ -64,8 +65,8 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
 
             leader_list.append(str(this_leader.leader_id))
             leader_pos_list.append(str(this_leader.subunit_pos - count_zero))
-        current_preset.append(leader_list)
-        current_preset.append(leader_pos_list)
+        current_preset["Leader"] = leader_list
+        current_preset["Leader Position"] = leader_pos_list
 
         faction = []  # generate faction list that can use this unit
         faction_list = self.faction_data.faction_list.copy()
@@ -73,13 +74,13 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
         del faction_list[0]
         faction_count = dict.fromkeys(faction_list.keys(), 0)  # dict of faction occurrence count
 
-        for index, item in enumerate(current_preset):
-            for this_item in item:
-                if index in range(0, 8):  # subunit
+        for key, value in current_preset.items():
+            for this_item in value:
+                if "Row " in key:  # subunit
                     for faction_item in faction_list.items():
                         if int(this_item) in faction_item[1]["Troop"]:
                             faction_count[faction_item[0]] += 1
-                elif index == 8:  # leader
+                elif key == "Leader":  # leader
                     for faction_item in faction_list.items():
                         if int(this_item) < 10000 and int(this_item) in faction_item[1]["Leader"]:
                             faction_count[faction_item[0]] += 1
@@ -95,16 +96,16 @@ def convert_slot_dict(self, name, pos=None, add_id=None):
                 else:  # units from various factions, counted as multi-faction unit
                     faction = [0]
                     break
-        current_preset.append(faction)
+        current_preset["Faction"] = faction
 
-        for item_index, item in enumerate(current_preset):  # convert list to string
-            if type(item) == list:
-                if len(item) > 1:
-                    current_preset[item_index] = ",".join(item)
+        for key, value in enumerate(current_preset.items()):  # convert list to string
+            if type(value) == list:
+                if len(value) > 1:
+                    current_preset[key] = ",".join(value)
                 else:  # still type list because only one item in list
-                    current_preset[item_index] = str(current_preset[item_index][0])
+                    current_preset[key] = str(value[0])
         if add_id is not None:
-            current_preset = [add_id] + current_preset
+            current_preset["ID"] = add_id
         current_preset = {name: current_preset}
     else:
         current_preset = None

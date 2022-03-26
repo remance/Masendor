@@ -186,21 +186,15 @@ def attack_logic(self, dt, combat_timer, parent_state):
                 self.stamina = self.stamina - (combat_timer * 5)
 
         elif self.state in (11, 12, 13):  # range combat
-            if type(self.attack_target) == int:  # For fire at will, which attack_target is int
-                all_unit_index = self.battle.all_unit_index
-                if self.attack_target in all_unit_index:  # if the melee_attack base_target still alive (if dead it would not be in index list)
-                    self.attack_target = self.battle.all_unit_list[
-                        all_unit_index.index(self.attack_target)]  # change attack_target index into sprite
-                else:  # enemy dead
+            if self.attack_target is not None:  # For fire at will
+                if self.attack_target not in self.battle.alive_unit_list:  # enemy dead
                     self.attack_pos = 0  # reset attack_pos to 0
                     self.attack_target = None  # reset attack_target to 0
 
-                    for target in list(self.unit.near_target.values()):  # find other nearby base_target to shoot
-                        if target in all_unit_index:  # check if base_target alive
-                            self.attack_pos = target[1]
-                            self.attack_target = target[1]
-                            self.attack_target = self.battle.all_unit_list[all_unit_index.index(self.attack_target)]
-                            break  # found new base_target break loop
+                    for target, pos in self.unit.near_target.items():  # find other nearby base_target to shoot
+                        self.attack_pos = pos
+                        self.attack_target = target
+                        break  # found new target, break loop
             elif self.attack_target is None:
                 self.attack_target = self.unit.attack_target
 
@@ -213,7 +207,7 @@ def attack_logic(self, dt, combat_timer, parent_state):
                 self.ammo_now -= 1  # use 1 magazine_left in magazine
             elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target destroyed when it about to shoot
                 self.unit.range_combat_check = False
-                self.unit.attack_target = 0  # reset range combat check and base_target
+                self.unit.attack_target = None  # reset range combat check and base_target
 
     if parent_state != 10:  # reset base_target every update to command base_target outside of combat
         if self.base_target != self.command_target:
@@ -451,7 +445,7 @@ def die(self):
 
     if self in self.battle.battle_camera:
         self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
-    self.battle.all_subunit_list.remove(self)
+    self.battle.alive_subunit_list.remove(self)
     self.unit.subunits.remove(self)
 
     for subunit in self.unit.subunit_list.flat:  # remove from index array

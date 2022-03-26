@@ -6,6 +6,7 @@ editconfig = utility.edit_config
 
 lorebook_process = lorebook.lorebook_process
 
+
 def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool, mouse_scrollup: bool,
                     mouse_scrolldown: bool, uidraw: pygame.sprite.LayeredUpdates):
     """

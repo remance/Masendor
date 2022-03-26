@@ -918,8 +918,10 @@ class InspectSubunit(pygame.sprite.Sprite):
         self.image = self.who.block
         self.rect = self.image.get_rect(topleft=self.pos)
 
-    def delete(self):
+    def delete(self, local=False):
         self.who = None
+        if local:
+            print(locals())
 
 
 class BattleDone(pygame.sprite.Sprite):
