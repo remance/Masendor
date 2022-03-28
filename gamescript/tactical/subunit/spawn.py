@@ -66,7 +66,7 @@ def add_mount_stat(self):
     self.stamina += self.mount["Stamina Bonus"]
     self.trait += self.mount["Trait"]  # Apply mount trait to subunit
     self.subunit_type = 2  # If subunit has a mount, count as cav for command buff
-    self.feature_mod = 4  # the starting column in unit_terrainbonus of cavalry
+    self.feature_mod = "Cavalry"  # Use cavalry type for terrain bonus
 
 
 def add_trait(self):

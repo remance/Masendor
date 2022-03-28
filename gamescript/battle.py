@@ -491,15 +491,20 @@ class Battle:
             self.capture_troop_number = [0, 0, 0]
             self.unit_setup((self.team0_unit, self.team1_unit, self.team2_unit), self.troop_data.troop_list)
 
+            subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit]))
+            who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
-                                                                      self.screen_scale, self.main.leader_sprite)
+                                                                      self.screen_scale, self.main.leader_sprite,
+                                                                      who_todo)
 
             subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
 
+            who_todo = {key: value for key, value in self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
-                                                                      self.screen_scale, self.main.leader_sprite)
+                                                                      self.screen_scale, self.main.leader_sprite,
+                                                                      who_todo)
 
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)

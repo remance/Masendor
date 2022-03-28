@@ -29,6 +29,7 @@ class Lorebook(pygame.sprite.Sprite):
     mount_grade_list = None
     race_list = None
     unit_state_text = None
+    preview_sprite_pool = None
 
     concept_section = 0
     history_section = 1
@@ -66,8 +67,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.current_subsection2 = None  # Subsection lore currently viewing
         self.subsection_list = None
         self.portrait = None
-        self.preview_sprite_original = pygame.Surface((200, 200))
-        self.preview_sprite = self.preview_sprite_original.copy()
+        self.preview_sprite = None
 
         self.equipment_stat = {}
         self.equipment_last_index = []
@@ -130,7 +130,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.lore_data = self.section_list[self.section][1]  # get new lore data of the new section
         self.max_page = 0  # reset max page
         self.current_subsection_row = 0  # reset subsection scroll to the top one
-        this_list = list(self.stat_data.values())[1:]  # get list of subsection
+        this_list = list(self.stat_data.values())  # get list of subsection
         self.subsection_list = [name[0] if
                                 type(name) is list and "Name" != name[0] else name["Name"] for name in this_list]  # remove the header from subsection list
         if "Name" in self.subsection_list:
@@ -160,13 +160,11 @@ class Lorebook(pygame.sprite.Sprite):
             except:
                 pass
 
-        if self.section != self.leader_section:  # TODO change this when other sections have portrait
-            self.page_design()
-        else:  # leader section exclusive for now (will merge with other section when add portrait for others)
+        if self.section == self.leader_section:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
                 image_name = str(self.subsection) + ".png"
                 self.portrait = self.leader_data.images[image_name].copy()  # get leader portrait based on subsection number
-            except:
+            except KeyError:
                 self.portrait = self.leader_data.images["9999999.png"].copy()  # Use Unknown leader image if there is none in list
                 font = pygame.font.SysFont("timesnewroman", 300)
                 text_image = font.render(str(self.subsection), True, pygame.Color("white"))
@@ -176,28 +174,33 @@ class Lorebook(pygame.sprite.Sprite):
 
             self.portrait = pygame.transform.scale(self.portrait,
                                                    (int(150 * self.screen_scale[0]), int(150 * self.screen_scale[1])))  # scale leader image to 150x150
-            self.page_design()
+        elif self.section == self.troop_section:
+            try:
+                self.portrait = self.preview_sprite_pool[self.subsection]["sprite"]
+            except KeyError:
+                pass
+        self.page_design()
 
-    def setup_subsection_list(self, listsurface, listgroup):
+    def setup_subsection_list(self, list_surface, list_group):
         """generate list of subsection of the left side of encyclopedia"""
         row = 15 * self.screen_scale[1]
         column = 15 * self.screen_scale[0]
-        pos = listsurface.rect.topleft
+        pos = list_surface.rect.topleft
         if self.current_subsection_row > self.log_size - self.max_subsection_show:
             self.current_subsection_row = self.log_size - self.max_subsection_show
 
-        if len(listgroup) > 0:  # remove previous subsection in the group before generate new one
-            for stuff in listgroup:
+        if len(list_group) > 0:  # remove previous subsection in the group before generate new one
+            for stuff in list_group:
                 stuff.kill()
                 del stuff
 
         loop_list = [item for item in list(self.stat_data.keys()) if type(item) != str]
         for index, item in enumerate(self.subsection_list):
             if index >= self.current_subsection_row:
-                listgroup.add(
+                list_group.add(
                     SubsectionName(self.screen_scale, (pos[0] + column, pos[1] + row), item, loop_list[index]))  # add new subsection sprite to group
                 row += (41 * self.screen_scale[1])  # next row
-                if len(listgroup) > self.max_subsection_show:
+                if len(list_group) > self.max_subsection_show:
                     break  # will not generate more than space allowed
 
     def page_design(self):
@@ -206,7 +209,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         stat = self.stat_data[self.subsection]
         name = list(stat.values())[0]
-        print(stat)
+        # TODO fix some section problem
         description = stat["Description"]
         text_surface = self.font_header.render(str(name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
@@ -377,24 +380,20 @@ class Lorebook(pygame.sprite.Sprite):
                                     create_text = key + ": " + self.leader_class_list[value]["Leader Social Class"]
 
                         else:  # equipment section, header depends on equipment type
-                            for this_index, last_index in enumerate(self.equipment_last_index):
-                                if self.subsection < last_index:  # check if this index pass the last index of each type
-                                    new_header = stat_header[this_index]
-                                    break
-                            create_text = new_header[index] + ": " + str(text)
+                            create_text = key + ": " + str(value)
 
-                            if new_header[index] == "ImageID":  # not used in encyclopedia
+                            if key == "ImageID":  # not used in encyclopedia
                                 create_text = ""
                                 pass
 
-                            elif new_header[index] == "Properties":
+                            elif key == "Properties":
                                 trait_list = ""
-                                if text != [0]:
+                                if value != [0]:
                                     for this_text in value:
                                         if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
                                             trait_list += self.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]
-                                    create_text = new_header[index] + ": " + trait_list
+                                    create_text = key + ": " + trait_list
                                 else:
                                     create_text = ""
                                     pass

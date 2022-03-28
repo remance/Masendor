@@ -203,7 +203,7 @@ class BeautifulMap(pygame.sprite.Sprite):
             new_colour = self.new_colour_list[feature][1]
             self.image.fill(new_colour)
             map_feature_mod = feature_map.feature_mod[feature]
-            speed_mod = int(map_feature_mod[2] * 100)
+            speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
             gamebattle.map_move_array = [[speed_mod] * default_map_width] * default_map_height
         else:
             for row_pos in range(0, default_map_width):  # recolour the map
@@ -215,7 +215,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                     self.image.fill(new_colour, rect)
 
                     map_feature_mod = feature_map.feature_mod[feature]
-                    speed_mod = int(map_feature_mod[2] * 100)
+                    speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
                     # infcombatmod = int(map_feature_mod[3] * 100)
                     # cavcombatmod = int(map_feature_mod[6] * 100)
                     speed_array.append(speed_mod)

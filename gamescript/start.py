@@ -723,6 +723,29 @@ class MainMenu:
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
             self.main_dir, self.ruleset_folder)
 
+        self.generic_action_data = load_action(self.main_dir)
+        subunit.Subunit.generic_action_data = self.generic_action_data
+        animation_dict = load_animation_pool(self.main_dir)
+        self.generic_animation_pool = animation_dict["generic_animation_pool"]
+
+        self.skel_joint_list = animation_dict["skel_joint_list"]
+        self.weapon_joint_list = animation_dict["weapon_joint_list"]
+
+        pool_dict = load_part_sprite_pool(self.main_dir,
+                                          [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
+
+        self.gen_body_sprite_pool = pool_dict["gen_body_sprite_pool"]
+        self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
+        self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
+
+        self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir)
+
+        self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
+
+        who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
+        self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,
+                                                           self.leader_sprite, who_todo, preview=True)
+
         # Encyclopedia
         lorebook.Lorebook.faction_lore = self.faction_data.faction_list
         lorebook.Lorebook.troop_list = self.troop_data.troop_list
@@ -746,29 +769,9 @@ class MainMenu:
         lorebook.Lorebook.race_list = self.troop_data.race_list
         lorebook.Lorebook.screen_rect = self.screen_rect
         lorebook.Lorebook.unit_state_text = self.unit_state_text
+        lorebook.Lorebook.preview_sprite_pool = self.preview_sprite_pool
 
         self.encyclopedia.change_ruleset()
-
-        self.generic_action_data = load_action(self.main_dir)
-        subunit.Subunit.generic_action_data = self.generic_action_data
-        animation_dict = load_animation_pool(self.main_dir)
-        self.generic_animation_pool = animation_dict["generic_animation_pool"]
-
-        self.skel_joint_list = animation_dict["skel_joint_list"]
-        self.weapon_joint_list = animation_dict["weapon_joint_list"]
-
-        pool_dict = load_part_sprite_pool(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
-
-        self.gen_body_sprite_pool = pool_dict["gen_body_sprite_pool"]
-        self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
-        self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
-
-        self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir)
-
-        self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
-
-        self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,
-                                                             self.leader_sprite, preview=True)
 
     def game_intro(self, screen, clock, intro):
         timer = 0

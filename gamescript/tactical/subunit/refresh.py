@@ -103,28 +103,28 @@ def status_update(self, this_weather=None):
 
     # v Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
-    if map_feature_mod[self.feature_mod] != 1:  # speed/charge
-        speed_mod = map_feature_mod[self.feature_mod]  # get the speed mod appropriate to subunit type
+    if map_feature_mod[self.feature_mod + " Speed/Charge Effect"] != 1:  # speed/charge
+        speed_mod = map_feature_mod[self.feature_mod + " Speed/Charge Effect"]  # get the speed mod appropriate to subunit type
         self.speed *= speed_mod
         self.charge *= speed_mod
 
-    if map_feature_mod[self.feature_mod + 1] != 1:  # melee melee_attack
+    if map_feature_mod[self.feature_mod + " Combat Effect"] != 1:  # melee melee_attack
         # combat_mod = self.unit.feature_map.feature_mod[self.unit.feature][self.feature_mod + 1]
-        self.melee_attack *= map_feature_mod[self.feature_mod + 1]  # get the melee_attack mod appropriate to subunit type
+        self.melee_attack *= map_feature_mod[self.feature_mod + " Combat Effect"]  # get the melee_attack mod appropriate to subunit type
 
-    if map_feature_mod[self.feature_mod + 2] != 1:  # melee/charge defence
-        combat_mod = map_feature_mod[self.feature_mod + 2]  # get the defence mod appropriate to subunit type
+    if map_feature_mod[self.feature_mod + " Defense Effect"] != 1:  # melee/charge defence
+        combat_mod = map_feature_mod[self.feature_mod + " Defense Effect"]  # get the defence mod appropriate to subunit type
         self.melee_def *= combat_mod
         self.charge_def *= combat_mod
 
-    self.range_def += map_feature_mod[7]  # range defence bonus from terrain bonus
-    self.accuracy -= (map_feature_mod[7] / 2)  # range def bonus block subunit sight as well so less accuracy
-    self.discipline += map_feature_mod[9]  # discipline defence bonus from terrain bonus
+    self.range_def += map_feature_mod["Range Defense Bonus"]  # range defence bonus from terrain bonus
+    self.accuracy -= (map_feature_mod["Range Defense Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
+    self.discipline += map_feature_mod["Discipline Bonus"]  # discipline defence bonus from terrain bonus
 
-    if map_feature_mod[11] != [0]:  # Some terrain feature can also cause status effect such as swimming in water
-        if 1 in map_feature_mod[11]:  # Shallow water type terrain
+    if map_feature_mod["Status"] != [0]:  # Some terrain feature can also cause status effect such as swimming in water
+        if 1 in map_feature_mod["Status"]:  # Shallow water type terrain
             self.status_effect[31] = self.status_list[31].copy()  # wet
-        if 5 in map_feature_mod[11]:  # Deep water type terrain
+        if 5 in map_feature_mod["Status"]:  # Deep water type terrain
             self.status_effect[93] = self.status_list[93].copy()  # drench
 
             if self.weight > 60 or self.stamina <= 0:  # weight too much or tired will cause drowning
@@ -136,13 +136,13 @@ def status_update(self, this_weather=None):
             elif self.weight < 30:  # Lightweight subunit has no trouble travel through water
                 self.status_effect[104] = self.status_list[104].copy()  # Swimming
 
-        if 2 in map_feature_mod[11]:  # Rot type terrain
+        if 2 in map_feature_mod["Status"]:  # Rot type terrain
             self.status_effect[54] = self.status_list[54].copy()
 
-        if 3 in map_feature_mod[11]:  # Poison type terrain
+        if 3 in map_feature_mod["Status"]:  # Poison type terrain
             self.elem_count[4] += ((100 - self.elem_res[4]) / 100)
     # self.hidden += self.unit.feature_map[self.unit.feature][6]
-    temp_reach = map_feature_mod[10] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
+    temp_reach = map_feature_mod["Temperature"] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
     # ^ End map feature
 
     # v Apply effect from skill

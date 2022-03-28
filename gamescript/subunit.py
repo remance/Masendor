@@ -232,7 +232,7 @@ class Subunit(pygame.sprite.Sprite):
         self.equipped_weapon = 0
 
         self.original_speed = 50  # All infantry has base speed at 50
-        self.feature_mod = 1  # the starting column in terrain bonus of infantry
+        self.feature_mod = "Infantry"  # the starting column in terrain bonus of infantry
         self.authority = 100  # default start at 100
 
         # vv Elemental stat

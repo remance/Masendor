@@ -225,7 +225,7 @@ def read_terrain_data(main_dir):
     """Read map data and create map texture and their default variables"""
     # read terrain feature list
     feature_list = []
-    with open(os.path.join(main_dir, "data", "map", "unit_terrainbonus.csv"), encoding="utf-8", mode="r") as edit_file:
+    with open(os.path.join(main_dir, "data", "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         for row in rd:
             feature_list.append(row[1])  # get terrain feature combination name for folder
@@ -241,29 +241,31 @@ def read_terrain_data(main_dir):
 
     # read terrain feature mode
     feature_mod = {}
-    with open(os.path.join(main_dir, "data", "map", "unit_terrainbonus.csv"), encoding="utf-8", mode="r") as edit_file:
+    with open(os.path.join(main_dir, "data", "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         run = 0  # for skipping the first row
+        rd = [row for row in rd]
+        header = rd[0]
         for row in rd:
             for n, i in enumerate(row):
                 if run != 0:
-                    if n == 12:  # effect list is at column 12
+                    if header[n] == "Status":  # effect list is at column 12
                         if "," in i:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                         elif i.isdigit():
                             row[n] = [int(i)]
 
-                    elif n in (2, 3, 4, 5, 6, 7):  # other modifer column
+                    elif "Effect" in header[n]:  # other modifier column
                         if i != "":
                             row[n] = float(i) / 100
-                        else:  # empty row assign 1.0 default
+                        else:  # empty row assign default 1.0
                             row[n] = 1.0
 
-                    elif i.isdigit() or "-" in i:  # modifer bonus (including negative) in other column
+                    elif i.isdigit() or "-" in i:  # modifier bonus (including negative) in other column
                         row[n] = int(i)
 
             run += 1
-            feature_mod[row[0]] = row[1:]
+            feature_mod[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
     edit_file.close()
 
     # set up default
@@ -787,12 +789,11 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
             "resolution_icon": resolution_icon, "volume_slider": volume_slider, "value_box": value_box, "volume_icon": volume_icon}
 
 
-def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, leader_sprite, preview=False):
+def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, leader_sprite, who_todo, preview=False):
     # TODO maybe add body pos and size for check collide?
     animation_sprite_pool = {}  # TODO need to add for subunit creator
     weapon_common_type_list = list(set(["_" + value["Common"] + "_" for value in self.generic_action_data.values()]))  # list of all common type animation set
     weapon_attack_type_list = list(set(["_" + value["Attack"] + "_" for value in self.generic_action_data.values()]))  # list of all attack set
-    who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
     if leader_sprite:
         who_todo |= {"h" + str(key): value for key, value in self.leader_data.leader_list.items()}
     for subunit_id, this_subunit in who_todo.items():
@@ -824,11 +825,12 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, le
                                                                    self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
 
             if preview:  # only create random right side sprite
-                weapon_index = random.randint(0, 1)
-                animation = [this_animation for this_animation in self.generic_animation_pool[0] if (any(ext in this_animation for ext in weapon_common_type_list) is False or
-                                                weapon_common_action[0][weapon_index] in this_animation) and
-                                               (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                                                (weapon_attack_action[0][weapon_index] in this_animation and ("Main", "Sub")[weapon_index] in this_animation))]  # get animation that can be performed with main weapon
+                animation = [this_animation for this_animation in self.generic_animation_pool[0]
+                             if (any(ext in this_animation for ext in weapon_common_type_list) is False or
+                                 weapon_common_action[0][0] in this_animation) and
+                             (any(ext in this_animation for ext in weapon_attack_type_list) is False or
+                              (weapon_attack_action[0][0] in this_animation and ("Main", "Sub")[0] in this_animation))
+                             and "Default" not in this_animation]  # get animation with main weapon
                 animation = random.choice(animation)  # random animation
 
                 frame_data = random.choice(self.generic_animation_pool[1][animation])  # random frame
