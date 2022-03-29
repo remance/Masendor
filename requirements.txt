@@ -1,5 +1,6 @@
 iniconfig==1.1.1
 numpy~=1.22.2
+pandas~=1.4.1
 Pillow~=9.0.1
 py==1.10.0
 pygame~=2.0.3
