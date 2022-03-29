@@ -1,6 +1,6 @@
 "ID","Name","Health","Authority","Melee Command","Range Command","Cavalry Command","Combat","Social Class","Trait","Ability","Mana","Race","Description"
 1,"None",0,0,0,0,0,0,0,,1,0,1,
-2,"Remance of House Malabel",1250,91,5,2,9,7,5,"8, 13, 18",2,0,1,"Cavalry general of House Malabel. Joined military at age 17 and become general at age 26. He is expert in heavy cavalry tactic and won various battles against enemies of Mocnan Kingdom throughout his military career. As he grows older, he wishes that his name will be remembered alongside other greatest heroes."
+2,"Remance of House Malabel",1250,91,5,2,9,7,5,"8, 13, 18",2,0,1,"Cavalry general of House Malabel. Joined military at age 17 and became general at age 26. He is an expert in heavy cavalry tactics and won various battles against enemies of the Mocnan Kingdom throughout his military career. As he grows older, he wishes that his name will be remembered alongside other greatest heroes."
 3,"Amunsa",1400,31,6,1,1,8,2,,3,0,1,"It is often said that creation represents the personality of the creator. The weapons that Amunsa created were all in the hand of the greatest warriors and rulers in written history. The perfection of quality comes not only from pure talent but also thousand hours of hard-working practice. His arts were even praised by the dwarf craftsmen, something that no human ever have the grace to ever receive it. "
 4,"Jonas Elbadai",1000,86,4,8,3,4,7,14,4,,1,"The world is not only made of black and white. It existed in many shades of colour, maybe even the colours we can never see. So does a person and his or her characteristics. But must so-called characteristic be constant? What would happen if a person can change his personality in the matter of friction of a second? Not simply faking it but completely alters it at the very core to become a completely new identity. Can such a thing even be called person anymore or it becomes something incomprehensible entirely? "
 5,"Vars Karsunlaamt",9999999,77,8,1,2,10,7,"1, 6, 8",5,0,1,"Peerless warrior who always seek a new challenge. His growth and lust in fighting know no bounds. His single-mindedness is very troublesome for many people involved in his life. Now a king of Masendor, the hero of Meskemdar, the first of house Karsunlaamt. His rule will certainly bring change to the history of the whole world."
@@ -16,7 +16,7 @@
 15,"Little Boy",9999999,21,1,1,0,0,3,,15,,1,
 16,"Aquanturas",1000,91,2,8,9,4,5,,16,0,1,
 17,"Bigboy",2000,15,3,0,0,8,1,15,17,0,1,
-18,"Rodhinbar Leafleft Rora",1100,67,5,9,2,7,3,,18,,1,
+18,"Rodhinbar Leafleft Rora",1100,67,5,9,2,7,3,,18,,1,"Militia trainer and leader of Leafleft village. Proficient in bow and close combat. Rodhinbar hardly ever left his village due to being far from the country's border and warzone. Such peace means that he had not fully utilised his skill and seen the horror of war.  "
 19,"Savalorse",1000,50,4,7,1,3,4,,19,,1,
 20,"Ladun Ladanlasia Makan Og Gumdmoiq",1450,74,8,5,3,8,7,,20,,1,
 21,"Venswa",900,85,2,6,2,3,7,,21,,1,
@@ -34,7 +34,7 @@
 33,"Feydiavy",1300,44,5,1,1,8,3,,33,,1,
 34,"Miyilya Cui An",1000,75,6,7,2,3,2,,34,,1,
 35,"Parna Roldorn",1200,88,6,4,8,7,4,,35,0,1,
-36,"Vraesier",10000,27,7,1,1,10,2,,36,,1,"There is a tale of abomination entity that resides in the Forest of Skangra. This mysterious creature has one eye and wears the skin of female clad in tattered armour swings its monstrously huge great sword at whoever crosses its path. Rumour is that this creature once was seen talking to another similar female creature or even travel together. Nobody knows where they came from or why they stalk the forest but the first sighting was around 20 years ago by the hunter whose arm got chopped off."
+36,"Vraesier",10000,27,7,1,1,10,2,,36,,1,"There is a tale of an abomination entity that resides in the Forest of Skangra. This mysterious creature has one eye and wears the skin of a female clad in tattered armour and swing its monstrously huge great sword at whoever crosses its path. Rumour is that this creature once was seen talking to another similar female creature or even travelling together. Nobody knows where they came from or why they stalked the forest, but the first sighting was around 20 years ago by the hunter whose arm got chopped off."
 37,"Nraesier",10000,53,5,4,1,9,2,,37,,1,
 38,"Niavesia the Royal Knight",1300,85,9,5,4,8,4,8,38,,1,"Captain of the elite royal guard unit, Milingrels. The Protector of Tower Throne. She is born into a soldier family and discovers talent in fighting at a young age. After proving herself in the Trial of Giasarost at age 20, she becomes the personal bodyguard to the royal family of Werlermar House. "
 39,"Eona Suermphael",400,41,2,2,1,1,3,,39,,1,

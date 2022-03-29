@@ -159,9 +159,9 @@ class InputBox(pygame.sprite.Sprite):
 
     def text_start(self, text):
         """Add starting text to input box"""
-        self.current_pos = 0
         self.image = self.image_original.copy()
         self.text = text
+        self.current_pos = len(self.text)  # start input at the end
         show_text = self.text[:self.current_pos] + "|" + self.text[self.current_pos:]
         text_surface = self.font.render(show_text, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))

@@ -70,11 +70,6 @@ def reload_animation(animation, char):
         head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
         p1_armour_selector.change_name(skeleton.armour["p1_armour"])
         p2_armour_selector.change_name(skeleton.armour["p2_armour"])
-        for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
-            this_text = "Any"
-            if face[index] not in (0, 1):
-                this_text = face[index]
-            selector.change_name(head_text[index] + str(this_text))
         for frame_index in range(0, 10):
             for prop in frame_property_select[frame_index] + anim_property_select:
                 if "effect" in prop:
@@ -634,7 +629,7 @@ class Skeleton:
             self.default_body_part = {key: value for key, value in self.all_part_list.items()}
             self.default_part_name = {key: None for key in self.rect_part_list.keys()}
 
-    def random_face(self):  # todo change when add option to change face
+    def random_face(self):
         self.p1_eyebrow = list(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"].keys())[
             random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"]) - 1)]
         self.p1_any_eye = list(gen_body_sprite_pool[self.p1_race]["side"]["eye"].keys())[
@@ -909,6 +904,7 @@ class Skeleton:
                             new_part_name = part_name
                         if "special" in stuff:
                             part_name = "special"
+                            new_part_name = part_name
                         if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
                             new_part_name = part_name[2:]  # remove side
                         self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
@@ -1259,12 +1255,10 @@ class Skeleton:
         for key in list(self.frame_list[current_frame].keys()):
             if "weapon" in key and self.frame_list[current_frame][key] != [0]:
                 self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
-        p1_face = {"p1_eye": self.bodypart_list[current_frame]["p1_eye"] if self.bodypart_list[current_frame]["p1_eye"] != self.p1_any_eye else 1,
-                   "p1_mouth": self.bodypart_list[current_frame]["p1_mouth"] if self.bodypart_list[current_frame][
-                                                                                    "p1_mouth"] != self.p1_any_mouth else 1}
-        p2_face = {"p2_eye": self.bodypart_list[current_frame]["p2_eye"] if self.bodypart_list[current_frame]["p2_eye"] != self.p2_any_eye else 1,
-                   "p2_mouth": self.bodypart_list[current_frame]["p2_mouth"] if self.bodypart_list[current_frame][
-                                                                                    "p2_mouth"] != self.p2_any_mouth else 1}
+        p1_face = {"p1_eye": self.bodypart_list[current_frame]["p1_eye"] if p1_eye_selector.text != "P1 Eye: Any" else 1,
+                   "p1_mouth": self.bodypart_list[current_frame]["p1_mouth"] if p1_mouth_selector.text != "P1 Mouth: Any" else 1}
+        p2_face = {"p2_eye": self.bodypart_list[current_frame]["p2_eye"] if p2_eye_selector.text != "P2 Eye: Any" else 1,
+                   "p2_mouth": self.bodypart_list[current_frame]["p2_mouth"] if p2_mouth_selector.text != "P2 Mouth: Any" else 1}
         p2_face_pos = 15
         self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p2_face_pos] + list(p2_face.items()) +
                                                             list(self.frame_list[current_frame].items())[p2_face_pos:])}
@@ -1638,6 +1632,16 @@ if animation_name is not None:
 else:
     skeleton.animation_list = [None] * 10
     skeleton.edit_part(None, "new")
+face = [skeleton.frame_list[current_frame]["p1_eye"], skeleton.frame_list[current_frame]["p1_mouth"],
+        skeleton.frame_list[current_frame]["p2_eye"], skeleton.frame_list[current_frame]["p2_mouth"]]
+head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
+p1_armour_selector.change_name(skeleton.armour["p1_armour"])
+p2_armour_selector.change_name(skeleton.armour["p2_armour"])
+for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+    this_text = "Any"
+    if face[index] not in (0, 1):
+        this_text = face[index]
+    selector.change_name(head_text[index] + str(this_text))
 animation_history.append({key: (value[:].copy() if value is not None else value) for key, value in skeleton.animation_part_list[current_frame].items()})
 body_part_history.append({key: value for key, value in skeleton.bodypart_list[current_frame].items()})
 part_name_history.append({key: value for key, value in skeleton.part_name_list[current_frame].items()})
@@ -1803,14 +1807,18 @@ while True:
                                 elif "p2" in popup_listbox.action:
                                     p2_armour_selector.change_name(name.name)
                             elif "eye" in popup_listbox.action:
+                                if "p1" in popup_listbox.action:
+                                    p1_eye_selector.change_name("P1 Eye: " + name.name)
+                                elif "p2" in popup_listbox.action:
+                                    p2_eye_selector.change_name("P2 Eye: " + name.name)
                                 skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
                                 reload_animation(anim, skeleton)
                             elif "mouth" in popup_listbox.action:
-                                skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
                                 if "p1" in popup_listbox.action:
                                     p1_mouth_selector.change_name("P1 Mouth: " + name.name)
                                 elif "p2" in popup_listbox.action:
                                     p2_mouth_selector.change_name("P2 Mouth: " + name.name)
+                                skeleton.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
                                 reload_animation(anim, skeleton)
                             elif popup_listbox.action == "animation_select":
                                 if animation_name != name.name:
