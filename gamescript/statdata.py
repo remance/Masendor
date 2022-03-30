@@ -189,17 +189,18 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            for row in rd:
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
-                else:
-                    this_ruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
-                       this_ruleset):  # only grab effect that existed in the ruleset and first row
-                    for n, i in enumerate(row):
-                        if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
-                            row[n] = float(i)
-                    self.race_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+            for index, row in enumerate(rd):
+                if index > 0:
+                    if "," in row[-2]:  # make str with , into list
+                        this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                    else:
+                        this_ruleset = [row[-2]]
+                    if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                           this_ruleset):  # only grab effect that existed in the ruleset and first row
+                        for n, i in enumerate(row):
+                            if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
+                                row[n] = float(i)
+                        self.race_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Troop grade dict

@@ -40,6 +40,19 @@ def swap_equipment(self, new_weapon):
             self.skill.pop(skill)
 
 
+def find_shooting_target(self, unit_state):
+    """get nearby enemy base_target from list if not targeting anything yet"""
+    self.attack_pos = list(self.unit.near_target.values())[0]  # replace attack_pos with enemy unit pos
+    self.attack_target = list(self.unit.near_target.keys())[0]  # replace attack_target with enemy unit id
+    for shoot_range in self.shoot_range:
+        if shoot_range >= self.attack_pos.distance_to(self.base_pos):
+            self.state = 11
+            if unit_state in (1, 3, 5):  # Walk and shoot
+                self.state = 12
+            elif unit_state in (2, 4, 6):  # Run and shoot
+                self.state = 13
+
+
 def attack_logic(self, dt, combat_timer, parent_state):
     from gamescript import rangeattack
 

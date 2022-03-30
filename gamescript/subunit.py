@@ -28,6 +28,7 @@ def change_subunit_genre(genre):
     Subunit.add_weapon_stat = spawn.add_weapon_stat
     Subunit.add_mount_stat = spawn.add_mount_stat
     Subunit.add_trait = spawn.add_trait
+    Subunit.find_shooting_target = fight.find_shooting_target
     Subunit.attack_logic = fight.attack_logic
     Subunit.dmg_cal = fight.dmg_cal
     Subunit.change_leader = fight.change_leader
@@ -66,10 +67,11 @@ class Subunit(pygame.sprite.Sprite):
     check_skill_condition = common_fight.check_skill_condition
     make_front_pos = common_refresh.make_front_pos
 
-    # method that change based on genre
+    # methods that change based on genre
     add_weapon_stat = None
     add_mount_stat = None
     add_trait = None
+    find_shooting_target = None
     attack_logic = None
     dmg_cal = None
     change_leader = None
@@ -195,7 +197,7 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_cooldown = {}
         self.grade_name = grade_stat["Name"]
         self.armour_gear = stat["Armour"]  # armour equipment
-        self.original_armour = 0  # TODO change when has race or something
+        self.original_armour = 0  # TODO change when has race
         self.base_armour = self.armour_data.armour_list[self.armour_gear[0]]["Armour"] \
                            * self.armour_data.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
 
@@ -222,13 +224,14 @@ class Subunit(pygame.sprite.Sprite):
 
         self.size = self.troop_data.race_list[stat["Race"]]["Size"]
         self.weight = 0
-        self.melee_dmg = [0, 0]
-        self.melee_penetrate = 0
-        self.range_dmg = [0, 0]
-        self.range_penetrate = 0
-        self.base_range = 0
-        self.weapon_speed = 0
-        self.magazine_size = 0
+        self.melee_dmg = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}, 2: {0: 0, 1: 0}, 3: {0: 0, 1: 0}}
+        self.melee_penetrate = {0: 0, 1: 0, 2: 0, 3: 0}
+        self.range_dmg = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}, 2: {0: 0, 1: 0}, 3: {0: 0, 1: 0}}
+        self.range_penetrate = {0: 0, 1: 0, 2: 0, 3: 0}
+        self.base_range = {0: 0, 1: 0, 2: 0, 3: 0}
+        self.weapon_speed = {0: 0, 1: 0, 2: 0, 3: 0}
+        self.magazine_size = {0: 0, 1: 0, 2: 0, 3: 0}  # can shoot how many times before have to reload
+        self.arrow_speed = {0: 0, 1: 0, 2: 0, 3: 0}
         self.equipped_weapon = 0
 
         self.original_speed = 50  # All infantry has base speed at 50
@@ -238,9 +241,9 @@ class Subunit(pygame.sprite.Sprite):
         # vv Elemental stat
         self.original_elem_melee = 0  # start with physical element for melee weapon
         self.original_elem_range = 0  # start with physical for range weapon
-        self.elem_count = [0, 0, 0, 0, 0]  # Elemental threshold count in this order fire,water,air,earth,poison
+        self.elem_count = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}  # Elemental threshold count fire, water, air, earth, poison
         self.temp_count = 0  # Temperature threshold count
-        self.elem_res = [0, 0, 0, 0, 0]  # fire, water, air, earth, poison in this order
+        self.elem_res = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}  # fire, water, air, earth, poison in this order
         self.magic_res = 0  # Resistance to any magic
         self.heat_res = 0  # Resistance to heat temperature
         self.cold_res = 0  # Resistance to cold temperature
@@ -576,17 +579,6 @@ class Subunit(pygame.sprite.Sprite):
             # if close_target.base_pos.distance_to(self.base_pos) < 20: # in case can't find close target
         return close_target
 
-    def find_shooting_target(self, unit_state):
-        """get nearby enemy base_target from list if not targeting anything yet"""
-        self.attack_pos = list(self.unit.near_target.values())[0]  # replace attack_pos with enemy unit pos
-        self.attack_target = list(self.unit.near_target.keys())[0]  # replace attack_target with enemy unit id
-        if self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
-            self.state = 11
-            if unit_state in (1, 3, 5):  # Walk and shoot
-                self.state = 12
-            elif unit_state in (2, 4, 6):  # Run and shoot
-                self.state = 13
-
     def make_pos_range(self):
         """create range of sprite pos for pathfinding"""
         self.pos_range = (range(int(max(0, self.base_pos[0] - (self.image_height - 1))), int(min(1000, self.base_pos[0] + self.image_height))),
@@ -747,7 +739,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.attack_pos = self.unit.base_attack_pos
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
-                    self.status_update(weather)
+                    self.status_update(weather=weather)
                     self.available_skill = []
 
                     if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use

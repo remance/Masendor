@@ -894,7 +894,10 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, le
                                                 sprite_data = self.troop_data.troop_sprite_list[str(subunit_id)]
                                             else:
                                                 leader_id = int(subunit_id.replace("h", ""))
-                                                sprite_data = self.leader_data.leader_sprite_list[str(leader_id)]
+                                                if leader_id < 10000:
+                                                    sprite_data = self.leader_data.leader_sprite_list[str(leader_id)]
+                                                else:  # common leader
+                                                    sprite_data = self.leader_data.common_leader_sprite_list[str(leader_id)]
                                             sprite_dict = make_sprite(animation, this_subunit["Size"], frame_data,
                                                                       sprite_data, self.gen_body_sprite_pool,
                                                                       self.gen_weapon_sprite_pool,

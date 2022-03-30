@@ -49,6 +49,18 @@ def change_leader(self, event):
         self.unit_leader = False
 
 
+def find_shooting_target(self, unit_state):
+    """get nearby enemy base_target from list if not targeting anything yet"""
+    self.attack_pos = list(self.unit.near_target.values())[0]  # replace attack_pos with enemy unit pos
+    self.attack_target = list(self.unit.near_target.keys())[0]  # replace attack_target with enemy unit id
+    if self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
+        self.state = 11
+        if unit_state in (1, 3, 5):  # Walk and shoot
+            self.state = 12
+        elif unit_state in (2, 4, 6):  # Run and shoot
+            self.state = 13
+
+
 def attack_logic(self, dt, combat_timer, parent_state):
     from gamescript import rangeattack
 
@@ -149,7 +161,7 @@ def attack_logic(self, dt, combat_timer, parent_state):
         self.attack_target = None
         self.combat_move_queue = []
 
-        # v Range attack function
+        # v Range attack function  # TODO fix can shoot when broken, also broken not retreat from map when reach border
         if parent_state == 11:  # Unit in range melee_attack state
             self.state = 0  # Default state at idle
             if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \

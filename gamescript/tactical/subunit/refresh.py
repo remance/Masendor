@@ -23,7 +23,7 @@ def player_interact(self, mouse_pos, mouse_left_up):
     # ^ End mouse detect
 
 
-def status_update(self, this_weather=None):
+def status_update(self, weather=None):
     """calculate stat from stamina, morale state, skill, status, terrain"""
 
     if self.red_border and self.unit.selected:  # have red border (taking melee_dmg) on inspect ui, reset image
@@ -80,8 +80,7 @@ def status_update(self, this_weather=None):
 
     # v apply effect from weather"""
     weather_temperature = 0
-    if this_weather is not None:
-        weather = this_weather
+    if weather is not None:
         self.melee_attack += weather.melee_atk_buff
         self.melee_def += weather.melee_def_buff
         self.range_def += weather.range_def_buff
