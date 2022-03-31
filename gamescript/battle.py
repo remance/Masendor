@@ -56,7 +56,6 @@ def change_battle_genre(genre):
     Battle.editor_state_mouse = user.editor_state_mouse
     Battle.selected_unit_process = user.selected_unit_process
     Battle.add_behaviour_ui = user.add_behaviour_ui
-    Battle.camera_process = user.camera_process
 
     Battle.start_zoom = genre.start_zoom
     Battle.start_zoom_mode = genre.start_zoom_mode
@@ -79,6 +78,7 @@ class Battle:
     leader_mouse_over = common_user.leader_mouse_over
     effect_icon_mouse_over = common_user.effect_icon_mouse_over
     troop_card_button_click = common_user.troop_card_button_click
+    camera_process = common_user.camera_process
     unit_setup = common_generate.unit_setup
 
     # method that change based on genre
@@ -102,6 +102,7 @@ class Battle:
     def __init__(self, main, window_style):
         # v Get self object/variable from start_set
         self.mode = None  # battle map mode can be "unit_editor" for unit editor or "battle" for self battle
+        self.player_char = None  # for genre that allow player to control only one unit
         self.main = main
         self.genre = main.genre
 
@@ -358,6 +359,7 @@ class Battle:
         self.unit_scale = unit_scale
         self.team_selected = team_selected  # player selected team
         self.player_team_check = self.team_selected  # for indexing dict of unit
+        self.char_selected = char_selected
         self.enactment = enactment  # enactment mod, control both team
 
         self.faction_data = self.main.faction_data
@@ -383,11 +385,6 @@ class Battle:
 
         if self.enactment:
             self.player_team_check = "all"
-
-        # v load the sound effects
-        # boom_sound = load_sound("boom.wav")
-        # shoot_sound = load_sound("car_door.wav")
-        # ^ End load sound effect
 
         # v Load weather schedule
         try:
@@ -498,7 +495,8 @@ class Battle:
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
                                                                       self.screen_scale, self.main.leader_sprite,
-                                                                      who_todo)
+                                                                      who_todo)  # TODO: arcade mode cause huge ram usage
+
 
             subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         else:
@@ -514,10 +512,11 @@ class Battle:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
 
         # Create the game camera
-        self.camera_pos = pygame.Vector2(500 * self.screen_scale[0],
-                                         500 * self.screen_scale[1])  # Camera pos at the current zoom, start at center of map
         self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
-                                              500 * self.screen_scale[1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
+                                              500 * self.screen_scale[
+                                                  1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
+        self.camera_pos = self.base_camera_pos * self.camera_zoom  # Camera pos at the current zoom, start at center of map
+
         self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
                                       self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
 
@@ -544,6 +543,10 @@ class Battle:
             self.base_camera_pos[1] = self.max_camera[1]
         elif self.base_camera_pos[1] < 0:
             self.base_camera_pos[1] = 0
+
+        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
+                                      self.camera_pos[1] - self.center_screen[
+                                          1])  # calculate top left corner of camera position
 
     def change_state(self):
         self.previous_game_state = self.game_state
@@ -578,14 +581,23 @@ class Battle:
 
             self.game_speed = 1
 
-            # v Run starting function
+            # Run starting method
             for this_unit in self.alive_unit_list:
                 this_unit.start_set(self.subunit)
             for this_subunit in self.subunit:
                 this_subunit.start_set(self.camera_zoom)
             for this_leader in self.leader_updater:
                 this_leader.start_set()
-            # ^ End starting
+            if self.char_selected is not None:
+                for unit in self.alive_unit_list:  # get player char
+                    if unit.game_id == self.char_selected:
+                        self.player_char = unit.leader[0].subunit
+                        self.last_selected = self.player_char.unit
+                        if self.camera_mode == "Follow":
+                            self.base_camera_pos = self.player_char.base_pos
+                            self.camera_pos = self.base_camera_pos * self.camera_zoom  # Camera pos at the current zoom, start at center of map
+                            self.camera_fix()
+                        break
 
         elif self.game_state == "editor":  # change to editor state
             self.camera_mode = "Free"
@@ -658,6 +670,8 @@ class Battle:
         self.team2_pos_list = {}
         self.before_selected = None
 
+        self.player_char = None
+
         self.drama_timer = 0  # reset drama text popup
         self.battle_ui_updater.remove(self.drama_text)
 
@@ -666,7 +680,6 @@ class Battle:
 
             self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
                                           self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
-
 
             for group in self.troop_namegroup, self.unit_edit_border, self.unitpreset_namegroup:
                 for item in group:  # remove name list
@@ -698,8 +711,8 @@ class Battle:
     def run_game(self):
         # v Create Starting Values
         self.game_state = "battle"  # battle mode
-        self.current_unit_row = 0
-        self.current_troop_row = 0
+        self.current_unit_row = 0  # custom unit preset current row in editor
+        self.current_troop_row = 0  # troop selection current row in editor
         self.text_input_popup = (None, None)  # no popup asking for user text input state
         self.leader_now = []  # list of showing leader in command ui
         self.current_weather = None

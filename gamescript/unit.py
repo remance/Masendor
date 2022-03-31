@@ -522,7 +522,7 @@ class Unit(pygame.sprite.Sprite):
         self.base_target = pygame.Vector2(pos)  # Set new base base_target
         self.set_subunit_target(self.base_target)
 
-    def process_command(self, target_pos, runcommand=False, revert_move=False, enemy=None, other_command=0):
+    def process_command(self, target_pos, run_command=False, revert_move=False, enemy=None, other_command=0):
         """Process input order into state and subunit base_target action
         other_command parameter 0 is default command, 1 is natural pause, 2 is order pause"""
         if other_command == 0:  # move or melee_attack command
@@ -545,7 +545,7 @@ class Unit(pygame.sprite.Sprite):
             else:
                 self.set_target(target_pos)
 
-            if runcommand or self.run_toggle == 1:
+            if run_command or self.run_toggle == 1:
                 self.state += 1  # run state
 
             self.command_state = self.state

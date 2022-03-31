@@ -13,25 +13,7 @@ def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_rig
             self.terrain_check.pos != self.mouse_pos or key_state[pygame.K_s] or key_state[pygame.K_w] or key_state[pygame.K_a] or key_state[pygame.K_d]):
         self.battle_ui_updater.remove(self.terrain_check)  # remove terrain popup when move mouse or camera
 
-    if self.mini_map.rect.collidepoint(self.mouse_pos):  # mouse position on mini map
-        self.click_any = True
-        if mouse_left_up:  # move self camera to position clicked on mini map
-            self.base_camera_pos = pygame.Vector2(int(self.mouse_pos[0] - self.mini_map.rect.x) * self.screen_scale[0] * self.mini_map.map_scale_width,
-                                                  int(self.mouse_pos[1] - self.mini_map.rect.y) * self.screen_scale[1] * self.mini_map.map_scale_height)
-            self.camera_pos = self.base_camera_pos * self.camera_zoom
-    elif self.unit_selector_scroll.rect.collidepoint(self.mouse_pos):  # Must check mouse collide for scroll before unit select ui
-        self.click_any = True
-        if mouse_left_down or mouse_left_up:
-            new_row = self.unit_selector_scroll.user_input(self.mouse_pos)
-            if self.unit_selector.current_row != new_row:
-                self.unit_selector.current_row = new_row
-                self.setup_unit_icon()
-
-    elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
-        self.click_any = True
-        unit_icon_mouse_over(self, mouse_left_up, mouse_right_up)
-
-    elif self.test_button in self.battle_ui_updater and self.test_button.rect.collidepoint(self.mouse_pos):
+    if self.test_button in self.battle_ui_updater and self.test_button.rect.collidepoint(self.mouse_pos):
         self.click_any = True
         if mouse_left_up:
             if self.test_button.event == 0:
@@ -57,23 +39,6 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
     elif self.event_log.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
         self.click_any = True
-
-    elif self.time_ui.rect.collidepoint(self.mouse_pos):  # check mouse collide for time bar ui
-        self.click_any = True
-        for index, button in enumerate(self.time_button):  # Event log button and timer button click
-            if button.rect.collidepoint(self.mouse_pos) and mouse_left_up:
-                if button.event == "pause":  # pause button
-                    self.game_speed = 0
-                elif button.event == "decrease":  # reduce speed button
-                    new_index = self.game_speed_list.index(self.game_speed) - 1
-                    if new_index >= 0:
-                        self.game_speed = self.game_speed_list[new_index]
-                elif button.event == "increase":  # increase speed button
-                    new_index = self.game_speed_list.index(self.game_speed) + 1
-                    if new_index < len(self.game_speed_list):
-                        self.game_speed = self.game_speed_list[new_index]
-                self.speed_number.speed_update(self.game_speed)
-                break
 
     elif self.click_any is False:
         for index, button in enumerate(self.event_log_button):  # Event log button and timer button click
@@ -998,28 +963,28 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
                                                  self.troop_listbox, self.current_troop_row, self.faction_data.faction_name_list,
                                                  self.troop_namegroup, self.battle_ui_updater)
 
-    elif self.map_scale_delay == 0:  # Scrolling in self map to zoom
-        if mouse_scroll_up:
-            self.camera_zoom += 1
-            if self.camera_zoom > 10:
-                self.camera_zoom = 10
-            else:
-                self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
-                self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
-                self.show_map.change_scale(self.camera_zoom)
-                if self.game_state == "battle":  # only have delay in battle mode
-                    self.map_scale_delay = 0.001
-
-        elif mouse_scroll_down:
-            self.camera_zoom -= 1
-            if self.camera_zoom < 1:
-                self.camera_zoom = 1
-            else:
-                self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
-                self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
-                self.show_map.change_scale(self.camera_zoom)
-                if self.game_state == "battle":  # only have delay in battle mode
-                    self.map_scale_delay = 0.001
+    # elif self.map_scale_delay == 0:  # Scrolling in self map to zoom
+    #     if mouse_scroll_up:
+    #         self.camera_zoom += 1
+    #         if self.camera_zoom > 10:
+    #             self.camera_zoom = 10
+    #         else:
+    #             self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
+    #             self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
+    #             self.show_map.change_scale(self.camera_zoom)
+    #             if self.game_state == "battle":  # only have delay in battle mode
+    #                 self.map_scale_delay = 0.001
+    #
+    #     elif mouse_scroll_down:
+    #         self.camera_zoom -= 1
+    #         if self.camera_zoom < 1:
+    #             self.camera_zoom = 1
+    #         else:
+    #             self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
+    #             self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
+    #             self.show_map.change_scale(self.camera_zoom)
+    #             if self.game_state == "battle":  # only have delay in battle mode
+    #                 self.map_scale_delay = 0.001
 
 
 def unit_icon_mouse_over(self, mouse_up, mouse_right):
@@ -1130,39 +1095,6 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
     self.before_selected = self.last_selected
     # ^ End update value
-
-
-def camera_process(self, key_state):
-    # v Camera movement
-    if key_state[pygame.K_s] or self.mouse_pos[1] >= self.bottom_corner:  # Camera move down
-        self.base_camera_pos[1] += 4 * (
-                11 - self.camera_zoom)  # need "11 -" for converting cameral scale so the further zoom camera move faster
-        self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom  # resize camera pos
-        self.camera_fix()
-
-    elif key_state[pygame.K_w] or self.mouse_pos[1] <= 5:  # Camera move up
-        self.base_camera_pos[1] -= 4 * (11 - self.camera_zoom)
-        self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
-        self.camera_fix()
-
-    if key_state[pygame.K_a] or self.mouse_pos[0] <= 5:  # Camera move left
-        self.base_camera_pos[0] -= 4 * (11 - self.camera_zoom)
-        self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
-        self.camera_fix()
-
-    elif key_state[pygame.K_d] or self.mouse_pos[0] >= self.right_corner:  # Camera move right
-        self.base_camera_pos[0] += 4 * (11 - self.camera_zoom)
-        self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
-        self.camera_fix()
-
-    self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
-                                  self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
-    # ^ End camera movement
-
-    if self.map_scale_delay > 0:  # player change map scale once before
-        self.map_scale_delay += self.ui_dt
-        if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
-            self.map_scale_delay = 0
 
 
 def add_behaviour_ui(self, who_input, else_check=False):

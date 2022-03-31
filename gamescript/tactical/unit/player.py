@@ -14,10 +14,11 @@ def user_input(self, pos, mouse_left_up, mouse_right_up, double_mouse_right, tar
         self.range_combat_check = False
 
         # register user keyboard
-        if key_state is not None and (key_state[pygame.K_LCTRL] or key_state[pygame.K_RCTRL]):
-            self.forced_melee = True
-        if key_state is not None and (key_state[pygame.K_LALT] or key_state[pygame.K_RALT]):
-            self.attack_place = True
+        if key_state is not None:
+            if key_state[pygame.K_LCTRL] or key_state[pygame.K_RCTRL]:
+                self.forced_melee = True
+            if key_state[pygame.K_LALT] or key_state[pygame.K_RALT]:
+                self.attack_place = True
 
         if self.state != 100:
             if mouse_right_up and 1 <= pos[0] < 998 and 1 <= pos[1] < 998:

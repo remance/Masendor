@@ -311,7 +311,6 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.menu_state = "char_select"
         self.select_button.event = False
         self.char_select_row = 0
-        self.char_selected = 0
 
         self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.enactment_tick_box,
                                     self.source_list_box, self.source_scroll, self.source_description, self.army_stat)
@@ -340,6 +339,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         setup_unit_icon(self.char_selector, self.unit_icon, self.preview_char, self.char_selector_scroll, icon_scale=1)
 
         for index, icon in enumerate(self.unit_icon):  # select first char
+            self.char_selected = icon.unit.game_id
             icon.selection()
             self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
             self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
@@ -402,7 +402,8 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
                 self.main_ui_updater.add(icon.unit.subunits)
 
-                self.char_selected = index
+                self.char_selected = icon.unit.game_id
+                print(self.char_selected)
                 break
 
     elif self.char_stat["troop"].rect.collidepoint(self.mouse_pos):
