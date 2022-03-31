@@ -866,48 +866,27 @@ def battle_key_press(self, key_press):
         self.show_map.change_mode(self.map_mode)
         self.show_map.change_scale(self.camera_zoom)
 
-    elif key_press == pygame.K_o:  # Toggle unit number
-        if self.show_troop_number:
-            self.show_troop_number = False
-            self.effect_updater.remove(*self.troop_number_sprite)
-            self.battle_camera.remove(*self.troop_number_sprite)
-        else:  # speed currently pause
-            self.show_troop_number = True
-            self.effect_updater.add(*self.troop_number_sprite)
-            self.battle_camera.add(*self.troop_number_sprite)
+    # elif key_press == pygame.K_o:  # Toggle unit number
 
-    elif key_press == pygame.K_p:  # Speed Pause/unpause Button
-        if self.game_speed >= 0.5:  #
-            self.game_speed = 0  # pause self speed
-        else:  # speed currently pause
-            self.game_speed = 1  # unpause self and set to speed 1
-        self.speed_number.speed_update(self.game_speed)
+    # elif key_press == pygame.K_p:  # Speed Pause/unpause Button
 
-    elif key_press == pygame.K_KP_MINUS:  # reduce self speed
-        new_index = self.game_speed_list.index(self.game_speed) - 1
-        if new_index >= 0:  # cannot reduce self speed than what is available
-            self.game_speed = self.game_speed_list[new_index]
-        self.speed_number.speed_update(self.game_speed)
+    # elif key_press == pygame.K_KP_MINUS:  # reduce self speed
+    #
+    # elif key_press == pygame.K_KP_PLUS:  # increase self speed
 
-    elif key_press == pygame.K_KP_PLUS:  # increase self speed
-        new_index = self.game_speed_list.index(self.game_speed) + 1
-        if new_index < len(self.game_speed_list):  # cannot increase self speed than what is available
-            self.game_speed = self.game_speed_list[new_index]
-        self.speed_number.speed_update(self.game_speed)
+    # elif key_press == pygame.K_PAGEUP:  # Go to top of event log
+    #     self.event_log.current_start_row = 0
+    #     self.event_log.recreate_image()
+    #     self.log_scroll.change_image(new_row=self.event_log.current_start_row)
+    #
+    # elif key_press == pygame.K_PAGEDOWN:  # Go to bottom of event log
+    #     if self.event_log.len_check > self.event_log.max_row_show:
+    #         self.event_log.current_start_row = self.event_log.len_check - self.event_log.max_row_show
+    #         self.event_log.recreate_image()
+    #         self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
-    elif key_press == pygame.K_PAGEUP:  # Go to top of event log
-        self.event_log.current_start_row = 0
-        self.event_log.recreate_image()
-        self.log_scroll.change_image(new_row=self.event_log.current_start_row)
-
-    elif key_press == pygame.K_PAGEDOWN:  # Go to bottom of event log
-        if self.event_log.len_check > self.event_log.max_row_show:
-            self.event_log.current_start_row = self.event_log.len_check - self.event_log.max_row_show
-            self.event_log.recreate_image()
-            self.log_scroll.change_image(new_row=self.event_log.current_start_row)
-
-    elif key_press == pygame.K_SPACE and self.last_selected is not None:
-        self.last_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+    # elif key_press == pygame.K_SPACE and self.last_selected is not None:
+    #     self.last_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_1:

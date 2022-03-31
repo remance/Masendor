@@ -879,7 +879,7 @@ def battle_key_press(self, key_press):
             self.show_troop_number = False
             self.effect_updater.remove(*self.troop_number_sprite)
             self.battle_camera.remove(*self.troop_number_sprite)
-        else:  # speed currently pause
+        else:
             self.show_troop_number = True
             self.effect_updater.add(*self.troop_number_sprite)
             self.battle_camera.add(*self.troop_number_sprite)

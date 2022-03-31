@@ -59,6 +59,7 @@ def change_battle_genre(genre):
     Battle.camera_process = user.camera_process
 
     Battle.start_zoom = genre.start_zoom
+    Battle.start_zoom_mode = genre.start_zoom_mode
 
 
 class Battle:
@@ -96,6 +97,7 @@ class Battle:
 
     # variable that get changed based on genre
     start_zoom = 1
+    start_zoom_mode = "Free"
 
     def __init__(self, main, window_style):
         # v Get self object/variable from start_set
@@ -484,6 +486,7 @@ class Battle:
 
         if self.mode == "battle":
             self.camera_zoom = self.start_zoom  # Camera zoom
+            self.camera_mode = self.start_zoom_mode
             self.start_troop_number = [0, 0, 0]
             self.wound_troop_number = [0, 0, 0]
             self.death_troop_number = [0, 0, 0]
@@ -500,6 +503,7 @@ class Battle:
             subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
+            self.camera_mode = "Free"  # start with free
 
             who_todo = {key: value for key, value in self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
@@ -544,6 +548,7 @@ class Battle:
     def change_state(self):
         self.previous_game_state = self.game_state
         if self.game_state == "battle":  # change to battle state
+            self.camera_mode = self.start_zoom_mode
             self.mini_map.draw_image(self.show_map.true_image, self.camera)
 
             if self.last_selected is not None:  # any unit is selected
@@ -583,6 +588,7 @@ class Battle:
             # ^ End starting
 
         elif self.game_state == "editor":  # change to editor state
+            self.camera_mode = "Free"
             self.inspect = False  # reset inspect ui
             self.mini_map.draw_image(self.show_map.true_image, self.camera)  # reset mini_map
             for arrow in self.range_attacks:  # remove all range melee_attack

@@ -800,6 +800,9 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, le
         if subunit_id not in animation_sprite_pool and subunit_id not in (0, "h1"):  # skip None troop
             animation_sprite_pool[subunit_id] = {}
 
+            race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
+            mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]
+
             this_subunit["Size"] = self.troop_data.race_list[this_subunit["Race"]]["Size"]  # TODO add mount
 
             primary_main_weapon = this_subunit["Primary Main Weapon"][0]
@@ -858,7 +861,10 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, le
                      "frame_property": sprite_dict["frame_property"]}
             else:
                 for animation in self.generic_animation_pool[0]:  # use one side in the list for finding animation name
-                    if self.troop_data.race_list[this_subunit["Race"]]["Name"] in animation:  # grab troop animation
+                    # only get animation with same race and mount after "&"
+                    # if race in animation and ((mount_race == "Any" and "&" not in animation) or
+                    #                           ("&" in animation and mount_race in animation.split("&")[1])):
+                    if race in animation and "&" not in animation:
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
                                 subunit_weapon_list):  # create animation for each weapon set
