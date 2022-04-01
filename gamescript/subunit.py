@@ -90,7 +90,6 @@ class Subunit(pygame.sprite.Sprite):
         self.get_feature = self.feature_map.get_feature
         self.get_height = self.height_map.get_height
 
-        self.who_last_select = None
         self.leader = None  # Leader in the sub-subunit if there is one, got add in leader start_set
         self.board_pos = None  # Used for event log position of subunit (Assigned in battle subunit setup)
         self.walk = False  # currently walking
@@ -826,7 +825,6 @@ class Subunit(pygame.sprite.Sprite):
         """delete reference when function is called"""
         del self.unit
         del self.leader
-        del self.who_last_select
         del self.attack_target
         del self.melee_target
         del self.close_target

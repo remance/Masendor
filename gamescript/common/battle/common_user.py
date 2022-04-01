@@ -97,6 +97,7 @@ def camera_process(self, key_state):
             if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
                 self.map_scale_delay = 0
     elif self.camera_mode == "Follow":
-        self.base_camera_pos = self.player_char.base_pos
+        self.base_camera_pos = pygame.Vector2(self.player_char.base_pos[0] * self.screen_scale[0],
+                                              self.player_char.base_pos[1] * self.screen_scale[1])
         self.camera_pos = self.base_camera_pos * self.camera_zoom
         self.camera_fix()

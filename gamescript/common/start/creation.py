@@ -789,13 +789,11 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
             "resolution_icon": resolution_icon, "volume_slider": volume_slider, "value_box": value_box, "volume_icon": volume_icon}
 
 
-def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, leader_sprite, who_todo, preview=False):
+def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
     # TODO maybe add body pos and size for check collide?
     animation_sprite_pool = {}  # TODO need to add for subunit creator
     weapon_common_type_list = list(set(["_" + value["Common"] + "_" for value in self.generic_action_data.values()]))  # list of all common type animation set
     weapon_attack_type_list = list(set(["_" + value["Attack"] + "_" for value in self.generic_action_data.values()]))  # list of all attack set
-    if leader_sprite:
-        who_todo |= {"h" + str(key): value for key, value in self.leader_data.leader_list.items()}
     for subunit_id, this_subunit in who_todo.items():
         if subunit_id not in animation_sprite_pool and subunit_id not in (0, "h1"):  # skip None troop
             animation_sprite_pool[subunit_id] = {}

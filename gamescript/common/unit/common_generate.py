@@ -7,7 +7,7 @@ import pygame
 from gamescript.statdata import stat_convert
 
 
-def unit_setup(self, team_army, troop_list, specific_team=None):
+def setup_unit(self, team_army, troop_list, specific_team=None):
     """read unit from unit_pos file"""
     from gamescript import unit
     team_colour = unit.team_colour

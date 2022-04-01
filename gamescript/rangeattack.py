@@ -75,7 +75,7 @@ class RangeArrow(pygame.sprite.Sprite):
                         if target_move.length() > 1:
                             target_move.normalize_ip()
                             target_now = target_hit.base_pos + (
-                                    (target_move * (target_hit.unit.runs_peed * how_long)) / 11)
+                                    (target_move * (target_hit.unit.run_speed * how_long)) / 11)
                             if self.shooter.agile_aim is False:
                                 hit_chance -= 20
                         else:

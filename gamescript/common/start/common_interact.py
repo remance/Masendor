@@ -334,7 +334,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         if self.enactment:
             team_selected = None
 
-        self.unit_setup(self.preview_char, self.troop_data.troop_list, specific_team=team_selected)
+        self.setup_unit(self.preview_char, self.troop_data.troop_list, specific_team=team_selected)
 
         setup_unit_icon(self.char_selector, self.unit_icon, self.preview_char, self.char_selector_scroll, icon_scale=1)
 
@@ -359,7 +359,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
 
 def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
-    if self.char_back_button.event or esc_press:  # go back to team/source selection screen
+    if self.char_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
         self.current_source_row = 0
         self.menu_state = "team_select"
         self.char_back_button.event = False
@@ -377,9 +377,9 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
         self.make_team_coa([self.map_data[self.map_title.name]["Team 1"],
                             self.map_data[self.map_title.name]["Team 2"]], self.main_ui_updater)
 
-    elif self.start_button.event:  # start battle button
-        self.start_button.event = False
-        start_battle(self, self.char_selected)
+        if self.start_button.event:  # start battle button
+            self.start_button.event = False
+            start_battle(self, self.char_selected)
 
     elif self.char_selector_scroll.rect.collidepoint(self.mouse_pos):
         if mouse_left_down or mouse_left_up:

@@ -79,7 +79,7 @@ class Battle:
     effect_icon_mouse_over = common_user.effect_icon_mouse_over
     troop_card_button_click = common_user.troop_card_button_click
     camera_process = common_user.camera_process
-    unit_setup = common_generate.unit_setup
+    setup_unit = common_generate.setup_unit
 
     # method that change based on genre
     split_unit = None
@@ -313,7 +313,7 @@ class Battle:
         self.capture_troop_number = [0, 0, 0]
         self.faction_pick = 0
         self.filter_troop = [True, True, True, True]
-        self.last_selected = None
+        self.current_selected = None
         self.before_selected = None
 
         self.team0_pos_list = {}  # team 0 unit position
@@ -343,6 +343,19 @@ class Battle:
         subunit.Subunit.battle = self
         leader.Leader.battle = self
         # ^ End assign default
+
+        # Create the game camera
+        self.camera_zoom = 1
+        self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
+                                              500 * self.screen_scale[
+                                                  1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
+        self.camera_pos = self.base_camera_pos * self.camera_zoom  # Camera pos at the current zoom, start at center of map
+
+        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
+                                      self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
+
+        camera.Camera.screen_rect = self.screen_rect
+        self.camera = camera.Camera(self.camera_pos, self.camera_zoom)
 
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
@@ -489,14 +502,17 @@ class Battle:
             self.death_troop_number = [0, 0, 0]
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
-            self.unit_setup((self.team0_unit, self.team1_unit, self.team2_unit), self.troop_data.troop_list)
+            self.setup_unit((self.team0_unit, self.team1_unit, self.team2_unit), self.troop_data.troop_list)
 
             subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit]))
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
+            if self.main.leader_sprite:
+                for this_unit in self.unit_updater:
+                    for this_leader in this_unit.leader:
+                        who_todo |= {"h" + str(this_leader.leader_id): self.leader_data.leader_list[this_leader.leader_id]}
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
-                                                                      self.screen_scale, self.main.leader_sprite,
-                                                                      who_todo)  # TODO: arcade mode cause huge ram usage
-
+                                                                      self.screen_scale,
+                                                                      who_todo)
 
             subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         else:
@@ -505,23 +521,10 @@ class Battle:
 
             who_todo = {key: value for key, value in self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
-                                                                      self.screen_scale, self.main.leader_sprite,
-                                                                      who_todo)
+                                                                      self.screen_scale, who_todo)
 
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
-
-        # Create the game camera
-        self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
-                                              500 * self.screen_scale[
-                                                  1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
-        self.camera_pos = self.base_camera_pos * self.camera_zoom  # Camera pos at the current zoom, start at center of map
-
-        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
-                                      self.camera_pos[1] - self.center_screen[1])  # calculate top left corner of camera position
-
-        camera.Camera.screen_rect = self.screen_rect
-        self.camera = camera.Camera(self.camera_pos, self.camera_zoom)
 
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
@@ -554,8 +557,8 @@ class Battle:
             self.camera_mode = self.start_zoom_mode
             self.mini_map.draw_image(self.show_map.true_image, self.camera)
 
-            if self.last_selected is not None:  # any unit is selected
-                self.last_selected = None  # reset last_selected
+            if self.current_selected is not None:  # any unit is selected
+                self.current_selected = None  # reset last_selected
                 self.before_selected = None  # reset before selected unit after remove last selected
 
             self.command_ui.rect = self.command_ui.image.get_rect(
@@ -588,16 +591,6 @@ class Battle:
                 this_subunit.start_set(self.camera_zoom)
             for this_leader in self.leader_updater:
                 this_leader.start_set()
-            if self.char_selected is not None:
-                for unit in self.alive_unit_list:  # get player char
-                    if unit.game_id == self.char_selected:
-                        self.player_char = unit.leader[0].subunit
-                        self.last_selected = self.player_char.unit
-                        if self.camera_mode == "Follow":
-                            self.base_camera_pos = self.player_char.base_pos
-                            self.camera_pos = self.base_camera_pos * self.camera_zoom  # Camera pos at the current zoom, start at center of map
-                            self.camera_fix()
-                        break
 
         elif self.game_state == "editor":  # change to editor state
             self.camera_mode = "Free"
@@ -782,7 +775,21 @@ class Battle:
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
         self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
         self.inspect = False  # For checking if inspect ui is currently open or not
-        self.last_selected = None  # Which unit is last selected
+        self.current_selected = None  # Which unit is currently selected
+        if self.char_selected is not None:  # select player char by default if control only one
+            for unit in self.alive_unit_list:  # get player char
+                if unit.game_id == self.char_selected:
+                    self.player_char = unit.leader[0].subunit
+                    self.current_selected = unit
+                    unit.just_selected = True
+                    unit.selected = True
+                    if self.camera_mode == "Follow":
+                        self.base_camera_pos = pygame.Vector2(self.player_char.base_pos[0] * self.screen_scale[0],
+                                                              self.player_char.base_pos[1] * self.screen_scale[1])
+                        self.camera_pos = self.base_camera_pos * self.camera_zoom
+                        self.camera_fix()
+                    break
+
         self.map_mode = 0  # default, another one show height map
         self.subunit_selected = None  # which subunit in inspect ui is selected in last update loop
         self.before_selected = None  # Which unit is selected before
@@ -796,7 +803,7 @@ class Battle:
         # ^ End start value
 
         setup_unit_icon(self.unit_selector, self.unit_icon,
-                             self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                        self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
         self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
 
         self.effect_updater.update(self.alive_unit_list, self.dt, self.camera_zoom)
@@ -1073,8 +1080,8 @@ class Battle:
                     # ^ End melee pathfinding
 
                     # v Remove the unit ui when click at empty space
-                    if mouse_left_up and self.last_selected is not None and self.click_any is False:  # not click at any unit while has selected unit
-                        self.last_selected = None  # reset last_selected
+                    if mouse_left_up and self.current_selected is not None and self.click_any is False:  # not click at any unit while has selected unit
+                        self.current_selected = None  # reset last_selected
                         self.before_selected = None  # reset before selected unit after remove last selected
                         self.remove_unit_ui()
                         if self.game_state == "editor" and self.slot_display_button.event == 0:  # add back ui again for when unit editor ui displayed

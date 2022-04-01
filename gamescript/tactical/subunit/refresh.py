@@ -14,11 +14,10 @@ def player_interact(self, mouse_pos, mouse_left_up):
         if self.rect.collidepoint(mouse_pos):
             self.battle.last_mouseover = self.unit  # last mouse over on this unit
             if mouse_left_up and self.battle.click_any is False:
-                self.battle.last_selected = self.unit  # become last selected unit
+                self.battle.current_selected = self.unit  # become last selected unit
                 if self.unit.selected is False:
                     self.unit.just_selected = True
                     self.unit.selected = True
-                self.who_last_select = self.game_id
                 self.battle.click_any = True
     # ^ End mouse detect
 

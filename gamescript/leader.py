@@ -25,7 +25,7 @@ class Leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leader_data.leader_list[leader_id]
-        self.leader_id = leader_id  # Different from self id, leader_id is only used as reference to the data
+        self.leader_id = leader_id  # leader_id is only used as reference to the data
         self.name = stat["Name"]
         self.health = stat["Health"]
         self.authority = stat["Authority"]

@@ -137,7 +137,7 @@ class MainMenu:
     game_creator_process = common_interact.game_creator_process
     read_source = common_interact.read_source
     change_source = common_interact.change_source
-    unit_setup = common_generate.unit_setup
+    setup_unit = common_generate.setup_unit
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
@@ -308,8 +308,6 @@ class MainMenu:
         self.range_attacks = pygame.sprite.Group()  # all range_attacks group and maybe other range effect stuff later
         self.direction_arrows = pygame.sprite.Group()
         self.troop_number_sprite = pygame.sprite.Group()  # troop text number that appear next to unit sprite
-
-        self.dead_unit = pygame.sprite.Group()  # dead subunit group
 
         self.button_ui = pygame.sprite.Group()  # buttons in battle group
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
@@ -744,7 +742,7 @@ class MainMenu:
 
         who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
         self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,
-                                                           self.leader_sprite, who_todo, preview=True)
+                                                           who_todo, preview=True)
 
         # Encyclopedia
         lorebook.Lorebook.faction_lore = self.faction_data.faction_list

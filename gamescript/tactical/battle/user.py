@@ -98,7 +98,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
         pass
 
     # v code that only run when any unit is selected
-    if self.last_selected is not None and self.last_selected.state != 100:
+    if self.current_selected is not None and self.current_selected.state != 100:
         if self.inspect_button.rect.collidepoint(self.mouse_pos) or (self.inspect and self.new_unit_click):  # click on inspect ui open/close button
             if self.new_unit_click is False:
                 self.click_any = True
@@ -111,7 +111,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                     self.battle_ui_updater.add(*self.troop_card_button,
                                                self.troop_card_ui, self.inspect_ui)
                     self.subunit_selected = None
-                    for index, this_subunit in enumerate(self.last_selected.subunits_array.flat):
+                    for index, this_subunit in enumerate(self.current_selected.subunits_array.flat):
                         if this_subunit is not None:
                             self.inspect_subunit[index].add_subunit(this_subunit)
                             self.battle_ui_updater.add(self.inspect_subunit[index])
@@ -139,13 +139,13 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
             if (mouse_left_up or mouse_right_up) and self.command_ui.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
             # and ( or key_press is not None)
-            if self.last_selected.control and mouse_left_up:
+            if self.current_selected.control and mouse_left_up:
                 if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:
                     if mouse_left_up or key_press == pygame.K_g:  # rotate skill condition when clicked
-                        self.last_selected.skill_cond += 1
-                        if self.last_selected.skill_cond > 3:
-                            self.last_selected.skill_cond = 0
-                        self.behaviour_switch_button[0].event = self.last_selected.skill_cond
+                        self.current_selected.skill_cond += 1
+                        if self.current_selected.skill_cond > 3:
+                            self.current_selected.skill_cond = 0
+                        self.behaviour_switch_button[0].event = self.current_selected.skill_cond
                     if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Free Skill Use", "Conserve 50% Stamina", "Conserve 25% stamina", "Forbid Skill")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[0].event])
@@ -153,10 +153,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                 elif self.behaviour_switch_button[1].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_f:
                     if mouse_left_up or key_press == pygame.K_f:  # rotate fire at will condition when clicked
-                        self.last_selected.fire_at_will += 1
-                        if self.last_selected.fire_at_will > 1:
-                            self.last_selected.fire_at_will = 0
-                        self.behaviour_switch_button[1].event = self.last_selected.fire_at_will
+                        self.current_selected.fire_at_will += 1
+                        if self.current_selected.fire_at_will > 1:
+                            self.current_selected.fire_at_will = 0
+                        self.behaviour_switch_button[1].event = self.current_selected.fire_at_will
                     if self.behaviour_switch_button[1].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Fire at will", "Hold fire until order")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[1].event])
@@ -164,10 +164,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                 elif self.behaviour_switch_button[2].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_h:
                     if mouse_left_up or key_press == pygame.K_h:  # rotate hold condition when clicked
-                        self.last_selected.hold += 1
-                        if self.last_selected.hold > 2:
-                            self.last_selected.hold = 0
-                        self.behaviour_switch_button[2].event = self.last_selected.hold
+                        self.current_selected.hold += 1
+                        if self.current_selected.hold > 2:
+                            self.current_selected.hold = 0
+                        self.behaviour_switch_button[2].event = self.current_selected.hold
                     if self.behaviour_switch_button[2].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Aggressive", "Skirmish/Scout", "Hold Ground")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[2].event])
@@ -175,10 +175,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                 elif self.behaviour_switch_button[3].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
                     if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
-                        self.last_selected.use_min_range += 1
-                        if self.last_selected.use_min_range > 1:
-                            self.last_selected.use_min_range = 0
-                        self.behaviour_switch_button[3].event = self.last_selected.use_min_range
+                        self.current_selected.use_min_range += 1
+                        if self.current_selected.use_min_range > 1:
+                            self.current_selected.use_min_range = 0
+                        self.behaviour_switch_button[3].event = self.current_selected.use_min_range
                     if self.behaviour_switch_button[3].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Minimum Shoot Range", "Maximum Shoot range")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[3].event])
@@ -186,10 +186,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                 elif self.behaviour_switch_button[4].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
                     if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
-                        self.last_selected.shoot_mode += 1
-                        if self.last_selected.shoot_mode > 2:
-                            self.last_selected.shoot_mode = 0
-                        self.behaviour_switch_button[4].event = self.last_selected.shoot_mode
+                        self.current_selected.shoot_mode += 1
+                        if self.current_selected.shoot_mode > 2:
+                            self.current_selected.shoot_mode = 0
+                        self.behaviour_switch_button[4].event = self.current_selected.shoot_mode
                     if self.behaviour_switch_button[4].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Both Arc and Direct Shot", "Only Arc Shot", "Only Direct Shot")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[4].event])
@@ -197,10 +197,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                 elif self.behaviour_switch_button[5].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
                     if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
-                        self.last_selected.run_toggle += 1
-                        if self.last_selected.run_toggle > 1:
-                            self.last_selected.run_toggle = 0
-                        self.behaviour_switch_button[5].event = self.last_selected.run_toggle
+                        self.current_selected.run_toggle += 1
+                        if self.current_selected.run_toggle > 1:
+                            self.current_selected.run_toggle = 0
+                        self.behaviour_switch_button[5].event = self.current_selected.run_toggle
                     if self.behaviour_switch_button[5].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Toggle Walk", "Toggle Run")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[5].event])
@@ -208,10 +208,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
                 elif self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # or key_press == pygame.K_j
                     if mouse_left_up:  # or key_press == pygame.K_j  # rotate min range condition when clicked
-                        self.last_selected.attack_mode += 1
-                        if self.last_selected.attack_mode > 2:
-                            self.last_selected.attack_mode = 0
-                        self.behaviour_switch_button[6].event = self.last_selected.attack_mode
+                        self.current_selected.attack_mode += 1
+                        if self.current_selected.attack_mode > 2:
+                            self.current_selected.attack_mode = 0
+                        self.behaviour_switch_button[6].event = self.current_selected.attack_mode
                     if self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
                         pop_text = ("Frontline Attack Only", "Keep Formation", "All Out Attack")
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[6].event])
@@ -220,12 +220,12 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 elif self.col_split_button in self.battle_ui_updater and self.col_split_button.rect.collidepoint(self.mouse_pos):
                     self.button_name_popup.pop(self.mouse_pos, "Split By Middle Column")
                     self.battle_ui_updater.add(self.button_name_popup)
-                    if mouse_left_up and self.last_selected.state != 10:
-                        self.split_unit(self.last_selected, 1)
+                    if mouse_left_up and self.current_selected.state != 10:
+                        self.split_unit(self.current_selected, 1)
                         self.split_happen = True
-                        self.check_split(self.last_selected)
+                        self.check_split(self.current_selected)
                         self.battle_ui_updater.remove(*self.leader_now)
-                        self.leader_now = self.last_selected.leader
+                        self.leader_now = self.current_selected.leader
                         self.battle_ui_updater.add(*self.leader_now)
                         setup_unit_icon(self.unit_selector, self.unit_icon,
                                         self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
@@ -233,12 +233,12 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 elif self.row_split_button in self.battle_ui_updater and self.row_split_button.rect.collidepoint(self.mouse_pos):
                     self.button_name_popup.pop(self.mouse_pos, "Split by Middle Row")
                     self.battle_ui_updater.add(self.button_name_popup)
-                    if mouse_left_up and self.last_selected.state != 10:
-                        self.split_unit(self.last_selected, 0)
+                    if mouse_left_up and self.current_selected.state != 10:
+                        self.split_unit(self.current_selected, 0)
                         self.split_happen = True
-                        self.check_split(self.last_selected)
+                        self.check_split(self.current_selected)
                         self.battle_ui_updater.remove(*self.leader_now)
-                        self.leader_now = self.last_selected.leader
+                        self.leader_now = self.current_selected.leader
                         self.battle_ui_updater.add(*self.leader_now)
                         setup_unit_icon(self.unit_selector, self.unit_icon,
                                         self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
@@ -303,10 +303,10 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
             self.kill_effect_icon()
 
         if mouse_right_up and self.click_any is False:  # Unit command
-            self.last_selected.user_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right,
-                                          self.last_mouseover, key_state)
+            self.current_selected.user_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right,
+                                             self.last_mouseover, key_state)
 
-    if mouse_right_up and self.last_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
+    if mouse_right_up and self.current_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
         if 0 <= self.battle_mouse_pos[0] <= 999 and \
                 0 <= self.battle_mouse_pos[1] <= 999:  # not draw if pos is off the map
             terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos, self.battle_map_base)
@@ -915,8 +915,8 @@ def battle_key_press(self, key_press):
             self.event_log.recreate_image()
             self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
-    elif key_press == pygame.K_SPACE and self.last_selected is not None:
-        self.last_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+    elif key_press == pygame.K_SPACE and self.current_selected is not None:
+        self.current_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_1:
@@ -1062,15 +1062,15 @@ def unit_icon_mouse_over(self, mouse_up, mouse_right):
         for icon in self.unit_icon:
             if icon.rect.collidepoint(self.mouse_pos):
                 if mouse_up:
-                    self.last_selected = icon.army
-                    self.last_selected.just_selected = True
-                    self.last_selected.selected = True
+                    self.current_selected = icon.army
+                    self.current_selected.just_selected = True
+                    self.current_selected.selected = True
 
                     if self.before_selected is None:  # add back the pop up ui, so it gets shown when click subunit with none selected before
                         self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
                         self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
 
-                        self.add_behaviour_ui(self.last_selected)
+                        self.add_behaviour_ui(self.current_selected)
 
                 elif mouse_right:
                     self.base_camera_pos = pygame.Vector2(icon.army.base_pos[0] * self.screen_scale[0],
@@ -1081,21 +1081,21 @@ def unit_icon_mouse_over(self, mouse_up, mouse_right):
 
 
 def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down, key_state, key_press):
-    if self.last_selected is not None:
-        if self.game_state == "battle" and self.last_selected.state != 100:
+    if self.current_selected is not None:
+        if self.game_state == "battle" and self.current_selected.state != 100:
             if self.before_selected is None:  # add back the pop-up ui, so it gets shown when click subunit with none selected before
                 self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
                 self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
 
-                self.add_behaviour_ui(self.last_selected)
+                self.add_behaviour_ui(self.current_selected)
 
-            elif self.before_selected != self.last_selected or self.split_happen:  # change subunit information when select other unit
+            elif self.before_selected != self.current_selected or self.split_happen:  # change subunit information when select other unit
                 if self.inspect:  # change inspect ui
                     self.new_unit_click = True
                     self.battle_ui_updater.remove(*self.inspect_subunit)
 
                     self.subunit_selected = None
-                    for index, this_subunit in enumerate(self.last_selected.subunits_array.flat):
+                    for index, this_subunit in enumerate(self.current_selected.subunits_array.flat):
                         if this_subunit is not None:
                             self.inspect_subunit[index].add_subunit(this_subunit)
                             self.battle_ui_updater.add(self.inspect_subunit[index])
@@ -1109,60 +1109,60 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                                                    split=self.split_happen)
                 self.battle_ui_updater.remove(*self.leader_now)
 
-                self.add_behaviour_ui(self.last_selected, else_check=True)
+                self.add_behaviour_ui(self.current_selected, else_check=True)
 
                 if self.split_happen:  # end split check
                     self.split_happen = False
 
             else:  # Update unit stat ui and command ui value every 1.1 seconds
                 if self.ui_timer >= 1.1:
-                    self.unitstat_ui.value_input(who=self.last_selected, split=self.split_happen)
-                    self.command_ui.value_input(who=self.last_selected, split=self.split_happen)
+                    self.unitstat_ui.value_input(who=self.current_selected, split=self.split_happen)
+                    self.command_ui.value_input(who=self.current_selected, split=self.split_happen)
 
         elif self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater:
             if (mouse_right_up or mouse_right_down) and self.click_any is False:  # Unit placement
-                self.last_selected.placement(self.command_mouse_pos, mouse_right_up, mouse_right_down, double_mouse_right)
+                self.current_selected.placement(self.command_mouse_pos, mouse_right_up, mouse_right_down, double_mouse_right)
 
             if key_state[pygame.K_DELETE]:
                 for this_unit in self.troop_number_sprite:
-                    if this_unit.who == self.last_selected:
+                    if this_unit.who == self.current_selected:
                         this_unit.delete()
                         this_unit.kill()
                         del this_unit
-                for this_subunit in self.last_selected.subunits:
+                for this_subunit in self.current_selected.subunits:
                     this_subunit.delete()
                     self.alive_subunit_list.remove(this_subunit)
                     this_subunit.kill()
                     del this_subunit
-                for this_leader in self.last_selected.leader:
+                for this_leader in self.current_selected.leader:
                     this_leader.delete()
                     this_leader.kill()
                     del this_leader
-                del [self.team0_pos_list, self.team1_pos_list, self.team2_pos_list][self.last_selected.team][
-                    self.last_selected]
-                self.last_selected.delete()
-                self.last_selected.kill()
-                self.alive_unit_list.remove(self.last_selected)
-                self.alive_unit_index.remove(self.last_selected.game_id)
+                del [self.team0_pos_list, self.team1_pos_list, self.team2_pos_list][self.current_selected.team][
+                    self.current_selected]
+                self.current_selected.delete()
+                self.current_selected.kill()
+                self.alive_unit_list.remove(self.current_selected)
+                self.alive_unit_index.remove(self.current_selected.game_id)
                 setup_unit_icon(self.unit_selector, self.unit_icon,
                                 self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
-                self.last_selected = None
+                self.current_selected = None
 
     # v Update value of the clicked subunit every 1.1 second
     if self.game_state == "battle" and self.inspect and ((self.ui_timer >= 1.1 and self.troop_card_ui.option != 0) or
-                                                         self.before_selected != self.last_selected):
+                                                         self.before_selected != self.current_selected):
         self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data, armour_data=self.armour_data,
                                        split=self.split_happen)
         if self.troop_card_ui.option == 2:  # skill and status effect card
             self.countdown_skill_icon()
             self.effect_icon_blit()
-            if self.before_selected != self.last_selected:  # change subunit, reset trait icon as well
+            if self.before_selected != self.current_selected:  # change subunit, reset trait icon as well
                 self.trait_skill_blit()
                 self.countdown_skill_icon()
         else:
             self.kill_effect_icon()
 
-    self.before_selected = self.last_selected
+    self.before_selected = self.current_selected
     # ^ End update value
 
 

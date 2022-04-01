@@ -91,7 +91,7 @@ def move_logic(self, dt, parent_state, collide_list):
                     speed = self.speed / 15  # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                    speed = self.unit.runs_peed  # use run speed
+                    speed = self.unit.run_speed  # use run speed
                     self.run = True
                 if self.charge_skill in self.skill_effect:  # speed gradually decrease with momentum during charge
                     speed = speed * self.charge_momentum / 8
