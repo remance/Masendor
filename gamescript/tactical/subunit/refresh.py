@@ -8,7 +8,7 @@ equip_set = ("Main", "Sub")
 
 
 def player_interact(self, mouse_pos, mouse_left_up):
-    # v Mouse collision detection
+    """Mouse collision detection"""
     if self.battle.game_state == "battle" or (
             self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui_updater):
         if self.rect.collidepoint(mouse_pos):
@@ -19,7 +19,6 @@ def player_interact(self, mouse_pos, mouse_left_up):
                     self.unit.just_selected = True
                     self.unit.selected = True
                 self.battle.click_any = True
-    # ^ End mouse detect
 
 
 def status_update(self, weather=None):

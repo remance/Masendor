@@ -25,6 +25,7 @@ List of animation frame properties:
 "turret": not sure how it will work yet but for when sprite can face other direction while walking in other direction 
 "effect_": add special image effect (not animation effect) like blur, need effect name after and related input value "effect_" (e.g., effect_blur_50)
 
-List of animation effect propertiers:  # only need to be put in at the first frame row.  
+List of animation effect propertiers:  # only need to be put in at the first frame row. 
+"dmgsprite": sprite will do damage with the whole sprite instead of just damage effect 
 "interuptrevert": effect run revert back to first frame when animation is interupted, can only be use with external effect
-"wholeeffect_": add special image effect to every sprite, need effect name after and related input value "wholeeffect_" (e.g., wholeeffect_blur_50)
+"norestart": animation will use the last frame instead of restart when continue with the same animation

@@ -56,7 +56,7 @@ anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_
 frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon",
                        "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
 
-anim_property_list = ["dmgsprite", "interuptrevert"] + frame_property_list
+anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
 
 # TODO: unique, more than two p, at least 10 effect and special, lock?
 
