@@ -211,15 +211,6 @@ def set_rotate(self, set_target=None):
     return round(new_angle)
 
 
-def kill_effect_icon(self):
-    for icon in self.skill_icon.sprites():
-        icon.kill()
-        del icon
-    for icon in self.effect_icon.sprites():
-        icon.kill()
-        del icon
-
-
 def setup_list(screen_scale, item_class, current_row, show_list, item_group, box, ui_class, layer=15):
     """generate list of subsection of the left side of encyclopedia"""
     row = 5 * screen_scale[1]

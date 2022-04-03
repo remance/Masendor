@@ -158,9 +158,9 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ["eye", "mouth", "size", "property"]
-    pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and
+    pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and v != "" and
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
-    pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and "weapon" in k})
+    pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and "weapon" in k})
     pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
     for index, layer in enumerate(pose_layer_list):
         part = animation_part_list[layer]

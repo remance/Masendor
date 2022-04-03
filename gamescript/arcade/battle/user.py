@@ -1084,3 +1084,8 @@ def add_behaviour_ui(self, who_input, else_check=False):
     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
     self.unitstat_ui.value_input(who=who_input, split=self.split_happen)
     self.command_ui.value_input(who=who_input, split=self.split_happen)
+
+
+def remove_unit_ui_check(self, *args):
+    """No ui to remove in arcade mode"""
+    pass

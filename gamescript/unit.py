@@ -26,6 +26,8 @@ def change_unit_genre(genre):
     Unit.user_input = player.user_input
     Unit.rotate_logic = mobalise.rotate_logic
     Unit.revert_move = mobalise.revert_move
+    Unit.set_target = mobalise.set_target
+    Unit.set_subunit_target = mobalise.set_subunit_target
     Unit.selection = update.selection
     Unit.auth_recal = update.auth_recal
     Unit.setup_unit = update.setup_unit
@@ -48,11 +50,15 @@ class Unit(pygame.sprite.Sprite):
     destroyed = None
     retreat = None
     switch_faction = None
-    auth_recal = None
     user_input = None
     rotate_logic = None
     revert_move = None
+    set_target = None
+    set_subunit_target = None
     selection = None
+    auth_recal = None
+    setup_unit = None
+    process_command = None
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although unit in code, this is referred as subunit ingame"""
@@ -301,40 +307,6 @@ class Unit(pygame.sprite.Sprite):
     #         self.skill_cooldown[which_skill] = skillstat[4]
     # self.skill_cooldown[which_skill] =
 
-    def set_subunit_target(self, target="rotate", reset_path=False):
-        """generate all four side, hitbox and subunit positions
-        target parameter can be "rotate" for simply rotate whole unit but not move or tuple/vector2 for target position to move
-        reset_path argument True will reset subunit command queue"""
-        if target == "rotate":  # rotate unit before moving
-            unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
-                                          self.base_pos[1] - self.base_height_box)
-
-            for subunit in self.subunits:  # generate position of each subunit
-                if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
-                    new_target = unit_topleft + subunit.unit_position
-                    if reset_path:
-                        subunit.command_target.append(pygame.Vector2(
-                            rotation_xy(self.base_pos, new_target, self.radians_angle)))
-                    else:
-                        subunit.command_target = pygame.Vector2(
-                            rotation_xy(self.base_pos, new_target, self.radians_angle))  # rotate according to sprite current rotation
-                        subunit.new_angle = self.new_angle
-
-        else:  # moving unit to specific target position
-            unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
-                                          target[1])  # get the top left corner of sprite to generate subunit position
-
-            for subunit in self.subunits:  # generate position of each subunit
-                if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
-                    subunit.new_angle = self.new_angle
-                    new_target = unit_topleft + subunit.unit_position
-                    if reset_path:
-                        subunit.command_target.append(pygame.Vector2(
-                            rotation_xy(target, new_target, self.radians_angle)))
-                    else:
-                        subunit.command_target = pygame.Vector2(
-                            rotation_xy(target, new_target, self.radians_angle))  # rotate according to sprite current rotation
-
     def start_set(self, subunit_group):
         """Setup various variables at the start of battle or when new unit spawn/split"""
         self.setup_unit(battle_start=False)
@@ -518,10 +490,6 @@ class Unit(pygame.sprite.Sprite):
                 for subunit in self.subunits:
                     subunit.kill()
 
-    def set_target(self, pos):
-        """set new base_target, scale base_target from base_target according to zoom scale"""
-        self.base_target = pygame.Vector2(pos)  # Set new base base_target
-        self.set_subunit_target(self.base_target)
 
     def process_retreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)

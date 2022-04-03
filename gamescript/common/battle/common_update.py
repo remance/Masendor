@@ -70,3 +70,12 @@ def countdown_skill_icon(self):
     #     if effect.id in self.troop_card_ui.value2[4]:
     #         cd = int(self.troop_card_ui.value2[4][effect.id][3])
     #     effect.iconchange(cd, 0)
+
+
+def kill_effect_icon(self):
+    for icon in self.skill_icon.sprites():
+        icon.kill()
+        del icon
+    for icon in self.effect_icon.sprites():
+        icon.kill()
+        del icon

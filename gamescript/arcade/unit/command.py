@@ -4,24 +4,19 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
     if other_command == 0:  # move or melee_attack command
         self.state = 1
 
-        if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # melee_attack
-            if self.ammo <= 0 or self.forced_melee:  # no magazine_left to shoot or forced melee_attack command
-                self.state = 3  # move to melee
-            elif self.ammo > 0:  # have magazine_left to shoot
-                self.state = 5  # Move to range melee_attack
-            if self.attack_place:  # melee_attack specific location
-                self.set_target(target_pos)
-                # if self.magazine_left > 0:
-                self.base_attack_pos = target_pos
-            else:
-                self.attack_target = enemy
-                self.base_attack_pos = enemy.base_pos
-                self.set_target(self.base_attack_pos)
+        # if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # melee_attack
+        #     if self.ammo <= 0 or self.forced_melee:  # no magazine_left to shoot or forced melee_attack command
+        #         self.state = 3  # move to melee
+        #     elif self.ammo > 0:  # have magazine_left to shoot
+        #         self.state = 5  # Move to range melee_attack
+        #         self.attack_target = enemy
+        #         self.base_attack_pos = enemy.base_pos
+        #         self.set_target(self.base_attack_pos)
+        #
+        # else:
+        self.set_target(target_pos)
 
-        else:
-            self.set_target(target_pos)
-
-        if run_command or self.run_toggle == 1:
+        if run_command:
             self.state += 1  # run state
 
         self.command_state = self.state
@@ -34,10 +29,6 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
             self.revert_move()
             # if runcommand or self.run_toggle:
             #     self.state -= 1
-
-        if self.charging:  # change order when attacking will cause authority penalty
-            self.leader[0].authority -= self.auth_penalty
-            self.auth_recal()
 
     elif other_command in (1, 2) and self.state != 10:  # Pause all action command except combat
         if self.charging and other_command == 2:  # halt order instead of auto halt

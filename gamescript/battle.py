@@ -56,13 +56,13 @@ def change_battle_genre(genre):
     Battle.editor_state_mouse = user.editor_state_mouse
     Battle.selected_unit_process = user.selected_unit_process
     Battle.add_behaviour_ui = user.add_behaviour_ui
+    Battle.remove_unit_ui_check = user.remove_unit_ui_check
 
     Battle.start_zoom = genre.start_zoom
     Battle.start_zoom_mode = genre.start_zoom_mode
 
 
 class Battle:
-    kill_effect_icon = utility.kill_effect_icon
     popout_lorebook = utility.popout_lorebook
     popup_list_new_open = utility.popup_list_open
     escmenu_process = escmenu.escmenu_process
@@ -74,6 +74,7 @@ class Battle:
     trait_skill_blit = common_update.trait_skill_blit
     effect_icon_blit = common_update.effect_icon_blit
     countdown_skill_icon = common_update.countdown_skill_icon
+    kill_effect_icon = common_update.kill_effect_icon
     ui_mouse_over = common_user.ui_mouse_over
     leader_mouse_over = common_user.leader_mouse_over
     effect_icon_mouse_over = common_user.effect_icon_mouse_over
@@ -94,6 +95,7 @@ class Battle:
     editor_state_mouse = None
     selected_unit_process = None
     add_behaviour_ui = None
+    remove_unit_ui_check = None
 
     # variable that get changed based on genre
     start_zoom = 1
@@ -1070,23 +1072,15 @@ class Battle:
                     self.subunit_updater.update(self.current_weather, self.dt, self.camera_zoom, self.combat_timer,
                                                 self.base_mouse_pos, mouse_left_up)
 
-                    # v Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
+                    # Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
                     if len(self.combat_path_queue) > 0:
                         run = 0
                         while len(self.combat_path_queue) > 0 and run < 5:
                             self.combat_path_queue[0].combat_pathfind()
                             self.combat_path_queue = self.combat_path_queue[1:]
                             run += 1
-                    # ^ End melee pathfinding
 
-                    # v Remove the unit ui when click at empty space
-                    if mouse_left_up and self.current_selected is not None and self.click_any is False:  # not click at any unit while has selected unit
-                        self.current_selected = None  # reset last_selected
-                        self.before_selected = None  # reset before selected unit after remove last selected
-                        self.remove_unit_ui()
-                        if self.game_state == "editor" and self.slot_display_button.event == 0:  # add back ui again for when unit editor ui displayed
-                            self.battle_ui_updater.add(self.unit_setup_stuff, self.leader_now)
-                    # ^ End remove
+                    self.remove_unit_ui_check()
 
                     if self.ui_timer > 1:
                         self.scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar

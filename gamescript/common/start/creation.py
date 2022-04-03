@@ -826,7 +826,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                    self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
 
             if preview:  # only create random right side sprite
-                animation = [this_animation for this_animation in self.generic_animation_pool[0]
+                animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in this_animation and "&" not in this_animation]
+                animation = [this_animation for this_animation in animation
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  weapon_common_action[0][0] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
