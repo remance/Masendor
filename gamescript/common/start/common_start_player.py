@@ -3,14 +3,14 @@ import pygame
 
 from gamescript import menu, battleui
 from gamescript.common import utility
-from gamescript.common.ui import selector
+from gamescript.common.ui import common_ui_selector
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 edit_config = utility.edit_config
 load_image = utility.load_image
 clean_group_object = utility.clean_group_object
-setup_unit_icon = selector.setup_unit_icon
+setup_unit_icon = common_ui_selector.setup_unit_icon
 
 
 def main_menu_process(self, mouse_left_up):

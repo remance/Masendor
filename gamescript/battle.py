@@ -8,13 +8,13 @@ import pygame
 import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor
 from gamescript.common import utility
-from gamescript.common.start import creation
-from gamescript.common.uniteditor import editor
-from gamescript.common.battle import common_setup, common_update, common_user
-from gamescript.common.ui import selector, escmenu
-from gamescript.common.unit import common_generate
+from gamescript.common.start import common_start_setup
+from gamescript.common.uniteditor import common_uniteditor_editor
+from gamescript.common.battle import common_battle_setup, common_battle_update, common_battle_player
+from gamescript.common.ui import common_ui_selector, common_ui_escmenu
+from gamescript.common.unit import common_unit_setup
 
-direction_list = creation.direction_list
+direction_list = common_start_setup.direction_list
 
 from pygame.locals import *
 from scipy.spatial import KDTree
@@ -26,37 +26,35 @@ load_sound = utility.load_sound
 editconfig = utility.edit_config
 setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
-setup_unit_icon = selector.setup_unit_icon
+setup_unit_icon = common_ui_selector.setup_unit_icon
 
 
 def change_battle_genre(genre):
     sys.path.insert(0, "/gamescript/genre/")
     if genre == "tactical":
-        from gamescript.tactical.battle import setup, user
-        from gamescript.tactical.unit import combat, generate
-        from gamescript.tactical.subunit import fight
-        from gamescript.tactical.uniteditor import convert
+        from gamescript.tactical.battle import battle_setup, battle_player
+        from gamescript.tactical.unit import unit_combat, unit_setup
+        from gamescript.tactical.uniteditor import uniteditor_convert
         from gamescript.tactical import genre
     elif genre == "arcade":
-        from gamescript.arcade.battle import setup, user
-        from gamescript.arcade.unit import combat, generate
-        from gamescript.arcade.subunit import fight
-        from gamescript.arcade.uniteditor import convert
+        from gamescript.arcade.battle import battle_setup, battle_player
+        from gamescript.arcade.unit import unit_combat, unit_setup
+        from gamescript.arcade.uniteditor import uniteditor_convert
         from gamescript.arcade import genre
 
-    Battle.split_unit = combat.split_unit
-    Battle.check_split = combat.check_split
-    Battle.generate_unit = generate.generate_unit
-    Battle.setup_battle_ui = setup.setup_battle_ui
-    Battle.convert_edit_unit = convert.convert_edit_unit
-    Battle.battle_mouse_scrolling = user.battle_mouse_scrolling
-    Battle.battle_key_press = user.battle_key_press
-    Battle.battle_mouse = user.battle_mouse
-    Battle.battle_state_mouse = user.battle_state_mouse
-    Battle.editor_state_mouse = user.editor_state_mouse
-    Battle.selected_unit_process = user.selected_unit_process
-    Battle.add_behaviour_ui = user.add_behaviour_ui
-    Battle.remove_unit_ui_check = user.remove_unit_ui_check
+    Battle.split_unit = unit_combat.split_unit
+    Battle.check_split = unit_combat.check_split
+    Battle.generate_unit = unit_setup.generate_unit
+    Battle.setup_battle_ui = battle_setup.setup_battle_ui
+    Battle.convert_edit_unit = uniteditor_convert.convert_edit_unit
+    Battle.battle_mouse_scrolling = battle_player.battle_mouse_scrolling
+    Battle.battle_key_press = battle_player.battle_key_press
+    Battle.battle_mouse = battle_player.battle_mouse
+    Battle.battle_state_mouse = battle_player.battle_state_mouse
+    Battle.editor_state_mouse = battle_player.editor_state_mouse
+    Battle.selected_unit_process = battle_player.selected_unit_process
+    Battle.add_behaviour_ui = battle_player.add_behaviour_ui
+    Battle.remove_unit_ui_check = battle_player.remove_unit_ui_check
 
     Battle.start_zoom = genre.start_zoom
     Battle.start_zoom_mode = genre.start_zoom_mode
@@ -65,22 +63,22 @@ def change_battle_genre(genre):
 class Battle:
     popout_lorebook = utility.popout_lorebook
     popup_list_new_open = utility.popup_list_open
-    escmenu_process = escmenu.escmenu_process
-    editor_map_change = editor.editor_map_change
-    save_preset = editor.save_preset
-    convert_slot_dict = editor.convert_slot_dict
-    preview_authority = editor.preview_authority
-    filter_troop_list = editor.filter_troop_list
-    trait_skill_blit = common_update.trait_skill_blit
-    effect_icon_blit = common_update.effect_icon_blit
-    countdown_skill_icon = common_update.countdown_skill_icon
-    kill_effect_icon = common_update.kill_effect_icon
-    ui_mouse_over = common_user.ui_mouse_over
-    leader_mouse_over = common_user.leader_mouse_over
-    effect_icon_mouse_over = common_user.effect_icon_mouse_over
-    troop_card_button_click = common_user.troop_card_button_click
-    camera_process = common_user.camera_process
-    setup_unit = common_generate.setup_unit
+    escmenu_process = common_ui_escmenu.escmenu_process
+    editor_map_change = common_uniteditor_editor.editor_map_change
+    save_preset = common_uniteditor_editor.save_preset
+    convert_slot_dict = common_uniteditor_editor.convert_slot_dict
+    preview_authority = common_uniteditor_editor.preview_authority
+    filter_troop_list = common_uniteditor_editor.filter_troop_list
+    trait_skill_blit = common_battle_update.trait_skill_blit
+    effect_icon_blit = common_battle_update.effect_icon_blit
+    countdown_skill_icon = common_battle_update.countdown_skill_icon
+    kill_effect_icon = common_battle_update.kill_effect_icon
+    ui_mouse_over = common_battle_player.ui_mouse_over
+    leader_mouse_over = common_battle_player.leader_mouse_over
+    effect_icon_mouse_over = common_battle_player.effect_icon_mouse_over
+    troop_card_button_click = common_battle_player.troop_card_button_click
+    camera_process = common_battle_player.camera_process
+    setup_unit = common_unit_setup.setup_unit
 
     # method that change based on genre
     split_unit = None
@@ -1080,7 +1078,7 @@ class Battle:
                             self.combat_path_queue = self.combat_path_queue[1:]
                             run += 1
 
-                    self.remove_unit_ui_check()
+                    self.remove_unit_ui_check(mouse_left_up)
 
                     if self.ui_timer > 1:
                         self.scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar

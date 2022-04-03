@@ -4,12 +4,12 @@ import pygame.freetype
 
 def change_leader_genre(genre):
     if genre == "tactical":
-        from gamescript.tactical.leader import engage
+        from gamescript.tactical.leader import leader_combat
     elif genre == "arcade":
-        from gamescript.arcade.leader import engage
+        from gamescript.arcade.leader import leader_combat
 
-    Leader.pos_change_stat = engage.pos_change_stat
-    Leader.gone = engage.gone
+    Leader.pos_change_stat = leader_combat.pos_change_stat
+    Leader.gone = leader_combat.gone
 
 
 class Leader(pygame.sprite.Sprite):

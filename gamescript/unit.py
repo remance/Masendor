@@ -14,24 +14,24 @@ team_colour = {0: (255, 255, 255), 1: (144, 167, 255), 2: (255, 114, 114)}  # te
 def change_unit_genre(genre):
     """Change game genre and add appropriate method to subunit class"""
     if genre == "tactical":
-        from gamescript.tactical.unit import combat, mobalise, player, update, command
+        from gamescript.tactical.unit import unit_combat, unit_movement, unit_player, unit_update, unit_command
     elif genre == "arcade":
-        from gamescript.arcade.unit import combat, mobalise, player, update, command
+        from gamescript.arcade.unit import unit_combat, unit_movement, unit_player, unit_update, unit_command
 
-    Unit.skirmish = combat.skirmish
-    Unit.chase = combat.chase
-    Unit.destroyed = combat.destroyed  # destroyed script
-    Unit.retreat = combat.retreat
-    Unit.switch_faction = combat.switch_faction
-    Unit.user_input = player.user_input
-    Unit.rotate_logic = mobalise.rotate_logic
-    Unit.revert_move = mobalise.revert_move
-    Unit.set_target = mobalise.set_target
-    Unit.set_subunit_target = mobalise.set_subunit_target
-    Unit.selection = update.selection
-    Unit.auth_recal = update.auth_recal
-    Unit.setup_unit = update.setup_unit
-    Unit.process_command = command.process_command
+    Unit.skirmish = unit_combat.skirmish
+    Unit.chase = unit_combat.chase
+    Unit.destroyed = unit_combat.destroyed  # destroyed script
+    Unit.retreat = unit_combat.retreat
+    Unit.switch_faction = unit_combat.switch_faction
+    Unit.user_input = unit_player.user_input
+    Unit.rotate_logic = unit_movement.rotate_logic
+    Unit.revert_move = unit_movement.revert_move
+    Unit.set_target = unit_movement.set_target
+    Unit.set_subunit_target = unit_movement.set_subunit_target
+    Unit.selection = unit_update.selection
+    Unit.auth_recal = unit_update.auth_recal
+    Unit.setup_unit = unit_update.setup_unit
+    Unit.process_unit_command = unit_command.process_command
 
 
 class Unit(pygame.sprite.Sprite):

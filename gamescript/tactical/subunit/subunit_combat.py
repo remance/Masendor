@@ -59,6 +59,7 @@ def find_shooting_target(self, unit_state):
             self.state = 12
         elif unit_state in (2, 4, 6):  # Run and shoot
             self.state = 13
+            self.state = 13
 
 
 def attack_logic(self, dt, combat_timer, parent_state):

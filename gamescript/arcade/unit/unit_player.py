@@ -3,14 +3,15 @@ import pygame
 
 def user_input(self, mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right, target, key_state, other_command=0):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-    if self.state not in (95, 97, 98, 99, 100):
+    if self.state != 100:
         self.rotate_only = False
         self.forced_melee = False
         self.attack_place = False
         self.range_combat_check = False
         # register user keyboard
-        new_pos = pygame.Vector2(self.leader[0].subunit.base_pos)
-
+        leader_subunit = self.leader[0].subunit
+        new_pos = pygame.Vector2(leader_subunit.base_pos)
+        leader_subunit.new_angle = leader_subunit.set_rotate(mouse_pos)
         if key_state[pygame.K_s]:  # move down
             new_pos[1] += self.run_speed
 

@@ -3,59 +3,29 @@ import random
 import pygame
 
 from gamescript.common import utility
-from gamescript.common.subunit import common_movement
+from gamescript.common.subunit import common_subunit_movement
 
 rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
-rotation_list = common_movement.rotation_list
-rotation_name = common_movement.rotation_name
-rotation_dict = common_movement.rotation_dict
+rotation_list = common_subunit_movement.rotation_list
+rotation_name = common_subunit_movement.rotation_name
+rotation_dict = common_subunit_movement.rotation_dict
 
-def rotate_logic(self, dt):
-    rotate_cal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
-    rotate_check = 360 - rotate_cal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
-    self.radians_angle = math.radians(360 - self.angle)  # for all side rotate
-    if self.angle < 0:  # negative angle (rotate to left side)
-        self.radians_angle = math.radians(-self.angle)
 
-    rotate_tiny = self.rotate_speed * dt  # rotate little by little according to time
-    if self.new_angle > self.angle:  # rotate to angle more than the current one
-        if rotate_cal > 180:  # rotate with the smallest angle direction
-            self.angle -= rotate_tiny
-            rotate_check -= rotate_tiny
-            if rotate_check <= 0:
-                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-        else:
-            self.angle += rotate_tiny
-            if self.angle > self.new_angle:
-                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-    elif self.new_angle < self.angle:  # rotate to angle less than the current one
-        if rotate_cal > 180:  # rotate with the smallest angle direction
-            self.angle += rotate_tiny
-            rotate_check -= rotate_tiny
-            if rotate_check <= 0:
-                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-        else:
-            self.angle -= rotate_tiny
-            if self.angle < self.new_angle:
-                self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
+def rotate_logic(self, *args):
+    self.new_angle = min(rotation_list,
+                   key=lambda x: abs(x - self.new_angle))  # find closest in list of rotation
 
+    self.angle = self.new_angle  # arcade mode doesn't have gradual rotate, subunit can rotate at once
     if self.zoom != 10:
         self.rotate()  # rotate sprite to new angle
-    self.sprite_direction = rotation_dict[min(rotation_list,
-                   key=lambda x: abs(x - self.angle))]  # find closest in list of rotation for sprite direction
     self.make_front_pos()  # generate new pos related to side
     self.front_height = self.height_map.get_height(self.front_pos)
 
 
 def move_logic(self, dt, parent_state, collide_list):
-    revert_move = True  # revert move check for in case subunit still need to rotate before moving
-    if parent_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
-        revert_move = False
-
-    if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
-            (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
+    if (self.base_pos != self.base_target or self.charge_momentum > 1):
         no_collide_check = False  # can move if front of unit not collided
         if (((self.unit.collide is False or self.frontline is False) or parent_state == 99)
                 or (parent_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
@@ -139,7 +109,7 @@ def move_logic(self, dt, parent_state, collide_list):
                         self.unit.front_pos = rotation_xy(self.unit.base_pos, front_pos, self.unit.radians_angle)
 
                         number_pos = (self.unit.base_pos[0] - self.unit.base_width_box,
-                                      (self.unit.base_pos[1] + self.unit.base_height_box))
+                                      (self.unit.base_pos[1] + self.unit.base_height_box))  # TODO change to flag team
                         self.unit.number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
                         self.unit.true_number_pos = self.unit.number_pos * (
                                 11 - self.unit.zoom)  # find new position for troop number text

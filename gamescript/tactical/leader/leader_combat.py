@@ -1,8 +1,8 @@
 import pygame
 
-from gamescript.common.ui import selector
+from gamescript.common.ui import common_ui_selector
 
-setup_unit_icon = selector.setup_unit_icon
+setup_unit_icon = common_ui_selector.setup_unit_icon
 
 def pos_change_stat(self, leader):
     """Change stat that related to army position such as in leader dead event"""

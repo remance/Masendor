@@ -185,10 +185,15 @@ def rotation_xy(origin, point, angle):
 
 
 def set_rotate(self, set_target=None):
-    """set base_target and new angle for sprite rotation"""
-    if set_target is None:  # For auto chase rotate
+    """
+    set base_target and new angle for sprite rotation
+    :param self: sprite object
+    :param set_target: pos for target position to rotate to
+    :return: new angle
+    """
+    if set_target is None:  # Use base target variable
         my_radians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
-    else:  # Command move or rotate
+    else:  # use set_target parameter
         my_radians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
     new_angle = math.degrees(my_radians)
 
@@ -207,7 +212,6 @@ def set_rotate(self, set_target=None):
     # """lower left +"""
     elif 90 < new_angle <= 180:
         new_angle = 270 - new_angle
-
     return round(new_angle)
 
 

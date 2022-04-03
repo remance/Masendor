@@ -2,11 +2,11 @@ import pygame
 
 from gamescript import weather, menu, battleui, unit, map
 from gamescript.common import utility
-from gamescript.common.ui import selector
+from gamescript.common.ui import common_ui_selector
 
 list_scroll = utility.list_scroll
 setup_list = utility.setup_list
-setup_unit_icon = selector.setup_unit_icon
+setup_unit_icon = common_ui_selector.setup_unit_icon
 
 team_colour = unit.team_colour
 

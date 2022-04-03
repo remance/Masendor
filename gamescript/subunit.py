@@ -5,15 +5,15 @@ import time
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_fight, common_movement, common_refresh
+from gamescript.common.subunit import common_subunit_combat, common_subunit_movement, common_subunit_update
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from pygame.transform import scale
 
-rotation_list = common_movement.rotation_list
-rotation_name = common_movement.rotation_name
-rotation_dict = common_movement.rotation_dict
+rotation_list = common_subunit_movement.rotation_list
+rotation_name = common_subunit_movement.rotation_name
+rotation_dict = common_subunit_movement.rotation_dict
 
 infinity = float("inf")
 
@@ -21,26 +21,26 @@ infinity = float("inf")
 def change_subunit_genre(genre):
     """Change game genre and add appropriate method to subunit class"""
     if genre == "tactical":
-        from gamescript.tactical.subunit import fight, spawn, movement, refresh
+        from gamescript.tactical.subunit import subunit_combat, subunit_setup, subunit_movement, subunit_update
     elif genre == "arcade":
-        from gamescript.arcade.subunit import fight, spawn, movement, refresh
+        from gamescript.arcade.subunit import subunit_combat, subunit_setup, subunit_movement, subunit_update
 
-    Subunit.add_weapon_stat = spawn.add_weapon_stat
-    Subunit.add_mount_stat = spawn.add_mount_stat
-    Subunit.add_trait = spawn.add_trait
-    Subunit.find_shooting_target = fight.find_shooting_target
-    Subunit.attack_logic = fight.attack_logic
-    Subunit.dmg_cal = fight.dmg_cal
-    Subunit.change_leader = fight.change_leader
-    Subunit.die = fight.die
-    Subunit.rotate_logic = movement.rotate_logic
-    Subunit.move_logic = movement.move_logic
-    Subunit.player_interact = refresh.player_interact
-    Subunit.status_update = refresh.status_update
-    Subunit.morale_logic = refresh.morale_logic
-    Subunit.pick_animation = refresh.pick_animation
-    Subunit.health_stamina_logic = refresh.health_stamina_logic
-    Subunit.charge_logic = refresh.charge_logic
+    Subunit.add_weapon_stat = subunit_setup.add_weapon_stat
+    Subunit.add_mount_stat = subunit_setup.add_mount_stat
+    Subunit.add_trait = subunit_setup.add_trait
+    Subunit.find_shooting_target = subunit_combat.find_shooting_target
+    Subunit.attack_logic = subunit_combat.attack_logic
+    Subunit.dmg_cal = subunit_combat.dmg_cal
+    Subunit.change_leader = subunit_combat.change_leader
+    Subunit.die = subunit_combat.die
+    Subunit.rotate_logic = subunit_movement.rotate_logic
+    Subunit.move_logic = subunit_movement.move_logic
+    Subunit.player_interact = subunit_update.player_interact
+    Subunit.status_update = subunit_update.status_update
+    Subunit.morale_logic = subunit_update.morale_logic
+    Subunit.pick_animation = subunit_update.pick_animation
+    Subunit.health_stamina_logic = subunit_update.health_stamina_logic
+    Subunit.charge_logic = subunit_update.charge_logic
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -62,10 +62,10 @@ class Subunit(pygame.sprite.Sprite):
 
     play_animation = animation.play_animation
     set_rotate = utility.set_rotate
-    use_skill = common_fight.use_skill
-    rotate = common_movement.rotate
-    check_skill_condition = common_fight.check_skill_condition
-    make_front_pos = common_refresh.make_front_pos
+    use_skill = common_subunit_combat.use_skill
+    rotate = common_subunit_movement.rotate
+    check_skill_condition = common_subunit_combat.check_skill_condition
+    make_front_pos = common_subunit_update.make_front_pos
 
     # methods that change based on genre
     add_weapon_stat = None
@@ -124,7 +124,7 @@ class Subunit(pygame.sprite.Sprite):
         self.charge_momentum = 1  # charging momentum to reach target before choosing the nearest enemy
         self.ammo_now = 0
         self.zoom = 1
-        self.last_zoom = 10
+        self.last_zoom = 0
         self.skill_cond = 0
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
 

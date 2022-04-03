@@ -11,12 +11,11 @@ import pygame.freetype
 import screeninfo
 from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
 from gamescript.common import utility
-from gamescript.common.start import creation, common_interact
-from gamescript.common.battle import common_setup
-from gamescript.common.unit import common_generate
+from gamescript.common.start import common_start_setup, common_start_player
+from gamescript.common.unit import common_unit_setup
 from pygame.locals import *
 
-direction_list = creation.direction_list
+direction_list = common_start_setup.direction_list
 
 load_image = utility.load_image
 load_images = utility.load_images
@@ -28,27 +27,27 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
-load_action = creation.load_action
-load_animation_pool = creation.load_animation_pool
-read_terrain_data = creation.read_terrain_data
-read_weather_data = creation.read_weather_data
-read_map_data = creation.read_map_data
-read_faction_data = creation.read_faction_data
-make_encyclopedia_ui = creation.make_encyclopedia
-make_input_box = creation.make_input_box
-make_editor_ui = creation.make_editor_ui
-load_icon_data = creation.load_icon_data
-load_battle_data = creation.load_battle_data
-make_option_menu = creation.make_option_menu
-make_event_log = creation.make_event_log
-make_esc_menu = creation.make_esc_menu
-make_popup_ui = creation.make_popup_ui
-make_battle_ui = creation.make_battle_ui
-make_genre_ui = creation.make_genre_ui
-change_genre_ui = creation.change_genre_ui
-load_part_sprite_pool = creation.load_part_sprite_pool
-load_effect_sprite_pool = creation.load_effect_sprite_pool
-read_colour = creation.read_colour
+load_action = common_start_setup.load_action
+load_animation_pool = common_start_setup.load_animation_pool
+read_terrain_data = common_start_setup.read_terrain_data
+read_weather_data = common_start_setup.read_weather_data
+read_map_data = common_start_setup.read_map_data
+read_faction_data = common_start_setup.read_faction_data
+make_encyclopedia_ui = common_start_setup.make_encyclopedia
+make_input_box = common_start_setup.make_input_box
+make_editor_ui = common_start_setup.make_editor_ui
+load_icon_data = common_start_setup.load_icon_data
+load_battle_data = common_start_setup.load_battle_data
+make_option_menu = common_start_setup.make_option_menu
+make_event_log = common_start_setup.make_event_log
+make_esc_menu = common_start_setup.make_esc_menu
+make_popup_ui = common_start_setup.make_popup_ui
+make_battle_ui = common_start_setup.make_battle_ui
+make_genre_ui = common_start_setup.make_genre_ui
+change_genre_ui = common_start_setup.change_genre_ui
+load_part_sprite_pool = common_start_setup.load_part_sprite_pool
+load_effect_sprite_pool = common_start_setup.load_effect_sprite_pool
+read_colour = common_start_setup.read_colour
 
 version_name = "Dream Decision"
 
@@ -85,20 +84,20 @@ def change_genre(self, genre):
         self.genre = genre.lower()
 
     if self.genre == "tactical":
-        from gamescript.tactical.start import begin, interact
         from gamescript.tactical import genre
-        from gamescript.tactical.unit import generate
+        from gamescript.tactical.start import start_setup, start_player
+        from gamescript.tactical.unit import unit_setup
         self.team_select_button = (self.start_button, self.map_back_button)  # tactical mode has no char select screen
         self.battle_game.genre = self.genre
 
     elif self.genre == "arcade":
-        from gamescript.arcade.start import begin, interact
         from gamescript.arcade import genre
-        from gamescript.arcade.unit import generate
+        from gamescript.arcade.start import start_setup, start_player
+        from gamescript.arcade.unit import unit_setup
         self.team_select_button = (self.map_select_button, self.map_back_button)
         self.battle_game.genre = self.genre
 
-    MainMenu.generate_unit = generate.generate_unit
+    MainMenu.generate_unit = unit_setup.generate_unit
 
     self.genre_sprite_size = genre.genre_sprite_size
     self.char_select = genre.char_select
@@ -128,16 +127,16 @@ class MainMenu:
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
     change_genre = change_genre
-    create_sprite_pool = creation.create_sprite_pool
-    main_menu_process = common_interact.main_menu_process
-    map_select_process = common_interact.map_select_process
-    team_select_process = common_interact.team_select_process
-    option_menu_process = common_interact.option_menu_process
-    char_select_process = common_interact.char_select_process
-    game_creator_process = common_interact.game_creator_process
-    read_source = common_interact.read_source
-    change_source = common_interact.change_source
-    setup_unit = common_generate.setup_unit
+    create_sprite_pool = common_start_setup.create_sprite_pool
+    main_menu_process = common_start_player.main_menu_process
+    map_select_process = common_start_player.map_select_process
+    team_select_process = common_start_player.team_select_process
+    option_menu_process = common_start_player.option_menu_process
+    char_select_process = common_start_player.char_select_process
+    game_creator_process = common_start_player.game_creator_process
+    read_source = common_start_player.read_source
+    change_source = common_start_player.change_source
+    setup_unit = common_unit_setup.setup_unit
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
