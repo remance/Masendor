@@ -31,7 +31,7 @@ def change_unit_genre(genre):
     Unit.selection = unit_update.selection
     Unit.auth_recal = unit_update.auth_recal
     Unit.setup_unit = unit_update.setup_unit
-    Unit.process_unit_command = unit_command.process_command
+    Unit.process_command = unit_command.process_command
 
 
 class Unit(pygame.sprite.Sprite):
@@ -183,7 +183,7 @@ class Unit(pygame.sprite.Sprite):
         # v Set up subunit position list for drawing
         width, height = 0, 0
         subunit_number = 0  # Number of subunit based on the position in row and column
-        for this_subunit in self.subunit_list.flat:
+        for _ in self.subunit_list.flat:
             width += self.image_size[0]
             self.subunit_position_list.append((width, height))
             subunit_number += 1

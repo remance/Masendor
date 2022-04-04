@@ -71,8 +71,9 @@ class Leader(pygame.sprite.Sprite):
     def start_set(self):
         self.subunit = self.unit.subunits[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
+        print(self.name, self.army_position)
         if self.army_position == 0:  # unit leader
-            self.unit.leader_subunit = self.subunit  # TODO add this to when change leader or start_set leader move ot other subunit
+            self.unit.leader_subunit = self.subunit  # TODO add this to when change leader or leader move ot other subunit
             # self.unit.leader_subunit - self.unit.base_pos
             self.subunit.unit_leader = True
 

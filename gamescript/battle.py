@@ -789,7 +789,6 @@ class Battle:
                         self.camera_pos = self.base_camera_pos * self.camera_zoom
                         self.camera_fix()
                     break
-
         self.map_mode = 0  # default, another one show height map
         self.subunit_selected = None  # which subunit in inspect ui is selected in last update loop
         self.before_selected = None  # Which unit is selected before

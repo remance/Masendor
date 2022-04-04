@@ -28,7 +28,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
     """generate unit"""
     from gamescript import battleui, subunit
     subunit_array = np.array([setup_data["Row 1"], setup_data["Row 2"], setup_data["Row 3"], setup_data["Row 4"],
-                                   setup_data["Row 5"]])
+                              setup_data["Row 5"]])
     leader_position = 0
     for row in subunit_array:
         for stuff in row:
@@ -36,6 +36,9 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
                 break
             elif stuff != "0":
                 leader_position += 1
+        else:
+            continue
+        break
     this_unit = add_unit(setup_data["ID"], setup_data["POS"], subunit_array,
                          colour, (setup_data["Leader"], leader_position), self.leader_data, control,
                          coa, command, setup_data["Angle"], setup_data["Start Health"], setup_data["Start Stamina"],

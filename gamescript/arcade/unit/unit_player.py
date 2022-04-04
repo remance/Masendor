@@ -8,10 +8,9 @@ def user_input(self, mouse_pos, mouse_left_up, mouse_right_up, double_mouse_righ
         self.forced_melee = False
         self.attack_place = False
         self.range_combat_check = False
-        # register user keyboard
-        leader_subunit = self.leader[0].subunit
-        new_pos = pygame.Vector2(leader_subunit.base_pos)
-        leader_subunit.new_angle = leader_subunit.set_rotate(mouse_pos)
+
+        new_pos = pygame.Vector2(self.leader_subunit.base_pos)
+        self.leader_subunit.new_angle = self.leader_subunit.set_rotate(mouse_pos)
         if key_state[pygame.K_s]:  # move down
             new_pos[1] += self.run_speed
 

@@ -75,7 +75,7 @@
 74,"Long Range Accuracy",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"Death from afar, the end of the chivalric era is near."
 75,"Entertainer",3,,,,,0,,,,,,0,0,0,15,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Entertainment may look like it has no place in this hell. But it sure improves the soldiers’ morale."
 76,"Virtue Of Honour",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
-77,"Kings Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,
+77,"Royal Banner",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,
 78,"Missile Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Piecing damage from missiles can do little damage to these troops. Not even a hail of arrows can stop their advance."
 79,"Pain Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Ultimate soldiers. Pain and suffering is not even a concept to these monsters of war."
 80,"Poison Resistance",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,50,,,0,0,,,,2,"Underhand tactics will not work well on these troops. Try crushing them with raw might instead."
@@ -100,7 +100,7 @@
 99,"Unholy Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 100,"Knightly Valour",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"The valour of a knight is often a sight to behold for both enemy and friend. Often time, the flow of battle can change completely just from these knights’ presence."
 101,"Thorny Armour",,,,,,,,,,,,10,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Enemies that attack these troops in melee combat will also receive damage in return."
-102,"Unstoppable",,,,150,150,30,,,,,130,20,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,20,0,,,,2,
+102,"Unstoppable",,,,150,150,30,,,,,130,20,0,0,50,0,0,0,,,0,0,0,0,0,0,0,0,,,20,0,,,,2,"Unstoppable force. Stand aside or perish."
 103,"Battle Preparation",,,115,115,115,0,110,,,115,115,10,0,0,20,10,0,0,15,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"These troops receive a combat bonus when their stamina is at a fresh level."
 104,"Blessed",1,,,,,0,,,,,,0,0,0,0,0,0,18,,,,,,,,,,,,,0,0,,,,2,"To the blessed heaven shall assist. The world is blight and the sky is clear."
 105,"Cursed",1,,,,,0,,,,,,0,0,0,0,0,0,19,,,,,,,,,,,,,0,0,,,,2,"A cursed being either by means of magic or nature, these troops will always be cursed and cannot be cured by normal means."
@@ -115,13 +115,13 @@
 114,"Marvelous Athletic",1,,,,,0,,,,,,0,0,1,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"These troops being athletic superior makes them much more effective in long activities such as fighting."
 115,"Iron Discipline",1,,,,,0,,,,,,0,0,0,0,20,0,0,,,0,0,0,0,0,0,0,0,,,20,0,,,,0,"These troops receive further bonus effects from discipline."
 116,"Sticky Attack",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,24,,,,2,
-117,"Curse Strike",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,19,,,,2,
+117,"Curse Strike",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,19,,,,2,"Attacks imbued with hatred. Blood will not stop flowing and vigour will keep draining."
 118,"Infective Touch",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Who can blame the unfortunates that want to spread misfortune to the others? The world is too bright for fake happiness."
 119,"Stunning Blast",1,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,23,,,,2,
 120,"Mana Stealer",1,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Every strike from these troops will sap away the mana of any enemy mage. Manaless mages make for nothing but useless pieces of baggage."
 121,"Maiden Of Meldolea",,,,,,,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 122,"Perverted Agony",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
-123,"Battlelust",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
+123,"Battlelust",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Nothing is better than soldiers who are thirsty for battle. They are the ones that always fight the hardest."
 124,"Justice Order",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 125,"Unbreakable Bond",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 126,"Dread Challenger",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
@@ -163,7 +163,7 @@
 162,"Merciless",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,,2,"These troops cannot capture running enemies as they always prefer killing them instead."
 163,"Fragile Will",1,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,,0,"These troops will be affected by negative psychological effects even more than usual."
 164,"Overwhelming Presence",,,,,,0,,,,,,15,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These creatures’ appearance is so overwhelming that they leave both friendly and enemy troops in fear and worry."
-165,"Headshotter",,,,,,0,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
+165,"Headshotter",,,,,,0,,,,,,0,0,0,0,0,25,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Precise. It is best to aim for a certain kill when you are able. "
 166,"Perfect Aims",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Never a shot wasted when the enemies are lining up to be killed."
 167,"Personal Escort",,,,,,0,,,,,,20,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"Trained to escort important people to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
 168,"Domination Aura",,,,,,0,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"When enemies become broken near these creatures, they will join these troops' sides instead of freeing."
@@ -183,7 +183,7 @@
 182,"Unholy Flesh",,,,,,5,,,,,,0,0,0,0,0,0,,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can not be healed and will instead receive damage from healing magic."
 183,"Field Medic",,,,,,0,,,,,,0,0,0,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"These troops can heal nearby allies when both are not in melee combat."
 184,"Divine Presence",,,,,,0,,,,,,0,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,,2,"These troops are divine or considered to be divine by their followers. They will make every ally on the battlefield at maximum morale and cannot be broken."
-185,"Plague Carrier",,,,,,0,,,,,,0,0,0,0,0,0,20,,,,,,,,,,,,,0,0,,,,2,
+185,"Plague Carrier",,,,,,0,,,,,,0,0,0,0,0,0,20,,,,,,,,,,,,,0,0,,,,2,"Undeniably unethical in the rule of warfare. Fight dirty to bring the suffering that continues until the end of your enemy's life."
 186,"Blight Bearer",,,,,,0,,,,,,0,0,0,0,0,0,21,,,,,,,,,,,,,0,0,,,,2,"Enemy of all lives. The blight will spread and consume. And now will survive."
 187,"Antarndenxor",,,,,,,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,,2,
 188,"Dawn Hum",,,,,,0,,,,,,,0,0,0,0,0,,,,,,,,,,,,,,0,0,,,,2,
@@ -263,7 +263,7 @@
 262,"Fear Fire",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 263,"Fear Air",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 264,"Fear Earth",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
-265,"Fear Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
+265,"Fear Magic",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"It is natural to fear the unnatural. What can you do against something you can never truly understand?"
 266,"Scare Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"These troops can cause enemies' mount to panic or scare, which reduce enemy cavalries’ combat effectiveness and morale."
 267,"Fearless Mount",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,0,"These troops’ mount cannot be panicked or broken and immune to Scare Mount."
 268,"Human Killer",1,,,,,0,,,,,,0,,,0,0,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"Humans, they seem to be everywhere. So different, yet all so irritating. Time to make the world a better place by killing them all."

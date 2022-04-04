@@ -721,6 +721,9 @@ class Subunit(pygame.sprite.Sprite):
             self.player_interact(mouse_pos, mouse_left_up)
 
             if dt > 0:  # only run these when self not pause
+                # if self.unit_leader and self.game_id == 8:
+                #     print(self.name, self.new_angle, self.angle)
+
                 self.timer += dt
 
                 self.walk = False  # reset walk
@@ -762,8 +765,8 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.health_stamina_logic(dt)
 
-            if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 999 or
-                                           self.base_pos[1] <= 0 or self.base_pos[1] >= 999):  # remove when unit move pass map border
+            if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
+                                           self.base_pos[1] <= 1 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                 self.state = 100  # enter dead state
                 self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
                 self.troop_number = 0

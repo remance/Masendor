@@ -318,32 +318,12 @@ class CommandBar(pygame.sprite.Sprite):
             self.image = self.image_original.copy()
             self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
-            if who.commander:  # commander unit use king and queen icon
-                # start_set general as king
-                icon_rect = use_colour[0].get_rect(midbottom=self.inspect_pos[0])
-                self.image.blit(use_colour[0], icon_rect)
-
-                # sub commander/strategist role as queen
-                icon_rect = use_colour[1].get_rect(midbottom=self.inspect_pos[3])
-                self.image.blit(use_colour[1], icon_rect)
-
-            else:  # the rest use rook and bishop
-                # general as rook
-                icon_rect = use_colour[2].get_rect(
-                    midbottom=(self.image.get_width() / 2.1, self.image.get_height() / 2.5))
-                self.image.blit(use_colour[2], icon_rect)
-
-                # sub general/special advisor role as bishop
-                icon_rect = use_colour[5].get_rect(midbottom=self.inspect_pos[3])
-                self.image.blit(use_colour[5], icon_rect)
-
-            # left sub general as knight
-            icon_rect = use_colour[3].get_rect(midbottom=self.inspect_pos[1])
-            self.image.blit(use_colour[3], icon_rect)
-
-            # right sub general as knight
-            icon_rect = use_colour[0].get_rect(midbottom=self.inspect_pos[2])
-            self.image.blit(use_colour[4], icon_rect)
+            pic_list = (0, 3, 4, 5)  # rook, bishop, left knight, right knight
+            if who.commander:
+                pic_list = (2, 3, 4, 5)  # king, queen, left knight, right knight
+            for index, _ in enumerate(who.leader):
+                icon_rect = use_colour[pic_list[index]].get_rect(midbottom=self.inspect_pos[index])
+                self.image.blit(use_colour[pic_list[index]], icon_rect)
 
             self.image_original2 = self.image.copy()
 

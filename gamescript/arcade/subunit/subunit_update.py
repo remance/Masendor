@@ -8,18 +8,16 @@ equip_set = ("Main", "Sub")
 
 
 def player_interact(self, mouse_pos, mouse_left_up):
-    # v Mouse collision detection
-    if self.battle.game_state == "battle" or (
-            self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui_updater):
-        if self.rect.collidepoint(mouse_pos):
-            self.battle.last_mouseover = self.unit  # last mouse over on this unit
-            if self.battle.game_state == "editor" and mouse_left_up and self.battle.click_any is False:
-                self.battle.current_selected = self.unit  # become last selected unit
-                if self.unit.selected is False:
-                    self.unit.just_selected = True
-                    self.unit.selected = True
-                self.battle.click_any = True
-    # ^ End mouse detect
+    """Mouse collision detection"""
+    if self.rect.collidepoint(mouse_pos):
+        self.battle.last_mouseover = self.unit  # last mouse over on this unit
+        if self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui_updater:
+                if self.battle.game_state == "editor" and mouse_left_up and self.battle.click_any is False:
+                    self.battle.current_selected = self.unit  # become last selected unit
+                    if self.unit.selected is False:
+                        self.unit.just_selected = True
+                        self.unit.selected = True
+                    self.battle.click_any = True
 
 
 def status_update(self, weather=None):
@@ -352,33 +350,7 @@ def morale_logic(self, dt, parent_state):
     # v Morale check
     if self.max_morale != infinity:
         if self.base_morale < self.max_morale:
-            if self.morale <= 10:  # Enter retreat state when morale reach 0
-                if self.state not in (98, 99):
-                    self.state = 98  # retreat state
-                    max_random = 1 - (self.mental / 100)
-                    if max_random < 0:
-                        max_random = 0
-                    self.morale_regen -= random.uniform(0, max_random)  # morale regen slower per broken state
-                    if self.morale_regen < 0:  # begin checking broken state
-                        self.state = 99  # Broken state
-                        self.change_leader("broken")
-
-                        corner_list = [[0, self.base_pos[1]], [1000, self.base_pos[1]], [self.base_pos[0], 0], [self.base_pos[0], 1000]]
-                        which_corner = [self.base_pos.distance_to(corner_list[0]), self.base_pos.distance_to(corner_list[1]),
-                                        self.base_pos.distance_to(corner_list[2]),
-                                        self.base_pos.distance_to(corner_list[3])]  # find the closest map corner to run to
-                        found_corner = which_corner.index(min(which_corner))
-                        self.base_target = pygame.Vector2(corner_list[found_corner])
-                        self.command_target = self.base_target
-                        self.new_angle = self.set_rotate()
-
-                    for subunit in self.unit.subunits:
-                        subunit.base_morale -= (
-                                15 * subunit.mental)  # reduce morale of other subunit, creating panic when seeing friend panic and may cause mass panic
-                if self.morale < 0:
-                    self.morale = 0  # morale cannot be lower than 0
-
-            if self.state not in (95, 99) and parent_state not in (10, 99):  # If not missing start_set leader can replenish morale
+            if self.state != 99:  # If not missing start_set leader can replenish morale
                 self.base_morale += (dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
 
             if self.base_morale < 0:  # morale cannot be negative
@@ -387,14 +359,8 @@ def morale_logic(self, dt, parent_state):
         elif self.base_morale > self.max_morale:
             self.base_morale -= dt  # gradually reduce morale that exceed the starting max amount
 
-        if self.state == 95:  # disobey state, morale gradually decrease until recover
+        if self.state in (95, 99):  # disobey or broken state, morale gradually decrease until recover
             self.base_morale -= dt * self.mental
-
-        elif self.state == 98:
-            if parent_state not in (98, 99):
-                self.unit_health -= (dt * 100)  # Unit begin to desert if retreating but unit not retreat/broken
-                if self.morale_state > 0.2:
-                    self.state = 0  # Reset state to 0 when exit retreat state
 
 
 def health_stamina_logic(self, dt):

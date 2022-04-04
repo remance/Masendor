@@ -44,7 +44,7 @@ def set_subunit_target(self, target="rotate", reset_path=False):
         unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
         for subunit in self.subunits:  # generate position of each subunit
-            if subunit.unit_leader is False and (subunit.state != 99 or (subunit.state == 99 and self.retreat_start)):
+            if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                 new_target = unit_topleft + subunit.unit_position
                 if reset_path:
                     subunit.command_target.append(pygame.Vector2(
@@ -55,8 +55,10 @@ def set_subunit_target(self, target="rotate", reset_path=False):
                     subunit.new_angle = self.new_angle
 
     else:  # moving unit to specific target position
-        unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
-                                      target[1])  # get the top left corner of sprite to generate subunit position
+        unit_target = pygame.Vector2(target[0] - (self.base_width_box - self.leader_subunit.unit_position[0]),
+                                     target[1] - (self.base_height_box - self.leader_subunit.unit_position[1]))
+        unit_topleft = pygame.Vector2(unit_target[0] - self.base_width_box,
+                                      unit_target[1])  # get the top left corner of sprite to generate subunit position
 
         for subunit in self.subunits:  # generate position of each subunit
             if subunit.unit_leader is False and (subunit.state != 99 or (subunit.state == 99 and self.retreat_start)):
@@ -64,7 +66,10 @@ def set_subunit_target(self, target="rotate", reset_path=False):
                 new_target = unit_topleft + subunit.unit_position
                 if reset_path:
                     subunit.command_target.append(pygame.Vector2(
-                        rotation_xy(target, new_target, self.radians_angle)))
+                        rotation_xy(unit_target, new_target, self.radians_angle)))
                 else:
                     subunit.command_target = pygame.Vector2(
-                        rotation_xy(target, new_target, self.radians_angle))  # rotate according to sprite current rotation
+                        rotation_xy(unit_target, new_target, self.radians_angle))  # rotate according to sprite current rotation
+            elif subunit.unit_leader:
+                subunit.new_angle = self.new_angle
+                subunit.command_target = target

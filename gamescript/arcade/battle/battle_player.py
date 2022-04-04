@@ -223,7 +223,6 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
         else:
             self.kill_effect_icon()
-
         self.current_selected.user_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right,
                                          self.last_mouseover, key_state)
 
