@@ -8,7 +8,7 @@ rotation_list = (-90, -120, -45, 0, 90, 45, 120, 180)
 
 
 def rotate_logic(self, *args):
-    if self.angle != self.new_angle and self.charging is False and self.state != 10 and self.stamina > 0 and self.collide is False:
+    if self.angle != self.new_angle and self.charging is False and self.stamina > 0:
         self.new_angle = min(rotation_list,
                              key=lambda x: abs(x - self.new_angle))  # find closest in list of rotation
 
@@ -44,7 +44,7 @@ def set_subunit_target(self, target="rotate", reset_path=False):
         unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
         for subunit in self.subunits:  # generate position of each subunit
-            if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
+            if subunit.unit_leader is False and (subunit.state != 99 or (subunit.state == 99 and self.retreat_start)):
                 new_target = unit_topleft + subunit.unit_position
                 if reset_path:
                     subunit.command_target.append(pygame.Vector2(
@@ -71,5 +71,4 @@ def set_subunit_target(self, target="rotate", reset_path=False):
                     subunit.command_target = pygame.Vector2(
                         rotation_xy(unit_target, new_target, self.radians_angle))  # rotate according to sprite current rotation
             elif subunit.unit_leader:
-                subunit.new_angle = self.new_angle
                 subunit.command_target = target

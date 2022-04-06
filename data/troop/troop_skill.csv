@@ -62,7 +62,7 @@
 61,"Second Wind",0,0,1,30,120,"0,1,2,3,4,5,6,7,8,9,10,11","0,1,2,3,4,5,6,7,8,9,10,11",,60,0,,,,,,,,,0,0,1,10,0,,,,0,0,0,0,0,0,0,"One more push to victory. Such a chance never come often. "
 62,"Bloodlust",0,0,1,30,0,,,,50,2,,,,,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,2,"All stat +10%, stamina +10% for every enemy destroyed"
 63,"Critical Measure",0,0,1,10,100,10,10,,60,,125,125,125,125,125,,125,125,25,0,-5,0,40,,,,0,2,0,0,0,0,2,"A critical measure must be taken for this crisis, or we will not survive. "
-64,"Camaraderie",0,0,1,30,0,,,,70,1,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,2,
+64,"Camaraderie",0,0,1,30,0,,,,70,1,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,2,"Should a task be too difficult to accomplish alone, a fine work of cooperation should make clear any obstacle."
 65,"Cripple Strike",0,0,1,1,15,10,10,,40,15,,,,,,,,,0,0,0,0,0,,,,0,0,10,3,34,0,2,"Why kill when you can cripple the enemy and make them suffer for all to see. "
 66,"Random Throwing",0,1,1,30,10,11,11,,20,5,,,,,,,,,0,0,-0.5,0,0,,30,,0,0,0,0,0,0,0,"Sacrificing accuracy for speed can be beneficial if the situation does not permit taking time to aim."
 67,"Joy Of The Barbarian",0,0,2,1,30,10,10,,10,90,,,,,,,,,0,0,,0,0,,,,0,0,0,4,0,0,2,"Pillage and destroy is the joy of savages. And it is the best feeling ever."
@@ -103,7 +103,7 @@
 102,"Flying",0,0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,70,30,,,,,,,,,0,0,-1,0,0,,,,0,39,0,0,0,0,2,"Flying troop does not suffer terrain and height penalty while also can only be damaged by melee attack when the troops themselves attack."
 103,"Floating",0,0,1,,30,"0,1,2,3,4,5,6,7,8,9,10,11","1,2,3,4,5,6,7,8,9,10",,,,,,,,,,,,0,0,-1,0,0,,,,0,40,0,0,0,0,2,"Floating troops do not suffer terrain penalties but still receive height penalties. Moreover, the troops receive a melee defence bonus against enemies with no Anti-Cavalry and Anti-Flying."
 104,"Combine Determination",0,0,3,1,100,,,,80,30,130,130,130,130,130,,130,130,30,0,,130,50,,200,,0,0,0,0,,0,2,
-105,"Clear Mind",0,0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,0,0,0,0,2,
+105,"Clear Mind",0,0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,0,0,0,0,2,"Clear thy mind and the Lord will carry guidance to thee."
 106,"The Great Banner",0,0,4,1200,1200,,,,40,15,105,105,105,105,105,,105,105,5,0,0,110,5,,,,0,0,0,0,,0,2,
 107,"Hammer Of Faith",0,0,1,1,60,10,10,,60,40,,,,,,,,,0,0,0,0,0,,200,,0,3,0,6,,0,2,
 108,"Blade Dance",1,0,2,10,60,10,10,,75,88,,,,,,,,,0,0,,0,0,,40,,0,0,0,0,,0,2,"The dance of death never ends. A man and his sword never part until the stage turn red from the audiences’ gore."
@@ -149,7 +149,7 @@
 148,"Crack The Whip",0,0,3,30,,,,,10,5,,,,,,,,,0,0,,,,,,,,68,0,0,,0,2,"Work for your master, slaves! Nothing makes slaves work harder than the sound of whiplash."
 149,"Silver Arrow",0,1,1,20,60,11,11,,50,0,,,,,,,,,0,0,0,,,,,,,,0,0,,5,2,"Next range attack deals 100% and +100% damage to spirit, evil and demon squads"
 150,"Rampage",0,0,1,5,,10,10,,20,50,120,,,125,,,,,0,,,,,,,,,,,,5,0,2,
-151,"Overpower",0,0,,10,,10,10,,60,40,300,,,,,,,,0,,,,,,,,,,,,,0,2,
+151,"Overpower",0,0,,10,,10,10,,60,40,300,,,,,,,,0,,,,,,,,,,,,,0,2,"A total display of dominance in strength. The weak shall always cower before the strong."
 152,"Overwhelm",0,0,,10,,10,10,,60,40,130,,,,,,,,0,,,,,,130,,,,,,"5,46",0,2,
 153,"Flashy Display",0,0,3,25,,,,,70,5,,,,,,,,,0,0,,15,,,,,,,,3,,0,2,
 154,"Spellbind",0,0,1,30,,,,,65,10,,,,,,,,,0,0,,,,,,,,,0,0,"8,69",5,2,
@@ -158,15 +158,15 @@
 157,"Clear Insight",0,0,1,60,,,,,70,0,,,,,110,,,,20,0,0,15,10,,,,,50,0,0,,0,2,"The route is clear. Now only focus."
 158,"Blood For Blood",0,0,,200,,,,,35,25,200,0,0,,,,,150,0,,,,,,,,,,,,,0,2,
 159,"Shield Breaking",0,0,,1,,10,10,,,35,,,,,,,,,0,0,,,,,,,,,,,,0,2,"Render their faith in the protection of their lives shattered, and their will to fight will be broken."
-160,"Reconnaissance",0,0,,100,,,,,50,20,,,,,,,,,20,0,,,,,,125,,,0,0,,0,0,
+160,"Reconnaissance",0,0,,100,,,,,50,20,,,,,,,,,20,0,,,,,,125,,,0,0,,0,0,"Only the very best of plans can be created from the most thorough information gathering process."
 161,"Battle Prayer",0,0,1,200,,,,,65,5,105,105,105,105,105,105,105,,0,0,,10,5,,,,,,0,0,,0,0,"Prayer for safety and victory. Preparing for the departure."
-162,"Disrupting Song",0,0,,1000,,,,,,15,,,,,,,,,0,0,,,,,,,,,0,3,5,0,2,
+162,"Disrupting Song",0,0,,1000,,,,,,15,,,,,,,,,0,0,,,,,,,,,0,3,5,0,2,"A song can soothe the minds just as much as it can disrupt listeners' focus."
 163,"Exact Justice",0,0,,1,,,,,,,,,,,,,,,0,0,,,,200,200,,,,,,,0,2,
 164,"Collect Corpse",0,0,1,,,,,,,,,,,,,,,,0,,,,,,,,,,0,0,,0,2,"Good flesh and bone never should go to waste."
 165,"Unlife",0,0,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,71,,2,
 166,"Devour Corpse",0,0,,,,,,,,,,,,,,,,,0,5,,,,,,,,,0,0,,0,2,"All flesh can nourish life, especially if they are still fresh."
 167,"Wail Of Death",0,0,4,20,,,,,,0,,,,,,,,,0,0,,,,,,,,,,,72,,2,"The deaths sing, all lives follow."
-168,"Cleaving Strike",0,0,2,3,,10,10,,30,35,,,,,,,,,0,0,,,,0,120,,,,0,0,,0,2,
+168,"Cleaving Strike",0,0,2,3,,10,10,,30,35,,,,,,,,,0,0,,,,0,120,,,,0,0,,0,2,"Cleaving through bodies and armour with ease. A feat that is achievable only by the strongest warriors."
 169,"Mark For Death",0,0,1,,,,,,50,,,,,,,,,,0,0,,,,,,,,,,,58,0,2,"Those who are marked will never know."
 170,"Dominate",0,0,1,60,,,,,60,,,,,,,,,,0,0,,,,,,,,,,,73,5,2,"Every mind can be changed. Submission is the natural process of all lives."
 171,"Will Release",0,0,1,1,,,,,60,,,,,,,,,,0,0,,,,,,,,50,0,0,,5,2,

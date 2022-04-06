@@ -60,6 +60,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
             row += 1
         army_subunit_index += 1
     self.troop_number_sprite.add(battleui.TroopNumber(self.screen_scale, this_unit))  # create troop number text sprite
+    return subunit_game_id
 
 
 def split_new_unit(self, who, add_unit_list=True):

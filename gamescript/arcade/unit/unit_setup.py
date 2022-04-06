@@ -80,6 +80,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
             column = 0
             row += 1
         army_subunit_index += 1
+    return subunit_game_id
 
 
 def split_new_unit(self):

@@ -89,40 +89,40 @@ def attack_logic(self, dt, combat_timer, parent_state):
         if self.angle != self.unit.angle:  # reset angle
             self.new_angle = self.set_rotate()
             self.new_angle = self.unit.angle
-
-    if self.state != 10 and self.magazine_left > 0 and self.unit.fire_at_will == 0 and (self.arc_shot or self.frontline) and \
-            self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
-        self.state = 11
-        if self.unit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
-            self.find_shooting_target(parent_state)
+    # TODO fix range attack later
+    # if self.state != 10 and self.magazine_left > 0 and self.unit.fire_at_will == 0 and (self.arc_shot or self.frontline) and \
+    #         self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
+    #     self.state = 11
+    #     if self.unit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
+    #         self.find_shooting_target(parent_state)
     # ^ End melee check
 
-    else:  # range attack
-        if self in self.battle.combat_path_queue:
-            self.battle.combat_path_queue.remove(self)
-        self.attack_target = None
-        self.combat_move_queue = []
-
-        # v Range attack function
-        if parent_state == 11:  # Unit in range attack state
-            self.state = 0  # Default state at idle
-            if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \
-                    self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
-                self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
-
-        elif self.magazine_left > 0 and self.unit.fire_at_will == 0 and \
-                (self.state == 0 or (self.state not in (95, 96, 97, 98, 99) and
-                                     parent_state in (1, 2, 3, 4, 5, 6) and self.shoot_move)):  # Fire at will
-            if self.unit.near_target != {} and self.attack_target is None:
-                self.find_shooting_target(parent_state)  # shoot the nearest target
-
-    if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
-        self.reload_time += dt
-        if self.reload_time >= self.reload:
-            self.ammo_now = self.magazine_size
-            self.magazine_left -= 1
-            self.reload_time = 0
-        self.stamina = self.stamina - (dt * 2)  # use stamina while reloading
+    # else:  # range attack
+    #     if self in self.battle.combat_path_queue:
+    #         self.battle.combat_path_queue.remove(self)
+    #     self.attack_target = None
+    #     self.combat_move_queue = []
+    #
+    #     # v Range attack function
+    #     if parent_state == 11:  # Unit in range attack state
+    #         self.state = 0  # Default state at idle
+    #         if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \
+    #                 self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
+    #             self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
+    #
+    #     elif self.magazine_left > 0 and self.unit.fire_at_will == 0 and \
+    #             (self.state == 0 or (self.state not in (95, 96, 97, 98, 99) and
+    #                                  parent_state in (1, 2, 3, 4, 5, 6) and self.shoot_move)):  # Fire at will
+    #         if self.unit.near_target != {} and self.attack_target is None:
+    #             self.find_shooting_target(parent_state)  # shoot the nearest target
+    #
+    # if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
+    #     self.reload_time += dt
+    #     if self.reload_time >= self.reload:
+    #         self.ammo_now = self.magazine_size
+    #         self.magazine_left -= 1
+    #         self.reload_time = 0
+    #     self.stamina = self.stamina - (dt * 2)  # use stamina while reloading
     # ^ End range attack function
 
     if combat_timer >= 0.5:  # combat is calculated every 0.5 second in self time

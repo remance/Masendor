@@ -979,7 +979,6 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
         if self.game_state == "battle" and self.current_selected.state != 100:
             if self.before_selected is None:  # add back the pop-up ui, so it gets shown when click subunit with none selected before
                 self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
-                self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
 
                 self.add_behaviour_ui(self.current_selected)
 

@@ -24,7 +24,7 @@
 23,"Stun",,,5,50,50,50,,50,50,50,50,50,0,0,0,-30,,,0,0,"Vision blur, hearing deafen, regain oneself or be perished."
 24,"Entangle",,,10,80,90,,,30,,20,0,-25,0,0,0,0,,,0,2,"Entangle to the ground, unable to move. The time to run may yet come, so shake off the obstacle as soon as possible."
 25,"Focus",,12,10,130,130,130,,80,150,70,,15,0,0,0,20,10,,0,2,"Focus to accomplish what is necessary. These troops will fight to the fullest without distraction. "
-26,"Poison",,49,60,,,,,,,,,0,-60,-2,-10,0,,,0,0,
+26,"Poison",,49,60,,,,,,,,,0,-60,-2,-10,0,,,0,0,"A dangerous substance that causes damage over time. Endure and hope for the best or seek aid."
 27,"Deadly Poison",,,60,80,,,,,,,70,0,-100,-4,-20,-10,,,0,0,"A deadly poison that cannot be cured. Very few can survive this painful experience, and even fewer can live a long life after."
 28,"Burn",,"29,93,101,102,104",10,,,,,,,,,0,-100,0,-10,0,0,0,50,0,"Dead by burning is not a good way to go. Try to drench yourselves as soon as possible."
 29,"Freeze",0,"28,92",30,40,60,60,,30,40,40,20,-30,-20,-10,-20,-20,,,0,0,"Frozen in place and time. Nothing to be done but wait."
@@ -76,7 +76,7 @@
 75,"Calm Berserk",,,,,,,,,,,,0,,,,,,,0,2,"Controlled chaos is nothing short of unnatural. By the process of intensive training, calm berserk allows these troops to unleash its wrath without losing control."
 76,"Breaching",,,,,,,,,,,,0,,,,,,,0,0,"Breaching through a mass of battalion is no easy task, even for the finest cavalry force. Hold fast and be tenacious."
 77,"Insane",,,,,,,,,,,,0,0,0,,,,,0,2,"Sanity is a fickle thing. Once changed, the world turns over."
-78,"Gobbling",,,,,,,,,,,,0,,,,,,,0,2,
+78,"Gobbling",,,,,,,,,,,,0,,,,,,,0,2,"Something big is inside these creatures' mouths or stomachs causing them to have trouble moving and fighting."
 79,"Polymorph",,,,,,,,,,,,0,,,,,,,0,2,
 80,"Shapeshift",,,,,,,,,,,,0,,,,,,,0,2,
 81,"Pain Reflect",,,,,,,,,,,,0,,,,,,,0,2,

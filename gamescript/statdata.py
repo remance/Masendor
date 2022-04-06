@@ -118,12 +118,15 @@ class TroopData:
             list_column = ["Trait", "Skill", "Armour", "Primary Main Weapon", "Primary Sub Weapon",
                            "Secondary Main Weapon", "Secondary Sub Weapon",
                            "Mount", "Role", "Ruleset"]  # value in list only
+            mod_column = ["Ammunition Modifier"]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for row_index, row in enumerate(rd):
                 if row_index > 0:  # skip convert header row
                     for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column, int_column=int_column)
+                        row = stat_convert(row, n, i, mod_column=mod_column,
+                                           list_column=list_column, int_column=int_column)
                     self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 

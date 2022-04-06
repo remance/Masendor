@@ -1,7 +1,7 @@
-def process_command(self, target_pos, run_command=False, revert_move=False, enemy=None, other_command=0):
+def process_command(self, target_pos, run_command=False, revert_move=False, enemy=None, other_command=None):
     """Process input order into state and subunit base_target action
     other_command parameter 0 is default command, 1 is natural pause, 2 is order pause"""
-    if other_command == 0:  # move or melee_attack command
+    if other_command is None:  # move or melee_attack command
         self.state = 1
 
         if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # melee_attack

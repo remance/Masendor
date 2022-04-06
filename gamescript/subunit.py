@@ -142,7 +142,8 @@ class Subunit(pygame.sprite.Sprite):
                 "Defence Bonus"]  # base range defence with grade bonus
             self.original_accuracy = stat["Accuracy"] + grade_stat["Accuracy Bonus"]
             self.original_sight = stat["Sight"]  # base sight range
-            self.magazine_left = stat["Ammunition"]  # amount of ammunition
+            self.magazine_left = {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"],
+                                  2: stat["Ammunition Modifier"], 3: stat["Ammunition Modifier"]}  # ammunition, for now as mod number
             self.original_reload = stat["Reload"] + grade_stat["Reload Bonus"]
             self.original_charge = stat["Charge"]
             self.original_charge_def = 50  # All infantry subunit has default 50 charge defence
@@ -170,7 +171,8 @@ class Subunit(pygame.sprite.Sprite):
                 "Defence Bonus"]  # base range defence with grade bonus
             self.original_accuracy = (stat["Range Command"] * stat["Combat"]) + grade_stat["Accuracy Bonus"]
             self.original_sight = (stat["Range Command"] * stat["Combat"])  # base sight range
-            self.magazine_left = infinity  # amount of ammunition
+            self.magazine_left = {0: 2, 1: 2,
+                                  2: 2, 3: 2}  # leader gets double ammunition
             self.original_reload = (stat["Range Command"] * stat["Combat"]) + grade_stat["Reload Bonus"]
             self.original_charge = 100
             self.original_charge_def = 100
@@ -721,9 +723,6 @@ class Subunit(pygame.sprite.Sprite):
             self.player_interact(mouse_pos, mouse_left_up)
 
             if dt > 0:  # only run these when self not pause
-                # if self.unit_leader and self.game_id == 8:
-                #     print(self.name, self.new_angle, self.angle)
-
                 self.timer += dt
 
                 self.walk = False  # reset walk

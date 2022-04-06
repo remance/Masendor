@@ -17,6 +17,8 @@ def add_weapon_stat(self):
     self.weapon_speed = self.weapon_speed[0]
     self.range_dmg = self.range_dmg[0]
     self.range_penetrate = self.range_penetrate[0]
+    self.magazine_mod = self.magazine_left[0]
+    self.magazine_left = 0  # use combined magazine for all weapon
     self.magazine_size = self.magazine_size[0]
     self.base_range = self.base_range[0]
     for index, weapon in enumerate([self.primary_main_weapon, self.primary_sub_weapon, self.secondary_main_weapon, self.secondary_sub_weapon]):
@@ -37,6 +39,7 @@ def add_weapon_stat(self):
 
             self.range_penetrate += self.weapon_data.weapon_list[weapon[0]]["Armour Penetration"] * \
                                     self.weapon_data.quality[weapon[1]] / (index + 1)
+            self.magazine_left += self.weapon_data.weapon_list[weapon[0]]["Ammunition"]
             self.magazine_size += self.weapon_data.weapon_list[weapon[0]]["Magazine"]
             weapon_reload += self.weapon_data.weapon_list[weapon[0]]["Speed"] * (index + 1)
             base_range.append(self.weapon_data.weapon_list[weapon[0]]["Range"] * self.weapon_data.quality[weapon[1]])

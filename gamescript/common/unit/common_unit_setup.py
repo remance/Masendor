@@ -47,7 +47,8 @@ def setup_unit(self, team_army, troop_list, specific_team=None):
                 if len(which_army) == 0:  # First unit is commander
                     command = True
                 coa = pygame.transform.scale(self.coa_list[this_unit["Faction"]], (60, 60))  # get coa_list image and scale smaller to fit ui
-                self.generate_unit(which_army, this_unit, control, command, colour, coa, subunit_game_id, troop_list)
+                subunit_game_id = self.generate_unit(which_army, this_unit, control, command, colour, coa,
+                                                     subunit_game_id, troop_list)
                 # ^ End subunit setup
 
     unit_file.close()
