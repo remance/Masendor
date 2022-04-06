@@ -700,6 +700,19 @@ class Skeleton:
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
                         elif pose[part] != 0:
                             bodypart_list[part] = pose[part]
+                            part_name = pose[part]
+                            if part_name == 1:
+                                part_name = "Any"
+                            if "p1" in part:
+                                if "mouth" in part:
+                                    p1_mouth_selector.change_name("P1 Mouth: " + part_name)
+                                elif "eye" in part:
+                                    p1_eye_selector.change_name("P1 Eye: " + part_name)
+                            elif "p2" in part:
+                                if "mouth" in part:
+                                    p2_mouth_selector.change_name("P2 Mouth: " + part_name)
+                                elif "eye" in part:
+                                    p2_mouth_selector.change_name("P2 Eye: " + part_name)
                         else:
                             bodypart_list[part] = 1.0
                     elif "property" in part and pose[part] != [""]:
@@ -999,9 +1012,10 @@ class Skeleton:
 
         elif edit_type == "paste":  # paste copy part
             for part in copy_part.keys():
-                self.bodypart_list[current_frame][part] = copy_part[part].copy()
-                self.animation_part_list[current_frame][part] = copy_animation[part].copy()
-                self.part_name_list[current_frame][part] = copy_name[part].copy()
+                if copy_part[part] is not None:
+                    self.bodypart_list[current_frame][part] = copy_part[part].copy()
+                    self.animation_part_list[current_frame][part] = copy_animation[part].copy()
+                    self.part_name_list[current_frame][part] = copy_name[part].copy()
 
         elif "direction" in edit_type:
             if self.part_selected != []:
