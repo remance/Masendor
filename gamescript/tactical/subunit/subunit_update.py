@@ -121,8 +121,9 @@ def status_update(self, weather=None):
     if map_feature_mod["Status"] != [0]:  # Some terrain feature can also cause status effect such as swimming in water
         if 1 in map_feature_mod["Status"]:  # Shallow water type terrain
             self.status_effect[31] = self.status_list[31].copy()  # wet
-        if 5 in map_feature_mod["Status"]:  # Deep water type terrain
-            self.status_effect[93] = self.status_list[93].copy()  # drench
+        if 4 in map_feature_mod["Status"] or 5 in map_feature_mod["Status"]:  # Deep water type terrain
+            if 5 in map_feature_mod["Status"]:
+                self.status_effect[93] = self.status_list[93].copy()  # drench
 
             if self.weight > 60 or self.stamina <= 0:  # weight too much or tired will cause drowning
                 self.status_effect[102] = self.status_list[102].copy()  # Drowning
@@ -138,6 +139,9 @@ def status_update(self, weather=None):
 
         if 3 in map_feature_mod["Status"]:  # Poison type terrain
             self.elem_count[4] += ((100 - self.elem_res[4]) / 100)
+
+        if 6 in map_feature_mod["Status"]:  # Mud terrain
+            self.status_effect[106] = self.status_list[106].copy()
     # self.hidden += self.unit.feature_map[self.unit.feature][6]
     temp_reach = map_feature_mod["Temperature"] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
     # ^ End map feature
