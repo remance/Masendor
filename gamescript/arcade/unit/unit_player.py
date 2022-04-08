@@ -32,9 +32,9 @@ def user_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_rig
 
             if new_pos != self.leader_subunit.base_pos:
                 self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
-                self.process_command(new_pos, key_state[pygame.K_LSHIFT])
+                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
             elif self.rotate_only:
-                self.process_command(cursor_pos, key_state[pygame.K_LSHIFT])
+                self.process_command(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
         #     # if self.state == 10:
         #     if key_state is not None and (key_state[pygame.K_LSHIFT] or key_state[pygame.K_RSHIFT]):
         #         self.rotate_only = True

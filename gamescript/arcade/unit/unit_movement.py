@@ -8,29 +8,24 @@ rotation_list = (-90, -120, -45, 0, 90, 45, 120, 180)
 
 
 def rotate_logic(self, *args):
-    if self.angle != self.new_angle and self.charging is False and self.stamina > 0:
+    if self.charging is False:
         self.new_angle = min(rotation_list,
                              key=lambda x: abs(x - self.new_angle))  # find closest in list of rotation
 
         self.angle = self.new_angle  # arcade mode doesn't have gradual rotate, subunit can rotate at once
-        # ^^ End rotate tiny
+        self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
         self.set_subunit_target()  # generate new pos related to side
 
 
 def revert_move(self):
-    """Only subunit will rotate to move, not the entire unit"""
-    self.new_angle = self.angle
-    self.move_rotate = False  # will not rotate to move
-    self.revert = True
-    new_angle = self.set_rotate()
-    for subunit in self.subunits:
-        subunit.new_angle = new_angle
+    """Not use in arcade mode"""
+    pass
 
 
 def set_target(self, pos):
     """set new base_target, scale base_target from base_target according to zoom scale"""
     self.base_target = pygame.Vector2(pos)  # Set new base base_target
-    self.set_subunit_target(self.base_target)
+    self.set_subunit_target(target=self.base_target)
 
 
 def set_subunit_target(self, target="rotate", reset_path=False):

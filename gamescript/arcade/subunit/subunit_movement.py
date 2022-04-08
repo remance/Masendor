@@ -102,8 +102,7 @@ def move_logic(self, dt, parent_state, collide_list):
                     self.last_pos = self.base_pos
 
                     if self.unit_leader and new_move_length > 0:
-                        if self.unit.move_rotate is False:
-                            self.unit.base_pos += move
+                        self.unit.base_pos += move
                         front_pos = (self.unit.base_pos[0],
                                      (self.unit.base_pos[1] - self.unit.base_height_box))  # find front position
                         self.unit.front_pos = rotation_xy(self.unit.base_pos, front_pos, self.unit.radians_angle)

@@ -42,7 +42,7 @@ def rotate_logic(self, dt):
     elif self.move_rotate and abs(self.angle - self.new_angle) < 1:  # Finish
         self.move_rotate = False
         if self.rotate_only is False:  # continue moving to base_target after finish rotate
-            self.set_subunit_target(self.base_target)
+            self.set_subunit_target(target=self.base_target)
         else:
             self.state = 0  # idle state
             self.process_command(self.base_target, other_command=1)
@@ -62,7 +62,7 @@ def revert_move(self):
 def set_target(self, pos):
     """set new base_target, scale base_target from base_target according to zoom scale"""
     self.base_target = pygame.Vector2(pos)  # Set new base base_target
-    self.set_subunit_target(self.base_target)
+    self.set_subunit_target(target=self.base_target)
 
 
 def set_subunit_target(self, target="rotate", reset_path=False):
