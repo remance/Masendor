@@ -863,7 +863,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                     # only get animation with same race and mount after "&"
                     # if race in animation and ((mount_race == "Any" and "&" not in animation) or
                     #                           ("&" in animation and mount_race in animation.split("&")[1])):
-                    if race in animation and "&" not in animation:
+                    if race in animation and "&" not in animation and "Preview" not in animation:
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
                                 subunit_weapon_list):  # create animation for each weapon set

@@ -43,6 +43,8 @@ def sort_animation(pool, pool_name, header):
         if any(ext in key for ext in ["_Main_", "_Sub_"]):
             action_type = "C"
             hand = value[2]
+        elif "Preview" in key:
+            action_type = "P"
         elif "Default" in key:
             action_type = "A"
             hand = "0hand"
@@ -51,7 +53,7 @@ def sort_animation(pool, pool_name, header):
             hand = value[1]
         type_list[key] = {"Race": race, "Hand": hand, "Type": action_type, "Action": action}
     df = pd.DataFrame.from_dict(type_list, orient="index")
-    df = df.reset_index().sort_values(by=["Type", "Hand", "index"])
+    df = df.reset_index().sort_values(by=["Race", "Type", "Hand", "index"])
 
     print(df["index"].tolist())
 
