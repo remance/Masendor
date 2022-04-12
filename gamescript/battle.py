@@ -628,6 +628,7 @@ class Battle:
         self.team_troop_number = [1, 1, 1]  # reset list of troop number in each team
         self.last_team_troop_number = [1, 1, 1]
         self.drama_text.queue = []  # reset drama text popup queue
+
         if self.mode == "unit_editor":
             self.game_state = "editor"  # editor mode
 

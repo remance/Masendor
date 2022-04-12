@@ -258,18 +258,19 @@ class TroopCard(pygame.sprite.Sprite):
 
 
 class CommandBar(pygame.sprite.Sprite):
-    def __init__(self, image, icon, text="", text_size=16):
+    def __init__(self, text_size=16):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
-        self.text = text
-        self.image = image
-        self.icon = icon
         self.value = [-1, -1]
         self.last_value = 0
         self.option = 0
         self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
+        self.last_auth = 0
 
+    def load_sprite(self, image, icon):
+        self.image = image
+        self.icon = icon
         self.inspect_pos = ((self.image.get_width() / 2.1, self.image.get_height() / 2.5),  # general
                             (self.image.get_width() / 3.5, self.image.get_height() / 1.6),  # left sub general
                             (self.image.get_width() / 1.5, self.image.get_height() / 1.6),  # right sub general
@@ -288,14 +289,13 @@ class CommandBar(pygame.sprite.Sprite):
                           self.icon["knight.png"], self.icon["knight.png"], self.icon["bishop.png"]]  # team 1 white chess head
             self.black = self.white  # no colour change
 
-        self.last_auth = 0
-
         self.leader_pos = ((self.inspect_pos[0][0], self.inspect_pos[0][1]),
                            (self.inspect_pos[1][0], self.inspect_pos[1][1]),
                            (self.inspect_pos[2][0], self.inspect_pos[2][1]),
                            (self.inspect_pos[3][0], self.inspect_pos[3][1]))
 
         self.image_original = self.image.copy()
+
 
     def change_pos(self, pos):
         """change position of ui to new one"""

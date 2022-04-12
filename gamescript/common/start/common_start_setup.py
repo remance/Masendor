@@ -682,8 +682,8 @@ def make_genre_ui(main_dir, screen_scale, genre, battle_ui_image):
 
     genre_icon_image = load_images(main_dir, screen_scale, [genre, "ui", "battle_ui",
                                                             "commandbar_icon"], load_order=False)
-    command_ui = battleui.CommandBar(genre_battle_ui_image["command_box.png"],
-                                     genre_icon_image)  # Left top command ui with leader and unit behaviours button
+    command_ui = battleui.CommandBar()  # Command ui with leader and unit behaviours button
+    command_ui.load_sprite(genre_battle_ui_image["command_box.png"], genre_icon_image)
 
     col_split_button = battleui.UIButton(genre_battle_ui_image["colsplit_button.png"],
                                               0)  # unit split by column button
@@ -725,9 +725,7 @@ def change_genre_ui(main_dir, screen_scale, genre, old_ui_dict):
 
     genre_icon_image = load_images(main_dir, screen_scale, [genre, "ui", "battle_ui",
                                                             "commandbar_icon"], load_order=False)
-
-    old_ui_dict["command_ui"].image = genre_battle_ui_image["command_box.png"]
-    old_ui_dict["command_ui"].icon = genre_icon_image
+    old_ui_dict["command_ui"].load_sprite(genre_battle_ui_image["command_box.png"], genre_icon_image)
 
     old_ui_dict["col_split_button"].image = genre_battle_ui_image["colsplit_button.png"]
     old_ui_dict["row_split_button"].image = genre_battle_ui_image["rowsplit_button.png"]

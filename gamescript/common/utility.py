@@ -177,6 +177,13 @@ def text_objects(text, font):
 
 
 def rotation_xy(origin, point, angle):
+    """
+    Rotate point to the new pos
+    :param origin: origin pos
+    :param point: target point pos
+    :param angle: angle of rotation
+    :return:
+    """
     ox, oy = origin
     px, py = point
     x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)

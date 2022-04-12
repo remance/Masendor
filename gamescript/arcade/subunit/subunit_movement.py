@@ -80,8 +80,10 @@ def move_logic(self, dt, parent_state, collide_list):
                         self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
                         if self.stamina != infinity:
                             if self.walk:
+                                self.state = 1
                                 self.stamina = self.stamina - (dt * 2)
                             elif self.run:
+                                self.state = 2
                                 self.stamina = self.stamina - (dt * 5)
 
                     else:  # move length pass the base_target destination, set movement to stop exactly at base_target

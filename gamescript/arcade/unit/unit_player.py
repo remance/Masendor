@@ -12,10 +12,10 @@ def user_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_rig
         new_pos = pygame.Vector2(self.leader_subunit.base_pos)
         self.leader_subunit.new_angle = self.leader_subunit.set_rotate(cursor_pos)
         if key_state is not None:
-            speed = self.walk_speed
+            speed = self.walk_speed / 10
             if key_state[pygame.K_LSHIFT]:
-                speed = self.run_speed
-            if key_state[pygame.K_LALT]:
+                speed = self.run_speed / 10
+            if key_state[pygame.K_SPACE]:
                 self.rotate_only = True
 
             if key_state[pygame.K_s]:  # move down
@@ -31,6 +31,7 @@ def user_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_rig
                 new_pos[0] += speed
 
             if new_pos != self.leader_subunit.base_pos:
+                self.leader_subunit.base_target = new_pos
                 self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
                 self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
             elif self.rotate_only:

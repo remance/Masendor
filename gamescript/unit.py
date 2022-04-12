@@ -254,24 +254,24 @@ class Unit(pygame.sprite.Sprite):
         got_another = True  # keep finding another subunit while true
 
         for index, who_frontline in enumerate(who_array):
-            newwhofrontline = who_frontline.copy()
-            dead = np.where((newwhofrontline == 0))  # replace the dead in frontline with other subunit in the same column
+            new_frontline = who_frontline.copy()
+            dead = np.where((new_frontline == 0))  # replace the dead in frontline with other subunit in the same column
             for dead_subunit in dead[0]:
                 run = 0
                 while got_another:
                     if full_who_array[index][run, dead_subunit] != 0:
-                        newwhofrontline[dead_subunit] = full_who_array[index][run, dead_subunit]
+                        new_frontline[dead_subunit] = full_who_array[index][run, dead_subunit]
                         got_another = False
                     else:
                         run += 1
                         if len(full_who_array[index]) == run:
-                            newwhofrontline[dead_subunit] = 0
+                            new_frontline[dead_subunit] = 0
                             got_another = False
                 got_another = True  # reset for another loop
-            empty_array = newwhofrontline
-            newwhofrontline = empty_array.copy()
+            empty_array = new_frontline
+            new_frontline = empty_array.copy()
 
-            self.frontline[index] = newwhofrontline
+            self.frontline[index] = new_frontline
 
         self.frontline_object = self.frontline.copy()  # frontline array as object instead of index
         for array_index, who_frontline in enumerate(list(self.frontline.values())):
