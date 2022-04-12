@@ -817,9 +817,9 @@ def battle_key_press(self, key_press):
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_1:
-        self.drama_text.queue.append("Hello and Welcome to update video")
+        self.drama_text.queue.append("In Arcade mode, player control only one unit as its leader")
     elif key_press == pygame.K_2:
-        self.drama_text.queue.append("Showcase: Walk and run animation sample")
+        self.drama_text.queue.append("The control is a bit more simpler and similar to action game")
     # elif key_press == pygame.K_3:
     #     self.drama_text.queue.append("Before")
     # elif key_press == pygame.K_4:

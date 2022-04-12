@@ -84,11 +84,11 @@ def attack_logic(self, dt, combat_timer, parent_state):
 
         self.attack_target = None
         self.base_target = self.command_target
-        self.new_angle = self.unit.angle
+        # self.new_angle = self.unit.angle
         self.state = 0
-        if self.angle != self.unit.angle:  # reset angle
-            self.new_angle = self.set_rotate()
-            self.new_angle = self.unit.angle
+        # if self.angle != self.unit.angle:  # reset angle
+        #     self.new_angle = self.set_rotate()
+        #     self.new_angle = self.unit.angle
     # TODO fix range attack later
     # if self.state != 10 and self.magazine_left > 0 and self.unit.fire_at_will == 0 and (self.arc_shot or self.frontline) and \
     #         self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot

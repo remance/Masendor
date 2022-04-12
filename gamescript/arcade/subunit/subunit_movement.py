@@ -78,17 +78,19 @@ def move_logic(self, dt, parent_state, collide_list):
                         self.base_pos = new_pos
                         self.pos = self.base_pos * self.zoom
                         self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
-                        if self.stamina != infinity:
-                            if self.walk:
-                                self.state = 1
+                        self.new_angle = self.set_rotate(self.base_target)
+                        if self.walk:
+                            self.state = 1
+                            if self.stamina != infinity:
                                 self.stamina = self.stamina - (dt * 2)
-                            elif self.run:
-                                self.state = 2
+                        elif self.run:
+                            self.state = 2
+                            if self.stamina != infinity:
                                 self.stamina = self.stamina - (dt * 5)
-
                     else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                         move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                         self.base_pos += move  # adjust base position according to movement
+
                     if len(self.combat_move_queue) > 0 and self.base_pos.distance_to(
                             pygame.Vector2(self.combat_move_queue[0])) < 0.1:  # reach the current queue point, remove from queue
                         self.combat_move_queue = self.combat_move_queue[1:]

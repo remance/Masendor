@@ -922,9 +922,9 @@ def battle_key_press(self, key_press):
     elif key_press == pygame.K_1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_2:
-        self.drama_text.queue.append("Showcase: Walk and run animation sample")
-    # elif key_press == pygame.K_3:
-    #     self.drama_text.queue.append("Before")
+        self.drama_text.queue.append("Showcase: Unit movement comparison between Arcade and Tactical mode")
+    elif key_press == pygame.K_3:
+        self.drama_text.queue.append("Tactical Mode use similar system like RTS games to move unit")
     # elif key_press == pygame.K_4:
     #     self.drama_text.queue.append("Where the hell is blue team, can only see red")
     # elif key_press == pygame.K_5:

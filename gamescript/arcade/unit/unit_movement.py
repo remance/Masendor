@@ -47,14 +47,15 @@ def set_subunit_target(self, target="rotate", *args):
     else:  # moving unit to specific target position
         # calculate new target from leader target and position in unit
         unit_target = target - (self.leader_subunit.unit_position[0] - self.base_width_box,
-                                self.leader_subunit.unit_position[1] - self.base_height_box)
+                                self.leader_subunit.unit_position[1])
+        unit_target = pygame.Vector2(
+                    rotation_xy(self.leader_subunit.base_pos, unit_target, self.radians_angle))
         # get the top left corner of sprite to generate subunit position, use only width since target is for front
         unit_topleft = pygame.Vector2(unit_target[0] - self.base_width_box,
                                       unit_target[1])
 
     for subunit in self.subunits:  # generate position of each subunit
         if subunit.unit_leader is False:
-            subunit.angle = self.angle
             new_target = unit_topleft + subunit.unit_position
             subunit.command_target = pygame.Vector2(
                 rotation_xy(unit_target, new_target, self.radians_angle))  # rotate according to sprite current rotation
