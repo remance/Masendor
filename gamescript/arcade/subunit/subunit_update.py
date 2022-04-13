@@ -464,12 +464,19 @@ def charge_logic(self, parent_state):
             self.charge_momentum = 1
 
 
+def skill_check_logic(self):
+    self.check_skill_condition()
+    if "troop skill" in self.current_action:
+        self.use_skill(self.available_skill[int(self.current_action[-1])])
+
+
 def pick_animation(self):
     try:
-        if self.state == 10:
-            equip = random.randint(0, 1)
-            weapon = self.weapon_name[random.randint(0, 1)][equip]
-            animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
+        if self.current_action is not None:
+            if "action " in self.current_action:
+                equip = int(self.current_action[-1]) - 1
+                weapon = self.weapon_name[self.equipped_weapon][equip]
+                animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
         else:
             state_name = self.subunit_state[self.state]
             animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)  #TODO change when add change equip

@@ -497,6 +497,14 @@ def charge_logic(self, parent_state):
             self.charge_momentum = 1
 
 
+def skill_check_logic(self):
+    if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
+        self.check_skill_condition()
+
+    if len(self.available_skill) > 0 and random.randint(0, 10) >= 6:  # random chance to use random available skill
+        self.use_skill(self.available_skill[random.randint(0, len(self.available_skill) - 1)])
+
+
 def pick_animation(self):
     try:
         if self.state == 10:

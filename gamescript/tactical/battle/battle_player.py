@@ -26,7 +26,7 @@ def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_rig
     elif self.unit_selector_scroll.rect.collidepoint(self.mouse_pos):  # Must check mouse collide for scroll before unit select ui
         self.click_any = True
         if mouse_left_down or mouse_left_up:
-            new_row = self.unit_selector_scroll.user_input(self.mouse_pos)
+            new_row = self.unit_selector_scroll.player_input(self.mouse_pos)
             if self.unit_selector.current_row != new_row:
                 self.unit_selector.current_row = new_row
                 setup_unit_icon(self.unit_selector, self.unit_icon,
@@ -55,7 +55,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
         self.click_any = True
         if mouse_left_down or mouse_left_up:
             self.click_any = True
-            new_row = self.log_scroll.user_input(self.mouse_pos)
+            new_row = self.log_scroll.player_input(self.mouse_pos)
             if self.event_log.current_start_row != new_row:
                 self.event_log.current_start_row = new_row
                 self.event_log.recreate_image()
@@ -303,8 +303,8 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
             self.kill_effect_icon()
 
         if mouse_right_up and self.click_any is False:  # Unit command
-            self.current_selected.user_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right,
-                                             self.last_mouseover, key_state)
+            self.current_selected.player_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, double_mouse_right,
+                                               self.last_mouseover, key_state)
 
     if mouse_right_up and self.current_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
         if 0 <= self.battle_mouse_pos[0] <= 999 and \
@@ -509,7 +509,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                 elif self.popup_list_scroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
                     self.click_any = True
-                    self.current_pop_up_row = self.popup_list_scroll.user_input(
+                    self.current_pop_up_row = self.popup_list_scroll.player_input(
                         self.mouse_pos)  # update the scroll and get new current subsection
                     if self.popup_listbox.type == "terrain":
                         setup_list(self.screen_scale, menu.NameList, self.current_pop_up_row,
@@ -533,7 +533,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
             elif self.troop_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
                 self.click_any = True
-                self.current_troop_row = self.troop_scroll.user_input(
+                self.current_troop_row = self.troop_scroll.player_input(
                     self.mouse_pos)  # update the scroll and get new current subsection
                 if self.current_list_show == "troop":
                     setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.troop_list,
@@ -546,7 +546,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
             elif self.unit_preset_name_scroll.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
-                self.current_unit_row = self.unit_preset_name_scroll.user_input(
+                self.current_unit_row = self.unit_preset_name_scroll.player_input(
                     self.mouse_pos)  # update the scroll and get new current subsection
                 setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                            self.unitpreset_namegroup, self.unit_listbox, self.battle_ui_updater)  # setup preset army list
@@ -789,8 +789,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 this_leader.start_set()
 
                             for this_unit in self.alive_unit_list:
-                                this_unit.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
-                                                     other_command=1)
+                                this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
+                                                       other_command=1)
                         else:
                             self.warning_msg.warning(warning_list)
                             self.battle_ui_updater.add(self.warning_msg)
@@ -916,7 +916,7 @@ def battle_key_press(self, key_press):
             self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
     elif key_press == pygame.K_SPACE and self.current_selected is not None:
-        self.current_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+        self.current_selected.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_1:

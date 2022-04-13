@@ -23,7 +23,7 @@ def change_unit_genre(genre):
     Unit.destroyed = unit_combat.destroyed  # destroyed script
     Unit.retreat = unit_combat.retreat
     Unit.switch_faction = unit_combat.switch_faction
-    Unit.user_input = unit_player.user_input
+    Unit.player_input = unit_player.player_input
     Unit.rotate_logic = unit_movement.rotate_logic
     Unit.revert_move = unit_movement.revert_move
     Unit.set_target = unit_movement.set_target

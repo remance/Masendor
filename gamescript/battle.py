@@ -774,7 +774,7 @@ class Battle:
 
                 elif event.type == pygame.KEYDOWN:
                     if self.text_input_popup[0] == "text_input":  # event update to input box
-                        self.input_box.user_input(event)
+                        self.input_box.player_input(event)
                     else:
                         key_press = event.key
 

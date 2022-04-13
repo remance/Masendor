@@ -913,7 +913,7 @@ class MainMenu:
                         if event.key == K_ESCAPE:
                             input_esc = True
                         elif self.text_input_popup[0] == "text_input":
-                            self.input_box.user_input(event, key_press)
+                            self.input_box.player_input(event, key_press)
                     else:
                         if event.key == K_ESCAPE:
                             esc_press = True

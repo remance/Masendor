@@ -1732,9 +1732,9 @@ while True:
                 input_esc = True
             elif text_input_popup[0] == "text_input":
                 if input_box in ui:
-                    input_box.user_input(event, key_press)
+                    input_box.player_input(event, key_press)
                 elif colour_input_box in ui:
-                    colour_input_box.user_input(event, key_press)
+                    colour_input_box.player_input(event, key_press)
 
     if pygame.mouse.get_pressed()[0]:  # Hold left click
         mouse_left_down = True
@@ -1852,7 +1852,7 @@ while True:
 
                 elif popup_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     popup_click = True
-                    new_row = popup_list_scroll.user_input(mouse_pos)
+                    new_row = popup_list_scroll.player_input(mouse_pos)
                     if new_row is not None:
                         current_popup_row = new_row
                         setup_list(menu.NameList, current_popup_row, popup_listbox.namelist, popup_namegroup,
@@ -1898,14 +1898,14 @@ while True:
                         show_joint = False
 
                 elif anim_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = anim_prop_list_scroll.user_input(mouse_pos)
+                    new_row = anim_prop_list_scroll.player_input(mouse_pos)
                     if new_row is not None:
                         current_anim_row = new_row
                         setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
                                    anim_prop_listbox, ui, screen_scale, layer=9, old_list=anim_property_select)
 
                 elif frame_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = frame_prop_list_scroll.user_input(mouse_pos)
+                    new_row = frame_prop_list_scroll.player_input(mouse_pos)
                     if new_row is not None:
                         current_frame_row = new_row
                         setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,

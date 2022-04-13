@@ -528,7 +528,7 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                     break  # found clicked subsection, break loop
 
         if self.lore_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-            self.encyclopedia.current_subsection_row = self.lore_scroll.user_input(
+            self.encyclopedia.current_subsection_row = self.lore_scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
             self.encyclopedia.setup_subsection_list(self.lore_name_list,
                                                 self.subsection_name)  # update subsection name list

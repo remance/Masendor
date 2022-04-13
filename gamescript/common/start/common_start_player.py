@@ -109,7 +109,7 @@ def main_menu_process(self, mouse_left_up):
 
         elif self.popup_list_scroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
             self.ui_click = True
-            self.current_popup_row = self.popup_list_scroll.user_input(
+            self.current_popup_row = self.popup_list_scroll.player_input(
                 self.mouse_pos)  # update the scroller and get new current subsection
             setup_list(self.screen_scale, menu.NameList, self.current_popup_row, self.genre_list,
                        self.popup_namegroup, self.popup_listbox, self.main_ui_updater)
@@ -145,8 +145,8 @@ def option_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
     if mouse_left_up or mouse_left_down:
         if self.volume_slider.rect.collidepoint(self.mouse_pos) and (
                 mouse_left_down or mouse_left_up):  # mouse click on slider bar
-            self.volume_slider.user_input(self.mouse_pos,
-                                          self.value_box[0])  # update slider button based on mouse value
+            self.volume_slider.player_input(self.mouse_pos,
+                                            self.value_box[0])  # update slider button based on mouse value
             self.master_volume = float(
                 self.volume_slider.value / 100)  # for now only music volume slider exist
             edit_config("DEFAULT", "master_volume", str(self.volume_slider.value), "configuration.ini",
@@ -196,7 +196,7 @@ def map_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mo
                     break
 
         if self.map_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-            self.current_map_row = self.map_scroll.user_input(
+            self.current_map_row = self.map_scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
             setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list,
                        self.map_namegroup, self.map_listbox,
@@ -258,7 +258,7 @@ def team_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                         self.enactment = box.tick
 
         if self.source_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-            self.current_source_row = self.source_scroll.user_input(
+            self.current_source_row = self.source_scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
             setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_list,
                        self.source_namegroup,
@@ -383,7 +383,7 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
 
     elif self.char_selector_scroll.rect.collidepoint(self.mouse_pos):
         if mouse_left_down or mouse_left_up:
-            new_row = self.char_selector_scroll.user_input(self.mouse_pos)
+            new_row = self.char_selector_scroll.player_input(self.mouse_pos)
             if self.char_selector.current_row != new_row:
                 self.char_selector.current_row = new_row
                 setup_unit_icon(self.char_selector, self.unit_icon, self.preview_char,

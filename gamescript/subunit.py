@@ -38,6 +38,7 @@ def change_subunit_genre(genre):
     Subunit.player_interact = subunit_update.player_interact
     Subunit.status_update = subunit_update.status_update
     Subunit.morale_logic = subunit_update.morale_logic
+    Subunit.skill_check_logic = subunit_update.skill_check_logic
     Subunit.pick_animation = subunit_update.pick_animation
     Subunit.health_stamina_logic = subunit_update.health_stamina_logic
     Subunit.charge_logic = subunit_update.charge_logic
@@ -83,6 +84,8 @@ class Subunit(pygame.sprite.Sprite):
     morale_logic = None
     health_stamina_logic = None
     charge_logic = None
+    skill_check_logic = None
+    pick_animation = None
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, genre, purpose="battle"):
         self._layer = 4
@@ -105,6 +108,7 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0
         self.animation_timer = 0
+        self.current_action = None  # for genre that use specific action instead of state
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -127,6 +131,7 @@ class Subunit(pygame.sprite.Sprite):
         self.last_zoom = 0
         self.skill_cond = 0
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
+        self.interrupt_animation = False
 
         # v Setup troop original stat before applying trait, gear and other stuffs
         if type(troop_id) == int or "h" not in troop_id:
@@ -609,13 +614,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.pick_animation()
 
-        # self.idle_animation = self.sprite_pool["Human_Default/" + str(self.equiped_weapon)]
-        # self.walk_animation = None
-        # self.run_animation = None
-        # self.action1_animation = None
-        # self.action2_animation = None
-        # self.die_animation = None
-
     def create_inspect_sprite(self):
         # v Subunit image sprite in inspect ui and far zoom
         ui_image = self.unit_ui_images["ui_squad_player.png"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
@@ -714,8 +712,10 @@ class Subunit(pygame.sprite.Sprite):
 
         if self.zoom == self.max_zoom:  # TODO add weapon specific action condition
             done = self.play_animation(0.5, dt)
-            if done and self.state != 100:
+            if (done or self.interrupt_animation) and self.state != 100:
                 self.pick_animation()
+                self.interrupt_animation = False
+                self.current_action = None  # finish current action when animation finish
             if recreate_rect:
                 self.rect = self.image.get_rect(center=self.pos)
 
@@ -742,12 +742,7 @@ class Subunit(pygame.sprite.Sprite):
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)
                     self.available_skill = []
-
-                    if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
-                        self.check_skill_condition()
-
-                    if len(self.available_skill) > 0 and random.randint(0, 10) >= 6:  # random chance to use random available skill
-                        self.use_skill(self.available_skill[random.randint(0, len(self.available_skill) - 1)])
+                    self.skill_check_logic()
 
                     self.charge_logic(parent_state)
 
