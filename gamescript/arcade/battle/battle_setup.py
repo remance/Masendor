@@ -22,10 +22,8 @@ def setup_battle_ui(self, change):
         self.troop_card_ui.change_pos((self.inspect_ui.rect.bottomleft[0] + self.troop_card_ui.image.get_width() / 2,
                                        (self.inspect_ui.rect.bottomleft[1] + self.troop_card_ui.image.get_height() / 2)))
 
-        self.time_ui.change_pos((self.unit_selector.rect.topright), self.time_number)
-        self.time_button[0].change_pos((self.time_ui.rect.center[0] - 30, self.time_ui.rect.center[1]))  # time pause button
-        self.time_button[1].change_pos((self.time_ui.rect.center[0], self.time_ui.rect.center[1]))  # time decrease button
-        self.time_button[2].change_pos((self.time_ui.rect.midright[0] - 60, self.time_ui.rect.center[1]))  # time increase button
+        self.time_ui.change_pos((self.unitstat_ui.rect.topleft[0] - self.time_ui.image.get_width(),
+                                 self.unitstat_ui.rect.topleft[1]), self.time_number)
 
         self.scale_ui.change_pos(self.time_ui.rect.bottomleft)
         self.test_button.change_pos((self.scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
@@ -79,9 +77,6 @@ def setup_battle_ui(self, change):
         change_group(self.unit_selector, self.battle_ui_updater, change)
         change_group(self.unit_selector_scroll, self.battle_ui_updater, change)
 
-    change_group(self.col_split_button, self.button_ui, change)
-    change_group(self.row_split_button, self.button_ui, change)
-    change_group(self.time_button, self.battle_ui_updater, change)
     change_group(self.scale_ui, self.battle_ui_updater, change)
 
 

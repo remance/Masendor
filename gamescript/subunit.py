@@ -37,6 +37,7 @@ def change_subunit_genre(genre):
     Subunit.move_logic = subunit_movement.move_logic
     Subunit.player_interact = subunit_update.player_interact
     Subunit.status_update = subunit_update.status_update
+    Subunit.state_reset_logic = subunit_update.state_reset_logic
     Subunit.morale_logic = subunit_update.morale_logic
     Subunit.skill_check_logic = subunit_update.skill_check_logic
     Subunit.pick_animation = subunit_update.pick_animation
@@ -81,6 +82,7 @@ class Subunit(pygame.sprite.Sprite):
     move_logic = None
     player_interact = None
     status_update = None
+    state_reset_logic = None
     morale_logic = None
     health_stamina_logic = None
     charge_logic = None
@@ -711,7 +713,7 @@ class Subunit(pygame.sprite.Sprite):
             recreate_rect = True
 
         if self.zoom == self.max_zoom:  # TODO add weapon specific action condition
-            done = self.play_animation(0.5, dt)
+            done = self.play_animation(0.15, dt)
             if (done or self.interrupt_animation) and self.state != 100:
                 self.pick_animation()
                 self.interrupt_animation = False
@@ -729,15 +731,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.run = False  # reset run
 
                 parent_state = self.unit.state
-                if parent_state in (1, 2, 3, 4):
-                    self.attacking = True
-                elif self.attacking and parent_state not in (1, 2, 3, 4, 10):  # cancel charge when no longer move to melee or in combat
-                    self.attacking = False
-                if self.state not in (95, 97, 98, 99) and parent_state in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99):
-                    self.state = parent_state  # Enforce unit state to subunit when moving and breaking
-
-                self.attack_target = self.unit.attack_target
-                self.attack_pos = self.unit.base_attack_pos
+                self.state_reset_logic(parent_state)
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)

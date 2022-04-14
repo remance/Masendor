@@ -350,6 +350,11 @@ def status_update(self, weather=None):
     # ^ End timer effect
 
 
+def state_reset_logic(self, *args):
+    """Simply reset to idle state for arcade mode as it use independent action"""
+    self.state = 0
+
+
 def morale_logic(self, dt, parent_state):
     # v Morale check
     if self.max_morale != infinity:
@@ -466,7 +471,7 @@ def charge_logic(self, parent_state):
 
 def skill_check_logic(self):
     self.check_skill_condition()
-    if "troop skill" in self.current_action:
+    if self.current_action is not None and "troop skill" in self.current_action:
         self.use_skill(self.available_skill[int(self.current_action[-1])])
 
 
