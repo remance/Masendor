@@ -672,7 +672,7 @@ class UIScroller(pygame.sprite.Sprite):
             self.current_row = new_row
             self.create_new_image()
 
-    def user_input(self, mouse_pos):
+    def player_input(self, mouse_pos):
         """User input update"""
         if self.rect.collidepoint(mouse_pos) and mouse_pos is not None:
             mouse_value = (mouse_pos[1] - self.pos[

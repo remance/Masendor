@@ -20,7 +20,7 @@ class Cursor(pygame.sprite.Sprite):
         self.image = images[0]
         self.rect = self.image.get_rect(topleft=self.pos)
 
-    def user_input(self, pos):
+    def player_input(self, pos):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
@@ -92,7 +92,7 @@ class SliderMenu(pygame.sprite.Sprite):
         self.image.blit(self.button_image, button_rect)
         self.rect = self.image.get_rect(center=self.pos)
 
-    def user_input(self, mouse_pos, value_box, forced_value=False):
+    def player_input(self, mouse_pos, value_box, forced_value=False):
         """Update slider value and position"""
         if forced_value is False:
             self.mouse_value = mouse_pos[0]
@@ -167,7 +167,7 @@ class InputBox(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
 
-    def user_input(self, event, key_press):
+    def player_input(self, event, key_press):
         """register user keyboard and mouse input"""
         if event.type == pygame.KEYDOWN and self.active:  # text input
             self.image = self.image_original.copy()

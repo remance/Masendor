@@ -1,0 +1,13 @@
+"Action","1hand",,"2hand",,"2pole",,"shield",,"hide weapon"
+"Human&Horse","main","sub","main","sub","main","sub","main","sub",
+"Default","None","None","None","None","None","None","None","None",1
+"Idle",1,"None",1,"None",1,"None",1,"None",0
+"Walk",1,1,1,1,1,1,1,1,0
+"Run",1,1,1,1,1,1,1,1,0
+"Pierce",1,0,0,"None",1,"None","None","None",0
+"Punch",1,1,"None","None","None","None","None","None",0
+"Slash",2,2,2,"None",1,"None","None","None",0
+"Reload",0,0,1,"None",0,"None","None","None",0
+"Shoot",0,0,1,"None",0,"None","None","None",0
+"Bash",0,0,0,"None",0,"None",0,1,0
+"Preview",5,"None",3,"None",0,"None",0,"None",4

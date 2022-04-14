@@ -50,7 +50,7 @@ class Unit(pygame.sprite.Sprite):
     destroyed = None
     retreat = None
     switch_faction = None
-    user_input = None
+    player_input = None
     rotate_logic = None
     revert_move = None
     set_target = None
