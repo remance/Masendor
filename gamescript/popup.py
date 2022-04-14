@@ -16,19 +16,12 @@ class TerrainPopup(pygame.sprite.Sprite):
                                                              int(self.images[0].get_height() * self.scale_adjust)))
         self.font = pygame.font.SysFont("helvetica", int(16 * self.scale_adjust))
         self.height_font = pygame.font.SysFont("helvetica", int(12 * self.scale_adjust))
-        self.img_pos = (
-        (24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),
-        # inf speed, inf atk
-        (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),
-        # inf def, cav speed
-        (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),
-        # cav atk, cav def
-        (90 * self.scale_adjust, 34 * self.scale_adjust),
-        (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
-        self.mod_list = (
-        1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
-        self.bonus_list = (
-        40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
+        self.img_pos = ((24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),  # inf speed, inf atk
+                        (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),  # inf def, cav speed
+                        (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),  # cav atk, cav def
+                        (90 * self.scale_adjust, 34 * self.scale_adjust), (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
+        self.mod_list = (1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
+        self.bonus_list = (40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
 
         self.image_original = self.image.copy()
 
@@ -55,8 +48,7 @@ class TerrainPopup(pygame.sprite.Sprite):
                 self.image.blit(self.images[7], image_rect)
             else:  # upper or lower (^v) arrow icon to indicate modifier level
                 for mod_index, mod in enumerate(self.mod_list):  # loop to find ^v arrow icon for the modifier
-                    if feature[
-                        index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
+                    if feature[index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
                         image_rect = self.images[mod_index + 1].get_rect(center=img_pos)
                         self.image.blit(self.images[mod_index + 1], image_rect)
                         break  # found arrow image to blit end loop

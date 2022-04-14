@@ -1,6 +1,6 @@
-import csv
 import os
 import sys
+
 import pool
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -15,7 +15,7 @@ animation_pool, part_name_header = read_anim_data(direction_list, "generic")
 
 
 def check_pool():
-    """Check if all animation direction has same number of frame and properties"""
+    """Check if all animation direction has same number of frames and properties"""
     warning_list = {}
     stat_list = {}
     for index, direction in enumerate(direction_list):
@@ -29,7 +29,7 @@ def check_pool():
     for key, value in stat_list.items():
         frames = {}
         props = {}
-        for direction, anim_value in value.items()
+        for direction, anim_value in value.items():
             frames[direction] = anim_value["frames"]
             props[direction] = anim_value["frame properties"]
         if len(list(set(list(frames.values())))) != 1:
@@ -38,4 +38,6 @@ def check_pool():
             warning_list[animation]["Unequal frame prop"] = True
     warning_list = {key: value for key, value in warning_list.items() if value != {}}
     print(warning_list)
+
+
 check_pool()

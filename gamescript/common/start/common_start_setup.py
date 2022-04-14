@@ -1,10 +1,9 @@
 import csv
 import os
 import random
-
-import pygame
 from pathlib import Path
 
+import pygame
 from gamescript import weather, battleui, lorebook, menu, uniteditor, statdata, popup, map
 from gamescript.common import utility, animation
 
@@ -607,16 +606,16 @@ def make_event_log(battle_ui_image, screen_rect):
     troop_log_button = battleui.UIButton(battle_ui_image["event_log_button1.png"], 0)  # war tab log
 
     event_log_button = [
-        battleui.UIButton(battle_ui_image["event_log_button2.png"], 1), # army tab log button
+        battleui.UIButton(battle_ui_image["event_log_button2.png"], 1),  # army tab log button
         battleui.UIButton(battle_ui_image["event_log_button3.png"], 2),  # leader tab log button
-        battleui.UIButton(battle_ui_image["event_log_button4.png"], 3), # subunit tab log button
-        battleui.UIButton(battle_ui_image["event_log_button5.png"], 4), # delete current tab log button
-        battleui.UIButton(battle_ui_image["event_log_button6.png"], 5)] # delete all log button
+        battleui.UIButton(battle_ui_image["event_log_button4.png"], 3),  # subunit tab log button
+        battleui.UIButton(battle_ui_image["event_log_button5.png"], 4),  # delete current tab log button
+        battleui.UIButton(battle_ui_image["event_log_button6.png"], 5)]  # delete all log button
 
     event_log_button = [troop_log_button] + event_log_button
     log_scroll = battleui.UIScroller(event_log.rect.topright, battle_ui_image["event_log.png"].get_height(),
-                                          event_log.max_row_show)  # event log scroller
-    event_log.log_scroll = log_scroll  # Link scroller to ui since it is easier to do here with the current order
+                                          event_log.max_row_show)  # event log scroll
+    event_log.log_scroll = log_scroll  # Link log scroll to ui since it is easier to do here with the current order
 
     return {"event_log": event_log, "troop_log_button": troop_log_button, "event_log_button": event_log_button, "log_scroll": log_scroll}
 
@@ -645,7 +644,7 @@ def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
 
     esc_menu_images = load_images(main_dir, screen_scale, ["ui", "battlemenu_ui", "slider"], load_order=False)
     esc_slider_menu = [menu.SliderMenu([esc_menu_images["scroller_box.png"], esc_menu_images["scroller.png"]],
-                                       [esc_menu_images["scoll_button_normal.png"], esc_menu_images["scoll_button_click.png"]],
+                                       [esc_menu_images["scroll_button_normal.png"], esc_menu_images["scroll_button_click.png"]],
                                        (menu_rect_center0, menu_rect_center1), mixer_volume, 0)]
     esc_value_box = [menu.ValueBox(esc_menu_images["value.png"], (battle_menu.rect.topright[0] * 1.08, menu_rect_center1), mixer_volume)]
 
@@ -677,7 +676,7 @@ def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
             "leader_popup": leader_popup, "effect_popup": effect_popup, "char_popup": char_popup}
 
 
-def make_genre_ui(main_dir, screen_scale, genre, battle_ui_image):
+def make_genre_ui(main_dir, screen_scale, genre):
     genre_battle_ui_image = load_images(main_dir, screen_scale, [genre, "ui", "battle_ui"], load_order=False)
 
     genre_icon_image = load_images(main_dir, screen_scale, [genre, "ui", "battle_ui",
@@ -775,7 +774,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     # Volume change scroll bar
     esc_menu_images = load_images(main_dir, screen_scale, ["ui", "battlemenu_ui", "slider"], load_order=False)
     volume_slider = menu.SliderMenu([esc_menu_images["scroller_box.png"], esc_menu_images["scroller.png"]],
-                                    [esc_menu_images["scoll_button_normal.png"], esc_menu_images["scoll_button_click.png"]],
+                                    [esc_menu_images["scroll_button_normal.png"], esc_menu_images["scroll_button_click.png"]],
                                     (screen_rect.width / 2, screen_rect.height / 3), mixer_volume)
     value_box = [menu.ValueBox(esc_menu_images["value.png"], (volume_slider.rect.topright[0] * 1.1, volume_slider.rect.topright[1]),
                       mixer_volume)]

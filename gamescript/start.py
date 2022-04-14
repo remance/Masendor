@@ -123,6 +123,7 @@ def change_genre(self, genre):
     self.background = pygame.Surface(self.screen_rect.size)
     self.background.blit(bgd_tile, (0, 0))
 
+
 class MainMenu:
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
@@ -174,7 +175,7 @@ class MainMenu:
         self.config = config
         self.screen_width = int(self.config["DEFAULT"]["screen_width"])
         self.screen_height = int(self.config["DEFAULT"]["screen_height"])
-        self.FULLSCREEN = int(self.config["DEFAULT"]["fullscreen"])
+        self.full_screen = int(self.config["DEFAULT"]["fullscreen"])
         self.master_volume = float(self.config["DEFAULT"]["master_volume"])
         self.profile_name = str(self.config["DEFAULT"]["player_Name"])
         self.genre = str(self.config["DEFAULT"]["genre"])
@@ -185,7 +186,7 @@ class MainMenu:
         self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
         self.window_style = 0
-        if FULLSCREEN == 1:  # fullscreen = 1
+        if self.full_screen == 1:  # fullscreen = 1
             self.window_style = pygame.FULLSCREEN
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.window_style, 32)
         self.screen = pygame.display.set_mode(self.screen_rect.size, self.window_style | pygame.RESIZABLE, self.best_depth)
@@ -609,7 +610,7 @@ class MainMenu:
         self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
 
-        self.genre_ui_dict = make_genre_ui(self.main_dir, self.screen_scale, self.genre, battle_ui_image)
+        self.genre_ui_dict = make_genre_ui(self.main_dir, self.screen_scale, self.genre)
         self.command_ui = self.genre_ui_dict["command_ui"]
         self.ui_updater.add(self.command_ui)
         uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
