@@ -65,7 +65,7 @@ def set_target(self, pos):
     self.set_subunit_target(target=self.base_target)
 
 
-def set_subunit_target(self, target="rotate", reset_path=False):
+def set_subunit_target(self, target="rotate", reset_path=False, *args):
     """
     generate all four side, hitbox and subunit positions
     :param self: unit object
@@ -101,3 +101,7 @@ def set_subunit_target(self, target="rotate", reset_path=False):
                 else:
                     subunit.command_target = pygame.Vector2(
                         rotation_xy(target, new_target, self.radians_angle))  # rotate according to sprite current rotation
+
+
+def move_leader(self, *args):
+    pass

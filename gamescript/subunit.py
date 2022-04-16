@@ -510,36 +510,36 @@ class Subunit(pygame.sprite.Sprite):
         for row_index, row_list in enumerate(self.unit.subunit_list.tolist()):
             if self.game_id in row_list:
                 if row_list.index(self.game_id) - 1 != -1:  # get subunit from left if not at first column
-                    self.nearby_subunit_list.append(self.unit.sprite_array[row_index][row_list.index(self.game_id) - 1])  # index 0
+                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index][row_list.index(self.game_id) - 1])  # index 0
                 else:  # not exist
                     self.nearby_subunit_list.append(0)  # add number 0 instead
 
                 if row_list.index(self.game_id) + 1 != len(row_list):  # get subunit from right if not at last column
-                    self.nearby_subunit_list.append(self.unit.sprite_array[row_index][row_list.index(self.game_id) + 1])  # index 1
+                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index][row_list.index(self.game_id) + 1])  # index 1
                 else:  # not exist
                     self.nearby_subunit_list.append(0)  # add number 0 instead
 
                 if row_index != 0:  # get top subunit
-                    self.nearby_subunit_list.append(self.unit.sprite_array[row_index - 1][row_list.index(self.game_id)])  # index 2
+                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index - 1][row_list.index(self.game_id)])  # index 2
                     if row_list.index(self.game_id) - 1 != -1:  # get top left subunit
-                        corner_subunit.append(self.unit.sprite_array[row_index - 1][row_list.index(self.game_id) - 1])  # index 3
+                        corner_subunit.append(self.unit.subunit_list[row_index - 1][row_list.index(self.game_id) - 1])  # index 3
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
                     if row_list.index(self.game_id) + 1 != len(row_list):  # get top right
-                        corner_subunit.append(self.unit.sprite_array[row_index - 1][row_list.index(self.game_id) + 1])  # index 4
+                        corner_subunit.append(self.unit.subunit_list[row_index - 1][row_list.index(self.game_id) + 1])  # index 4
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
                 else:  # not exist
                     self.nearby_subunit_list.append(0)  # add number 0 instead
 
-                if row_index != len(self.unit.sprite_array) - 1:  # get bottom subunit
-                    self.nearby_subunit_list.append(self.unit.sprite_array[row_index + 1][row_list.index(self.game_id)])  # index 5
+                if row_index != len(self.unit.subunit_list) - 1:  # get bottom subunit
+                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index + 1][row_list.index(self.game_id)])  # index 5
                     if row_list.index(self.game_id) - 1 != -1:  # get bottom left subunit
-                        corner_subunit.append(self.unit.sprite_array[row_index + 1][row_list.index(self.game_id) - 1])  # index 6
+                        corner_subunit.append(self.unit.subunit_list[row_index + 1][row_list.index(self.game_id) - 1])  # index 6
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
                     if row_list.index(self.game_id) + 1 != len(row_list):  # get bottom  right subunit
-                        corner_subunit.append(self.unit.sprite_array[row_index + 1][row_list.index(self.game_id) + 1])  # index 7
+                        corner_subunit.append(self.unit.subunit_list[row_index + 1][row_list.index(self.game_id) + 1])  # index 7
                     else:  # not exist
                         corner_subunit.append(0)  # add number 0 instead
                 else:  # not exist
@@ -558,7 +558,7 @@ class Subunit(pygame.sprite.Sprite):
                     if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
                         subunit.status_effect[status_id] = status_list  # apply status effect
         elif aoe == 4:  # apply to whole unit
-            for subunit in self.unit.sprite_array.flat:
+            for subunit in self.unit.subunit_list.flat:
                 if subunit.state != 100:  # only apply to alive squads
                     subunit.status_effect[status_id] = status_list  # apply status effect
 

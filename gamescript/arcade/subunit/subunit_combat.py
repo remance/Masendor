@@ -380,7 +380,7 @@ def die(self):
     self.battle.alive_subunit_list.remove(self)
     self.unit.subunits.remove(self)
 
-    for subunit in self.unit.subunit_list.flat:  # remove from index array
+    for subunit in self.unit.subunits_array.flat:  # remove from index array
         if subunit == self.game_id:
             self.unit.subunit_list = np.where(self.unit.subunit_list == self.game_id, 0, self.unit.subunit_list)
             break

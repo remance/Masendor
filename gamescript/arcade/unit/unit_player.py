@@ -1,7 +1,7 @@
 import pygame
 
 
-def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_right, target, key_state, other_command=None):
+def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_right, target, key_state, *args):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
     if self.state not in (99, 100):
         self.rotate_only = False
@@ -19,6 +19,16 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_r
 
             elif key_state is not None:
                 speed = self.walk_speed / 10
+                if self.input_delay == 0:
+                    if key_state[pygame.K_DOWN]:
+                        self.move_leader("down")
+                    elif key_state[pygame.K_UP]:
+                        self.move_leader("up")
+                    elif key_state[pygame.K_LEFT]:
+                        self.move_leader("left")
+                    elif key_state[pygame.K_RIGHT]:
+                        self.move_leader("right")
+
                 if key_state[pygame.K_LSHIFT]:
                     speed = self.run_speed / 10
                 if key_state[pygame.K_SPACE]:
