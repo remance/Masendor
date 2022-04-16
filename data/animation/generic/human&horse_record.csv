@@ -2,8 +2,8 @@
 "Human&Horse","main","sub","main","sub","main","sub","main","sub",
 "Default","None","None","None","None","None","None","None","None",1
 "Idle",1,"None",1,"None",1,"None",1,"None",0
-"Walk",1,1,1,1,1,1,1,1,0
-"Run",1,1,1,1,1,1,1,1,0
+"Walk",1,"None",1,"None",1,"None",0,"None",0
+"Run",1,"None",1,"None",1,"None",0,"None",0
 "Pierce",1,0,0,"None",1,"None","None","None",0
 "Punch",1,1,"None","None","None","None","None","None",0
 "Slash",2,2,2,"None",1,"None","None","None",0

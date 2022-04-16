@@ -38,6 +38,7 @@ def check_pool():
             warning_list[animation]["Unequal frame prop"] = True
     warning_list = {key: value for key, value in warning_list.items() if value != {}}
     print(warning_list)
+    print(stat_list)
 
 
 check_pool()

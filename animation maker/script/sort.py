@@ -32,7 +32,10 @@ for direction in direction_list:
 
 
 def sort_animation(pool, pool_name, header):
-    name_list = list(pool[0].keys())
+    name_list = []
+    for this_pool in pool:
+        name_list += list(this_pool.keys())
+    name_list = list(set(name_list))
     new_list = {name: name.split("_") for index, name in enumerate(name_list)}
     type_list = {}
     for key, value in new_list.items():
@@ -54,14 +57,16 @@ def sort_animation(pool, pool_name, header):
         type_list[key] = {"Race": race, "Hand": hand, "Type": action_type, "Action": action}
     df = pd.DataFrame.from_dict(type_list, orient="index")
     df = df.reset_index().sort_values(by=["Race", "Type", "Hand", "index"])
-
     print(df["index"].tolist())
 
     new_pool = []
     for index, direction in enumerate(direction_list):
         animation_pool = {}
         for new_stuff in df["index"].tolist():
-            animation_pool[new_stuff] = pool[index][new_stuff]
+            try:
+                animation_pool[new_stuff] = pool[index][new_stuff]
+            except KeyError:
+                pass
         new_pool.append(animation_pool)
 
     for index, direction in enumerate(direction_list):
@@ -75,5 +80,6 @@ def sort_animation(pool, pool_name, header):
             for row in final_save:
                 filewriter.writerow(row)
         edit_file.close()
+
 
 sort_animation(pool, "generic", part_name_header)
