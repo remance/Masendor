@@ -89,7 +89,22 @@ class Subunit(pygame.sprite.Sprite):
     skill_check_logic = None
     pick_animation = None
 
-    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, genre, purpose="battle"):
+    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, purpose="battle"):
+        """
+        Subunit object represent a group of troop or leader
+        Subunit has three different stage of stat;
+        first: original stat (e.g., original_melee_attack), this is their stat before calculating equipment, trait, and other effect
+        second: base stat (e.g., base_melee_attack), this is their stat after calculating equipment and trait
+        third: stat itself (e.g., melee_attack), this is their stat after calculating terrain, weather, and status effect
+        :param troop_id: ID of the troop in data, can be 'h' for game mode that directly use leader character
+        :param game_id: ID of the subunit as object
+        :param unit: Unit that this subunit belongs to
+        :param start_pos: Starting pos of the subunit that will be used for sprite blit
+        :param start_hp: Starting health or troop number percentage
+        :param start_stamina: Starting maximum stamina percentage
+        :param unit_scale: Scale of troop number
+        :param purpose: Purpose of this subunit, can be 'battle' for in game battle or 'edit' for unit/subunit editor
+        """
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.get_feature = self.feature_map.get_feature
@@ -101,14 +116,14 @@ class Subunit(pygame.sprite.Sprite):
         self.run = False  # currently running
         self.frontline = False  # on front line of unit or not
         self.unit_leader = False  # contain the general or not, making it leader subunit
-        self.attack_target = None
+        self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.close_target = None  # closet target to move to in melee
         self.attacking = False  # For checking if unit in attacking state or not for using charge skill
 
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
-        self.show_frame = 0
+        self.show_frame = 0  # current animation frame
         self.animation_timer = 0
         self.current_action = None  # for genre that use specific action instead of state
 
@@ -128,11 +143,11 @@ class Subunit(pygame.sprite.Sprite):
         self.timer = random.random()  # may need to use random.random()
         self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing the nearest enemy
-        self.ammo_now = 0
         self.zoom = 1
         self.last_zoom = 0
         self.skill_cond = 0
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
+        self.ammo_now = 0  # ammunition count in the current magazine
         self.interrupt_animation = False
 
         # v Setup troop original stat before applying trait, gear and other stuffs
@@ -142,13 +157,13 @@ class Subunit(pygame.sprite.Sprite):
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
             self.original_melee_attack = stat["Melee Attack"] + grade_stat[
-                "Melee Attack Bonus"]  # base melee melee_attack with grade bonus
+                "Melee Attack Bonus"]  # melee attack with grade bonus
             self.original_melee_def = stat["Melee Defence"] + grade_stat[
-                "Defence Bonus"]  # base melee defence with grade bonus
+                "Defence Bonus"]  # melee defence with grade bonus
             self.original_range_def = stat["Ranged Defence"] + grade_stat[
-                "Defence Bonus"]  # base range defence with grade bonus
+                "Defence Bonus"]  # range defence with grade bonus
             self.original_accuracy = stat["Accuracy"] + grade_stat["Accuracy Bonus"]
-            self.original_sight = stat["Sight"]  # base sight range
+            self.original_sight = stat["Sight"]  # sight range
             self.magazine_left = {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"],
                                   2: stat["Ammunition Modifier"], 3: stat["Ammunition Modifier"]}  # ammunition, for now as mod number
             self.original_reload = stat["Reload"] + grade_stat["Reload Bonus"]
@@ -171,13 +186,13 @@ class Subunit(pygame.sprite.Sprite):
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
             self.original_melee_attack = (stat["Melee Command"] * stat["Combat"]) + grade_stat[
-                "Melee Attack Bonus"]  # base melee melee_attack with grade bonus
+                "Melee Attack Bonus"]  # melee attack with grade bonus
             self.original_melee_def = (stat["Melee Command"] * stat["Combat"]) + grade_stat[
-                "Defence Bonus"]  # base melee defence with grade bonus
+                "Defence Bonus"]  # melee defence with grade bonus
             self.original_range_def = (stat["Range Command"] * stat["Combat"]) + grade_stat[
-                "Defence Bonus"]  # base range defence with grade bonus
+                "Defence Bonus"]  # range defence with grade bonus
             self.original_accuracy = (stat["Range Command"] * stat["Combat"]) + grade_stat["Accuracy Bonus"]
-            self.original_sight = (stat["Range Command"] * stat["Combat"])  # base sight range
+            self.original_sight = (stat["Range Command"] * stat["Combat"])  # sight range
             self.magazine_left = {0: 2, 1: 2,
                                   2: 2, 3: 2}  # leader gets double ammunition
             self.original_reload = (stat["Range Command"] * stat["Combat"]) + grade_stat["Reload Bonus"]
@@ -242,7 +257,7 @@ class Subunit(pygame.sprite.Sprite):
         self.arrow_speed = {0: 0, 1: 0, 2: 0, 3: 0}
         self.equipped_weapon = 0
 
-        self.original_speed = 50  # All infantry has base speed at 50
+        self.original_speed = 50  # All infantry has starting speed at 50
         self.feature_mod = "Infantry"  # the starting column in terrain bonus of infantry
         self.authority = 100  # default start at 100
 
@@ -677,12 +692,15 @@ class Subunit(pygame.sprite.Sprite):
         block.blit(stamina_image, stamina_block_rect)
         # ^ End health and stamina
 
-        # v weapon class icon in middle circle
+        # v weapon class icon in middle circle or leader
         image1 = self.weapon_data.images[self.weapon_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
+        if type(self.troop_id) != int and "h" in self.troop_id:
+            try:
+                image1 = self.leader_data.images[self.troop_id.replace("h", "") + ".png"].copy()
+            except KeyError:
+                image1 = self.leader_data.images["9999999.png"].copy()
+            image1 = pygame.transform.scale(image1.copy(), stamina_image.get_size())
         image_rect = image1.get_rect(center=image.get_rect().center)
-        if self.unit_leader:  # add crown image first
-            image2 = self.weapon_data.images[-1]
-            image.blit(image2, image_rect)
         image.blit(image1, image_rect)
 
         image_rect = image1.get_rect(center=block.get_rect().center)

@@ -101,3 +101,13 @@ def camera_process(self, key_state):
                                               self.player_char.base_pos[1] * self.screen_scale[1])
         self.camera_pos = self.base_camera_pos * self.camera_zoom
         self.camera_fix()
+
+
+def change_inspect_subunit(self):
+    self.battle_ui_updater.remove(*self.inspect_subunit)
+    for index, this_subunit in enumerate(self.current_selected.subunits_array.flat):
+        if this_subunit is not None:
+            self.inspect_subunit[index].add_subunit(this_subunit)
+            self.battle_ui_updater.add(self.inspect_subunit[index])
+            if self.subunit_selected is None:
+                self.subunit_selected = self.inspect_subunit[index]

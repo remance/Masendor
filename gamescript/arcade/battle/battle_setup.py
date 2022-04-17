@@ -12,18 +12,13 @@ setup_unit_icon = common_ui_selector.setup_unit_icon
 def setup_battle_ui(self, change):
     """Change can be either 'add' or 'remove' for adding or removing ui"""
     if change == "add":
-        self.unitstat_ui.change_pos((self.screen_rect.width - self.unitstat_ui.image.get_width() / 2,
-                                     self.unitstat_ui.image.get_height() / 2))
-        self.inspect_button.change_pos((self.unitstat_ui.pos[0] - 206, self.unitstat_ui.pos[1] - 1))
-
-        self.inspect_ui.change_pos((self.screen_rect.width - self.inspect_ui.image.get_width() / 2,
-                                    self.unitstat_ui.image.get_height() + (self.inspect_ui.image.get_height() / 2)))
+        self.time_ui.change_pos((self.screen_rect.width - self.time_ui.image.get_width(),
+                                 0), self.time_number)
+        self.inspect_ui.change_pos((self.inspect_ui.image.get_width() / 6, self.inspect_ui.image.get_height() / 2))
 
         self.troop_card_ui.change_pos((self.inspect_ui.rect.bottomleft[0] + self.troop_card_ui.image.get_width() / 2,
                                        (self.inspect_ui.rect.bottomleft[1] + self.troop_card_ui.image.get_height() / 2)))
 
-        self.time_ui.change_pos((self.unitstat_ui.rect.topleft[0] - self.time_ui.image.get_width(),
-                                 self.unitstat_ui.rect.topleft[1]), self.time_number)
 
         self.scale_ui.change_pos(self.time_ui.rect.bottomleft)
         self.test_button.change_pos((self.scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
@@ -31,8 +26,6 @@ def setup_battle_ui(self, change):
         self.warning_msg.change_pos(self.test_button.rect.bottomleft)
 
         # self.speed_number.change_pos(self.time_ui.rect.center)  # self speed number on the time ui
-
-        self.command_ui.change_pos((self.command_ui.image.get_size()[0] / 2, (self.command_ui.image.get_size()[1] / 2)))
 
         # self.switch_button[0].change_pos((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96))  # skill condition button
         # self.switch_button[1].change_pos((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96))  # fire at will button
@@ -55,16 +48,16 @@ def setup_battle_ui(self, change):
         self.event_log_button[5].change_pos((self.event_log_button[0].pos[0] + (self.event_log_button[0].image.get_width() * 6),
                                              self.event_log_button[0].pos[1]))  # delete all log button
 
-        inspect_ui_pos = [self.unitstat_ui.rect.bottomleft[0] - self.icon_sprite_width / 1.25,
-                               self.unitstat_ui.rect.bottomleft[1]]
+        inspect_ui_pos = [self.inspect_ui.rect.topleft[0] + self.icon_sprite_width / 1.25,
+                          self.inspect_ui.rect.topleft[1]]
         width, height = inspect_ui_pos[0], inspect_ui_pos[1]
         sub_unit_number = 0  # Number of subunit based on the position in row and column
         imgsize = (self.icon_sprite_width, self.icon_sprite_height)
-        for this_subunit in list(range(0, 64)):
+        for _ in list(range(0, 25)):
             width += imgsize[0]
             self.inspect_subunit.append(battleui.InspectSubunit((width, height)))
             sub_unit_number += 1
-            if sub_unit_number == 8:  # Reach the last subunit in the row, go to the next one
+            if sub_unit_number == 5:  # Reach the last subunit in the row, go to the next one
                 width = inspect_ui_pos[0]
                 height += imgsize[1]
                 sub_unit_number = 0
@@ -103,8 +96,8 @@ def change_state(self):
             self.current_selected = None  # reset last_selected
             self.before_selected = None  # reset before selected unit after remove last selected
 
-        self.command_ui.rect = self.command_ui.image.get_rect(
-            center=(self.command_ui.image.get_width() / 2, self.command_ui.image.get_height() / 2))  # change leader ui position back
+        # self.command_ui.rect = self.command_ui.image.get_rect(
+        #     center=(self.command_ui.image.get_width() / 2, self.command_ui.image.get_height() / 2))  # change leader ui position back
         self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(
             center=self.troop_card_ui.pos)  # change subunit card position back
 
@@ -122,7 +115,7 @@ def change_state(self):
                     self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
         self.battle_ui_updater.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui, self.warning_msg)
-        self.battle_ui_updater.add(self.event_log, self.log_scroll, self.event_log_button, self.time_button)
+        self.battle_ui_updater.add(self.event_log, self.log_scroll, self.event_log_button)
 
         self.game_speed = 1
 
@@ -170,10 +163,10 @@ def change_state(self):
         self.slot_display_button.event = 0  # reset display editor ui button to show
         self.game_speed = 0  # pause battle
 
-        for slot in self.subunit_build:
-            if slot.troop_id != 0:
-                self.command_ui.value_input(who=slot)
-                break
+        # for slot in self.subunit_build:
+        #     if slot.troop_id != 0:
+        #         self.command_ui.value_input(who=slot)
+        #         break
 
         setup_unit_icon(self.unit_selector, self.unit_icon,
                         self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)

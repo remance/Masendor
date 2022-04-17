@@ -16,7 +16,24 @@ battle_side_cal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side
 
 def add_unit(game_id, pos, subunit_list, colour, leader_list, leader_stat, control, coa, command, start_angle,
              start_hp, start_stamina, team):
-    """Create unit object into the battle and leader of the unit"""
+    """
+    Create unit object into the game and leader of the unit
+    :param game_id: game id for the unit
+    :param pos: pos of the unit in battle map
+    :param subunit_list: list of subunits in the unit
+    :param colour: team colour
+    :param leader_list: list of leader in the unit
+    :param leader_stat: leader stat data
+    :param control: for checking whether player can control the unit
+    :param coa: coat of arm image
+    :param command: commander unit or not
+    :param start_angle: starting angle of unit
+    :param start_hp: starting troop number/health of the unit
+    :param start_stamina: starting troop stamina of the unit
+    :param team: team number
+    :return: unit object
+    """
+
     from gamescript import unit, leader
     old_subunit_list = subunit_list[~np.all(subunit_list == "0", axis=1)]  # remove whole empty column in subunit list
     subunit_list = old_subunit_list[:, ~np.all(old_subunit_list == "0", axis=0)]  # remove whole empty row in subunit list
@@ -29,7 +46,21 @@ def add_unit(game_id, pos, subunit_list, colour, leader_list, leader_stat, contr
 
 
 def generate_unit(self, which_army, setup_data, control, command, colour, coa, subunit_game_id, troop_list, *args):
-    """generate unit"""
+    """
+    generate unit and their subunits
+    :param self: battle object
+    :param which_army: team group
+    :param setup_data: list of data for the unit
+    :param control: for checking whether player can control the unit
+    :param command: commander unit or not
+    :param colour: colour for their icon
+    :param coa: coat of arm image
+    :param subunit_game_id: starting game id for subunits
+    :param troop_list: troop data, use for checking troop size
+    :param args: other arguments
+    :return: latest subunit game id for other unit generation
+    """
+
     from gamescript import battleui, subunit
     subunit_array = np.array([setup_data["Row 1"], setup_data["Row 2"], setup_data["Row 3"], setup_data["Row 4"],
                               setup_data["Row 5"]])
@@ -72,7 +103,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
                 if this_subunit_number == "h":  # Leader
                     this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
                 add_subunit = subunit.Subunit(this_subunit_number, subunit_game_id, this_unit, this_unit.subunit_position_list[army_subunit_index],
-                                              this_unit.start_hp, this_unit.start_stamina, self.unit_scale, self.genre)
+                                              this_unit.start_hp, this_unit.start_stamina, self.unit_scale)
                 self.subunit.add(add_subunit)
                 subunit_number[...] = subunit_game_id
                 this_unit.subunits_array[row][column] = add_subunit
@@ -88,11 +119,15 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
 
 
 def split_new_unit(self):
+    """Split unit not existed in arcade mode"""
     pass
 
 
 def setup_frontline(self):
-    """Setup frontline array"""
+    """
+    Setup frontline array
+    :param self: unit object
+    """
 
     # v check if completely empty side row/col, then delete and re-adjust array
     stop_loop = False

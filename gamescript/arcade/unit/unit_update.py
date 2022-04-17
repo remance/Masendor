@@ -36,7 +36,10 @@ def setup_unit(self, battle_start=True):
     for index, subunit in enumerate(pos_dict.keys()):
         if subunit.state != 100:  # only get stat from alive subunit
             if self.zoom == 1:
-                self.battle_camera.change_layer(subunit, index + 4)
+                if subunit.unit_leader is False:
+                    self.battle_camera.change_layer(subunit, index + 4)
+                else:
+                    self.battle_camera.change_layer(subunit, 15)  # use higher layer for leader
             self.troop_number += subunit.troop_number
             self.stamina += subunit.stamina
             self.morale += subunit.morale

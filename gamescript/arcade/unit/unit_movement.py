@@ -84,24 +84,27 @@ def move_leader(self, how):
             self.subunit_list = np.column_stack((self.subunit_list, np.array([0, 0, 0, 0, 0])))
     new_unit_position = (leader_position[0][0] * 5) + leader_position[1][0]
 
-    old_subunit = self.subunits_array[leader_position[0][0]][leader_position[1][0]]
-    self.subunits_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit
-    self.subunits_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
-    self.subunit_list[leader_position[0][0]][leader_position[1][0]] = str(self.leader_subunit.game_id)
+    if leader_position != old_leader_position:
+        old_subunit = self.subunits_array[leader_position[0][0]][leader_position[1][0]]
+        self.subunits_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit
+        self.subunits_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
+        self.subunit_list[leader_position[0][0]][leader_position[1][0]] = str(self.leader_subunit.game_id)
 
-    self.leader_subunit.unit_position = (self.subunit_position_list[new_unit_position][0] / 10,
-                                         self.subunit_position_list[new_unit_position][1] / 10)
-    if old_subunit is not None:
-        self.subunit_list[old_leader_position[0][0]][old_leader_position[1][0]] = str(old_subunit.game_id)
-        old_subunit.unit_position = (self.subunit_position_list[old_unit_position][0] / 10,
-                                     self.subunit_position_list[old_unit_position][1] / 10)
-    else:
-        self.subunit_list[old_leader_position[0][0]][old_leader_position[1][0]] = 0
+        self.leader_subunit.unit_position = (self.subunit_position_list[new_unit_position][0] / 10,
+                                             self.subunit_position_list[new_unit_position][1] / 10)
+        if old_subunit is not None:
+            self.subunit_list[old_leader_position[0][0]][old_leader_position[1][0]] = str(old_subunit.game_id)
+            old_subunit.unit_position = (self.subunit_position_list[old_unit_position][0] / 10,
+                                         self.subunit_position_list[old_unit_position][1] / 10)
+        else:
+            self.subunit_list[old_leader_position[0][0]][old_leader_position[1][0]] = 0
 
-    # old_subunit_list = self.subunit_list[~np.all(self.subunit_list == 0, axis=1)]  # remove whole empty column in subunit list
-    # self.subunit_list = old_subunit_list[:, ~np.all(old_subunit_list == 0, axis=0)]  # remove whole empty row in subunit list
+        # old_subunit_list = self.subunit_list[~np.all(self.subunit_list == 0, axis=1)]  # remove whole empty column in subunit list
+        # self.subunit_list = old_subunit_list[:, ~np.all(old_subunit_list == 0, axis=0)]  # remove whole empty row in subunit list
 
-    self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, \
-                                                len(self.subunit_list) * (self.image_size[1] + 2) / 20
-    self.set_subunit_target()
-    self.input_delay = 1
+        self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, \
+                                                    len(self.subunit_list) * (self.image_size[1] + 2) / 20
+        self.set_subunit_target()
+        if self.control:
+            self.battle.change_inspect_subunit()
+        self.input_delay = 0.5
