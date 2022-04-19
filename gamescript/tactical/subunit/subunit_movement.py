@@ -68,12 +68,12 @@ def move_logic(self, dt, parent_state, collide_list):
             if self.state in (96, 98, 99):  # escape
                 enemy_collide_check = False
                 no_collide_check = True  # bypass collide
-            elif self.charge_skill in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
+            elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
                 enemy_collide_check = False
 
         if self.stamina > 0 and no_collide_check and enemy_collide_check is False and \
                 (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
-            if self.charge_skill in self.skill_effect and self.base_pos == self.base_target and parent_state == 10:
+            if 0 in self.skill_effect and self.base_pos == self.base_target and parent_state == 10:
                 new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                 self.base_target = self.base_target + new_target
                 self.command_target = self.base_target
@@ -93,7 +93,7 @@ def move_logic(self, dt, parent_state, collide_list):
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                     speed = self.unit.run_speed  # use run speed
                     self.run = True
-                if self.charge_skill in self.skill_effect:  # speed gradually decrease with momentum during charge
+                if 0 in self.skill_effect:  # speed gradually decrease with momentum during charge
                     speed = speed * self.charge_momentum / 8
                 if self.collide_penalty:  # reduce speed during moving through another unit
                     speed = speed / 2

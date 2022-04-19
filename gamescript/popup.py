@@ -135,7 +135,7 @@ class EffectIconPopup(pygame.sprite.Sprite):
         if self.pos != pos or self.text_input != text_input:
             self.text_input = text_input
             self.pos = pos
-            name_surface = self.head_font.render(self.text_input[0], True, (0, 0, 0))  # name font surface
+            name_surface = self.head_font.render(self.text_input["Name"], True, (0, 0, 0))  # name font surface
             name_rect = name_surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
             # text_surface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
             # text_rect = text_surface.get_rect(topleft=(1, text_rect.height + 1))

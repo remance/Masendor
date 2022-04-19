@@ -35,19 +35,6 @@ def setup_battle_ui(self, change):
         # self.switch_button[5].change_pos((self.command_ui.pos[0] + 80, self.command_ui.pos[1] + 96))  # toggle run button
         # self.switch_button[6].change_pos((self.command_ui.pos[0] + 120, self.command_ui.pos[1] + 96))  # toggle melee mode
 
-        self.event_log_button[0].change_pos((self.event_log.pos[0] + (self.event_log_button[0].image.get_width() / 2),
-                                             self.event_log.pos[1] - self.event_log.image.get_height() - (self.event_log_button[0].image.get_height() / 2)))
-        self.event_log_button[1].change_pos((self.event_log_button[0].pos[0] + self.event_log_button[0].image.get_width(),
-                                             self.event_log_button[0].pos[1]))  # army tab log button
-        self.event_log_button[2].change_pos((self.event_log_button[0].pos[0] + (self.event_log_button[0].image.get_width() * 2),
-                                             self.event_log_button[0].pos[1]))  # leader tab log button
-        self.event_log_button[3].change_pos((self.event_log_button[0].pos[0] + (self.event_log_button[0].image.get_width() * 3),
-                                             self.event_log_button[0].pos[1]))  # subunit tab log button
-        self.event_log_button[4].change_pos((self.event_log_button[0].pos[0] + (self.event_log_button[0].image.get_width() * 5),
-                                             self.event_log_button[0].pos[1]))  # delete current tab log button
-        self.event_log_button[5].change_pos((self.event_log_button[0].pos[0] + (self.event_log_button[0].image.get_width() * 6),
-                                             self.event_log_button[0].pos[1]))  # delete all log button
-
         inspect_ui_pos = [self.inspect_ui.rect.topleft[0] + self.icon_sprite_width / 1.25,
                           self.inspect_ui.rect.topleft[1]]
         width, height = inspect_ui_pos[0], inspect_ui_pos[1]
@@ -115,7 +102,7 @@ def change_state(self):
                     self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
         self.battle_ui_updater.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui, self.warning_msg)
-        self.battle_ui_updater.add(self.event_log, self.log_scroll, self.event_log_button)
+        self.battle_ui_updater.add(self.event_log, self.log_scroll)
 
         self.game_speed = 1
 

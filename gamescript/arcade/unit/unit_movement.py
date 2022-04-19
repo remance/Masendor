@@ -30,6 +30,10 @@ def set_target(self, pos):
     self.set_subunit_target(target=self.base_target)
 
 
+def movement_logic(self):
+    pass
+
+
 def set_subunit_target(self, target="rotate", leader_move=False, *args):
     """
     generate all four side, hitbox and subunit positions

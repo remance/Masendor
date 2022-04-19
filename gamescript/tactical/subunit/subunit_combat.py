@@ -269,7 +269,7 @@ def complex_dmg_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
 
         if dmg_type == 0:  # Melee melee_dmg
             dmg = random.uniform(who.melee_dmg[0], who.melee_dmg[1])
-            if who.charge_skill in who.skill_effect:  # Include charge in melee_dmg if attacking
+            if 0 in who.skill_effect:  # Include charge in dmg if attacking
                 if who.ignore_charge_def is False:  # Ignore charge defence if have ignore trait
                     side_cal = battle_side_cal[def_side]
                     if target.full_def or target.temp_full_def:  # defence all side
@@ -283,13 +283,13 @@ def complex_dmg_cal(attacker, defender, hit, defence, dmg_type, def_side=None):
                     dmg = dmg + (who.charge * 2)
                     who.charge_momentum -= 1 / who.charge
 
-            if target.charge_skill in target.skill_effect:  # Also include charge_def in melee_dmg if enemy charging
+            if 0 in target.skill_effect:  # Also include charge_def in melee_dmg if enemy charging
                 if target.ignore_charge_def is False:
                     charge_def_cal = who.charge_def - target.charge
                     if charge_def_cal < 0:
                         charge_def_cal = 0
                     dmg = dmg + (charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
-            elif who.charge_skill not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
+            elif 0 not in who.skill_effect:  # not charging or defend from charge, use attack speed roll
                 dmg += sum([random.uniform(who.melee_dmg[0], who.melee_dmg[1]) for x in range(who.weapon_speed)])
 
             penetrate = who.melee_penetrate / target.armour

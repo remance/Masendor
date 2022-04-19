@@ -193,8 +193,8 @@ def status_update(self, weather=None):
                 for effect in cal_status["Enemy Status"]:
                     if effect != 0:
                         self.inflict_status[effect] = cal_status["Area of Effect"]
-        if self.charge_skill in self.skill_effect:
-            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while attacking)
+        if 0 in self.skill_effect:
+            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while charging)
     # ^ End skill effect
 
     # v Apply effect and modifier from status effect
@@ -466,7 +466,21 @@ def charge_logic(self, parent_state):
 def skill_check_logic(self):
     self.check_skill_condition()
     if self.current_action is not None and "troop skill" in self.current_action:
-        self.use_skill(self.available_skill[int(self.current_action[-1])])
+        skill = int(self.current_action[-1]) - 1
+        if len(self.skill) >= int(self.current_action[-1]):
+            skill = list(self.skill.keys())[skill]
+            if skill in self.available_skill:
+                self.use_skill(skill)
+
+
+def change_equipment(self):
+    self.skill = self.original_skill.copy()
+    for weapon in ((self.primary_main_weapon, self.primary_sub_weapon),
+                   (self.secondary_main_weapon, self.secondary_sub_weapon))[self.equipped_weapon]:
+        self.skill += self.weapon_data.weapon_list[weapon[0]]["Skill"]
+    # self.skill = self.skill +
+    self.action_list = {key: value for key, value in self.generic_action_data.items() if
+                        key in self.weapon_name[self.equipped_weapon]}
 
 
 def pick_animation(self):

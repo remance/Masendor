@@ -192,7 +192,7 @@ def status_update(self, weather=None):
                 for effect in cal_status["Enemy Status"]:
                     if effect != 0:
                         self.inflict_status[effect] = cal_status["Area of Effect"]
-        if self.charge_skill in self.skill_effect:
+        if 0 in self.skill_effect:
             self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while attacking)
     # ^ End skill effect
 
@@ -511,6 +511,11 @@ def skill_check_logic(self):
 
     if len(self.available_skill) > 0 and random.randint(0, 10) >= 6:  # random chance to use random available skill
         self.use_skill(self.available_skill[random.randint(0, len(self.available_skill) - 1)])
+
+
+def change_equipment(self):
+    self.action_list = {key: value for key, value in self.generic_action_data.items() if
+                        key in self.weapon_name[0] or key in self.weapon_name[1]}
 
 
 def pick_animation(self):

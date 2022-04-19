@@ -42,6 +42,7 @@ def change_subunit_genre(genre):
     Subunit.skill_check_logic = subunit_update.skill_check_logic
     Subunit.pick_animation = subunit_update.pick_animation
     Subunit.health_stamina_logic = subunit_update.health_stamina_logic
+    Subunit.change_equipment = subunit_update.change_equipment
     Subunit.charge_logic = subunit_update.charge_logic
 
 
@@ -85,6 +86,7 @@ class Subunit(pygame.sprite.Sprite):
     state_reset_logic = None
     morale_logic = None
     health_stamina_logic = None
+    change_equipment = None
     charge_logic = None
     skill_check_logic = None
     pick_animation = None
@@ -224,7 +226,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_armour = self.armour_data.armour_list[self.armour_gear[0]]["Armour"] \
                            * self.armour_data.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
 
-        self.original_skill = [self.charge_skill] + skill  # Add charge skill as first item in the list
+        self.original_skill = skill  # Add charge skill as first item in the list
         self.troop_health = stat["Health"] * grade_stat["Health Effect"]  # Health of each troop
         self.original_mana = 0
         if "Mana" in stat:
@@ -338,7 +340,8 @@ class Subunit(pygame.sprite.Sprite):
         self.base_elem_range = self.original_elem_range
 
         self.add_weapon_stat()
-        self.action_list = {key: value for key, value in self.generic_action_data.items() if key in self.weapon_name[0] or key in self.weapon_name[1]}
+        self.action_list = {}  # got added in change_equipment
+        self.change_equipment()
 
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
@@ -373,6 +376,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.skill = {x: self.troop_data.skill_list[x].copy() for x in self.skill if
                       x != 0 and x in self.troop_data.skill_list}  # grab skill stat into dict
+        self.skill[0] = self.troop_data.skill_list[self.charge_skill].copy()  # add change skill with key 0
         for skill in list(self.skill.keys()):  # remove skill if class mismatch
             skill_troop_cond = self.skill[skill]["Troop Type"]
             if skill_troop_cond != 0 and self.subunit_type != skill_troop_cond:

@@ -17,6 +17,10 @@ def auth_recal(self):
     self.leader_social = self.leader[0].social
 
 
+def morale_check_logic(self):
+    pass
+
+
 def setup_unit(self, battle_start=True):
     """Grab stat from all subunit in the unit"""
     self.troop_number = 0

@@ -914,17 +914,17 @@ def battle_key_press(self, key_press):
         self.current_selected.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
-    elif key_press == pygame.K_1:
+    elif key_press == pygame.K_F1:
         self.drama_text.queue.append("Hello and Welcome to update video")
-    elif key_press == pygame.K_2:
+    elif key_press == pygame.K_F2:
         self.drama_text.queue.append("Showcase: Unit movement comparison between Arcade and Tactical mode")
-    elif key_press == pygame.K_3:
+    elif key_press == pygame.K_F3:
         self.drama_text.queue.append("Tactical Mode use similar system like RTS games to move unit")
-    # elif key_press == pygame.K_4:
+    # elif key_press == pygame.K_F4:
     #     self.drama_text.queue.append("Where the hell is blue team, can only see red")
-    # elif key_press == pygame.K_5:
+    # elif key_press == pygame.K_F5:
     #     self.drama_text.queue.append("After")
-    # elif key_press == pygame.K_6:
+    # elif key_press == pygame.K_F6:
     #     self.drama_text.queue.append("Now much more clear")
     # elif key_press == pygame.K_n and self.last_selected is not None:
     #     if self.last_selected.team == 1:
