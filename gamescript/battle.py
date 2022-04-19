@@ -78,6 +78,7 @@ class Battle:
     effect_icon_mouse_over = common_battle_player.effect_icon_mouse_over
     troop_card_button_click = common_battle_player.troop_card_button_click
     camera_process = common_battle_player.camera_process
+    change_inspect_subunit = common_battle_player.change_inspect_subunit
     setup_unit = common_unit_setup.setup_unit
 
     # method that change based on genre

@@ -1,14 +1,8 @@
 def use_skill(self, which_skill):
-    if which_skill == 0:  # charge skill need to separate since charge power will be used only for charge skill
-        skill_stat = self.skill[list(self.skill)[0]].copy()  # get skill stat
-        self.skill_effect[self.charge_skill] = skill_stat  # add stat to skill effect
-        self.skill_cooldown[self.charge_skill] = skill_stat["Cooldown"]  # add skill cooldown
-    else:  # other skill
-        skill_stat = self.skill[which_skill].copy()  # get skill stat
-        self.skill_effect[which_skill] = skill_stat  # add stat to skill effect
-        self.skill_cooldown[which_skill] = skill_stat["Cooldown"]  # add skill cooldown
+    skill_stat = self.skill[which_skill].copy()  # get skill stat
+    self.skill_effect[which_skill] = skill_stat  # add stat to skill effect
+    self.skill_cooldown[which_skill] = skill_stat["Cooldown"]  # add skill cooldown
     self.stamina -= skill_stat["Stamina Cost"]
-    # self.skill_cooldown[which_skill] =
 
 
 def check_skill_condition(self):
@@ -21,6 +15,5 @@ def check_skill_condition(self):
     else:  # check all skill
         self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
                                 and self.state in self.skill[skill]["Condition"] and self.discipline >=
-                                self.skill[skill][
-                                    "Discipline Requirement"]
-                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != self.charge_skill]
+                                self.skill[skill]["Discipline Requirement"]
+                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0]

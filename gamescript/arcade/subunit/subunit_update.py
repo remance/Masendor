@@ -193,8 +193,8 @@ def status_update(self, weather=None):
                 for effect in cal_status["Enemy Status"]:
                     if effect != 0:
                         self.inflict_status[effect] = cal_status["Area of Effect"]
-        if self.charge_skill in self.skill_effect:
-            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while attacking)
+        if 0 in self.skill_effect:
+            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while charging)
     # ^ End skill effect
 
     # v Apply effect and modifier from status effect
@@ -373,15 +373,7 @@ def morale_logic(self, dt, parent_state):
 
 
 def health_stamina_logic(self, dt):
-    # v Hp and stamina regen
-    if self.stamina != infinity:
-        if self.stamina < self.max_stamina:
-            if self.stamina <= 0:  # Collapse and cannot act
-                self.stamina = 0
-                self.status_effect[105] = self.status_list[105].copy()  # receive collapse status
-            self.stamina = self.stamina + (dt * self.stamina_regen)  # regen
-        else:  # stamina cannot exceed the max stamina
-            self.stamina = self.max_stamina
+    """Health and stamina calculation"""
     if self.unit_health != infinity:
         if self.hp_regen > 0 and self.unit_health % self.troop_health != 0:  # hp regen cannot resurrect troop only heal to max hp
             alive_hp = self.troop_number * self.troop_health  # max hp possible for the number of alive subunit
@@ -424,32 +416,34 @@ def health_stamina_logic(self, dt):
             for index, health in enumerate(self.health_list):
                 if self.unit_health > health:
                     if self.last_health_state != abs(4 - index):
-                        self.image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
+                        self.inspect_image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
                         self.block_original.blit(self.health_image_list[index + 1], self.health_block_rect)
                         self.block.blit(self.block_original, self.corner_image_rect)
                         self.last_health_state = abs(4 - index)
                         self.zoom_scale()
                     break
-            # ^ End Health bar
 
             self.old_unit_health = self.unit_health
 
-    # v Stamina bar
-    if self.old_last_stamina != self.stamina:
-        stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
-        for index, stamina in enumerate(stamina_list):
-            if self.stamina >= stamina:
-                if self.last_stamina_state != abs(4 - index):
-                    # if index != 3:
-                    self.image_original3.blit(self.stamina_image_list[index + 6], self.stamina_image_rect)
-                    self.zoom_scale()
-                    self.block_original.blit(self.stamina_image_list[index + 6], self.stamina_block_rect)
-                    self.block.blit(self.block_original, self.corner_image_rect)
-                    self.last_stamina_state = abs(4 - index)
-                break
+    if self.stamina != infinity:
+        if self.stamina < self.max_stamina:
+            self.stamina = self.stamina + (dt * self.stamina_regen)  # regen
+        else:  # stamina cannot exceed the max stamina
+            self.stamina = self.max_stamina
 
-        self.old_last_stamina = self.stamina
-    # ^ End stamina bar
+        if self.old_last_stamina != self.stamina:
+            for index, stamina in enumerate((self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)):
+                if self.stamina >= stamina:
+                    if self.last_stamina_state != abs(4 - index):
+                        # if index != 3:
+                        self.inspect_image_original3.blit(self.stamina_image_list[index + 6], self.stamina_image_rect)
+                        self.zoom_scale()
+                        self.block_original.blit(self.stamina_image_list[index + 6], self.stamina_block_rect)
+                        self.block.blit(self.block_original, self.corner_image_rect)
+                        self.last_stamina_state = abs(4 - index)
+                    break
+
+            self.old_last_stamina = self.stamina
 
 
 def charge_logic(self, parent_state):
@@ -472,7 +466,21 @@ def charge_logic(self, parent_state):
 def skill_check_logic(self):
     self.check_skill_condition()
     if self.current_action is not None and "troop skill" in self.current_action:
-        self.use_skill(self.available_skill[int(self.current_action[-1])])
+        skill = int(self.current_action[-1]) - 1
+        if len(self.skill) >= int(self.current_action[-1]):
+            skill = list(self.skill.keys())[skill]
+            if skill in self.available_skill:
+                self.use_skill(skill)
+
+
+def change_equipment(self):
+    self.skill = self.original_skill.copy()
+    for weapon in ((self.primary_main_weapon, self.primary_sub_weapon),
+                   (self.secondary_main_weapon, self.secondary_sub_weapon))[self.equipped_weapon]:
+        self.skill += self.weapon_data.weapon_list[weapon[0]]["Skill"]
+    # self.skill = self.skill +
+    self.action_list = {key: value for key, value in self.generic_action_data.items() if
+                        key in self.weapon_name[self.equipped_weapon]}
 
 
 def pick_animation(self):

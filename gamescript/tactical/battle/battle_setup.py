@@ -75,7 +75,7 @@ def setup_battle_ui(self, change):
         width, height = inspect_ui_pos[0], inspect_ui_pos[1]
         sub_unit_number = 0  # Number of subunit based on the position in row and column
         imgsize = (self.icon_sprite_width, self.icon_sprite_height)
-        for this_subunit in list(range(0, 64)):
+        for _ in list(range(0, 64)):
             width += imgsize[0]
             self.inspect_subunit.append(battleui.InspectSubunit((width, height)))
             sub_unit_number += 1

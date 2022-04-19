@@ -29,10 +29,12 @@ def change_unit_genre(genre):
     Unit.rotate_logic = unit_movement.rotate_logic
     Unit.revert_move = unit_movement.revert_move
     Unit.set_target = unit_movement.set_target
+    Unit.movement_logic = unit_movement.movement_logic
     Unit.set_subunit_target = unit_movement.set_subunit_target
     Unit.move_leader = unit_movement.move_leader
     Unit.selection = unit_update.selection
     Unit.auth_recal = unit_update.auth_recal
+    Unit.morale_check_logic = unit_update.morale_check_logic
     Unit.setup_unit = unit_update.setup_unit
     Unit.process_command = unit_command.process_command
     Unit.setup_frontline = unit_setup.setup_frontline
@@ -61,10 +63,12 @@ class Unit(pygame.sprite.Sprite):
     rotate_logic = None
     revert_move = None
     set_target = None
+    movement_logic = None
     set_subunit_target = None
     move_leader = None
     selection = None
     auth_recal = None
+    morale_check_logic = None
     setup_unit = None
     process_command = None
     setup_frontline = None
@@ -351,35 +355,9 @@ class Unit(pygame.sprite.Sprite):
                         self.leader[0].authority += 20
                         self.auth_recal()
 
-                if self.morale <= 10:  # Retreat state when morale lower than 10
-                    if self.state not in (98, 99):
-                        self.state = 98
-                    if self.retreat_start is False:
-                        self.retreat_start = True
-
-                elif self.state == 98 and self.morale >= 50:  # quit retreat when morale reach increasing limit
-                    self.state = 0  # become idle, not resume previous command
-                    self.retreat_start = False
-                    self.retreat_way = None
-                    self.process_command(self.base_pos, False, False, other_command=1)
-
-                if self.retreat_start and self.state != 96:
-                    self.retreat()
+                self.morale_check_logic()
 
                 self.rotate_logic(dt)  # Rotate Function
-
-                if self.state not in (0, 95) and self.front_pos.distance_to(self.command_target) < 1:  # reach destination and not in combat
-                    not_halt = False  # check if any subunit in combat
-                    for subunit in self.subunits:
-                        if subunit.state == 10:
-                            not_halt = True
-                        if subunit.unit_leader and subunit.state != 10:
-                            not_halt = False
-                            break
-                    if not_halt is False:
-                        self.retreat_start = False  # reset retreat
-                        self.revert = False  # reset revert order
-                        self.process_command(self.base_target, other_command=1)  # reset command base_target state will become 0 idle
 
                 # v Perform range melee_attack, can only enter range melee_attack state after finishing rotate
                 shoot_range = self.max_range

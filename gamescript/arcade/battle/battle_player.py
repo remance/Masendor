@@ -141,30 +141,6 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                         self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[6].event])
                         self.battle_ui_updater.add(self.button_name_popup)
 
-                elif self.col_split_button in self.battle_ui_updater and self.col_split_button.rect.collidepoint(self.mouse_pos):
-                    self.button_name_popup.pop(self.mouse_pos, "Split By Middle Column")
-                    self.battle_ui_updater.add(self.button_name_popup)
-                    if mouse_left_up and self.current_selected.state != 10:
-                        self.split_unit(self.current_selected, 1)
-                        self.split_happen = True
-                        self.check_split(self.current_selected)
-                        self.battle_ui_updater.remove(*self.leader_now)
-                        self.leader_now = self.current_selected.leader
-                        self.battle_ui_updater.add(*self.leader_now)
-                        self.setup_unit_icon()
-
-                elif self.row_split_button in self.battle_ui_updater and self.row_split_button.rect.collidepoint(self.mouse_pos):
-                    self.button_name_popup.pop(self.mouse_pos, "Split by Middle Row")
-                    self.battle_ui_updater.add(self.button_name_popup)
-                    if mouse_left_up and self.current_selected.state != 10:
-                        self.split_unit(self.current_selected, 0)
-                        self.split_happen = True
-                        self.check_split(self.current_selected)
-                        self.battle_ui_updater.remove(*self.leader_now)
-                        self.leader_now = self.current_selected.leader
-                        self.battle_ui_updater.add(*self.leader_now)
-                        self.setup_unit_icon()
-
                 # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
                 #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
                 #     self.battle_ui.add(self.button_name_popup)
@@ -196,7 +172,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                                      self.subunit_selected.who.unit.leader[0].name + "'s unit is selected"], [3])
                                 self.battle_ui_updater.add(self.subunit_selected_border)
                                 self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
-                                                               armour_data=self.armour_data, split=self.split_happen)
+                                                               armour_data=self.armour_data)
 
                                 if self.troop_card_ui.option == 2:
                                     self.trait_skill_blit()
@@ -816,17 +792,17 @@ def battle_key_press(self, key_press):
     #     self.last_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
-    elif key_press == pygame.K_1:
-        self.drama_text.queue.append("In Arcade mode, player control only one unit as its leader")
-    elif key_press == pygame.K_2:
-        self.drama_text.queue.append("The control is a bit more simpler and similar to action game")
-    # elif key_press == pygame.K_3:
+    elif key_press == pygame.K_F1:
+        self.drama_text.queue.append("Hello and Welcome to update video")
+    elif key_press == pygame.K_F2:
+        self.drama_text.queue.append("Showcase: Leader unit position changing function")
+    # elif key_press == pygame.K_F3:
     #     self.drama_text.queue.append("Before")
-    # elif key_press == pygame.K_4:
+    # elif key_press == pygame.K_F4:
     #     self.drama_text.queue.append("Where the hell is blue team, can only see red")
-    # elif key_press == pygame.K_5:
+    # elif key_press == pygame.K_F5:
     #     self.drama_text.queue.append("After")
-    # elif key_press == pygame.K_6:
+    # elif key_press == pygame.K_F6:
     #     self.drama_text.queue.append("Now much more clear")
     # elif key_press == pygame.K_n and self.last_selected is not None:
     #     if self.last_selected.team == 1:
@@ -949,68 +925,39 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
     #                 self.map_scale_delay = 0.001
 
 
-def unit_icon_mouse_over(self, mouse_up, mouse_right):
-    """process user mouse input on unit icon, left click = select, right click = go to unit position on map"""
-    self.click_any = True
-    if self.game_state == "battle" or (self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater):
-        for icon in self.unit_icon:
-            if icon.rect.collidepoint(self.mouse_pos):
-                if mouse_up:
-                    self.current_selected = icon.army
-                    self.current_selected.just_selected = True
-                    self.current_selected.selected = True
-
-                    if self.before_selected is None:  # add back the pop up ui, so it gets shown when click subunit with none selected before
-                        self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
-                        self.battle_ui_updater.add(self.inspect_button)  # add inspection ui open/close button
-
-                        self.add_behaviour_ui(self.current_selected)
-
-                elif mouse_right:
-                    self.base_camera_pos = pygame.Vector2(icon.army.base_pos[0] * self.screen_scale[0],
-                                                          icon.army.base_pos[1] * self.screen_scale[1])
-                    self.camera_pos = self.base_camera_pos * self.camera_zoom
-                break
-    return self.click_any
+def unit_icon_mouse_over(self, *args):
+    """Unit icon ui not used in arcade mode"""
+    pass
 
 
 def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down, key_state, key_press):
     if self.current_selected is not None:
         if self.game_state == "battle" and self.current_selected.state != 100:
-            if self.before_selected is None:  # add back the pop-up ui, so it gets shown when click subunit with none selected before
-                self.battle_ui_updater.add(self.unitstat_ui, self.command_ui)  # add leader and top ui
+            if self.before_selected is None:  # add back the pop-up ui, so it gets shown if not show before
+                self.change_inspect_subunit()
+                self.battle_ui_updater.add(self.inspect_ui, self.inspect_subunit)  # add leader and top ui
 
-                self.add_behaviour_ui(self.current_selected)
+                # self.add_behaviour_ui(self.current_selected)
 
-            elif self.before_selected != self.current_selected or self.split_happen:  # change subunit information when select other unit
+            elif self.before_selected != self.current_selected:  # change subunit information when select other unit
                 if self.inspect:  # change inspect ui
                     self.new_unit_click = True
-                    self.battle_ui_updater.remove(*self.inspect_subunit)
 
                     self.subunit_selected = None
-                    for index, this_subunit in enumerate(self.current_selected.subunits_array.flat):
-                        if this_subunit is not None:
-                            self.inspect_subunit[index].add_subunit(this_subunit)
-                            self.battle_ui_updater.add(self.inspect_subunit[index])
-                            if self.subunit_selected is None:
-                                self.subunit_selected = self.inspect_subunit[index]
+                    self.change_inspect_subunit()
 
                     self.subunit_selected_border.pop(self.subunit_selected.pos)
                     self.battle_ui_updater.add(self.subunit_selected_border)
                     self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
-                                                   armour_data=self.armour_data,
-                                                   split=self.split_happen)
+                                                   armour_data=self.armour_data)
                 self.battle_ui_updater.remove(*self.leader_now)
 
                 self.add_behaviour_ui(self.current_selected, else_check=True)
 
-                if self.split_happen:  # end split check
-                    self.split_happen = False
-
             else:  # Update unit stat ui and command ui value every 1.1 seconds
                 if self.ui_timer >= 1.1:
-                    self.unitstat_ui.value_input(who=self.current_selected, split=self.split_happen)
-                    self.command_ui.value_input(who=self.current_selected, split=self.split_happen)
+                    self.unitstat_ui.value_input(who=self.current_selected)
+                    self.command_ui.value_input(who=self.current_selected)
 
         elif self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater:
             if (mouse_right_up or mouse_right_down) and self.click_any is False:  # Unit placement
@@ -1043,8 +990,8 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
     # v Update value of the clicked subunit every 1.1 second
     if self.game_state == "battle" and self.inspect and ((self.ui_timer >= 1.1 and self.troop_card_ui.option != 0) or
                                                          self.before_selected != self.current_selected):
-        self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data, armour_data=self.armour_data,
-                                       split=self.split_happen)
+        self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
+                                       armour_data=self.armour_data)
         if self.troop_card_ui.option == 2:  # skill and status effect card
             self.countdown_skill_icon()
             self.effect_icon_blit()
@@ -1080,8 +1027,8 @@ def add_behaviour_ui(self, who_input, else_check=False):
 
     self.leader_now = who_input.leader
     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
-    self.unitstat_ui.value_input(who=who_input, split=self.split_happen)
-    self.command_ui.value_input(who=who_input, split=self.split_happen)
+    self.unitstat_ui.value_input(who=who_input)
+    self.command_ui.value_input(who=who_input)
 
 
 def remove_unit_ui_check(self, *args):

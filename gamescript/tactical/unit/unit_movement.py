@@ -65,6 +65,23 @@ def set_target(self, pos):
     self.set_subunit_target(target=self.base_target)
 
 
+def movement_logic(self):
+    if self.state not in (0, 95) and self.front_pos.distance_to(
+            self.command_target) < 1:  # reach destination and not in combat
+        not_halt = False  # check if any subunit in combat
+        for subunit in self.subunits:
+            if subunit.state == 10:
+                not_halt = True
+            if subunit.unit_leader and subunit.state != 10:
+                not_halt = False
+                break
+        if not_halt is False:
+            self.retreat_start = False  # reset retreat
+            self.revert = False  # reset revert order
+            self.process_command(self.base_target,
+                                 other_command=1)  # reset command base_target state will become 0 idle
+
+
 def set_subunit_target(self, target="rotate", reset_path=False, *args):
     """
     generate all four side, hitbox and subunit positions

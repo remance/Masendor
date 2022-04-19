@@ -27,15 +27,6 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
         else:  # rotate unit only
             self.new_angle = self.set_rotate(target_pos)
             self.set_subunit_target()
-
-    # elif other_command in (1, 2) and self.state != 10:  # Pause all action command except combat
-    #     if self.charging and other_command == 2:  # halt order instead of auto halt
-    #         self.leader[0].authority -= self.auth_penalty  # decrease authority of the first leader for stop charge
-    #         self.auth_recal()  # recal authority
-    #
-    #     self.state = 0  # go into idle state
-    #     self.command_state = self.state  # reset command state
-    #     self.set_target(self.front_pos)  # set base_target at self
-    #     self.command_target = self.base_target  # reset command base_target
-    #     self.range_combat_check = False  # reset range combat check
-    #     self.new_angle = self.set_rotate()  # set rotation base_target
+    elif type(other_command) == str and "Troop Skill" in other_command:
+        for subunit in self.subunits:
+            subunit.current_action = other_command
