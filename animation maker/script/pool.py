@@ -111,8 +111,8 @@ def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=N
     """Add animation to animation pool data"""
     if replace is not None:  # rename animation
         for direction in range(0, 5):
-            pool[direction] = {animation_name if k == replace else k: v for k, v in pool[direction].items()}
-    if duplicate is not None:
+            pool[direction][animation_name] = pool[direction].pop(replace)
+    elif duplicate is not None:
         for direction in range(0, 5):
             pool[direction][animation_name] = pool[direction][duplicate]
     else:
