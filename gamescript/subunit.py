@@ -5,7 +5,8 @@ import time
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_subunit_combat, common_subunit_movement, common_subunit_update
+from gamescript.common.subunit import common_subunit_combat, common_subunit_movement, \
+    common_subunit_update, common_subunit_setup
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -42,7 +43,7 @@ def change_subunit_genre(genre):
     Subunit.skill_check_logic = subunit_update.skill_check_logic
     Subunit.pick_animation = subunit_update.pick_animation
     Subunit.health_stamina_logic = subunit_update.health_stamina_logic
-    Subunit.change_equipment = subunit_update.change_equipment
+    Subunit.swap_weapon = subunit_update.swap_weapon
     Subunit.charge_logic = subunit_update.charge_logic
 
 
@@ -69,27 +70,28 @@ class Subunit(pygame.sprite.Sprite):
     rotate = common_subunit_movement.rotate
     check_skill_condition = common_subunit_combat.check_skill_condition
     make_front_pos = common_subunit_update.make_front_pos
+    process_trait_skill = common_subunit_setup.process_trait_skill
 
     # methods that change based on genre
-    add_weapon_stat = None
-    add_mount_stat = None
-    add_trait = None
-    find_shooting_target = None
-    attack_logic = None
-    dmg_cal = None
-    change_leader = None
-    die = None
-    rotate_logic = None
-    move_logic = None
-    player_interact = None
-    status_update = None
-    state_reset_logic = None
-    morale_logic = None
-    health_stamina_logic = None
-    change_equipment = None
-    charge_logic = None
-    skill_check_logic = None
-    pick_animation = None
+    def add_weapon_stat(self): pass
+    def add_mount_stat(self): pass
+    def add_trait(self): pass
+    def find_shooting_target(self): pass
+    def attack_logic(self): pass
+    def dmg_cal(self): pass
+    def change_leader(self): pass
+    def die(self): pass
+    def rotate_logic(self): pass
+    def move_logic(self): pass
+    def player_interact(self): pass
+    def status_update(self): pass
+    def state_reset_logic(self): pass
+    def morale_logic(self): pass
+    def health_stamina_logic(self): pass
+    def swap_weapon(self): pass
+    def charge_logic(self): pass
+    def skill_check_logic(self): pass
+    def pick_animation(self): pass
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, purpose="battle"):
         """
@@ -166,8 +168,8 @@ class Subunit(pygame.sprite.Sprite):
                 "Defence Bonus"]  # range defence with grade bonus
             self.original_accuracy = stat["Accuracy"] + grade_stat["Accuracy Bonus"]
             self.original_sight = stat["Sight"]  # sight range
-            self.magazine_left = {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"],
-                                  2: stat["Ammunition Modifier"], 3: stat["Ammunition Modifier"]}  # ammunition, for now as mod number
+            self.magazine_left = {0: {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"]},
+                                  1: {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"]}}  # ammunition, for now as mod number
             self.original_reload = stat["Reload"] + grade_stat["Reload Bonus"]
             self.original_charge = stat["Charge"]
             self.original_charge_def = 50  # All infantry subunit has default 50 charge defence
@@ -195,8 +197,8 @@ class Subunit(pygame.sprite.Sprite):
                 "Defence Bonus"]  # range defence with grade bonus
             self.original_accuracy = (stat["Range Command"] * stat["Combat"]) + grade_stat["Accuracy Bonus"]
             self.original_sight = (stat["Range Command"] * stat["Combat"])  # sight range
-            self.magazine_left = {0: 2, 1: 2,
-                                  2: 2, 3: 2}  # leader gets double ammunition
+            self.magazine_left = {0: {0: 2, 1: 2},
+                                  1: {0: 2, 1: 2}}  # leader gets double ammunition
             self.original_reload = (stat["Range Command"] * stat["Combat"]) + grade_stat["Reload Bonus"]
             self.original_charge = 100
             self.original_charge_def = 100
@@ -249,14 +251,15 @@ class Subunit(pygame.sprite.Sprite):
 
         self.size = self.troop_data.race_list[stat["Race"]]["Size"]
         self.weight = 0
-        self.melee_dmg = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}, 2: {0: 0, 1: 0}, 3: {0: 0, 1: 0}}
-        self.melee_penetrate = {0: 0, 1: 0, 2: 0, 3: 0}
-        self.range_dmg = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}, 2: {0: 0, 1: 0}, 3: {0: 0, 1: 0}}
-        self.range_penetrate = {0: 0, 1: 0, 2: 0, 3: 0}
-        self.base_range = {0: 0, 1: 0, 2: 0, 3: 0}
-        self.weapon_speed = {0: 0, 1: 0, 2: 0, 3: 0}
-        self.magazine_size = {0: 0, 1: 0, 2: 0, 3: 0}  # can shoot how many times before have to reload
-        self.arrow_speed = {0: 0, 1: 0, 2: 0, 3: 0}
+        self.melee_dmg = {0: {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}, 1: {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}}
+        self.melee_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.range_dmg = {0: {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}, 1: {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}}
+        self.range_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.base_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
+        self.arrow_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
         self.equipped_weapon = 0
 
         self.original_speed = 50  # All infantry has starting speed at 50
@@ -341,13 +344,14 @@ class Subunit(pygame.sprite.Sprite):
 
         self.add_weapon_stat()
         self.action_list = {}  # got added in change_equipment
-        self.change_equipment()
 
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
             race_id = [key for key, value in self.troop_data.race_list.items() if self.mount["Race"] in value["Name"]][0]
             if self.troop_data.race_list[race_id]["Size"] > self.size:  # replace size if mount is larger
                 self.size = self.troop_data.race_list[self.mount["Race"]]["Size"]
+
+        self.swap_weapon()
 
         self.last_health_state = 4  # state start at full
         self.last_stamina_state = 4
@@ -365,22 +369,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.old_last_health, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
         self.max_troop = self.troop_number  # max number of troop at the start
-
-        self.trait += self.armour_data.armour_list[self.armour_gear[0]]["Trait"]  # Apply armour trait to subunit
-
-        self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
-        if len(self.trait) > 0:
-            self.trait = {x: self.troop_data.trait_list[x] for x in self.trait if
-                          x in self.troop_data.trait_list}  # Any trait not available in ruleset will be ignored
-            self.add_trait()
-
-        self.skill = {x: self.troop_data.skill_list[x].copy() for x in self.skill if
-                      x != 0 and x in self.troop_data.skill_list}  # grab skill stat into dict
-        self.skill[0] = self.troop_data.skill_list[self.charge_skill].copy()  # add change skill with key 0
-        for skill in list(self.skill.keys()):  # remove skill if class mismatch
-            skill_troop_cond = self.skill[skill]["Troop Type"]
-            if skill_troop_cond != 0 and self.subunit_type != skill_troop_cond:
-                self.skill.pop(skill)
 
         # v Weight calculation
         self.weight += self.armour_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour

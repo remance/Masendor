@@ -12,15 +12,15 @@ def add_weapon_stat(self):
     weapon_reload = 0
     base_range = []
     arrow_speed = []
-    self.melee_dmg = self.melee_dmg[0]
-    self.melee_penetrate = self.melee_penetrate[0]
-    self.weapon_speed = self.weapon_speed[0]
-    self.range_dmg = self.range_dmg[0]
-    self.range_penetrate = self.range_penetrate[0]
-    self.magazine_mod = self.magazine_left[0]
+    self.melee_dmg = self.melee_dmg[0][0]
+    self.melee_penetrate = self.melee_penetrate[0][0]
+    self.weapon_speed = self.weapon_speed[0][0]
+    self.range_dmg = self.range_dmg[0][0]
+    self.range_penetrate = self.range_penetrate[0][0]
+    self.magazine_mod = self.magazine_left[0][0]
     self.magazine_left = 0  # use combined magazine for all weapon
-    self.magazine_size = self.magazine_size[0]
-    self.base_range = self.base_range[0]
+    self.magazine_size = self.magazine_size[0][0]
+    self.base_range = self.base_range[0][0]
     for index, weapon in enumerate([self.primary_main_weapon, self.primary_sub_weapon, self.secondary_main_weapon, self.secondary_sub_weapon]):
         if self.weapon_data.weapon_list[weapon[0]]["Range"] == 0:  # melee weapon if range 0
             self.melee_dmg[0] += self.weapon_data.weapon_list[weapon[0]]["Minimum Damage"] * \
@@ -47,6 +47,7 @@ def add_weapon_stat(self):
         self.base_melee_def += self.weapon_data.weapon_list[weapon[0]]["Defense"] / (index + 1)
         self.base_range_def += self.weapon_data.weapon_list[weapon[0]]["Defense"] / (index + 1)
         self.skill += self.weapon_data.weapon_list[weapon[0]]["Skill"]
+        self.weapon_skill[index] = self.weapon_data.weapon_list[weapon[0]]["Skill"]
         self.trait += self.weapon_data.weapon_list[weapon[0]]["Trait"]
         self.weight += self.weapon_data.weapon_list[weapon[0]]["Weight"]
 

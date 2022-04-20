@@ -513,7 +513,8 @@ def skill_check_logic(self):
         self.use_skill(self.available_skill[random.randint(0, len(self.available_skill) - 1)])
 
 
-def change_equipment(self):
+def swap_weapon(self):
+    self.process_trait_skill()
     self.action_list = {key: value for key, value in self.generic_action_data.items() if
                         key in self.weapon_name[0] or key in self.weapon_name[1]}
 

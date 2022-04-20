@@ -54,24 +54,24 @@ class Unit(pygame.sprite.Sprite):
     unit_size = None
 
     # method that change based on genre
-    skirmish = None
-    chase = None
-    destroyed = None
-    retreat = None
-    switch_faction = None
-    player_input = None
-    rotate_logic = None
-    revert_move = None
-    set_target = None
-    movement_logic = None
-    set_subunit_target = None
-    move_leader = None
-    selection = None
-    auth_recal = None
-    morale_check_logic = None
-    setup_unit = None
-    process_command = None
-    setup_frontline = None
+    def skirmish(self): pass
+    def chase(self): pass
+    def destroyed(self): pass
+    def retreat(self): pass
+    def switch_faction(self): pass
+    def player_input(self): pass
+    def rotate_logic(self): pass
+    def revert_move(self): pass
+    def set_target(self): pass
+    def movement_logic(self): pass
+    def set_subunit_target(self): pass
+    def move_leader(self): pass
+    def selection(self): pass
+    def auth_recal(self): pass
+    def morale_check_logic(self): pass
+    def setup_unit(self): pass
+    def process_command(self): pass
+    def setup_frontline(self): pass
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Although unit in code, this is referred as subunit ingame"""

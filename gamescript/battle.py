@@ -82,19 +82,19 @@ class Battle:
     setup_unit = common_unit_setup.setup_unit
 
     # method that change based on genre
-    split_unit = None
-    check_split = None
-    generate_unit = None
-    convert_edit_unit = None
-    setup_battle_ui = None
-    battle_mouse_scrolling = None
-    battle_key_press = None
-    battle_mouse = None
-    battle_state_mouse = None
-    editor_state_mouse = None
-    selected_unit_process = None
-    add_behaviour_ui = None
-    remove_unit_ui_check = None
+    def split_unit(self): pass
+    def check_split(self): pass
+    def generate_unit(self): pass
+    def convert_edit_unit(self): pass
+    def setup_battle_ui(self): pass
+    def battle_mouse_scrolling(self): pass
+    def battle_key_press(self): pass
+    def battle_mouse(self): pass
+    def battle_state_mouse(self): pass
+    def editor_state_mouse(self): pass
+    def selected_unit_process(self): pass
+    def add_behaviour_ui(self): pass
+    def remove_unit_ui_check(self): pass
 
     # variable that get changed based on genre
     start_zoom = 1
