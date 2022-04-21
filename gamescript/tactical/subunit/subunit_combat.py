@@ -229,7 +229,6 @@ def attack_logic(self, dt, combat_timer, parent_state):
                 self.new_angle = self.set_rotate()
         elif self.angle != self.unit.angle:  # reset angle
             self.new_angle = self.unit.angle
-            self.new_angle = self.set_rotate()
 
     return parent_state, collide_list
 

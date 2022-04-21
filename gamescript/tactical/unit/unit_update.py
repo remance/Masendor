@@ -18,8 +18,7 @@ def auth_recal(self):
                      (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
     self.leader_social = self.leader[0].social
     if self.authority > 0:
-        big_army_size = self.subunit_list > 0
-        big_army_size = big_army_size.sum()
+        big_army_size = len(self.subunit_list)
         if big_army_size > 20:  # army size larger than 20 will reduce start_set leader authority
             self.authority = (self.team_commander.authority / 2) + (self.leader[0].authority / 2 * (100 - big_army_size) / 100) + \
                              (self.leader[1].authority / 2) + (self.leader[2].authority / 2) + (self.leader[3].authority / 4)
@@ -38,7 +37,7 @@ def morale_check_logic(self):
         self.state = 0  # become idle, not resume previous command
         self.retreat_start = False
         self.retreat_way = None
-        self.process_command(self.base_pos, False, False, other_command=1)
+        self.process_command(self.base_pos, False, False, other_command="Stop")
 
     if self.retreat_start and self.state != 96:
         self.retreat()

@@ -96,9 +96,12 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, pool, arm
         pass
 
     if sprite_list[p + "_head"] != "none":
-        gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]][head_side]["helmet"][body_part_list[2]]
-        rect = gear_image.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-        head_sprite_surface.blit(gear_image, rect)
+        try:
+            gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]][head_side]["helmet"][body_part_list[2]]
+            rect = gear_image.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+            head_sprite_surface.blit(gear_image, rect)
+        except KeyError:  # helmet folder not existed
+            pass
 
     return head_sprite_surface
 

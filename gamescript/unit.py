@@ -359,6 +359,8 @@ class Unit(pygame.sprite.Sprite):
 
                 self.rotate_logic(dt)  # Rotate Function
 
+                self.movement_logic()
+
                 # v Perform range melee_attack, can only enter range melee_attack state after finishing rotate
                 shoot_range = self.max_range
                 if self.use_min_range == 0:  # use minimum range to shoot

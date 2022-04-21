@@ -45,7 +45,7 @@ def rotate_logic(self, dt):
             self.set_subunit_target(target=self.base_target)
         else:
             self.state = 0  # idle state
-            self.process_command(self.base_target, other_command=1)
+            self.process_command(self.base_target, other_command="Stop")
             self.rotate_only = False  # reset rotate only condition
 
 
@@ -79,7 +79,7 @@ def movement_logic(self):
             self.retreat_start = False  # reset retreat
             self.revert = False  # reset revert order
             self.process_command(self.base_target,
-                                 other_command=1)  # reset command base_target state will become 0 idle
+                                 other_command="Stop")  # reset command base_target state will become 0 idle
 
 
 def set_subunit_target(self, target="rotate", reset_path=False, *args):

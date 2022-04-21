@@ -12,6 +12,7 @@ rotation_list = common_subunit_movement.rotation_list
 rotation_name = common_subunit_movement.rotation_name
 rotation_dict = common_subunit_movement.rotation_dict
 
+
 def rotate_logic(self, dt):
     rotate_cal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
     rotate_check = 360 - rotate_cal  # rotate distance used for preventing angle calculation bug (pygame rotate related)

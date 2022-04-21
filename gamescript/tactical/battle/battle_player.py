@@ -785,7 +785,7 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                             for this_unit in self.alive_unit_list:
                                 this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
-                                                       other_command=1)
+                                                       other_command="Stop")
                         else:
                             self.warning_msg.warning(warning_list)
                             self.battle_ui_updater.add(self.warning_msg)
@@ -911,7 +911,7 @@ def battle_key_press(self, key_press):
             self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
     elif key_press == pygame.K_SPACE and self.current_selected is not None:
-        self.current_selected.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+        self.current_selected.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command="Stop")
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_F1:
