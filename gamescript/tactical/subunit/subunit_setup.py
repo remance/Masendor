@@ -47,7 +47,7 @@ def add_weapon_stat(self):
         self.base_melee_def += self.weapon_data.weapon_list[weapon[0]]["Defense"] / (index + 1)
         self.base_range_def += self.weapon_data.weapon_list[weapon[0]]["Defense"] / (index + 1)
         self.skill += self.weapon_data.weapon_list[weapon[0]]["Skill"]
-        self.weapon_skill[index] = self.weapon_data.weapon_list[weapon[0]]["Skill"]
+        self.weapon_skill[index] = self.weapon_data.weapon_list[weapon[0]]["Skill"][0]  # take only first skill
         self.trait += self.weapon_data.weapon_list[weapon[0]]["Trait"]
         self.weight += self.weapon_data.weapon_list[weapon[0]]["Weight"]
 
@@ -131,7 +131,7 @@ def add_trait(self):
         self.base_discipline += random.randint(-20, 0)
         self.mental += random.randint(-20, 10)
 
-    # v Change trait variable
+    # Change trait variable
     if 16 in self.trait:
         self.arc_shot = True  # can shoot in arc
     if 17 in self.trait:
@@ -159,5 +159,3 @@ def add_trait(self):
         self.temp_unbreakable = True
     if 149 in self.trait:  # Impetuous
         self.base_auth_penalty += 0.5
-    # ^ End change trait variable
-# ^^ End add trait to stat

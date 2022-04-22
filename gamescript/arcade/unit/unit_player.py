@@ -56,8 +56,11 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, double_mouse_r
                 #     self.leader_subunit.current_action = "leader skill 1"
                 # elif key_state[pygame.K_e]:  # Use leader skill 2
                 #     self.leader_subunit.current_action = "leader skill 2"
-                elif key_state[pygame.K_1]:  # Use troop skill 1
+                elif key_state[pygame.K_1]:  # Use troop weapon skill 1
+                    self.process_command(cursor_pos, other_command="Troop Weapon Skill 0")
+                elif key_state[pygame.K_2]:  # Use troop weapon skill 2
+                    self.process_command(cursor_pos, other_command="Troop Weapon Skill 1")
+                elif key_state[pygame.K_3]:  # Use troop skill 1
+                    self.process_command(cursor_pos, other_command="Troop Skill 0")
+                elif key_state[pygame.K_4]:  # Use troop skill 2
                     self.process_command(cursor_pos, other_command="Troop Skill 1")
-                elif key_state[pygame.K_2]:  # Use troop skill 2
-                    self.process_command(cursor_pos, other_command="Troop Skill 2")
-

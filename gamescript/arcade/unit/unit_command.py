@@ -27,6 +27,6 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
         else:  # rotate unit only
             self.new_angle = self.set_rotate(target_pos)
             self.set_subunit_target()
-    elif type(other_command) == str and "Troop Skill" in other_command:
+    elif type(other_command) == str and "Skill" in other_command:
         for subunit in self.subunits:
-            subunit.current_action = other_command
+            subunit.command_action = other_command

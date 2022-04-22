@@ -73,7 +73,7 @@
 72,"Bournliedels",0,10,1,"22","34",,,53,20,0,"3,4",0,0,0,0,35,21,100,100,,"15,3","1,0",130,40,5,1,200,1,1,,,,
 73,"Axemen",0,1,1,,"36",,,49,28,15,"2,3",0,0,0,0,47,21,100,100,,"13,3","1,0",100,35,,1,200,1,1,,,,"Axe is one of the very first cutting tools that existed since the stone age. Simple to create and use, yet capable of producing powerful blow from it monstrous momentum. Axemen is no surprise a common sight in armies throughout history and the world. Fortunately, their amazing offensive performance does outshine their slightly poorer defence, which means that they can be employed for both offensive and defensive purposes."
 74,"Shield Breakers",0,2,1,,,,,60,30,15,"3,3",0,0,0,0,70,21,100,,,"13,3","1,0",110,50,,1,150,1,1,,,,
-75,"Axemasters",0,5,1,"123","36",,,75,50,20,"2,5",0,0,0,0,80,,120,,,"13,5","1,0",125,85,,1,10,1,1,,,,"Although considered to a less romantic weapon than a sword and even less than a mace, axe still has its appeal (mostly in brute strength) enough for people to practice it until achieving complete mastery. Who need other weapons in hands when an axe cleave through anyone standing discriminately. With the combination of preciseness and pure brute force, Axemasters truly have no equal. Well except for a charging heavy cavalry unit perhaps. "
+75,"Axemasters",0,5,1,"221","36",,,75,50,20,"2,5",0,0,0,0,80,,120,,,"13,5","1,0",125,85,,1,10,1,1,,,,"Although considered to a less romantic weapon than a sword and even less than a mace, axe still has its appeal (mostly in brute strength) enough for people to practice it until achieving complete mastery. Who need other weapons in hands when an axe cleave through anyone standing discriminately. With the combination of preciseness and pure brute force, Axemasters truly have no equal. Well except for a charging heavy cavalry unit perhaps. "
 76,"Delpiborhs",0,1,1,,,,,60,60,35,"10,3",0,0,0,0,,21,,,,"13,3","1,0",100,55,,1,150,1,1,,,,
 77,"Bodibars",0,2,1,,,,,,,,,,,,,67,,,,,"13,3","1,0",,50,,1,150,1,1,,,,
 78,"Kunbann Woodbreakers",0,10,1,"56,149",,,,70,19,0,,0,0,0,0,75,1,,,,"13,4","1,0",100,25,,1,100,1,1,,,,
@@ -116,12 +116,12 @@
 115,"Hashshashin",0,2,1,"33,56,227,232,304","44,96,196",,,73,34,10,"27,3",,,,,64,,100,130,0,"3,3",,105,80,5,1,20,1,1,,,,
 116,"Golanggas",0,2,1,"33,56,194,232,304","44,196",,,,,,,,,,,,,,,2,"3,4",,110,80,4,1,15,1,1,,,,
 117,"Shadow Lawmakers",0,4,1,"14,56,33,232,304","44,196",,,,,,,,,,,,,,,0,"3,4",,135,95,4,1,10,1,1,,,,
-118,"Scouts",0,1,1,"190,225,308","160,196",,,32,35,3,"21,3",,,,,,21,100,115,0,,,100,50,8,1,10,1,1,,,,"Intelligence is one of the key aspects of victory in warfare. Knowing the location, who is leading, and how many are the enemy troops can let one formulate a well-thought plan. Scouts are well-versed in the art of reconnaissance, skirmishing and ambushing. A battalion of Scouts leading the main army body is the basis of every capable leader's tactic. With extremely high survivability ability, the only real threat to Scouts is light cavalry units that are capable of catching up to their speed. "
-119,"Mountaineer Scouts",0,1,1,"192,2308","160,196",,,31,35,3,"21,3",,,,,,21,,130,0,,,100,55,7,1,10,1,1,,,,
-120,"Border Patrols",0,1,1,"308","160",,,45,52,5,"3,3",60,80,3,60,,21,,115,0,,,100,65,7,1,30,1,1,,,,"In the ancient time, the border existed not only to formalised the territory of a country but also served as a safety zone for people inside it. Border Patrols regularly safeguard against both hostile civilisations and beasts alike. More than just scouting, they are prepared to deal with the immediate threat with both melee and range arms as the first line of protection for the empire. "
-121,"Giseras",0,1,1,"194,308","44,160",,,,,,,,,,,,21,,,0,,,105,,6,1,15,1,1,,,,
-122,"Lagoinu Watchers",0,1,1,"308","160,196",,,,,,,,,,,,21,,,0,,,100,,8,1,20,1,1,,,,
-123,"Foe Seekers",0,2,1,"236,305,307","160,196",,,,,,,,,,,,21,,,0,,,110,,9,1,10,1,1,,,,
+118,"Scouts",0,1,1,"190,225,308","28,196",,,32,35,3,"21,3",,,,,,21,100,115,0,,,100,50,8,1,10,1,1,,,,"Intelligence is one of the key aspects of victory in warfare. Knowing the location, who is leading, and how many are the enemy troops can let one formulate a well-thought plan. Scouts are well-versed in the art of reconnaissance, skirmishing and ambushing. A battalion of Scouts leading the main army body is the basis of every capable leader's tactic. With extremely high survivability ability, the only real threat to Scouts is light cavalry units that are capable of catching up to their speed. "
+119,"Mountaineer Scouts",0,1,1,"192,2308","28,196",,,31,35,3,"21,3",,,,,,21,,130,0,,,100,55,7,1,10,1,1,,,,
+120,"Border Patrols",0,1,1,"308","28",,,45,52,5,"3,3",60,80,3,60,,21,,115,0,,,100,65,7,1,30,1,1,,,,"In the ancient time, the border existed not only to formalised the territory of a country but also served as a safety zone for people inside it. Border Patrols regularly safeguard against both hostile civilisations and beasts alike. More than just scouting, they are prepared to deal with the immediate threat with both melee and range arms as the first line of protection for the empire. "
+121,"Giseras",0,1,1,"194,308","28,44",,,,,,,,,,,,21,,,0,,,105,,6,1,15,1,1,,,,
+122,"Lagoinu Watchers",0,1,1,"308","28,196",,,,,,,,,,,,21,,,0,,,100,,8,1,20,1,1,,,,
+123,"Foe Seekers",0,2,1,"236,305,307","28,196",,,,,,,,,,,,21,,,0,,,110,,9,1,10,1,1,,,,
 124,"Bandits",0,10,1,"3,112,225",,,,,,,"10,1",,40,8,10,29,21,100,105,0,,,90,20,6,1,200,1,1,,,,"The pests of early civilisation that creeping in the area where the hand of law cannot reach. Bandits are a group of people that take up arms to rob, loot and raze village or even unguarded town for their survival. Using whatever equipments they can get, Bandits are versatile units that can be used in both skirmish and serious melee engagement.  Their looting ability also allows them to gain more resource from raiding."
 125,"Free People",0,10,1,"3,112,222",,,,,,,"21,3",,30,5,20,33,21,100,100,0,,,90,25,6,1,150,1,1,,,,"The Free People, in other words, those who do not follow the rule of law established by the tyranny of society. Even less organised than tribal people, Free People live in an unorganised society purely of communal benefit for survival in the harsh wild. And in the uncertain time, it is not uncommon for these Free People to turn to banditry on unsuspected traveller or merchant."
 126,"Pirates",0,10,1,"112,191",,,,,,,"21,3",,0,0,0,25,21,100,110,0,,,90,20,7,1,100,1,1,,,,"The outlaws of the high sea where the dream of treasure is always in reach. Interesting enough, history seems to suggest that pirate may not always be outlaws and often are employed as privateers by many empires such as the Barbary pirates, Vikings and of course Republic of Pirates (being privateers of their very own country). Living on the sea for the major part of their life allows Pirates to become a fearsome naval force and later on a legend that fascinates people of the future."
@@ -166,7 +166,7 @@
 165,"Greatswordsmen",0,1,1,"24",,,,,,,,,,,,,21,,,,,,,40,,1,100,1,1,,,,"Unlike a normal sword, a greatsword is not a weapon that just anyone can use due to its massive size. Requiring two hands to wield, each greatsword swing is capable of cleaving through even steel armour. Greatswordsmen are amazingly powerful offensive shock infantry units that excel in both short and long term melee combat. However, being infantry with no shield requires them to avoid a long-range attack or be perished before even engaging the enemy."
 166,"Zweihanders",0,2,1,"24","98",,,,,,,,,,,,21,,,,,,,45,,1,,1,1,,,,
 167,"Greatswords Of Tasadun",0,3,1,"11,24","48,58",,,,,,,,,,,,3,,,,,,,65,,1,,1,1,,,,
-168,"Sinkpako Jibes",0,3,1,"12,24,176","100,132,153",,,,,,,,,,,,21,,,,,,,50,,1,,1,1,,,,
+168,"Sinkpako Jibes",0,3,1,"12,24,176","29,100",,,,,,,,,,,,21,,,,,,,50,,1,,1,1,,,,
 169,"Qistiaz Zailarorns",0,5,1,"11,24,34","53,178",,,,,,,,,,,,3,,,,,,,65,,1,,1,1,,,,
 170,"Glaive Warriors",0,2,1,"24","49",,,,,,,,,,,,21,,,,,,,40,,1,100,1,1,,,,
 171,"Great Glaive Warriors",0,2,1,"24","49",,,,,,,,,,,,21,,,,,,,40,,1,,1,1,,,,
@@ -227,7 +227,7 @@
 226,"Tellas Huntmen",1,1,1,"194,225","196",,,22,28,8,"21,3",60,160,25,3,14,21,100,130,0,,"25,3",110,70,9,1,20,2,1,,,,
 227,"Nehel Followers",1,1,1,"90,194,225","196",,,48,45,10,"1,0",65,160,30,4,32,21,100,130,0,,"25,4",120,50,8,1,15,2,1,,,,
 228,"Light Horsemen",0,1,1,,"0",,,50,28,15,"3,3",0,0,0,0,30,21,100,200,0,,,,,,,50,5,2,,,,"Light Horsemen are superb scouting and harassing cavalry units due to extremely high movement speed. Very few can catch up to Light Horsemen speed but their effectiveness existed only for those purposes. In the hand of a capable commander, they can create maximum chaos to the enemy army and allows other units to engage the enemy in more favourable terms."
-229,"Night Riders",0,1,1,,"160",,,,,,"3,3",0,0,0,0,33,21,100,200,0,,,,,,,,5,2,,,,
+229,"Night Riders",0,1,1,,"28",,,,,,"3,3",0,0,0,0,33,21,100,200,0,,,,,,,,5,2,,,,
 230,"Steppe Horsemen",0,1,1,,"0",,,,,,"20,3",0,0,0,0,30,21,100,220,0,,,,,,,,5,2,,,,
 231,"Bandit Riders",0,10,1,,,,,,,,,,,,,,,,,,,,,,,,,,2,,,,
 232,"Calandels",0,2,1,,,,,,,,,,,,,,,,,,,,,,,,,5,2,,,,

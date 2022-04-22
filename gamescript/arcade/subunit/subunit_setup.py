@@ -34,7 +34,7 @@ def add_weapon_stat(self):
                 self.arrow_speed[set_index][index] = self.weapon_data.weapon_list[weapon[0]]["Travel Speed"]  # travel speed of range melee_attack
 
             self.weight += self.weapon_data.weapon_list[weapon[0]]["Weight"]
-            self.weapon_skill[set_index][index] = self.weapon_data.weapon_list[weapon[0]]["Skill"]
+            self.weapon_skill[set_index][index] = self.weapon_data.weapon_list[weapon[0]]["Skill"][0]  # take only first skill
 
 
 def add_mount_stat(self):

@@ -236,7 +236,7 @@ class TroopData:
             header = rd[0]
             run = 0
             int_column = ["ID", "Troop Type", "Type", "Area of Effect", "Element", "Cost"]  # value int only
-            list_column = ["Status", "Restriction", "Condition", "Enemy Status", "Ruleset"]  # value in list only
+            list_column = ["Status", "Restriction", "Condition", "Enemy Status", "Action", "Ruleset"]  # value in list only
             mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Damage Effect"]

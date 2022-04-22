@@ -463,14 +463,29 @@ def charge_logic(self, parent_state):
             self.charge_momentum = 1
 
 
+def check_skill_condition(self):
+    """Check which skill can be used, cooldown, condition state, discipline, stamina are checked.
+    charge skill is excepted from this check"""
+    self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
+                            and self.discipline >= self.skill[skill]["Discipline Requirement"]
+                            and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0]
+
+
 def skill_check_logic(self):
     self.check_skill_condition()
-    if self.current_action is not None and "troop skill" in self.current_action:
-        skill = int(self.current_action[-1]) - 1
-        if len(self.skill) >= int(self.current_action[-1]):
-            skill = list(self.skill.keys())[skill]
-            if skill in self.available_skill:
-                self.use_skill(skill)
+    if self.current_action is None and self.command_action is not None:
+        if "Skill" in self.command_action:
+            if (self.unit_leader and "Leader" in self.command_action) or \
+                    (self.unit_leader is False and "Troop" in self.command_action):
+                skill = int(self.command_action[-1])
+                if "Weapon" in self.command_action:
+                    skill = self.weapon_skill[self.equipped_weapon][skill]
+                elif len(self.troop_skill) > skill:
+                    skill = self.troop_skill[skill]
+                if skill != 0 and skill in self.available_skill:
+                    self.use_skill(skill)
+                    self.current_action = self.skill[skill]["Action"][0]  # TODO other in list
+            self.command_action = None
 
 
 def swap_weapon(self):

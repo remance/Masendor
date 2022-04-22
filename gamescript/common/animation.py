@@ -13,7 +13,7 @@ rotation_xy = utility.rotation_xy
 default_sprite_size = (200, 200)
 
 
-def play_animation(self, speed, dt, scale=1):
+def play_animation(self, speed, dt, scale=1, replace_image=True):
     done = False
     self.animation_timer += dt
     current_animation = self.current_animation[self.sprite_direction]
@@ -25,10 +25,12 @@ def play_animation(self, speed, dt, scale=1):
             done = True
             self.show_frame = 0
 
-    if scale == 1:
+    if replace_image:
         self.image = current_animation[self.show_frame]["sprite"]
-    else:
-        self.image = pygame.transform.scale(current_animation[self.show_frame]["sprite"].copy(), (self.image.get_width() * scale, self.image.get_height() * scale))
+    # if scale == 1:
+    # else:
+    #     self.image = pygame.transform.scale(current_animation[self.show_frame]["sprite"].copy(),
+    #                                         (self.image.get_width() * scale, self.image.get_height() * scale))
     return done
 
 

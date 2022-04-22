@@ -505,6 +505,25 @@ def charge_logic(self, parent_state):
             self.charge_momentum = 1
 
 
+def check_skill_condition(self):
+    """Check which skill can be used, cooldown, condition state, discipline, stamina are checked.
+    charge skill is excepted from this check"""
+    if self.skill_cond == 1 and self.stamina_state < 50:  # reserve 50% stamina, don't use any skill
+        self.available_skill = []
+    elif self.skill_cond == 2 and self.stamina_state < 25:  # reserve 25% stamina, don't use any skill
+        self.available_skill = []
+    else:  # check all skill
+        print([skill for skill in self.skill if skill not in self.skill_cooldown.keys() and self.state in self.skill[skill]["Condition"] and skill != 0])
+        print([skill for skill in self.skill if skill not in self.skill_cooldown.keys()
+                                and self.state in self.skill[skill]["Condition"] and self.discipline >=
+                                self.skill[skill]["Discipline Requirement"]
+                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0])
+        self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
+                                and self.state in self.skill[skill]["Condition"] and self.discipline >=
+                                self.skill[skill]["Discipline Requirement"]
+                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0]
+
+
 def skill_check_logic(self):
     if self.skill_cond != 3:  # any skill condition behaviour beside 3 (forbid skill) will check available skill to use
         self.check_skill_condition()
