@@ -58,6 +58,7 @@ def change_battle_genre(genre):
 
     Battle.start_zoom = genre.start_zoom
     Battle.start_zoom_mode = genre.start_zoom_mode
+    Battle.time_speed_scale = genre.time_speed_scale
 
 
 class Battle:
@@ -99,6 +100,7 @@ class Battle:
     # variable that get changed based on genre
     start_zoom = 1
     start_zoom_mode = "Free"
+    time_speed_scale = 1
 
     def __init__(self, main, window_style):
         # v Get self object/variable from start_set
@@ -1015,12 +1017,12 @@ class Battle:
                     self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
                     self.ui_dt = self.dt  # get ui timer before apply self
 
-                    self.dt = self.dt * self.game_speed  # apply dt with game_speed for ingame calculation
+                    self.dt = self.dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.dt > 0.1:
                         self.dt = 0.1  # make it so stutter does not cause sprite to clip other sprite especially when zoom change
 
                     self.combat_timer += self.dt  # update combat timer
-                    self.time_number.timerupdate(self.dt * 10)  # update ingame time with 5x speed
+                    self.time_number.timer_update(self.dt * self.time_speed_scale)  # update battle time with genre speed
 
                     if self.mode == "battle" and (len(self.team1_unit) <= 0 or len(self.team2_unit) <= 0):
                         if self.battle_done_box not in self.battle_ui_updater:

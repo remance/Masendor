@@ -344,7 +344,7 @@ def status_update(self, weather=None):
     for a, b in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
         b["Duration"] -= self.timer
     self.skill_effect = {key: val for key, val in self.skill_effect.items() if
-                         val["Duration"] > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
+                         val["Duration"] > 0 and (len(val["Restriction"]) > 0 and self.state in val["Restriction"])}  # remove effect if time reach 0 or restriction state is not met
     for a, b in self.status_effect.items():
         b["Duration"] -= self.timer
     self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0}

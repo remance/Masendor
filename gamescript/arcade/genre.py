@@ -6,6 +6,7 @@ start_zoom = 10  # start with the closest zoom
 start_zoom_mode = "Follow"
 leader_sprite = True
 unit_size = (5, 5)
+time_speed_scale = 30
 
 
 # Default keyboard binding

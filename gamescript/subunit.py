@@ -650,10 +650,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.run = False  # reset run
 
                 parent_state = self.unit.state
-                self.state_reset_logic(parent_state)
-
-                self.available_skill = []
-                self.skill_check_logic()
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)
@@ -662,12 +658,17 @@ class Subunit(pygame.sprite.Sprite):
 
                     self.timer -= 1
 
+                self.state_reset_logic(parent_state)
+
                 parent_state, collide_list = self.attack_logic(dt, combat_timer, parent_state)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
 
                 self.move_logic(dt, parent_state, collide_list)  # Move function
+
+                self.available_skill = []
+                self.skill_check_logic()
 
                 self.morale_logic(dt, parent_state)
 

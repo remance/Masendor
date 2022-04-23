@@ -6,7 +6,7 @@ start_zoom = 1  # start with the furthest zoom
 start_zoom_mode = "Free"
 leader_sprite = False
 unit_size = (8, 8)
-
+time_speed_scale = 10
 
 event_log_top = "page up"
 event_log_bottom = "page down"
