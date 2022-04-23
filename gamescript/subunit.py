@@ -264,7 +264,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
         self.arrow_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
+        self.weapon_skill = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.equipped_weapon = 0
 
         self.original_speed = 50  # All infantry has starting speed at 50

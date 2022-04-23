@@ -513,11 +513,6 @@ def check_skill_condition(self):
     elif self.skill_cond == 2 and self.stamina_state < 25:  # reserve 25% stamina, don't use any skill
         self.available_skill = []
     else:  # check all skill
-        print([skill for skill in self.skill if skill not in self.skill_cooldown.keys() and self.state in self.skill[skill]["Condition"] and skill != 0])
-        print([skill for skill in self.skill if skill not in self.skill_cooldown.keys()
-                                and self.state in self.skill[skill]["Condition"] and self.discipline >=
-                                self.skill[skill]["Discipline Requirement"]
-                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0])
         self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
                                 and self.state in self.skill[skill]["Condition"] and self.discipline >=
                                 self.skill[skill]["Discipline Requirement"]

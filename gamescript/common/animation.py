@@ -205,7 +205,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
             if angle != 0:
                 part_rotated = pygame.transform.rotate(part_rotated, angle)  # rotate part sprite
 
-            new_target = target  # - pos_different  # find new center point
+            new_target = target
 
             if "weapon" in layer:  # only weapon use joint to calculate position
                 part_name = weapon[1][0]  # main weapon
@@ -219,13 +219,10 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                     ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
 
                     target = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
-                    if "p2_main" in layer:
+                    if "p2_main" in layer:  # change p2 main weapon pos to p2 right hand
                         target = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
-                    elif "sub" in animation_name and ("2hand" in animation_name or "2pole" in animation_name):  # put sub weapon on back instead for two handed weapon
-                        if "p1_sub" in layer:
-                            target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_body"][4])
-                        elif "p2_sub" in layer:
-                            target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_body"][4])
+                    elif "sub" in layer and ("2hand" in animation_name or "2pole" in animation_name):  # has sub weapon but main is 2 hands weapon
+                        pass  # use pos according to data instead of hand, usually attach to the back of body part
                     else:
                         if "p1_sub" in layer:
                             target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
