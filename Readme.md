@@ -10,7 +10,11 @@ There is no main name for the game but rather the name will be based on a major 
 
 For video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
-For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues) page, the channel's [YouTube video](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw) or write it [here](https://freesuggestionbox.com/pub/ybjkdfb) (no login needed): https://freesuggestionbox.com/pub/ybjkdfb
+For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues) page.
+
+Discord channel: https://discord.gg/q7yxz4netf
+
+The channel's [YouTube video](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw) for game update showcase.
 
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
