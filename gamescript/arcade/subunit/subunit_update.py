@@ -474,18 +474,26 @@ def check_skill_condition(self):
 def skill_check_logic(self):
     self.check_skill_condition()
     if self.current_action is None and self.command_action is not None:
-        if "Skill" in self.command_action:
-            if (self.unit_leader and "Leader" in self.command_action) or \
-                    (self.unit_leader is False and "Troop" in self.command_action):
-                skill = int(self.command_action[-1])
-                if "Weapon" in self.command_action:
+        command_action = self.command_action[0]
+        if "Skill" in command_action:  # use skill and convert command action into skill action name
+            if (self.unit_leader and "Leader" in command_action) or \
+                    (self.unit_leader is False and "Troop" in command_action):
+                skill = int(self.command_action[0][-1])
+                if "Weapon" in command_action:
                     skill = self.weapon_skill[self.equipped_weapon][skill]
+                    action = self.skill[skill]["Action"]
+                    action[0] += " " + command_action[-1]
                 elif len(self.troop_skill) > skill:
                     skill = self.troop_skill[skill]
+                    action = self.skill[skill]["Action"]
+                    if "Action" in action[0]:
+                        action[0] += " " + str(0)  # use main hand by default for Action type animation skill
                 if skill != 0 and skill in self.available_skill:
                     self.use_skill(skill)
-                    self.current_action = self.skill[skill]["Action"][0]  # TODO other in list
-            self.command_action = None
+                    self.command_action = action  # TODO other in list
+                    self.unit.input_delay = 1
+                else:
+                    self.command_action = None
 
 
 def swap_weapon(self):
@@ -509,8 +517,9 @@ def swap_weapon(self):
 def pick_animation(self):
     try:
         if self.current_action is not None:
-            if "action " in self.current_action:
-                equip = int(self.current_action[-1]) - 1
+            print(self.current_action)
+            if "Action " in self.current_action[0]:
+                equip = int(self.current_action[0][-1])
                 weapon = self.weapon_name[self.equipped_weapon][equip]
                 animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
         else:

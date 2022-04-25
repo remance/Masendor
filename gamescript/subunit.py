@@ -682,10 +682,12 @@ class Subunit(pygame.sprite.Sprite):
                 self.battle.battle_camera.remove(self)
 
             done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
-            if (done or self.interrupt_animation) and self.state != 100:
+            # if self.current_action is not None:
+            #     print("play", self.current_action)
+            if done or self.interrupt_animation:
                 self.pick_animation()
                 self.interrupt_animation = False
-                self.current_action = self.command_action  # finish current action when animation finish
+                self.current_action = self.command_action  # continue next action when animation finish
                 self.command_action = None
             if recreate_rect:
                 self.rect = self.image.get_rect(center=self.pos)

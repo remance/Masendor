@@ -781,10 +781,10 @@ class Battle:
                     else:
                         key_press = event.key
 
-                if pygame.mouse.get_pressed()[0]:  # Hold left click
-                    mouse_left_down = True
-                elif pygame.mouse.get_pressed()[2]:  # Hold left click
-                    mouse_right_down = True
+            if pygame.mouse.get_pressed()[0]:  # Hold left click
+                mouse_left_down = True
+            elif pygame.mouse.get_pressed()[2]:  # Hold left click
+                mouse_right_down = True
 
             if self.text_input_popup == (None, None):
                 if esc_press:  # open/close menu

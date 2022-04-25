@@ -40,8 +40,7 @@ def add_weapon_stat(self):
 def add_mount_stat(self):
     """Combine mount stat"""
     self.base_charge_def = 25  # charge defence only 25 for cav
-    self.base_speed = (
-            self.mount["Speed"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
+    self.base_speed = (self.mount["Speed"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
     self.troop_health += (self.mount["Health Bonus"] * self.mount_grade["Health Effect"]) + \
                          self.mount_armour["Health"]  # Add mount health to the troop health
     self.base_charge += (self.mount["Charge Bonus"] +
@@ -55,7 +54,7 @@ def add_mount_stat(self):
 
 
 def add_trait(self):
-    """Add trait to base stat"""
+    """Add trait stat to base stat"""
     for trait in self.trait.values():  # add trait modifier to base stat
         self.base_melee_attack *= trait['Melee Attack Effect']
         self.base_melee_def *= trait['Melee Defence Effect']
@@ -102,7 +101,7 @@ def add_trait(self):
         self.base_discipline += random.randint(-20, 0)
         self.mental += random.randint(-20, 10)
 
-    # v Change trait variable
+    # Change trait variable
     if 16 in self.trait:
         self.arc_shot = True  # can shoot in arc
     if 17 in self.trait:
@@ -130,5 +129,4 @@ def add_trait(self):
         self.temp_unbreakable = True
     if 149 in self.trait:  # Impetuous
         self.base_auth_penalty += 0.5
-    # ^ End change trait variable
-# ^^ End add trait to stat
+

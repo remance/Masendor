@@ -29,4 +29,4 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
             self.set_subunit_target()
     elif type(other_command) == str and "Skill" in other_command:
         for subunit in self.subunits:
-            subunit.command_action = other_command
+            subunit.command_action = (other_command, )
