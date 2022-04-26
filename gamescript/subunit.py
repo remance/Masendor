@@ -1,5 +1,6 @@
 import math
 import random
+import sys
 
 import pygame
 import pygame.freetype
@@ -18,12 +19,17 @@ rotation_dict = common_subunit_movement.rotation_dict
 infinity = float("inf")
 
 
-def change_subunit_genre(genre):
-    """Change game genre and add appropriate method to subunit class"""
-    if genre == "tactical":
-        from gamescript.tactical.subunit import subunit_combat, subunit_setup, subunit_movement, subunit_update
-    elif genre == "arcade":
-        from gamescript.arcade.subunit import subunit_combat, subunit_setup, subunit_movement, subunit_update
+def change_subunit_genre(self):
+    """
+    Change genre method to subunit class
+    :param self: Game object
+    """
+    import importlib
+
+    subunit_combat = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_combat")
+    subunit_setup = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_setup")
+    subunit_movement = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_movement")
+    subunit_update = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_update")
 
     Subunit.add_weapon_stat = subunit_setup.add_weapon_stat
     Subunit.add_mount_stat = subunit_setup.add_mount_stat
@@ -73,6 +79,7 @@ class Subunit(pygame.sprite.Sprite):
     make_front_pos = common_subunit_update.make_front_pos
     make_pos_range = common_subunit_update.make_pos_range
     threshold_count = common_subunit_update.threshold_count
+    temperature_cal = common_subunit_update.temperature_cal
     start_set = common_subunit_setup.start_set
     process_trait_skill = common_subunit_setup.process_trait_skill
     create_inspect_sprite = common_subunit_setup.create_inspect_sprite

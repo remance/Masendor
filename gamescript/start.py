@@ -49,7 +49,7 @@ load_part_sprite_pool = common_start_setup.load_part_sprite_pool
 load_effect_sprite_pool = common_start_setup.load_effect_sprite_pool
 read_colour = common_start_setup.read_colour
 
-version_name = "Dream Decision"
+version_name = "Dream Decision"  # Game version name that will appear as game name
 
 unit_state_text = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)",
                    7: "Walk (F)", 8: "Run (F)", 10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
@@ -78,34 +78,41 @@ team_colour = unit.team_colour
 
 def change_genre(self, genre):
     """Add new genre module here"""
+    import importlib
+
     if type(genre) == int:
         self.genre = self.genre_list[genre].lower()
     else:
         self.genre = genre.lower()
+    self.battle_game.genre = self.genre
 
-    if self.genre == "tactical":
-        from gamescript.tactical import genre
-        from gamescript.tactical.start import start_setup, start_player
-        from gamescript.tactical.unit import unit_setup
-        self.team_select_button = (self.start_button, self.map_back_button)  # tactical mode has no char select screen
-        self.battle_game.genre = self.genre
+    start_setup = importlib.import_module("gamescript." + self.genre + ".start.start_setup")
+    start_player = importlib.import_module("gamescript." + self.genre + ".start.start_player")
+    unit_setup = importlib.import_module("gamescript." + self.genre + ".unit.unit_setup")
+    genre_setting = importlib.import_module("gamescript." + self.genre + ".genre_setting")
 
-    elif self.genre == "arcade":
-        from gamescript.arcade import genre
-        from gamescript.arcade.start import start_setup, start_player
-        from gamescript.arcade.unit import unit_setup
+    if genre_setting.char_select:  # mode with char select screen
         self.team_select_button = (self.map_select_button, self.map_back_button)
-        self.battle_game.genre = self.genre
+    else:
+        self.team_select_button = (self.start_button, self.map_back_button)
 
-    MainMenu.generate_unit = unit_setup.generate_unit
+    # Method
+    Game.generate_unit = unit_setup.generate_unit
 
-    self.genre_sprite_size = genre.genre_sprite_size
-    self.char_select = genre.char_select
-    self.leader_sprite = genre.leader_sprite
-    subunit.change_subunit_genre(self.genre)
-    unit.change_unit_genre(self.genre)
-    battle.change_battle_genre(self.genre)
-    leader.change_leader_genre(self.genre)
+    # Variable
+    self.genre_sprite_size = genre_setting.genre_sprite_size
+    self.char_select = genre_setting.char_select
+    self.leader_sprite = genre_setting.leader_sprite
+    self.unit_size = genre_setting.unit_size
+    self.start_zoom = genre_setting.start_zoom
+    self.start_zoom_mode = genre_setting.start_zoom_mode
+    self.time_speed_scale = genre_setting.time_speed_scale
+
+    # change genre for other objects
+    subunit.change_subunit_genre(self)
+    unit.change_unit_genre(self)
+    battle.change_battle_genre(self)
+    leader.change_leader_genre(self)
 
     self.genre_change_box.change_text(self.genre.capitalize())
     edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
@@ -124,7 +131,7 @@ def change_genre(self, genre):
     self.background.blit(bgd_tile, (0, 0))
 
 
-class MainMenu:
+class Game:
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
     change_genre = change_genre

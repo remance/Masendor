@@ -3,6 +3,7 @@ import glob
 import os
 import random
 import sys
+from importlib import reload
 
 import pygame
 import pygame.freetype
@@ -28,25 +29,19 @@ setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
 
 
-def change_battle_genre(genre):
-    sys.path.insert(0, "/gamescript/genre/")
-    if genre == "tactical":
-        from gamescript.tactical.battle import battle_setup, battle_player
-        from gamescript.tactical.unit import unit_combat, unit_setup
-        from gamescript.tactical.uniteditor import uniteditor_convert
-        from gamescript.tactical import genre
-    elif genre == "arcade":
-        from gamescript.arcade.battle import battle_setup, battle_player
-        from gamescript.arcade.unit import unit_combat, unit_setup
-        from gamescript.arcade.uniteditor import uniteditor_convert
-        from gamescript.arcade import genre
+def change_battle_genre(self):
+    import importlib
 
-    Battle.split_unit = unit_combat.split_unit
-    Battle.check_split = unit_combat.check_split
-    Battle.generate_unit = unit_setup.generate_unit
+    battle_setup = importlib.import_module("gamescript." + self.genre + ".battle.battle_setup")
+    battle_player = importlib.import_module("gamescript." + self.genre + ".battle.battle_player")
+    uniteditor_convert = importlib.import_module("gamescript." + self.genre + ".uniteditor.uniteditor_convert")
+    unit_combat = importlib.import_module("gamescript." + self.genre + ".unit.unit_combat")
+    unit_setup = importlib.import_module("gamescript." + self.genre + ".unit.unit_setup")
+
+    # Method
     Battle.setup_battle_ui = battle_setup.setup_battle_ui
     Battle.change_state = battle_setup.change_state
-    Battle.convert_edit_unit = uniteditor_convert.convert_edit_unit
+
     Battle.battle_mouse_scrolling = battle_player.battle_mouse_scrolling
     Battle.battle_key_press = battle_player.battle_key_press
     Battle.battle_mouse = battle_player.battle_mouse
@@ -56,9 +51,17 @@ def change_battle_genre(genre):
     Battle.add_behaviour_ui = battle_player.add_behaviour_ui
     Battle.remove_unit_ui_check = battle_player.remove_unit_ui_check
 
-    Battle.start_zoom = genre.start_zoom
-    Battle.start_zoom_mode = genre.start_zoom_mode
-    Battle.time_speed_scale = genre.time_speed_scale
+    Battle.split_unit = unit_combat.split_unit
+    Battle.check_split = unit_combat.check_split
+
+    Battle.generate_unit = self.generate_unit
+
+    Battle.convert_edit_unit = uniteditor_convert.convert_edit_unit
+
+    # Variable
+    Battle.start_zoom = self.start_zoom
+    Battle.start_zoom_mode = self.start_zoom_mode
+    Battle.time_speed_scale = self.time_speed_scale
 
 
 class Battle:

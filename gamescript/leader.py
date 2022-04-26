@@ -1,12 +1,17 @@
+import sys
+
 import pygame
 import pygame.freetype
 
 
-def change_leader_genre(genre):
-    if genre == "tactical":
-        from gamescript.tactical.leader import leader_combat
-    elif genre == "arcade":
-        from gamescript.arcade.leader import leader_combat
+def change_leader_genre(self):
+    """
+    Change genre method to leader class
+    :param self: Game object
+    """
+    import importlib
+
+    leader_combat = importlib.import_module("gamescript." + self.genre + ".leader.leader_combat")
 
     Leader.pos_change_stat = leader_combat.pos_change_stat
     Leader.gone = leader_combat.gone

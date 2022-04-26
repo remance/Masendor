@@ -1,5 +1,7 @@
 import math
 import random
+import os
+import sys
 
 import numpy as np
 import pygame
@@ -11,34 +13,48 @@ rotation_xy = utility.rotation_xy
 team_colour = {0: (255, 255, 255), 1: (144, 167, 255), 2: (255, 114, 114)}  # team colour, Neutral, 1, 2
 
 
-def change_unit_genre(genre):
-    """Change game genre and add appropriate method to subunit class"""
-    if genre == "tactical":
-        from gamescript.tactical.unit import unit_combat, unit_movement, unit_player, unit_update, unit_command, unit_setup
-        from gamescript.tactical import genre
-    elif genre == "arcade":
-        from gamescript.arcade.unit import unit_combat, unit_movement, unit_player, unit_update, unit_command, unit_setup
-        from gamescript.arcade import genre
+def change_unit_genre(self):
+    """
+    Change genre method to unit class
+    :param self: Game object
+    """
+    import importlib
 
+    unit_combat = importlib.import_module("gamescript." + self.genre + ".unit.unit_combat")
+    unit_movement = importlib.import_module("gamescript." + self.genre + ".unit.unit_movement")
+    unit_player = importlib.import_module("gamescript." + self.genre + ".unit.unit_player")
+    unit_update = importlib.import_module("gamescript." + self.genre + ".unit.unit_update")
+    unit_command = importlib.import_module("gamescript." + self.genre + ".unit.unit_command")
+    unit_setup = importlib.import_module("gamescript." + self.genre + ".unit.unit_setup")
+
+    # Method
     Unit.skirmish = unit_combat.skirmish
     Unit.chase = unit_combat.chase
     Unit.destroyed = unit_combat.destroyed  # destroyed script
     Unit.retreat = unit_combat.retreat
     Unit.switch_faction = unit_combat.switch_faction
+
     Unit.player_input = unit_player.player_input
+
     Unit.rotate_logic = unit_movement.rotate_logic
     Unit.revert_move = unit_movement.revert_move
     Unit.set_target = unit_movement.set_target
     Unit.movement_logic = unit_movement.movement_logic
     Unit.set_subunit_target = unit_movement.set_subunit_target
     Unit.move_leader = unit_movement.move_leader
+
     Unit.selection = unit_update.selection
     Unit.auth_recal = unit_update.auth_recal
     Unit.morale_check_logic = unit_update.morale_check_logic
-    Unit.setup_unit = unit_update.setup_unit
+
     Unit.process_command = unit_command.process_command
+
+    Unit.setup_unit = unit_update.setup_unit
     Unit.setup_frontline = unit_setup.setup_frontline
-    Unit.unit_size = genre.unit_size
+
+    # Variable
+
+    Unit.unit_size = self.unit_size
 
 
 class Unit(pygame.sprite.Sprite):
@@ -74,7 +90,7 @@ class Unit(pygame.sprite.Sprite):
     def setup_frontline(self): pass
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
-        """Although unit in code, this is referred as subunit ingame"""
+        """Unit object represent a group of subunit, each unit can contain a specific number of subunits depending on the genre setting"""
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon

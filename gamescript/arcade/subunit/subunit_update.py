@@ -118,7 +118,7 @@ def status_update(self, weather=None):
     self.accuracy -= (map_feature_mod["Range Defense Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
     self.discipline += map_feature_mod["Discipline Bonus"]  # discipline defence bonus from terrain bonus
 
-    if map_feature_mod["Status"] != [0]:  # Some terrain feature can also cause status effect such as swimming in water
+    if 0 not in map_feature_mod["Status"]:  # Some terrain feature can also cause status effect such as swimming in water
         if 1 in map_feature_mod["Status"]:  # Shallow water type terrain
             self.status_effect[31] = self.status_list[31].copy()  # wet
         if 4 in map_feature_mod["Status"] or 5 in map_feature_mod["Status"]:  # Deep water type terrain
@@ -180,7 +180,7 @@ def status_update(self, weather=None):
                     self.corner_atk = True  # if aoe 3 mean it can melee_attack enemy on all side
 
             # v Apply status to friendly if there is one in skill effect
-            if cal_status["Status"] != [0]:
+            if 0 not in cal_status["Status"]:
                 for effect in cal_status["Status"]:
                     self.status_effect[effect] = self.status_list[effect].copy()
                     if self.status_effect[effect][2] > 1:
@@ -189,7 +189,7 @@ def status_update(self, weather=None):
 
             self.bonus_morale_dmg += cal_status["Morale Damage"]
             self.bonus_stamina_dmg += cal_status["Stamina Damage"]
-            if cal_status["Enemy Status"] != [0]:  # Apply status effect to enemy from skill to inflict list
+            if 0 not in cal_status["Enemy Status"]:  # Apply status effect to enemy from skill to inflict list
                 for effect in cal_status["Enemy Status"]:
                     if effect != 0:
                         self.inflict_status[effect] = cal_status["Area of Effect"]
@@ -223,27 +223,7 @@ def status_update(self, weather=None):
                 self.temp_full_def = True
     # ^ End status effect
 
-    # v Temperature mod function from terrain and weather
-    for status in self.status_effect.values():
-        temp_reach += status["Temperature Change"]  # add more from status effect
-    if temp_reach < 0:  # cold # temperature
-        temp_reach = temp_reach * (100 - self.cold_res) / 100  # lowest temperature the subunit will change based on cold resist
-    else:  # hot temperature
-        temp_reach = temp_reach * (100 - self.heat_res) / 100  # highest temperature the subunit will change based on heat resist
-
-    if self.temp_count != temp_reach:  # move temp_count toward temp_reach
-        if temp_reach > 0:
-            if self.temp_count < temp_reach:
-                self.temp_count += (100 - self.heat_res) / 100 * self.timer  # increase temperature, rate depends on heat resistance (- is faster)
-        elif temp_reach < 0:
-            if self.temp_count > temp_reach:
-                self.temp_count -= (100 - self.cold_res) / 100 * self.timer  # decrease temperature, rate depends on cold resistance
-        else:  # temp_reach is 0, subunit temp revert to 0
-            if self.temp_count > 0:
-                self.temp_count -= (1 + self.heat_res) / 100 * self.timer  # revert faster with higher resist
-            else:
-                self.temp_count += (1 + self.cold_res) / 100 * self.timer
-    # ^ End temperature
+    self.temperature_cal(temp_reach)  # calculate temperature and its effect
 
     # v Elemental effect
     if self.elem_count != [0, 0, 0, 0, 0]:  # Apply effect if elem threshold reach 50 or 100
@@ -255,18 +235,6 @@ def status_update(self, weather=None):
         self.elem_count = [elem - self.timer if elem > 0 else elem for elem in self.elem_count]
     # ^ End elemental effect
 
-    # v Temperature effect
-    if self.temp_count > 50:  # Hot
-        self.status_effect[96] = self.status_list[96].copy()
-        if self.temp_count > 100:  # Extremely hot
-            self.status_effect[97] = self.status_list[97].copy()
-            del self.status_effect[96]
-    if self.temp_count < -50:  # Cold
-        self.status_effect[95] = self.status_list[95].copy()
-        if self.temp_count < -100:  # Extremely cold
-            self.status_effect[29] = self.status_list[29].copy()
-            del self.status_effect[95]
-    # ^ End temperature effect related function
 
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
     if self.morale_state > 3 or math.isnan(self.morale_state):  # morale state more than 3 give no more benefit

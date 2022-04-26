@@ -350,6 +350,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                     part_name = weapon[1][1]  # sub weapon
                 check_prop = frame_property + animation_property
                 center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
+                use_center = False
                 if ("p1_main" in layer and "p1_fix_main_weapon" not in check_prop) or \
                     ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
                     ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
@@ -359,7 +360,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                     if "p2_main" in layer:  # change p2 main weapon pos to p2 right hand
                         target = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
                     elif "sub" in layer and ("2hand" in animation_name or "2pole" in animation_name):  # has sub weapon but main is 2 hands weapon
-                        pass  # use pos according to data instead of hand, usually attach to the back of body part
+                        use_center = True  # use pos according to data instead of hand, usually attach to the back of body part. and use center not joint
                     else:
                         if "p1_sub" in layer:
                             target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
@@ -367,7 +368,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                             target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
                     new_target = target
 
-                if weapon_joint_list[new_part[0]][part_name] != "center":  # use weapon joint pos and hand pos for weapon position blit
+                if weapon_joint_list[new_part[0]][part_name] != "center" and use_center is False:  # use weapon joint pos and hand pos for weapon position blit
                     main_joint_pos = [weapon_joint_list[new_part[0]][part_name][0], weapon_joint_list[new_part[0]][part_name][1]]
 
                     # change pos from flip

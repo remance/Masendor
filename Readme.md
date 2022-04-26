@@ -8,13 +8,11 @@
 
 There is no main name for the game but rather the name will be based on a major update. 
 
-For video update: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
-
 For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues) page.
 
 Discord channel: https://discord.gg/q7yxz4netf
 
-The channel's [YouTube video](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw) for game update showcase.
+For game update showcase video: [YouTube Channel](https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw)
 
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
@@ -62,13 +60,6 @@ Animation maker for arcade mode.
 
 # Key features so far
 
-The current state of the game and code performance/readibility:
-<br>
-<br>
-![alt text](https://github.com/remance/preview/blob/main/gamestate.png?raw=true)
-
-Meaning: The update is going well and steady.
-
 ## History is told by the victor, but sometimes the words of the loser do not fade away
 
 > 14th October 1066 AD, Duke William of Normandy’s force arrived at Telham Hill early in the morning, while Harold Godwinson’s force was already positioned at Senlac Ridge. It is believed that Harold intent to ambush William's army at their camp and was surprised by William's arrival at Telham Hill.
@@ -86,12 +77,6 @@ Well in this game, all versions of the story are accepted and represented. Every
 So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people that participated in the battle.
 
 ![alt text](https://github.com/remance/preview/blob/main/leader.gif?raw=true)
-
-## Complex troop statistic system
-
-A lot of simplified soldier statistics yet complexly interchange together that affect combat capability in various ways.
-
-![alt text](https://github.com/remance/preview/blob/main/troop.gif?raw=true)
 
 ## Custom Unit Creator
 
