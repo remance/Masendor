@@ -68,7 +68,7 @@ def status_update(self, weather=None):
     # v Apply status effect from trait
     if len(self.trait) > 1:
         for trait in self.trait.values():
-            if trait["Status"] != [0]:
+            if 0 not in trait["Status"]:  # 0 value means no trait or not use
                 for effect in trait["Status"]:  # apply status effect from trait
                     self.status_effect[effect] = self.status_list[effect].copy()
                     if trait["Buff Range"] > 1:  # status buff range to nearby friend
@@ -501,7 +501,7 @@ def swap_weapon(self):
     self.base_melee_def = self.original_melee_def
     self.base_range_def = self.original_range_def
     self.trait = self.original_trait
-    self.skill = self.original_skill.copy()
+    self.skill = self.original_skill
     for weapon_index, weapon in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
                    (self.secondary_main_weapon, self.secondary_sub_weapon))[self.equipped_weapon]):
         self.base_melee_def += self.weapon_data.weapon_list[weapon[0]]["Defense"]

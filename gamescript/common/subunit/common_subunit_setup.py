@@ -5,12 +5,48 @@ from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 
 from gamescript import statdata
 from gamescript.common import utility, animation
+from gamescript.common.subunit import common_subunit_movement
 
 stat_convert = statdata.stat_convert
 rotation_xy = utility.rotation_xy
 apply_colour = animation.apply_colour
 
 default_sprite_size = (200, 200)
+
+rotation_list = common_subunit_movement.rotation_list
+rotation_name = common_subunit_movement.rotation_name
+rotation_dict = common_subunit_movement.rotation_dict
+
+
+def start_set(self, zoom):
+    """run once when battle start or subunit just get created"""
+    self.zoom = zoom
+    self.front_pos = self.make_front_pos()
+    self.make_pos_range()
+    self.zoom_scale()
+    self.find_nearby_subunit()
+
+    try:
+        self.terrain, self.feature = self.get_feature(self.base_pos,
+                                                      self.base_map)  # get new terrain and feature at each subunit position
+        self.height = self.height_map.get_height(self.base_pos)  # current terrain height
+        self.front_height = self.height_map.get_height(self.front_pos)  # terrain height at front position
+    except AttributeError:
+        pass
+
+    self.grade_social_effect = self.unit.leader_social[self.grade_name]
+    self.status_update()
+
+    self.battle.alive_subunit_list.append(self)
+    if self.team == 1:  # add sprite to team subunit group for collision
+        group_collide = self.battle.team1_subunit
+    elif self.team == 2:
+        group_collide = self.battle.team2_subunit
+    group_collide.add(self)
+
+    self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
+
+    self.pick_animation()
 
 
 def skill_convert(self, skill_list, add_charge_skill=False):

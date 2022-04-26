@@ -5,7 +5,7 @@ import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
 from gamescript.common.subunit import common_subunit_combat, common_subunit_movement, \
-    common_subunit_update, common_subunit_setup
+    common_subunit_update, common_subunit_setup, common_subunit_zoom
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -45,6 +45,8 @@ def change_subunit_genre(genre):
     Subunit.health_stamina_logic = subunit_update.health_stamina_logic
     Subunit.swap_weapon = subunit_update.swap_weapon
     Subunit.charge_logic = subunit_update.charge_logic
+    Subunit.zoom_scale = common_subunit_zoom.zoom_scale
+    Subunit.change_pos_scale = common_subunit_zoom.change_pos_scale
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -69,6 +71,9 @@ class Subunit(pygame.sprite.Sprite):
     use_skill = common_subunit_combat.use_skill
     rotate = common_subunit_movement.rotate
     make_front_pos = common_subunit_update.make_front_pos
+    make_pos_range = common_subunit_update.make_pos_range
+    threshold_count = common_subunit_update.threshold_count
+    start_set = common_subunit_setup.start_set
     process_trait_skill = common_subunit_setup.process_trait_skill
     create_inspect_sprite = common_subunit_setup.create_inspect_sprite
 
@@ -94,7 +99,7 @@ class Subunit(pygame.sprite.Sprite):
     def skill_check_logic(self): pass
     def pick_animation(self): pass
 
-    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, purpose="battle"):
+    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
         """
         Subunit object represent a group of troop or leader
         Subunit has three different stage of stat;
@@ -108,7 +113,6 @@ class Subunit(pygame.sprite.Sprite):
         :param start_hp: Starting health or troop number percentage
         :param start_stamina: Starting maximum stamina percentage
         :param unit_scale: Scale of troop number
-        :param purpose: Purpose of this subunit, can be 'battle' for in game battle or 'edit' for unit/subunit editor
         """
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -139,6 +143,8 @@ class Subunit(pygame.sprite.Sprite):
         self.same_front = []  # list of same unit front collide sprite
         self.full_merge = []  # list of sprite that collide and almost overlap with this sprite
         self.collide_penalty = False
+        self.movement_queue = []
+        self.combat_move_queue = []  # movement during melee combat
 
         self.game_id = game_id  # ID of this
         self.unit = unit  # reference to the parent uit of this subunit
@@ -227,7 +233,7 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_cooldown = {}
         self.grade_name = grade_stat["Name"]
         self.armour_gear = stat["Armour"]  # armour equipment
-        self.original_armour = 0  # TODO change when has race
+        self.original_armour = self.troop_data.race_list[stat["Race"]]["Armour"]
         self.base_armour = self.armour_data.armour_list[self.armour_gear[0]]["Armour"] \
                            * self.armour_data.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
 
@@ -267,7 +273,8 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_skill = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.equipped_weapon = 0
 
-        self.original_speed = 50  # All infantry has starting speed at 50
+        self.original_speed = self.troop_data.race_list[stat["Race"]]["Speed"] * \
+                              self.troop_data.race_list[stat["Race"]]["Size"]  # use speed of race multiply by race size
         self.feature_mod = "Infantry"  # the starting column in terrain bonus of infantry
         self.authority = 100  # default start at 100
 
@@ -324,7 +331,7 @@ class Subunit(pygame.sprite.Sprite):
 
         # stat after applying trait and gear
 
-        self.trait = self.original_trait.copy()
+        self.trait = self.original_trait
         self.base_melee_attack = self.original_melee_attack
         self.base_melee_def = self.original_melee_def
         self.base_range_def = self.original_range_def
@@ -337,8 +344,8 @@ class Subunit(pygame.sprite.Sprite):
         self.base_reload = self.original_reload
         self.base_charge = self.original_charge
         self.base_charge_def = self.original_charge_def
-        self.skill = self.original_skill.copy()
-        self.troop_skill = self.original_skill.copy()
+        self.skill = self.original_skill
+        self.troop_skill = self.original_skill
         self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline
@@ -447,77 +454,35 @@ class Subunit(pygame.sprite.Sprite):
         self.health_image_list = sprite_dict["health_list"]
         self.stamina_image_list = sprite_dict["stamina_list"]
 
-        if purpose == "battle":
-            self.angle = self.unit.angle
-            self.new_angle = self.unit.angle
-            self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
-            self.sprite_direction = rotation_dict[min(rotation_list,
-                                                      key=lambda x: abs(x - self.angle))]  # find closest in list of rotation for sprite direction
-            self.parent_angle = self.unit.angle  # angle subunit will face when not moving
-
-            # position related
-            self.unit_position = (start_pos[0] / 10, start_pos[1] / 10)  # position in unit sprite
+        self.unit_position = (start_pos[0] / 10, start_pos[1] / 10)  # position in unit sprite
+        try:
             unit_top_left = pygame.Vector2(self.unit.base_pos[0] - self.unit.base_width_box / 2,
                                            self.unit.base_pos[
                                                1] - self.unit.base_height_box / 2)  # get top left corner position of unit to calculate true pos
             self.base_pos = pygame.Vector2(unit_top_left[0] + self.unit_position[0],
                                            unit_top_left[1] + self.unit_position[1])  # true position of subunit in map
             self.last_pos = self.base_pos
+
+            self.angle = self.unit.angle
+            self.new_angle = self.unit.angle
+            self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
+            self.sprite_direction = rotation_dict[min(rotation_list,
+                                                      key=lambda x: abs(
+                                                          x - self.angle))]  # find closest in list of rotation for sprite direction
             self.attack_pos = self.unit.base_attack_pos
 
-            self.movement_queue = []
-            self.combat_move_queue = []
             self.base_target = self.base_pos  # base_target to move
             self.command_target = self.base_pos  # actual base_target outside of combat
-            self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)  # pos is for showing on screen
+            self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom,
+                        self.base_pos[1] * self.screen_scale[1] * self.zoom)  # pos is for showing on screen
 
             self.image_height = (self.image.get_height() - 1) / 20  # get real half height of circle sprite
 
             self.front_pos = self.make_front_pos()
 
-            try:
-                self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)  # get new terrain and feature at each subunit position
-                self.height = self.height_map.get_height(self.base_pos)  # current terrain height
-                self.front_height = self.height_map.get_height(self.front_pos)  # terrain height at front position
-            except AttributeError:
-                pass
-
-        elif purpose == "edit":
-            self.image = self.block
-            self.pos = start_pos
-            self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
-            self.inspect_image_original = self.block_original
-            self.coa = self.unit.coa
-            self.commander = True
-
-        self.rect = self.image.get_rect(center=self.pos)
-
-    def zoom_scale(self):
-        """camera zoom change and rescale the sprite and position scale, sprite closer zoom will be scale in the play animation function instead"""
-        self.use_animation_sprite = False
-        if self.zoom != self.max_zoom:
-            if self.zoom > 1:
-                self.inspect_image_original = self.inspect_image_original3.copy()  # reset image for new scale
-                dim = pygame.Vector2(self.inspect_image_original.get_width() * self.zoom / self.max_zoom, self.inspect_image_original.get_height() * self.zoom / self.max_zoom)
-                self.image = pygame.transform.scale(self.inspect_image_original, (int(dim[0]), int(dim[1])))
-                if self.unit.selected and self.state != 100:
-                    self.selected_inspect_image_original = pygame.transform.scale(self.selected_inspect_image_original2, (int(dim[0]), int(dim[1])))
-            else:  # furthest zoom
-                self.inspect_image_original = self.far_image.copy()
-                self.image = self.inspect_image_original.copy()
-                if self.unit.selected and self.state != 100:
-                    self.selected_inspect_image_original = self.far_selected_image.copy()
-            self.inspect_image_original = self.image.copy()
-            self.inspect_image_original2 = self.image.copy()
-            self.rotate()
-        elif self.zoom == self.max_zoom:  # TODO add weapon specific action condition
-            self.use_animation_sprite = True
-        self.change_pos_scale()
-
-    def change_pos_scale(self):
-        """Change position variable to new camera scale"""
-        self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom, self.base_pos[1] * self.screen_scale[1] * self.zoom)
-        self.rect.center = self.pos
+            self.rect = self.image.get_rect(center=self.pos)
+        except AttributeError:  # for subunit with dummy unit
+            pass
 
     def find_nearby_subunit(self):
         """Find nearby friendly squads in the same unit for applying buff"""
@@ -578,16 +543,6 @@ class Subunit(pygame.sprite.Sprite):
                 if subunit.state != 100:  # only apply to alive squads
                     subunit.status_effect[status_id] = status_list  # apply status effect
 
-    def threshold_count(self, elem, t1status, t2status):
-        """apply elemental status effect when reach elemental threshold"""
-        if elem > 50:
-            self.status_effect[t1status] = self.status_list[t1status].copy()  # apply tier 1 status
-            if elem > 100:
-                self.status_effect[t2status] = self.status_list[t2status].copy()  # apply tier 2 status
-                del self.status_effect[t1status]  # remove tier 1 status
-                elem = 0  # reset elemental count
-        return elem
-
     def find_close_target(self, subunit_list):
         """Find close enemy subunit to move to fight"""
         close_list = {subunit: subunit.base_pos.distance_to(self.base_pos) for subunit in subunit_list}
@@ -602,35 +557,6 @@ class Subunit(pygame.sprite.Sprite):
             close_target = list(close_list.keys())[random.randint(0, max_random)]
             # if close_target.base_pos.distance_to(self.base_pos) < 20: # in case can't find close target
         return close_target
-
-    def make_pos_range(self):
-        """create range of sprite pos for pathfinding"""
-        self.pos_range = (range(int(max(0, self.base_pos[0] - (self.image_height - 1))), int(min(1000, self.base_pos[0] + self.image_height))),
-                          range(int(max(0, self.base_pos[1] - (self.image_height - 1))), int(min(1000, self.base_pos[1] + self.image_height))))
-
-    def start_set(self, zoom):
-        """run once when battle start or subunit just get created"""
-        self.zoom = zoom
-        self.front_pos = self.make_front_pos()
-        self.make_pos_range()
-        self.zoom_scale()
-        self.find_nearby_subunit()
-        self.terrain, self.feature = self.get_feature(self.base_pos, self.base_map)
-        self.height = self.height_map.get_height(self.base_pos)
-        self.front_height = self.height_map.get_height(self.front_pos)  # terrain height at front position
-        self.grade_social_effect = self.unit.leader_social[self.grade_name]
-        self.status_update()
-
-        self.battle.alive_subunit_list.append(self)
-        if self.team == 1:  # add sprite to team subunit group for collision
-            group_collide = self.battle.team1_subunit
-        elif self.team == 2:
-            group_collide = self.battle.team2_subunit
-        group_collide.add(self)
-
-        self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
-
-        self.pick_animation()
 
     def update(self, weather, dt, zoom, combat_timer, mouse_pos, mouse_left_up):
         recreate_rect = False
@@ -745,7 +671,7 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End path finding
 
     def delete(self, local=False):
-        """delete reference when function is called"""
+        """delete reference when method is called"""
         del self.unit
         del self.leader
         del self.attack_target
@@ -755,3 +681,15 @@ class Subunit(pygame.sprite.Sprite):
             self.battle.combat_path_queue.remove(self)
         if local:
             print(locals())
+
+
+class EditorSubunit(Subunit):
+    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
+        """Create subunit object used for editor only"""
+        Subunit.__init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale)
+        self.pos = start_pos
+        self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
+        self.image = self.block
+        self.inspect_image_original = self.block_original
+        self.commander = True
+        self.rect = self.image.get_rect(center=self.pos)

@@ -20,7 +20,7 @@ troop_skill: list of all sub-units' abilities. The data structure of ability is 
 
 - Stat Effect and bonus modifier as mentioned above
 
-- Status effect (only to friendly sub-units according to aoe) 
+- Status effect (only to friendly sub-units according to aoe), assign 0 to indicate no status effect
 
 - Stamina damage (each time sub-unit deal dmg it will also deal damage to stamina) 
 

@@ -520,7 +520,7 @@ class Battle:
             subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
-            self.camera_mode = "Free"  # start with free
+            self.camera_mode = "Free"  # start with free camera mode
 
             who_todo = {key: value for key, value in self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
             self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
