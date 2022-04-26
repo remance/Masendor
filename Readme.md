@@ -12,7 +12,7 @@ For any suggestions or bugs, feel free to report them in the [**Issues**](https:
 
 Discord channel: [![github](https://github.com/remance/preview/blob/main/discord_logo.png?raw=true)][1]
 
-For game update showcase video: [![github](https://github.com/remance/preview/blob/main/youtube_logo2.png?raw=true)][1]
+For game update showcase video: [![github](https://github.com/remance/preview/blob/main/youtube_logo3.png?raw=true)][1]
 
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
