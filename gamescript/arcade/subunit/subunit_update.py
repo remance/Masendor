@@ -415,9 +415,7 @@ def health_stamina_logic(self, dt):
 
 
 def charge_logic(self, parent_state):
-    if self.state in (4, 13) and parent_state != 10 and self.attacking and self.unit.move_rotate is False and \
-            self.base_pos.distance_to(self.base_target) < 50:  # charge skill only when running to melee
-
+    if self.state == 4:  # charge skill only when running to melee
         self.charge_momentum += self.timer * (self.speed / 50)
         if self.charge_momentum >= 5:
             self.use_skill(0)  # Use charge skill
@@ -449,8 +447,8 @@ def skill_check_logic(self):
                 skill = int(self.command_action[0][-1])
                 if "Weapon" in command_action:
                     skill = self.weapon_skill[self.equipped_weapon][skill]
-                    action = self.skill[skill]["Action"]
-                    action[0] += " " + command_action[-1]
+                    action = self.skill[skill]["Action"].copy()
+                    action[0] += " " + command_action[0][-1]
                 elif len(self.troop_skill) > skill:
                     skill = self.troop_skill[skill]
                     action = self.skill[skill]["Action"]
@@ -458,10 +456,17 @@ def skill_check_logic(self):
                         action[0] += " " + str(0)  # use main hand by default for Action type animation skill
                 if skill != 0 and skill in self.available_skill:
                     self.use_skill(skill)
-                    self.command_action = action  # TODO other in list
+                    self.command_action = action
                     self.unit.input_delay = 1
                 else:
                     self.command_action = None
+            elif "Charge" in command_action:
+                skill = self.troop_skill[0]
+                action = self.skill[skill]["Action"]
+                action[0] += " " + command_action[0][-1]
+                self.command_action = action
+            else:
+                self.command_action = None
 
 
 def swap_weapon(self):
@@ -485,7 +490,6 @@ def swap_weapon(self):
 def pick_animation(self):
     try:
         if self.current_action is not None:
-            print(self.current_action)
             if "Action " in self.current_action[0]:
                 equip = int(self.current_action[0][-1])
                 weapon = self.weapon_name[self.equipped_weapon][equip]
@@ -496,5 +500,7 @@ def pick_animation(self):
 
         self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
+        if self.current_action is not None:
+            print(self.current_animation)
     except:  # animation not found, use default
         self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equipped_weapon)]

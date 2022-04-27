@@ -17,8 +17,7 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
             elif mouse_right_up or mouse_right_down:
                 self.leader_subunit.current_action = ("Action 1", )
 
-            elif key_state is not None:
-                speed = self.walk_speed / 10
+            if key_state is not None:
                 if self.input_delay == 0:  # for input that need to have time delay to work properly
                     if key_state[pygame.K_DOWN]:
                         self.move_leader("down")
@@ -37,6 +36,7 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                     elif key_state[pygame.K_4]:  # Use troop skill 2
                         self.process_command(cursor_pos, other_command="Troop Skill 1")
 
+                speed = self.walk_speed / 10
                 if key_state[pygame.K_LSHIFT]:
                     speed = self.run_speed / 10
                 if key_state[pygame.K_SPACE]:
@@ -57,11 +57,18 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                 if new_pos != self.leader_subunit.base_pos:
                     self.leader_subunit.base_target = new_pos
                     self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
-                    self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+                    if mouse_left_down:
+                        self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                             other_command="Charge Skill 0")
+                    if mouse_right_down:
+                        self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                             other_command="Charge Skill 1")
+                    else:
+                        self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
                 elif self.rotate_only:
                     self.process_command(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
                 elif key_state[pygame.K_q]:  # Use leader skill 1
-                    self.leader_subunit.current_action = ("Leader skill 1", )
+                    self.leader_subunit.command_action = ("Leader skill 0", )
                 elif key_state[pygame.K_e]:  # Use leader skill 2
-                    self.leader_subunit.current_action = ("Leader skill 2", )
+                    self.leader_subunit.command_action = ("Leader skill 1", )
 

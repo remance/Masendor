@@ -9,7 +9,6 @@ from gamescript.common.subunit import common_subunit_movement
 
 stat_convert = statdata.stat_convert
 rotation_xy = utility.rotation_xy
-apply_colour = animation.apply_colour
 
 default_sprite_size = (200, 200)
 
@@ -202,6 +201,8 @@ def grab_face_part(pool, race, side, part, part_check, part_default):
 
 
 def generate_head(p, animation_part_list, body_part_list, sprite_list, pool, armour_pool, armour, hair_colour_list, skin_colour_list):
+    apply_colour = animation.apply_colour
+
     head_sprite_surface = None
     try:
         head_race = body_part_list[0]
@@ -247,6 +248,8 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, pool, arm
 
 def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_sprite_pool=None, colour=None,
                   weapon=None, armour=None, colour_list=None):
+    apply_colour = animation.apply_colour
+
     # main/body first
     sprite_image = None
     try:
@@ -295,7 +298,11 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
 def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool, armour_sprite_pool,
                 effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size,
                 screen_scale):
-    frame_property = animation_part_list["frame_property"]
+    apply_colour = animation.apply_colour
+
+    frame_property = animation_part_list["frame_property"].copy()
+    animation_property = animation_property.copy()
+    check_prop = frame_property + animation_property
 
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
 
@@ -348,7 +355,6 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                 part_name = weapon[1][0]  # main weapon
                 if "sub" in layer:
                     part_name = weapon[1][1]  # sub weapon
-                check_prop = frame_property + animation_property
                 center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
                 use_center = False
                 if ("p1_main" in layer and "p1_fix_main_weapon" not in check_prop) or \

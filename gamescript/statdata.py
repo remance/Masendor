@@ -268,11 +268,13 @@ class TroopData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
-            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Action", "Ruleset")  # value in tuple only
+            list_column = ("Action", )
+            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Damage Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
@@ -284,8 +286,8 @@ class TroopData:
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         if index != 0:  # Skip first row header
-                            row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
-                                               int_column=int_column)
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               tuple_column=tuple_column, int_column=int_column)
                     self.skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 

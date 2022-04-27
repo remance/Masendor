@@ -10,7 +10,7 @@ import pygame
 import pygame.freetype
 import screeninfo
 from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
-from gamescript.common import utility
+from gamescript.common import animation, utility
 from gamescript.common.start import common_start_setup, common_start_player
 from gamescript.common.unit import common_unit_setup
 from pygame.locals import *
@@ -132,10 +132,6 @@ def change_genre(self, genre):
 
 
 class Game:
-    popup_list_open = utility.popup_list_open
-    lorebook_process = lorebook.lorebook_process
-    change_genre = change_genre
-    create_sprite_pool = common_start_setup.create_sprite_pool
     main_menu_process = common_start_player.main_menu_process
     map_select_process = common_start_player.map_select_process
     team_select_process = common_start_player.team_select_process
@@ -144,7 +140,16 @@ class Game:
     game_creator_process = common_start_player.game_creator_process
     read_source = common_start_player.read_source
     change_source = common_start_player.change_source
+
     setup_unit = common_unit_setup.setup_unit
+
+    popup_list_open = utility.popup_list_open
+
+    create_sprite_pool = animation.create_sprite_pool
+
+    lorebook_process = lorebook.lorebook_process
+
+    change_genre = change_genre
 
     def __init__(self, main_dir):
         pygame.init()  # Initialize pygame
