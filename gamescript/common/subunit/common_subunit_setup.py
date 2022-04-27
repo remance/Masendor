@@ -424,7 +424,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                                               "RGBA")  # convert image back to a pygame surface
             if "colour" in prop:
                 colour = prop[prop.rfind("_") + 1:]
-                colour = [int(this_colour) for this_colour in colour.split(",")]
+                colour = [int(this_colour) for this_colour in colour.split(".")]
                 surface = apply_colour(surface, colour)
 
             if prop in frame_property:
