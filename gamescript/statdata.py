@@ -82,7 +82,7 @@ class WeaponData:
             header = rd[0]
             int_column = ("ID", "Cost", "ImageID", "Speed", "Hand")  # value int only
             list_column = ("Skill", "Trait")  # value in list only
-            tuple_column = ("Ruleset", )  # value in tuple only
+            tuple_column = ("Ruleset",)  # value in tuple only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -112,8 +112,8 @@ class ArmourData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("ID", "Cost")  # value int only
-            list_column = ("Trait", )  # value in list only
-            tuple_column = ("Ruleset", )  # value in tuple only
+            list_column = ("Trait",)  # value in list only
+            tuple_column = ("Ruleset",)  # value in tuple only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -144,10 +144,10 @@ class TroopData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Size")  # value int only
-            list_column = ("Trait", "Skill", )  # value in list only
+            list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
-            mod_column = ("Ammunition Modifier", )
+            mod_column = ("Ammunition Modifier",)
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -221,8 +221,8 @@ class TroopData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("Size", "Armour", "Speed")  # value int only
-            list_column = ("Trait", )  # value in list only
-            tuple_column = ("Ruleset", )  # value in tuple only
+            list_column = ("Trait",)  # value in list only
+            tuple_column = ("Ruleset",)  # value in tuple only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -246,8 +246,8 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", )  # value int only
-            list_column = ("Trait", )  # value in list only
+            int_column = ("ID",)  # value int only
+            list_column = ("Trait",)  # value in list only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
@@ -268,7 +268,7 @@ class TroopData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
-            list_column = ("Action", )
+            list_column = ("Action",)
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
@@ -337,8 +337,8 @@ class TroopData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("ID", "Cost")  # value int only
-            list_column = ("Trait", )  # value in list only
-            tuple_column = ("Ruleset", )  # value in tuple only
+            list_column = ("Trait",)  # value in list only
+            tuple_column = ("Ruleset",)  # value in tuple only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -361,8 +361,8 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", )  # value int only
-            list_column = ("Trait", )  # value in list only
+            int_column = ("ID",)  # value int only
+            list_column = ("Trait",)  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             for index, row in enumerate(rd):

@@ -396,7 +396,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
             rect = part_rotated.get_rect(center=new_target)
             surface.blit(part_rotated, rect)
 
-    for prop in (frame_property + animation_property):
+    for prop in check_prop:
         if "effect" in prop:
             if "grey" in prop:  # not work with just convert L for some reason
                 width, height = surface.get_size()
@@ -441,4 +441,4 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     # change to whatever genre's specific size
     surface = pygame.transform.scale(surface, (genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
 
-    return {"sprite": surface, "animation_property": animation_property, "frame_property": frame_property}
+    return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property)}

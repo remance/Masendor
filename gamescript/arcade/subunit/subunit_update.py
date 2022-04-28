@@ -448,10 +448,10 @@ def skill_check_logic(self):
                 if "Weapon" in command_action:
                     skill = self.weapon_skill[self.equipped_weapon][skill]
                     action = self.skill[skill]["Action"].copy()
-                    action[0] += " " + command_action[0][-1]
+                    action[0] += " " + command_action[-1]
                 elif len(self.troop_skill) > skill:
                     skill = self.troop_skill[skill]
-                    action = self.skill[skill]["Action"]
+                    action = self.skill[skill]["Action"].copy()
                     if "Action" in action[0]:
                         action[0] += " " + str(0)  # use main hand by default for Action type animation skill
                 if skill != 0 and skill in self.available_skill:
@@ -500,7 +500,5 @@ def pick_animation(self):
 
         self.current_animation = {key: value for key, value in self.sprite_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
-        if self.current_action is not None:
-            print(self.current_animation)
     except:  # animation not found, use default
         self.current_animation = self.sprite_pool[self.race_name + "_Default/" + str(self.equipped_weapon)]

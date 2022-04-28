@@ -10,17 +10,20 @@ make_sprite = common_subunit_setup.make_sprite
 
 def play_animation(self, speed, dt, scale=1, replace_image=True):
     done = False
-    self.animation_timer += dt
     current_animation = self.current_animation[self.sprite_direction]
-    if self.current_action is not None:
-        print(self.current_action, current_animation)
-    if self.animation_timer >= speed:
-        if self.show_frame < len(current_animation):
-            self.show_frame += 1
-        self.animation_timer = 0
-        if self.show_frame >= len(current_animation):  # TODO add property
-            done = True
-            self.show_frame = 0
+    # if self.current_action is not None:
+    #     print(self.current_action, current_animation, len(current_animation))
+    #     print(self.action_list)
+    if self.current_action is None or ("hold" not in self.current_action and
+                                       "hold" not in self.action_list[self.weapon_name[self.equipped_weapon]]["Properties"]):  # not holding current frame
+        self.animation_timer += dt
+        if self.animation_timer >= speed:
+            if self.show_frame < len(current_animation):
+                self.show_frame += 1
+            self.animation_timer = 0
+            if self.show_frame >= len(current_animation):  # TODO add property
+                done = True
+                self.show_frame = 0
 
     if replace_image:
         self.image = current_animation[self.show_frame]["sprite"]
@@ -99,7 +102,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                 animation = random.choice(animation)  # random animation
 
                 frame_data = random.choice(self.generic_animation_pool[1][animation])  # random frame
-                animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
+                animation_property = self.generic_animation_pool[0][animation][0]["animation_property"]
                 if type(subunit_id) == int:
                     sprite_data = self.troop_data.troop_sprite_list[str(subunit_id)]
                 else:

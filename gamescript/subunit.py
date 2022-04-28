@@ -244,7 +244,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_armour = self.armour_data.armour_list[self.armour_gear[0]]["Armour"] \
                            * self.armour_data.quality[self.armour_gear[1]]  # armour stat is calculated from based armour * quality
 
-        self.original_skill = skill  # Skill that the subunit processes
+        self.original_skill = skill.copy()  # Skill that the subunit processes
         if "" in self.original_skill:
             self.original_skill.remove("")
         self.troop_health = stat["Health"] * grade_stat["Health Effect"]  # Health of each troop
@@ -351,8 +351,8 @@ class Subunit(pygame.sprite.Sprite):
         self.base_reload = self.original_reload
         self.base_charge = self.original_charge
         self.base_charge_def = self.original_charge_def
-        self.skill = self.original_skill
-        self.troop_skill = self.original_skill
+        self.skill = self.original_skill.copy()
+        self.troop_skill = self.original_skill.copy()
         self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline
@@ -617,10 +617,10 @@ class Subunit(pygame.sprite.Sprite):
             done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
             # if self.current_action is not None:
             #     print("play", self.current_action)
-            if done or self.interrupt_animation:
-                self.pick_animation()
-                self.interrupt_animation = False
-                self.current_action = self.command_action  # continue next action when animation finish
+            self.pick_animation()
+            self.interrupt_animation = False
+            self.current_action = self.command_action  # continue next action when animation finish
+            if self.interrupt_animation or (done and (self.current_action is None or "repeat" not in self.current_action)):
                 self.command_action = None
             if recreate_rect:
                 self.rect = self.image.get_rect(center=self.pos)

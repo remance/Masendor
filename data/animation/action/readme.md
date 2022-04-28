@@ -18,9 +18,10 @@ List of action properties:
 "cancelable": can be cancel with other animation input beside forced animation
 "invincible": can not be damaged during animation
 "revert": run animation in revert frame
+"hold": weapon action can hold at the frame with "hold" property 
 "holdfront": weapon do damage during hold like spearwall and pikewall
-"power": start power version and deal no damage during hold
-"timing_": add hold and release timing mechanic (can work with power and block) that improve accuracy, require count time number and release time window (e.g., timing_1.5_2 for start perfect timing 1.5 second after hold and last for 2 seconds) 
+"power": hold start power charging
+"timing_": add release timing mechanic for hold (can work with power and block) that improve accuracy, require count time number and release time window (e.g., timing_1.5_2 for start perfect timing 1.5 second after hold and last for 2 seconds) 
 "block": use full defence from the weapon and deal no damage when hold
 "parry": animation count as blocking and attack with bonus during if got hit by attack
 "aoe": effect deal further aoe damage outside of sprite effect in distance, need distance number after "aoe" (e.g.,aoe10)
