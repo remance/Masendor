@@ -11,20 +11,16 @@ make_sprite = common_subunit_setup.make_sprite
 def play_animation(self, speed, dt, scale=1, replace_image=True):
     done = False
     current_animation = self.current_animation[self.sprite_direction]
-    # if self.current_action is not None:
-    #     print(self.current_action, current_animation, len(current_animation))
-    #     print(self.action_list)
-    if self.current_action is None or ("hold" not in self.current_action and
-                                       "hold" not in self.action_list[self.weapon_name[self.equipped_weapon]]["Properties"]):  # not holding current frame
-        self.animation_timer += dt
-        if self.animation_timer >= speed:
-            if self.show_frame < len(current_animation):
-                self.show_frame += 1
-            self.animation_timer = 0
-            if self.show_frame >= len(current_animation):  # TODO add property
-                done = True
-                self.show_frame = 0
-
+    # if not self.current_action or ("hold" not in self.current_action and "hold" not in current_animation[self.show_frame]["frame_property"] and
+    #                                "hold" not in self.action_list[self.weapon_name[self.equipped_weapon][int(self.current_action[0][-1])]]["Properties"]):  # not holding current frame
+    self.animation_timer += dt
+    if self.animation_timer >= speed:
+        if self.show_frame < len(current_animation):
+            self.show_frame += 1
+        self.animation_timer = 0
+        if self.show_frame >= len(current_animation):  # TODO add property
+            done = True
+            self.show_frame = 0
     if replace_image:
         self.image = current_animation[self.show_frame]["sprite"]
     # if scale == 1:

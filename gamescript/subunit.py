@@ -141,8 +141,8 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
         self.animation_timer = 0
-        self.current_action = None  # for genre that use specific action instead of state
-        self.command_action = None  # next action to be performed
+        self.current_action = ()  # for genre that use specific action instead of state
+        self.command_action = ()  # next action to be performed
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -613,15 +613,17 @@ class Subunit(pygame.sprite.Sprite):
                 self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
                 self.troop_number = 0
                 self.battle.battle_camera.remove(self)
-
+            # if not self.command_action and "uninterruptible" not in self.current_action:
+            #     self.interrupt_animation = True  # interrupt current animation if there is command action
             done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
             # if self.current_action is not None:
             #     print("play", self.current_action)
-            self.pick_animation()
-            self.interrupt_animation = False
-            self.current_action = self.command_action  # continue next action when animation finish
-            if self.interrupt_animation or (done and (self.current_action is None or "repeat" not in self.current_action)):
-                self.command_action = None
+            if (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
+                    (done and "repeat" not in self.current_action):
+                self.interrupt_animation = False
+                self.current_action = self.command_action  # continue next action when animation finish
+                self.pick_animation()
+                self.command_action = ()
             if recreate_rect:
                 self.rect = self.image.get_rect(center=self.pos)
 

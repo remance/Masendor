@@ -9,13 +9,13 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit
+from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit, datasprite
 from gamescript.common import animation, utility
 from gamescript.common.start import common_start_setup, common_start_player
 from gamescript.common.unit import common_unit_setup
 from pygame.locals import *
 
-direction_list = common_start_setup.direction_list
+direction_list = datasprite.direction_list
 
 load_image = utility.load_image
 load_images = utility.load_images
@@ -27,8 +27,6 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
-load_action = common_start_setup.load_action
-load_animation_pool = common_start_setup.load_animation_pool
 read_terrain_data = common_start_setup.read_terrain_data
 read_weather_data = common_start_setup.read_weather_data
 read_map_data = common_start_setup.read_map_data
@@ -45,9 +43,6 @@ make_popup_ui = common_start_setup.make_popup_ui
 make_battle_ui = common_start_setup.make_battle_ui
 make_genre_ui = common_start_setup.make_genre_ui
 change_genre_ui = common_start_setup.change_genre_ui
-load_part_sprite_pool = common_start_setup.load_part_sprite_pool
-load_effect_sprite_pool = common_start_setup.load_effect_sprite_pool
-read_colour = common_start_setup.read_colour
 
 version_name = "Dream Decision"  # Game version name that will appear as game name
 
@@ -733,24 +728,19 @@ class Game:
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
             self.main_dir, self.ruleset_folder)
 
-        self.generic_action_data = load_action(self.main_dir)
+        self.troop_animation = datasprite.TroopAnimation(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
+        self.generic_action_data = self.troop_animation.generic_action_data  # action data pool
+        self.generic_animation_pool = self.troop_animation.generic_animation_pool  # animation data pool
+        self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
+        self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
+        self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
+        self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
+        self.hair_colour_list = self.troop_animation.hair_colour_list  # hair colour list
+        self.skin_colour_list = self.troop_animation.skin_colour_list  # skin colour list
+
         subunit.Subunit.generic_action_data = self.generic_action_data
-        animation_dict = load_animation_pool(self.main_dir)
-        self.generic_animation_pool = animation_dict["generic_animation_pool"]
 
-        self.skel_joint_list = animation_dict["skel_joint_list"]
-        self.weapon_joint_list = animation_dict["weapon_joint_list"]
-
-        pool_dict = load_part_sprite_pool(self.main_dir,
-                                          [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
-
-        self.gen_body_sprite_pool = pool_dict["gen_body_sprite_pool"]
-        self.gen_armour_sprite_pool = pool_dict["gen_armour_sprite_pool"]
-        self.gen_weapon_sprite_pool = pool_dict["gen_weapon_sprite_pool"]
-
-        self.effect_sprite_pool = load_effect_sprite_pool(self.main_dir)
-
-        self.skin_colour_list, self.hair_colour_list = read_colour(self.main_dir)
+        self.effect_sprite_pool = datasprite.EffectSprite(self.main_dir)
 
         who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
         self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,

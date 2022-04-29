@@ -14,7 +14,7 @@ ID, Name (weapon), Action (animation name that needed to be in animation data, t
 
 List of action properties:
 "movable": animation can be performed when moving and moving can be initiate during animation
-"uninteruptable": animation can not be interupt by anything else (normally can be interupted like when take damage)
+"uninterruptible": animation can not be interupt by anything else (normally can be interupted like when take damage)
 "cancelable": can be cancel with other animation input beside forced animation
 "invincible": can not be damaged during animation
 "revert": run animation in revert frame

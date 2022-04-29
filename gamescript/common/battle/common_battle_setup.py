@@ -3,7 +3,7 @@ import os
 
 import pygame
 
-from gamescript import statdata
+from gamescript import datastat
 from gamescript.common import animation
 
 

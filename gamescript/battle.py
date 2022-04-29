@@ -7,15 +7,14 @@ from importlib import reload
 
 import pygame
 import pygame.freetype
-from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor
+from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor, datasprite
 from gamescript.common import utility
-from gamescript.common.start import common_start_setup
 from gamescript.common.uniteditor import common_uniteditor_editor
 from gamescript.common.battle import common_battle_setup, common_battle_update, common_battle_player
 from gamescript.common.ui import common_ui_escmenu
 from gamescript.common.unit import common_unit_setup
 
-direction_list = common_start_setup.direction_list
+direction_list = datasprite.direction_list
 
 from pygame.locals import *
 from scipy.spatial import KDTree

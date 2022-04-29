@@ -41,6 +41,7 @@ feaure_list = ("Plain", "Barren", "PlantField", "Forest", "InlandWater", "Road",
 default_map_width = 1000  # map default size is 1000 x 1000
 default_map_height = 1000
 
+
 class BaseMap(pygame.sprite.Sprite):
     max_zoom = 10
 

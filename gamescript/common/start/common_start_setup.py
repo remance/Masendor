@@ -4,227 +4,14 @@ import random
 from pathlib import Path
 
 import pygame
-from gamescript import weather, battleui, lorebook, menu, uniteditor, statdata, popup, map
+from gamescript import weather, battleui, lorebook, menu, uniteditor, datastat, popup, map
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_subunit_setup
 
 load_image = utility.load_image
 load_images = utility.load_images
-load_textures = utility.load_textures
 csv_read = utility.csv_read
 make_bar_list = utility.make_bar_list
-stat_convert = statdata.stat_convert
-make_sprite = common_subunit_setup.make_sprite
-
-direction_list = ("front", "side", "back", "sideup", "sidedown")
-
-
-def read_colour(main_dir):
-    with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
-              mode="r") as edit_file:
-        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        header = rd[0]
-        skin_colour_list = {}
-        int_column = ["red", "green", "blue"]  # value in list only
-        int_column = [index for index, item in enumerate(header) if item in int_column]
-        for row_index, row in enumerate(rd):
-            if row_index > 0:
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, int_column=int_column)
-                    key = row[0].split("/")[0]
-                skin_colour_list[key] = row[1:]
-
-    with open(os.path.join(main_dir, "data", "sprite", "generic", "hair_colour_rgb.csv"), encoding="utf-8",
-              mode="r") as edit_file:
-        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        header = rd[0]
-        hair_colour_list = {}
-        int_column = ["red", "green", "blue"]  # value in list only
-        int_column = [index for index, item in enumerate(header) if item in int_column]
-        for row_index, row in enumerate(rd):
-            if row_index > 0:
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, int_column=int_column)
-                    key = row[0].split("/")[0]
-                hair_colour_list[key] = row[1:]
-    return skin_colour_list, hair_colour_list
-
-
-def load_action(main_dir):
-    generic_action_data = {}
-    with open(os.path.join(main_dir, "data", "animation", "action", "generic.csv"), encoding="utf-8", mode="r") as edit_file:
-        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        part_name_header = rd[0]
-        header = rd[0]
-        tuple_column = ("Properties", )
-        tuple_column = [index for index, item in enumerate(part_name_header) if item in tuple_column]
-        part_name_header = part_name_header[1:]
-        for row_index, row in enumerate(rd):
-            if row_index > 0:
-                key = row[0]
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, tuple_column=tuple_column)
-                row = row[1:]
-                generic_action_data[key] = {part_name_header[item_index]: item for item_index, item in enumerate(row)}
-    return generic_action_data
-
-
-def load_animation_pool(main_dir):
-    generic_animation_pool = []
-    for direction in direction_list:
-        with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            part_name_header = rd[0]
-            list_column = ("p1_head", "p1_face", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
-                           "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot",
-                           "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
-                           "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
-                           "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2",
-                           "frame_property", "animation_property", "special_1", "special_2", "special_3", "special_4",
-                           "special_5")  # value in list only
-            list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
-            part_name_header = part_name_header[1:]  # keep only part name for list ref later
-            animation_pool = {}
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    key = row[0].split("/")[0]
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column)
-                    row = row[1:]
-                    if key in animation_pool:
-                        animation_pool[key].append({part_name_header[item_index]: item for item_index, item in enumerate(row)})
-                    else:
-                        animation_pool[key] = [{part_name_header[item_index]: item for item_index, item in enumerate(row)}]
-            generic_animation_pool.append(animation_pool)
-        edit_file.close()
-
-    skel_joint_list = []
-    for race in ["Human", "Horse"]:  # TODO change later when has more race
-        for direction in direction_list:
-            with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
-                      mode="r") as edit_file:
-                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                rd = [row for row in rd]
-                header = rd[0]
-                list_column = ("Position", )  # value in list only
-                list_column = [index for index, item in enumerate(header) if item in list_column]
-                joint_list = {}
-                for row_index, row in enumerate(rd):
-                    if row_index > 0:
-                        for n, i in enumerate(row):
-                            row = stat_convert(row, n, i, list_column=list_column)
-                            key = row[0].split("/")[0]
-                        if key in joint_list:
-                            joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
-                        else:
-                            joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
-                skel_joint_list.append(joint_list)
-            edit_file.close()
-
-    weapon_joint_list = {}
-    for direction_index, direction in enumerate(direction_list):
-        weapon_joint_list[direction] = {}
-        with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            header = rd[0]
-            list_column = direction_list  # value in list only
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column)
-                        key = row[0].split("/")[0]
-                    position = row[direction_index + 1]
-                    if position == ["center"] or position == [""]:
-                        position = "center"
-                    else:
-                        position = pygame.Vector2(position[0], position[1])
-
-                    weapon_joint_list[direction][key] = position
-        edit_file.close()
-
-    return {"generic_animation_pool": generic_animation_pool, "skel_joint_list": skel_joint_list, "weapon_joint_list": weapon_joint_list}
-
-
-def load_part_sprite_pool(main_dir, race_list):
-    gen_body_sprite_pool = {}
-    for race in race_list:
-        gen_body_sprite_pool[race] = {}
-        for direction in direction_list:
-            part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
-            try:
-                subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
-                gen_body_sprite_pool[race][direction] = {}
-                for folder in subdirectories:
-                    imgs = load_textures(main_dir, folder)
-                    gen_body_sprite_pool[race][direction][folder[-1]] = imgs
-            except FileNotFoundError:
-                pass
-
-    gen_armour_sprite_pool = {}
-    for race in race_list:
-        gen_armour_sprite_pool[race] = {}
-        for direction in direction_list:
-            try:
-                part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour"))
-                subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
-                for subfolder in subdirectories:
-                    part_subsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1]))
-                    subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subsubfolder.iterdir() if x.is_dir()]
-                    if subfolder[-1] not in gen_armour_sprite_pool[race]:
-                        gen_armour_sprite_pool[race][subfolder[-1]] = {}
-                    for subsubfolder in subsubdirectories:
-                        if subsubfolder[-1] not in gen_armour_sprite_pool[race][subfolder[-1]]:
-                            gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]] = {}
-                        gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction] = {}
-                        body_subsubfolder = Path(
-                            os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
-                        body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
-                        for body_folder in body_directories:
-                            imgs = load_textures(main_dir,
-                                                 ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
-                            gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
-            except FileNotFoundError:
-                pass
-
-    gen_weapon_sprite_pool = {}
-    part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon"))
-    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
-    for folder in subdirectories:
-        gen_weapon_sprite_pool[folder[-1]] = {}
-        part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon", folder[-1]))
-        subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
-        for subfolder in subsubdirectories:
-            gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
-            for direction in direction_list:
-                imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
-                if direction not in gen_weapon_sprite_pool[folder[-1]]:
-                    gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction] = imgs
-                else:
-                    gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction].update(imgs)
-
-    return {"gen_body_sprite_pool": gen_body_sprite_pool, "gen_armour_sprite_pool": gen_armour_sprite_pool,
-            "gen_weapon_sprite_pool": gen_weapon_sprite_pool}
-
-
-def load_effect_sprite_pool(main_dir):
-    effect_sprite_pool = {}
-    part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
-    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
-    for folder in subdirectories:
-        effect_sprite_pool[folder[-1]] = {}
-        part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
-        subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
-        for subfolder in subsubdirectories:
-            imgs = load_textures(main_dir, subfolder)
-            effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
-    return effect_sprite_pool
+stat_convert = datastat.stat_convert
 
 
 def read_terrain_data(main_dir):
@@ -367,8 +154,8 @@ def read_map_data(main_dir, ruleset_folder):
 
 
 def read_faction_data(main_dir, screen_scale, ruleset_folder):
-    statdata.FactionData.main_dir = main_dir
-    faction_data = statdata.FactionData(ruleset_folder)
+    datastat.FactionData.main_dir = main_dir
+    faction_data = datastat.FactionData(ruleset_folder)
     images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
                            load_order=False)  # coa_list images list
     coa_list = []
@@ -594,16 +381,16 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
         x, y = images[image].get_width(), images[image].get_height()
         images[image] = pygame.transform.scale(images[image],
                                      (int(x / 1.7), int(y / 1.7)))  # scale 1.7 seem to be most fitting as a placeholder
-    weapon_data = statdata.WeaponData(main_dir, images, ruleset)  # Create weapon class
+    weapon_data = datastat.WeaponData(main_dir, images, ruleset)  # Create weapon class
 
     images = load_images(main_dir, screen_scale, ["ui", "unit_ui", "armour"])
-    armour_data = statdata.ArmourData(main_dir, images, ruleset)  # Create armour class
-    troop_data = statdata.TroopData(main_dir, ruleset, ruleset_folder)
+    armour_data = datastat.ArmourData(main_dir, images, ruleset)  # Create armour class
+    troop_data = datastat.TroopData(main_dir, ruleset, ruleset_folder)
 
     # v create leader list
     images, order = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False,
                               return_order=True)
-    leader_data = statdata.LeaderData(main_dir, images, order, ruleset_folder)
+    leader_data = datastat.LeaderData(main_dir, images, order, ruleset_folder)
     # ^ End leader
     return weapon_data, armour_data, troop_data, leader_data
 

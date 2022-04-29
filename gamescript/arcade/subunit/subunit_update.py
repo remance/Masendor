@@ -235,7 +235,6 @@ def status_update(self, weather=None):
         self.elem_count = [elem - self.timer if elem > 0 else elem for elem in self.elem_count]
     # ^ End elemental effect
 
-
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
     if self.morale_state > 3 or math.isnan(self.morale_state):  # morale state more than 3 give no more benefit
         self.morale_state = 3
@@ -439,7 +438,7 @@ def check_skill_condition(self):
 
 def skill_check_logic(self):
     self.check_skill_condition()
-    if self.current_action is None and self.command_action is not None:
+    if not self.current_action and self.command_action:  # no current action and has skill command waiting
         command_action = self.command_action[0]
         if "Skill" in command_action:  # use skill and convert command action into skill action name
             if (self.unit_leader and "Leader" in command_action) or \
@@ -459,14 +458,13 @@ def skill_check_logic(self):
                     self.command_action = action
                     self.unit.input_delay = 1
                 else:
-                    self.command_action = None
+                    self.command_action = ()
             elif "Charge" in command_action:
-                skill = self.troop_skill[0]
-                action = self.skill[skill]["Action"]
+                action = self.skill[0]["Action"]
                 action[0] += " " + command_action[0][-1]
-                self.command_action = action
+                self.command_action = tuple(action)
             else:
-                self.command_action = None
+                self.command_action = ()
 
 
 def swap_weapon(self):
@@ -489,12 +487,12 @@ def swap_weapon(self):
 
 def pick_animation(self):
     try:
-        if self.current_action is not None:
+        if self.current_action:  # pick animation with current action
             if "Action " in self.current_action[0]:
                 equip = int(self.current_action[0][-1])
                 weapon = self.weapon_name[self.equipped_weapon][equip]
                 animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
-        else:
+        else:  # use state to pick animation
             state_name = self.subunit_state[self.state]
             animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)  #TODO change when add change equip
 
