@@ -12,10 +12,6 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
 
         new_pos = pygame.Vector2(self.leader_subunit.base_pos)
         self.leader_subunit.new_angle = self.leader_subunit.set_rotate(cursor_pos)
-        if mouse_left_up or mouse_left_down:
-            self.leader_subunit.current_action = ("Action 0", )
-        elif mouse_right_up or mouse_right_down:
-            self.leader_subunit.current_action = ("Action 1", )
 
         if key_state is not None:
             if self.input_delay == 0:  # for input that need to have time delay to work properly
@@ -54,21 +50,26 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
             elif key_state[pygame.K_d]:  # move right
                 new_pos[0] += speed
 
-            if new_pos != self.leader_subunit.base_pos:
-                self.leader_subunit.base_target = new_pos
-                self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
-                if mouse_left_down and key_state[pygame.K_LSHIFT]:
-                    self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                         other_command="Charge Skill 0")
-                elif mouse_right_down and key_state[pygame.K_LSHIFT]:
-                    self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                         other_command="Charge Skill 1")
-                else:
-                    self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
-            elif self.rotate_only:
-                self.process_command(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
             elif key_state[pygame.K_q]:  # Use leader skill 1
                 self.leader_subunit.command_action = ("Leader skill 0", )
             elif key_state[pygame.K_e]:  # Use leader skill 2
                 self.leader_subunit.command_action = ("Leader skill 1", )
 
+        if new_pos != self.leader_subunit.base_pos:
+            self.leader_subunit.base_target = new_pos
+            self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
+            if mouse_left_down and key_state[pygame.K_LSHIFT]:
+                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                     other_command="Charge Skill 0")
+            elif mouse_right_down and key_state[pygame.K_LSHIFT]:
+                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                     other_command="Charge Skill 1")
+            else:
+                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+        elif self.rotate_only:
+            self.process_command(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
+        else:  # no new movement register other
+            if mouse_left_up or mouse_left_down:
+                self.leader_subunit.command_action = ("Action 0", )
+            elif mouse_right_up or mouse_right_down:
+                self.leader_subunit.command_action = ("Action 1", )

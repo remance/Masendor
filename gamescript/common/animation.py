@@ -9,20 +9,29 @@ make_sprite = common_subunit_setup.make_sprite
 
 
 def play_animation(self, speed, dt, scale=1, replace_image=True):
+    """
+    Play sprite animation
+    :param self: Object of the animation sprite
+    :param speed: Play speed
+    :param dt: Time
+    :param scale: Sprite scale
+    :param replace_image: Further zoom level does not show sprite animation even when it play
+    :return:
+    """
     done = False
     current_animation = self.current_animation[self.sprite_direction]
-    # if not self.current_action or ("hold" not in self.current_action and "hold" not in current_animation[self.show_frame]["frame_property"] and
-    #                                "hold" not in self.action_list[self.weapon_name[self.equipped_weapon][int(self.current_action[0][-1])]]["Properties"]):  # not holding current frame
-    self.animation_timer += dt
-    if self.animation_timer >= speed:
-        if self.show_frame < len(current_animation):
-            self.show_frame += 1
-        self.animation_timer = 0
-        if self.show_frame >= len(current_animation):  # TODO add property
-            done = True
-            self.show_frame = 0
-    if replace_image:
-        self.image = current_animation[self.show_frame]["sprite"]
+    if not self.current_action or ("hold" in self.current_action and "hold" in current_animation[self.show_frame]["frame_property"] and
+                                   "hold" in self.action_list[self.weapon_name[self.equipped_weapon][int(self.current_action[0][-1])]]["Properties"]) is False:  # not holding current frame
+        self.animation_timer += dt
+        if self.animation_timer >= speed:
+            if self.show_frame < len(current_animation):
+                self.show_frame += 1
+            self.animation_timer = 0
+            if self.show_frame >= len(current_animation):  # TODO add property
+                done = True
+                self.show_frame = 0
+        if replace_image:  # replace image sprite
+            self.image = current_animation[self.show_frame]["sprite"]
     # if scale == 1:
     # else:
     #     self.image = pygame.transform.scale(current_animation[self.show_frame]["sprite"].copy(),
