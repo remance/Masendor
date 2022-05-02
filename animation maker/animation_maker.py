@@ -16,7 +16,7 @@ current_dir = os.path.split(os.path.abspath(__file__))[0]
 main_dir = current_dir[:current_dir.rfind("\\")+1]
 sys.path.insert(1, main_dir)
 
-from gamescript import statdata, menu, battleui
+from gamescript import datastat, menu, battleui
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -24,7 +24,7 @@ load_image = utility.load_image
 load_images = utility.load_images
 load_base_button = utility.load_base_button
 load_textures = utility.load_textures
-stat_convert = statdata.stat_convert
+stat_convert = datastat.stat_convert
 
 apply_colour = colour.apply_colour
 setup_list = listpopup.setup_list

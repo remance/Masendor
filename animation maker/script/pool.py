@@ -8,9 +8,9 @@ main_dir = current_dir[:current_dir.rfind("\\")+1].split("\\")
 main_dir = ''.join(stuff + "\\" for stuff in main_dir[:-2])  # one folder further back
 sys.path.insert(1, main_dir)
 
-from gamescript import statdata
+from gamescript import datastat
 
-stat_convert = statdata.stat_convert
+stat_convert = datastat.stat_convert
 
 
 def read_anim_data(direction_list, pool_type):
