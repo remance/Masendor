@@ -460,6 +460,9 @@ class LeaderData:
             rd = [row for row in rd]
             header = rd[0]
             for row_index, row in enumerate(rd):
+                for n, i in enumerate(row):
+                    if "," in i:
+                        row[n] = i.split(",")
                 self.leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
@@ -470,6 +473,9 @@ class LeaderData:
             rd = [row for row in rd]
             header = rd[0]
             for row_index, row in enumerate(rd):
+                for n, i in enumerate(row):
+                    if "," in i:
+                        row[n] = i.split(",")
                 self.common_leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 

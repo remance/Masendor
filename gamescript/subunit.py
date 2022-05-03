@@ -1,16 +1,11 @@
 import math
 import random
-import sys
 
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
 from gamescript.common.subunit import common_subunit_combat, common_subunit_movement, \
     common_subunit_update, common_subunit_setup, common_subunit_zoom
-from pathfinding.core.diagonal_movement import DiagonalMovement
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
-from pygame.transform import scale
 
 rotation_list = common_subunit_movement.rotation_list
 rotation_name = common_subunit_movement.rotation_name
@@ -76,10 +71,14 @@ class Subunit(pygame.sprite.Sprite):
     set_rotate = utility.set_rotate
     use_skill = common_subunit_combat.use_skill
     rotate = common_subunit_movement.rotate
+    combat_pathfind = common_subunit_movement.combat_pathfind
+    find_close_target = common_subunit_movement.find_close_target
     make_front_pos = common_subunit_update.make_front_pos
     make_pos_range = common_subunit_update.make_pos_range
     threshold_count = common_subunit_update.threshold_count
     temperature_cal = common_subunit_update.temperature_cal
+    find_nearby_subunit = common_subunit_update.find_nearby_subunit
+    status_to_friend = common_subunit_update.status_to_friend
     start_set = common_subunit_setup.start_set
     process_trait_skill = common_subunit_setup.process_trait_skill
     create_inspect_sprite = common_subunit_setup.create_inspect_sprite
@@ -491,80 +490,6 @@ class Subunit(pygame.sprite.Sprite):
         except AttributeError:  # for subunit with dummy unit
             pass
 
-    def find_nearby_subunit(self):
-        """Find nearby friendly squads in the same unit for applying buff"""
-        self.nearby_subunit_list = []
-        corner_subunit = []
-        for row_index, row_list in enumerate(self.unit.subunit_list.tolist()):
-            if self.game_id in row_list:
-                if row_list.index(self.game_id) - 1 != -1:  # get subunit from left if not at first column
-                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index][row_list.index(self.game_id) - 1])  # index 0
-                else:  # not exist
-                    self.nearby_subunit_list.append(0)  # add number 0 instead
-
-                if row_list.index(self.game_id) + 1 != len(row_list):  # get subunit from right if not at last column
-                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index][row_list.index(self.game_id) + 1])  # index 1
-                else:  # not exist
-                    self.nearby_subunit_list.append(0)  # add number 0 instead
-
-                if row_index != 0:  # get top subunit
-                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index - 1][row_list.index(self.game_id)])  # index 2
-                    if row_list.index(self.game_id) - 1 != -1:  # get top left subunit
-                        corner_subunit.append(self.unit.subunit_list[row_index - 1][row_list.index(self.game_id) - 1])  # index 3
-                    else:  # not exist
-                        corner_subunit.append(0)  # add number 0 instead
-                    if row_list.index(self.game_id) + 1 != len(row_list):  # get top right
-                        corner_subunit.append(self.unit.subunit_list[row_index - 1][row_list.index(self.game_id) + 1])  # index 4
-                    else:  # not exist
-                        corner_subunit.append(0)  # add number 0 instead
-                else:  # not exist
-                    self.nearby_subunit_list.append(0)  # add number 0 instead
-
-                if row_index != len(self.unit.subunit_list) - 1:  # get bottom subunit
-                    self.nearby_subunit_list.append(self.unit.subunit_list[row_index + 1][row_list.index(self.game_id)])  # index 5
-                    if row_list.index(self.game_id) - 1 != -1:  # get bottom left subunit
-                        corner_subunit.append(self.unit.subunit_list[row_index + 1][row_list.index(self.game_id) - 1])  # index 6
-                    else:  # not exist
-                        corner_subunit.append(0)  # add number 0 instead
-                    if row_list.index(self.game_id) + 1 != len(row_list):  # get bottom  right subunit
-                        corner_subunit.append(self.unit.subunit_list[row_index + 1][row_list.index(self.game_id) + 1])  # index 7
-                    else:  # not exist
-                        corner_subunit.append(0)  # add number 0 instead
-                else:  # not exist
-                    self.nearby_subunit_list.append(0)  # add number 0 instead
-        self.nearby_subunit_list = self.nearby_subunit_list + corner_subunit
-
-    def status_to_friend(self, aoe, status_id, status_list):
-        """apply status effect to nearby subunit depending on aoe stat"""
-        if aoe in (2, 3):
-            if aoe > 1:  # only direct nearby friendly subunit
-                for subunit in self.nearby_subunit_list[0:4]:
-                    if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
-                        subunit.status_effect[status_id] = status_list  # apply status effect
-            if aoe > 2:  # all nearby including corner friendly subunit
-                for subunit in self.nearby_subunit_list[4:]:
-                    if subunit != 0 and subunit.state != 100:  # only apply to exist and alive squads
-                        subunit.status_effect[status_id] = status_list  # apply status effect
-        elif aoe == 4:  # apply to whole unit
-            for subunit in self.unit.subunit_list.flat:
-                if subunit.state != 100:  # only apply to alive squads
-                    subunit.status_effect[status_id] = status_list  # apply status effect
-
-    def find_close_target(self, subunit_list):
-        """Find close enemy subunit to move to fight"""
-        close_list = {subunit: subunit.base_pos.distance_to(self.base_pos) for subunit in subunit_list}
-        close_list = dict(sorted(close_list.items(), key=lambda item: item[1]))
-        max_random = 3
-        if len(close_list) < 4:
-            max_random = len(close_list) - 1
-            if max_random < 0:
-                max_random = 0
-        close_target = None
-        if len(close_list) > 0:
-            close_target = list(close_list.keys())[random.randint(0, max_random)]
-            # if close_target.base_pos.distance_to(self.base_pos) < 20: # in case can't find close target
-        return close_target
-
     def update(self, weather, dt, zoom, combat_timer, mouse_pos, mouse_left_up):
         recreate_rect = False
         if self.last_zoom != zoom:  # camera zoom is changed
@@ -638,46 +563,6 @@ class Subunit(pygame.sprite.Sprite):
             if self.state != 100:  # enter dead state
                 self.state = 100  # enter dead state
                 self.die()
-
-    def combat_pathfind(self):
-        # v Pathfinding
-        self.combat_move_queue = []
-        move_array = self.battle.subunit_pos_array.copy()
-        int_base_target = (int(self.close_target.base_pos[0]), int(self.close_target.base_pos[1]))
-        for y in self.close_target.pos_range[0]:
-            for x in self.close_target.pos_range[1]:
-                move_array[x][y] = 100  # reset path in the enemy sprite position
-
-        int_base_pos = (int(self.base_pos[0]), int(self.base_pos[1]))
-        for y in self.pos_range[0]:
-            for x in self.pos_range[1]:
-                move_array[x][y] = 100  # reset path for subunit sprite position
-
-        start_point = (min([max(0, int_base_pos[0] - 5), max(0, int_base_target[0] - 5)]),  # start point of new smaller array
-                      min([max(0, int_base_pos[1] - 5), max(0, int_base_target[1] - 5)]))
-        end_point = (max([min(999, int_base_pos[0] + 5), min(999, int_base_target[0] + 5)]),  # end point of new array
-                    max([min(999, int_base_pos[1] + 5), min(999, int_base_target[1] + 5)]))
-
-        move_array = move_array[start_point[1]:end_point[1]]  # cut 1000x1000 array into smaller one by row
-        move_array = [this_array[start_point[0]:end_point[0]] for this_array in move_array]  # cut by column
-
-        # if len(move_array) < 100 and len(move_array[0]) < 100: # if too big then skip combat pathfinding
-        grid = Grid(matrix=move_array)
-        grid.cleanup()
-
-        start = grid.node(int_base_pos[0] - start_point[0], int_base_pos[1] - start_point[1])  # start point
-        end = grid.node(int_base_target[0] - start_point[0], int_base_target[1] - start_point[1])  # end point
-
-        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-        path, runs = finder.find_path(start, end, grid)
-        path = [(this_path[0] + start_point[0], this_path[1] + start_point[1]) for this_path in path]  # remake pos into actual map pos
-
-        path = path[4:]  # remove some starting path that may clip with friendly subunit sprite
-
-        self.combat_move_queue = path  # add path into combat movement queue
-        if len(self.combat_move_queue) < 1:  # simply try walk to target anyway if pathfinder return empty
-            self.combat_move_queue = [self.close_target.base_pos]
-        # ^ End path finding
 
     def delete(self, local=False):
         """delete reference when method is called"""

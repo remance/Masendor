@@ -109,6 +109,7 @@ def move_leader(self, how):
         self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, \
                                                     len(self.subunit_list) * (self.image_size[1] + 2) / 20
         self.set_subunit_target()
+        self.setup_frontline()
         if self.control:
             self.battle.change_inspect_subunit()
         self.input_delay = 0.5

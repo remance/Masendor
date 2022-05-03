@@ -235,6 +235,7 @@ def setup_frontline(self):
 
     for subunit in self.subunits:  # assign frontline variable to subunit for only front side
         subunit.frontline = False
+        subunit.find_nearby_subunit()  # reset nearby subunit in the same unit
         if subunit in self.frontline_object[0]:
             subunit.frontline = True
 

@@ -68,8 +68,8 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                 self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
         elif self.rotate_only:
             self.process_command(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
-        else:  # no new movement register other
-            if mouse_left_up or mouse_left_down:
+        else:  # no new movement register other command
+            if mouse_left_up:
                 self.leader_subunit.command_action = ("Action 0", )
-            elif mouse_right_up or mouse_right_down:
+            elif mouse_right_up:
                 self.leader_subunit.command_action = ("Action 1", )

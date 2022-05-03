@@ -10,7 +10,7 @@ import pygame
 import pygame.freetype
 import screeninfo
 from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit, datasprite
-from gamescript.common import animation, utility
+from gamescript.common import utility
 from gamescript.common.start import common_start_setup, common_start_player
 from gamescript.common.unit import common_unit_setup
 from pygame.locals import *
@@ -140,7 +140,7 @@ class Game:
 
     popup_list_open = utility.popup_list_open
 
-    create_sprite_pool = animation.create_sprite_pool
+    create_sprite_pool = common_start_setup.create_sprite_pool
 
     lorebook_process = lorebook.lorebook_process
 

@@ -6,7 +6,9 @@ from pathlib import Path
 import pygame
 from gamescript import weather, battleui, lorebook, menu, uniteditor, datastat, popup, map
 from gamescript.common import utility, animation
+from gamescript.common.subunit import common_subunit_setup
 
+make_sprite = common_subunit_setup.make_sprite
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
