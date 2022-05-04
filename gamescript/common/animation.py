@@ -3,7 +3,6 @@ import pygame
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 
 
-
 def play_animation(self, speed, dt, scale=1, replace_image=True):
     """
     Play sprite animation
