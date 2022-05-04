@@ -58,7 +58,7 @@ frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "
 
 anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
 
-# TODO: unique, more than two p, at least 10 effect and special, lock?
+# TODO: unique, more than two p, at least 10 effect and special, sort in maker, lock?
 
 
 def reload_animation(animation, char):
