@@ -65,11 +65,6 @@ def reload_animation(animation, char):
     """Reload animation frames"""
     frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if this_image is not None]
     if len(char.frame_list[current_frame]) > 1:  # has stuff to load
-        face = [char.frame_list[current_frame]["p1_eye"], char.frame_list[current_frame]["p1_mouth"],
-                char.frame_list[current_frame]["p2_eye"], char.frame_list[current_frame]["p2_mouth"]]
-        head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
-        p1_armour_selector.change_name(model.armour["p1_armour"])
-        p2_armour_selector.change_name(model.armour["p2_armour"])
         for frame_index in range(0, 10):
             for prop in frame_property_select[frame_index] + anim_property_select:
                 if "effect" in prop:
@@ -109,6 +104,16 @@ def reload_animation(animation, char):
                     frames[frame_index] = surface
             filmstrip_list[frame_index].add_strip(frames[frame_index])
     animation.reload(frames)
+    p1_armour_selector.change_name(char.armour["p1_armour"])
+    p2_armour_selector.change_name(char.armour["p2_armour"])
+    face = [char.bodypart_list[current_frame]["p1_eye"], char.bodypart_list[current_frame]["p1_mouth"],
+            char.bodypart_list[current_frame]["p2_eye"], char.bodypart_list[current_frame]["p2_mouth"]]
+    head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
+    for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+        this_text = "Any"
+        if face[index] not in (0, 1):
+            this_text = face[index]
+        selector.change_name(head_text[index] + str(this_text))
     for helper in helper_list:
         helper.stat1 = char.part_name_list[current_frame]
         helper.stat2 = char.animation_part_list[current_frame]
@@ -1055,9 +1060,9 @@ class Model:
 
         elif "armour" in edit_type:
             if "p1_" in edit_type:
-                self.armour["p1_armour"] = edit_type[10:]
+                self.armour["p1_armour"] = edit_type.split("p1_armour_")[1]
             elif "p2_" in edit_type:
-                self.armour["p2_armour"] = edit_type[10:]
+                self.armour["p2_armour"] = edit_type.split("p2_armour_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             for part in self.sprite_image:
                 if self.animation_part_list[current_frame][part] is not None:
@@ -1066,14 +1071,14 @@ class Model:
         elif "eye" in edit_type:
             if "Any" in edit_type:
                 if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_eye"] = self.p1_any_eye
+                    self.bodypart_list[current_frame]["p1_eye"] = 1
                 elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_eye"] = self.p2_any_eye
+                    self.bodypart_list[current_frame]["p2_eye"] = 1
             else:
                 if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_eye"] = edit_type[7:]
+                    self.bodypart_list[current_frame]["p1_eye"] = edit_type.split("p1_eye_")[1]
                 elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_eye"] = edit_type[7:]
+                    self.bodypart_list[current_frame]["p2_eye"] = edit_type.split("p2_eye_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             part = "p1_head"
             if "p2_" in edit_type:
@@ -1088,9 +1093,9 @@ class Model:
                     self.bodypart_list[current_frame]["p2_mouth"] = self.p2_any_mouth
             else:
                 if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_mouth"] = edit_type[9:]
+                    self.bodypart_list[current_frame]["p1_mouth"] = edit_type.split("p1_mouth_")[1]
                 elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_mouth"] = edit_type[9:]
+                    self.bodypart_list[current_frame]["p2_mouth"] = edit_type.split("p2_mouth_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             part = "p1_head"
             if "p2_" in edit_type:
@@ -1283,10 +1288,10 @@ class Model:
         for key in list(self.frame_list[current_frame].keys()):
             if "weapon" in key and self.frame_list[current_frame][key] != [0]:
                 self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
-        p1_face = {"p1_eye": self.bodypart_list[current_frame]["p1_eye"] if p1_eye_selector.text != "P1 Eye: Any" else 1,
-                   "p1_mouth": self.bodypart_list[current_frame]["p1_mouth"] if p1_mouth_selector.text != "P1 Mouth: Any" else 1}
-        p2_face = {"p2_eye": self.bodypart_list[current_frame]["p2_eye"] if p2_eye_selector.text != "P2 Eye: Any" else 1,
-                   "p2_mouth": self.bodypart_list[current_frame]["p2_mouth"] if p2_mouth_selector.text != "P2 Mouth: Any" else 1}
+        p1_face = {"p1_eye": self.bodypart_list[current_frame]["p1_eye"],
+                   "p1_mouth": self.bodypart_list[current_frame]["p1_mouth"]}
+        p2_face = {"p2_eye": self.bodypart_list[current_frame]["p2_eye"],
+                   "p2_mouth": self.bodypart_list[current_frame]["p2_mouth"]}
         p2_face_pos = 15
         self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p2_face_pos] + list(p2_face.items()) +
                                                             list(self.frame_list[current_frame].items())[p2_face_pos:])}
@@ -1301,7 +1306,7 @@ class Model:
 
         if edit_type == "new" or edit_type == "change":
             if edit_type == "new":
-                for index, frame in enumerate(self.frame_list):  # reset all empty like the first frame
+                for index, frame in enumerate(self.frame_list):  # reset all frame to empty frame like the first one
                     self.frame_list[index] = {key: value for key, value in list(self.frame_list[0].items())}
                 anim_to_pool(animation_name, current_pool, self, activate_list, new=True)
 
@@ -1310,18 +1315,13 @@ class Model:
             animation_history = animation_history[-1:] + [self.animation_part_list[current_frame]]
             body_part_history = body_part_history[-1:] + [self.bodypart_list[current_frame]]
             current_history = 0
-
         elif edit_type != "undo" and edit_type != "redo":
             if current_history < len(animation_history) - 1:
                 part_name_history = part_name_history[:current_history + 1]
                 animation_history = animation_history[:current_history + 1]
                 body_part_history = body_part_history[:current_history + 1]
 
-            animation_history.append(
-                {key: (value[:].copy() if value is not None else value) for key, value in self.animation_part_list[current_frame].items()})
-            body_part_history.append({key: value for key, value in self.bodypart_list[current_frame].items()})
-            part_name_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
-            current_history += 1
+            self.add_history()
 
             if len(animation_history) > 1000:  # save only last 1000 activity
                 new_first = len(animation_history) - 1000
@@ -1369,6 +1369,14 @@ class Model:
         for part_index, part in enumerate(self.animation_part_list[current_frame]):
             rect = part.rect
             self.rect_part_list[list(self.rect_part_list.keys())[part_index]] = rect
+
+    def add_history(self):
+        global current_history
+        animation_history.append(
+            {key: (value[:].copy() if value is not None else value) for key, value in self.animation_part_list[current_frame].items()})
+        body_part_history.append({key: value for key, value in self.bodypart_list[current_frame].items()})
+        part_name_history.append({key: value for key, value in self.part_name_list[current_frame].items()})
+        current_history += 1
 
 
 class Joint(pygame.sprite.Sprite):
@@ -1829,7 +1837,6 @@ while True:
                                 model.edit_part(mouse_pos, "race_" + name.name)
                             elif "armour" in popup_listbox.action:
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "armour_" + name.name)
-                                reload_animation(anim, model)
                                 if "p1" in popup_listbox.action:
                                     p1_armour_selector.change_name(name.name)
                                 elif "p2" in popup_listbox.action:
@@ -1840,14 +1847,12 @@ while True:
                                 elif "p2" in popup_listbox.action:
                                     p2_eye_selector.change_name("P2 Eye: " + name.name)
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
-                                reload_animation(anim, model)
                             elif "mouth" in popup_listbox.action:
                                 if "p1" in popup_listbox.action:
                                     p1_mouth_selector.change_name("P1 Mouth: " + name.name)
                                 elif "p2" in popup_listbox.action:
                                     p2_mouth_selector.change_name("P2 Mouth: " + name.name)
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
-                                reload_animation(anim, model)
                             elif popup_listbox.action == "animation_select":
                                 if animation_name != name.name:
                                     change_animation(name.name)
