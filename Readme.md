@@ -12,7 +12,7 @@ For any suggestions or bugs, feel free to report them in the [**Issues**](https:
 
 Discord channel: [![github](https://github.com/remance/preview/blob/main/discord_logo.png?raw=true)][1]
 
-For game update showcase video: [![github](https://github.com/remance/preview/blob/main/youtube_logo3.png?raw=true)][1]
+For game update showcase video: [![github](https://github.com/remance/preview/blob/main/youtube_logo3.png?raw=true)][2]
 
 If anyone is interested in another similar game like this, there is an interesting game by another developer: https://kaetjaatyy.github.io/devlog/
 
@@ -149,6 +149,6 @@ For those who have read this far, thank you for your interest in the game. To be
 I start developing this game with zero knowledge in video game development let alone how to use pygame. I start learning how to use pygame by tinkering with alien.py in pygame examples folder and keep testing/changing it until it becomes what you can see right now (I keep most video updates on youtube which show the progress of improvement almost from the start). All of the plan I list for the future is the same. I have no idea how to do it, the only thing I have is the picture of what I want to make it look like. Nevertheless, it is fun figuring stuff out and don't let the lack of knowledge stop you from making your own game :P. 
 
 
-[1]: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
-[2]: https://discord.gg/q7yxz4netf
+[1]: https://discord.gg/q7yxz4netf
+[2]: https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw
 
