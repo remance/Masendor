@@ -1,18 +1,18 @@
 "Name","front","side","back","sideup","sidedown"
 "Unarmed","center","center","center","center","center"
-"Sword","2,2","7,4","2,2","6,5","4,4"
-"Greatsword","6,12","6,12","3,8","10,7","8,6"
-"Shortsword","3,3","6,5","3,3","5,5","4,4"
-"Dagger","2,4","7,4","3,3","3,3","3,3"
-"Spear","3,9","4,9","4,9","17,10","17,10"
+"Sword","2,7","7,4","2,2","6,5","4,4"
+"Greatsword","3,11","6,12","3,8","3,10","3,10"
+"Shortsword","3,3","6,5","3,3","3,6","3,6"
+"Dagger","3,5","7,4","3,3","2.5,4","2.5,4"
+"Spear","3,9","4,9","4,9","3,15","3,15"
 "Club",,,,,
 "Mace",,,,,
 "Great Mace",,,,,
 "Flail",,,,,
 "Hammer",,,,,
 "War Hammer",,,,,
-"Handaxe","2,4","13,6","2,4","6,6","6,6"
-"Greataxe","16,11","16,11","9,18","18,19","18,19"
+"Handaxe","2,11","13,7","2,4","11,9","11,9"
+"Greataxe","16,11","16,11","9,18","12,9","12,9"
 "Halberd",,,,,
 "Pike","6,15","3,12","6,11","12,12","12,12"
 "Glaive",,,,,
@@ -20,7 +20,7 @@
 "Quarterstaff",,,,,
 "Sling",,"14,5",,,
 "Blowgun",,,,,
-"Javelin",,"1,7","2,14",,
+"Javelin","1,14","1,9","2,14","3,12","3,12"
 "Throwing Axe",,,,,
 "Longbow",,,,,
 "Shortbow",,"19.5,58",,,
@@ -37,7 +37,7 @@
 "Flintlock Musket",,,,,
 "Flintlock Pistol",,,,,
 "Matchlock Pistol",,,,,
-"Kite Shield","center","center","center","center","center"
+"Kite Shield","16,36","16,36","15,29","12,33","12,33"
 "Buckler","center","center","center","center","center"
 "Round Shield","center","center","center","center","center"
 "Tower Shield","center","center","center","center","center"
