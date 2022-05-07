@@ -78,6 +78,7 @@ class Subunit(pygame.sprite.Sprite):
     threshold_count = common_subunit_update.threshold_count
     temperature_cal = common_subunit_update.temperature_cal
     find_nearby_subunit = common_subunit_update.find_nearby_subunit
+    apply_map_status = common_subunit_update.apply_map_status
     status_to_friend = common_subunit_update.status_to_friend
     start_set = common_subunit_setup.start_set
     process_trait_skill = common_subunit_setup.process_trait_skill
@@ -142,6 +143,7 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_timer = 0
         self.current_action = ()  # for genre that use specific action instead of state
         self.command_action = ()  # next action to be performed
+        self.idle_action = ()  # action that is performed when subunit is idle such as hold spearwall when skill active
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -217,7 +219,7 @@ class Subunit(pygame.sprite.Sprite):
             self.original_reload = (stat["Range Command"] * stat["Combat"]) + grade_stat["Reload Bonus"]
             self.original_charge = 100
             self.original_charge_def = 100
-            self.charge_skill = 21  # use normal charge by default
+            self.charge_skill = 25  # use leading charge by default for leader
             self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = 100 + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
@@ -538,17 +540,17 @@ class Subunit(pygame.sprite.Sprite):
                 self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
                 self.troop_number = 0
                 self.battle.battle_camera.remove(self)
-            # if not self.command_action and "uninterruptible" not in self.current_action:
-            #     self.interrupt_animation = True  # interrupt current animation if there is command action
             done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
-            # if self.current_action is not None:
-            #     print("play", self.current_action)
-            if (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
+            # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
+            if ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
+                (self.idle_action != self.command_action and not self.command_action)) or \
                     (done and "repeat" not in self.current_action):
                 self.interrupt_animation = False
                 self.current_action = self.command_action  # continue next action when animation finish
                 self.pick_animation()
                 self.command_action = ()
+                if not self.idle_action:
+                    self.command_action = self.idle_action
             if recreate_rect:
                 self.rect = self.image.get_rect(center=self.pos)
 

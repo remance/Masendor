@@ -167,6 +167,7 @@ class HeightMap(pygame.sprite.Sprite):
         height_index = 256 - colour  # get colour at pos to obtain the terrain type
         return height_index
 
+
 class BeautifulMap(pygame.sprite.Sprite):
     texture_images = []
     empty_image = None
@@ -236,8 +237,8 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         # v Put in terrain feature texture
         if editor_map is False:
-            for row_pos in range(0, 991):
-                for col_pos in range(0, 991):
+            for row_pos in range(0, 1000):
+                for col_pos in range(0, 1000):
                     if row_pos % 20 == 0 and col_pos % 20 == 0:
                         random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
                         terrain, this_feature = feature_map.get_feature(random_pos, base_map)
@@ -252,7 +253,8 @@ class BeautifulMap(pygame.sprite.Sprite):
                         self.image.blit(this_texture, rect)
         # ^ End terrain feature
 
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.screen_scale[0], self.image.get_height() * self.screen_scale[1]))
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.screen_scale[0],
+                                                         self.image.get_height() * self.screen_scale[1]))
         self.true_image = self.image.copy()  # image before adding effect and place name
 
         self.place_name = place_name  # save place name image as variable

@@ -350,7 +350,8 @@ class Battle:
         # ^ End assign default
 
         # Create the game camera
-        self.camera_zoom = 1
+        self.camera_zoom = 1  # camera zoom level, starting at the furthest zoom
+        self.camera_mode = "Free"  # mode of game camera
         self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
                                               500 * self.screen_scale[
                                                   1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom

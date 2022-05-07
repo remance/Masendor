@@ -1,29 +1,29 @@
 "ID","Name","Troop Type","Type","Area of Effect","Duration","Cooldown","Restriction","Condition","Mana Cost","Discipline Requirement","Stamina Cost","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Damage Effect","Sight Bonus","Hidden Bonus","Status","Stamina Damage","Morale Damage","Enemy Status","Element","Action","Ruleset","Description"
-1,"Fearless Charge",0,2,1,10,5,"4,10","4,10",0,10,10,105,90,90,120,,,,,0,0,-2,0,0,,,,0,1,0,0,0,0,"Charge,repeat",0,"Fear only bring the weakest of men. To be fearless is to charge on even against the face of death itself."
-2,"Glorious Charge",0,2,1,10,5,"4,10","4,10",0,30,10,,,,,,,,,0,0,-2,10,0,,,,0,0,0,4,0,0,"Charge,repeat",0,"Glory to those who brave the fear of death and charge onward to the unknown."
-3,"Steady Charge",0,2,1,10,5,"4,10","4,10",0,40,10,,115,115,80,,,,,10,0,-1.5,10,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"Steady but not too slow will win even more races and battles."
-4,"Frenzied Charge",0,2,1,10,5,"4,10","4,10",0,10,10,160,50,50,130,,,,,-50,0,-4,0,0,115,,,0,1,0,0,0,0,"Charge,repeat",0,"Mindless and aggressive make the most powerful charge."
-5,"Devastating Charge",0,2,1,10,5,"4,10","4,10",0,10,10,110,,,105,,,,120,0,0,-3,0,0,120,,,0,0,0,2,0,0,"Charge,repeat",0,"What is a better objective of a charge aside to devastate the enemies utterly?"
-6,"Stampede",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,110,0,0,-2.5,0,0,,,,0,0,0,1,4,0,"Charge,repeat",0,"Under the iron hooves and beneath the blazing sun, only the strongest can rise up again."
-7,"Breach",0,2,1,10,5,"4,10","4,10",0,10,10,110,,,,,,,110,0,0,-3,0,0,,,,0,76,0,2,0,0,"Charge,repeat",0,"Breaching through the enemy's formation to crush whoever dares to stand at their front is the greatest achievement every shock cavalry troop should dream of."
-8,"Cover Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,130,130,85,,,,,20,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"Risky yet safe. Shield at the front and no archer or spearman can halt your advance."
-9,"Agile Charge",0,2,1,10,5,"4,10","4,10",0,25,10,,120,120,120,,,,110,0,0,-2.5,0,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"Agility is the most important aspect of a charge. You do not really charge by standing still, do you?"
-10,"Highland Charge",1,2,1,10,5,"4,10","4,10",0,30,20,,,,,110,,110,120,,,,,,,,,0,0,0,0,0,,"Charge,repeat",1,
-11,"Dread Charge",0,2,1,10,5,"4,10","4,10",0,10,10,110,,,,,,,,0,0,-2.5,0,0,,,,0,0,0,10,2,0,"Charge,repeat",0,"Oh great horror, what sin did we do to bring you into us."
-12,"Leaping Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,140,0,0,-3.5,0,0,110,,,0,0,0,0,0,0,"Charge,repeat",2,"Momentum gain from leaping can make any following blow a massive crushing power."
-13,"Banzai Charge",0,2,1,,,"4,10","4,10",0,15,15,,,,,,,,,,,,,,,,,-20,0,0,0,0,,"Charge,repeat",1,
-14,"Reckless Charge",0,2,1,10,5,"4,10","4,10",0,0,10,,,,,,,,,,,,,,,,,0,0,0,0,0,,"Charge,repeat",0,
-15,"Historic Moment",0,2,2,10,5,"4,10","4,10",0,10,10,120,,,115,,,,,0,0,-2.5,50,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"There are not many events in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
-16,"Hidden Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,90,,,,,0,0,-2,0,0,,,,0,6,0,0,0,0,"Charge,repeat",0,"It should be practically impossible to charge while remaining hidden. And how can someone defend against such an impossible feat?"
-17,"Clumsy Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"Some troops are just not suitable for charging, whether it be because of their insufficient training or unsuitable equipment."
-18,"Heroic Charge",0,2,2,10,5,"4,10","4,10",0,10,10,110,,,110,,,,,0,0,-2.5,20,0,,,,0,0,0,1,0,0,"Charge,repeat",0,"Just follows the hero, and everything will be alright. They become masters of battle by staying alive after all."
-19,"Weak Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,40,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"A weak charge can often time results in total disaster. Exercise charging tactic for troops with this skill with caution."
-20,"Slow Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,50,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"Due to the troop's equipment weight, its charge is much slower than usual and less effective overall."
-21,"Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,110,,,,,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat",0,"An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemies that completely destroy their morale, or it can be a total disaster that results in a retreat of the charge initiator instead."
-22,"Chanting Charge",0,2,3,10,5,"4,10","4,10",0,10,15,,,,,,,,,,,,,,,,,-40,0,0,0,2,0,"Charge,repeat",0,
-23,"Break Charge",1,2,1,10,100,10,10,0,45,10,,,,,,,,,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat",2,
-24,"Counter Charge",1,2,1,10,60,10,10,0,55,10,,,,,,,,,30,0,-2,0,0,,,,0,0,0,1,0,0,"Charge,repeat",2,
-25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+1,"Fearless Charge",0,2,1,10,5,"4,10","4,10",0,10,10,105,90,90,120,,,,,0,0,-2,0,0,,,,0,1,0,0,0,0,"Charge,repeat,movable",0,"Fear only bring the weakest of men. To be fearless is to charge on even against the face of death itself."
+2,"Glorious Charge",0,2,1,10,5,"4,10","4,10",0,30,10,,,,,,,,,0,0,-2,10,0,,,,0,0,0,4,0,0,"Charge,repeat,movable",0,"Glory to those who brave the fear of death and charge onward to the unknown."
+3,"Steady Charge",0,2,1,10,5,"4,10","4,10",0,40,10,,115,115,80,,,,,10,0,-1.5,10,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"Steady but not too slow will win even more races and battles."
+4,"Frenzied Charge",0,2,1,10,5,"4,10","4,10",0,10,10,160,50,50,130,,,,,-50,0,-4,0,0,115,,,0,1,0,0,0,0,"Charge,repeat,movable",0,"Mindless and aggressive make the most powerful charge."
+5,"Devastating Charge",0,2,1,10,5,"4,10","4,10",0,10,10,110,,,105,,,,120,0,0,-3,0,0,120,,,0,0,0,2,0,0,"Charge,repeat,movable",0,"What is a better objective of a charge aside to devastate the enemies utterly?"
+6,"Stampede",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,110,0,0,-2.5,0,0,,,,0,0,0,1,4,0,"Charge,repeat,movable",0,"Under the iron hooves and beneath the blazing sun, only the strongest can rise up again."
+7,"Breach",0,2,1,10,5,"4,10","4,10",0,10,10,110,,,,,,,110,0,0,-3,0,0,,,,0,76,0,2,0,0,"Charge,repeat,movable",0,"Breaching through the enemy's formation to crush whoever dares to stand at their front is the greatest achievement every shock cavalry troop should dream of."
+8,"Cover Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,130,130,85,,,,,20,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"Risky yet safe. Shield at the front and no archer or spearman can halt your advance."
+9,"Agile Charge",0,2,1,10,5,"4,10","4,10",0,25,10,,120,120,120,,,,110,0,0,-2.5,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"Agility is the most important aspect of a charge. You do not really charge by standing still, do you?"
+10,"Highland Charge",1,2,1,10,5,"4,10","4,10",0,30,20,,,,,110,,110,120,,,,,,,,,0,0,0,0,0,,"Charge,repeat,movable",1,
+11,"Dread Charge",0,2,1,10,5,"4,10","4,10",0,10,10,110,,,,,,,,0,0,-2.5,0,0,,,,0,0,0,10,2,0,"Charge,repeat,movable",0,"Oh great horror, what sin did we do to bring you into us."
+12,"Leaping Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,140,0,0,-3.5,0,0,110,,,0,0,0,0,0,0,"Charge,repeat,movable",2,"Momentum gain from leaping can make any following blow a massive crushing power."
+13,"Banzai Charge",0,2,1,,,"4,10","4,10",0,15,15,,,,,,,,,,,,,,,,,-20,0,0,0,0,,"Charge,repeat,movable",1,
+14,"Reckless Charge",0,2,1,10,5,"4,10","4,10",0,0,10,,,,,,,,,,,,,,,,,0,0,0,0,0,,"Charge,repeat,movable",0,
+15,"Historic Moment",0,2,2,10,5,"4,10","4,10",0,10,10,120,,,115,,,,,0,0,-2.5,50,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"There are not many events in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
+16,"Hidden Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,90,,,,,0,0,-2,0,0,,,,0,6,0,0,0,0,"Charge,repeat,movable",0,"It should be practically impossible to charge while remaining hidden. And how can someone defend against such an impossible feat?"
+17,"Clumsy Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,30,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"Some troops are just not suitable for charging, whether it be because of their insufficient training or unsuitable equipment."
+18,"Heroic Charge",0,2,2,10,5,"4,10","4,10",0,10,10,110,,,110,,,,,0,0,-2.5,20,0,,,,0,0,0,1,0,0,"Charge,repeat,movable",0,"Just follows the hero, and everything will be alright. They become masters of battle by staying alive after all."
+19,"Weak Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,40,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"A weak charge can often time results in total disaster. Exercise charging tactic for troops with this skill with caution."
+20,"Slow Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,50,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"Due to the troop's equipment weight, its charge is much slower than usual and less effective overall."
+21,"Charge",0,2,1,10,5,"4,10","4,10",0,10,10,,,,110,,,,,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,"An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemies that completely destroy their morale, or it can be a total disaster that results in a retreat of the charge initiator instead."
+22,"Chanting Charge",0,2,3,10,5,"4,10","4,10",0,10,15,,,,,,,,,,,,,,,,,-40,0,0,0,2,0,"Charge,repeat,movable",0,
+23,"Break Charge",1,2,1,10,100,"4,10","4,10",0,45,10,,,,,,,,,0,0,-2,0,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",2,
+24,"Counter Charge",1,2,1,10,60,"4,10","4,10",0,55,10,,,,,,,,,30,0,-2,0,0,,,,0,0,0,1,0,0,"Charge,repeat,movable",2,
+25,"Leading Charge",0,2,1,10,15,"4,10","4,10",0,30,10,120,,,125,,,,120,0,0,-1,10,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,
 26,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 27,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 28,"Reconnaissance",0,0,,100,,,,,50,20,,,,,,,,,20,0,,,,,,125,,,0,0,,0,,0,"Only the very best of plans can be created from the most thorough information gathering process."
@@ -100,7 +100,7 @@
 99,"Triple Slash",0,0,1,1,60,10,10,,60,70,,,,,,,,,0,0,0,0,0,,300,,0,0,0,0,0,0,"Action,3times",2,"Thrice the damage, triple the prize!"
 100,"Great Sweep",0,0,3,1,60,10,10,,60,95,,,,,,,,,0,0,0,0,0,,115,,0,0,0,0,0,0,,2,"“One great circle and the bodies will fall. No life shall be forgiven under the dying muttering.” Gasiernse Poem of Blade."
 101,"Pinpoint Shot",0,1,1,30,60,11,11,,70,45,,,,,200,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,"Action",0,"Waste not the arrows nor mind."
-102,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+102,"Swift Thrusts",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 103,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 104,"Combine Determination",0,0,3,1,100,,,,80,30,130,130,130,130,130,,130,130,30,0,,130,50,,200,,0,0,0,0,,0,,2,
 105,"Clear Mind",0,0,1,10,60,,,,70,10,110,110,110,110,110,,110,110,10,0,0,110,0,,,,0,50,0,0,0,0,"BuffSelf",2,"Clear thy mind and the Lord will carry guidance to thee."
@@ -115,22 +115,22 @@
 114,"Poison Attack",0,0,2,1,60,10,10,,50,20,,,,,,,,,0,0,,0,0,,,,0,0,1,2,26,6,,0,"Poison at the tip of a blade never fails to disappoint, especially for those who receive it."
 115,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 116,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-117,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-118,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-119,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+117,"Suppressing Fire",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+118,"Soul Reap",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+119,"Aegis",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 120,"Crushing Leap",0,0,1,1,120,10,10,,60,80,,,,,,,,,0,0,0,0,0,,120,,0,0,0,0,23,0,,2,
 121,"Final Showdown",0,0,1,120,10000,10,10,,50,0,160,160,160,160,160,,160,160,60,0,-10,160,50,,,,0,0,0,0,,0,,2,
 122,"Unto Demise",0,0,,,,,,,,20,,,,,,,,,0,0,,0,0,,,,0,0,20,5,,0,,2,
 123,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 124,"Purge The Infidels",0,0,1,,,,,,80,20,,,,,,,,,0,0,0,0,0,,,,0,0,0,0,,0,,2,"The villains of the peace must be purged. For true peace only existed in our lord’s guidance."
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+125,"Hex Wind",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 126,"Grasp The Opportunity",0,0,,15,60,,,,50,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,,2,"There is always a possibility in every impossible lies waiting."
 127,"Blood Demand",0,0,,,,,,,75,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,,2,"Demand to be made. Or this tribunal will never end."
 128,"Valiant Struggle",0,0,1,,,,,,80,,,,,,,,,,0,0,,0,0,,,,0,0,0,0,,0,,2,"History will remember this day of our valiant struggle!"
 129,"Ground Shake",0,0,3,5,600,10,10,,40,80,,,,,,,,,0,0,0,0,0,,20,,0,0,0,0,23,0,,2,"Those who have legs cannot fight effectively on a shaky foundation."
 130,"Spike Burst",0,0,1,2,120,,,,45,55,,,,,,,,,0,0,,0,0,,150,,0,0,0,0,23,4,,2,"Who would expect the ground they stand on to be their enemy?"
 131,"Deathblow",0,0,1,3,6000,10,10,,,70,,,,,,,,,0,0,0,,,,250,,,,0,0,,0,,2,"These troops can muster their last strength to deal the final blow before they die. Death in melee combat will cause damage to the attackers."
-132,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+132,"Impact Slam",0,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 133,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 134,"Requiem",0,0,2,90,,,,,75,15,,,,,,,,,0,0,,,,,0,,,,0,7,,0,"Play,repeat",2,
 135,"Nature Awakening",0,0,1,,,,,,,10,135,135,135,135,135,135,135,135,35,1,,20,,,,,,86,0,0,,0,,2,
@@ -144,7 +144,7 @@
 143,"Rushing Engagement",0,0,,,,10,10,,40,,115,20,20,140,,,,,-30,0,,50,20,,130,,,,0,0,,0,,2,
 144,"Final Drive",0,0,1,10,6000,10,10,,60,10,150,150,150,150,,,,150,0,,,100,,,,,,,,,,0,,2,"Only a few are prepared to meet their end. Even fewer dare to confront it."
 145,"Primal Carnage",0,0,1,20,,10,10,,10,30,135,30,30,150,,,150,120,-50,,,100,-20,,,,,,0,0,,0,,2,
-146,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+146,"Upbeat Melody",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 147,"Bloody Onslaught",0,0,,10,,10,10,,40,30,160,80,80,135,,,,,0,,,,,,,,,,,1,,0,,2,
 148,"Crack The Whip",0,0,3,30,,,,,10,5,,,,,,,,,0,0,,,,,,,,68,0,0,,0,,2,"Work for your master, slaves! Nothing makes slaves work harder than the sound of whiplash."
 149,"Silver Arrow",0,1,1,20,60,11,11,,50,0,,,,,,,,,0,0,0,,,,,,,,0,0,,5,"BuffGear",2,"Next range attack deals 100% and +100% damage to spirit, evil and demon squads"
@@ -158,7 +158,7 @@
 157,"Clear Insight",0,0,1,60,,,,,70,0,,,,,110,,,,20,0,0,15,10,,,,,50,0,0,,0,,2,"The route is clear. Now only focus."
 158,"Blood For Blood",0,0,,200,,,,,35,25,200,0,0,,,,,150,0,,,,,,,,,,,,,0,,2,
 159,"Shield Breaking",0,0,,1,,10,10,,,35,,,,,,,,,0,0,,,,,,,,,,,,0,,2,"Render their faith in the protection of their lives shattered, and their will to fight will be broken."
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+160,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 161,"Battle Prayer",0,0,1,200,,,,,65,5,105,105,105,105,105,105,105,,0,0,,10,5,,,,,,0,0,,0,,0,"Prayer for safety and victory. Preparing for the departure."
 162,"Disrupting Song",0,0,,1000,,,,,,15,,,,,,,,,0,0,,,,,,,,,0,3,5,0,,2,"A song can soothe the minds just as much as it can disrupt listeners' focus."
 163,"Exact Justice",0,0,,1,,,,,,,,,,,,,,,0,0,,,,200,200,,,,,,,0,,2,
@@ -227,3 +227,4 @@
 226,"Malabel Igiela",3,2,1,10,5,"4,10","4,10",0,10,10,130,120,120,120,,,,150,20,0,-3,10,0,,,,0,1,0,5,0,0,"Charge,repeat",2,"The great charge of Malabel cavalry may one day rest in a page of legend or history book, but today, let us offer condolences to the unfortunate victims of this charge."
 227,"Charge Of Regret",0,2,1,10,5,"4,10","4,10",0,10,10,,,,,,,,130,0,0,-2,30,0,,,,0,2,0,1,2,0,"Charge,repeat",2,"The only word to describe this momentous moment is regret. The regret to not being able to relive this same exact moment ever again, no matter how many times it gets replicated."
 228,"Giant Rush",1,2,2,10,5,"4,10","4,10",0,10,10,,,,110,,,,,0,0,-1.5,0,0,,,,0,0,0,6,4,0,"Charge,repeat",2,"A charge from giants can be count as one of the most devastating charge in history , it is almost impossible to hold position against such massive blows."
+229,"Astral Projection",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

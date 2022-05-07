@@ -33,6 +33,8 @@ def start_set(self, zoom):
     except AttributeError:
         pass
 
+    self.command_buff = self.unit.command_buff[
+                            self.subunit_type] * 100  # command buff from main leader according to this subunit type
     self.grade_social_effect = self.unit.leader_social[self.grade_name]
     self.status_update()
 

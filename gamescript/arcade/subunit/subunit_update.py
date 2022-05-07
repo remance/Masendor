@@ -28,17 +28,8 @@ def status_update(self, weather=None):
         self.red_border = False
 
     # v reset stat to default and apply morale, stamina, command buff to stat
-    if self.max_stamina > 100:
-        self.max_stamina = self.max_stamina - (self.timer * 0.05)  # Max stamina gradually decrease over time - (self.timer * 0.05)
-        self.stamina75 = self.max_stamina * 0.75
-        self.stamina50 = self.max_stamina * 0.5
-        self.stamina25 = self.max_stamina * 0.25
-        self.stamina5 = self.max_stamina * 0.05
-
     self.morale = self.base_morale
     self.authority = self.unit.authority  # unit total authority
-    self.command_buff = self.unit.command_buff[
-                           self.subunit_type] * 100  # command buff from start_set leader according to this subunit type
     self.discipline = self.base_discipline
     self.melee_attack = self.base_melee_attack
     self.melee_def = self.base_melee_def
@@ -118,30 +109,7 @@ def status_update(self, weather=None):
     self.accuracy -= (map_feature_mod["Range Defense Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
     self.discipline += map_feature_mod["Discipline Bonus"]  # discipline defence bonus from terrain bonus
 
-    if 0 not in map_feature_mod["Status"]:  # Some terrain feature can also cause status effect such as swimming in water
-        if 1 in map_feature_mod["Status"]:  # Shallow water type terrain
-            self.status_effect[31] = self.status_list[31].copy()  # wet
-        if 4 in map_feature_mod["Status"] or 5 in map_feature_mod["Status"]:  # Deep water type terrain
-            if 5 in map_feature_mod["Status"]:
-                self.status_effect[93] = self.status_list[93].copy()  # drench
-
-            if self.weight > 60 or self.stamina <= 0:  # weight too much or tired will cause drowning
-                self.status_effect[102] = self.status_list[102].copy()  # Drowning
-
-            elif self.weight > 30:  # Medium weight subunit has trouble travel through water and will sink and progressively lose troops
-                self.status_effect[101] = self.status_list[101].copy()  # Sinking
-
-            elif self.weight < 30:  # Lightweight subunit has no trouble travel through water
-                self.status_effect[104] = self.status_list[104].copy()  # Swimming
-
-        if 2 in map_feature_mod["Status"]:  # Rot type terrain
-            self.status_effect[54] = self.status_list[54].copy()
-
-        if 3 in map_feature_mod["Status"]:  # Poison type terrain
-            self.elem_count[4] += ((100 - self.elem_res[4]) / 100)
-
-        if 6 in map_feature_mod["Status"]:  # Mud terrain
-            self.status_effect[106] = self.status_list[106].copy()
+    self.apply_map_status(map_feature_mod)
     # self.hidden += self.unit.feature_map[self.unit.feature][6]
     temp_reach = map_feature_mod["Temperature"] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
     # ^ End map feature
@@ -225,14 +193,13 @@ def status_update(self, weather=None):
 
     self.temperature_cal(temp_reach)  # calculate temperature and its effect
 
-    # v Elemental effect
-    if self.elem_count != [0, 0, 0, 0, 0]:  # Apply effect if elem threshold reach 50 or 100
-        self.elem_count[0] = self.threshold_count(self.elem_count[0], 28, 92)
-        self.elem_count[1] = self.threshold_count(self.elem_count[1], 31, 93)
-        self.elem_count[2] = self.threshold_count(self.elem_count[2], 30, 94)
-        self.elem_count[3] = self.threshold_count(self.elem_count[3], 23, 35)
-        self.elem_count[4] = self.threshold_count(self.elem_count[4], 26, 27)
-        self.elem_count = [elem - self.timer if elem > 0 else elem for elem in self.elem_count]
+    # v Elemental effect, Apply effect if elem threshold reach 50 or 100
+    self.elem_count[0] = self.threshold_count(self.elem_count[0], 28, 92)
+    self.elem_count[1] = self.threshold_count(self.elem_count[1], 31, 93)
+    self.elem_count[2] = self.threshold_count(self.elem_count[2], 30, 94)
+    self.elem_count[3] = self.threshold_count(self.elem_count[3], 23, 35)
+    self.elem_count[4] = self.threshold_count(self.elem_count[4], 26, 27)
+    self.elem_count = {key: value - self.timer if value > 0 else value for key, value in self.elem_count.items()}
     # ^ End elemental effect
 
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
