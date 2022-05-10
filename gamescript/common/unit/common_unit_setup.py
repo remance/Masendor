@@ -8,7 +8,13 @@ from gamescript.datastat import stat_convert
 
 
 def setup_unit(self, team_army, troop_list, specific_team=None):
-    """read unit from unit_pos file"""
+    """
+    Read unit battle data from unit_pos file
+    :param self: Battle or Game object
+    :param team_army: List of team unit group
+    :param troop_list: Troop_list from troop data
+    :param specific_team: Assign the unit to which specific team
+    """
     from gamescript import unit
     team_colour = unit.team_colour
 
@@ -32,7 +38,7 @@ def setup_unit(self, team_army, troop_list, specific_team=None):
             for n, i in enumerate(this_unit):
                 this_unit = stat_convert(this_unit, n, i, list_column=list_column, int_column=int_column, float_column=float_column)
             this_unit = {header[index]: stuff for index, stuff in enumerate(this_unit)}
-            if specific_team is None or specific_team == this_unit["Team"]:
+            if specific_team is None or specific_team == this_unit["Team"]:  # check player control
                 control = False
                 if self.team_selected == this_unit["Team"] or self.enactment:
                     control = True

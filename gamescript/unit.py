@@ -404,7 +404,6 @@ class Unit(pygame.sprite.Sprite):
                 for subunit in self.subunits:
                     subunit.kill()
 
-
     def process_retreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)
         self.command_state = self.state  # command retreat

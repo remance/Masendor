@@ -1,24 +1,11 @@
 def process_command(self, target_pos, run_command=False, revert_move=False, enemy=None, other_command=None):
     """Process input order into state and subunit base_target action
     other_command parameter 0 is default command, 1 is natural pause, 2 is order pause"""
-    if other_command is None:  # move or melee_attack command
+    if other_command is None:  # move
         self.state = 1
-
-        # if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # melee_attack
-        #     if self.ammo <= 0 or self.forced_melee:  # no magazine_left to shoot or forced melee_attack command
-        #         self.state = 3  # move to melee
-        #     elif self.ammo > 0:  # have magazine_left to shoot
-        #         self.state = 5  # Move to range melee_attack
-        #         self.attack_target = enemy
-        #         self.base_attack_pos = enemy.base_pos
-        #         self.set_target(self.base_attack_pos)
-        #
-        # else:
 
         if run_command:
             self.state += 1  # run state
-
-        self.command_state = self.state
 
         self.range_combat_check = False
         self.command_target = self.base_target
@@ -31,5 +18,8 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
         if "Skill" in other_command:
             for subunit in self.subunits:
                 subunit.command_action = (other_command, )
-            if "Charge" in other_command:
+            if "Charge" in other_command:  # also move when charge
+                self.state = 4
                 self.set_target(target_pos)
+
+    self.command_state = self.state

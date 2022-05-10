@@ -542,14 +542,13 @@ class Subunit(pygame.sprite.Sprite):
                 self.battle.battle_camera.remove(self)
             done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
             # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
-            if ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
-                (self.idle_action != self.command_action and not self.command_action)) or \
+            if (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
                     (done and "repeat" not in self.current_action):
                 self.interrupt_animation = False
                 self.current_action = self.command_action  # continue next action when animation finish
                 self.pick_animation()
                 self.command_action = ()
-                if not self.idle_action:
+                if not self.idle_action and self.idle_action != self.command_action:
                     self.command_action = self.idle_action
             if recreate_rect:
                 self.rect = self.image.get_rect(center=self.pos)

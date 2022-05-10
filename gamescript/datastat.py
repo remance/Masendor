@@ -192,7 +192,7 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ["ID", "Temperature Change"]  # value int only
+            int_column = ["ID", "Max Stack", "Temperature Change"]  # value int only
             tuple_column = ["Special Effect", "Status Conflict", "Ruleset"]  # value in tuple only
             mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Armour Effect",
                           "Speed Effect", "Accuracy Effect", "Reload Effect",

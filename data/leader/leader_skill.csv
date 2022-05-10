@@ -1,8 +1,8 @@
-0,"Name","Type","Range","Area of Effect","Duration","Cooldown","Mana Cost","Stamina Cost","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Authority Effect","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Damage Effect","Sight Bonus","Hidden Bonus","Status","Damage","Stamina Damage","Morale Damage","Enemy Status","Element","Action","Ruleset","Description"
-1,"Inspire Loyalty",0,0,4,60,300,0,,,,,,,,,,,0,0,0,30,15,,,,-10,0,,0,0,0,0,"BuffUnit",0,"True Loyalty comes from respect. Inspire your followers so they understand that you are worthy of it."
+0,"Name","Type","Range","Area of Effect","Duration","Cooldown","Mana Cost","Stamina Cost","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Authority Bonus","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Damage Effect","Sight Bonus","Hidden Bonus","Status","Damage","Stamina Damage","Morale Damage","Enemy Status","Element","Action","Ruleset","Description"
+1,"Inspire Loyalty",0,0,4,60,300,0,,,,,,,,,,10,0,0,0,30,15,,,,-10,0,,0,0,0,0,"BuffUnit",0,"True Loyalty comes from respect. Inspire your followers so they understand that you are worthy of it."
 2,"Battle Chant",0,0,4,30,250,0,,120,,,,,,,120,,0,0,0,10,0,,,,-20,0,,0,4,0,0,"Shout",0,
 3,"Rally",0,0,4,60,300,0,,,,,,,,,,,0,0,0,50,0,,,,-30,,,0,0,0,0,"BuffUnit",0,"A well-timed rally from a capable leader can turn the tide of battle as much as a well-thought plan."
-4,"Entrap",1,100,4,20,195,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,20,,0,"DebuffUnit",0,
+4,"Entrap",1,100,4,20,195,0,,80,,,30,,,,70,,0,0,0,,0,,,,,,,0,20,,0,"DebuffUnit",0,
 5,"Lure",1,100,4,15,195,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,15,,0,"DebuffUnit",0,"Just a piece of bait. Even the mightiest can fall to the weakest in the right circumstance."
 6,"Prayer",0,0,4,120,750,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"Prayer",0,
 7,"Misinformation",1,100,4,30,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,2,,0,"DebuffUnit",0,"The right plan and action can only be implemented with the right information. One wrong placement of a piece can render the whole operation crumble."
@@ -10,95 +10,95 @@
 9,"Order Disruption",,60,1,25,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"DebuffUnit",0,
 10,"Glorious Presence",0,0,1,120,,0,,,,,,,,,,,0,0,0,,,,,,-100,,,0,0,,,"BuffSelf",0,
 11,"Terrifying Presence",0,0,1,,,0,,,,,,,,,,,0,0,0,,,,,,-100,,,0,10,,0,"BuffSelf",0,
-12,"Majestic Presence",0,0,1,,,0,,,,,,,,,,,0,0,0,,,,,,-100,,,0,0,,0,"BuffSelf",0,
-13,"Godly Presence",0,0,1,60,,0,,,,,,,,,,,0,0,0,,,,,,-200,,,0,0,,,"BuffSelf",2,
-14,"Forced March",0,0,4,30,30,0,0,50,,,200,40,,,,,0,0,0,-20,0,,,,,,,0,0,,,"BuffUnit",0,"Location is a deciding factor in most battles. A forced march may ensure that you can secure an advantageous position before the enemy."
-15,"Death March",0,0,4,30,30,0,0,50,,,300,30,,,,,0,-10,0,-40,0,,,,,,,0,0,,0,"BuffUnit",0,
-16,"Suppress Fear",0,30,4,60,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,
+12,"Majestic Presence",0,0,1,,,0,,,,,,,,,,,0,0,0,,15,,,,-100,,,0,0,,0,"BuffSelf",0,
+13,"Godly Presence",0,0,1,60,,0,,,,,,,,,,,0,0,0,,40,,,,-200,,,0,0,,0,"BuffSelf",2,
+14,"Forced March",0,0,4,30,30,0,0,50,60,70,200,40,,,,,-20,0,-1,-20,0,,,,-50,0,,0,0,,0,"BuffUnit",0,"Location is a deciding factor in most battles. A forced march may ensure that you can secure an advantageous position before the enemy."
+15,"Death March",0,0,4,30,30,0,0,50,40,60,300,30,,,,,-30,-10,-1,-40,0,,,,-70,0,,0,0,,0,"BuffUnit",0,"Deaths are preferable to defeat. The commander orders, and the troops obey such is the will of an army. One final march."
+16,"Suppress Fear",0,30,4,60,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,"Soldiers quivering in fear is no better than unarmed civilians. What use is their weapon if they are not going to wield it against their enemies?"
 17,"Vanquish Terror",,30,4,60,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,
-18,"Determination",,,,,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,1,,0,,0,
-19,"Encourage",,30,4,60,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,"A simple encouragement can go a long way to make the weak become the strong."
-20,"Ensnare",,45,4,15,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"DebuffUnit",0,
-21,"Make Haste",,0,4,80,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,
-22,"Demoralise",,100,4,45,,0,,,,,,,,,,,,0,0,,,,,,,,,0,0,,0,"DebuffUnit",0,"Morale is everything in battle. A battle can only go on when the troops are willing to fight. Now just take that out of the equation and a fight will turn into a massacre."
-23,"Defiance",,0,1,,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffSelf",0,
-24,"Show Of Force",,0,4,,,0,0,,,,,,,,,,30,0,0,,0,,,,,,,0,1,,0,,0,
-25,"Tactical Withdrawal",,0,4,10,60,0,5,60,120,120,150,,,,,,10,0,0,0,10,,,,0,0,,0,0,,0,"BuffUnit",0,
-26,"Defense Focus",,0,4,30,100,,0,60,140,140,60,60,60,60,60,,50,0,0,,,,,,,,,,,,,"BuffUnit",0,
-27,"Magic Focus",,0,4,30,100,,0,60,60,60,60,,,,60,,-50,0,0,,,,,,,,,,,,,"BuffUnit",2,
-28,"Offense Focus",,0,4,30,100,,0,140,50,50,120,,,,140,,-50,0,0,,,,,,,,,,,,,"BuffUnit",0,
-29,"Range Focus",,0,4,30,100,,0,50,50,50,60,140,140,140,60,,-50,0,0,,,,,,,,,,,,,"BuffUnit",0,
-30,"Ambush Focus",,0,4,30,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,
-31,"Breakout",,,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,
-32,"Swift Retreat",0,,4,15,80,,10,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,"Running away and conserving your troops to save the day. This is the way to win the war."
-33,"Hit And Run",,,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,
+18,"Determination",,,,,,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,1,,0,,0,"Only willpower brings a dream to reality. Determination begets success or so the saying goes."
+19,"Encourage",,30,4,60,,0,,105,105,105,105,105,105,105,105,5,0,0,0,15,0,,,,,,,0,0,,0,"BuffUnit",0,"A simple encouragement can go a long way to make the weak become the strong."
+20,"Ensnare",,45,4,15,,0,,,,,10,80,,,50,,0,0,0,,0,,,,,,,0,0,,0,"DebuffUnit",0,
+21,"Make Haste",,0,4,80,,0,,,,,145,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,
+22,"Demoralise",,100,4,45,,0,,,,,,,,,,,,0,0,-60,,,,,,,,0,0,,0,"DebuffUnit",0,"Morale is everything in battle. A battle can only go on when the troops are willing to fight. Now just take that out of the equation and a fight will turn into a massacre."
+23,"Defiance",,0,1,,,0,,125,140,150,,,,,,,50,0,0,,0,,,,,,,0,0,,0,"BuffSelf",0,
+24,"Show Of Force",,0,4,,,0,0,,,,,,,,,,30,0,0,,0,,,,,,,0,1,,0,,0,"A simple demonstration of true power. They only need to see to know defeat. The ultimate feat of victory to win a war without waging a single battle ."
+25,"Tactical Withdrawal",,0,4,10,60,0,5,60,120,120,150,,,,,,10,0,0,0,10,,,,0,0,,0,0,,0,"BuffUnit",0,"A quick and efficient retreat is a tactic every good leader must know. Why waste your troops on a losing battle when a winning one is possible later on? "
+26,"Defense Focus",,0,4,30,100,0,0,60,140,140,60,60,60,60,60,,50,0,0,,,,,,,,,,,,,"BuffUnit",0,"The best defence is a good offence. Receive, gauge, and then retaliate. Let the enemy makes the first move allows you to select the best countermeasure. "
+27,"Magic Focus",,0,4,30,100,0,0,60,60,60,60,,,,60,,-50,0,0,,,,,,,,,,,,,"BuffUnit",2,
+28,"Offense Focus",,0,4,30,100,0,0,140,50,50,120,,,,140,,-50,0,0,,,,,,,,,,,,,"BuffUnit",0,
+29,"Range Focus",,0,4,30,100,0,0,50,50,50,60,140,140,140,60,,-50,0,0,,,,,,,,,,,,,"BuffUnit",0,
+30,"Ambush Focus",,0,4,30,,0,,,,,20,,,,,,70,0,0,,,120,,-30,,,,,,,,"BuffUnit",0,"The enemy one should fight with is the enemy unprepared for battle. No one can really efficiently plan against an unseen enemy. "
+31,"Breakout",,,,,,0,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,
+32,"Swift Retreat",0,,4,15,80,0,10,20,,,170,,,,10,,,0,0,,,,,,,,,,,,,"BuffUnit",0,"Running away and conserving your troops to save the day. This is the way to win the war."
+33,"Hit And Run",,,4,,,0,,,,,145,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,
 34,,,,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,
-35,"Great Maneuver",,,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",0,
+35,"Great Maneuver",,,4,,,,,,,,160,,,,,5,,0,0,,5,,,,,,,,,,,"BuffUnit",0,
 36,"Final Glory",,,1,60,60000,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",,
-37,"Provoke",,50,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"DebuffUnit",,
+37,"Provoke",,50,4,,,,,125,70,70,110,80,,80,140,-10,-15,0,0,10,-5,,,,,,,,,,,"DebuffUnit",,
 38,"Intimidate",,30,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"DebuffUnit",,
-39,"Sabotage",,90,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"DebuffUnit",,
-40,"Great Taunt",,100,,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"DebuffUnit",,
-41,"Combat Aid",,60,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
-42,"Emergency Treatment",,30,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,"BuffUnit",,
-43,"Unity",,0,4,,,,,,,,,,,,,,,0,0,,,,,,,,,,,,,,,
+39,"Sabotage",,90,4,,,,,60,70,80,80,70,70,80,70,,-10,0,0,,,,,,,,,,,,,"DebuffUnit",,
+40,"Great Taunt",,100,,,,,,160,20,20,130,10,10,10,130,-30,-40,0,0,30,-20,,,,,,,,,,,"DebuffUnit",,
+41,"Combat Aid",,30,4,,,,,,,,,,,,,,,20,5,20,,,,,-15,,,,,,,"BuffUnit",,
+42,"Emergency Treatment",,15,4,,,,,,,,,,,,,,,30,10,10,,,,,,,,,,,,"BuffUnit",,
+43,"Unity",,0,4,,,,,,,,,,,,,30,,0,0,15,30,,,,,,,,,,,,,
 44,"Fire Trap",,60,30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 45,"Smoke Trap",,60,45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 46,"On The Defensive",,0,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
 47,"Diversion",,50,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-48,"Emperor's Decree",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-49,"King's Command",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-50,"Lord's Order",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-51,"Honourable Chivalry",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
-52,"Heroic Valour",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-53,"Marathon Sprint",,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
-54,"Total Control",,0,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
+48,"Emperor's Decree",,0,5,,,,,130,130,130,130,130,,130,130,50,25,,,50,40,,,,,,,,,,,"BuffAll",,
+49,"King's Command",,0,5,,,,,120,120,120,120,120,,120,120,35,15,,,40,30,,,,,,,,,,,"BuffAll",,
+50,"Lord's Order",,0,5,,,,,110,110,110,110,110,,110,110,20,5,,,30,20,,,,,,,,,,,"BuffAll",,
+51,"Honourable Chivalry",,0,5,,,,,105,105,105,105,,,,110,10,10,,,20,15,,,,,,,,,,,"BuffUnit",,
+52,"Heroic Valour",,0,5,,,,,120,125,125,115,115,,115,150,30,15,,,50,20,,,,,,,,,,,"BuffAll",,
+53,"Marathon Sprint",,0,1,,,,,50,50,50,200,50,50,50,50,,,,1,25,10,,,,,,,,,,,"BuffSelf",,
+54,"Total Control",,0,4,,,,,,,,,,,,,100,,,,-30,70,,,,,,,,,,,"BuffUnit",,"No disobedience is allowed and total control must be maintained."
 55,"Holy Ordinance",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-56,"Divine Potency",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
+56,"Divine Potency",,0,5,,,,,,,,,,,,,65,,5,10,300,75,,,,-60,,,,,,,"BuffAll",,
 57,"Great Enlightenment",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-58,"Divine Purity",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-59,"Devout Submission",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffUnit",,
-60,"Commander's Duty",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-61,"Conqueror's Destiny",,0,300,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
+58,"Divine Purity",,,1,,,,,160,160,160,120,200,,200,250,50,50,20,30,500,100,,,,,,,,,,,"BuffAll",,"Purity of the soul and mind reaching the status of divinity. No mere man can hope to accomplish such a feat. "
+59,"Devout Submission",,,,,,,,70,70,70,,10,,70,120,200,,,,100,100,,,-80,,,,,,,,"DebuffUnit",,
+60,"Commander's Duty",,0,5,,,,,110,135,125,120,140,,140,115,30,20,,,20,35,,,,,,,,,,,"BuffAll",,
+61,"Conqueror's Destiny",,0,300,,,,,170,115,105,110,110,,110,150,30,,,,50,50,,,,,,,,,,,"BuffAll",,"The star aligns, and it is time for the dynasty to change. Some say the ruler's throne has a will of its own, and it will choose only those who deserve of it. No one can deny destiny. Not even the conqueror himself."
 62,"Command To Obey",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
-63,"Chieftain's Guidance",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-64,"Land Supremacy",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-65,"Commence The Hunt",,0,300,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-66,"God Of War",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-67,"Liberty Or Death",,0,250,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
+63,"Chieftain's Guidance",,0,5,,,,,120,,,110,,,,130,5,,,,30,,,,,,,,,,,,"BuffAll",,
+64,"Land Supremacy",,0,5,,,,,150,150,150,150,150,,150,150,60,60,,,100,,,,,,,,,,,,"BuffAll",,"Complete control over land is now established under the supreme leadership. The battle is simply as good as over."
+65,"Commence The Hunt",,0,300,120,600,,,115,70,60,140,200,150,200,140,20,-50,,,50,-15,150,,100,100,,,,,,,"BuffAll",,"The hunting party is commenced. All are nothing more than prey in the eyes of true hunters."
+66,"God Of War",,0,5,60,600,,,180,160,150,150,180,,150,200,50,50,,5,50,50,,,,,,,,,,,"BuffAll",,
+67,"Liberty Or Death",,0,250,60,600,,,125,140,110,115,150,,150,120,20,45,,,60,10,,,,,,,,,,,"BuffAll",,
 68,"Masterful Ambush",,0,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
 69,"Mastermind Perpetration",,100,150,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffAll",,
-70,"Demon Curse",,200,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-71,"Blessing Of Heart",,150,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
+70,"Demon Curse",,200,4,,,40,,25,50,50,30,20,,40,30,-30,-50,-5,-5,-60,-30,,,-10,,,,,,,,,,"Some curses are worse than death. This one is definitely one of those."
+71,"Blessing Of Heart",,150,4,,,,,125,125,125,125,125,,125,125,10,10,,,35,20,,,,,,,,,,,"BuffAll",,
 72,"Cooperation Support",,60,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
 73,"New Choosing",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 74,"Ingenious Manipulation",,100,150,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffAll",,
 75,"Enforce Authority",,,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
 76,"Bestow Duty",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-77,"Sense Recover",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-78,"Warhorn Signal",,,300,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Warhorn",,
+77,"Sense Recover",,,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+78,"Warhorn Signal",,,300,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Warhorn",,"A sound from a warhorn can be heard throughout a battlefield, which makes it wonderful for an important signal or boosting the troops' morale."
 79,"Unleash Hell",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Summon",,
-80,"Undead Rising",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Summon",,
+80,"Undead Rising",,,100,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Summon",,
 81,"Triumphant Of The Worthy",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 82,"Omen Of Victory",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 83,"God Speed",,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
 84,"March Of The Four Wind",,60,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 85,"Bribery Betrayal",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 86,"Blazing Heart",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-87,"Precise Execution",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-88,"Absolute Might",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
+87,"Precise Execution",,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+88,"Absolute Might",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,"Only those with might can truly rule. The strongs not only survive, they can exploit, dominate, and eradicate the weaks at will."
 89,"Absolute Command",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 90,"Zero To One",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 91,"Guardian Star",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-92,"Finest Archer",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
-93,"Grand Combat",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
+92,"Finest Archer",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
+93,"Grand Combat",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
 94,"Dread Fury",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 95,"Paragon Providence",,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
-96,"Will Domination",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffUnit",,
+96,"Will Domination",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffUnit",,"All will can crumble. A simple trick to the mind and even the strongest of will shall fall to the string of manipulation."
 97,"Salvation",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Summon",,
 98,"Master Plan Initiative",,,250,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffAll",,
 99,"Saint Exemplar",,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-100,"Foundation Of An Empire",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+100,"Foundation Of An Empire",,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 101,"Great Destruction",,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 102,"Abandon All Hope",,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 103,"Feast Of Death",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

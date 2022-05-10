@@ -29,22 +29,22 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class EscBox(pygame.sprite.Sprite):
-    images = []
+    images = {}
     screen_rect = None
 
     def __init__(self):
         self._layer = 24
         pygame.sprite.Sprite.__init__(self)
         self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
-        self.image = list(self.images.values())[0]
-        self.rect = self.image.get_rect(center=self.pos)
         self.mode = "menu"  # Current menu mode
+        self.image = self.images[self.mode + ".png"]
+        self.rect = self.image.get_rect(center=self.pos)
 
     def change_mode(self, mode):
         """Change between 0 menu, 1 option, 2 encyclopedia mode"""
         self.mode = mode
-        if self.mode != 2:
-            self.image = list(self.images.values())[mode]
+        if self.mode != "encyclopedia":
+            self.image = self.images[mode + ".png"]
             self.rect = self.image.get_rect(center=self.pos)
 
 

@@ -274,10 +274,14 @@ def status_update(self, weather=None):
     # v cooldown, active and effect timer function
     self.skill_cooldown = {key: val - self.timer for key, val in self.skill_cooldown.items()}  # cooldown decrease overtime
     self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if val > 0}  # remove cooldown if time reach 0
+    self.idle_action = ()
     for a, b in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
         b["Duration"] -= self.timer
+        if "hold" in b["Action"] or "repeat" in b["Action"]:
+            self.idle_action = self.command_action
     self.skill_effect = {key: val for key, val in self.skill_effect.items() if
                          val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
+
     for a, b in self.status_effect.items():
         b["Duration"] -= self.timer
     self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0}
@@ -380,19 +384,9 @@ def health_stamina_logic(self, dt):
             self.old_last_stamina = self.stamina
 
 
-def charge_logic(self, parent_state):
-    if self.state == 4:  # charge skill only when running to melee
-        self.charge_momentum += self.timer * (self.speed / 50)
-        if self.charge_momentum >= 5:
-            self.use_skill(0)  # Use charge skill
-            self.unit.charging = True
-            self.charge_momentum = 5
-
-    elif self.charge_momentum > 1:  # reset charge momentum if charge skill not active
-        self.charge_momentum -= self.timer * (self.speed / 50)
-        if self.charge_momentum <= 1:
-            self.unit.charging = False
-            self.charge_momentum = 1
+def charge_logic(self, *args):
+    """Not use in arcade mode"""
+    pass
 
 
 def check_skill_condition(self):
@@ -421,13 +415,17 @@ def skill_check_logic(self):
                     if "Action" in action[0]:
                         action[0] += " " + str(0)  # use main hand by default for Action type animation skill
                 if skill != 0 and skill in self.available_skill:
+                    self.skill_effect = {}  # arcade mode allows only 1 skill active at a time
                     self.use_skill(skill)
                     self.command_action = action
+                    if "hold" in self.command_action or "repeat" in self.command_action:
+                        self.idle_action = self.command_action
                     self.unit.input_delay = 1
                 else:
                     self.command_action = ()
             elif "Charge" in command_action:
-                action = self.skill[0]["Action"]
+                print(command_action)
+                action = self.skill[0]["Action"].copy()
                 action[0] += " " + command_action[0][-1]
                 self.command_action = tuple(action)
             else:
