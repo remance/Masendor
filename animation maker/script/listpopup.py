@@ -74,7 +74,7 @@ def popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui,
     popup_listbox.namelist = new_list
     popup_listbox.action = action
     setup_list(menu.NameList, current_row, new_list, popup_namegroup,
-               popup_listbox, ui, screen_scale, layer=19)
+               popup_listbox, ui, screen_scale, layer=21)
 
     popup_list_scroll.pos = popup_listbox.rect.topright  # change position variable
     popup_list_scroll.rect = popup_list_scroll.image.get_rect(topleft=popup_listbox.rect.topright)

@@ -110,9 +110,8 @@ def reload_animation(animation, char):
                     frames[frame_index] = surface
             filmstrip_list[frame_index].add_strip(frames[frame_index])
     animation.reload(frames)
-    armour_selector.change_name(char.armour["p1_armour"])
-    face = [char.bodypart_list[current_frame]["p1_eye"], char.bodypart_list[current_frame]["p1_mouth"],
-            char.bodypart_list[current_frame]["p2_eye"], char.bodypart_list[current_frame]["p2_mouth"]]
+    armour_selector.change_name(char.armour[p_body_helper.ui_type + "_armour"])
+    face = [char.bodypart_list[current_frame][p_body_helper.ui_type + "_eye"], char.bodypart_list[current_frame][p_body_helper.ui_type + "_mouth"]]
     head_text = ["Eye: ", "Mouth: "]
     for index, selector in enumerate([eye_selector, mouth_selector]):
         this_text = "Any"
@@ -546,9 +545,7 @@ class BodyHelper(pygame.sprite.Sprite):
                     text_rect1 = text_surface1.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 10))
                     text_rect2 = text_surface2.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 10 + self.font_size + 2))
                 elif "body" in part:
-                    head_name = "p1_head"
-                    if "p2" in part:
-                        head_name = "p2_head"
+                    head_name = part[0:2] + "_head"
                     text_rect1 = text_surface1.get_rect(midleft=(self.part_pos[head_name][0] + shift_x, self.part_pos[head_name][1] - 5))
                     text_rect2 = text_surface2.get_rect(
                         midleft=(self.part_pos[head_name][0] + shift_x, self.part_pos[head_name][1] - 5 + self.font_size + 2))
@@ -1241,16 +1238,15 @@ class Model:
         for key in list(self.frame_list[current_frame].keys()):
             if "weapon" in key and self.frame_list[current_frame][key] != [0]:
                 self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
-        p1_face = {"p1_eye": self.bodypart_list[current_frame]["p1_eye"],
-                   "p1_mouth": self.bodypart_list[current_frame]["p1_mouth"]}
-        p2_face = {"p2_eye": self.bodypart_list[current_frame]["p2_eye"],
-                   "p2_mouth": self.bodypart_list[current_frame]["p2_mouth"]}
-        p2_face_pos = 15
-        self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p2_face_pos] + list(p2_face.items()) +
-                                                            list(self.frame_list[current_frame].items())[p2_face_pos:])}
-        p1_face_pos = 1
-        self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p1_face_pos] + list(p1_face.items()) +
-                                                            list(self.frame_list[current_frame].items())[p1_face_pos:])}
+        p_face = {}
+        for p in ["p" + str(p) for p in range(1, max_person + 1)]:
+            p_face = p_face | {p: {p + "_eye": self.bodypart_list[current_frame][p + "_eye"],
+                                   p + "_mouth": self.bodypart_list[current_frame][p + "_mouth"]}}
+        for p in p_face:
+            p_face_pos = list(self.frame_list[current_frame].keys()).index(p + "_head") + 1
+            self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p_face_pos] + list(p_face[p].items()) +
+                                                                list(self.frame_list[current_frame].items())[p_face_pos:])}
+
         self.frame_list[current_frame]["size"] = self.size
         self.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
         self.frame_list[current_frame]["animation_property"] = anim_property_select
@@ -1505,8 +1501,8 @@ part_copy_button = Button("Copy P", image, (reset_button.pos[0] + reset_button.i
                                             p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
                                               p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-p_all_button = Button("P All", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
-                                       p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p_all_button = Button("P All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
+                                       p_body_helper.rect.midtop[1] - (image.get_height() * 2)))
 all_button = Button("All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
                                    p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 race_part_button = Button("", image, (reset_button.image.get_width() / 2,
