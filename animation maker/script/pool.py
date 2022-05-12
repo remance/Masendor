@@ -13,7 +13,7 @@ from gamescript import datastat
 stat_convert = datastat.stat_convert
 
 
-def read_anim_data(direction_list, pool_type):
+def read_anim_data(direction_list, pool_type, anim_column_header):
     pool = []
     for direction in direction_list:
         with open(os.path.join(main_dir, "data", "animation", pool_type, direction + ".csv"), encoding="utf-8",
@@ -21,15 +21,9 @@ def read_anim_data(direction_list, pool_type):
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             part_name_header = rd[0]
-            list_column = ["p1_head", "p1_face", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
-                           "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot",
-                           "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up",
-                           "p2_r_arm_low", "p2_r_hand",
-                           "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
-                           "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1",
-                           "dmg_effect_2",
-                           "frame_property", "animation_property", "special_1", "special_2", "special_3", "special_4",
-                           "special_5"]  # value in list only
+            list_column = anim_column_header  # value in list only
+            list_exclude = ["Name", "size", "eye", "mouth"]
+            list_column = [item for item in list_column if item not in list_exclude and any(ext in item for ext in list_exclude) is False]
             list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
             part_name_header = part_name_header[1:]  # keep only part name for list ref later
             animation_pool = {}

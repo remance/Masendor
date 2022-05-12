@@ -47,18 +47,24 @@ pygame.display.set_caption("Animation Maker")  # set the self name on program bo
 pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
-anim_column_header = ["Name", "p1_head", "p1_eye", "p1_mouth", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
-                      "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot", "p1_main_weapon", "p1_sub_weapon",
-                      "p2_head", "p2_eye", "p2_mouth", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand", "p2_l_arm_up",
-                      "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg", "p2_l_foot", "p2_main_weapon", "p2_sub_weapon",
-                      "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2", "special_1", "special_2", "special_3", "special_4",
-                      "special_5", "size", "frame_property", "animation_property"]  # For csv saving
-frame_property_list = ["hold", "p1_turret", "p2_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon",
-                       "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_", "effect_grey", "effect_colour_"]
+max_person = 4
+part_column_header = ["head", "eye", "mouth", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
+                      "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon"]
+anim_column_header = ["Name"]
+for p in range(1, max_person + 1):
+    p_name = "p" + str(p) + "_"
+    anim_column_header += [p_name + item for item in part_column_header]
+anim_column_header += ["Name", "effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2", "dmg_effect_3", "dmg_effect_4",
+                       "special_1", "special_2", "special_3", "special_4", "special_5", "special_6", "special_7", "special_8", "special_9",
+                       "special_10", "size", "frame_property", "animation_property"]  # For csv saving and accessing
+frame_property_list = ["hold", "p1_turret", "p2_turret", "p3_turret", "p4_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon",
+                       "p2_fix_main_weapon", "p2_fix_sub_weapon", "p3_fix_main_weapon", "p3_fix_sub_weapon",
+                       "p4_fix_main_weapon", "p4_fix_sub_weapon", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_",
+                       "effect_grey", "effect_colour_"]  # starting property list
 
 anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
 
-# TODO: unique, more than two p, at least 10 effect and special, lock?
+# TODO: unique, lock?
 
 
 def reload_animation(animation, char):
@@ -104,12 +110,11 @@ def reload_animation(animation, char):
                     frames[frame_index] = surface
             filmstrip_list[frame_index].add_strip(frames[frame_index])
     animation.reload(frames)
-    p1_armour_selector.change_name(char.armour["p1_armour"])
-    p2_armour_selector.change_name(char.armour["p2_armour"])
+    armour_selector.change_name(char.armour["p1_armour"])
     face = [char.bodypart_list[current_frame]["p1_eye"], char.bodypart_list[current_frame]["p1_mouth"],
             char.bodypart_list[current_frame]["p2_eye"], char.bodypart_list[current_frame]["p2_mouth"]]
-    head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
-    for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+    head_text = ["Eye: ", "Mouth: "]
+    for index, selector in enumerate([eye_selector, mouth_selector]):
         this_text = "Any"
         if face[index] not in (0, 1):
             this_text = face[index]
@@ -178,7 +183,7 @@ race_list = race_list[2:]  # remove header and any race
 race_acro = race_acro[2:]
 race_accept = ["Human", "Horse"]  # for now accept only Human race
 
-generic_animation_pool, part_name_header = read_anim_data(direction_list, "generic")
+generic_animation_pool, part_name_header = read_anim_data(direction_list, "generic", anim_column_header)
 skel_joint_list, weapon_joint_list = read_joint_data(direction_list, race_list, race_accept)
 
 
@@ -378,7 +383,7 @@ class SwitchButton(pygame.sprite.Sprite):
 
 
 class BodyHelper(pygame.sprite.Sprite):
-    def __init__(self, size, pos, type, part_images):
+    def __init__(self, size, pos, ui_type, part_images):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font_size = int(12 * screen_scale[1])
@@ -389,9 +394,9 @@ class BodyHelper(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (100, 150, 150), (0, 0, self.image.get_width(), self.image.get_height()), 3)
         self.image_original = self.image.copy()  # for original before add part and click
         self.rect = self.image.get_rect(center=pos)
-        self.type = type
+        self.ui_type = ui_type
         self.part_images_original = [image.copy() for image in part_images]
-        if self.type in ("p1", "p2"):
+        if "p" in self.ui_type:
             self.box_font = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
             empty_box = self.part_images_original[-1]
             self.part_images_original = self.part_images_original[:-1]
@@ -405,7 +410,7 @@ class BodyHelper(pygame.sprite.Sprite):
             self.box_font = pygame.font.SysFont("helvetica", int(18 * screen_scale[1]))
             empty_box = self.part_images_original[0]
             self.part_images_original = self.part_images_original[:-1]
-            for box_part in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2"):
+            for box_part in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2", "S6", "S7", "S8", "S9", "S10", "E3", "E4", "DE3", "DE4"):
                 text_surface = self.box_font.render(box_part, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(empty_box.get_width() / 2, empty_box.get_height() / 2))
                 new_box = empty_box.copy()
@@ -415,32 +420,40 @@ class BodyHelper(pygame.sprite.Sprite):
         self.part_selected = []
         self.stat1 = {}
         self.stat2 = {}
-        if self.type == "p1":
-            self.rect_part_list = {"p1_head": None, "p1_body": None, "p1_r_arm_up": None, "p1_r_arm_low": None, "p1_r_hand": None,
-                                   "p1_l_arm_up": None, "p1_l_arm_low": None, "p1_l_hand": None, "p1_r_leg": None, "p1_r_foot": None,
-                                   "p1_l_leg": None, "p1_l_foot": None, "p1_main_weapon": None, "p1_sub_weapon": None}
-            self.part_pos = {"p1_head": (185, 85), "p1_body": (185, 148), "p1_r_arm_up": (155, 126), "p1_r_arm_low": (155, 156),
-                             "p1_r_hand": (155, 187), "p1_l_arm_up": (215, 126), "p1_l_arm_low": (215, 156), "p1_l_hand": (215, 187),
-                             "p1_r_leg": (170, 216), "p1_r_foot": (170, 246), "p1_l_leg": (200, 216), "p1_l_foot": (200, 246),
-                             "p1_main_weapon": (165, 30), "p1_sub_weapon": (205, 30)}
-        elif self.type == "p2":
-            self.rect_part_list = {"p2_head": None, "p2_body": None, "p2_r_arm_up": None, "p2_r_arm_low": None,
-                                   "p2_r_hand": None, "p2_l_arm_up": None, "p2_l_arm_low": None, "p2_l_hand": None,
-                                   "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
-                                   "p2_main_weapon": None, "p2_sub_weapon": None}
-            self.part_pos = {"p2_head": (185, 85), "p2_body": (185, 148), "p2_r_arm_up": (155, 126), "p2_r_arm_low": (155, 156),
-                             "p2_r_hand": (155, 187), "p2_l_arm_up": (215, 126), "p2_l_arm_low": (215, 156), "p2_l_hand": (215, 187),
-                             "p2_r_leg": (170, 216), "p2_r_foot": (170, 246), "p2_l_leg": (200, 216), "p2_l_foot": (200, 246),
-                             "p2_main_weapon": (155, 30), "p2_sub_weapon": (215, 30)}
+        if "p" in self.ui_type:
+            self.change_p_type(self.ui_type)
         else:
             self.rect_part_list = {"special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
-                                   "effect_1": None, "effect_2": None, "dmg_effect_1": None, "dmg_effect_2": None}
+                                   "effect_1": None, "effect_2": None, "dmg_effect_1": None, "dmg_effect_2": None, "special_6": None,
+                                   "special_7": None, "special_8": None, "special_9": None, "special_10": None,
+                                   "effect_3": None, "effect_4": None, "dmg_effect_3": None, "dmg_effect_4": None}
             self.part_pos = {"special_1": (20, 15), "special_2": (20, 45), "special_3": (20, 75), "special_4": (20, 105), "special_5": (20, 135),
-                             "effect_1": (20, 165), "effect_2": (20, 195), "dmg_effect_1": (20, 225), "dmg_effect_2": (20, 255)}
+                             "effect_1": (20, 165), "effect_2": (20, 195), "dmg_effect_1": (20, 225), "dmg_effect_2": (20, 255),
+                             "special_6": (225, 15), "special_7": (225, 45), "special_8": (225, 75), "special_9": (225, 105), "special_10": (225, 135),
+                             "effect_3": (225, 165), "effect_4": (225, 195), "dmg_effect_3": (225, 225), "dmg_effect_4": (225, 255)}
 
         for key, item in self.part_pos.items():
             self.part_pos[key] = (item[0] * screen_scale[0], item[1] * screen_scale[1])
         self.blit_part()
+
+    def change_p_type(self, new_type, player_change=False):
+        """For helper that can change person"""
+        self.ui_type = new_type
+        self.rect_part_list = {self.ui_type + "_head": None, self.ui_type + "_body": None, self.ui_type + "_r_arm_up": None,
+                               self.ui_type + "_r_arm_low": None, self.ui_type + "_r_hand": None,
+                               self.ui_type + "_l_arm_up": None, self.ui_type + "_l_arm_low": None, self.ui_type + "_l_hand": None,
+                               self.ui_type + "_r_leg": None, self.ui_type + "_r_foot": None, self.ui_type + "_l_leg": None,
+                               self.ui_type + "_l_foot": None, self.ui_type + "_main_weapon": None, self.ui_type + "_sub_weapon": None}
+        self.part_pos = {self.ui_type + "_head": (225, 85), self.ui_type + "_body": (225, 148), self.ui_type + "_r_arm_up": (195, 126),
+                         self.ui_type + "_r_arm_low": (195, 156), self.ui_type + "_r_hand": (195, 187), self.ui_type + "_l_arm_up": (255, 126),
+                         self.ui_type + "_l_arm_low": (255, 156), self.ui_type + "_l_hand": (255, 187), self.ui_type + "_r_leg": (210, 216),
+                         self.ui_type + "_r_foot": (210, 246), self.ui_type + "_l_leg": (240, 216), self.ui_type + "_l_foot": (240, 246),
+                         self.ui_type + "_main_weapon": (205, 30), self.ui_type + "_sub_weapon": (245, 30)}
+        if player_change:
+            self.select_part(None, False, False)  # reset first
+            for part in model.part_selected:  # blit selected part that is in helper
+                if list(model.rect_part_list.keys())[part] in self.rect_part_list:
+                    self.select_part(mouse_pos, True, False, list(model.rect_part_list.keys())[part])
 
     def blit_part(self):
         self.image = self.image_original.copy()
@@ -604,36 +617,47 @@ class Model:
         self.animation_part_list = []
         self.frame_list = [{}] * 10
         self.side = 1  # 0 = front, 1 = side, 2 = back, 3 = sideup, 4 = sidedown
-
-        self.rect_part_list = {"p1_head": None, "p1_body": None, "p1_r_arm_up": None, "p1_r_arm_low": None, "p1_r_hand": None,
-                               "p1_l_arm_up": None, "p1_l_arm_low": None, "p1_l_hand": None, "p1_r_leg": None, "p1_r_foot": None,
-                               "p1_l_leg": None, "p1_l_foot": None, "p1_main_weapon": None, "p1_sub_weapon": None,
-                               "p2_head": None, "p2_body": None, "p2_r_arm_up": None, "p2_r_arm_low": None,
-                               "p2_r_hand": None, "p2_l_arm_up": None, "p2_l_arm_low": None, "p2_l_hand": None,
-                               "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
-                               "p2_main_weapon": None, "p2_sub_weapon": None, "effect_1": None, "effect_2": None,
-                               "dmg_effect_1": None, "dmg_effect_2": None, "special_1": None, "special_2": None,
-                               "special_3": None, "special_4": None, "special_5": None}
-        self.all_part_list = {"p1_head": None, "p1_eye": 1, "p1_mouth": 1, "p1_body": None, "p1_r_arm_up": None,
-                              "p1_r_arm_low": None, "p1_r_hand": None, "p1_l_arm_up": None, "p1_l_arm_low": None, "p1_l_hand": None,
-                              "p1_r_leg": None, "p1_r_foot": None, "p1_l_leg": None, "p1_l_foot": None, "p1_main_weapon": None,
-                              "p1_sub_weapon": None, "p2_head": None, "p2_eye": 1, "p2_mouth": 1, "p2_body": None,
-                              "p2_r_arm_up": None, "p2_r_arm_low": None, "p2_r_hand": None, "p2_l_arm_up": None, "p2_l_arm_low": None,
-                              "p2_l_hand": None, "p2_r_leg": None, "p2_r_foot": None, "p2_l_leg": None, "p2_l_foot": None,
-                              "p2_main_weapon": None, "p2_sub_weapon": None, "effect_1": None, "effect_2": None,
-                              "dmg_effect_1": None, "dmg_effect_2": None, "special_1": None, "special_2": None,
-                              "special_3": None, "special_4": None, "special_5": None}
+        self.rect_part_list = {}
+        self.all_part_list = {}
+        for p in range(1, max_person + 1):
+            self.rect_part_list = self.rect_part_list | {"p" + str(p) + "_head": None, "p" + str(p) + "_body": None, "p" + str(p) + "_r_arm_up": None,
+                                                         "p" + str(p) + "_r_arm_low": None, "p" + str(p) + "_r_hand": None,
+                                                         "p" + str(p) + "_l_arm_up": None, "p" + str(p) + "_l_arm_low": None,
+                                                         "p" + str(p) + "_l_hand": None, "p" + str(p) + "_r_leg": None,
+                                                         "p" + str(p) + "_r_foot": None, "p" + str(p) + "_l_leg": None,
+                                                         "p" + str(p) + "_l_foot": None, "p" + str(p) + "_main_weapon": None,
+                                                         "p" + str(p) + "_sub_weapon": None}
+            self.all_part_list = self.all_part_list | {"p" + str(p) + "_head": None, "p" + str(p) + "_eye": 1, "p" + str(p) + "_mouth": 1,
+                                                       "p" + str(p) + "_body": None, "p" + str(p) + "_r_arm_up": None,
+                                                       "p" + str(p) + "_r_arm_low": None, "p" + str(p) + "_r_hand": None,
+                                                       "p" + str(p) + "_l_arm_up": None, "p" + str(p) + "_l_arm_low": None,
+                                                       "p" + str(p) + "_l_hand": None, "p" + str(p) + "_r_leg": None,
+                                                       "p" + str(p) + "_r_foot": None, "p" + str(p) + "_l_leg": None,
+                                                       "p" + str(p) + "_l_foot": None, "p" + str(p) + "_main_weapon": None,
+                                                       "p" + str(p) + "_sub_weapon": None}
+        self.rect_part_list = self.rect_part_list | {"effect_1": None, "effect_2": None, "effect_3": None, "effect_4": None,
+                                                     "dmg_effect_1": None, "dmg_effect_2": None, "dmg_effect_3": None, "dmg_effect_4": None,
+                                                     "special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
+                                                     "special_6": None, "special_7": None, "special_8": None, "special_9": None, "special_10": None}
+        self.all_part_list = self.all_part_list | {"effect_1": None, "effect_2": None, "effect_3": None, "effect_4": None,
+                                                   "dmg_effect_1": None, "dmg_effect_2": None, "dmg_effect_3": None, "dmg_effect_4": None,
+                                                   "special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
+                                                   "special_6": None, "special_7": None, "special_8": None, "special_9": None, "special_10": None}
+        self.p_eyebrow = {}
+        self.p_any_eye = {}
+        self.p_any_mouth = {}
+        self.p_beard = {}
         self.part_selected = []
-        self.p1_race = "Human"
-        self.p2_race = "Human"
+        self.p_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         skin_colour = skin_colour_list[skin]
-        self.p1_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.p1_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.p2_hair_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.p2_eye_colour = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.weapon = {"p1_main_weapon": "Sword", "p1_sub_weapon": "Sword", "p2_main_weapon": "Sword", "p2_sub_weapon": "Sword"}
-        self.armour = {"p1_armour": "None", "p2_armour": "None"}
+        self.p_hair_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in range(1, max_person + 1)}
+        self.p_eye_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in range(1, max_person + 1)}
+        self.weapon = {}
+        self.armour = {}
+        for p in range(1, max_person + 1):
+            self.weapon = self.weapon | {"p" + str(p) + "_main_weapon": "Sword", "p" + str(p) + "_sub_weapon": "Sword"}
+            self.armour = self.armour | {"p" + str(p) + "_armour": "None"}
         self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0, 1]
         self.random_face()
         self.size = 1  # size scale of sprite
@@ -649,22 +673,16 @@ class Model:
             self.default_part_name = {key: None for key in self.rect_part_list.keys()}
 
     def random_face(self):
-        self.p1_eyebrow = list(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eyebrow"]) - 1)]
-        self.p1_any_eye = list(gen_body_sprite_pool[self.p1_race]["side"]["eye"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eye"]) - 1)]
-        self.p1_any_mouth = list(gen_body_sprite_pool[self.p1_race]["side"]["mouth"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["mouth"]) - 1)]
-        self.p1_beard = list(gen_body_sprite_pool[self.p1_race]["side"]["beard"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["beard"]) - 1)]
-        self.p2_eyebrow = list(gen_body_sprite_pool[self.p2_race]["side"]["eyebrow"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["eyebrow"]) - 1)]
-        self.p2_any_eye = list(gen_body_sprite_pool[self.p2_race]["side"]["eye"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p1_race]["side"]["eye"]) - 1)]
-        self.p2_any_mouth = list(gen_body_sprite_pool[self.p2_race]["side"]["mouth"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["mouth"]) - 1)]
-        self.p2_beard = list(gen_body_sprite_pool[self.p2_race]["side"]["beard"].keys())[
-            random.randint(0, len(gen_body_sprite_pool[self.p2_race]["side"]["beard"]) - 1)]
+        for p in range(1, max_person + 1):
+            this_p = "p" + str(p)
+            self.p_eyebrow = self.p_eyebrow | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eyebrow"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eyebrow"]) - 1)]}
+            self.p_any_eye = self.p_any_eye | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eye"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eye"]) - 1)]}
+            self.p_any_mouth = self.p_any_mouth | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["mouth"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["mouth"]) - 1)]}
+            self.p_beard = self.p_beard | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["beard"].keys())[
+                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["beard"]) - 1)]}
 
     def make_layer_list(self, sprite_part):
         pose_layer_list = {k: v[5] for k, v in sprite_part.items() if v is not None and v != []}
@@ -722,16 +740,10 @@ class Model:
                             part_name = pose[part]
                             if part_name == 1:
                                 part_name = "Any"
-                            if "p1" in part:
-                                if "mouth" in part:
-                                    p1_mouth_selector.change_name("P1 Mouth: " + part_name)
-                                elif "eye" in part:
-                                    p1_eye_selector.change_name("P1 Eye: " + part_name)
-                            elif "p2" in part:
-                                if "mouth" in part:
-                                    p2_mouth_selector.change_name("P2 Mouth: " + part_name)
-                                elif "eye" in part:
-                                    p2_mouth_selector.change_name("P2 Eye: " + part_name)
+                            if "mouth" in part:
+                                mouth_selector.change_name("Mouth: " + part_name)
+                            elif "eye" in part:
+                                eye_selector.change_name("Eye: " + part_name)
                         else:
                             bodypart_list[part] = 1.0
                     elif "property" in part and pose[part] != [""]:
@@ -812,8 +824,8 @@ class Model:
         for index, layer in enumerate(pose_layer_list):
             part = self.animation_part_list[current_frame][layer]
             name_check = layer
-            if "p1" in name_check or "p2" in name_check:
-                name_check = name_check[3:]  # remove p1_
+            if any(ext in name_check for ext in ["p" + str(p) for p in range(1, max_person + 1)]):
+                name_check = name_check[3:]  # remove p*number*_
             if self.part_name_list[current_frame][layer] is not None and \
                     name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
                 for index, item in enumerate(
@@ -835,87 +847,52 @@ class Model:
         return surface
 
     def generate_body(self, bodypart_list):
-        p1_head_sprite_surface = None
-        try:
-            p1_head_race = bodypart_list["p1_head"][0]
-            p1_head_side = bodypart_list["p1_head"][1]
-            p1_head = gen_body_sprite_pool[p1_head_race][p1_head_side]["head"][bodypart_list["p1_head"][2]].copy()
-            p1_head_sprite_surface = pygame.Surface(p1_head.get_size(), pygame.SRCALPHA)
-            head_rect = p1_head.get_rect(midtop=(p1_head_sprite_surface.get_width() / 2, 0))
-            p1_head_sprite_surface.blit(p1_head, head_rect)
-            p1_face = [gen_body_sprite_pool[p1_head_race][p1_head_side]["eyebrow"][self.p1_eyebrow].copy(),
-                       self.grab_face_part(p1_head_race, p1_head_side, "eye", bodypart_list["p1_eye"], self.p1_any_eye),
-                       gen_body_sprite_pool[p1_head_race][p1_head_side]["beard"][self.p1_beard].copy(),
-                       self.grab_face_part(p1_head_race, p1_head_side, "mouth", bodypart_list["p1_mouth"], self.p1_any_mouth)]
-            # if skin != "white":
-            #     face[0] = self.apply_colour(face[0], skin_colour)
-            p1_face[0] = apply_colour(p1_face[0], self.p1_hair_colour)
-            p1_face[2] = apply_colour(p1_face[2], self.p1_hair_colour)
-            p1_face[1] = apply_colour(p1_face[1], self.p1_eye_colour)
-
-            p1_head_sprite_surface = pygame.Surface((p1_face[2].get_width(), p1_face[2].get_height()), pygame.SRCALPHA)
-            rect = p1_head.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
-            p1_head_sprite_surface.blit(p1_head, rect)
-
-            for index, item in enumerate(p1_face):
-                rect = item.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
-                p1_head_sprite_surface.blit(item, rect)
-
-        except KeyError:  # some head direction show no face
-            pass
-        except TypeError:  # empty
-            pass
-
-        if self.armour["p1_armour"] != "None":
+        p_head_sprite_surface = {"p" + str(p): None for p in range(1, max_person + 1)}
+        for key in p_head_sprite_surface:
             try:
-                armour = self.armour["p1_armour"].split("/")
-                gear_image = gen_armour_sprite_pool[p1_head_race][armour[0]][armour[1]][p1_head_side]["helmet"][bodypart_list["p1_head"][2]].copy()
-                rect = gear_image.get_rect(center=(p1_head_sprite_surface.get_width() / 2, p1_head_sprite_surface.get_height() / 2))
-                p1_head_sprite_surface.blit(gear_image, rect)
-            except KeyError:  # skip part that not exist
+                head_race = bodypart_list[key + "_head"][0]
+                head_side = bodypart_list[key + "_head"][1]
+                head_sprite = gen_body_sprite_pool[head_race][head_side]["head"][bodypart_list[key + "_head"][2]].copy()
+                head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
+                head_rect = head_sprite.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
+                head_sprite_surface.blit(head_sprite, head_rect)
+                face = [gen_body_sprite_pool[head_race][head_side]["eyebrow"][self.p_eyebrow[key]].copy(),
+                           self.grab_face_part(head_race, head_side, "eye", bodypart_list[key + "_eye"], self.p_any_eye[key]),
+                           gen_body_sprite_pool[head_race][head_side]["beard"][self.p_beard[key]].copy(),
+                           self.grab_face_part(head_race, head_side, "mouth", bodypart_list[key + "_mouth"], self.p_any_mouth[key])]
+                # if skin != "white":
+                #     face[0] = self.apply_colour(face[0], skin_colour)
+                face[0] = apply_colour(face[0], self.p_hair_colour[key])
+                face[2] = apply_colour(face[2], self.p_hair_colour[key])
+                face[1] = apply_colour(face[1], self.p_eye_colour[key])
+
+                head_sprite_surface = pygame.Surface((face[2].get_width(), face[2].get_height()), pygame.SRCALPHA)
+                rect = head_sprite.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+                head_sprite_surface.blit(head_sprite, rect)
+
+                for index, item in enumerate(face):  # add face to head sprite
+                    rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+                    head_sprite_surface.blit(item, rect)
+
+                p_head_sprite_surface[key] = head_sprite_surface
+            except KeyError:  # some head direction show no face
                 pass
-            except UnboundLocalError:  # for when change animation
+            except TypeError:  # empty
                 pass
 
-        p2_head_sprite_surface = None
-        try:
-            p2_head_race = bodypart_list["p2_head"][0]
-            p2_head_side = bodypart_list["p2_head"][1]
-            p2_head = gen_body_sprite_pool[p2_head_race][p2_head_side]["head"][bodypart_list["p2_head"][2]].copy()
-            p2_head_sprite_surface = pygame.Surface((p2_head.get_width(), p2_head.get_height()), pygame.SRCALPHA)
-            head_rect = p2_head.get_rect(midtop=(p2_head_sprite_surface.get_width() / 2, 0))
-            p2_head_sprite_surface.blit(p2_head, head_rect)
-            p2_face = [gen_body_sprite_pool[p2_head_race][p2_head_side]["eyebrow"][self.p2_eyebrow].copy(),
-                       self.grab_face_part(p2_head_race, p2_head_side, "eye", bodypart_list["p2_eye"], self.p2_any_eye),
-                       gen_body_sprite_pool[p2_head_race][p2_head_side]["beard"][self.p2_beard].copy(),
-                       self.grab_face_part(p2_head_race, p2_head_side, "mouth", bodypart_list["p2_mouth"], self.p2_any_mouth)]
-            # if skin != "white":
-            #     face[0] = self.apply_colour(face[0], skin_colour)
-            p2_face[0] = apply_colour(p2_face[0], self.p2_hair_colour)
-            p2_face[2] = apply_colour(p2_face[2], self.p2_hair_colour)
-            p2_face[1] = apply_colour(p2_face[1], self.p2_eye_colour)
-            p2_head_sprite_surface = pygame.Surface((p2_face[2].get_width(), p2_face[2].get_height()), pygame.SRCALPHA)
-            rect = p2_head.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
-            p2_head_sprite_surface.blit(p2_head, rect)
+            if self.armour[key + "_armour"] != "None":
+                try:
+                    armour = self.armour[key + "_armour"].split("/")
+                    gear_image = gen_armour_sprite_pool[head_race][armour[0]][armour[1]][head_side]["helmet"][bodypart_list[key + "_head"][2]].copy()
+                    rect = gear_image.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+                    head_sprite_surface.blit(gear_image, rect)
+                    p_head_sprite_surface[key] = head_sprite_surface
 
-            for index, item in enumerate(p2_face):
-                rect = item.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
-                p2_head_sprite_surface.blit(item, rect)
-        except KeyError:  # some head direction show no face
-            pass
-        except TypeError:  # empty
-            pass
+                except KeyError:  # skip part that not exist
+                    pass
+                except UnboundLocalError:  # for when change animation
+                    pass
 
-        if self.armour["p2_armour"] != "None":
-            try:
-                armour = self.armour["p2_armour"].split("/")
-                gear_image = gen_armour_sprite_pool[p2_head_race][armour[0]][armour[1]][p2_head_side]["helmet"][bodypart_list["p2_head"][2]].copy()
-                rect = gear_image.get_rect(center=(p2_head_sprite_surface.get_width() / 2, p2_head_sprite_surface.get_height() / 2))
-                p2_head_sprite_surface.blit(gear_image, rect)
-            except KeyError:  # skip part that not exist
-                pass
-            except UnboundLocalError:  # for when change animation
-                pass
 
         self.sprite_image = {key: None for key in self.rect_part_list.keys()}
         except_list = ["eye", "mouth", "head"]  # skip doing these
@@ -931,8 +908,8 @@ class Model:
                             bodypart_list[stuff][2]].copy()
                     else:
                         new_part_name = stuff
-                        if "p1_" in stuff or "p2_" in stuff:
-                            part_name = stuff[3:]  # remove p1_ or p2_ to get part name
+                        if any(ext in stuff for ext in ["p" + str(p) for p in range(1, max_person + 1)]):
+                            part_name = stuff[3:]  # remove p*number*_ to get part name
                             new_part_name = part_name
                         if "special" in stuff:
                             part_name = "special"
@@ -941,9 +918,9 @@ class Model:
                             new_part_name = part_name[2:]  # remove side
                         self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
                             bodypart_list[stuff][2]].copy()
-                        if "p1_" in stuff and self.armour["p1_armour"] != "None":
+                        if any(ext in stuff for ext in ["p" + str(p) for p in range(1, max_person + 1)]) and self.armour[stuff[0:2] + "_armour"] != "None":
                             try:
-                                armour = self.armour["p1_armour"].split("/")
+                                armour = self.armour[stuff[0:2] + "_armour"].split("/")
                                 gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][bodypart_list[stuff][1]][part_name][
                                     bodypart_list[stuff][2]].copy()
                                 rect = gear_image.get_rect(center=(self.sprite_image[stuff].get_width() / 2, self.sprite_image[stuff].get_height() / 2))
@@ -954,11 +931,7 @@ class Model:
                                 pass
 
                 elif "head" in stuff:
-                    if "p1" in stuff:
-                        self.sprite_image[stuff] = p1_head_sprite_surface
-                    else:
-                        self.sprite_image[stuff] = p2_head_sprite_surface
-
+                    self.sprite_image[stuff] = p_head_sprite_surface[stuff[0:2]]
         # if skin != "white":
         #     for part in list(self.sprite_image.keys())[1:]:
         #         self.sprite_image[part] = self.apply_colour(self.sprite_image[part], skin_colour)
@@ -966,7 +939,7 @@ class Model:
         main_joint_pos_list = {}
         for part_index, part in enumerate(part_name_header):
             for part_link in skel_joint_list[self.side]:
-                if part_link in part:  # match part name, p1_head = head in part link
+                if part_link in part:  # match part name, p*number*_head = head in part link
                     main_joint_pos_list[part] = list(skel_joint_list[self.side][part_link][0].values())[0]
                     break
             if part in self.weapon and self.weapon[part] in weapon_joint_list[self.side]:  # weapon joint
@@ -1059,10 +1032,8 @@ class Model:
             self.bodypart_list[current_frame] = body_part_history[current_history]
 
         elif "armour" in edit_type:
-            if "p1_" in edit_type:
-                self.armour["p1_armour"] = edit_type.split("p1_armour_")[1]
-            elif "p2_" in edit_type:
-                self.armour["p2_armour"] = edit_type.split("p2_armour_")[1]
+            if any(ext in edit_type for ext in ["p" + str(p) for p in range(1, max_person + 1)]) in edit_type:
+                self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             for part in self.sprite_image:
                 if self.animation_part_list[current_frame][part] is not None:
@@ -1070,36 +1041,20 @@ class Model:
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
-                if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_eye"] = 1
-                elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_eye"] = 1
+                self.bodypart_list[current_frame][edit_type[0:2] + "_eye"] = 1
             else:
-                if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_eye"] = edit_type.split("p1_eye_")[1]
-                elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_eye"] = edit_type.split("p2_eye_")[1]
+                self.bodypart_list[current_frame][edit_type[0:2] + "_eye"] = edit_type.split(edit_type[0:2] + "_eye_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-            part = "p1_head"
-            if "p2_" in edit_type:
-                part = "p2_head"
+            part = edit_type[0:2] + "_head"
             self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "mouth" in edit_type:
             if "Any" in edit_type:
-                if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_mouth"] = self.p1_any_mouth
-                elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_mouth"] = self.p2_any_mouth
+                self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = self.p_any_mouth[edit_type[0:2]]
             else:
-                if "p1_" in edit_type:
-                    self.bodypart_list[current_frame]["p1_mouth"] = edit_type.split("p1_mouth_")[1]
-                elif "p2_" in edit_type:
-                    self.bodypart_list[current_frame]["p2_mouth"] = edit_type.split("p2_mouth_")[1]
+                self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = edit_type.split(edit_type[0:2] + "_mouth_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-            part = "p1_head"
-            if "p2_" in edit_type:
-                part = "p2_head"
+            part = edit_type[0:2] + "_head"
             self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "part" in edit_type:
@@ -1143,14 +1098,12 @@ class Model:
 
         elif "new" in edit_type:  # new animation
             self.animation_part_list = [{key: None for key in self.rect_part_list.keys()}] * 10
-            p1_face = {"p1_eye": 1,
-                       "p1_mouth": 1}
-            p2_face = {"p2_eye": 1,
-                       "p2_mouth": 1}
+            p_face = {}
+            for p in range(1, max_person + 1):
+                p_face = p_face | {"p" + str(p) + "_eye": 1, "p" + str(p) + "_mouth": 1}
             self.bodypart_list = [{key: value for key, value in self.all_part_list.items()}] * 10
             for stuff in self.bodypart_list:
-                stuff.update(p1_face)
-                stuff.update(p2_face)
+                stuff.update(p_face)
             self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
             self.part_selected = []
 
@@ -1491,16 +1444,14 @@ filmstrip_list = [Filmstrip((0, 42 * screen_scale[1])), Filmstrip((image.get_wid
 filmstrips.add(*filmstrip_list)
 
 images = load_images(current_dir, screen_scale, ["animation_maker_ui", "helper_parts"])
-body_helper_size = (370 * screen_scale[0], 270 * screen_scale[1])
-effect_helper_size = (250 * screen_scale[0], 270 * screen_scale[1])
-effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 2, screen_size[1] - (body_helper_size[1] / 2)),
+body_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
+effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
+effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 1.25, screen_size[1] - (body_helper_size[1] / 2)),
                            "effect", [images["smallbox_helper.png"]])
 del images["smallbox_helper.png"]
-p1_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
-                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
-p2_body_helper = BodyHelper(body_helper_size, (screen_size[0] - (body_helper_size[0] / 2),
-                                               screen_size[1] - (body_helper_size[1] / 2)), "p2", list(images.values()))
-helper_list = [p1_body_helper, p2_body_helper, effect_helper]
+p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
+                                              screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
+helper_list = [p_body_helper, effect_helper]
 
 image = load_image(current_dir, screen_scale, "button.png", ["animation_maker_ui"])
 image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
@@ -1544,40 +1495,34 @@ undo_button = Button("Undo", image, (play_animation_button.pos[0] - play_animati
 redo_button = Button("Redo", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 6,
                                      filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 
-reset_button = Button("Reset", image, (screen_size[0] / 2.1, p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+reset_button = Button("Reset", image, (screen_size[0] / 2.1, p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
 flip_hori_button = Button("Flip H", image, (reset_button.pos[0] + reset_button.image.get_width(),
-                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + (reset_button.image.get_width() * 2),
-                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 part_copy_button = Button("Copy P", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
-                                          p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
-                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-p1_all_button = Button("P1 All", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
-                                         p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-p2_all_button = Button("P2 All", image, (reset_button.pos[0] + reset_button.image.get_width() * 6,
-                                         p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                              p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p_all_button = Button("P All", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
+                                       p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 all_button = Button("All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
-                                   p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                   p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 race_part_button = Button("", image, (reset_button.image.get_width() / 2,
-                                      p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+                                      p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_button.image.get_width(),
-                                           p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
-p1_armour_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
-                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 4.2)))
-p1_eye_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
-                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
-p1_mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
-                                                        p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
-p2_armour_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
-                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 4.2)))
-p2_eye_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
-                                                      p1_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
-p2_mouth_selector = NameBox((250, image.get_height()), (screen_size[0] - (reset_button.image.get_width() * 1.8),
-                                                        p1_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
+                                           p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+p_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                 p_body_helper.rect.midtop[1] - (image.get_height() * 5.2)))
+armour_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                      p_body_helper.rect.midtop[1] - (image.get_height() * 4.2)))
+eye_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                   p_body_helper.rect.midtop[1] - (image.get_height() * 3.2)))
+mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
+                                                     p_body_helper.rect.midtop[1] - (image.get_height() * 2.2)))
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
-#                                            p1_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
+#                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
 input_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui"),
                         (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
@@ -1668,12 +1613,11 @@ if animation_name is not None:
 else:
     model.animation_list = [None] * 10
     model.edit_part(None, "new")
-face = [model.frame_list[current_frame]["p1_eye"], model.frame_list[current_frame]["p1_mouth"],
-        model.frame_list[current_frame]["p2_eye"], model.frame_list[current_frame]["p2_mouth"]]
-head_text = ["P1 Eye: ", "P1 Mouth: ", "P2 Eye: ", "P2 Mouth: "]
-p1_armour_selector.change_name(model.armour["p1_armour"])
-p2_armour_selector.change_name(model.armour["p2_armour"])
-for index, selector in enumerate([p1_eye_selector, p1_mouth_selector, p2_eye_selector, p2_mouth_selector]):
+face = [model.frame_list[current_frame]["p1_eye"], model.frame_list[current_frame]["p1_mouth"]]
+head_text = ["Eye: ", "Mouth: "]
+p_selector.change_name("p1")
+armour_selector.change_name(model.armour["p1_armour"])
+for index, selector in enumerate([eye_selector, mouth_selector]):
     this_text = "Any"
     if face[index] not in (0, 1):
         this_text = face[index]
@@ -1835,23 +1779,17 @@ while True:
                                 model.edit_part(mouse_pos, "part_" + name.name)
                             elif popup_listbox.action == "race_select":
                                 model.edit_part(mouse_pos, "race_" + name.name)
+                            elif "person" in popup_listbox.action:
+                                p_body_helper.change_p_type(name.name, player_change=True)
+                                p_selector.change_name(name.name)
                             elif "armour" in popup_listbox.action:
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "armour_" + name.name)
-                                if "p1" in popup_listbox.action:
-                                    p1_armour_selector.change_name(name.name)
-                                elif "p2" in popup_listbox.action:
-                                    p2_armour_selector.change_name(name.name)
+                                armour_selector.change_name(name.name)
                             elif "eye" in popup_listbox.action:
-                                if "p1" in popup_listbox.action:
-                                    p1_eye_selector.change_name("P1 Eye: " + name.name)
-                                elif "p2" in popup_listbox.action:
-                                    p2_eye_selector.change_name("P2 Eye: " + name.name)
+                                eye_selector.change_name("Eye: " + name.name)
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
                             elif "mouth" in popup_listbox.action:
-                                if "p1" in popup_listbox.action:
-                                    p1_mouth_selector.change_name("P1 Mouth: " + name.name)
-                                elif "p2" in popup_listbox.action:
-                                    p2_mouth_selector.change_name("P2 Mouth: " + name.name)
+                                mouth_selector.change_name("Mouth: " + name.name)
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
                             elif popup_listbox.action == "animation_select":
                                 if animation_name != name.name:
@@ -2027,11 +1965,8 @@ while True:
                     elif part_paste_button.rect.collidepoint(mouse_pos):
                         part_paste_press = True
 
-                    elif p1_all_button.rect.collidepoint(mouse_pos) or p2_all_button.rect.collidepoint(mouse_pos):
-                        if p1_all_button.rect.collidepoint(mouse_pos):
-                            part_change = "p1_"
-                        elif p2_all_button.rect.collidepoint(mouse_pos):
-                            part_change = "p2_"
+                    elif p_all_button.rect.collidepoint(mouse_pos):
+                        part_change = p_body_helper.ui_type + "_"
                         for part in list(model.rect_part_list.keys()):
                             if part_change in part:
                                 if ctrl_press is False:  # add parts
@@ -2117,7 +2052,7 @@ while True:
                         if direction_part_button.text != "" and race_part_button.text != "":
                             current_part = list(model.animation_part_list[current_frame].keys())[model.part_selected[-1]]
                             try:
-                                if "p1" in current_part or "p2" in current_part:
+                                if any(ext in current_part for ext in ["p" + str(p) for p in range(1, max_person + 1)]):
                                     selected_part = current_part[3:]
                                     if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
                                         selected_part = selected_part[2:]
@@ -2133,45 +2068,27 @@ while True:
                             popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui,
                                             "part_select", part_selector.rect.topleft, part_list, "bottom", screen_scale)
 
-                    elif p1_armour_selector.rect.collidepoint(mouse_pos):
+                    elif p_selector.rect.collidepoint(mouse_pos):
+                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "person_select",
+                                        p_selector.rect.topleft, ["p" + str(p) for p in range(1, max_person + 1)], "bottom", screen_scale)
+                    elif armour_selector.rect.collidepoint(mouse_pos):
                         armour_part_list = []
-                        for item in list(gen_armour_sprite_pool[model.p1_race].keys()):
-                            for armour in gen_armour_sprite_pool[model.p1_race][item]:
+                        for item in list(gen_armour_sprite_pool[model.p_race[p_body_helper.ui_type]].keys()):
+                            for armour in gen_armour_sprite_pool[model.p_race[p_body_helper.ui_type]][item]:
                                 armour_part_list.append(item + "/" + armour)
                         part_list = ["None"] + armour_part_list
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "p1_armour_select",
-                                        p1_armour_selector.rect.topleft, part_list, "bottom", screen_scale)
+                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_armour_select",
+                                        armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
-                    elif p2_armour_selector.rect.collidepoint(mouse_pos):
-                        armour_part_list = []
-                        for item in list(gen_armour_sprite_pool[model.p2_race].keys()):
-                            for armour in gen_armour_sprite_pool[model.p2_race][item]:
-                                armour_part_list.append(item + "/" + armour)
-                        part_list = ["None"] + armour_part_list
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "p2_armour_select",
-                                        p2_armour_selector.rect.topleft, part_list, "bottom", screen_scale)
+                    elif eye_selector.rect.collidepoint(mouse_pos):
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][direction_list[model.side]]["eye"].keys())
+                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_eye_select",
+                                        eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
-                    elif p1_eye_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p1_race][direction_list[model.side]]["eye"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "p1_eye_select",
-                                        p1_eye_selector.rect.topleft, part_list, "bottom", screen_scale)
-
-                    elif p1_mouth_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p1_race][direction_list[model.side]]["mouth"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "p1_mouth_select",
-                                        p1_mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
-
-                    elif p2_eye_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p2_race][direction_list[model.side]]["eye"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "p2_eye_select",
-                                        (p2_eye_selector.rect.topleft[0] - (45 * screen_scale[0]), p2_eye_selector.rect.topleft[1]), part_list,
-                                        "bottom", screen_scale)
-
-                    elif p2_mouth_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p2_race][direction_list[model.side]]["mouth"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "p2_mouth_select",
-                                        (p2_mouth_selector.rect.topleft[0] - (45 * screen_scale[0]), p2_mouth_selector.rect.topleft[1]), part_list,
-                                        "bottom", screen_scale)
+                    elif mouth_selector.rect.collidepoint(mouse_pos):
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][direction_list[model.side]]["mouth"].keys())
+                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_mouth_select",
+                                        mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif race_part_button.rect.collidepoint(mouse_pos):
                         if model.part_selected != []:
