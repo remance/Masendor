@@ -54,7 +54,7 @@ anim_column_header = ["Name"]
 for p in range(1, max_person + 1):
     p_name = "p" + str(p) + "_"
     anim_column_header += [p_name + item for item in part_column_header]
-anim_column_header += ["Name", "effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2", "dmg_effect_3", "dmg_effect_4",
+anim_column_header += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2", "dmg_effect_3", "dmg_effect_4",
                        "special_1", "special_2", "special_3", "special_4", "special_5", "special_6", "special_7", "special_8", "special_9",
                        "special_10", "size", "frame_property", "animation_property"]  # For csv saving and accessing
 frame_property_list = ["hold", "p1_turret", "p2_turret", "p3_turret", "p4_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon",
@@ -846,6 +846,7 @@ class Model:
     def generate_body(self, bodypart_list):
         p_head_sprite_surface = {"p" + str(p): None for p in range(1, max_person + 1)}
         for key in p_head_sprite_surface:
+            head_sprite_surface = None
             try:
                 head_race = bodypart_list[key + "_head"][0]
                 head_side = bodypart_list[key + "_head"][1]
@@ -871,11 +872,12 @@ class Model:
                     rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
                     head_sprite_surface.blit(item, rect)
 
-                p_head_sprite_surface[key] = head_sprite_surface
             except KeyError:  # some head direction show no face
                 pass
             except TypeError:  # empty
                 pass
+
+            p_head_sprite_surface[key] = head_sprite_surface
 
             if self.armour[key + "_armour"] != "None":
                 try:
