@@ -1,5 +1,5 @@
 "ID","Name","Special Effect","Status Conflict","Max Stack","Duration","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Armour Effect","Speed Effect","Accuracy Effect","Reload Effect","Charge Effect","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Sight Bonus","Hidden Bonus","Temperature Change","Ruleset","Description"
-1,"Fearless",,0,1,10,,,,,,,,,0,0,0,200,0,0,,0,0,"Being fearless is a beneficial trait in a place of life and death in battle. Although fear allows a person to survive longer to fight another day, being fearless is more of a double-edged sword."
+1,"Fearless",,,1,10,,,,,,,,,0,0,0,200,0,0,,0,0,"Being fearless is a beneficial trait in a place of life and death in battle. Although fear allows a person to survive longer to fight another day, being fearless is more of a double-edged sword."
 2,"Fear",,"1,3",1,10,,,,,,,,,0,0,0,-30,0,0,,0,0,"There should be no fear in the machine of war. Fear makes even obedient soldiers refuse to follow the command after all."
 3,"Hope",,2,1,10,,,,,,,,,0,0,0,30,0,0,,0,0,"Optimism to survive and see the better days is good. A soldier always fights harder when there is hope."
 4,"Stampede",,,1,10,,85,85,,,,,,0,0,0,0,0,0,,0,0,
@@ -34,11 +34,11 @@
 33,"Drunk",,50,1,600,,80,60,,,,,,-35,0,0,30,-50,,,0,0,"Getting drunk in battle may not be the smartest thing to do, but It sure helps raise the morale and fierceness of the troops."
 34,"Cripple",,,5,300,75,80,,,80,80,80,80,-20,0,0,0,0,,,0,0,"Cripple in body, but can the heart hold out? Only time will tell."
 35,"Petrify",,,1,120,0,,,120,,,,,-100,0,0,0,0,,,0,2,"Fresh to stone. Statue of endless time to serve as a warning to others."
-36,"Slow",,,5,,,,,,75,,90,80,0,0,0,0,0,,,0,0,"Slowing to a crawl. Best be steady, or you may lose both race and war."
-37,"Haste",,,5,,,,,,125,,110,115,0,0,0,0,0,,,0,2,"Superior speed leads to victory. The momentum is with us to seize any fortune from the enemy."
+36,"Slow",,37,5,60,,,,,75,,90,80,0,0,0,0,0,,,0,0,"Slowing to a crawl. Best be steady, or you may lose both race and war."
+37,"Haste",,36,5,60,,,,,125,,110,115,0,0,0,0,0,,,0,2,"Superior speed leads to victory. The momentum is with us to seize any fortune from the enemy."
 38,"Undead Curse",,,3,,,,,,,,,,0,,,,,,,0,2,"Restless in life and disturbed in death. This curse is hideous in all forms."
-39,"Flying",3,,1,300,,200,150,,200,,,180,50,0,0,0,0,,,0,2,"The dream of flight is now the reality of warfare."
-40,"Floating",3,,1,300,,150,120,,150,,,150,30,0,0,0,0,,,0,2,"Air superiority is gained by a small height difference at a time."
+39,"Flying",3,43,1,300,,200,150,,200,,,180,50,0,0,0,0,,,0,2,"The dream of flight is now the reality of warfare."
+40,"Floating",3,43,1,300,,150,120,,150,,,150,30,0,0,0,0,,,0,2,"Air superiority is gained by a small height difference at a time."
 41,"Charmed","0,1",,1,10,,,,,,,,,0,0,0,30,-30,,,0,2,"""Damn! Akusb got charmed by succubus again! Someone go get some water, beer and a stick!"""
 42,"Bewitched","0,1",,1,30,,,,,,,,,0,0,0,30,-10,,,0,2,"""Damn! Akusb got bewitched by mermaids this time! Go get a compass, a priest, and a monkey here!"""
 43,"Paralysed",,,1,10,0,20,20,,0,,0,,-80,0,0,0,0,,,0,2,"Paralysed and unable to act, these troops are now an easy target for coup de grace."
@@ -59,7 +59,7 @@
 58,"Marked",,,1,,,,,,,,,,0,0,0,,,,,0,2,"Marked for death to embrace the grip of life. Endure the pain, and you may live to see another day."
 59,"Weaken",,,5,60,90,90,,,90,,,90,-15,,,,,,,0,2,"Weaken but not unwilling to fight. May the Lord grants them strength once again."
 60,"Strengthen",,,5,60,110,110,,,110,,,110,15,,,,,,,0,2,
-61,"Meleelock",,,1,30,,,,,0,,,,0,0,0,,,,,0,2,
+61,"Melee Lock",,,1,30,,,,,0,,,,0,0,0,,,,,0,2,
 62,"Smoke",,,1,,,,,,,,,,30,,,,,,,0,0,"Smoke reduces the sight of these troops, making them less effective in combat, but improves range defence."
 63,"Poison Smoke",,,1,,,,,,,,,,0,,,,,,,0,2,
 64,"Sleep Smoke",,,1,,,,,,,,,,0,,,,,,,0,2,
@@ -105,3 +105,4 @@
 104,"Swimming",,"39,40",1,1,,,,,,,,,0,0,0,0,0,0,,0,0,
 105,"Collapse",,,1,120,,,,,0,,1,,0,1,5,0,0,0,20,0,0,"Collapsing may allow one to recover strength. If they can wake up again, that is."
 106,"Muddy Leg",,,1,300,70,70,80,,50,,,40,-10,0,0,-15,-20,0,0,0,0,
+107,"Dispelled",,,,,,,,,,,,,,,,,,,,,,

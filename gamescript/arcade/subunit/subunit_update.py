@@ -424,9 +424,9 @@ def skill_check_logic(self):
                 else:
                     self.command_action = ()
             elif "Charge" in command_action:
-                print(command_action)
                 action = self.skill[0]["Action"].copy()
-                action[0] += " " + command_action[0][-1]
+                weapon = self.weapon_name[self.equipped_weapon][int(command_action[-1])]
+                action[0] = ("Main_", "Sub_")[int(command_action[-1])] + self.action_list[weapon]["Common"] + "_" + action[0]
                 self.command_action = tuple(action)
             else:
                 self.command_action = ()
@@ -457,6 +457,8 @@ def pick_animation(self):
                 equip = int(self.current_action[0][-1])
                 weapon = self.weapon_name[self.equipped_weapon][equip]
                 animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
+            else:
+                animation_name = self.race_name + "_" + self.current_action[0]
         else:  # use state to pick animation
             state_name = self.subunit_state[self.state]
             animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)  #TODO change when add change equip

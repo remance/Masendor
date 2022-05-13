@@ -10,8 +10,8 @@ lorebook_process = lorebook.lorebook_process
 def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool, mouse_scrollup: bool,
                     mouse_scrolldown: bool, uidraw: pygame.sprite.LayeredUpdates):
     """
-    ESC menu user interaction
-    :param self: self process object, battle
+    User interaction processing for ESC menu during battle
+    :param self: Battle process object
     :param mouse_up: mouse left click release
     :param mouse_leftdown: mouse hold left click
     :param esc_press: esc button

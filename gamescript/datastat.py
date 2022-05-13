@@ -1,79 +1,24 @@
+"""This file contains all class and function that read subunit/leader related data
+and save them into dict for ingame use """
+
 import csv
 import os
 import re
 
-"""This file contains all class and function that read subunit/leader related data 
-and save them into dict for ingame use """
+from gamescript.common import utility
 
-
-def stat_convert(row, n, i, mod_column=(), list_column=(), tuple_column=(), int_column=(), float_column=()):
-    """
-    Convert string value to another type
-    :param row: row that contains value
-    :param n: index of value
-    :param i: value
-    :param mod_column: list of value header that should be in percentage as decimal value
-    :param list_column: list of value header that should be in list type, in case it needs to be modified later
-    :param tuple_column: list of value header that should be in tuple type, for value that is static
-    :param int_column: list of value header that should be in int number type
-    :param float_column: list of value header that should be in float number type
-    :return: converted row
-    """
-    if n in mod_column:
-        if i == "":
-            row[n] = 1.0
-        else:
-            row[n] = float(i) / 100  # Need to be float for percentage cal
-
-    elif n in list_column:
-        if "," in i:
-            if "." in i:
-                row[n] = [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")]
-            else:
-                row[n] = [int(item) if item.isdigit() else item for item in i.split(",")]
-        elif i.isdigit():
-            if "." in i:
-                row[n] = [float(i)]
-            else:
-                row[n] = [int(i)]
-        else:
-            row[n] = [i]
-
-    elif n in tuple_column:
-        if "," in i:
-            if "." in i:
-                row[n] = tuple([float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")])
-            else:
-                row[n] = tuple([int(item) if item.isdigit() else item for item in i.split(",")])
-        elif i.isdigit():
-            if "." in i:
-                row[n] = tuple([float(i)])
-            else:
-                row[n] = tuple([int(i)])
-        else:
-            row[n] = tuple([i])
-
-    elif n in int_column:
-        if i != "" and re.search("[a-zA-Z]", i) is None:
-            row[n] = int(i)
-        elif i == "":
-            row[n] = 0
-    elif n in float_column:
-        if i != "" and re.search("[a-zA-Z]", i) is None:
-            row[n] = float(i)
-        elif i == "":
-            row[n] = 0
-    else:
-        if i == "":
-            row[n] = 0
-        elif i.isdigit() or (("-" in i or "." in i) and re.search("[a-zA-Z]", i) is None) or i == "inf":
-            row[n] = float(i)
-    return row
+stat_convert = utility.stat_convert
 
 
 class WeaponData:
     def __init__(self, main_dir, images, ruleset):
-        """Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
+        """
+        For keeping all data related to troop weapon including its icon image but not sprite.
+        Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect
+        :param main_dir: Game folder direction
+        :param images: Weapon icon images, not sprite
+        :param ruleset: Current ruleset of the game
+        """
         self.images = list(images.values())
         self.weapon_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as edit_file:
@@ -104,7 +49,13 @@ class WeaponData:
 
 class ArmourData:
     def __init__(self, main_dir, images, ruleset):
-        """Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect"""
+        """
+        For keeping all data related to troop armour including its icon image but not sprite.
+        Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect
+        :param main_dir: Game folder direction
+        :param images: Armour icon images, not sprite
+        :param ruleset: Current ruleset of the game
+        """
         self.images = images
         self.armour_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_armour.csv"), encoding="utf-8", mode="r") as edit_file:
@@ -135,7 +86,12 @@ class ArmourData:
 
 class TroopData:
     def __init__(self, main_dir, ruleset, ruleset_folder):
-        """Unit stat data read"""
+        """
+        For keeping all data related to troop.
+        :param main_dir: Game folder direction
+        :param ruleset: Current ruleset of the game
+        :param ruleset_folder: Folder name of the ruleset
+        """
         # v Troop stat dict
         self.troop_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
@@ -398,9 +354,14 @@ class TroopData:
 
 
 class LeaderData:
-    def __init__(self, main_dir, images, image_order, ruleset_folder):
+    def __init__(self, main_dir, images, ruleset_folder):
+        """
+        For keeping all data related to leader.
+        :param main_dir: Game folder direction
+        :param images: Portrait images of leaders
+        :param ruleset_folder: Folder name of the ruleset
+        """
         self.images = images
-        self.image_order = image_order
         self.leader_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -495,12 +456,15 @@ class LeaderData:
 
 class FactionData:
     images = []
-    main_dir = None
 
-    def __init__(self, ruleset_folder):
-        """Unit stat data read"""
+    def __init__(self, main_dir, ruleset_folder):
+        """
+        For keeping all data related to leader.
+        :param main_dir: Game folder direction
+        :param ruleset_folder: Folder name of the ruleset
+        """
         self.faction_list = {}
-        with open(os.path.join(self.main_dir, "data", "ruleset", ruleset_folder, "faction", "faction.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "faction.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]

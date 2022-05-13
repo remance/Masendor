@@ -13,7 +13,7 @@ load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
 make_bar_list = utility.make_bar_list
-stat_convert = datastat.stat_convert
+stat_convert = utility.stat_convert
 
 
 def read_terrain_data(main_dir):
@@ -156,8 +156,7 @@ def read_map_data(main_dir, ruleset_folder):
 
 
 def read_faction_data(main_dir, screen_scale, ruleset_folder):
-    datastat.FactionData.main_dir = main_dir
-    faction_data = datastat.FactionData(ruleset_folder)
+    faction_data = datastat.FactionData(main_dir, ruleset_folder)
     images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
                            load_order=False)  # coa_list images list
     coa_list = []
@@ -390,9 +389,8 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
     troop_data = datastat.TroopData(main_dir, ruleset, ruleset_folder)
 
     # v create leader list
-    images, order = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False,
-                              return_order=True)
-    leader_data = datastat.LeaderData(main_dir, images, order, ruleset_folder)
+    images = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False)
+    leader_data = datastat.LeaderData(main_dir, images, ruleset_folder)
     # ^ End leader
     return weapon_data, armour_data, troop_data, leader_data
 
@@ -441,7 +439,7 @@ def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
     esc_menu_images = load_images(main_dir, screen_scale, ["ui", "battlemenu_ui", "slider"], load_order=False)
     esc_slider_menu = [menu.SliderMenu([esc_menu_images["scroller_box.png"], esc_menu_images["scroller.png"]],
                                        [esc_menu_images["scroll_button_normal.png"], esc_menu_images["scroll_button_click.png"]],
-                                       (menu_rect_center0, menu_rect_center1), mixer_volume, 0)]
+                                       (menu_rect_center0, menu_rect_center1), mixer_volume)]
     esc_value_box = [menu.ValueBox(esc_menu_images["value.png"], (battle_menu.rect.topright[0] * 1.08, menu_rect_center1), mixer_volume)]
 
     return {"battle_menu": battle_menu, "battle_menu_button": battle_menu_button, "esc_option_menu_button": esc_option_menu_button,
@@ -619,13 +617,13 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                    self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
 
             if preview:  # only create random right side sprite
-                animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in this_animation and "&" not in this_animation]
+                animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in this_animation and "&" not in this_animation]  # TODO remove last condition when has mount
                 animation = [this_animation for this_animation in animation
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  weapon_common_action[0][0] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
                               (weapon_attack_action[0][0] in this_animation and ("Main", "Sub")[0] in this_animation))
-                             and "Default" not in this_animation]  # get animation with main weapon
+                             and "Default" not in this_animation]  # get animation with weapon
                 animation = random.choice(animation)  # random animation
 
                 frame_data = random.choice(self.generic_animation_pool[1][animation])  # random frame

@@ -70,11 +70,17 @@ class EscButton(pygame.sprite.Sprite):
 
 
 class SliderMenu(pygame.sprite.Sprite):
-    def __init__(self, bar_images, button_images, pos, value, ui_type=0):
+    def __init__(self, bar_images, button_images, pos, value):
+        """
+        Slider UI that let player click or drag the setting point in the bar
+        :param bar_images: List of box image and slider box
+        :param button_images: List of button or ball clicked/non-clicked image
+        :param pos: Position of the ui sprite
+        :param value: Value of the setting
+        """
         self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.ui_type = ui_type
         self.image = bar_images[0]
         self.slider_size = bar_images[1].get_width()
         self.difference = (self.image.get_width() - self.slider_size) / 2
@@ -93,7 +99,13 @@ class SliderMenu(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
     def player_input(self, mouse_pos, value_box, forced_value=False):
-        """Update slider value and position"""
+        """
+        Update slider value and position
+        :param mouse_pos: Cursor position
+        :param value_box: UI box that show number value
+        :param forced_value: forced
+        :return:
+        """
         if forced_value is False:
             self.mouse_value = mouse_pos[0]
             if self.mouse_value > self.max_value:

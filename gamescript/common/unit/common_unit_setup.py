@@ -4,7 +4,9 @@ import os
 import numpy as np
 import pygame
 
-from gamescript.datastat import stat_convert
+from gamescript.common import utility
+
+stat_convert = utility.stat_convert
 
 
 def setup_unit(self, team_army, troop_list, specific_team=None):

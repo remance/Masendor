@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pygame
 
-from datastat import stat_convert
 from gamescript.common import utility
 from gamescript.common.subunit import common_subunit_setup
 
 load_textures = utility.load_textures
+stat_convert = utility.stat_convert
 
 make_sprite = common_subunit_setup.make_sprite
 
@@ -17,6 +17,11 @@ direction_list = ("front", "side", "back", "sideup", "sidedown")
 
 class TroopAnimation:
     def __init__(self, main_dir, race_list):
+        """
+        Containing data related to troop animation sprite
+        :param main_dir: Game folder direction
+        :param race_list: List of troop races
+        """
         with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -73,13 +78,16 @@ class TroopAnimation:
                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
                 rd = [row for row in rd]
                 part_name_header = rd[0]
-                list_column = ("p1_head", "p1_face", "p1_body", "p1_r_arm_up", "p1_r_arm_low", "p1_r_hand", "p1_l_arm_up",
-                               "p1_l_arm_low", "p1_l_hand", "p1_r_leg", "p1_r_foot", "p1_l_leg", "p1_l_foot",
-                               "p1_main_weapon", "p1_sub_weapon", "p2_head", "p2_face", "p2_body", "p2_r_arm_up", "p2_r_arm_low", "p2_r_hand",
-                               "p2_l_arm_up", "p2_l_arm_low", "p2_l_hand", "p2_r_leg", "p2_r_foot", "p2_l_leg",
-                               "p2_l_foot", "p2_main_weapon", "p2_sub_weapon", "effect_1", "effect_2", "dmg_effect_1", "dmg_effect_2",
-                               "frame_property", "animation_property", "special_1", "special_2", "special_3", "special_4",
-                               "special_5")  # value in list only
+                list_column = ["head", "eye", "mouth", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
+                                      "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon",
+                                      "sub_weapon"]
+                for p in range(1, 5):  # up to p4
+                    p_name = "p" + str(p) + "_"
+                    list_column += [p_name + item for item in list_column]
+                list_column += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2",
+                                "dmg_effect_3", "dmg_effect_4", "special_1", "special_2", "special_3", "special_4",
+                                "special_5", "special_6", "special_7", "special_8", "special_9",
+                                "special_10", "frame_property", "animation_property"]  # value in list only
                 list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
                 part_name_header = part_name_header[1:]  # keep only part name for list ref later
                 animation_pool = {}
