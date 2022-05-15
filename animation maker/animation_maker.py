@@ -66,101 +66,6 @@ anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_proper
 
 # TODO: unique, lock?
 
-
-def reload_animation(animation, char):
-    """Reload animation frames"""
-    frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if this_image is not None]
-    if len(char.frame_list[current_frame]) > 1:  # has stuff to load
-        for frame_index in range(0, 10):
-            for prop in frame_property_select[frame_index] + anim_property_select:
-                if "effect" in prop:
-                    if "grey" in prop:  # not work with just convert L for some reason
-                        width, height = frames[frame_index].get_size()
-                        for x in range(width):
-                            for y in range(height):
-                                red, green, blue, alpha = frames[frame_index].get_at((x, y))
-                                average = (red + green + blue) // 3
-                                gs_color = (average, average, average, alpha)
-                                frames[frame_index].set_at((x, y), gs_color)
-                    data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
-                    surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
-                    alpha = surface.split()[-1]  # save alpha
-                    if "blur" in prop:
-                        surface = surface.filter(
-                            ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
-                    if "contrast" in prop:
-                        enhancer = ImageEnhance.Contrast(surface)
-                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
-                    if "brightness" in prop:
-                        enhancer = ImageEnhance.Brightness(surface)
-                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
-                    if "fade" in prop:
-                        empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
-                        empty.fill((255, 255, 255, 255))
-                        empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
-                        empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
-                        surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
-                    surface.putalpha(alpha)  # put back alpha
-                    surface = surface.tobytes()
-                    surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
-                    if "colour" in prop:
-                        colour = prop[prop.rfind("_")+1:]
-                        colour = [int(this_colour) for this_colour in colour.split(".")]
-                        surface = apply_colour(surface, colour)
-                    frames[frame_index] = surface
-            filmstrip_list[frame_index].add_strip(frames[frame_index])
-    animation.reload(frames)
-    armour_selector.change_name(char.armour[p_body_helper.ui_type + "_armour"])
-    face = [char.bodypart_list[current_frame][p_body_helper.ui_type + "_eye"], char.bodypart_list[current_frame][p_body_helper.ui_type + "_mouth"]]
-    head_text = ["Eye: ", "Mouth: "]
-    for index, selector in enumerate([eye_selector, mouth_selector]):
-        this_text = "Any"
-        if face[index] not in (0, 1):
-            this_text = face[index]
-        selector.change_name(head_text[index] + str(this_text))
-    for helper in helper_list:
-        helper.stat1 = char.part_name_list[current_frame]
-        helper.stat2 = char.animation_part_list[current_frame]
-        if char.part_selected:  # not empty
-            for part in char.part_selected:
-                part = list(char.rect_part_list.keys())[part]
-                helper.select_part((0, 0), True, False, part)
-        else:
-            helper.select_part(None, shift_press, False)
-
-
-def property_to_pool_data(which):
-    if which == "anim":
-        for frame in model.frame_list:
-            frame["animation_property"] = select_list
-        if anim_prop_listbox.rect.collidepoint(mouse_pos):
-            for direction in range(0, 5):
-                for frame in range(0, len(current_pool[direction][animation_name])):
-                    current_pool[direction][animation_name][frame]["animation_property"] = select_list
-    elif which == "frame":
-        model.frame_list[current_frame]["frame_property"] = select_list
-        for direction in range(0, 5):
-            current_pool[direction][animation_name][current_frame]["frame_property"] = select_list
-
-
-def change_animation(new_name):
-    global animation_name, current_frame, current_anim_row, current_frame_row, anim_property_select, frame_property_select
-    current_frame = 0
-    anim.show_frame = current_frame
-    anim_prop_listbox.namelist = anim_property_list + ["Custom"]  # reset property list
-    anim_property_select = []
-    frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
-    frame_property_select = [[] for _ in range(10)]
-    current_anim_row = 0
-    current_frame_row = 0
-    model.read_animation(new_name)
-    animation_name = new_name
-    animation_selector.change_name(new_name)
-    reload_animation(anim, model)
-    anim_prop_list_scroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
-    frame_prop_list_scroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
-
-
 race_list = []
 race_acro = []
 with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
@@ -262,6 +167,107 @@ for folder in subdirectories:
     for subfolder in subsubdirectories:
         imgs = load_textures(main_dir, subfolder, scale=screen_scale)
         effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
+
+
+
+
+def reload_animation(animation, char):
+    """Reload animation frames"""
+    frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if this_image is not None]
+    if len(char.frame_list[current_frame]) > 1:  # has stuff to load
+        for frame_index in range(0, 10):
+            for prop in frame_property_select[frame_index] + anim_property_select:
+                if "effect" in prop:
+                    if "grey" in prop:  # not work with just convert L for some reason
+                        width, height = frames[frame_index].get_size()
+                        for x in range(width):
+                            for y in range(height):
+                                red, green, blue, alpha = frames[frame_index].get_at((x, y))
+                                average = (red + green + blue) // 3
+                                gs_color = (average, average, average, alpha)
+                                frames[frame_index].set_at((x, y), gs_color)
+                    data = pygame.image.tostring(frames[frame_index], "RGBA")  # convert image to string data for filtering effect
+                    surface = Image.frombytes("RGBA", frames[frame_index].get_size(), data)  # use PIL to get image data
+                    alpha = surface.split()[-1]  # save alpha
+                    if "blur" in prop:
+                        surface = surface.filter(
+                            ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
+                    if "contrast" in prop:
+                        enhancer = ImageEnhance.Contrast(surface)
+                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
+                    if "brightness" in prop:
+                        enhancer = ImageEnhance.Brightness(surface)
+                        surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
+                    if "fade" in prop:
+                        empty = pygame.Surface(frames[frame_index].get_size(), pygame.SRCALPHA)
+                        empty.fill((255, 255, 255, 255))
+                        empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
+                        empty = Image.frombytes("RGBA", frames[frame_index].get_size(), empty)  # use PIL to get image data
+                        surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
+                    surface.putalpha(alpha)  # put back alpha
+                    surface = surface.tobytes()
+                    surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
+                    if "colour" in prop:
+                        colour = prop[prop.rfind("_")+1:]
+                        colour = [int(this_colour) for this_colour in colour.split(".")]
+                        surface = apply_colour(surface, colour)
+                    frames[frame_index] = surface
+            filmstrip_list[frame_index].add_strip(frames[frame_index])
+    animation.reload(frames)
+    change_selector_name(char)
+    for helper in helper_list:
+        helper.stat1 = char.part_name_list[current_frame]
+        helper.stat2 = char.animation_part_list[current_frame]
+        if char.part_selected:  # not empty
+            for part in char.part_selected:
+                part = list(char.rect_part_list.keys())[part]
+                helper.select_part((0, 0), True, False, part)
+        else:
+            helper.select_part(None, shift_press, False)
+
+
+def property_to_pool_data(which):
+    if which == "anim":
+        for frame in model.frame_list:
+            frame["animation_property"] = select_list
+        if anim_prop_listbox.rect.collidepoint(mouse_pos):
+            for direction in range(0, 5):
+                for frame in range(0, len(current_pool[direction][animation_name])):
+                    current_pool[direction][animation_name][frame]["animation_property"] = select_list
+    elif which == "frame":
+        model.frame_list[current_frame]["frame_property"] = select_list
+        for direction in range(0, 5):
+            current_pool[direction][animation_name][current_frame]["frame_property"] = select_list
+
+
+def change_animation(new_name):
+    global animation_name, current_frame, current_anim_row, current_frame_row, anim_property_select, frame_property_select
+    current_frame = 0
+    anim.show_frame = current_frame
+    anim_prop_listbox.namelist = anim_property_list + ["Custom"]  # reset property list
+    anim_property_select = []
+    frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
+    frame_property_select = [[] for _ in range(10)]
+    current_anim_row = 0
+    current_frame_row = 0
+    model.read_animation(new_name)
+    animation_name = new_name
+    animation_selector.change_name(new_name)
+    reload_animation(anim, model)
+    anim_prop_list_scroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
+    frame_prop_list_scroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
+
+
+def change_selector_name(char):
+    """Change armour and face part selector for changing animation or person"""
+    armour_selector.change_name(char.armour[p_body_helper.ui_type + "_armour"])
+    face = [char.bodypart_list[current_frame][p_body_helper.ui_type + "_eye"], char.bodypart_list[current_frame][p_body_helper.ui_type + "_mouth"]]
+    head_text = ["Eye: ", "Mouth: "]
+    for index, selector in enumerate([eye_selector, mouth_selector]):
+        this_text = "Any"
+        if face[index] not in (0, 1):
+            this_text = face[index]
+        selector.change_name(head_text[index] + str(this_text))
 
 
 class Showroom(pygame.sprite.Sprite):
@@ -886,12 +892,12 @@ class Model:
                     rect = gear_image.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
                     head_sprite_surface.blit(gear_image, rect)
                     p_head_sprite_surface[key] = head_sprite_surface
-
                 except KeyError:  # skip part that not exist
                     pass
                 except UnboundLocalError:  # for when change animation
                     pass
-
+                except TypeError:  # for when all parts empty
+                    pass
 
         self.sprite_image = {key: None for key in self.rect_part_list.keys()}
         except_list = ["eye", "mouth", "head"]  # skip doing these
@@ -1031,8 +1037,8 @@ class Model:
             self.bodypart_list[current_frame] = body_part_history[current_history]
 
         elif "armour" in edit_type:
-            if any(ext in edit_type for ext in ["p" + str(p) for p in range(1, max_person + 1)]) in edit_type:
-                self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
+            print(edit_type)
+            self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             for part in self.sprite_image:
                 if self.animation_part_list[current_frame][part] is not None:
@@ -1780,6 +1786,7 @@ while True:
                             elif "person" in popup_listbox.action:
                                 p_body_helper.change_p_type(name.name, player_change=True)
                                 p_selector.change_name(name.name)
+                                change_selector_name(model)
                             elif "armour" in popup_listbox.action:
                                 model.edit_part(mouse_pos, popup_listbox.action[0:3] + "armour_" + name.name)
                                 armour_selector.change_name(name.name)
@@ -2079,14 +2086,16 @@ while True:
                                         armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif eye_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][direction_list[model.side]]["eye"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_eye_select",
-                                        eye_selector.rect.topleft, part_list, "bottom", screen_scale)
+                        if model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1] != 0:
+                            part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
+                            popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_eye_select",
+                                            eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif mouth_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][direction_list[model.side]]["mouth"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_mouth_select",
-                                        mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
+                        if model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1] != 0:
+                            part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
+                            popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_mouth_select",
+                                            mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif race_part_button.rect.collidepoint(mouse_pos):
                         if model.part_selected != []:
