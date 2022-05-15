@@ -8,6 +8,7 @@ import re
 from gamescript.common import utility
 
 stat_convert = utility.stat_convert
+load_images = utility.load_images
 
 
 class WeaponData:
@@ -457,11 +458,12 @@ class LeaderData:
 class FactionData:
     images = []
 
-    def __init__(self, main_dir, ruleset_folder):
+    def __init__(self, main_dir, ruleset_folder, screen_scale):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
         :param ruleset_folder: Folder name of the ruleset
+        :param screen_scale: scale of screen resolution
         """
         self.faction_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "faction.csv"), encoding="utf-8",
@@ -480,4 +482,8 @@ class FactionData:
                             row[n] = [int(i)]
                 self.faction_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
-        self.faction_name_list = [item["Name"] for item in self.faction_list.values()][1:]
+        images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
+                                 load_order=False)  # coa_list images list
+        self.coa_list = []
+        for image in images_old:
+            self.coa_list.append(images_old[image])

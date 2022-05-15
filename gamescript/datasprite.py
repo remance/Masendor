@@ -15,7 +15,7 @@ make_sprite = common_subunit_setup.make_sprite
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
 
-class TroopAnimation:
+class TroopAnimationData:
     def __init__(self, main_dir, race_list):
         """
         Containing data related to troop animation sprite
@@ -214,7 +214,7 @@ class TroopAnimation:
                         self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction].update(imgs)
 
 
-class EffectSprite:
+class EffectSpriteData:
     def __init__(self, main_dir):
         self.effect_sprite_pool = {}
         part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
@@ -224,5 +224,5 @@ class EffectSprite:
             part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
             subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
-                imgs = load_textures(main_dir, subfolder)
-                self.effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
+                images = load_textures(main_dir, subfolder)
+                self.effect_sprite_pool[folder[-1]][subfolder[-1]] = images

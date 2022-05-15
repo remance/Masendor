@@ -34,6 +34,15 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
     return done
 
 
+def reset_animation(self):
+    """
+    Reset animation variable
+    :param self: Object of the animation sprite
+    """
+    self.show_frame = 0
+    self.animation_timer = 0
+    self.interrupt_animation = True
+
 def apply_colour(surface, colour=None, colour_list=None):
     """Colorise body part sprite"""
     if colour is not None and colour != "none":

@@ -237,12 +237,12 @@ class Battle:
         self.subsection_name = main.subsection_name
         self.page_button = main.page_button
 
-        self.weather_data = main.weather_data
-        self.weather_matter_images = main.weather_matter_images
-        self.weather_effect_images = main.weather_effect_images
-        self.weather_list = main.weather_list
+        self.weather_data = main.battle_map_data.weather_data
+        self.weather_matter_images = main.battle_map_data.weather_matter_images
+        self.weather_effect_images = main.battle_map_data.weather_effect_images
+        self.weather_list = main.battle_map_data.weather_list
 
-        self.feature_mod = main.feature_mod
+        self.feature_mod = main.battle_map_data.feature_mod
 
         self.status_images = main.status_images
         self.role_images = main.role_images
@@ -382,7 +382,7 @@ class Battle:
         self.enactment = enactment  # enactment mod, control both team
 
         self.faction_data = self.main.faction_data
-        self.coa_list = self.main.coa_list
+        self.coa_list = self.faction_data.coa_list
 
         self.troop_data = self.main.troop_data
         self.leader_data = self.main.leader_data

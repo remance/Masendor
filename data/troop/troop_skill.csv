@@ -26,10 +26,10 @@
 25,"Leading Charge",0,2,1,10,15,"4,10","4,10",0,30,10,120,,,125,,,,120,0,0,-1,10,0,,,,0,0,0,0,0,0,"Charge,repeat,movable",0,
 26,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 27,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-28,"Reconnaissance",0,0,,100,,,,,50,20,,,,,,,,,20,0,,,,,,125,,,0,0,,0,,0,"Only the very best of plans can be created from the most thorough information gathering process."
+28,"Reconnaissance",0,0,,100,,,,,50,20,,,,,,,,,20,0,,,,,,125,,,0,0,,0,"BuffSelf",0,"Only the very best of plans can be created from the most thorough information gathering process."
 29,"Berserk",0,0,1,1,300,,,,30,20,,,,,,,,,0,0,0,,,,,,,12,0,0,,0,"Shout",0,
 30,"Keen Strike",0,0,1,3,55,10,10,0,75,90,250,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,"Action",2,
-31,"Graceful Evasion",1,0,1,30,300,10,10,0,80,10,,150,150,170,,,,,20,0,0,0,0,,,,0,0,0,0,0,0,,2,"There is nothing more elegant than gracefully evading a blow from a brute."
+31,"Graceful Evasion",1,0,1,30,300,10,10,0,80,10,,150,150,170,,,,,20,0,0,0,0,,,,0,0,0,0,0,0,"BuffSelf",2,"There is nothing more elegant than gracefully evading a blow from a brute."
 32,"Spear Schiltron",1,0,,,,,,,,,,,,,,,,,100,0,,,,,,,,,0,0,,0,"Action,hold,repeat,outward",0,
 33,"Spearwall",1,0,1,120,0,"0,1,3,10","0,1,3,10",0,35,0,120,110,90,50,,,,,100,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you are rushing at full speed, after all."
 34,"Spearguard",1,0,1,90,0,"0,1,3,10","0,1,3,10",0,50,0,110,115,,60,,,,,40,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
@@ -46,7 +46,7 @@
 45,"Steady Aims",1,0,1,60,300,11,11,,44,10,,,,,120,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,"BuffSelf",0,"The most important part of range weaponry is to hit the target. Arrows missed are arrow wasted."
 46,"Steady Shield",1,0,1,60,0,"0,10","0,10",,48,10,,120,120,,,,,,30,0,-1,0,0,,,,0,0,0,0,0,0,"BuffSelf",0,"The art of defence begins with stability. No unsteady shield can defend against harm for its user."
 47,"Victory Or Death",0,0,1,1200,10000,10,10,,51,0,,,,,,,,,0,0,0,50,50,,,,0,0,0,0,0,0,"BuffSelf",2,"Sometimes retreat is a valid option, but not for this time."
-48,"Chain Attack",1,0,2,3,60,10,10,,49,50,,,,,,,,,0,0,0,0,0,,50,,0,0,0,0,0,0,,2,"Hitting all enemies at once in a swift fashion is not an easy feat. Extremely powerful skill in battlefield combat with no end of enemies to slay."
+48,"Chain Attack",1,0,2,3,60,10,10,,49,50,,,,,,,,,0,0,0,0,0,,50,,0,0,0,0,0,0,"Action,repeat,random,speed4",2,"Hitting all enemies at once in a swift fashion is not an easy feat. Extremely powerful skill in battlefield combat with no end of enemies to slay."
 49,"Sweep Asunder",0,0,2,1,30,10,10,,55,70,,,,,,,,,0,0,0,0,0,,120,,0,0,0,0,0,0,,2,"Only the strong can sweep a large weapon so powerful that the blow can leave all those standing at the front asunder."
 50,"Pledge Of Honour",0,0,3,300,600,10,10,,68,0,,,,,,,,,0,0,0,20,0,,,,0,0,0,0,0,0,"BuffSelf",2,
 51,"Ruthless Pursuit",0,0,1,120,60,"2,4","2,4",,30,15,,,,150,,,,130,,,,,,,,,,,,,,,,,
