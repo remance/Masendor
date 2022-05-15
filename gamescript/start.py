@@ -9,7 +9,7 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit, datasprite
+from gamescript import map, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, battle, leader, unit, subunit, datasprite, datamap
 from gamescript.common import utility
 from gamescript.common.start import common_start_setup, common_start_player
 from gamescript.common.unit import common_unit_setup
@@ -27,10 +27,7 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
-read_terrain_data = common_start_setup.read_terrain_data
-read_weather_data = common_start_setup.read_weather_data
-read_map_data = common_start_setup.read_map_data
-read_faction_data = common_start_setup.read_faction_data
+read_battle_list_data = common_start_setup.read_battle_list_data
 make_encyclopedia_ui = common_start_setup.make_encyclopedia
 make_input_box = common_start_setup.make_input_box
 make_editor_ui = common_start_setup.make_editor_ui
@@ -681,14 +678,12 @@ class Game:
         self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button, \
         self.lore_scroll = make_encyclopedia_ui(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
 
-        self.feature_mod, self.feature_list = read_terrain_data(self.main_dir)
-        self.weather_data, self.weather_list, self.weather_matter_images, self.weather_effect_images = read_weather_data(
-            self.main_dir, self.screen_scale)
+        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale)
 
         self.battle_game = battle.Battle(self, self.window_style)
         self.change_genre(self.genre)
 
-        self.troop_card_ui.feature_list = self.feature_list  # add terrain feature list name to subunit card
+        self.troop_card_ui.feature_list = self.battle_map_data.feature_list  # add terrain feature list name to subunit card
 
         subunit.Subunit.battle = self.battle_game
         leader.Leader.battle = self.battle_game
@@ -715,8 +710,8 @@ class Game:
 
     def change_ruleset(self):
 
-        self.faction_data, self.coa_list = read_faction_data(self.main_dir, self.screen_scale, self.ruleset_folder)
-        self.weapon_data, self.armour_data, self.troop_data, self.leader_data = load_battle_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
+        self.weapon_data, self.armour_data, self.troop_data, self.leader_data, self.faction_data\
+            = load_battle_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
         subunit.Subunit.screen_scale = self.screen_scale
         subunit.Subunit.weapon_data = self.weapon_data
         subunit.Subunit.armour_data = self.armour_data
@@ -725,10 +720,10 @@ class Game:
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 
-        self.preset_map_list, self.preset_map_folder, self.custom_map_list, self.custom_map_folder = read_map_data(
-            self.main_dir, self.ruleset_folder)
+        self.preset_map_list, self.preset_map_folder, self.custom_map_list, \
+        self.custom_map_folder = read_battle_list_data(self.main_dir, self.ruleset_folder)
 
-        self.troop_animation = datasprite.TroopAnimation(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
+        self.troop_animation = datasprite.TroopAnimationData(self.main_dir, [self.troop_data.race_list[key]["Name"] for key in self.troop_data.race_list])
         self.generic_action_data = self.troop_animation.generic_action_data  # action data pool
         self.generic_animation_pool = self.troop_animation.generic_animation_pool  # animation data pool
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
@@ -740,7 +735,7 @@ class Game:
 
         subunit.Subunit.generic_action_data = self.generic_action_data
 
-        self.effect_sprite_pool = datasprite.EffectSprite(self.main_dir)
+        self.effect_sprite_pool = datasprite.EffectSpriteData(self.main_dir)
 
         who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
         self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,
@@ -759,8 +754,8 @@ class Game:
         lorebook.Lorebook.trait_list = self.troop_data.trait_list
         lorebook.Lorebook.leader_data = self.leader_data
         lorebook.Lorebook.leader_lore = self.leader_data.leader_lore
-        lorebook.Lorebook.feature_mod = self.feature_mod
-        lorebook.Lorebook.weather_data = self.weather_data
+        lorebook.Lorebook.feature_mod = self.battle_map_data.feature_mod
+        lorebook.Lorebook.weather_data = self.battle_map_data.weather_data
         lorebook.Lorebook.landmark_data = None
         lorebook.Lorebook.troop_grade_list = self.troop_data.grade_list
         lorebook.Lorebook.troop_class_list = self.troop_data.role
@@ -833,12 +828,12 @@ class Game:
         if team1_set_pos is None:
             team1_set_pos = (self.screen_rect.width / 2 - (400 * self.screen_scale[0]), self.screen_rect.height / 3)
         # position = self.map_show[0].get_rect()
-        self.team_coa.add(menu.TeamCoa(self.screen_scale, team1_set_pos, self.coa_list[data[0]],
+        self.team_coa.add(menu.TeamCoa(self.screen_scale, team1_set_pos, self.faction_data.coa_list[data[0]],
                                        1, self.faction_data.faction_list[data[0]]["Name"]))  # team 1
 
         if one_team is False:
             self.team_coa.add(menu.TeamCoa(self.screen_scale, (self.screen_rect.width / 2 + (400 * self.screen_scale[0]), self.screen_rect.height / 3),
-                                           self.coa_list[data[1]], 2, self.faction_data.faction_list[data[1]]["Name"]))  # team 2
+                                           self.faction_data.coa_list[data[1]], 2, self.faction_data.faction_list[data[1]]["Name"]))  # team 2
         ui_class.add(self.team_coa)
 
     def make_preview_map(self, map_folder_list, map_list):

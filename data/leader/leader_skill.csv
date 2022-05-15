@@ -7,10 +7,10 @@
 6,"Prayer",0,0,4,120,750,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,0,,0,"Prayer",0,
 7,"Misinformation",1,100,4,30,600,0,,,,,,,,,,-30,0,0,0,,0,,,,,,,0,2,,0,"DebuffUnit",0,"The right plan and action can only be implemented with the right information. One wrong placement of a piece can render the whole operation crumble."
 8,"Incite Panic",1,70,4,15,450,0,,,,,,,,,,-15,0,0,0,-10,0,,,,,,,0,0,11,0,"DebuffUnit",0,
-9,"Order Disruption",1,60,1,25,450,0,,,,,,,,,,-40,0,0,0,,0,,,,,,,0,0,,0,"DebuffUnit",0,
+9,"Order Disruption",1,60,1,25,450,0,,,,,,,,,,-40,0,0,0,,0,,,,,,,0,0,,0,"DebuffUnit",0,"Any organisation cannot exist without order. A small disruption in the chain of command is enough to open a window to a total collapse."
 10,"Glorious Presence",0,0,1,120,600,0,,,,,,,,,,,0,0,0,,,,,,-100,,,0,0,,,"BuffSelf",0,
 11,"Terrifying Presence",0,0,1,120,600,0,,,,,,,,,,,0,0,0,,,,,,-100,,,0,10,,0,"BuffSelf",0,
-12,"Majestic Presence",0,0,1,60,600,0,,,,,,,,,,,0,0,0,,15,,,,-100,,,0,0,,0,"BuffSelf",0,
+12,"Majestic Presence",0,0,1,60,600,0,,,,,,,,,,,0,0,0,,15,,,,-100,,,0,0,,0,"BuffSelf",0,"Appearance is everything. No one respects those who look inferior to themselves. A majestic appearance befitting of a great leader will surely bring awe to all who follow you."
 13,"Godly Presence",0,0,1,60,600,0,,,,,,,,,,,0,0,0,,40,,,,-200,22,,0,0,,0,"BuffSelf",2,
 14,"Forced March",0,0,4,30,30,0,0,50,60,70,200,40,,,,,-20,0,-1,-20,0,,,,-50,0,,0,0,,0,"BuffUnit",0,"Location is a deciding factor in most battles. A forced march may ensure that you can secure an advantageous position before the enemy."
 15,"Death March",0,0,4,30,30,0,0,50,40,60,300,30,,,,,-30,-10,-1,-40,0,,,,-70,0,,0,0,,0,"BuffUnit",0,"Deaths are preferable to defeat. The commander orders, and the troops obey such is the will of an army. One final march."
@@ -19,7 +19,7 @@
 18,"Determination",0,,1,60,300,0,,,,,,,,,,,0,0,0,,0,,,,,,,0,1,,0,,0,"Only willpower brings a dream to reality. Determination begets success or so the saying goes."
 19,"Encourage",0,30,4,60,300,0,,105,105,105,105,105,105,105,105,5,0,0,0,15,0,,,,,,,0,0,,0,"BuffUnit",0,"A simple encouragement can go a long way to make the weak become the strong."
 20,"Ensnare",1,45,4,15,300,0,,,,,10,80,,,50,,0,0,0,,0,,,,,,,0,0,,0,"DebuffUnit",0,
-21,"Make Haste",0,0,4,80,700,0,,,,,145,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,
+21,"Make Haste",0,0,4,80,700,0,,,,,145,,,,,,0,0,0,,0,,,,,,,0,0,,0,"BuffUnit",0,"Speed is half the battle. Securing the location, reinforcing allies or flanking enemies. All require speed to be effectively accomplished."
 22,"Demoralise",1,100,4,45,600,0,,,,,,,,,,,,0,0,-60,,,,,,,,0,0,,0,"DebuffUnit",0,"Morale is everything in battle. A battle can only go on when the troops are willing to fight. Now just take that out of the equation and a fight will turn into a massacre."
 23,"Defiance",0,0,1,,,0,,125,140,150,,,,,,,50,0,0,,0,,,,,,,0,0,,0,"BuffSelf",0,
 24,"Show Of Force",0,0,4,,,0,0,,,,,,,,,,30,0,0,,0,,,,,,,0,1,,0,,0,"A simple demonstration of true power. They only need to see to know defeat. The ultimate feat of victory to win a war without waging a single battle ."
@@ -65,7 +65,7 @@
 64,"Land Supremacy",0,0,5,,,,,150,150,150,150,150,,150,150,60,60,,,100,,,,,,,,,,,,"BuffAll",,"Complete control over land is now established under the supreme leadership. The battle is simply as good as over."
 65,"Commence The Hunt",0,0,300,120,600,,,115,70,60,140,200,150,200,140,20,-50,,,50,-15,150,,100,100,,,,,,,"BuffAll",,"The hunting party is commenced. All are nothing more than prey in the eyes of true hunters."
 66,"God Of War",0,0,5,60,600,,,180,160,150,150,180,,150,200,50,50,,5,50,50,,,,,,,,,,,"BuffAll",,
-67,"Liberty Or Death",0,0,250,60,600,,,125,140,110,115,150,,150,120,20,45,,,60,10,,,,,,,,,,,"BuffAll",,
+67,"Liberty Or Death",0,0,250,60,600,,,125,140,110,115,150,,150,120,20,45,,,60,10,,,,,,,,,,,"BuffAll",,"Liberty or death! The spirit of revolution and rebellion throughout history against the oppressors never truly die."
 68,"Masterful Ambush",0,0,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffUnit",,
 69,"Mastermind Perpetration",0,100,150,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffAll",,
 70,"Demon Curse",1,200,4,,,40,,25,50,50,30,20,,40,30,-30,-50,-5,-5,-60,-30,,,-10,,,,,,,,,,"Some curses are worse than death. This one is definitely one of those."
@@ -90,7 +90,7 @@
 89,"Absolute Command",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 90,"Zero To One",0,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 91,"Guardian Star",0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-92,"Finest Archer",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
+92,"Finest Archer",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,"One arrow is enough to win the battle when it reaches the right place."
 93,"Grand Combat",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,
 94,"Dread Fury",0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 95,"Paragon Providence",0,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
@@ -100,7 +100,7 @@
 99,"Saint Exemplar",0,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 100,"Foundation Of An Empire",0,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 101,"Great Destruction",1,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-102,"Abandon All Hope",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+102,"Abandon All Hope",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Abandon everything. You must flee and survive at any cost."
 103,"Feast Of Death",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 104,"Blood Dance",1,,200,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 105,"Song Of Peace",2,,100,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

@@ -68,6 +68,7 @@ class Subunit(pygame.sprite.Sprite):
     generic_action_data = None
 
     play_animation = animation.play_animation
+    reset_animation = animation.reset_animation
     set_rotate = utility.set_rotate
     use_skill = common_subunit_combat.use_skill
     rotate = common_subunit_movement.rotate
@@ -544,6 +545,7 @@ class Subunit(pygame.sprite.Sprite):
             # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
             if (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
                     (done and "repeat" not in self.current_action):
+                self.reset_animation()
                 self.interrupt_animation = False
                 self.current_action = self.command_action  # continue next action when animation finish
                 self.pick_animation()
