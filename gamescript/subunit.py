@@ -112,8 +112,8 @@ class Subunit(pygame.sprite.Sprite):
         Subunit object represent a group of troop or leader
         Subunit has three different stage of stat;
         first: original stat (e.g., original_melee_attack), this is their stat before calculating equipment, trait, and other effect
-        second: base stat (e.g., base_melee_attack), this is their stat after calculating equipment and trait
-        third: stat itself (e.g., melee_attack), this is their stat after calculating terrain, weather, and status effect
+        second: troop base stat (e.g., base_melee_attack), this is their stat after calculating equipment and trait
+        third: stat with all effect (e.g., melee_attack), this is their stat after calculating terrain, weather, and status effect
         :param troop_id: ID of the troop in data, can be 'h' for game mode that directly use leader character
         :param game_id: ID of the subunit as object
         :param unit: Unit that this subunit belongs to
@@ -366,11 +366,12 @@ class Subunit(pygame.sprite.Sprite):
         self.base_elem_range = self.original_elem_range
 
         self.add_weapon_stat()
-        self.action_list = {}  # got added in change_equipment
+        self.action_list = {}  # get added in change_equipment
 
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
             race_id = [key for key, value in self.troop_data.race_list.items() if self.mount["Race"] in value["Name"]][0]
+            # self.race_name += "&" + self.troop_data.race_list[race_id]["Name"]
             if self.troop_data.race_list[race_id]["Size"] > self.size:  # replace size if mount is larger
                 self.size = self.troop_data.race_list[self.mount["Race"]]["Size"]
 
@@ -576,8 +577,14 @@ class Subunit(pygame.sprite.Sprite):
         del self.melee_target
         del self.close_target
         del self.image
-        self.sprite_pool = {}
-        self.current_animation = {}
+        del self.sprite_pool
+        del self.current_animation
+        del self.animation_queue
+        del self.enemy_front
+        del self.enemy_side
+        del self.friend_front
+        del self.same_front
+        del self.full_merge
         if self in self.battle.combat_path_queue:
             self.battle.combat_path_queue.remove(self)
         if local:

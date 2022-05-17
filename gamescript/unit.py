@@ -58,7 +58,6 @@ def change_unit_genre(self):
 
 
 class Unit(pygame.sprite.Sprite):
-    images = []
     max_zoom = 10  # max zoom allow
     battle = None
     form_change_timer = 10
@@ -107,7 +106,7 @@ class Unit(pygame.sprite.Sprite):
         self.start_stamina = start_stamina  # starting stamina percentage
         self.subunit_list = subunit_list  # subunit array
         self.colour = colour  # box colour according to team
-        self.commander = commander  # commander unit if true
+        self.commander = commander  # True if commander unit
 
         self.zoom = 10  # start with the closest zoom
         self.last_zoom = 1  # zoom level without calculate with 11 - zoom for scale
@@ -196,13 +195,16 @@ class Unit(pygame.sprite.Sprite):
         self.auth_penalty = 0  # authority penalty
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
-        self.battle.all_team_unit["alive"].add(self)
 
         self.team = team  # team
 
         self.subunit_position_list = []
         self.frontline = {0: [], 1: [], 2: [], 3: []}  # frontline keep list of subunit at the front of each side in combat, same list index as above
         self.frontline_object = {0: [], 1: [], 2: [], 3: []}  # same as above but save object instead of index order:front, left, right, rear
+
+        self.battle.all_team_unit["alive"].add(self)
+        self.ally_pos_list = {}
+        self.enemy_pos_list = {}
 
         # v Set up subunit position list for drawing
         width, height = 0, 0
@@ -221,21 +223,6 @@ class Unit(pygame.sprite.Sprite):
         """Change position variable to new camera scale"""
         self.true_number_pos = self.number_pos * (11 - self.zoom)
 
-    # def useskill(self,which_skill):
-    #     #charge skill
-    #     skillstat = self.skill[list(self.skill)[0]].copy()
-    #     if which_skill == 0:
-    #         self.skill_effect[self.charge_skill] = skillstat
-    #         if skillstat[26] != 0:
-    #             self.status_effect[self.charge_skill] = skillstat[26]
-    #         self.skill_cooldown[self.charge_skill] = skillstat[4]
-    #     # other skill
-    #     else:
-    #         if skillstat[1] == 1:
-    #             self.skill[which_skill]
-    #         self.skill_cooldown[which_skill] = skillstat[4]
-    # self.skill_cooldown[which_skill] =
-
     def start_set(self, subunit_group):
         """Setup various variables at the start of battle or when new unit spawn/split"""
         self.setup_unit(battle_start=False)
@@ -249,6 +236,7 @@ class Unit(pygame.sprite.Sprite):
                 this_unit.team_commander = self.leader[0]
         # ^ End assign commander
 
+        self.battle.all_team_unit["alive"].add(self)
         self.ally_pos_list = self.battle.team_pos_list[self.team]
         self.enemy_pos_list = {key: value for key, value in self.battle.team_pos_list.items() if key != self.team and key != "alive"}
 
@@ -459,5 +447,7 @@ class Unit(pygame.sprite.Sprite):
         del self.leader_subunit
         del self.ally_pos_list
         del self.enemy_pos_list
+        del self.subunit_list
+        del self.subunits_array
         if local:
             print(locals())

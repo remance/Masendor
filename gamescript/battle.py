@@ -3,7 +3,6 @@ import glob
 import os
 import random
 import sys
-import gc
 
 import pygame
 import pygame.freetype
@@ -248,6 +247,9 @@ class Battle:
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
 
         self.combat_path_queue = []  # queue of sub-unit to run melee combat pathfiding
+        self.map_move_array = []  # array for pathfinding
+        self.subunit_pos_array = []  # pathfinding array after include subunit position as 0
+        self.map_def_array = []  # array for defence calculation
 
         self.esc_slider_menu = main.esc_slider_menu
         self.esc_value_box = main.esc_value_box
@@ -312,7 +314,7 @@ class Battle:
         self.current_selected = None
         self.before_selected = None
 
-        self.all_team_unit = {}  # all unit in each team and alive
+        self.all_team_unit = {"alive": pygame.sprite.Group()}  # all unit in each team and alive
         self.team_pos_list = {}  # all alive team unit position
         self.enemy_pos_list = {}  # all enemy unit position for each team
 
@@ -465,7 +467,6 @@ class Battle:
             self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, place_name_map, self, False)
         else:  # for unit editor mode, create empty temperate glass map
             self.editor_map_change((166, 255, 107), (181, 230, 29))
-        self.all_team_unit = {"alive": pygame.sprite.Group()}
 
         self.alive_subunit_list = []
 
@@ -547,7 +548,6 @@ class Battle:
 
         clean_group_object((self.subunit, self.leader, self.all_team_unit, self.unit_icon, self.troop_number_sprite,
                             self.inspect_subunit, self.range_attacks))  # remove all reference from battle object
-
         self.subunit_animation_pool = None
 
         self.remove_unit_ui()
@@ -561,6 +561,10 @@ class Battle:
 
         self.drama_timer = 0  # reset drama text popup
         self.battle_ui_updater.remove(self.drama_text)
+
+        self.map_move_array = []  # array for pathfinding
+        self.subunit_pos_array = []
+        self.map_def_array = []
 
         if self.mode == "unit_editor":
             self.subunit_in_card = None
@@ -595,7 +599,9 @@ class Battle:
 
             self.leader_now = []
 
-        print(gc.get_objects())  # for when memory leak checking
+        # for when memory leak checking
+        import gc
+        # print(gc.get_objects())
         # print(gc.get_referrers(self.subunit_animation_pool))
 
     def run_game(self):

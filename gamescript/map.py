@@ -197,9 +197,6 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.image = pygame.Surface((default_map_width, default_map_height))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-        gamebattle.map_move_array = []  # array for pathfinding
-        gamebattle.map_def_array = []
-
         if editor_map:
             terrain, feature = feature_map.get_feature((1, 1), base_map)
             new_colour = self.new_colour_list[feature][1]

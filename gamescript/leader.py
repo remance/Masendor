@@ -51,6 +51,7 @@ class Leader(pygame.sprite.Sprite):
             self.state = 100  # no leader is same as dead so no need to update
 
         self.unit = unit
+        self.subunit = None  # get assigned in start_set
         # self.mana = stat["Mana"]
         self.army_position = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
         self.image_position = self.leader_pos[self.army_position]  # image position based on army_position in command ui
@@ -98,8 +99,8 @@ class Leader(pygame.sprite.Sprite):
                 self.gone()
 
     def delete(self, local=False):
-        """delete reference when del is called"""
+        """delete reference when the method is called"""
+        del self.unit
+        del self.subunit
         if local:
             print(locals())
-        else:
-            del self.unit
