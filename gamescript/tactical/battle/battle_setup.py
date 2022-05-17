@@ -93,11 +93,10 @@ def setup_battle_ui(self, change):
     change_group(self.scale_ui, self.battle_ui_updater, change)
 
 
-
 def change_state(self):
     self.previous_game_state = self.game_state
     setup_unit_icon(self.unit_selector, self.unit_icon,
-                    self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                    self.all_team_unit[self.team_selected], self.unit_selector_scroll)
     self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
     if self.game_state == "battle":  # change to battle state
         self.camera_mode = self.start_zoom_mode
@@ -131,7 +130,7 @@ def change_state(self):
         self.game_speed = 1
 
         # Run starting method
-        for this_unit in self.alive_unit_list:
+        for this_unit in self.all_team_unit["alive"]:
             this_unit.start_set(self.subunit)
         for this_subunit in self.subunit:
             this_subunit.start_set(self.camera_zoom)
@@ -146,7 +145,7 @@ def change_state(self):
             arrow.kill()
             del arrow
 
-        for this_unit in self.alive_unit_list:  # reset all unit state
+        for this_unit in self.all_team_unit["alive"]:  # reset all unit state
             this_unit.player_input(self.battle_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
         self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(bottomright=(self.screen_rect.width,

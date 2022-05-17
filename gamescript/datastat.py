@@ -355,7 +355,7 @@ class TroopData:
 
 
 class LeaderData:
-    def __init__(self, main_dir, images, ruleset_folder):
+    def __init__(self, main_dir, images, ruleset, ruleset_folder):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
@@ -402,6 +402,65 @@ class LeaderData:
                                        int_column=int_column)
                 self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
+
+        self.skill_list = {}
+        with open(os.path.join(main_dir, "data", "leader", "leader_skill.csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = ("ID", "Troop Type", "Type", "Range", "Area of Effect", "Element", "Cost")  # value int only
+            list_column = ("Action", )
+            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
+            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
+                          "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
+                          "Critical Effect", "Damage Effect")
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            for index, row in enumerate(rd):
+                if "," in row[-2]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                else:
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
+                    for n, i in enumerate(row):
+                        if index != 0:  # Skip first row header
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               tuple_column=tuple_column, int_column=int_column)
+                    self.skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.commander_skill_list = {}
+        with open(os.path.join(main_dir, "data", "leader", "commander_skill.csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
+            list_column = ("Action", "Replace")
+            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
+            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
+                          "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
+                          "Critical Effect", "Damage Effect")
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            for index, row in enumerate(rd):
+                if "," in row[-2]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                else:
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
+                    for n, i in enumerate(row):
+                        if index != 0:  # Skip first row header
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               tuple_column=tuple_column, int_column=int_column)
+                    self.commander_skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
 
         # Lore of the leader dict
         self.leader_lore = {}

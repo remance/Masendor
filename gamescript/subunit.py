@@ -138,6 +138,7 @@ class Subunit(pygame.sprite.Sprite):
         self.close_target = None  # closet target to move to in melee
         self.attacking = False  # For checking if unit in attacking state or not for using charge skill
 
+        self.sprite_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
@@ -374,7 +375,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.size = self.troop_data.race_list[self.mount["Race"]]["Size"]
 
         self.swap_weapon()
-
         self.last_health_state = 4  # state start at full
         self.last_stamina_state = 4
 
@@ -568,12 +568,16 @@ class Subunit(pygame.sprite.Sprite):
                 self.die()
 
     def delete(self, local=False):
-        """delete reference when method is called"""
+        """delete reference when the method is called"""
         del self.unit
         del self.leader
         del self.attack_target
+        del self.attack_pos
         del self.melee_target
         del self.close_target
+        del self.image
+        self.sprite_pool = {}
+        self.current_animation = {}
         if self in self.battle.combat_path_queue:
             self.battle.combat_path_queue.remove(self)
         if local:

@@ -30,7 +30,7 @@ def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_rig
             if self.unit_selector.current_row != new_row:
                 self.unit_selector.current_row = new_row
                 setup_unit_icon(self.unit_selector, self.unit_icon,
-                                self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                self.all_team_unit[self.team_selected], self.unit_selector_scroll)
 
     elif self.unit_selector.rect.collidepoint(self.mouse_pos):  # check mouse collide for unit selector ui
         self.click_any = True
@@ -223,7 +223,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                         self.leader_now = self.current_selected.leader
                         self.battle_ui_updater.add(*self.leader_now)
                         setup_unit_icon(self.unit_selector, self.unit_icon,
-                                        self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                        self.all_team_unit[self.team_selected], self.unit_selector_scroll)
 
                 elif self.row_split_button in self.battle_ui_updater and self.row_split_button.rect.collidepoint(self.mouse_pos):
                     self.button_name_popup.pop(self.mouse_pos, "Split by Middle Row")
@@ -236,7 +236,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                         self.leader_now = self.current_selected.leader
                         self.battle_ui_updater.add(*self.leader_now)
                         setup_unit_icon(self.unit_selector, self.unit_icon,
-                                        self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                        self.all_team_unit[self.team_selected], self.unit_selector_scroll)
 
                 # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
                 #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
@@ -752,8 +752,8 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
                         if can_deploy:
                             unit_game_id = 0
-                            if len(self.alive_unit_index) > 0:
-                                unit_game_id = self.alive_unit_index[-1] + 1
+                            if len(self.all_team_unit["alive"]) > 0:
+                                unit_game_id = self.all_team_unit["alive"][-1].game_id + 1
                             current_preset = self.convert_slot_dict(self.unit_preset_name,
                                                                     [str(int(self.base_camera_pos[0] / self.screen_scale[0])),
                                                                      str(int(self.base_camera_pos[1] / self.screen_scale[1]))], unit_game_id)
@@ -767,23 +767,23 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                                 current_preset[self.unit_preset_name]["Start Health"] = 100
                                 current_preset[self.unit_preset_name]["Start Stamina"] = 100
                                 current_preset[self.unit_preset_name]["Team"] = slot.team
-                                self.convert_edit_unit((self.team0_unit, self.team1_unit, self.team2_unit)[slot.team],
+                                self.convert_edit_unit(self.all_team_unit[slot.team],
                                                        current_preset[self.unit_preset_name], team_colour[slot.team],
                                                        pygame.transform.scale(self.coa_list[int(current_preset[self.unit_preset_name]["Team"])], (60, 60)), subunit_game_id)
                                 break
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
                             setup_unit_icon(self.unit_selector, self.unit_icon,
-                                            self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                            self.all_team_unit[self.team_selected], self.unit_selector_scroll)
                             self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
-                            for this_unit in self.alive_unit_list:
+                            for this_unit in battle.all_team_unit["alive"]:
                                 this_unit.start_set(self.subunit)
                             for this_subunit in self.subunit:
                                 this_subunit.start_set(self.camera_zoom)
                             for this_leader in self.leader_updater:
                                 this_leader.start_set()
 
-                            for this_unit in self.alive_unit_list:
+                            for this_unit in battle.all_team_unit["alive"]:
                                 this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
                                                        other_command="Stop")
                         else:
@@ -976,13 +976,13 @@ def battle_mouse_scrolling(self, mouse_scroll_up, mouse_scroll_down):
                 self.unit_selector.current_row = 0
             else:
                 setup_unit_icon(self.unit_selector, self.unit_icon,
-                                self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                self.all_team_unit[self.team_selected], self.unit_selector_scroll)
                 self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
         elif mouse_scroll_down:
             self.unit_selector.current_row += 1
             if self.unit_selector.current_row < self.unit_selector.log_size:
                 setup_unit_icon(self.unit_selector, self.unit_icon,
-                                self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                self.all_team_unit[self.team_selected], self.unit_selector_scroll)
                 self.unit_selector_scroll.change_image(new_row=self.unit_selector.current_row)
             else:
                 self.unit_selector.current_row -= 1
@@ -1134,14 +1134,12 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                     this_leader.delete()
                     this_leader.kill()
                     del this_leader
-                del [self.team0_pos_list, self.team1_pos_list, self.team2_pos_list][self.current_selected.team][
-                    self.current_selected]
+                del self.team_pos_list[self.current_selected.team][self.current_selected]
                 self.current_selected.delete()
                 self.current_selected.kill()
-                self.alive_unit_list.remove(self.current_selected)
-                self.alive_unit_index.remove(self.current_selected.game_id)
+                self.all_team_unit["alive"].remove(self.current_selected)
                 setup_unit_icon(self.unit_selector, self.unit_icon,
-                                self.team_unit_dict[self.player_team_check], self.unit_selector_scroll)
+                                self.all_team_unit[self.team_selected], self.unit_selector_scroll)
                 self.current_selected = None
 
     # v Update value of the clicked subunit every 1.1 second

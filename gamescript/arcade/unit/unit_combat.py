@@ -4,30 +4,24 @@ import pygame
 
 def destroyed(self, battle, morale_hit=True):
     """remove unit when it dies"""
-    if self.team == 1:
-        group = battle.team1_unit
-        enemy_group = battle.team2_unit
-        battle.team1_pos_list.pop(self)
-    else:
-        group = battle.team2_unit
-        enemy_group = battle.team1_unit
-        battle.team2_pos_list.pop(self)
+    group = battle.all_team_unit[self.team]
+    enemy_group = [this_unit for this_unit in battle.all_team_unit["alive"] if this_unit.team != self.team]
+    battle.team_pos_list[self.team].pop(self)
 
     if morale_hit:
         if self.commander:  # more morale penalty if the unit is a command unit
-            for army in group:
-                for this_subunit in army.subunits:
+            for this_unit in group:
+                for this_subunit in this_unit.subunits:
                     this_subunit.base_morale -= 30
 
-        for this_army in enemy_group:  # get bonus authority to the another army
-            this_army.authority += 5
+        for this_unit in enemy_group:  # get bonus authority to the another army
+            this_unit.authority += 5
 
-        for this_army in group:  # morale dmg to every subunit in army when allied unit destroyed
-            for this_subunit in this_army.subunits:
+        for this_unit in group:  # morale dmg to every subunit in army when allied unit destroyed
+            for this_subunit in this_unit.subunits:
                 this_subunit.base_morale -= 20
 
-    battle.alive_unit_list.remove(self)
-    battle.alive_unit_index.remove(self.game_id)
+    battle.all_team_unit["alive"].remove(self)
     group.remove(self)
     self.got_killed = True
 

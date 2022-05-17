@@ -293,17 +293,7 @@ class Game:
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
-        self.team0_unit = pygame.sprite.Group()  # team 0 units group
-        self.team1_unit = pygame.sprite.Group()  # team 1 units group
-        self.team2_unit = pygame.sprite.Group()  # team 2 units group
-
-        self.alive_unit_list = pygame.sprite.Group()  # list of every unit in self alive
-
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
-
-        self.team0_subunit = pygame.sprite.Group()  # team 0 units group
-        self.team1_subunit = pygame.sprite.Group()  # team 1 units group
-        self.team2_subunit = pygame.sprite.Group()  # team 2 units group
 
         self.subunit = pygame.sprite.Group()  # all subunits group
 
@@ -359,7 +349,7 @@ class Game:
         popup.TextPopup.containers = self.buttonname_popup, self.leader_popup
         popup.EffectIconPopup.containers = self.effect_popup
 
-        rangeattack.RangeArrow.containers = self.range_attacks, self.effect_updater, self.battle_camera
+        rangeattack.RangeAttack.containers = self.range_attacks, self.effect_updater, self.battle_camera
 
         menu.EscButton.containers = self.battle_menu_button, self.escoption_menu_button
 
@@ -506,6 +496,8 @@ class Game:
                                         self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
         # Music player
+        if pygame.mixer and not pygame.mixer.get_init():
+            pygame.mixer = None
         if pygame.mixer:
             self.master_volume = float(self.master_volume / 100)
             pygame.mixer.music.set_volume(self.master_volume)
@@ -537,7 +529,7 @@ class Game:
         self.show_map = map.BeautifulMap(self.screen_scale)
         self.battle_camera.add(self.show_map)
 
-        rangeattack.RangeArrow.height_map = self.battle_height_map
+        rangeattack.RangeAttack.height_map = self.battle_height_map
         subunit.Subunit.base_map = self.battle_base_map  # add battle map to subunit class
         subunit.Subunit.feature_map = self.battle_feature_map
         subunit.Subunit.height_map = self.battle_height_map
@@ -549,8 +541,8 @@ class Game:
 
         # Game sprite Effect
         effect_images = load_images(self.main_dir, self.screen_scale, ["sprite", "effect"], load_order=False)
-        rangeattack.RangeArrow.images = [effect_images["arrow.png"]]
-        rangeattack.RangeArrow.screen_scale = self.screen_scale
+        rangeattack.RangeAttack.images = [effect_images["arrow.png"]]
+        rangeattack.RangeAttack.screen_scale = self.screen_scale
 
         # Battle ui
         battle_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"],

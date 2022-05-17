@@ -8,14 +8,10 @@ rotation_xy = utility.rotation_xy
 
 def destroyed(self, battle, morale_hit=True):
     """remove unit when it dies"""
-    if self.team == 1:
-        group = battle.team1_unit
-        enemy_group = battle.team2_unit
-        battle.team1_pos_list.pop(self)
-    else:
-        group = battle.team2_unit
-        enemy_group = battle.team1_unit
-        battle.team2_pos_list.pop(self)
+    group = battle.all_team_unit[self.team]
+    enemy_group = [this_unit for this_unit in battle.all_team_unit["alive"] if this_unit.team != self.team]
+
+    battle.team_pos_list[self.team].pop(self)
 
     if morale_hit:
         if self.commander:  # more morale penalty if the unit is a command unit
@@ -30,8 +26,7 @@ def destroyed(self, battle, morale_hit=True):
             for this_subunit in this_army.subunits:
                 this_subunit.base_morale -= 20
 
-    battle.alive_unit_list.remove(self)
-    battle.alive_unit_index.remove(self.game_id)
+    battle.all_team_unit["alive"].remove(self)
     group.remove(self)
     self.got_killed = True
 
@@ -200,16 +195,12 @@ def split_unit(battle, who, how):
     # ^ End change original unit
 
     # v start making new unit
-    if who.team == 1:
-        whose_army = battle.team1_unit
-    else:
-        whose_army = battle.team2_unit
-    new_game_id = battle.alive_unit_list[-1].game_id + 1
+    new_game_id = battle.all_team_unit["alive"][-1].game_id + 1
 
     new_unit = unit.Unit(start_pos=new_pos, gameid=new_game_id, squadlist=new_army_subunit, colour=who.colour,
                          control=who.control, coa=who.coa_list, commander=False, startangle=who.angle, team=who.team)
 
-    whose_army.add(new_unit)
+    battle.all_team_unit[who.team].add(new_unit)
     new_unit.team_commander = team_commander
     new_unit.leader = new_leader
     new_unit.subunits = new_subunit_sprite
@@ -266,7 +257,7 @@ def chase(self):
                 self.new_angle = self.set_rotate()  # keep rotating while chasing
         else:  # enemy dead stop chasing
             self.attack_target = None
-            self.base_attack_pos = 0
+            self.base_attack_pos = None
             self.process_command(self.front_pos, other_command=1)
     # ^ End chase
 

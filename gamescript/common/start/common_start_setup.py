@@ -282,7 +282,7 @@ def load_battle_data(main_dir, screen_scale, ruleset, ruleset_folder):
 
     # create leader data storage object
     images = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False)
-    leader_data = datastat.LeaderData(main_dir, images, ruleset_folder)
+    leader_data = datastat.LeaderData(main_dir, images, ruleset, ruleset_folder)
 
     # create faction data storage object
     faction_data = datastat.FactionData(main_dir, ruleset_folder, screen_scale)
@@ -519,7 +519,10 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
                               (weapon_attack_action[0][0] in this_animation and ("Main", "Sub")[0] in this_animation))
                              and "Default" not in this_animation]  # get animation with weapon
-                animation = random.choice(animation)  # random animation
+                if len(animation) > 0:
+                    animation = random.choice(animation)  # random animation
+                else:
+                    animation = race+"_Default"
 
                 frame_data = random.choice(self.generic_animation_pool[1][animation])  # random frame
                 animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()

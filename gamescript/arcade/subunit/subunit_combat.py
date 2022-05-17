@@ -112,7 +112,7 @@ def attack_logic(self, dt, combat_timer, parent_state):
 
         elif self.state in (11, 12, 13):  # range combat
             if self.attack_target is not None:  # For fire at will
-                if self.attack_target not in self.battle.alive_unit_list:  # enemy dead
+                if self.attack_target.state == 100:  # enemy dead
                     self.attack_pos = 0  # reset attack_pos to 0
                     self.attack_target = None  # reset attack_target to 0
 
@@ -128,7 +128,7 @@ def attack_logic(self, dt, combat_timer, parent_state):
                     and (self.arc_shot or (self.arc_shot is False and self.unit.shoot_mode != 1)):
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 # TODO add line of sight for range attack
-                rangeattack.RangeArrow(self, self.base_pos.distance_to(self.attack_pos), self.shoot_range, self.zoom)  # Shoot
+                rangeattack.RangeAttack(self, self.base_pos.distance_to(self.attack_pos), self.shoot_range, self.zoom)  # Shoot
                 self.ammo_now -= 1  # use 1 magazine_left in magazine
             elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target destroyed when it about to shoot
                 self.unit.range_combat_check = False
@@ -351,7 +351,7 @@ def die(self):
     self.battle.alive_subunit_list.remove(self)
     self.unit.subunits.remove(self)
 
-    self.command_action = ("Die", "Uninterruptible")
+    self.command_action = ("Die", "uninterruptible")
     self.reset_animation()
 
     for subunit in self.unit.subunits_array.flat:  # remove from index array

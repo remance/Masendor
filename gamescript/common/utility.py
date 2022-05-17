@@ -381,6 +381,12 @@ def clean_group_object(groups):
                 stuff.kill()
                 stuff.delete()
                 del stuff
+        elif type(group) == dict:
+            for stuff in group.values():
+                for item in stuff:
+                    item.kill()
+                    item.delete()
+                    del item
         else:
             group.kill()
             group.delete()

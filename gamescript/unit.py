@@ -117,7 +117,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
         self.last_base_pos = self.base_pos
-        self.base_attack_pos = 0  # position of melee_attack base_target
+        self.base_attack_pos = None  # position of melee_attack base_target
         self.angle = start_angle  # start at this angle
         if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
             self.angle = 0
@@ -196,16 +196,9 @@ class Unit(pygame.sprite.Sprite):
         self.auth_penalty = 0  # authority penalty
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
-        team_pos_list = (self.battle.team0_pos_list, self.battle.team1_pos_list, self.battle.team2_pos_list)
-        self.battle.alive_unit_list.add(self)
-        self.battle.alive_unit_index.append(self.game_id)
+        self.battle.all_team_unit["alive"].add(self)
 
         self.team = team  # team
-        self.ally_pos_list = team_pos_list[self.team]
-        if self.team == 1:
-            self.enemy_pos_list = team_pos_list[2]
-        elif self.team == 2:
-            self.enemy_pos_list = team_pos_list[1]
 
         self.subunit_position_list = []
         self.frontline = {0: [], 1: [], 2: [], 3: []}  # frontline keep list of subunit at the front of each side in combat, same list index as above
@@ -252,12 +245,12 @@ class Unit(pygame.sprite.Sprite):
 
         # v assign team leader commander to every unit in team if this is commander unit
         if self.commander:
-            which_unit = self.battle.team1_unit
-            if self.team == 2:  # team2
-                which_unit = self.battle.team2_unit
-            for this_unit in which_unit:
+            for this_unit in self.battle.all_team_unit[self.team]:
                 this_unit.team_commander = self.leader[0]
         # ^ End assign commander
+
+        self.ally_pos_list = self.battle.team_pos_list[self.team]
+        self.enemy_pos_list = {key: value for key, value in self.battle.team_pos_list.items() if key != self.team and key != "alive"}
 
         self.auth_recal()
         self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
@@ -316,6 +309,7 @@ class Unit(pygame.sprite.Sprite):
 
         if self.state != 100:
             self.ally_pos_list[self] = self.base_pos  # update current position to team position list
+            self.battle.team_pos_list["alive"][self] = self.base_pos
 
             self.selection()
 
@@ -331,8 +325,9 @@ class Unit(pygame.sprite.Sprite):
 
                     # v Find near enemy base_target
                     self.near_target = {}  # Near base_target is enemy that is nearest
-                    for n, this_side in self.enemy_pos_list.items():
-                        self.near_target[n] = pygame.Vector2(this_side).distance_to(self.base_pos)
+                    for team in self.enemy_pos_list.values():
+                        for n, enemy_pos in team.items():
+                            self.near_target[n] = pygame.Vector2(enemy_pos).distance_to(self.base_pos)
                     self.near_target = {k: v for k, v in sorted(self.near_target.items(), key=lambda item: item[1])}  # sort to the closest one
                     for n in self.enemy_pos_list:
                         self.near_target[n] = self.enemy_pos_list[n]  # change back near base_target list value to vector with sorted order
@@ -452,16 +447,17 @@ class Unit(pygame.sprite.Sprite):
         self.process_command(self.base_pos, double_mouse_right, self.revert, self.base_target, 1)
 
     def delete(self, local=False):
-        """delete reference when del is called"""
+        """delete reference when the method is called"""
+        del self.icon
+        del self.team_commander
+        del self.start_where
+        del self.subunits
+        del self.near_target
+        del self.leader
+        del self.frontline_object
+        del self.attack_target
+        del self.leader_subunit
+        del self.ally_pos_list
+        del self.enemy_pos_list
         if local:
             print(locals())
-        else:
-            del self.icon
-            del self.team_commander
-            del self.start_where
-            del self.subunits
-            del self.near_target
-            del self.leader
-            del self.frontline_object
-            del self.attack_target
-            del self.leader_subunit

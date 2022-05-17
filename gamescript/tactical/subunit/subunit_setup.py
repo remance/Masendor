@@ -114,7 +114,7 @@ def add_trait(self):
         self.cold_res += (trait['Cold Resistance'] / 100)
         self.elem_res[4] += (trait['Poison Resistance'] / 100)
         self.mental += trait['Mental Bonus']
-        if trait['Enemy Status'] != [0]:
+        if 0 not in trait['Enemy Status']:
             for effect in trait['Enemy Status']:
                 self.base_inflict_status[effect] = trait['Buff Range']
         # self.base_elem_melee =

@@ -141,8 +141,7 @@ def split_new_unit(self, who, add_unit_list=True):
         this_subunit.start_set(this_subunit.zoom)
 
     if add_unit_list:
-        self.alive_unit_list.append(who)
-        self.alive_unit_index.append(who.game_id)
+        self.all_team_unit["alive"].append(who)
 
     number_spite = battleui.TroopNumber(self.screen_scale, who)
     self.troop_number_sprite.add(number_spite)
@@ -243,3 +242,4 @@ def setup_frontline(self):
     for subunit in self.subunits:
         if subunit.state != 100:
             self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit
+

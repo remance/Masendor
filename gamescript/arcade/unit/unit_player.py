@@ -71,5 +71,12 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
         else:  # no new movement register other command
             if mouse_left_up:
                 self.leader_subunit.command_action = ("Action 0", )
+                if "Main" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
+                    self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                         other_command="Action 0")
+
             elif mouse_right_up:
                 self.leader_subunit.command_action = ("Action 1", )
+                if "Sub" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
+                    self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                         other_command="Action 0")

@@ -51,8 +51,8 @@ def change_leader(self, event):
 
 def find_shooting_target(self, unit_state):
     """get nearby enemy base_target from list if not targeting anything yet"""
-    self.attack_pos = list(self.unit.near_target.values())[0]  # replace attack_pos with enemy unit pos
     self.attack_target = list(self.unit.near_target.keys())[0]  # replace attack_target with enemy unit id
+    self.attack_pos = self.attack_target.base_pos  # replace attack_pos with enemy unit pos
     if self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
         self.state = 11
         if unit_state in (1, 3, 5):  # Walk and shoot
@@ -150,7 +150,7 @@ def attack_logic(self, dt, combat_timer, parent_state):
         if self.state != 10 and self.magazine_left > 0 and self.unit.fire_at_will == 0 and (self.arc_shot or self.frontline) and \
                 self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
             self.state = 11
-            if self.unit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
+            if self.unit.near_target != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(parent_state)
     # ^ End melee check
 
@@ -165,7 +165,7 @@ def attack_logic(self, dt, combat_timer, parent_state):
         # v Range attack function  # TODO fix can shoot when broken, also broken not retreat from map when reach border
         if parent_state == 11:  # Unit in range attack state
             self.state = 0  # Default state at idle
-            if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos != 0 and \
+            if (self.magazine_left > 0 or self.ammo_now > 0) and self.attack_pos is not None and \
                     self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
                 self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
 
@@ -200,9 +200,9 @@ def attack_logic(self, dt, combat_timer, parent_state):
 
         elif self.state in (11, 12, 13):  # range combat
             if self.attack_target is not None:  # For fire at will
-                if self.attack_target not in self.battle.alive_unit_list:  # enemy dead
-                    self.attack_pos = 0  # reset attack_pos to 0
-                    self.attack_target = None  # reset attack_target to 0
+                if self.attack_target.state == 100:  # enemy dead
+                    self.attack_pos = None  # reset attack_pos to none
+                    self.attack_target = None  # reset attack_target to none
 
                     for target, pos in self.unit.near_target.items():  # find other nearby base_target to shoot
                         self.attack_pos = pos
@@ -210,13 +210,14 @@ def attack_logic(self, dt, combat_timer, parent_state):
                         break  # found new target, break loop
             elif self.attack_target is None:
                 self.attack_target = self.unit.attack_target
+                self.attack_pos = self.attack_target.base_pos
 
             if self.ammo_now > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
-                                      (self.attack_target is None and self.attack_pos != 0)) \
+                                      (self.attack_target is None and self.attack_pos is not None)) \
                     and (self.arc_shot or (self.arc_shot is False and self.unit.shoot_mode != 1)):
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 # TODO add line of sight for range attack
-                rangeattack.RangeArrow(self, self.base_pos.distance_to(self.attack_pos), self.shoot_range, self.zoom)  # Shoot
+                rangeattack.RangeAttack(self, self.base_pos.distance_to(self.attack_pos), self.shoot_range, self.zoom)  # Shoot
                 self.ammo_now -= 1  # use 1 magazine_left in magazine
             elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target destroyed when it about to shoot
                 self.unit.range_combat_check = False

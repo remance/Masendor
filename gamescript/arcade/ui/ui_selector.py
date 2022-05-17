@@ -4,11 +4,9 @@ def setup_unit_icon(self):
     row = 30
     start_column = 25
     column = start_column
-    unit_list = self.team1_unit
-    if self.team_selected == 2:
-        unit_list = self.team2_unit
+    unit_list = self.all_team_unit[self.team_selected]
     if self.enactment:  # include another team unit icon as well in enactment mode
-        unit_list = self.alive_unit_list
+        unit_list = self.all_team_unit["alive"]
     current_index = int(self.unit_selector.current_row * self.unit_selector.max_column_show)  # the first index of current row
     self.unit_selector.log_size = len(unit_list) / self.unit_selector.max_column_show
 

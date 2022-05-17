@@ -25,7 +25,7 @@ def rotate_logic(self, *args):
 
 
 def move_logic(self, dt, parent_state, collide_list):
-    if self.base_pos != self.base_target or "movable" in self.current_action:
+    if self.base_pos != self.base_target and (not self.current_action or "movable" in self.current_action):
         no_collide_check = False  # can move if front of unit not collided
         if (((self.unit.collide is False or self.frontline is False) or parent_state == 99)
                 or (parent_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)

@@ -207,7 +207,7 @@ def status_update(self, weather=None):
     self.elem_count[2] = self.threshold_count(self.elem_count[2], 30, 94)
     self.elem_count[3] = self.threshold_count(self.elem_count[3], 23, 35)
     self.elem_count[4] = self.threshold_count(self.elem_count[4], 26, 27)
-    self.elem_count = {key: value - self.timer for key, value in self.elem_count.items() if value > 0}
+    self.elem_count = {key: value - self.timer if value > 0 else value for key, value in self.elem_count.items()}
     # ^ End elemental effect
 
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat

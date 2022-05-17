@@ -16,12 +16,9 @@ def pos_change_stat(self, leader):
         leader.bad_morale = (30, 50)  # start_set general morale lost for bad event
 
         if leader.unit.commander:  # become army commander
-            which_army = leader.battle.team1_unit  # team1
-            if leader.unit.team == 2:  # team2
-                which_army = self.battle.team2_unit
-            for army in which_army:
-                army.team_commander = leader
-                army.auth_recal()
+            for this_unit in self.battle.all_team_unit[self.team]:
+                this_unit.team_commander = self.leader[0]
+                this_unit.auth_recal()
 
 
 def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}):
@@ -44,19 +41,14 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
 
     if self.commander:  # reduce morale to whole army if commander destroyed from the melee_dmg (leader destroyed cal is in leader.py)
         self.battle.drama_text.queue.append(str(self.name) + " is " + event_text[self.state])
-        event_map_id = "ld0"  # read ld0 event log for special log when team 1 commander destroyed, not used for other leader
-        which_army = self.battle.team1_unit
-        if self.unit.team == 2:
-            which_army = self.battle.team2_unit
-            event_map_id = "ld1"  # read ld1 event log for special log when team 2 commander destroyed, not used for other leader
-
+        event_map_id = "ld" + str(self.unit.team - 1)  # read ld event log for special log when team commander destroyed, not used for other leader
         if self.original_commander and self.state == 100:
             self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]], [0, 1, 2], event_map_id)
         else:
             self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]], [0, 1, 2])
 
-        for army in which_army:
-            for subunit in army.subunits:
+        for unit in self.battle.all_team_unit[self.unit.team]:
+            for subunit in unit.subunits:
                 subunit.base_morale -= (200 * subunit.mental)  # all subunit morale -100 when commander destroyed
                 subunit.morale_regen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
 

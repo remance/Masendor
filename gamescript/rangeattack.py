@@ -8,7 +8,7 @@ from gamescript.tactical.subunit import subunit_combat
 from pygame.transform import scale
 
 
-class RangeArrow(pygame.sprite.Sprite):
+class RangeAttack(pygame.sprite.Sprite):
     angle: float
     images = []
     screen_scale = (1, 1)
@@ -209,3 +209,9 @@ class RangeArrow(pygame.sprite.Sprite):
         else:  # reach base_target
             self.register_hit(self.pass_who)  # register hit whatever subunit the sprite land at
             self.kill()  # remove sprite
+
+    def delete(self):
+        """delete reference when the method is called"""
+        self.shooter = None
+        self.pass_who = None
+        self.target = None

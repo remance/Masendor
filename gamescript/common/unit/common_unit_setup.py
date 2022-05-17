@@ -9,11 +9,11 @@ from gamescript.common import utility
 stat_convert = utility.stat_convert
 
 
-def setup_unit(self, team_army, troop_list, specific_team=None):
+def setup_unit(self, all_team_unit, troop_list, specific_team=None):
     """
     Read unit battle data from unit_pos file
     :param self: Battle or Game object
-    :param team_army: List of team unit group
+    :param all_team_unit: List of team unit group
     :param troop_list: Troop_list from troop data
     :param specific_team: Assign the unit to which specific team
     """
@@ -46,17 +46,36 @@ def setup_unit(self, team_army, troop_list, specific_team=None):
                     control = True
 
                 colour = team_colour[this_unit["Team"]]
-                if type(team_army) == list or type(team_army) == tuple:
-                    which_army = team_army[this_unit["Team"]]
+                if type(all_team_unit) == dict:
+                    if this_unit["Team"] not in all_team_unit:
+                        all_team_unit[this_unit["Team"]] = pygame.sprite.Group()
+                    which_team = all_team_unit[this_unit["Team"]]
                 else:  # for character selection
-                    which_army = team_army
+                    which_team = all_team_unit
 
                 command = False  # Not commander unit by default
-                if len(which_army) == 0:  # First unit is commander
+                if len(which_team) == 0:  # First unit is commander
                     command = True
                 coa = pygame.transform.scale(self.faction_data.coa_list[this_unit["Faction"]], (60, 60))  # get coa_list image and scale smaller to fit ui
-                subunit_game_id = self.generate_unit(which_army, this_unit, control, command, colour, coa,
+                subunit_game_id = self.generate_unit(which_team, this_unit, control, command, colour, coa,
                                                      subunit_game_id, troop_list)
                 # ^ End subunit setup
 
     unit_file.close()
+
+
+def assign_commander(self, replace=None):
+    """
+    :param self: Unit object
+    :param replace: New unit that is replaced as the new commander
+    :return:
+    """
+    if replace is not None:
+        self.commander = True
+        self.team_commander = replace.leader[0]
+    else:
+        self.commander = False
+        self.team_commander = self.leader[0]
+        for this_unit in self.battle.all_team_unit[self.team]:
+            this_unit.team_commander = self.leader[0]
+

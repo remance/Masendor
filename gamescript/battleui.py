@@ -459,9 +459,7 @@ class MiniMap(pygame.sprite.Sprite):
         rect = team2_dot.get_rect(center=(team2_dot.get_width() / 2, team2_dot.get_height() / 2))
         team2_dot.blit(team2, rect)
         team1_dot.blit(team1, rect)
-        self.dot_images = (team1_dot, team2_dot)
-        self.team1_pos = []
-        self.team2_pos = []
+        self.dot_images = {1: team1_dot, 2: team2_dot}
 
         self.last_scale = 10
 
@@ -477,23 +475,18 @@ class MiniMap(pygame.sprite.Sprite):
         self.camera_pos = camera.pos
         self.rect = self.image.get_rect(bottomright=self.pos)
 
-    def update(self, view_mode, camera_pos, team1_pos_list, team2_pos_list):
+    def update(self, view_mode, camera_pos, team_pos_list):
         """update unit dot on map"""
-        if self.team1_pos != team1_pos_list.values() or self.team2_pos != team2_pos_list.values() or \
-                self.camera_pos != camera_pos or self.last_scale != view_mode:
-            self.team1_pos = team1_pos_list.values()
-            self.team2_pos = team2_pos_list.values()
-            self.camera_pos = camera_pos
-            self.image = self.image_original.copy()
-            for index, team in enumerate([team1_pos_list, team2_pos_list]):
-                for pos in team.values():
-                    scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
-                    rect = self.dot_images[index].get_rect(center=scaled_pos)
-                    self.image.blit(self.dot_images[index], rect)
-            pygame.draw.rect(self.image, (0, 0, 0), ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / view_mode,
-                                                     (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / view_mode,
-                                                     (self.camera_border[0] / self.screen_scale[0] / view_mode) / self.map_scale_width,
-                                                     (self.camera_border[1] / self.screen_scale[1] / view_mode) / self.map_scale_height), 2)
+        self.camera_pos = camera_pos
+        self.image = self.image_original.copy()
+        for unit, pos in team_pos_list["alive"].items():
+            scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
+            rect = self.dot_images[unit.team].get_rect(center=scaled_pos)
+            self.image.blit(self.dot_images[unit.team], rect)
+        pygame.draw.rect(self.image, (0, 0, 0), ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / view_mode,
+                                                 (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / view_mode,
+                                                 (self.camera_border[0] / self.screen_scale[0] / view_mode) / self.map_scale_width,
+                                                 (self.camera_border[1] / self.screen_scale[1] / view_mode) / self.map_scale_height), 2)
 
 
 class EventLog(pygame.sprite.Sprite):

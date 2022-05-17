@@ -39,13 +39,8 @@ def start_set(self, zoom):
     self.status_update()
 
     self.battle.alive_subunit_list.append(self)
-    if self.team == 1:  # add sprite to team subunit group for collision
-        group_collide = self.battle.team1_subunit
-    elif self.team == 2:
-        group_collide = self.battle.team2_subunit
-    group_collide.add(self)
 
-    self.sprite_pool = self.animation_sprite_pool[self.troop_id]  # grab only animation sprite that the subunit can use
+    self.sprite_pool = self.subunit_animation_pool[self.troop_id]  # grab only animation sprite that the subunit can use
 
     self.pick_animation()
 

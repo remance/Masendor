@@ -45,11 +45,11 @@ def add_unit(game_id, pos, subunit_list, colour, leader_list, leader_stat, contr
     return unit
 
 
-def generate_unit(self, which_army, setup_data, control, command, colour, coa, subunit_game_id, troop_list, *args):
+def generate_unit(self, which_team, setup_data, control, command, colour, coa, subunit_game_id, troop_list, *args):
     """
     generate unit and their subunits
     :param self: battle object
-    :param which_army: team group
+    :param which_team: team group
     :param setup_data: list of data for the unit
     :param control: for checking whether player can control the unit
     :param command: commander unit or not
@@ -78,7 +78,7 @@ def generate_unit(self, which_army, setup_data, control, command, colour, coa, s
                          colour, (setup_data["Leader"], leader_position), self.leader_data, control,
                          coa, command, setup_data["Angle"], setup_data["Start Health"], setup_data["Start Stamina"],
                          setup_data["Team"])
-    which_army.add(this_unit)
+    which_team.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
     # v Setup subunit in unit to subunit group
@@ -220,3 +220,4 @@ def setup_frontline(self):
     for subunit in self.subunits:
         if subunit.state != 100:
             self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit
+

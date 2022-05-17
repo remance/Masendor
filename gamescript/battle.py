@@ -3,7 +3,7 @@ import glob
 import os
 import random
 import sys
-from importlib import reload
+import gc
 
 import pygame
 import pygame.freetype
@@ -132,15 +132,6 @@ class Battle:
         self.battle_map_height = main.battle_height_map
         self.show_map = main.show_map
 
-        self.team0_unit = main.team0_unit
-        self.team1_unit = main.team1_unit
-        self.team2_unit = main.team2_unit
-
-        self.alive_unit_list = main.alive_unit_list
-
-        self.team0_subunit = main.team0_subunit
-        self.team1_subunit = main.team1_subunit
-        self.team2_subunit = main.team2_subunit
         self.subunit = main.subunit
         self.leader = main.leader
 
@@ -304,7 +295,7 @@ class Battle:
         self.skin_colour_list = None
 
         self.generic_action_data = None
-        self.animation_sprite_pool = None
+        self.subunit_animation_pool = None
 
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
@@ -321,13 +312,9 @@ class Battle:
         self.current_selected = None
         self.before_selected = None
 
-        self.team0_pos_list = {}  # team 0 unit position
-        self.team1_pos_list = {}  # team 1 unit position
-        self.team2_pos_list = {}  # same for team 2
-
-        self.alive_unit_index = []  # list of every unit index alive
-
-        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.alive_unit_list}
+        self.all_team_unit = {}  # all unit in each team and alive
+        self.team_pos_list = {}  # all alive team unit position
+        self.enemy_pos_list = {}  # all enemy unit position for each team
 
         self.alive_subunit_list = []  # list of all subunit alive in self, need to be in list for collision check
 
@@ -377,9 +364,10 @@ class Battle:
         self.map_source = str(map_source)
         self.unit_scale = unit_scale
         self.team_selected = team_selected  # player selected team
-        self.player_team_check = self.team_selected  # for indexing dict of unit
         self.char_selected = char_selected
         self.enactment = enactment  # enactment mod, control both team
+        if self.enactment:
+            self.team_selected = "alive"
 
         self.faction_data = self.main.faction_data
         self.coa_list = self.faction_data.coa_list
@@ -402,9 +390,6 @@ class Battle:
 
         self.generic_action_data = self.main.generic_action_data
 
-        if self.enactment:
-            self.player_team_check = "all"
-
         # v Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
@@ -419,8 +404,6 @@ class Battle:
         # ^ End weather schedule
 
         # v Random music played from list
-        if pygame.mixer and not pygame.mixer.get_init():
-            pygame.mixer = None
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
             self.musiclist = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
@@ -482,14 +465,7 @@ class Battle:
             self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, place_name_map, self, False)
         else:  # for unit editor mode, create empty temperate glass map
             self.editor_map_change((166, 255, 107), (181, 230, 29))
-
-        self.team0_pos_list = {}
-        self.team1_pos_list = {}
-        self.team2_pos_list = {}
-
-        self.alive_unit_index = []
-
-        self.team_unit_dict = {0: self.team0_unit, 1: self.team1_unit, 2: self.team2_unit, "all": self.alive_unit_list}
+        self.all_team_unit = {"alive": pygame.sprite.Group()}
 
         self.alive_subunit_list = []
 
@@ -508,7 +484,9 @@ class Battle:
             self.death_troop_number = [0, 0, 0]
             self.flee_troop_number = [0, 0, 0]
             self.capture_troop_number = [0, 0, 0]
-            self.setup_unit((self.team0_unit, self.team1_unit, self.team2_unit), self.troop_data.troop_list)
+            self.setup_unit(self.all_team_unit, self.troop_data.troop_list)
+
+            self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
 
             subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit]))
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
@@ -516,18 +494,18 @@ class Battle:
                 for this_unit in self.unit_updater:
                     for this_leader in this_unit.leader:
                         who_todo |= {"h" + str(this_leader.leader_id): self.leader_data.leader_list[this_leader.leader_id]}
-            self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
-                                                                      self.screen_scale,
-                                                                      who_todo)
+            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
+                                                                       self.screen_scale,
+                                                                       who_todo)
 
-            subunit.Subunit.animation_sprite_pool = self.animation_sprite_pool
+            subunit.Subunit.subunit_animation_pool = self.subunit_animation_pool
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
             self.camera_mode = "Free"  # start with free camera mode
 
             who_todo = {key: value for key, value in self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
-            self.animation_sprite_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
-                                                                      self.screen_scale, who_todo)
+            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
+                                                                       self.screen_scale, who_todo)
 
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
@@ -567,22 +545,16 @@ class Battle:
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                       *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
 
-        clean_group_object((self.subunit, self.leader, self.team0_unit, self.team1_unit, self.team2_unit,
-                            self.unit_icon, self.troop_number_sprite,
-                            self.inspect_subunit))  # remove all reference from battle object
+        clean_group_object((self.subunit, self.leader, self.all_team_unit, self.unit_icon, self.troop_number_sprite,
+                            self.inspect_subunit, self.range_attacks))  # remove all reference from battle object
+
+        self.subunit_animation_pool = None
 
         self.remove_unit_ui()
 
-        for arrow in self.range_attacks:  # remove all range melee_attack
-            arrow.kill()
-            del arrow
-
         self.subunit_selected = None
-        self.alive_unit_index = []
         self.combat_path_queue = []
-        self.team0_pos_list = {}
-        self.team1_pos_list = {}
-        self.team2_pos_list = {}
+        self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
         self.before_selected = None
 
         self.player_char = None
@@ -622,6 +594,9 @@ class Battle:
             self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:] # generate leader name list)
 
             self.leader_now = []
+
+        print(gc.get_objects())  # for when memory leak checking
+        # print(gc.get_referrers(self.subunit_animation_pool))
 
     def run_game(self):
         # v Create Starting Values
@@ -700,7 +675,7 @@ class Battle:
         self.inspect = False  # For checking if inspect ui is currently open or not
         self.current_selected = None  # Which unit is currently selected
         if self.char_selected is not None:  # select player char by default if control only one
-            for unit in self.alive_unit_list:  # get player char
+            for unit in self.all_team_unit["alive"]:  # get player char
                 if unit.game_id == self.char_selected:
                     self.player_char = unit.leader[0].subunit
                     self.current_selected = unit
@@ -724,7 +699,7 @@ class Battle:
         self.unit_selector.current_row = 0
         # ^ End start value
 
-        self.effect_updater.update(self.alive_unit_list, self.dt, self.camera_zoom)
+        self.effect_updater.update(self.all_team_unit["alive"], self.dt, self.camera_zoom)
 
         # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
@@ -919,7 +894,7 @@ class Battle:
                             self.music_event = self.music_event[1:]
                         # ^ End music system
 
-                        for this_unit in self.alive_unit_list:
+                        for this_unit in self.all_team_unit["alive"]:
                             this_unit.collide = False  # reset collide
 
                         if len(self.alive_subunit_list) > 1:
@@ -1007,7 +982,7 @@ class Battle:
                     self.effect_updater.update(self.subunit, self.dt, self.camera_zoom)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
                     self.mini_map.update(self.camera_zoom, [self.camera_pos, self.camera_topleft_corner],
-                                         self.team1_pos_list, self.team2_pos_list)
+                                         self.team_pos_list)
 
                     self.ui_updater.update()  # update ui
                     self.camera.update(self.camera_pos, self.battle_camera, self.camera_zoom)
@@ -1027,21 +1002,21 @@ class Battle:
                     self.combat_timer += self.dt  # update combat timer
                     self.time_number.timer_update(self.dt * self.time_speed_scale)  # update battle time with genre speed
 
-                    if self.mode == "battle" and (len(self.team1_unit) <= 0 or len(self.team2_unit) <= 0):
+                    if self.mode == "battle" and len([key for key, value in self.all_team_unit.items() if key != "alive" and len(value) > 0]) <= 1:
                         if self.battle_done_box not in self.battle_ui_updater:
-                            if len(self.team1_unit) <= 0 and len(self.team2_unit) <= 0:
+                            if len(self.all_team_unit["alive"]) <= 0:
                                 team_win = 0  # draw
-                            elif len(self.team2_unit) <= 0:
-                                team_win = 1
-                            else:
-                                team_win = 2
-                            if team_win != 0:
-                                for index, coa in enumerate(self.team_coa):
-                                    if index == team_win - 1:
-                                        self.battle_done_box.pop(coa.name)
-                                        break
-                            else:
                                 self.battle_done_box.pop("Draw")
+                            else:
+                                for key, value in self.all_team_unit.items():
+                                    if key != "alive":
+                                        if len(value) > 0:
+                                            team_win = key
+                                            for index, coa in enumerate(self.team_coa):
+                                                if index == team_win - 1:
+                                                    self.battle_done_box.pop(coa.name)
+                                                    break
+
                             self.battle_done_button.rect = self.battle_done_button.image.get_rect(midtop=self.battle_done_button.pos)
                             self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
                         else:
