@@ -48,6 +48,7 @@ pygame.mouse.set_visible(True)  # set mouse as visible
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 max_person = 4
+p_list = tuple(["p" + str(p) for p in range(1, max_person + 1)])
 part_column_header = ["head", "eye", "mouth", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
                       "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon"]
 anim_column_header = ["Name"]
@@ -541,7 +542,7 @@ class BodyHelper(pygame.sprite.Sprite):
 
                 text_surface2 = self.font.render(stat2, True, text_colour)
                 shift_x = 50 * screen_scale[0]
-                if any(ext in part for ext in ["effect", "special"]):
+                if any(ext in part for ext in ("effect", "special")):
                     text_rect1 = text_surface1.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 10))
                     text_rect2 = text_surface2.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 10 + self.font_size + 2))
                 elif "body" in part:
@@ -760,7 +761,7 @@ class Model:
                 main_joint_pos_list = self.generate_body(self.bodypart_list[index])
                 part_name = {key: None for key in self.rect_part_list.keys()}
 
-                except_list = ["eye", "mouth", "size"]
+                except_list = ("eye", "mouth", "size")
                 for part in part_name_header:
                     if part in pose and pose[part] != [0] and any(ext in part for ext in except_list) is False:
                         if "weapon" in part:
@@ -774,7 +775,7 @@ class Model:
                                                      link_list[part], pose[part][4], pose[part][5], pose[part][6], pose[part][7]]
                                 part_name[part] = [self.weapon[part], pose[part][0], pose[part][1]]
                         else:
-                            if any(ext in part for ext in ["effect", "special"]):
+                            if any(ext in part for ext in ("effect", "special")):
                                 sprite_part[part] = [self.sprite_image[part],
                                                      (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
                                                      link_list[part], pose[part][5], pose[part][6], pose[part][7], pose[part][8]]
@@ -821,7 +822,7 @@ class Model:
         for index, layer in enumerate(pose_layer_list):
             part = self.animation_part_list[current_frame][layer]
             name_check = layer
-            if any(ext in name_check for ext in ["p" + str(p) for p in range(1, max_person + 1)]):
+            if any(ext in name_check for ext in p_list):
                 name_check = name_check[3:]  # remove p*number*_
             if self.part_name_list[current_frame][layer] is not None and \
                     name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
@@ -907,7 +908,7 @@ class Model:
                             bodypart_list[stuff][2]].copy()
                     else:
                         new_part_name = stuff
-                        if any(ext in stuff for ext in ["p" + str(p) for p in range(1, max_person + 1)]):
+                        if any(ext in stuff for ext in p_list):
                             part_name = stuff[3:]  # remove p*number*_ to get part name
                             new_part_name = part_name
                         if "special" in stuff:
@@ -917,7 +918,7 @@ class Model:
                             new_part_name = part_name[2:]  # remove side
                         self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
                             bodypart_list[stuff][2]].copy()
-                        if any(ext in stuff for ext in ["p" + str(p) for p in range(1, max_person + 1)]) and self.armour[stuff[0:2] + "_armour"] != "None":
+                        if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
                             try:
                                 armour = self.armour[stuff[0:2] + "_armour"].split("/")
                                 gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][bodypart_list[stuff][1]][part_name][
@@ -1031,7 +1032,7 @@ class Model:
             self.bodypart_list[current_frame] = body_part_history[current_history]
 
         elif "armour" in edit_type:
-            if any(ext in edit_type for ext in ["p" + str(p) for p in range(1, max_person + 1)]) in edit_type:
+            if any(ext in edit_type for ext in p_list) in edit_type:
                 self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             for part in self.sprite_image:
@@ -1066,7 +1067,7 @@ class Model:
                 main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
                 if self.animation_part_list[current_frame][part_index] == []:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
-                    if any(ext in part_index for ext in ["effect", "special"]):
+                    if any(ext in part_index for ext in ("effect", "special")):
                         self.animation_part_list[current_frame][part_index][1] = "center"
                     elif "weapon" in part_index:
                         self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
@@ -1241,7 +1242,7 @@ class Model:
             if "weapon" in key and self.frame_list[current_frame][key] != [0]:
                 self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
         p_face = {}
-        for p in ["p" + str(p) for p in range(1, max_person + 1)]:
+        for p in p_list:
             p_face = p_face | {p: {p + "_eye": self.bodypart_list[current_frame][p + "_eye"],
                                    p + "_mouth": self.bodypart_list[current_frame][p + "_mouth"]}}
         for p in p_face:
@@ -2050,7 +2051,7 @@ while True:
                         if direction_part_button.text != "" and race_part_button.text != "":
                             current_part = list(model.animation_part_list[current_frame].keys())[model.part_selected[-1]]
                             try:
-                                if any(ext in current_part for ext in ["p" + str(p) for p in range(1, max_person + 1)]):
+                                if any(ext in current_part for ext in p_list):
                                     selected_part = current_part[3:]
                                     if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
                                         selected_part = selected_part[2:]
@@ -2068,7 +2069,7 @@ while True:
 
                     elif p_selector.rect.collidepoint(mouse_pos):
                         popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "person_select",
-                                        p_selector.rect.topleft, ["p" + str(p) for p in range(1, max_person + 1)], "bottom", screen_scale)
+                                        p_selector.rect.topleft, p_list, "bottom", screen_scale)
                     elif armour_selector.rect.collidepoint(mouse_pos):
                         armour_part_list = []
                         for item in list(gen_armour_sprite_pool[model.p_race[p_body_helper.ui_type]].keys()):
