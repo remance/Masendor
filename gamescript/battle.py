@@ -60,6 +60,7 @@ def change_battle_genre(self):
     Battle.start_zoom = self.start_zoom
     Battle.start_zoom_mode = self.start_zoom_mode
     Battle.time_speed_scale = self.time_speed_scale
+    Battle.troop_size_adjustable = self.troop_size_adjustable
 
 
 class Battle:
@@ -81,6 +82,7 @@ class Battle:
     troop_card_button_click = common_battle_player.troop_card_button_click
     camera_process = common_battle_player.camera_process
     change_inspect_subunit = common_battle_player.change_inspect_subunit
+    generate_unit = common_unit_setup.generate_unit
     setup_unit = common_unit_setup.setup_unit
 
     # method that change based on genre
@@ -102,9 +104,9 @@ class Battle:
     start_zoom = 1
     start_zoom_mode = "Free"
     time_speed_scale = 1
+    troop_size_adjustable = False
 
     def __init__(self, main, window_style):
-        # v Get self object/variable from start_set
         self.mode = None  # battle map mode can be "unit_editor" for unit editor or "battle" for self battle
         self.player_char = None  # for genre that allow player to control only one unit
         self.main = main
@@ -131,14 +133,9 @@ class Battle:
         self.battle_map_height = main.battle_height_map
         self.show_map = main.show_map
 
-        self.subunit = main.subunit
-        self.leader = main.leader
-
         self.range_attacks = main.range_attacks
         self.direction_arrows = main.direction_arrows
         self.troop_number_sprite = main.troop_number_sprite
-
-        self.inspect_subunit = main.inspect_subunit
 
         self.battle_map_base = main.battle_base_map
         self.battle_map_feature = main.battle_feature_map
@@ -246,6 +243,8 @@ class Battle:
         self.front_distance = self.icon_sprite_height / 20  # distance from front side
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
 
+        self.inspect_subunit = []  # list of subunit shown in inspect ui
+
         self.combat_path_queue = []  # queue of sub-unit to run melee combat pathfiding
         self.map_move_array = []  # array for pathfinding
         self.subunit_pos_array = []  # pathfinding array after include subunit position as 0
@@ -269,7 +268,6 @@ class Battle:
 
         self.battle_done_box = main.battle_done_box
         self.battle_done_button = main.battle_done_button
-        # ^ End load from start_set
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
         self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
@@ -310,13 +308,12 @@ class Battle:
         self.flee_troop_number = [0, 0, 0]
         self.capture_troop_number = [0, 0, 0]
         self.faction_pick = 0
-        self.filter_troop = [True, True, True, True]
+        self.filter_troop = [True, True, True, True]  # filter in this order: melee infantry, range inf, melee cavalry, range cav
         self.current_selected = None
         self.before_selected = None
 
         self.all_team_unit = {"alive": pygame.sprite.Group()}  # all unit in each team and alive
         self.team_pos_list = {}  # all alive team unit position
-        self.enemy_pos_list = {}  # all enemy unit position for each team
 
         self.alive_subunit_list = []  # list of all subunit alive in self, need to be in list for collision check
 
@@ -489,7 +486,7 @@ class Battle:
 
             self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
 
-            subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit]))
+            subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
             if self.main.leader_sprite:
                 for this_unit in self.unit_updater:
@@ -513,8 +510,9 @@ class Battle:
 
     def remove_unit_ui(self):
         self.troop_card_ui.option = 1  # reset subunit card option
+        self.inspect_subunit = []
         self.battle_ui_updater.remove(self.inspect_ui, self.command_ui, self.troop_card_ui, self.troop_card_button, self.inspect_button, self.col_split_button,
-                                      self.row_split_button, self.unitstat_ui, *self.behaviour_switch_button, *self.inspect_subunit)  # remove change behaviour button and inspect ui subunit
+                                      self.row_split_button, self.unitstat_ui, *self.behaviour_switch_button)  # remove change behaviour button and inspect ui subunit
         self.inspect = False  # inspect ui close
         self.battle_ui_updater.remove(*self.leader_now)  # remove leader image from command ui
         self.subunit_selected = None  # reset subunit selected
@@ -546,15 +544,19 @@ class Battle:
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                       *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
 
-        clean_group_object((self.subunit, self.leader, self.all_team_unit, self.unit_icon, self.troop_number_sprite,
-                            self.inspect_subunit, self.range_attacks))  # remove all reference from battle object
+        clean_group_object((self.subunit_updater, self.leader_updater, self.all_team_unit, self.unit_icon, self.troop_number_sprite,
+                            self.inspect_subunit, self.range_attacks, *self.inspect_subunit))  # remove all reference from battle object
+
         self.subunit_animation_pool = None
+        self.generic_action_data = None
 
         self.remove_unit_ui()
 
         self.subunit_selected = None
         self.combat_path_queue = []
+        self.alive_subunit_list = []
         self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
+        self.current_selected = None
         self.before_selected = None
 
         self.player_char = None
@@ -601,7 +603,7 @@ class Battle:
 
         # for when memory leak checking
         import gc
-        # print(gc.get_objects())
+        print(gc.get_objects())
         # print(gc.get_referrers(self.subunit_animation_pool))
 
     def run_game(self):
@@ -962,7 +964,7 @@ class Battle:
                                     self.subunit_pos_array[x][y] = 0
 
                     # v Updater
-                    self.unit_updater.update(self.current_weather, self.subunit, self.dt, self.camera_zoom,
+                    self.unit_updater.update(self.current_weather, self.subunit_updater, self.dt, self.camera_zoom,
                                              self.base_mouse_pos, mouse_left_up)
                     self.last_mouseover = None  # reset last unit mouse over
                     self.leader_updater.update()
@@ -985,7 +987,7 @@ class Battle:
                     if self.combat_timer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combat_timer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing
 
-                    self.effect_updater.update(self.subunit, self.dt, self.camera_zoom)
+                    self.effect_updater.update(self.subunit_updater, self.dt, self.camera_zoom)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
                     self.mini_map.update(self.camera_zoom, [self.camera_pos, self.camera_topleft_corner],
                                          self.team_pos_list)

@@ -7,7 +7,7 @@ start_zoom_mode = "Follow"
 leader_sprite = True
 unit_size = (5, 5)
 time_speed_scale = 30
-
+troop_size_adjustable = True
 
 # Default keyboard binding
 up = "w"

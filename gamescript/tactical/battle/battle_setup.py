@@ -130,9 +130,9 @@ def change_state(self):
         self.game_speed = 1
 
         # Run starting method
-        for this_unit in self.all_team_unit["alive"]:
-            this_unit.start_set(self.subunit)
-        for this_subunit in self.subunit:
+        for this_unit in self.unit_updater:
+            this_unit.start_set(self.subunit_updater)
+        for this_subunit in self.subunit_updater:
             this_subunit.start_set(self.camera_zoom)
         for this_leader in self.leader_updater:
             this_leader.start_set()

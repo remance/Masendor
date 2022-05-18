@@ -1,4 +1,4 @@
-from gamescript.arcade.unit.unit_setup import generate_unit
+from gamescript.common.unit.common_unit_setup import generate_unit
 
 
 def convert_edit_unit(self, which_army, row, colour, coa, subunit_game_id):

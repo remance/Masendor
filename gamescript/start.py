@@ -89,7 +89,7 @@ def change_genre(self, genre):
         self.team_select_button = (self.start_button, self.map_back_button)
 
     # Method
-    Game.generate_unit = unit_setup.generate_unit
+    Game.leader_position_check = unit_setup.leader_position_check
 
     # Variable
     self.genre_sprite_size = genre_setting.genre_sprite_size
@@ -99,6 +99,7 @@ def change_genre(self, genre):
     self.start_zoom = genre_setting.start_zoom
     self.start_zoom_mode = genre_setting.start_zoom_mode
     self.time_speed_scale = genre_setting.time_speed_scale
+    self.troop_size_adjustable = genre_setting.troop_size_adjustable
 
     # change genre for other objects
     subunit.change_subunit_genre(self)
@@ -133,6 +134,7 @@ class Game:
     read_source = common_start_player.read_source
     change_source = common_start_player.change_source
 
+    generate_unit = common_unit_setup.generate_unit
     setup_unit = common_unit_setup.setup_unit
 
     popup_list_open = utility.popup_list_open
@@ -286,7 +288,7 @@ class Game:
         # 6 = flying subunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
         self.battle_ui_updater = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
-        self.unit_updater = pygame.sprite.Group()  # updater for unit objects
+        self.unit_updater = pygame.sprite.Group()  # updater for unit objects, only for in battle not editor or preview
         self.subunit_updater = pygame.sprite.Group()  # updater for subunit objects
         self.leader_updater = pygame.sprite.Group()  # updater for leader objects
         self.ui_updater = pygame.sprite.Group()  # updater for ui objects
@@ -295,9 +297,9 @@ class Game:
 
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
 
-        self.subunit = pygame.sprite.Group()  # all subunits group
+        self.subunit_group = pygame.sprite.Group()  # all subunits group
 
-        self.leader = pygame.sprite.Group()  # all leaders group
+        self.leader_group = pygame.sprite.Group()  # all leaders group
 
         self.range_attacks = pygame.sprite.Group()  # all range_attacks group and maybe other range effect stuff later
         self.direction_arrows = pygame.sprite.Group()
@@ -357,8 +359,8 @@ class Game:
         weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater, self.weather_updater
 
         unit.Unit.containers = self.unit_updater
-        subunit.Subunit.containers = self.subunit_updater, self.subunit, self.battle_camera
-        leader.Leader.containers = self.leader, self.leader_updater
+        subunit.Subunit.containers = self.subunit_updater, self.battle_camera
+        leader.Leader.containers = self.leader_updater
 
         # Main menu related stuff
         image_list = load_base_button(self.main_dir, self.screen_scale)
@@ -442,12 +444,16 @@ class Game:
         self.source_text = [""]
 
         self.unit_scale = 1
-        self.inspect_subunit = []
 
         # will be changed in genre_change function depending on selected genre
         self.char_select = False
         self.leader_sprite = False
         self.genre_sprite_size = (200, 200)
+        self.unit_size = (8, 8)
+        self.start_zoom = 1
+        self.start_zoom_mode = "Follow"
+        self.time_speed_scale = 1
+        self.troop_size_adjustable = False
 
         # Unit and subunit editor button in game start menu
 

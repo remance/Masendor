@@ -368,9 +368,8 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                                     list(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
-        clean_group_object((self.subunit, self.leader, self.preview_char,
-                            self.unit_icon, self.troop_number_sprite,
-                            self.inspect_subunit))
+        clean_group_object((self.subunit_updater, self.leader_updater, self.preview_char,
+                            self.unit_icon, self.troop_number_sprite))
 
         change_to_source_selection(self)
 
