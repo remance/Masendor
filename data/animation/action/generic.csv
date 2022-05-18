@@ -4,7 +4,7 @@
 "Greatsword","2hand","Slash","hold,power"
 "Shortsword","1hand","Pierce",
 "Dagger","1hand","Pierce","parry"
-"Spear","1hand","Pierce","hold,holdfront"
+"Spear","1pole","Pierce","hold,holdfront"
 "Club","1hand","Smash",
 "Mace","1hand","Smash",
 "Great Mace","2pole","Smash","hold,power"

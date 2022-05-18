@@ -1050,7 +1050,7 @@ class Model:
 
         elif "mouth" in edit_type:
             if "Any" in edit_type:
-                self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = self.p_any_mouth[edit_type[0:2]]
+                self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = 1
             else:
                 self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = edit_type.split(edit_type[0:2] + "_mouth_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
@@ -2080,12 +2080,12 @@ while True:
                                         armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif eye_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][direction_list[model.side]]["eye"].keys())
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
                         popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif mouth_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][direction_list[model.side]]["mouth"].keys())
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
                         popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
