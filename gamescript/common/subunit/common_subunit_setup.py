@@ -17,7 +17,7 @@ rotation_name = common_subunit_movement.rotation_name
 rotation_dict = common_subunit_movement.rotation_dict
 
 
-def start_set(self, zoom):
+def start_set(self, zoom, animation_pool):
     """run once when battle start or subunit just get created"""
     self.zoom = zoom
     self.front_pos = self.make_front_pos()
@@ -40,7 +40,7 @@ def start_set(self, zoom):
 
     self.battle.alive_subunit_list.append(self)
 
-    self.sprite_pool = self.subunit_animation_pool[self.troop_id]  # grab only animation sprite that the subunit can use
+    self.animation_pool = animation_pool[self.troop_id]  # grab only animation sprite that the subunit can use
 
     self.pick_animation()
 

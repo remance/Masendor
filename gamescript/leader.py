@@ -100,7 +100,7 @@ class Leader(pygame.sprite.Sprite):
 
     def delete(self, local=False):
         """delete reference when the method is called"""
-        del self.unit
-        del self.subunit
+        self.unit = None
+        self.subunit = None
         if local:
             print(locals())

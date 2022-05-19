@@ -63,7 +63,7 @@ class BattleMapData:
 
         map.BeautifulMap.texture_images = map_texture
         map.BeautifulMap.load_texture_list = texture_folder
-        map.BeautifulMap.empty_image = empty_image
+        map.BeautifulMap.empty_texture = empty_image
 
         self.weather_data = csv_read(main_dir, "weather.csv", ["data", "map", "weather"], header_key=True)
         weather_list = [item["Name"] for item in self.weather_data.values()]

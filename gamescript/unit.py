@@ -90,7 +90,6 @@ class Unit(pygame.sprite.Sprite):
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Unit object represent a group of subunit, each unit can contain a specific number of subunits depending on the genre setting"""
-        self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon
         self.team_commander = None  # commander leader
@@ -436,18 +435,18 @@ class Unit(pygame.sprite.Sprite):
 
     def delete(self, local=False):
         """delete reference when the method is called"""
-        del self.icon
-        del self.team_commander
-        del self.start_where
-        del self.subunits
-        del self.near_target
-        del self.leader
-        del self.frontline_object
-        del self.attack_target
-        del self.leader_subunit
-        del self.ally_pos_list
-        del self.enemy_pos_list
-        del self.subunit_list
-        del self.subunits_array
+        self.icon = None
+        self.team_commander = None
+        self.start_where = None
+        self.subunits = None
+        self.near_target = None
+        self.leader = None
+        self.frontline_object = None
+        self.attack_target = None
+        self.leader_subunit = None
+        self.ally_pos_list = None
+        self.enemy_pos_list = None
+        self.subunit_list = None
+        self.subunits_array = None
         if local:
             print(locals())

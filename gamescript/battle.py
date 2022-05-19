@@ -61,6 +61,7 @@ def change_battle_genre(self):
     Battle.start_zoom_mode = self.start_zoom_mode
     Battle.time_speed_scale = self.time_speed_scale
     Battle.troop_size_adjustable = self.troop_size_adjustable
+    Battle.add_troop_number = self.add_troop_number
 
 
 class Battle:
@@ -105,6 +106,7 @@ class Battle:
     start_zoom_mode = "Free"
     time_speed_scale = 1
     troop_size_adjustable = False
+    add_troop_number = False
 
     def __init__(self, main, window_style):
         self.mode = None  # battle map mode can be "unit_editor" for unit editor or "battle" for self battle
@@ -146,7 +148,7 @@ class Battle:
         self.event_log = main.event_log
         self.log_scroll = main.log_scroll
         self.button_ui = main.button_ui
-        self.subunit_selected_border = main.inspect_selected_border
+        self.inspect_selected_border = main.inspect_selected_border
         self.behaviour_switch_button = main.behaviour_switch_button
         self.decimation_button = main.decimation_button
 
@@ -496,7 +498,6 @@ class Battle:
                                                                        self.screen_scale,
                                                                        who_todo)
 
-            subunit.Subunit.subunit_animation_pool = self.subunit_animation_pool
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
             self.camera_mode = "Free"  # start with free camera mode
@@ -516,7 +517,7 @@ class Battle:
         self.inspect = False  # inspect ui close
         self.battle_ui_updater.remove(*self.leader_now)  # remove leader image from command ui
         self.subunit_selected = None  # reset subunit selected
-        self.battle_ui_updater.remove(self.subunit_selected_border)  # remove subunit selected border sprite
+        self.battle_ui_updater.remove(self.inspect_selected_border)  # remove subunit selected border sprite
         self.leader_now = []  # clear leader list in command ui
 
     def camera_fix(self):
@@ -544,29 +545,38 @@ class Battle:
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                       *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
 
-        clean_group_object((self.subunit_updater, self.leader_updater, self.all_team_unit, self.unit_icon, self.troop_number_sprite,
-                            self.inspect_subunit, self.range_attacks, *self.inspect_subunit))  # remove all reference from battle object
+        # remove all reference from battle object
+        self.player_char = None
+        for value in self.all_team_unit.values():  # empty all group in dict
+            value.empty()
+
+        clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
+                            self.troop_number_sprite, self.inspect_subunit, self.range_attacks, *self.inspect_subunit))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None
 
         self.remove_unit_ui()
 
-        self.subunit_selected = None
         self.combat_path_queue = []
         self.alive_subunit_list = []
+        self.map_move_array = []
+        self.subunit_pos_array = []
+        self.map_def_array = []
         self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
         self.current_selected = None
         self.before_selected = None
+        self.last_mouseover = None
 
         self.player_char = None
 
         self.drama_timer = 0  # reset drama text popup
         self.battle_ui_updater.remove(self.drama_text)
 
-        self.map_move_array = []  # array for pathfinding
-        self.subunit_pos_array = []
-        self.map_def_array = []
+        self.battle_map_base.clear_image()
+        self.battle_map_feature.clear_image()
+        self.battle_map_height.clear_image()
+        self.show_map.clear_image()
 
         if self.mode == "unit_editor":
             self.subunit_in_card = None
@@ -600,11 +610,6 @@ class Battle:
             self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:] # generate leader name list)
 
             self.leader_now = []
-
-        # for when memory leak checking
-        import gc
-        print(gc.get_objects())
-        # print(gc.get_referrers(self.subunit_animation_pool))
 
     def run_game(self):
         # v Create Starting Values

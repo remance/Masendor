@@ -133,7 +133,7 @@ def change_state(self):
         for this_unit in self.unit_updater:
             this_unit.start_set(self.subunit_updater)
         for this_subunit in self.subunit_updater:
-            this_subunit.start_set(self.camera_zoom)
+            this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
         for this_leader in self.leader_updater:
             this_leader.start_set()
 
@@ -165,7 +165,7 @@ def change_state(self):
 
         self.battle_ui_updater.remove(self.event_log, self.log_scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
                                       self.event_log_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
-                                      self.subunit_selected_border, self.inspect_button, self.behaviour_switch_button)
+                                      self.inspect_selected_border, self.inspect_button, self.behaviour_switch_button)
 
         self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
         self.battle_ui_updater.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui, self.troop_card_ui, self.leader_now,

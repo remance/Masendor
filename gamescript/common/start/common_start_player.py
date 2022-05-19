@@ -402,7 +402,6 @@ def char_select_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, m
                 self.main_ui_updater.add(icon.unit.subunits)
 
                 self.char_selected = icon.unit.game_id
-                print(self.char_selected)
                 break
 
     elif self.char_stat["troop"].rect.collidepoint(self.mouse_pos):
@@ -557,4 +556,23 @@ def start_battle(self, char_selected=None):
     pygame.mixer.music.load(self.music_list[0])
     pygame.mixer.music.play(-1)
     gc.collect()  # collect no longer used object in previous battle from memory
+    # print(vars(self))
+    # print(vars(self.battle_game))
+
+    # for when memory leak checking
+    # print(gc.get_objects())
+    # print(vars(self))
+    # for item in gc.get_objects():
+    # #     try:
+    #         # if type(item) == unit.Unit or type(item) == subunit.Subunit or type(item) == leader.Leader:
+    #     if type(item) == dict:
+    #         print(item, type(item))
+            # print(item.current_animation)
+                # print(vars(item))
+    #         # asdasd
+    #     # except NameError:
+    #     #     asdasdasd
+    #     except:
+    #         pass
+    # print(gc.get_referrers(self.subunit_animation_pool))
 

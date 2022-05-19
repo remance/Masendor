@@ -56,7 +56,7 @@ def split_new_unit(self, who, add_unit_list=True):
     who.change_pos_scale()  # find new position for troop number text
 
     for this_subunit in who.subunits:
-        this_subunit.start_set(this_subunit.zoom)
+        this_subunit.start_set(this_subunit.zoom, self.subunit_animation_pool)
 
     if add_unit_list:
         self.all_team_unit["alive"].append(who)

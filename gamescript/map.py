@@ -72,6 +72,9 @@ class BaseMap(pygame.sprite.Sprite):
         terrain_index = self.terrain_colour.index(terrain)
         return terrain_index
 
+    def clear_image(self):
+        self.image = None
+
 
 class FeatureMap(pygame.sprite.Sprite):
     max_zoom = 10
@@ -87,9 +90,9 @@ class FeatureMap(pygame.sprite.Sprite):
     def draw_image(self, image):
         self.image = image.copy()
 
-    def get_feature(self, pos, gamemap):
+    def get_feature(self, pos, base_map):
         """get the terrain feature at that exact position"""
-        terrain_index = gamemap.get_terrain(pos)
+        terrain_index = base_map.get_terrain(pos)
         new_pos = pos
         if new_pos[0] < 0:
             new_pos[0] = 0
@@ -107,6 +110,9 @@ class FeatureMap(pygame.sprite.Sprite):
             feature_index = self.feature_colour.index(feature)
             feature_index = (terrain_index * len(self.feature_list)) + feature_index
         return terrain_index, feature_index
+
+    def clear_image(self):
+        self.image = None
 
 
 class HeightMap(pygame.sprite.Sprite):
@@ -167,10 +173,14 @@ class HeightMap(pygame.sprite.Sprite):
         height_index = 256 - colour  # get colour at pos to obtain the terrain type
         return height_index
 
+    def clear_image(self):
+        self.image = None
+        self.topology_image = None
+
 
 class BeautifulMap(pygame.sprite.Sprite):
     texture_images = []
-    empty_image = None
+    empty_texture = None
     load_texture_list = None
     main_dir = None
 
@@ -243,7 +253,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                         choose = random.randint(0, len(feature) - 1)
                         if this_feature - (terrain * 12) in (0, 1, 4, 5, 7) and \
                                 random.randint(0, 100) < 60:  # reduce special texture in empty terrain like glassland
-                            this_texture = self.empty_image  # empty texture
+                            this_texture = self.empty_texture  # empty texture
                         else:
                             this_texture = feature[choose]
                         rect = this_texture.get_rect(center=random_pos)
@@ -293,3 +303,7 @@ class BeautifulMap(pygame.sprite.Sprite):
             self.image = self.image_height_original.copy()
         self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
 
+    def clear_image(self):
+        self.image = None
+        self.true_image = None
+        self.place_name = None

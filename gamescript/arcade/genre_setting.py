@@ -8,6 +8,7 @@ leader_sprite = True
 unit_size = (5, 5)
 time_speed_scale = 30
 troop_size_adjustable = True
+add_troop_number = False
 
 # Default keyboard binding
 up = "w"

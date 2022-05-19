@@ -113,8 +113,8 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                     self.subunit_selected = None
                     self.change_inspect_subunit()
 
-                    self.subunit_selected_border.pop(self.subunit_selected.pos)
-                    self.battle_ui_updater.add(self.subunit_selected_border)
+                    self.inspect_selected_border.pop(self.subunit_selected.pos)
+                    self.battle_ui_updater.add(self.inspect_selected_border)
                     self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
                                                    armour_data=self.armour_data,
                                                    split=self.split_happen)
@@ -125,7 +125,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                         self.countdown_skill_icon()
 
                 elif self.inspect:  # Remove when click again and the ui already open
-                    self.battle_ui_updater.remove(*self.inspect_subunit, self.subunit_selected_border, self.troop_card_button,
+                    self.battle_ui_updater.remove(*self.inspect_subunit, self.inspect_selected_border, self.troop_card_button,
                                                   self.troop_card_ui, self.inspect_ui)
                     self.inspect = False
                     self.new_unit_click = False
@@ -262,12 +262,12 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                                 self.mouse_pos) and this_subunit in self.battle_ui_updater:  # Change showing stat to the clicked subunit one
                             if mouse_left_up:
                                 self.subunit_selected = this_subunit
-                                self.subunit_selected_border.pop(self.subunit_selected.pos)
+                                self.inspect_selected_border.pop(self.subunit_selected.pos)
                                 self.event_log.add_log(
                                     [0, str(self.subunit_selected.who.board_pos) + " " + str(
                                         self.subunit_selected.who.name) + " in " +
                                      self.subunit_selected.who.unit.leader[0].name + "'s unit is selected"], [3])
-                                self.battle_ui_updater.add(self.subunit_selected_border)
+                                self.battle_ui_updater.add(self.inspect_selected_border)
                                 self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
                                                                armour_data=self.armour_data, split=self.split_happen)
 
@@ -776,14 +776,14 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                             setup_unit_icon(self.unit_selector, self.unit_icon,
                                             self.all_team_unit[self.team_selected], self.unit_selector_scroll)
                             self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
-                            for this_unit in battle.all_team_unit["alive"]:
+                            for this_unit in self.unit_updater:
                                 this_unit.start_set(self.subunit)
-                            for this_subunit in self.subunit:
-                                this_subunit.start_set(self.camera_zoom)
+                            for this_subunit in self.subunit_updater:
+                                this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
                             for this_leader in self.leader_updater:
                                 this_leader.start_set()
 
-                            for this_unit in battle.all_team_unit["alive"]:
+                            for this_unit in self.unit_updater:
                                 this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
                                                        other_command="Stop")
                         else:
@@ -1098,8 +1098,8 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                     self.subunit_selected = None
                     self.change_inspect_subunit()
 
-                    self.subunit_selected_border.pop(self.subunit_selected.pos)
-                    self.battle_ui_updater.add(self.subunit_selected_border)
+                    self.inspect_selected_border.pop(self.subunit_selected.pos)
+                    self.battle_ui_updater.add(self.inspect_selected_border)
                     self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
                                                    armour_data=self.armour_data,
                                                    split=self.split_happen)

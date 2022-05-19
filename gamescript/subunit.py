@@ -107,7 +107,7 @@ class Subunit(pygame.sprite.Sprite):
     def skill_check_logic(self): pass
     def pick_animation(self): pass
 
-    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
+    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, animation_pool=None):
         """
         Subunit object represent a group of troop or leader
         Subunit has three different stage of stat;
@@ -138,7 +138,7 @@ class Subunit(pygame.sprite.Sprite):
         self.close_target = None  # closet target to move to in melee
         self.attacking = False  # For checking if unit in attacking state or not for using charge skill
 
-        self.sprite_pool = {}  # list of animation sprite this subunit can play with its action
+        self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
@@ -569,22 +569,22 @@ class Subunit(pygame.sprite.Sprite):
                 self.die()
 
     def delete(self, local=False):
-        """delete reference when the method is called"""
-        del self.unit
-        del self.leader
-        del self.attack_target
-        del self.attack_pos
-        del self.melee_target
-        del self.close_target
-        del self.image
-        del self.sprite_pool
-        del self.current_animation
-        del self.animation_queue
-        del self.enemy_front
-        del self.enemy_side
-        del self.friend_front
-        del self.same_front
-        del self.full_merge
+        """delete all reference when the method is called"""
+        self.unit = None
+        self.leader = None
+        self.attack_target = None
+        self.attack_pos = None
+        self.melee_target = None
+        self.close_target = None
+        self.image = None
+        self.animation_pool = None
+        self.current_animation = None
+        self.animation_queue = None
+        self.enemy_front = None
+        self.enemy_side = None
+        self.friend_front = None
+        self.same_front = None
+        self.full_merge = None
         if self in self.battle.combat_path_queue:
             self.battle.combat_path_queue.remove(self)
         if local:
