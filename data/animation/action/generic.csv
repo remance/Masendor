@@ -20,7 +20,7 @@
 "Quarterstaff","2pole","Slash","hold,power"
 "Sling","1hand","Shoot","cancelable,repeat,timing_2_1"
 "Blowgun","1hand","Shoot","cancelable"
-"Javelin","1hand","Shoot","cancelable,hold,timing_2_2"
+"Javelin","1pole","Shoot","cancelable,hold,timing_2_2"
 "Throwing Axe","1hand","Shoot","cancelable,hold,timing_2_2"
 "Longbow","1hand","Shoot","cancelable,hold,timing_2_2"
 "Shortbow","1hand","Shoot","cancelable,hold,timing_2_3"

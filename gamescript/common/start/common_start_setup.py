@@ -510,7 +510,6 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                   self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
                 weapon_attack_action = [weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],
                                                                    self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
-
             if preview:  # only create random right side sprite
                 animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in this_animation and "&" not in this_animation]  # TODO remove last condition when has mount
                 animation = [this_animation for this_animation in animation
@@ -558,13 +557,28 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                 subunit_weapon_list):  # create animation for each weapon set
                             for weapon_index, weapon in enumerate(weapon_set):
                                 # first check if animation is common weapon type specific and match with weapon, then check if it is attack specific
-                                if (any(ext in animation for ext in weapon_common_type_list) is False or
-                                    weapon_common_action[weapon_set_index][weapon_index] in animation) and \
-                                        (any(ext in animation for ext in weapon_attack_type_list) is False or (
-                                                weapon_attack_action[weapon_set_index][weapon_index] in animation and
-                                                ("Main", "Sub")[weapon_index] in animation)):
-                                    if animation + "/" + str(weapon_set_index) not in animation_sprite_pool[subunit_id]:
-                                        animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)] = {}
+                                make_animation = True
+                                animation_type = "normal"
+                                name_input = animation
+                                if any(ext in animation for ext in weapon_common_type_list):
+                                    animation_type = "weapon"
+                                    name_input = animation + "/" + str(weapon_set_index)
+                                if animation_type == "normal":
+                                    if name_input not in animation_sprite_pool[subunit_id]:
+                                        animation_sprite_pool[subunit_id][name_input] = {}
+                                    else:
+                                        make_animation = False
+                                elif animation_type == "weapon":
+                                    if (any(ext in animation for ext in weapon_common_type_list) is False or
+                                        weapon_common_action[weapon_set_index][weapon_index] in animation) and \
+                                            (any(ext in animation for ext in weapon_attack_type_list) is False or (
+                                                    weapon_attack_action[weapon_set_index][weapon_index] in animation and
+                                                    ("Main", "Sub")[weapon_index] in animation)):
+                                        if name_input not in animation_sprite_pool[subunit_id]:
+                                            animation_sprite_pool[subunit_id][name_input] = {}
+                                    else:
+                                        make_animation = False
+                                if make_animation:
                                     for index, direction in enumerate(direction_list):
                                         new_direction = direction
                                         opposite_direction = None  # no opposite direction for front and back
@@ -577,10 +591,10 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                         elif direction == "sidedown":
                                             new_direction = "r_sidedown"
                                             opposite_direction = "l_sidedown"
-                                        animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][
+                                        animation_sprite_pool[subunit_id][name_input][
                                             new_direction] = {}
                                         if opposite_direction is not None:
-                                            animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][
+                                            animation_sprite_pool[subunit_id][name_input][
                                                 opposite_direction] = {}
                                         for frame_num, frame_data in enumerate(
                                                 self.generic_animation_pool[index][animation]):
@@ -602,17 +616,12 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                       self.hair_colour_list, self.skin_colour_list,
                                                                       genre_sprite_size, screen_scale)
 
-                                            animation_sprite_pool[subunit_id][animation + "/" + str(weapon_set_index)][
-                                                new_direction][
-                                                frame_num] = \
+                                            animation_sprite_pool[subunit_id][name_input][new_direction][frame_num] = \
                                                 {"sprite": sprite_dict["sprite"],
                                                  "animation_property": sprite_dict["animation_property"],
                                                  "frame_property": sprite_dict["frame_property"]}
                                             if opposite_direction is not None:  # flip sprite for opposite direction
-                                                animation_sprite_pool[subunit_id][
-                                                    animation + "/" + str(weapon_set_index)][
-                                                    opposite_direction][
-                                                    frame_num] = {
+                                                animation_sprite_pool[subunit_id][ name_input][ opposite_direction][ frame_num] = {
                                                     "sprite": pygame.transform.flip(sprite_dict["sprite"].copy(), True,
                                                                                     False),
                                                     "animation_property": sprite_dict["animation_property"],

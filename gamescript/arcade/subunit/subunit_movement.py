@@ -41,7 +41,7 @@ def move_logic(self, dt, parent_state, collide_list):
             elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
                 enemy_collide_check = False
 
-        if self.stamina > 0 and no_collide_check and enemy_collide_check is False and \
+        if no_collide_check and enemy_collide_check is False and \
                 (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
             if 0 in self.skill_effect and self.base_pos == self.base_target and parent_state == 10:
                 new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
@@ -82,11 +82,11 @@ def move_logic(self, dt, parent_state, collide_list):
                         if self.walk:
                             self.state = 1
                             if self.stamina != infinity:
-                                self.stamina = self.stamina - (dt * 2)
+                                self.stamina = self.stamina - (dt * 1.5)
                         elif self.run:
                             self.state = 2
                             if self.stamina != infinity:
-                                self.stamina = self.stamina - (dt * 5)
+                                self.stamina = self.stamina - (dt * 3)
                     else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                         move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                         self.base_pos += move  # adjust base position according to movement

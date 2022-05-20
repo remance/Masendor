@@ -41,6 +41,9 @@ def start_set(self, zoom, animation_pool):
     self.battle.alive_subunit_list.append(self)
 
     self.animation_pool = animation_pool[self.troop_id]  # grab only animation sprite that the subunit can use
+    # print(self.name)
+    # print(self.animation_pool)
+    # asdasd
 
     self.pick_animation()
 
@@ -356,9 +359,9 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                 center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
                 use_center = False
                 if ("p1_main" in layer and "p1_fix_main_weapon" not in check_prop) or \
-                    ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
-                    ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
-                    ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
+                   ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
+                   ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
+                   ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
 
                     target = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
                     if "p2_main" in layer:  # change p2 main weapon pos to p2 right hand
