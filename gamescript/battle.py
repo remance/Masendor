@@ -401,7 +401,7 @@ class Battle:
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = [[4, new_time, 0]]  # default weather light sunny all day
-        self.weather_current = self.weather_event[0][1]  # weather_current here is used as the reference for map starting time
+        self.weather_playing = self.weather_event[0][1]  # weather_current here is used as the reference for map starting time
         # ^ End weather schedule
 
         # v Random music played from list
@@ -424,10 +424,10 @@ class Battle:
                         new_list.append(new_event_list)
                     self.music_event = new_list
                 else:
-                    self.music_schedule = [self.weather_current]
+                    self.music_schedule = [self.weather_playing]
                     self.music_event = [[5]]
             except:  # any reading error will play random custom music instead
-                self.music_schedule = [self.weather_current]
+                self.music_schedule = [self.weather_playing]
                 self.music_event = [[5]]  # TODO change later when has custom playlist
         # ^ End music play
 
@@ -451,7 +451,7 @@ class Battle:
                     self.event_schedule = self.event_log.map_event[event][3]
                 self.event_list.append(event)
 
-        self.time_number.start_setup(self.weather_current)
+        self.time_number.start_setup(self.weather_playing)
 
         if map_selected is not None:  # Create battle map
             images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.map_selected], load_order=False)
@@ -535,82 +535,6 @@ class Battle:
                                       self.camera_pos[1] - self.center_screen[
                                           1])  # calculate top left corner of camera position
 
-    def exit_battle(self):
-
-        self.battle_ui_updater.clear(self.screen, self.background)  # remove all sprite
-        self.battle_camera.clear(self.screen, self.background)  # remove all sprite
-
-        self.setup_battle_ui("remove")  # remove ui from group
-
-        self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                      *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
-
-        # remove all reference from battle object
-        self.player_char = None
-        for value in self.all_team_unit.values():  # empty all group in dict
-            value.empty()
-
-        clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
-                            self.troop_number_sprite, self.inspect_subunit, self.range_attacks, *self.inspect_subunit))
-
-        self.subunit_animation_pool = None
-        self.generic_action_data = None
-
-        self.remove_unit_ui()
-
-        self.combat_path_queue = []
-        self.alive_subunit_list = []
-        self.map_move_array = []
-        self.subunit_pos_array = []
-        self.map_def_array = []
-        self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
-        self.current_selected = None
-        self.before_selected = None
-        self.last_mouseover = None
-
-        self.player_char = None
-
-        self.drama_timer = 0  # reset drama text popup
-        self.battle_ui_updater.remove(self.drama_text)
-
-        self.battle_map_base.clear_image()
-        self.battle_map_feature.clear_image()
-        self.battle_map_height.clear_image()
-        self.show_map.clear_image()
-
-        if self.mode == "unit_editor":
-            self.subunit_in_card = None
-
-            self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
-                                          self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
-
-            for group in self.troop_namegroup, self.unit_edit_border, self.unitpreset_namegroup:
-                for item in group:  # remove name list
-                    item.kill()
-                    del item
-
-            for slot in self.subunit_build:  # reset all sub-subunit slot
-                slot.kill()
-                slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre, "edit")
-                slot.kill()
-                self.subunit_build.add(slot)
-                slot.leader = None  # remove leader link in
-
-            for this_leader in self.preview_leader:
-                this_leader.change_subunit(None)  # remove subunit link in leader
-                this_leader.change_preview_leader(1, self.leader_data)
-
-            del self.current_weather
-
-            self.faction_pick = 0
-            self.filter_troop = [True, True, True, True]
-            self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][1:] # reset troop filter back to all faction
-            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
-
-            self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:] # generate leader name list)
-
-            self.leader_now = []
-
     def run_game(self):
         # v Create Starting Values
         self.game_state = "battle"  # battle mode
@@ -663,7 +587,7 @@ class Battle:
                 else:  # reset all other slot
                     slot.selected = False
 
-            self.weather_current = None  # remove weather schedule from editor test
+            self.weather_playing = None  # remove weather schedule from editor test
 
             self.change_state()
 
@@ -681,6 +605,7 @@ class Battle:
         self.dt = 0  # Realtime used for in self calculation
         self.ui_dt = 0  # Realtime used for ui timer
         self.combat_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
+        self.weather_spawn_timer = 0
         self.last_mouseover = None  # Which subunit last mouse over
         self.speed_number.speed_update(self.game_speed)
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
@@ -835,7 +760,7 @@ class Battle:
                     if self.dt > 0:
                         self.team_troop_number = [1, 1, 1]  # reset troop count
 
-                        # v Event log timer
+                        # Event log timer
                         if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
                             self.event_log.add_log(None, None, event_id=self.event_id)
                             for event in self.event_log.map_event:
@@ -844,10 +769,9 @@ class Battle:
                                     self.event_schedule = self.event_log.map_event[event][3]
                                     break
                             self.event_list = self.event_list[1:]
-                        # ^ End event log timer
 
-                        # v Weather system
-                        if self.weather_current is not None and self.time_number.time_number >= self.weather_current:
+                        # Weather system
+                        if self.weather_playing is not None and self.time_number.time_number >= self.weather_playing:
                             del self.current_weather
                             this_weather = self.weather_event[0]
 
@@ -862,14 +786,14 @@ class Battle:
                             self.show_map.change_scale(self.camera_zoom)
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
-                                self.weather_current = self.weather_event[0][1]
+                                self.weather_playing = self.weather_event[0][1]
                             else:
-                                self.weather_current = None
+                                self.weather_playing = None
 
-                        if self.current_weather.spawn_rate > 0 and len(self.weather_matter) < self.current_weather.speed:
-                            spawn_number = range(0, int(self.current_weather.spawn_rate *
-                                                        self.dt * random.randint(0, 10)))  # number of sprite to spawn at this time
-                            for spawn in spawn_number:  # spawn each weather sprite
+                        if self.current_weather.spawn_rate > 0:
+                            self.weather_spawn_timer += self.dt
+                            if self.weather_spawn_timer >= self.current_weather.spawn_rate:
+                                self.weather_spawn_timer = 0
                                 true_pos = (random.randint(10, self.screen_rect.width), 0)  # starting pos
                                 target = (true_pos[0], self.screen_rect.height)  # final base_target pos
 
@@ -894,7 +818,6 @@ class Battle:
                                                                              self.current_weather.speed,
                                                                              self.weather_matter_images[self.current_weather.weather_type][
                                                                                  random_pic]))
-                        # ^ End weather system
 
                         # v Music System
                         if len(self.music_schedule) > 0 and self.time_number.time_number >= self.music_schedule[0]:
@@ -1108,3 +1031,78 @@ class Battle:
             self.battle_ui_updater.draw(self.screen)  # Draw the UI
             pygame.display.update()  # update self display, draw everything
             self.clock.tick(60)  # clock update even if self pause
+
+    def exit_battle(self):
+        self.battle_ui_updater.clear(self.screen, self.background)  # remove all sprite
+        self.battle_camera.clear(self.screen, self.background)  # remove all sprite
+
+        self.setup_battle_ui("remove")  # remove ui from group
+
+        self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
+                                      *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
+
+        # remove all reference from battle object
+        self.player_char = None
+        for value in self.all_team_unit.values():  # empty all group in dict
+            value.empty()
+
+        clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
+                            self.troop_number_sprite, self.inspect_subunit, self.range_attacks, *self.inspect_subunit))
+
+        self.subunit_animation_pool = None
+        self.generic_action_data = None
+
+        self.remove_unit_ui()
+
+        self.combat_path_queue = []
+        self.alive_subunit_list = []
+        self.map_move_array = []
+        self.subunit_pos_array = []
+        self.map_def_array = []
+        self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
+        self.current_selected = None
+        self.before_selected = None
+        self.last_mouseover = None
+
+        self.player_char = None
+
+        self.drama_timer = 0  # reset drama text popup
+        self.battle_ui_updater.remove(self.drama_text)
+
+        self.battle_map_base.clear_image()
+        self.battle_map_feature.clear_image()
+        self.battle_map_height.clear_image()
+        self.show_map.clear_image()
+
+        if self.mode == "unit_editor":
+            self.subunit_in_card = None
+
+            self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
+                                          self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
+
+            for group in self.troop_namegroup, self.unit_edit_border, self.unitpreset_namegroup:
+                for item in group:  # remove name list
+                    item.kill()
+                    del item
+
+            for slot in self.subunit_build:  # reset all sub-subunit slot
+                slot.kill()
+                slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre, "edit")
+                slot.kill()
+                self.subunit_build.add(slot)
+                slot.leader = None  # remove leader link in
+
+            for this_leader in self.preview_leader:
+                this_leader.change_subunit(None)  # remove subunit link in leader
+                this_leader.change_preview_leader(1, self.leader_data)
+
+            del self.current_weather
+
+            self.faction_pick = 0
+            self.filter_troop = [True, True, True, True]
+            self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][1:] # reset troop filter back to all faction
+            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
+
+            self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:] # generate leader name list)
+
+            self.leader_now = []

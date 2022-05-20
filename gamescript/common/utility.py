@@ -103,6 +103,8 @@ def csv_read(main_dir, file, subfolder=(), output_type=0, header_key=False):
             for n, i in enumerate(row):
                 if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
                     row[n] = int(i)
+                elif re.search("[a-zA-Z]", i) is None and "." in i:
+                    row[n] = float(i)
             if output_type == 0:  # return as dict
                 if header_key:
                     if row_index > 0:  # skip header row

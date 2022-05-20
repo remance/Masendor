@@ -536,12 +536,12 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.health_stamina_logic(dt)
 
-            if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
-                                           self.base_pos[1] <= 1 or self.base_pos[1] >= 999):  # remove when unit move pass map border
-                self.state = 100  # enter dead state
-                self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
-                self.troop_number = 0
-                self.battle.battle_camera.remove(self)
+                if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
+                                               self.base_pos[1] <= 1 or self.base_pos[1] >= 999):  # remove when unit move pass map border
+                    self.state = 100  # enter dead state
+                    self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
+                    self.troop_number = 0
+                    self.battle.battle_camera.remove(self)
             done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
             # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
             if (self.interrupt_animation and "uninterruptible" not in self.current_action) or \

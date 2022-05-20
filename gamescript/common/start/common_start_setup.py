@@ -423,7 +423,7 @@ def change_genre_ui(main_dir, screen_scale, genre, old_ui_dict):
     # Unit inspect information ui
     old_ui_dict["inspect_button"].image = genre_battle_ui_image["army_inspect_button.png"]
 
-    old_ui_dict["inspect_ui.image"] = genre_battle_ui_image["army_inspect.png"]
+    old_ui_dict["inspect_ui"].image = genre_battle_ui_image["army_inspect.png"]
 
     skill_condition_button = [genre_battle_ui_image["skillcond_0.png"], genre_battle_ui_image["skillcond_1.png"],
                               genre_battle_ui_image["skillcond_2.png"], genre_battle_ui_image["skillcond_3.png"]]
