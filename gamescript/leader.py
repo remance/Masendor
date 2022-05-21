@@ -51,6 +51,7 @@ class Leader(pygame.sprite.Sprite):
             self.state = 100  # no leader is same as dead so no need to update
 
         self.unit = unit
+        self.team = self.unit.team
         self.subunit = None  # get assigned in start_set
         # self.mana = stat["Mana"]
         self.army_position = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))

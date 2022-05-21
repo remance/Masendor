@@ -494,7 +494,7 @@ class Battle:
                 for this_unit in self.unit_updater:
                     for this_leader in this_unit.leader:
                         who_todo |= {"h" + str(this_leader.leader_id): self.leader_data.leader_list[this_leader.leader_id]}
-            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
+            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.troop_sprite_size,
                                                                        self.screen_scale,
                                                                        who_todo)
 
@@ -503,7 +503,7 @@ class Battle:
             self.camera_mode = "Free"  # start with free camera mode
 
             who_todo = {key: value for key, value in self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
-            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.genre_sprite_size,
+            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.troop_sprite_size,
                                                                        self.screen_scale, who_todo)
 
             for this_leader in self.preview_leader:

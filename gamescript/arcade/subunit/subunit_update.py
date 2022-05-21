@@ -471,4 +471,4 @@ def pick_animation(self):
         self.current_animation = {key: value for key, value in self.animation_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
     except:  # animation not found, use default
-        self.current_animation = self.animation_pool[self.race_name + "_Default/" + str(self.equipped_weapon)]
+        self.current_animation = self.animation_pool[self.race_name + "_Default"]

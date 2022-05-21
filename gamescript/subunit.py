@@ -31,7 +31,6 @@ def change_subunit_genre(self):
     Subunit.add_trait = subunit_setup.add_trait
     Subunit.find_shooting_target = subunit_combat.find_shooting_target
     Subunit.attack_logic = subunit_combat.attack_logic
-    Subunit.dmg_cal = subunit_combat.dmg_cal
     Subunit.change_leader = subunit_combat.change_leader
     Subunit.die = subunit_combat.die
     Subunit.rotate_logic = subunit_movement.rotate_logic
@@ -48,6 +47,8 @@ def change_subunit_genre(self):
     Subunit.charge_logic = subunit_update.charge_logic
     Subunit.zoom_scale = common_subunit_zoom.zoom_scale
     Subunit.change_pos_scale = common_subunit_zoom.change_pos_scale
+
+    dmg_include_leader = self.dmg_include_leader
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -71,6 +72,7 @@ class Subunit(pygame.sprite.Sprite):
     reset_animation = animation.reset_animation
     set_rotate = utility.set_rotate
     use_skill = common_subunit_combat.use_skill
+    hit_register = common_subunit_combat.hit_register
     rotate = common_subunit_movement.rotate
     combat_pathfind = common_subunit_movement.combat_pathfind
     find_close_target = common_subunit_movement.find_close_target
@@ -91,7 +93,6 @@ class Subunit(pygame.sprite.Sprite):
     def add_trait(self): pass
     def find_shooting_target(self): pass
     def attack_logic(self): pass
-    def dmg_cal(self): pass
     def change_leader(self): pass
     def die(self): pass
     def rotate_logic(self): pass
@@ -106,6 +107,9 @@ class Subunit(pygame.sprite.Sprite):
     def check_skill_condition(self): pass
     def skill_check_logic(self): pass
     def pick_animation(self): pass
+
+    # genre specific variable
+    dmg_include_leader = True
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, animation_pool=None):
         """
@@ -336,6 +340,7 @@ class Subunit(pygame.sprite.Sprite):
         self.unbreakable = False
         self.temp_unbreakable = False
         self.station_place = False
+        self.reflect = False
         # ^^ End setup trait variable
         # ^ End setup stat
 

@@ -7,6 +7,7 @@ import numpy as np
 import pygame
 import pygame.freetype
 from gamescript.common import utility
+from gamescript.common.unit import common_unit_setup, common_unit_update
 
 rotation_xy = utility.rotation_xy
 
@@ -43,14 +44,12 @@ def change_unit_genre(self):
     Unit.set_subunit_target = unit_movement.set_subunit_target
     Unit.move_leader = unit_movement.move_leader
 
-    Unit.selection = unit_update.selection
     Unit.auth_recal = unit_update.auth_recal
     Unit.morale_check_logic = unit_update.morale_check_logic
 
     Unit.process_command = unit_command.process_command
 
-    Unit.setup_unit = unit_update.setup_unit
-    Unit.setup_frontline = unit_setup.setup_frontline
+    Unit.setup_stat = unit_update.setup_stat
 
     # Variable
 
@@ -65,6 +64,9 @@ class Unit(pygame.sprite.Sprite):
     battle_camera = None
 
     set_rotate = utility.set_rotate
+    setup_frontline = common_unit_setup.setup_frontline
+    selection = common_unit_update.selection
+    cal_unit_stat = common_unit_update.cal_unit_stat
 
     unit_size = None
 
@@ -81,12 +83,10 @@ class Unit(pygame.sprite.Sprite):
     def movement_logic(self): pass
     def set_subunit_target(self): pass
     def move_leader(self): pass
-    def selection(self): pass
     def auth_recal(self): pass
     def morale_check_logic(self): pass
-    def setup_unit(self): pass
+    def setup_stat(self): pass
     def process_command(self): pass
-    def setup_frontline(self): pass
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
         """Unit object represent a group of subunit, each unit can contain a specific number of subunits depending on the genre setting"""
@@ -224,7 +224,7 @@ class Unit(pygame.sprite.Sprite):
 
     def start_set(self, subunit_group):
         """Setup various variables at the start of battle or when new unit spawn/split"""
-        self.setup_unit(battle_start=False)
+        self.setup_stat(battle_start=True)
         self.setup_frontline()
         self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
         self.leader_social = self.leader[0].social
@@ -308,7 +308,7 @@ class Unit(pygame.sprite.Sprite):
                         self.input_delay = 0
                 self.battle.team_troop_number[self.team] += self.troop_number
                 if self.timer >= 1:
-                    self.setup_unit()
+                    self.setup_stat()
 
                     # v Find near enemy base_target
                     self.near_target = {}  # Near base_target is enemy that is nearest

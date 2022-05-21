@@ -4,7 +4,7 @@ import random
 import pygame
 import pygame.freetype
 from gamescript.common import animation
-from gamescript.tactical.subunit import subunit_combat
+from gamescript.common.subunit import common_subunit_combat
 from pygame.transform import scale
 
 
@@ -141,7 +141,7 @@ class RangeAttack(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        who_dmg, who_morale_dmg, who_leader_dmg = subunit_combat.complex_dmg_cal(who, target, who_hit, target_def, self)
+        who_dmg, who_morale_dmg, who_leader_dmg = common_subunit_combat.dmg_cal(who, target, who_hit, target_def, self)
         target.unit_health -= who_dmg
         target.base_morale -= who_morale_dmg
 

@@ -1,14 +1,15 @@
 """For keeping variable related to genre specific"""
 
-char_select = False
-genre_sprite_size = (200, 200)
+char_select = False  # include character specific screen, tactical mode player control various unit
+troop_sprite_size = (200, 200)  # troop animation sprite size
 start_zoom = 1  # start with the furthest zoom
-start_zoom_mode = "Free"
-leader_sprite = False
-unit_size = (8, 8)
-time_speed_scale = 10
-troop_size_adjustable = False
-add_troop_number = True
+start_zoom_mode = "Free"  # rts style camera
+leader_sprite = False  # leader has its own animation sprite, tactical mode use subunit sprite only
+unit_size = (8, 8)  # maximum array size unit can contain subunits
+time_speed_scale = 10  # how fast time fly in battle
+troop_size_adjustable = False  # troop always at size 1
+add_troop_number = True  # add troop number sprite
+dmg_include_leader = False  # include leader in damage calculation
 
 event_log_top = "page up"
 event_log_bottom = "page down"

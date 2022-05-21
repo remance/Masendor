@@ -92,13 +92,16 @@ def change_genre(self, genre):
     Game.leader_position_check = unit_setup.leader_position_check
 
     # Variable
-    self.genre_sprite_size = genre_setting.genre_sprite_size
+    self.troop_sprite_size = genre_setting.troop_sprite_size
     self.char_select = genre_setting.char_select
     self.leader_sprite = genre_setting.leader_sprite
     self.unit_size = genre_setting.unit_size
     self.start_zoom = genre_setting.start_zoom
     self.start_zoom_mode = genre_setting.start_zoom_mode
     self.time_speed_scale = genre_setting.time_speed_scale
+    self.troop_size_adjustable = genre_setting.troop_size_adjustable
+    self.add_troop_number = genre_setting.add_troop_number
+    self.dmg_include_leader = genre_setting.dmg_include_leader
 
     # change genre for other objects
     subunit.change_subunit_genre(self)
@@ -447,7 +450,7 @@ class Game:
         # will be changed in genre_change function depending on selected genre
         self.char_select = False
         self.leader_sprite = False
-        self.genre_sprite_size = (200, 200)
+        self.troop_sprite_size = (200, 200)
         self.unit_size = (8, 8)
         self.start_zoom = 1
         self.start_zoom_mode = "Follow"
@@ -736,7 +739,7 @@ class Game:
         self.effect_sprite_pool = datasprite.EffectSpriteData(self.main_dir)
 
         who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
-        self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.genre_sprite_size, self.screen_scale,
+        self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.troop_sprite_size, self.screen_scale,
                                                            who_todo, preview=True)
 
         # Encyclopedia

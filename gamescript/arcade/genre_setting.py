@@ -1,14 +1,15 @@
 """For keeping variable related to genre specific"""
 
-char_select = True
-genre_sprite_size = (250, 250)
+char_select = True  # include character specific screen
+troop_sprite_size = (250, 250)  # troop animation sprite size
 start_zoom = 10  # start with the closest zoom
-start_zoom_mode = "Follow"
-leader_sprite = True
-unit_size = (5, 5)
-time_speed_scale = 30
-troop_size_adjustable = True
-add_troop_number = False
+start_zoom_mode = "Follow"  # one character control camera
+leader_sprite = True  # leader has its own animation sprite
+unit_size = (5, 5)  # maximum array size unit can contain subunits
+time_speed_scale = 30  # how fast time fly in battle
+troop_size_adjustable = True  # troop always at size 1
+add_troop_number = False  # troop number sprite not use in arcade mode
+dmg_include_leader = False  # include leader in damage calculation, not used in arcade mode since leader is subunit itself
 
 # Default keyboard binding
 up = "w"
