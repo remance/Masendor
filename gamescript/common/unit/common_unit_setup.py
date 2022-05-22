@@ -114,7 +114,7 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
             column = 0
             row += 1
         army_subunit_index += 1
-    if self.add_troop_number:
+    if self.add_troop_number_sprite:
         self.troop_number_sprite.add(battleui.TroopNumber(self.screen_scale, this_unit))  # create troop number text sprite
     return subunit_game_id
 

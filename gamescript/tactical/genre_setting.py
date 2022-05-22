@@ -8,8 +8,9 @@ leader_sprite = False  # leader has its own animation sprite, tactical mode use 
 unit_size = (8, 8)  # maximum array size unit can contain subunits
 time_speed_scale = 10  # how fast time fly in battle
 troop_size_adjustable = False  # troop always at size 1
-add_troop_number = True  # add troop number sprite
+add_troop_number_sprite = True  # add troop number sprite
 dmg_include_leader = False  # include leader in damage calculation
+stat_use_troop_number = True  # calculate troop number in damage calculation
 
 event_log_top = "page up"
 event_log_bottom = "page down"

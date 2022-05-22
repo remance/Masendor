@@ -24,12 +24,26 @@ Inside each map source folder
 
 - unit_pos(with source number after, e.g. unit_pos0 or unit_pos5): List of unit the csv data structure is as follows: 
 
-unit id | sub-unit list row 1 | row 2 | row 3 | row 4 | row 5 | row 6 | row 7 | row 8 | start position | leader | leader position according to  | faction (not team) | start angle | start health state | start stamina state | team
+ID: game id of unit, int number
 
-int	| 		int,int,int,int,int,int,int,int			    	      |    int,int     | int,int,int,int |int,int,int,int	| int     |    int	| int (0-100) 	     | int (0-100) |
+Row *number* (e.g., Row 1): sub-unit list row of any specific number of maximum row according to the genre setting, for example int,int,int,int,int,int,int,int (No space), 0 number means empty and note that whole empty row or column will be removed in game. Some genres accept string "h" as indication of leader as subunit
 
-no nagative | (1 = None) Note that whole empty row or column will be removed in game |	no negative    |    (1 = None)  |  Do not put multiple leader into same sub unit except none leader | leader position does not count 0 sub-unit in position row
+POS: starting position in map of the unit, int,int
 
+Leader: Number or list of leader id number depending on genre setting, int or int,int,int,int. In case of list 0 means empty.
+
+Leader Position: Mean different thing depending on genre mode, army position of leader. Or position of subunit that leader is attached to, do not put multiple leader into same subunit except empty leader. Leader position does not count 0 subunit in position row, for example row 1 of 1,2,5,1,0,9 position 5 will attach leader to the sixth subunit 9. 
+
+Faction: Faction ID (not team), int number 
+
+Angle: starting angle of the unit, int number
+
+Start Health: int number between 1 and 100 can be outside the range but may cause issue, used as percentage
+
+Start Stamina: int number between 1 and 100 can be outside the range but may cause issue, used as percentage
+
+Team: Team number, int number
+ 
 - weather: the list of all weather event that will occur during the battle. The structure is as follows;
 
 weatherid (see data/map/weather) | time the weather activiate and end of previous weather | weather level (0 = Light, 1 = Normal, 2 = Strong)

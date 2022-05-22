@@ -61,7 +61,7 @@ def change_battle_genre(self):
     Battle.start_zoom_mode = self.start_zoom_mode
     Battle.time_speed_scale = self.time_speed_scale
     Battle.troop_size_adjustable = self.troop_size_adjustable
-    Battle.add_troop_number = self.add_troop_number
+    Battle.add_troop_number = self.troop_number_sprite
 
 
 class Battle:

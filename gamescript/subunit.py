@@ -48,7 +48,8 @@ def change_subunit_genre(self):
     Subunit.zoom_scale = common_subunit_zoom.zoom_scale
     Subunit.change_pos_scale = common_subunit_zoom.change_pos_scale
 
-    dmg_include_leader = self.dmg_include_leader
+    Subunit.dmg_include_leader = self.dmg_include_leader
+    Subunit.stat_use_troop_number = self.stat_use_troop_number
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -108,8 +109,9 @@ class Subunit(pygame.sprite.Sprite):
     def skill_check_logic(self): pass
     def pick_animation(self): pass
 
-    # genre specific variable
+    # genre specific variables
     dmg_include_leader = True
+    stat_use_troop_number = True
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, animation_pool=None):
         """
@@ -131,8 +133,8 @@ class Subunit(pygame.sprite.Sprite):
         self.get_feature = self.feature_map.get_feature
         self.get_height = self.height_map.get_height
 
-        self.leader = None  # Leader in the sub-subunit if there is one, got add in leader start_set
-        self.board_pos = None  # Used for event log position of subunit (Assigned in battle subunit setup)
+        self.leader = None  # leader in the sub-subunit if there is one, got add in leader start_set
+        self.board_pos = None  # used for event log position of subunit (Assigned in battle subunit setup)
         self.walk = False  # currently walking
         self.run = False  # currently running
         self.frontline = False  # on front line of unit or not
@@ -140,7 +142,7 @@ class Subunit(pygame.sprite.Sprite):
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.close_target = None  # closet target to move to in melee
-        self.attacking = False  # For checking if unit in attacking state or not for using charge skill
+        self.attacking = False  # for checking if unit in attacking state or not for using charge skill
 
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
@@ -165,7 +167,7 @@ class Subunit(pygame.sprite.Sprite):
         self.team = self.unit.team
 
         self.red_border = False  # red corner to indicate taking melee_dmg in inspect ui
-        self.state = 0  # Current subunit state, similar to unit state
+        self.state = 0  # current subunit state, similar to unit state
         self.timer = random.random()  # may need to use random.random()
         self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing the nearest enemy
@@ -177,7 +179,8 @@ class Subunit(pygame.sprite.Sprite):
         self.interrupt_animation = False
         self.use_animation_sprite = False
 
-        # v Setup troop original stat before applying trait, gear and other stuffs
+        # Setup troop original stat before applying trait, gear and other stuffs
+        self.troop_number = 1  # number of troops inside the subunit
         if type(troop_id) == int or "h" not in troop_id:
             self.troop_id = int(troop_id)  # ID of preset used for this subunit
             stat = self.troop_data.troop_list[self.troop_id].copy()
@@ -195,14 +198,15 @@ class Subunit(pygame.sprite.Sprite):
                                   1: {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"]}}  # ammunition, for now as mod number
             self.original_reload = stat["Reload"] + grade_stat["Reload Bonus"]
             self.original_charge = stat["Charge"]
-            self.original_charge_def = 50  # All infantry subunit has default 50 charge defence
-            self.charge_skill = stat["Charge Skill"]  # For easier reference to check what charge skill this subunit has
+            self.original_charge_def = 50  # all infantry subunit has default 50 charge defence
+            self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
             self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = stat["Discipline"] + grade_stat["Discipline Bonus"]  # discipline with grade bonus
             self.mental = stat["Mental"] + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-            self.troop_number = stat["Troop"] * unit_scale[
-                self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
+            if self.stat_use_troop_number:
+                self.troop_number = stat["Troop"] * unit_scale[
+                    self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
             self.stamina = stat["Stamina"] * grade_stat["Stamina Effect"] * (
                         start_stamina / 100)  # starting stamina with grade
             self.subunit_type = stat["Troop Class"] - 1  # 0 is melee infantry and 1 is range for command buff
@@ -231,7 +235,6 @@ class Subunit(pygame.sprite.Sprite):
                 "Discipline Bonus"]  # discipline with grade bonus
             self.mental = 50 + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-            self.troop_number = 1
             self.stamina = 10000 * grade_stat["Stamina Effect"] * (
                         start_stamina / 100)  # starting stamina with grade
             self.subunit_type = 0
@@ -259,7 +262,7 @@ class Subunit(pygame.sprite.Sprite):
         if "Mana" in stat:
             self.original_mana = stat["Mana"]  # Resource for magic skill
 
-        # vv Equipment stat
+        # Equipment stat
         self.primary_main_weapon = stat["Primary Main Weapon"]
         self.primary_sub_weapon = stat["Primary Sub Weapon"]
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
@@ -292,7 +295,7 @@ class Subunit(pygame.sprite.Sprite):
         self.feature_mod = "Infantry"  # the starting column in terrain bonus of infantry
         self.authority = 100  # default start at 100
 
-        # vv Elemental stat
+        # Elemental stat
         self.original_elem_melee = 0  # start with physical element for melee weapon
         self.original_elem_range = 0  # start with physical for range weapon
         self.elem_count = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}  # Elemental threshold count fire, water, air, earth, poison
@@ -301,7 +304,8 @@ class Subunit(pygame.sprite.Sprite):
         self.magic_res = 0  # Resistance to any magic
         self.heat_res = 0  # Resistance to heat temperature
         self.cold_res = 0  # Resistance to cold temperature
-        # ^^ End elemental
+
+        # Other stats
 
         self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
         self.crit_effect = 1  # critical extra modifier
@@ -322,7 +326,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_inflict_status = {}  # list of status that this subunit will inflict to enemy when melee_attack
         self.special_status = []
 
-        # vv Set up trait variable
+        # Set up trait variable
         self.arc_shot = False
         self.anti_inf = False
         self.anti_cav = False
@@ -341,10 +345,8 @@ class Subunit(pygame.sprite.Sprite):
         self.temp_unbreakable = False
         self.station_place = False
         self.reflect = False
-        # ^^ End setup trait variable
-        # ^ End setup stat
 
-        # stat after applying trait and gear
+        # Stat after applying trait and gear
 
         self.trait = self.original_trait
         self.base_melee_attack = self.original_melee_attack

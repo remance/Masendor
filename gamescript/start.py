@@ -100,8 +100,9 @@ def change_genre(self, genre):
     self.start_zoom_mode = genre_setting.start_zoom_mode
     self.time_speed_scale = genre_setting.time_speed_scale
     self.troop_size_adjustable = genre_setting.troop_size_adjustable
-    self.add_troop_number = genre_setting.add_troop_number
+    self.add_troop_number_sprite = genre_setting.add_troop_number_sprite
     self.dmg_include_leader = genre_setting.dmg_include_leader
+    self.stat_use_troop_number = genre_setting.stat_use_troop_number
 
     # change genre for other objects
     subunit.change_subunit_genre(self)
@@ -456,7 +457,7 @@ class Game:
         self.start_zoom_mode = "Follow"
         self.time_speed_scale = 1
         self.troop_size_adjustable = False
-        self.add_troop_number = False
+        self.add_troop_number_sprite = False
 
         # Unit and subunit editor button in game start menu
 

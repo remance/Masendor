@@ -8,8 +8,9 @@ leader_sprite = True  # leader has its own animation sprite
 unit_size = (5, 5)  # maximum array size unit can contain subunits
 time_speed_scale = 30  # how fast time fly in battle
 troop_size_adjustable = True  # troop always at size 1
-add_troop_number = False  # troop number sprite not use in arcade mode
+add_troop_number_sprite = False  # troop number sprite not use in arcade mode
 dmg_include_leader = False  # include leader in damage calculation, not used in arcade mode since leader is subunit itself
+stat_use_troop_number = False  # arcade mode count one subunit as one troop
 
 # Default keyboard binding
 up = "w"
