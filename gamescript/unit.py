@@ -103,7 +103,7 @@ class Unit(pygame.sprite.Sprite):
         self.control = control  # player control or not
         self.start_hp = start_hp  # starting hp percentage
         self.start_stamina = start_stamina  # starting stamina percentage
-        self.subunit_list = subunit_list  # subunit array
+        self.subunit_list = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit
         self.colour = colour  # box colour according to team
         self.commander = commander  # True if commander unit
 
@@ -222,7 +222,7 @@ class Unit(pygame.sprite.Sprite):
         """Change position variable to new camera scale"""
         self.true_number_pos = self.number_pos * (11 - self.zoom)
 
-    def start_set(self, subunit_group):
+    def start_set(self):
         """Setup various variables at the start of battle or when new unit spawn/split"""
         self.setup_stat(battle_start=True)
         self.setup_frontline()
@@ -243,8 +243,7 @@ class Unit(pygame.sprite.Sprite):
         self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
                              (self.leader[0].cav_command - 5) * 0.1]  # unit leader command buff
 
-        for subunit in subunit_group:
-            self.subunit_list = np.where(self.subunit_list == subunit.game_id, subunit, self.subunit_list)
+        self.subunit_list = self.subunit_list.astype(int)
 
         unit_top_left = pygame.Vector2(self.base_pos[0] - self.base_width_box,
                                        self.base_pos[1] - self.base_height_box)  # get the top left corner of sprite to generate subunit position

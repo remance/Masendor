@@ -25,6 +25,7 @@ def rotate_logic(self, *args):
 
 
 def move_logic(self, dt, parent_state, collide_list):
+    self.base_target = self.command_target  # always attempt to catch up to command target
     if self.base_pos != self.base_target and (not self.current_action or "movable" in self.current_action):
         no_collide_check = False  # can move if front of unit not collided
         if (((self.unit.collide is False or self.frontline is False) or parent_state == 99)
@@ -35,10 +36,10 @@ def move_logic(self, dt, parent_state, collide_list):
         enemy_collide_check = False  # for chance to move or charge through enemy
         if len(collide_list) > 0:
             enemy_collide_check = True
-            if self.state in (96, 98, 99):  # escape
+            if self.state in (96, 98, 99):  # retreat
                 enemy_collide_check = False
                 no_collide_check = True  # bypass collide
-            elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
+            elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through TODO add charge power vs def
                 enemy_collide_check = False
 
         if no_collide_check and enemy_collide_check is False and \
@@ -58,7 +59,7 @@ def move_logic(self, dt, parent_state, collide_list):
                     speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 elif parent_state in (10, 99):  # run with its own speed instead of uniformed run
-                    speed = self.speed / 15  # use its own speed when broken
+                    speed = self.speed / 10  # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                     speed = self.unit.run_speed  # use run speed

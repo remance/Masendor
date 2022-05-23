@@ -144,8 +144,8 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
                 # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
                 #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
                 #     self.battle_ui.add(self.button_name_popup)
-                #     if mouse_left_up and self.last_selected.state == 0:
-                #         for subunit in self.last_selected.subunit_sprite:
+                #     if mouse_left_up and self.current_selected.state == 0:
+                #         for subunit in self.current_selected.subunit_sprite:
                 #             subunit.status_effect[98] = self.troop_data.status_list[98].copy()
                 #             subunit.unit_health -= round(subunit.unit_health * 0.1)
 
@@ -202,7 +202,7 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
         self.current_selected.player_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, mouse_left_down,
                                            mouse_right_down,  double_mouse_right, self.last_mouseover, key_state)
 
-    # if mouse_right_up and self.last_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
+    # if mouse_right_up and self.current_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
     #     if 0 <= self.battle_mouse_pos[0] <= 999 and \
     #             0 <= self.battle_mouse_pos[1] <= 999:  # not draw if pos is off the map
     #         terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos, self.battle_map_base)
@@ -788,8 +788,8 @@ def battle_key_press(self, key_press):
     #         self.event_log.recreate_image()
     #         self.log_scroll.change_image(new_row=self.event_log.current_start_row)
 
-    # elif key_press == pygame.K_SPACE and self.last_selected is not None:
-    #     self.last_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+    # elif key_press == pygame.K_SPACE and self.current_selected is not None:
+    #     self.current_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # vv FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_F1:
@@ -804,26 +804,27 @@ def battle_key_press(self, key_press):
     #     self.drama_text.queue.append("After")
     # elif key_press == pygame.K_F6:
     #     self.drama_text.queue.append("Now much more clear")
-    # elif key_press == pygame.K_n and self.last_selected is not None:
-    #     if self.last_selected.team == 1:
-    #         self.last_selected.switchfaction(self.team1_unit, self.team2_unit, self.team1_pos_list, self.enactment)
+    # elif key_press == pygame.K_n and self.current_selected is not None:
+    #     if self.current_selected.team == 1:
+    #         self.current_selected.switchfaction(self.team1_unit, self.team2_unit, self.team1_pos_list, self.enactment)
     #     else:
-    #         self.last_selected.switchfaction(self.team2_unit, self.team1_unit, self.team2_pos_list, self.enactment)
-    # elif key_press == pygame.K_l and self.last_selected is not None:
-    #     for subunit in self.last_selected.subunit_sprite:
+    #         self.current_selected.switchfaction(self.team2_unit, self.team1_unit, self.team2_pos_list, self.enactment)
+    # elif key_press == pygame.K_l and self.current_selected is not None:
+    #     for subunit in self.current_selected.subunit_sprite:
     #         subunit.base_morale = 0
-    # elif key_press == pygame.K_k and self.last_selected is not None:
-    #     # for index, subunit in enumerate(self.last_selected.subunit_sprite):
-    #     #     subunit.unit_health -= subunit.unit_health
-    #     self.subunit_selected.self.unit_health -= self.subunit_selected.self.unit_health
-    # elif key_press == pygame.K_m and self.last_selected is not None:
-    #     # self.last_selected.leader[0].health -= 1000
+    elif key_press == pygame.K_k and self.current_selected is not None:
+        # for index, subunit in enumerate(self.current_selected.subunit_sprite):
+        #     subunit.unit_health -= subunit.unit_health
+        self.current_selected.leader_subunit.troop_health -= self.current_selected.leader_subunit.troop_health
+        print(self.current_selected.leader_subunit.troop_health)
+    # elif key_press == pygame.K_m and self.current_selected is not None:
+    #     # self.current_selected.leader[0].health -= 1000
     #     self.subunit_selected.self.leader.health -= 1000
     #     # self.subunit_selected.self.base_morale -= 1000
     #     # self.subunit_selected.self.broken_limit = 80
     #     # self.subunit_selected.self.state = 99
-    # elif key_press == pygame.K_COMMA and self.last_selected is not None:
-    #     for index, subunit in enumerate(self.last_selected.subunit_sprite):
+    # elif key_press == pygame.K_COMMA and self.current_selected is not None:
+    #     for index, subunit in enumerate(self.current_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina
     # ^^ End For development test
     # ^ End register input

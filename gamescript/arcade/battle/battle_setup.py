@@ -108,7 +108,7 @@ def change_state(self):
 
         # Run starting method
         for this_unit in self.unit_updater:
-            this_unit.start_set(self.subunit_updater)
+            this_unit.start_set()
         for this_subunit in self.subunit_updater:
             this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
         for this_leader in self.leader_updater:

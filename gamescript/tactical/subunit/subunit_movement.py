@@ -86,13 +86,13 @@ def move_logic(self, dt, parent_state, collide_list):
                 move.normalize_ip()
 
                 if parent_state in (1, 3, 5, 7):  # walking
-                    speed = self.unit.walk_speed  # use walk speed
+                    speed = self.unit.walk_speed / 10  # use walk speed
                     self.walk = True
                 elif parent_state in (10, 99):  # run with its own speed instead of uniformed run
                     speed = self.speed / 15  # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                    speed = self.unit.run_speed  # use run speed
+                    speed = self.unit.run_speed / 10  # use run speed
                     self.run = True
                 if 0 in self.skill_effect:  # speed gradually decrease with momentum during charge
                     speed = speed * self.charge_momentum / 8

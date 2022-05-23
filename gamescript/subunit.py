@@ -571,6 +571,7 @@ class Subunit(pygame.sprite.Sprite):
             self.collide_penalty = False
 
         else:  # dead
+            print('die')
             if self.state != 100:  # enter dead state
                 self.state = 100  # enter dead state
                 self.die()

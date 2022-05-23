@@ -65,10 +65,10 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
             self.leader_subunit.command_action = ("Action 1", )
             if "Sub" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
                 self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Action 0")
+                                     other_command="Action 1")
 
         elif new_pos != self.leader_subunit.base_pos:
-            self.leader_subunit.base_target = new_pos
+            self.leader_subunit.command_target = new_pos
             self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
             if mouse_left_down and key_state[pygame.K_LSHIFT]:
                 self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,

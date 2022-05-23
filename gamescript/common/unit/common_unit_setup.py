@@ -79,41 +79,36 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
     # v Setup subunit in unit to subunit group
-    row, column = 0, 0
-    max_column = len(this_unit.subunit_list[0])
     unit_array = np.array([[0] * self.unit_size[0]] * self.unit_size[1])  # for unit size overlap check if genre has setting
-    for subunit_index, subunit_number in enumerate(np.nditer(this_unit.subunit_list, op_flags=["readwrite"], order="C")):
-        now_row = int(subunit_index / len(unit_array[0]))
-        now_col = subunit_index - (now_row * len(unit_array[0]))
-        this_unit.subunits_array[row][column] = None  # replace numpy None with python None
-        if subunit_number != "0" and (self.troop_size_adjustable is False or unit_array[now_row][now_col] == 0):
-            this_subunit_number = str(subunit_number)
-            size = 1
-            if this_subunit_number == "h":  # Leader, only need in genre with leader as subunit itself
-                this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
-                size = 1  # TODO change when there is way to check leader size
-            elif this_subunit_number != "0":
-                size = int(troop_list[int(subunit_number)]["Size"])
+    new_subunit_list = np.array([[0] * len(this_unit.subunit_list[0])] * len(this_unit.subunit_list))
+    for row_index, row in enumerate(this_unit.subunit_list):
+        for col_index, col in enumerate(row):
+            this_unit.subunits_array[row_index][col_index] = None  # replace numpy None with python None
+            if col != "0" and (self.troop_size_adjustable is False or unit_array[row_index][col_index] == 0):
+                this_subunit_number = col
+                size = 1
+                if this_subunit_number == "h":  # Leader, only need in genre with leader as subunit itself
+                    this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
+                    size = 1  # TODO change when there is way to check leader size
+                elif this_subunit_number != "0":
+                    size = int(troop_list[int(col)]["Size"])
 
-            if self.troop_size_adjustable is False or (now_row + size <= 5 and now_col + size <= 5):  # skip if subunit exceed unit size array
-                for row_number in range(now_row, now_row + size):
-                    for col_number in range(now_col, now_col + size):
-                        unit_array[row_number][col_number] = 1
+                if self.troop_size_adjustable is False or (row_index + size <= 5 and col_index + size <= 5):  # skip if subunit exceed unit size array
+                    for row_number in range(row_index, row_index + size):
+                        for col_number in range(col_index, col_index + size):
+                            unit_array[row_number][col_number] = 1
 
-                add_subunit = subunit.Subunit(this_subunit_number, subunit_game_id, this_unit,
-                                              this_unit.subunit_position_list[army_subunit_index],
-                                              this_unit.start_hp, this_unit.start_stamina, self.unit_scale)
-                add_subunit.board_pos = board_pos[army_subunit_index]
-                subunit_number[...] = subunit_game_id
-                this_unit.subunits_array[row][column] = add_subunit
-                this_unit.subunits.append(add_subunit)
-                subunit_game_id += 1
+                    add_subunit = subunit.Subunit(this_subunit_number, subunit_game_id, this_unit,
+                                                  this_unit.subunit_position_list[army_subunit_index],
+                                                  this_unit.start_hp, this_unit.start_stamina, self.unit_scale)
+                    add_subunit.board_pos = board_pos[army_subunit_index]
+                    new_subunit_list[row_index][col_index] = add_subunit.game_id
+                    this_unit.subunits_array[row_index][col_index] = add_subunit
+                    this_unit.subunits.append(add_subunit)
+                    subunit_game_id += 1
 
-        column += 1
-        if column == max_column:
-            column = 0
-            row += 1
-        army_subunit_index += 1
+            army_subunit_index += 1
+    this_unit.subunit_list = new_subunit_list
     if self.add_troop_number_sprite:
         self.troop_number_sprite.add(battleui.TroopNumber(self.screen_scale, this_unit))  # create troop number text sprite
     return subunit_game_id
@@ -190,7 +185,6 @@ def assign_commander(self, replace=None):
         self.team_commander = self.leader[0]
         for this_unit in self.battle.all_team_unit[self.team]:
             this_unit.team_commander = self.leader[0]
-
 
 
 def setup_frontline(self):

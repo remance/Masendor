@@ -16,7 +16,7 @@ def cal_unit_stat(self, how_many, all_speed, all_shoot_range, battle_start):
     self.stamina = self.stamina / how_many  # Average stamina of all subunit
     self.morale = self.morale / how_many  # Average morale of all subunit
     self.speed = min(all_speed)  # use the slowest subunit
-    self.walk_speed, self.run_speed = self.speed / 20, self.speed / 15
+    self.walk_speed, self.run_speed = self.speed / 2, self.speed
     if self.state in (1, 3, 5):
         self.rotate_speed = self.walk_speed * 50 / (len(self.subunit_list[0]) * len(
             self.subunit_list))  # rotate speed is based on move speed and unit block size (not subunit total number)

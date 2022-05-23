@@ -70,7 +70,8 @@ def set_subunit_target(self, target="rotate", leader_move=False, *args):
 
 def move_leader(self, how):
     """Use static number for maximum array size here, arcade mode accept only 5x5 unit so maximum at 4"""
-    leader_position = np.where(np.asarray(self.subunit_list) == str(self.leader_subunit.game_id))  # position of leader
+    leader_position = np.where(np.asarray(self.subunits_array) == self.leader_subunit)  # position of leader
+    print(self.subunit_list, self.leader_subunit.game_id, leader_position)
     old_leader_position = ([leader_position[0][0]], [leader_position[1][0]])
     old_unit_position = (leader_position[0][0] * 5) + leader_position[1][0]
 
@@ -92,12 +93,12 @@ def move_leader(self, how):
         old_subunit = self.subunits_array[leader_position[0][0]][leader_position[1][0]]
         self.subunits_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit
         self.subunits_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
-        self.subunit_list[leader_position[0][0]][leader_position[1][0]] = str(self.leader_subunit.game_id)
+        self.subunit_list[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit.game_id
 
         self.leader_subunit.unit_position = (self.subunit_position_list[new_unit_position][0] / 10,
                                              self.subunit_position_list[new_unit_position][1] / 10)
         if old_subunit is not None:
-            self.subunit_list[old_leader_position[0][0]][old_leader_position[1][0]] = str(old_subunit.game_id)
+            self.subunit_list[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit.game_id
             old_subunit.unit_position = (self.subunit_position_list[old_unit_position][0] / 10,
                                          self.subunit_position_list[old_unit_position][1] / 10)
         else:
