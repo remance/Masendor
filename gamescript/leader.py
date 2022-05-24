@@ -43,7 +43,8 @@ class Leader(pygame.sprite.Sprite):
 
         self.subunit_pos = int(subunit_position)  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat
-        # self.skill = stat
+        self.skill = stat["Skill"]
+
         self.state = 0  # 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
 
         if self.name == "None":  # None leader is considered dead by default, function the same way as dead one
@@ -75,6 +76,17 @@ class Leader(pygame.sprite.Sprite):
         self.commander = False  # army commander
         self.original_commander = False  # the first army commander at the start of battle
 
+        self.skill = {value: leader_data.skill_list[value] for value in self.skill if value in leader_data.skill_list}
+        if self.army_position == 0:
+            self.bad_morale = (30, 50)  # general morale lost when destroyed
+            if self.unit.commander:
+                self.commander = True
+                self.original_commander = True
+                for key, value in self.skill:  # replace leader skill with commander skill version
+                    for key2, value2 in leader_data.commander_skill_list:
+                        if key in value2["Replace"]:
+                            self.skill[key] = key2
+
     def start_set(self):
         self.subunit = self.unit.subunits[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
@@ -86,10 +98,7 @@ class Leader(pygame.sprite.Sprite):
             squad_penal = int(
                 (self.subunit_pos / len(self.unit.subunit_list[0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squad_penal / 100) / 2)
-            self.bad_morale = (30, 50)  # start_set general morale lost when destroyed
-            if self.unit.commander:
-                self.commander = True
-                self.original_commander = True
+
 
     def update(self):
         if self.state not in (96, 97, 98, 99, 100):

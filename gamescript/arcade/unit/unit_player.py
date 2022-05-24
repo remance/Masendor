@@ -31,6 +31,14 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                     self.process_command(cursor_pos, other_command="Troop Skill 0")
                 elif key_state[pygame.K_4]:  # Use troop skill 2
                     self.process_command(cursor_pos, other_command="Troop Skill 1")
+                elif key_state[pygame.K_q]:  # Use leader skill 1
+                    self.leader_subunit.command_action = ("Leader Weapon Skill 0",)
+                elif key_state[pygame.K_e]:  # Use leader skill 2
+                    self.leader_subunit.command_action = ("Leader Weapon Skill 1",)
+                elif key_state[pygame.K_r]:  # Use leader skill 1 TODO add this to UI later instead
+                    self.leader_subunit.command_action = ("Leader Skill 0",)
+                elif key_state[pygame.K_t]:  # Use leader skill 2
+                    self.leader_subunit.command_action = ("Leader Skill 1",)
 
             speed = self.walk_speed / 10
             if key_state[pygame.K_LSHIFT]:
@@ -49,11 +57,6 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
 
             elif key_state[pygame.K_d]:  # move right
                 new_pos[0] += speed
-
-            elif key_state[pygame.K_q]:  # Use leader skill 1
-                self.leader_subunit.command_action = ("Leader skill 0", )
-            elif key_state[pygame.K_e]:  # Use leader skill 2
-                self.leader_subunit.command_action = ("Leader skill 1", )
 
         if mouse_left_up:
             self.leader_subunit.command_action = ("Action 0", )

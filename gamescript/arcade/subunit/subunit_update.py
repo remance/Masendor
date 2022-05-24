@@ -12,12 +12,12 @@ def player_interact(self, mouse_pos, mouse_left_up):
     if self.rect.collidepoint(mouse_pos):
         self.battle.last_mouseover = self.unit  # last mouse over on this unit
         if self.battle.game_state == "editor" and self.battle.unit_build_slot not in self.battle.battle_ui_updater:
-                if self.battle.game_state == "editor" and mouse_left_up and self.battle.click_any is False:
-                    self.battle.current_selected = self.unit  # become last selected unit
-                    if self.unit.selected is False:
-                        self.unit.just_selected = True
-                        self.unit.selected = True
-                    self.battle.click_any = True
+            if self.battle.game_state == "editor" and mouse_left_up and self.battle.click_any is False:
+                self.battle.current_selected = self.unit  # become last selected unit
+                if self.unit.selected is False:
+                    self.unit.just_selected = True
+                    self.unit.selected = True
+                self.battle.click_any = True
 
 
 def status_update(self, weather=None):
@@ -312,31 +312,22 @@ def morale_logic(self, dt, parent_state):
 
 def health_stamina_logic(self, dt):
     """Health and stamina calculation"""
-    if self.unit_health != infinity:
-        if self.hp_regen > 0 and self.unit_health % self.troop_health != 0:  # hp regen cannot resurrect troop only heal to max hp
+    if self.subunit_health != infinity:
+        if self.hp_regen > 0 and self.subunit_health % self.troop_health != 0:  # hp regen cannot resurrect troop only heal to max hp
             alive_hp = self.troop_number * self.troop_health  # max hp possible for the number of alive subunit
-            self.unit_health += self.hp_regen * dt  # regen hp back based on time and regen stat
-            if self.unit_health > alive_hp:
-                self.unit_health = alive_hp  # Cannot exceed health of alive subunit (exceed mean resurrection)
+            self.subunit_health += self.hp_regen * dt  # regen hp back based on time and regen stat
+            if self.subunit_health > alive_hp:
+                self.subunit_health = alive_hp  # Cannot exceed health of alive subunit (exceed mean resurrection)
         elif self.hp_regen < 0:  # negative regen can kill
-            self.unit_health += self.hp_regen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
-            remain = self.unit_health / self.troop_health
-            if remain.is_integer() is False:  # always round up if there is decimal number
-                remain = int(remain) + 1
-            else:
-                remain = int(remain)
-            wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
-            self.battle.death_troop_number[self.team] += self.troop_number - remain - wound
-            self.battle.wound_troop_number[self.team] += wound
-            self.troop_number = remain  # Recal number of troop again in case some destroyed from negative regen
+            self.subunit_health += self.hp_regen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
 
-        if self.unit_health < 0:
-            self.unit_health = 0  # can't have negative hp
-        elif self.unit_health > self.max_health:
-            self.unit_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
+        if self.subunit_health < 0:
+            self.subunit_health = 0  # can't have negative hp
+        elif self.subunit_health > self.max_health:
+            self.subunit_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
 
-        if self.old_unit_health != self.unit_health:
-            remain = self.unit_health / self.troop_health
+        if self.old_subunit_health != self.subunit_health:
+            remain = self.subunit_health / self.troop_health
             if remain.is_integer() is False:  # always round up if there is decimal number
                 remain = int(remain) + 1
             else:
@@ -352,7 +343,7 @@ def health_stamina_logic(self, dt):
 
             # v Health bar
             for index, health in enumerate(self.health_list):
-                if self.unit_health > health:
+                if self.subunit_health > health:
                     if self.last_health_state != abs(4 - index):
                         self.inspect_image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
                         self.block_original.blit(self.health_image_list[index + 1], self.health_block_rect)
@@ -361,7 +352,7 @@ def health_stamina_logic(self, dt):
                         self.zoom_scale()
                     break
 
-            self.old_unit_health = self.unit_health
+            self.old_subunit_health = self.subunit_health
 
     if self.stamina != infinity:
         if self.stamina < self.max_stamina:
@@ -404,21 +395,27 @@ def check_skill_condition(self):
 
 def skill_check_logic(self):
     self.check_skill_condition()
-    if self.command_action:  # no current action and has skill command waiting
+    if not self.current_action and self.command_action:  # no current action and has skill command waiting
         command_action = self.command_action[0]
         if "Skill" in command_action:  # use skill and convert command action into skill action name
-            if (self.unit_leader and "Leader" in command_action) or \
-                    (self.unit_leader is False and "Troop" in command_action):
+            if ("Troop" in command_action and self.unit_leader is False) or ("Leader" in command_action and self.unit_leader):
                 skill = int(self.command_action[0][-1])
-                if "Weapon" in command_action:
+                if "Weapon" in command_action:  # weapon skill
                     skill = self.weapon_skill[self.equipped_weapon][skill]
                     action = self.skill[skill]["Action"].copy()
                     action[0] += " " + command_action[-1]
-                elif len(self.troop_skill) > skill:
-                    skill = self.troop_skill[skill]
-                    action = self.skill[skill]["Action"].copy()
-                    if "Action" in action[0]:
-                        action[0] += " " + str(0)  # use main hand by default for Action type animation skill
+                else:  # Troop or leader skill
+                    if ("Troop" in command_action and self.unit_leader is False) and len(self.troop_skill) > skill:
+                        skill = self.troop_skill[skill]
+                        action = self.skill[skill]["Action"].copy()
+                        if "Action" in action[0]:
+                            action[0] += " " + str(0)  # use main hand by default for Action type animation skill
+                    elif ("Leader" in command_action and self.unit_leader) and len(self.leader.skill) > skill:
+                        skill = self.leader_skill[skill]
+                        action = self.skill[skill]["Action"].copy()
+                        if "Action" in action[0]:
+                            action[0] += " " + str(0)  # use main hand by default for Action type animation skill
+
                 if skill != 0 and skill in self.available_skill:
                     self.skill_effect = {}  # arcade mode allows only 1 skill active at a time
                     self.use_skill(skill)

@@ -31,8 +31,7 @@ def change_subunit_genre(self):
     Subunit.add_trait = subunit_setup.add_trait
     Subunit.find_shooting_target = subunit_combat.find_shooting_target
     Subunit.attack_logic = subunit_combat.attack_logic
-    Subunit.change_leader = subunit_combat.change_leader
-    Subunit.die = subunit_combat.die
+    Subunit.dead_subunit_leader_logic = subunit_combat.dead_subunit_leader_logic
     Subunit.rotate_logic = subunit_movement.rotate_logic
     Subunit.move_logic = subunit_movement.move_logic
     Subunit.player_interact = subunit_update.player_interact
@@ -74,6 +73,7 @@ class Subunit(pygame.sprite.Sprite):
     set_rotate = utility.set_rotate
     use_skill = common_subunit_combat.use_skill
     hit_register = common_subunit_combat.hit_register
+    die = common_subunit_combat.die
     rotate = common_subunit_movement.rotate
     combat_pathfind = common_subunit_movement.combat_pathfind
     find_close_target = common_subunit_movement.find_close_target
@@ -94,8 +94,7 @@ class Subunit(pygame.sprite.Sprite):
     def add_trait(self): pass
     def find_shooting_target(self): pass
     def attack_logic(self): pass
-    def change_leader(self): pass
-    def die(self): pass
+    def dead_subunit_leader_logic(self): pass
     def rotate_logic(self): pass
     def move_logic(self): pass
     def player_interact(self): pass
@@ -180,12 +179,14 @@ class Subunit(pygame.sprite.Sprite):
         self.use_animation_sprite = False
 
         # Setup troop original stat before applying trait, gear and other stuffs
+        skill = []  # keep only troop and weapon skills in here, leader skills are kept in Leader object
         self.troop_number = 1  # number of troops inside the subunit
         if type(troop_id) == int or "h" not in troop_id:
             self.troop_id = int(troop_id)  # ID of preset used for this subunit
             stat = self.troop_data.troop_list[self.troop_id].copy()
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
+            skill = stat["Skill"]  # skill list according to the preset
             self.original_melee_attack = stat["Melee Attack"] + grade_stat[
                 "Melee Attack Bonus"]  # melee attack with grade bonus
             self.original_melee_def = stat["Melee Defence"] + grade_stat[
@@ -246,7 +247,7 @@ class Subunit(pygame.sprite.Sprite):
         self.race_name = self.troop_data.race_list[stat["Race"]]["Name"]
         self.original_trait = stat["Trait"]  # trait list from preset
         self.original_trait = self.original_trait + self.troop_data.grade_list[self.grade]["Trait"]  # add trait from grade
-        skill = stat["Skill"]  # skill list according to the preset
+
         self.skill_cooldown = {}
         self.grade_name = grade_stat["Name"]
         self.armour_gear = stat["Armour"]  # armour equipment
@@ -307,23 +308,23 @@ class Subunit(pygame.sprite.Sprite):
 
         # Other stats
 
-        self.reload_time = 0  # Unit can only refill magazine when reload_time is equal or more than reload stat
-        self.crit_effect = 1  # critical extra modifier
+        self.reload_time = 0  # Subunit can only refill magazine when reload_time is equal or more than reload stat
+        self.crit_effect = 1  # Critical extra modifier
         self.front_dmg_effect = 1  # Some skill affect only frontal combat melee_dmg
         self.side_dmg_effect = 1  # Some skill affect melee_dmg for side combat as well (AOE)
         self.corner_atk = False  # Check if subunit can melee_attack corner enemy or not
         self.flank_bonus = 1  # Combat bonus when flanking
-        self.base_auth_penalty = 0.1  # penalty to authority when bad event happen
-        self.bonus_morale_dmg = 0  # extra morale melee_dmg
-        self.bonus_stamina_dmg = 0  # extra stamina melee_dmg
-        self.auth_penalty = 0.1  # authority penalty for certain activities/order
-        self.original_hp_regen = 0  # hp regeneration modifier, will not resurrect dead troop by default
-        self.original_stamina_regen = 2  # stamina regeneration modifier
-        self.original_morale_regen = 2  # morale regeneration modifier
-        self.available_skill = []
-        self.status_effect = {}  # list of current status effect
-        self.skill_effect = {}  # list of activate skill effect
-        self.base_inflict_status = {}  # list of status that this subunit will inflict to enemy when melee_attack
+        self.base_auth_penalty = 0.1  # Penalty to authority when bad event happen
+        self.bonus_morale_dmg = 0  # Extra morale melee_dmg
+        self.bonus_stamina_dmg = 0  # Extra stamina melee_dmg
+        self.auth_penalty = 0.1  # Authority penalty for certain activities/order
+        self.original_hp_regen = 0  # HP regeneration modifier, will not resurrect dead troop by default
+        self.original_stamina_regen = 2  # Stamina regeneration modifier
+        self.original_morale_regen = 2  # Morale regeneration modifier
+        self.available_skill = []  # List of skills that subunit can currently use
+        self.status_effect = {}  # Current status effect
+        self.skill_effect = {}  # Activate skill effect
+        self.base_inflict_status = {}  # Status that this subunit will inflict to enemy when melee_attack
         self.special_status = []
 
         # Set up trait variable
@@ -363,6 +364,9 @@ class Subunit(pygame.sprite.Sprite):
         self.base_charge_def = self.original_charge_def
         self.skill = self.original_skill.copy()
         self.troop_skill = self.original_skill.copy()
+        self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
+                            (type(skill) == str or (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
+                             self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type + 1))]  # keep matched
         self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline
@@ -392,12 +396,12 @@ class Subunit(pygame.sprite.Sprite):
         self.stamina25 = self.stamina * 0.25
         self.stamina5 = self.stamina * 0.05
 
-        self.unit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
-        self.old_unit_health = self.unit_health
-        self.max_health = self.unit_health  # health percentage
-        self.health_list = (self.unit_health * 0.75, self.unit_health * 0.5, self.unit_health * 0.25, 0)
+        self.subunit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
+        self.old_subunit_health = self.subunit_health
+        self.max_health = self.subunit_health  # health percentage
+        self.health_list = (self.subunit_health * 0.75, self.subunit_health * 0.5, self.subunit_health * 0.25, 0)
 
-        self.old_last_health, self.old_last_stamina = self.unit_health, self.stamina  # save previous health and stamina in previous update
+        self.old_last_health, self.old_last_stamina = self.subunit_health, self.stamina  # save previous health and stamina in previous update
         self.max_troop = self.troop_number  # max number of troop at the start
 
         # v Weight calculation
@@ -509,7 +513,20 @@ class Subunit(pygame.sprite.Sprite):
             self.zoom_scale()  # update unit sprite according to new scale
             recreate_rect = True
 
-        if self.unit_health > 0:  # only run these when not dead
+        done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
+        # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
+        if self.state != 100 and ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
+                                  (done and "repeat" not in self.current_action) or
+                                  (self.idle_action and self.idle_action != self.command_action)):
+            self.reset_animation()
+            self.interrupt_animation = False
+            self.current_action = self.command_action  # continue next action when animation finish
+            self.pick_animation()
+            self.command_action = self.idle_action
+        if recreate_rect:
+            self.rect = self.image.get_rect(center=self.pos)
+
+        if self.subunit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
             if dt > 0:  # only run these when self not pause
@@ -549,19 +566,6 @@ class Subunit(pygame.sprite.Sprite):
                     self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
                     self.troop_number = 0
                     self.battle.battle_camera.remove(self)
-            done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
-            # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
-            if (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
-                    (done and "repeat" not in self.current_action):
-                self.reset_animation()
-                self.interrupt_animation = False
-                self.current_action = self.command_action  # continue next action when animation finish
-                self.pick_animation()
-                self.command_action = ()
-                if not self.idle_action and self.idle_action != self.command_action:
-                    self.command_action = self.idle_action
-            if recreate_rect:
-                self.rect = self.image.get_rect(center=self.pos)
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []
@@ -571,7 +575,6 @@ class Subunit(pygame.sprite.Sprite):
             self.collide_penalty = False
 
         else:  # dead
-            print('die')
             if self.state != 100:  # enter dead state
                 self.state = 100  # enter dead state
                 self.die()

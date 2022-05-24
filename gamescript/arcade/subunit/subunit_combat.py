@@ -6,9 +6,24 @@ battle_side_cal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side
 infinity = float("inf")
 
 
-def change_leader(self, event):
-    """Leader is subunit in arcode mode, so can't change to other subunit"""
-    pass
+def dead_subunit_leader_logic(self, *args):
+    """All subunit enter broken state when leader die in arcade mode"""
+    if self.unit_leader:  # leader dead, all subunit enter broken state
+        self.unit.state = 99
+        for subunit in self.unit.subunits:
+            subunit.state = 99  # Broken state
+
+            corner_list = [[0, subunit.base_pos[1]], [1000, subunit.base_pos[1]], [subunit.base_pos[0], 0],
+                           [subunit.base_pos[0], 1000]]
+            which_corner = [subunit.base_pos.distance_to(corner_list[0]), subunit.base_pos.distance_to(corner_list[1]),
+                            subunit.base_pos.distance_to(corner_list[2]),
+                            subunit.base_pos.distance_to(corner_list[3])]  # find the closest map corner to run to
+            found_corner = which_corner.index(min(which_corner))
+            subunit.base_target = pygame.Vector2(corner_list[found_corner])
+            subunit.command_target = subunit.base_target
+            subunit.new_angle = subunit.set_rotate()
+    if self.unit.control:
+        self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle
 
 
 def find_shooting_target(self, unit_state):
@@ -124,48 +139,3 @@ def attack_logic(self, dt, combat_timer, parent_state):
                 self.unit.attack_target = 0  # reset range combat check and base_target
 
     return parent_state, collide_list
-
-
-def die(self):
-    self.image_original3.blit(self.health_image_list[5], self.health_image_rect)  # blit white hp bar
-    self.block_original.blit(self.health_image_rect[5], self.health_block_rect)
-    self.zoom_scale()
-    self.last_health_state = 0
-    self.skill_cooldown = {}  # remove all cooldown
-    self.skill_effect = {}  # remove all skill effects
-
-    self.block.blit(self.block_original, self.corner_image_rect)
-    self.red_border = True  # to prevent red border appear when dead
-
-    self.unit.dead_change = True
-
-    if self in self.battle.battle_camera:
-        self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
-    self.battle.alive_subunit_list.remove(self)
-    self.unit.subunits.remove(self)
-
-    self.command_action = ("Die", "uninterruptible")
-    self.reset_animation()
-
-    for subunit in self.unit.subunits_array.flat:  # remove from index array
-        if subunit == self.game_id:
-            self.unit.subunit_list = np.where(self.unit.subunit_list == self.game_id, 0, self.unit.subunit_list)
-            break
-
-    if self.unit_leader:  # leader dead, all subunit enter broken state
-        for subunit in self.unit.subunits:
-            subunit.state = 99  # Broken state
-
-            corner_list = [[0, subunit.base_pos[1]], [1000, subunit.base_pos[1]], [subunit.base_pos[0], 0],
-                           [subunit.base_pos[0], 1000]]
-            which_corner = [subunit.base_pos.distance_to(corner_list[0]), subunit.base_pos.distance_to(corner_list[1]),
-                            subunit.base_pos.distance_to(corner_list[2]),
-                            subunit.base_pos.distance_to(corner_list[3])]  # find the closest map corner to run to
-            found_corner = which_corner.index(min(which_corner))
-            subunit.base_target = pygame.Vector2(corner_list[found_corner])
-            subunit.command_target = subunit.base_target
-            subunit.new_angle = subunit.set_rotate()
-
-    self.battle.event_log.add_log([0, str(self.board_pos) + " " + str(self.name)
-                                   + " in " + self.unit.leader[0].name
-                                   + "'s unit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab

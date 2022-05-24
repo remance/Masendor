@@ -408,7 +408,7 @@ class LeaderData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Troop Type", "Type", "Range", "Area of Effect", "Element", "Cost")  # value int only
+            int_column = ("Troop Type", "Type", "Range", "Area of Effect", "Element", "Cost")  # value int only
             list_column = ("Action", )
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
@@ -437,7 +437,7 @@ class LeaderData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
+            int_column = ("Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
             list_column = ("Action", "Replace")
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",

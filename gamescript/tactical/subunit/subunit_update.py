@@ -318,7 +318,7 @@ def morale_logic(self, dt, parent_state):
                     self.morale_regen -= random.uniform(0, max_random)  # morale regen slower per broken state
                     if self.morale_regen < 0:  # begin checking broken state
                         self.state = 99  # Broken state
-                        self.change_leader("broken")
+                        self.dead_subunit_leader_logic("Broken")
 
                         corner_list = [[0, self.base_pos[1]], [1000, self.base_pos[1]], [self.base_pos[0], 0], [self.base_pos[0], 1000]]
                         which_corner = [self.base_pos.distance_to(corner_list[0]), self.base_pos.distance_to(corner_list[1]),
@@ -349,22 +349,22 @@ def morale_logic(self, dt, parent_state):
 
         elif self.state == 98:
             if parent_state not in (98, 99):
-                self.unit_health -= (dt * 100)  # Unit begin to desert if retreating but unit not retreat/broken
+                self.subunit_health -= (dt * 100)  # Unit begin to desert if retreating but unit not retreat/broken
                 if self.morale_state > 0.2:
                     self.state = 0  # Reset state to 0 when exit retreat state
 
 
 def health_stamina_logic(self, dt):
     """Health and stamina calculation"""
-    if self.unit_health != infinity:
-        if self.hp_regen > 0 and self.unit_health % self.troop_health != 0:  # hp regen cannot resurrect troop only heal to max hp
+    if self.subunit_health != infinity:
+        if self.hp_regen > 0 and self.subunit_health % self.troop_health != 0:  # hp regen cannot resurrect troop only heal to max hp
             alive_hp = self.troop_number * self.troop_health  # max hp possible for the number of alive subunit
-            self.unit_health += self.hp_regen * dt  # regen hp back based on time and regen stat
-            if self.unit_health > alive_hp:
-                self.unit_health = alive_hp  # Cannot exceed health of alive subunit (exceed mean resurrection)
+            self.subunit_health += self.hp_regen * dt  # regen hp back based on time and regen stat
+            if self.subunit_health > alive_hp:
+                self.subunit_health = alive_hp  # Cannot exceed health of alive subunit (exceed mean resurrection)
         elif self.hp_regen < 0:  # negative regen can kill
-            self.unit_health += self.hp_regen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
-            remain = self.unit_health / self.troop_health
+            self.subunit_health += self.hp_regen * dt  # use the same as positive regen (negative regen number * dt will reduce hp)
+            remain = self.subunit_health / self.troop_health
             if remain.is_integer() is False:  # always round up if there is decimal number
                 remain = int(remain) + 1
             else:
@@ -374,13 +374,13 @@ def health_stamina_logic(self, dt):
             self.battle.wound_troop_number[self.team] += wound
             self.troop_number = remain  # Recal number of troop again in case some destroyed from negative regen
 
-        if self.unit_health < 0:
-            self.unit_health = 0  # can't have negative hp
-        elif self.unit_health > self.max_health:
-            self.unit_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
+        if self.subunit_health < 0:
+            self.subunit_health = 0  # can't have negative hp
+        elif self.subunit_health > self.max_health:
+            self.subunit_health = self.max_health  # hp can't exceed max hp (would increase number of troop)
 
-        if self.old_unit_health != self.unit_health:
-            remain = self.unit_health / self.troop_health
+        if self.old_subunit_health != self.subunit_health:
+            remain = self.subunit_health / self.troop_health
             if remain.is_integer() is False:  # always round up if there is decimal number
                 remain = int(remain) + 1
             else:
@@ -396,7 +396,7 @@ def health_stamina_logic(self, dt):
 
             # v Health bar
             for index, health in enumerate(self.health_list):
-                if self.unit_health > health:
+                if self.subunit_health > health:
                     if self.last_health_state != abs(4 - index):
                         self.inspect_image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
                         self.block_original.blit(self.health_image_list[index + 1], self.health_block_rect)
@@ -405,7 +405,7 @@ def health_stamina_logic(self, dt):
                         self.zoom_scale()
                     break
 
-            self.old_unit_health = self.unit_health
+            self.old_subunit_health = self.subunit_health
 
     if self.stamina != infinity:
         if self.stamina < self.max_stamina:

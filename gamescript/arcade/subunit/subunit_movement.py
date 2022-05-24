@@ -59,7 +59,7 @@ def move_logic(self, dt, parent_state, collide_list):
                     speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 elif parent_state in (10, 99):  # run with its own speed instead of uniformed run
-                    speed = self.speed / 10  # use its own speed when broken
+                    speed = self.speed / 5 # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                     speed = self.unit.run_speed  # use run speed

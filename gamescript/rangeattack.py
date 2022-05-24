@@ -142,7 +142,7 @@ class RangeAttack(pygame.sprite.Sprite):
             target_def = 0  # defence cannot be negative
 
         who_dmg, who_morale_dmg, who_leader_dmg = common_subunit_combat.dmg_cal(who, target, who_hit, target_def, self)
-        target.unit_health -= who_dmg
+        target.subunit_health -= who_dmg
         target.base_morale -= who_morale_dmg
 
         # v Add red corner to indicate melee_dmg

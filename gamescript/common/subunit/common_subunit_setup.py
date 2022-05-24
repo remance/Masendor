@@ -41,9 +41,6 @@ def start_set(self, zoom, animation_pool):
     self.battle.alive_subunit_list.append(self)
 
     self.animation_pool = animation_pool[self.troop_id]  # grab only animation sprite that the subunit can use
-    # print(self.name)
-    # print(self.animation_pool)
-    # asdasd
 
     self.pick_animation()
 
@@ -64,6 +61,10 @@ def skill_convert(self, skill_list, add_charge_skill=False):
     skill_dict = {skill: skill_dict[skill] for skill in skill_dict if skill == 0 or   # keep skill if class match
                   (skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                    self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type + 1))}
+
+    leader_skill_dict = {x: self.leader_data.skill_list[x].copy() for x in skill_dict if x != 0 and x in self.leader_data.skill_list}
+    skill_dict = skill_dict | leader_skill_dict
+
     return skill_dict
 
 
@@ -78,10 +79,6 @@ def process_trait_skill(self):
         self.trait = {x: self.troop_data.trait_list[x] for x in self.trait if
                       x in self.troop_data.trait_list}  # Any trait not available in ruleset will be ignored
         self.add_trait()
-
-    self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
-                        (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                         self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type + 1)]  # keep matched
 
     for weapon_set in self.weapon_skill:
         for weapon in self.weapon_skill[weapon_set]:

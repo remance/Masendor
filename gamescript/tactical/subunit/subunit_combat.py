@@ -6,10 +6,10 @@ battle_side_cal = (1, 0.5, 0.1, 0.5)  # battle_side_cal is for melee combat side
 infinity = float("inf")
 
 
-def change_leader(self, event):
-    """Leader change when subunit or gone/destroyed, event can be "destroyed" or "broken" """
+def dead_subunit_leader_logic(self, event):
+    """Leader change when subunit or gone/destroyed, event can be "Destroyed" or "Broken" """
     check_state = [100]
-    if event == "broken":
+    if event == "Broken":
         check_state = [99, 100]
     if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
         for this_subunit in self.nearby_subunit_list:
@@ -41,7 +41,7 @@ def change_leader(self, event):
 
                     break
 
-            if self.leader is not None and event == "destroyed":  # Still can't find new subunit so leader disappear with chance of different result
+            if self.leader is not None and event == "Destroyed":  # Still can't find new subunit so leader disappear with chance of different result
                 self.leader.state = random.randint(97, 100)  # captured, retreated, wounded, dead
                 self.leader.health = 0
                 self.leader.gone()
@@ -232,33 +232,3 @@ def attack_logic(self, dt, combat_timer, parent_state):
             self.new_angle = self.unit.angle
 
     return parent_state, collide_list
-
-
-def die(self):
-    self.inspect_image_original3.blit(self.health_image_list[4], self.health_image_rect)  # blit white hp bar
-    self.block_original.blit(self.health_image_list[4], self.health_block_rect)
-    self.zoom_scale()
-    self.last_health_state = 0
-    self.skill_cooldown = {}  # remove all cooldown
-    self.skill_effect = {}  # remove all skill effects
-
-    self.block.blit(self.block_original, self.corner_image_rect)
-    self.red_border = True  # to prevent red border appear when dead
-
-    self.unit.dead_change = True
-
-    if self in self.battle.battle_camera:
-        self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
-    self.battle.alive_subunit_list.remove(self)
-    self.unit.subunits.remove(self)
-
-    for subunit in self.unit.subunit_list.flat:  # remove from index array
-        if subunit == self.game_id:
-            self.unit.subunit_list = np.where(self.unit.subunit_list == self.game_id, 0, self.unit.subunit_list)
-            break
-
-    self.change_leader("destroyed")
-
-    self.battle.event_log.add_log([0, str(self.board_pos) + " " + str(self.name)
-                                   + " in " + self.unit.leader[0].name
-                                   + "'s unit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab

@@ -815,8 +815,7 @@ def battle_key_press(self, key_press):
     elif key_press == pygame.K_k and self.current_selected is not None:
         # for index, subunit in enumerate(self.current_selected.subunit_sprite):
         #     subunit.unit_health -= subunit.unit_health
-        self.current_selected.leader_subunit.troop_health -= self.current_selected.leader_subunit.troop_health
-        print(self.current_selected.leader_subunit.troop_health)
+        self.current_selected.leader_subunit.subunit_health -= self.current_selected.leader_subunit.subunit_health
     # elif key_press == pygame.K_m and self.current_selected is not None:
     #     # self.current_selected.leader[0].health -= 1000
     #     self.subunit_selected.self.leader.health -= 1000
