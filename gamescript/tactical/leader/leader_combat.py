@@ -22,7 +22,7 @@ def pos_change_stat(self, leader):
         if leader.unit.commander:  # become army commander
             for this_unit in self.battle.all_team_unit[self.team]:
                 this_unit.team_commander = leader
-                this_unit.auth_recal()
+                this_unit.authority_recalculation()
 
 
 def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: "wounded", 100: "dead"}):

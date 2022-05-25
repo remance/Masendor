@@ -68,12 +68,13 @@ def move_logic(self, dt, parent_state, collide_list):
                     speed = speed * self.charge_momentum / 8
                 if self.collide_penalty:  # reduce speed during moving through another unit
                     speed = speed / 2
+                self.state = parent_state
                 move = move * speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
 
                 if speed > 0 and (self.state in (98, 99) or (self.state not in (98, 99) and
-                                                             (0 < new_pos[0] < 999 and 0 < new_pos[1] < 999))):
+                                                             (0 < new_pos[0] < 1000 and 0 < new_pos[1] < 1000))):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos = new_pos
@@ -81,11 +82,9 @@ def move_logic(self, dt, parent_state, collide_list):
                         self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
                         self.new_angle = self.set_rotate(self.base_target)
                         if self.walk:
-                            self.state = 1
                             if self.stamina != infinity:
                                 self.stamina = self.stamina - (dt * 1.5)
                         elif self.run:
-                            self.state = 2
                             if self.stamina != infinity:
                                 self.stamina = self.stamina - (dt * 3)
                     else:  # move length pass the base_target destination, set movement to stop exactly at base_target

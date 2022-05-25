@@ -20,6 +20,7 @@ class UIButton(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
+
 class SwitchButton(pygame.sprite.Sprite):
     def __init__(self, images):
         self._layer = 11
@@ -822,29 +823,28 @@ class ScaleUI(pygame.sprite.Sprite):
     def __init__(self, image):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
-        self.percent_scale = -100
-        self.team1_colour = (144, 167, 255)
-        self.team2_colour = (255, 114, 114)
+        self.team_colour = {0: (200, 200, 200), 1: (144, 167, 255), 2:(255, 114, 114)}
         self.font = pygame.font.SysFont("helvetica", 12)
         self.pos = (0, 0)
         self.image = image
         self.image_width = self.image.get_width()
         self.image_height = self.image.get_height()
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.troop_number_list = []
 
     def change_fight_scale(self, troop_number_list):
-        new_percent = round(troop_number_list[1] / (troop_number_list[1] + troop_number_list[2]), 4)
-        if self.percent_scale != new_percent:
-            self.percent_scale = new_percent
-            self.image.fill(self.team1_colour, (0, 0, self.image_width, self.image_height))
-            self.image.fill(self.team2_colour, (self.image_width * self.percent_scale, 0, self.image_width, self.image_height))
+        if self.troop_number_list != troop_number_list:
+            self.troop_number_list = troop_number_list.copy()
+            total = sum(self.troop_number_list)
+            percent_scale = 0  # start point fo fill colour of team scale
+            for team, value in enumerate(self.troop_number_list):
+                if value > 1:
+                    self.image.fill(self.team_colour[team], (percent_scale, 0, self.image_width, self.image_height))
 
-            team1_text = self.font.render("{:,}".format(troop_number_list[1] - 1), True, (0, 0, 0))  # add troop number text
-            team1_text_rect = team1_text.get_rect(topleft=(0, 0))
-            self.image.blit(team1_text, team1_text_rect)
-            team2_text = self.font.render("{:,}".format(troop_number_list[2] - 1), True, (0, 0, 0))
-            team2_text_rect = team2_text.get_rect(topright=(self.image_width, 0))
-            self.image.blit(team2_text, team2_text_rect)
+                    # team_text = self.font.render("{:,}".format(int(value - 1)), True, (0, 0, 0))  # add troop number text
+                    # team_text_rect = team_text.get_rect(topleft=(percent_scale, 0))
+                    # self.image.blit(team_text, team_text_rect)
+                    percent_scale = (value / total * 100) + percent_scale
 
     def change_pos(self, pos):
         self.pos = pos

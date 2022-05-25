@@ -302,13 +302,13 @@ class Battle:
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.leader_now = []
-        self.team_troop_number = [1, 1, 1]  # list of troop number in each team, minimum at one because percentage can't divide by 0
-        self.last_team_troop_number = [1, 1, 1]
-        self.start_troop_number = [0, 0, 0]
-        self.wound_troop_number = [0, 0, 0]
-        self.death_troop_number = [0, 0, 0]
-        self.flee_troop_number = [0, 0, 0]
-        self.capture_troop_number = [0, 0, 0]
+        self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
+        self.last_team_troop_number = []
+        self.start_troop_number = []
+        self.wound_troop_number = []
+        self.death_troop_number = []
+        self.flee_troop_number = []
+        self.capture_troop_number = []
         self.faction_pick = 0
         self.filter_troop = [True, True, True, True]  # filter in this order: melee infantry, range inf, melee cavalry, range cav
         self.current_selected = None
@@ -479,13 +479,13 @@ class Battle:
         if self.mode == "battle":
             self.camera_zoom = self.start_zoom  # Camera zoom
             self.camera_mode = self.start_zoom_mode
-            self.start_troop_number = [0, 0, 0]
-            self.wound_troop_number = [0, 0, 0]
-            self.death_troop_number = [0, 0, 0]
-            self.flee_troop_number = [0, 0, 0]
-            self.capture_troop_number = [0, 0, 0]
             self.setup_unit(self.all_team_unit, self.troop_data.troop_list)
-
+            self.team_troop_number = [1 for _ in self.all_team_unit]  # reset list of troop number in each team
+            self.start_troop_number = [0 for _ in self.all_team_unit]
+            self.wound_troop_number = [0 for _ in self.all_team_unit]
+            self.death_troop_number = [0 for _ in self.all_team_unit]
+            self.flee_troop_number = [0 for _ in self.all_team_unit]
+            self.capture_troop_number = [0 for _ in self.all_team_unit]
             self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
 
             subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
@@ -543,8 +543,6 @@ class Battle:
         self.text_input_popup = (None, None)  # no popup asking for user text input state
         self.leader_now = []  # list of showing leader in command ui
         self.current_weather = None
-        self.team_troop_number = [1, 1, 1]  # reset list of troop number in each team
-        self.last_team_troop_number = [1, 1, 1]
         self.drama_text.queue = []  # reset drama text popup queue
 
         if self.mode == "unit_editor":
@@ -758,7 +756,6 @@ class Battle:
                     # ^ End drama
 
                     if self.dt > 0:
-                        self.team_troop_number = [1, 1, 1]  # reset troop count
 
                         # Event log timer
                         if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
@@ -910,7 +907,6 @@ class Battle:
 
                     if self.ui_timer > 1:
                         self.scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar
-                        self.last_team_troop_number = self.team_troop_number
 
                     if self.combat_timer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combat_timer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing

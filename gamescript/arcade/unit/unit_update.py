@@ -1,4 +1,8 @@
-def auth_recal(self):
+def state_reset_logic(self):
+    self.state = 0  # reset unit state to 0 idle by default
+
+
+def authority_recalculation(self):
     self.authority = self.leader[0].authority
     self.leader_social = self.leader[0].social
 

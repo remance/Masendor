@@ -1,4 +1,16 @@
-def auth_recal(self):
+def state_reset_logic(self):
+    """Check if any subunit still fighting, if not change to idle state"""
+    if self.state == 10:
+        stop_fight = True
+        for subunit in self.subunits:
+            if subunit.state == 10:
+                stop_fight = False
+                break
+        if stop_fight:
+            self.state = 0
+
+
+def authority_recalculation(self):
     """recalculate authority from all alive leaders"""
     self.authority = (self.leader[0].authority / 2) + (self.leader[1].authority / 4) + \
                      (self.leader[2].authority / 4) + (self.leader[3].authority / 10)

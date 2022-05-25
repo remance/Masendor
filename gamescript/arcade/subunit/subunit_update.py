@@ -281,16 +281,16 @@ def status_update(self, weather=None):
             self.idle_action = self.command_action
     self.skill_effect = {key: val for key, val in self.skill_effect.items() if
                          val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
-
     for a, b in self.status_effect.items():
         b["Duration"] -= self.timer
     self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0}
     # ^ End timer effect
 
 
-def state_reset_logic(self, *args):
+def state_reset_logic(self, parent_state):
     """Simply reset to idle state for arcade mode as it use independent action"""
-    self.state = 0
+    if self.state not in (95, 97, 98, 99) and parent_state in (0, 1, 2, 3, 4, 5, 6, 95, 96, 97, 98, 99):
+        self.state = parent_state  # Enforce unit state to subunit when moving and breaking
 
 
 def morale_logic(self, dt, parent_state):
@@ -332,14 +332,15 @@ def health_stamina_logic(self, dt):
                 remain = int(remain) + 1
             else:
                 remain = int(remain)
-            wound = random.randint(0, (self.troop_number - remain))  # chance to be wounded instead of dead
-            self.battle.death_troop_number[self.team] += self.troop_number - remain - wound
+            loss = self.troop_number - remain
+            wound = random.randint(0, loss)  # chance to be wounded instead of dead
+            self.battle.death_troop_number[self.team] += loss - wound
             if self.state in (98, 99) and len(self.enemy_front) + len(
                     self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
                 self.battle.capture_troop_number[self.team] += wound
             else:
                 self.battle.wound_troop_number[self.team] += wound
-            self.troop_number = remain  # Recal number of troop again in case some destroyed from negative regen
+            self.troop_loss(loss)  # Recal number of troop again in case some destroyed from negative regen
 
             # v Health bar
             for index, health in enumerate(self.health_list):
@@ -395,24 +396,24 @@ def check_skill_condition(self):
 
 def skill_check_logic(self):
     self.check_skill_condition()
-    if not self.current_action and self.command_action:  # no current action and has skill command waiting
+    if self.command_action:  # no current action and has skill command waiting
         command_action = self.command_action[0]
         if "Skill" in command_action:  # use skill and convert command action into skill action name
             if ("Troop" in command_action and self.unit_leader is False) or ("Leader" in command_action and self.unit_leader):
                 skill = int(self.command_action[0][-1])
                 if "Weapon" in command_action:  # weapon skill
                     skill = self.weapon_skill[self.equipped_weapon][skill]
-                    action = self.skill[skill]["Action"].copy()
+                    action = self.skill[skill]["Action"].copy() + [skill]
                     action[0] += " " + command_action[-1]
                 else:  # Troop or leader skill
                     if ("Troop" in command_action and self.unit_leader is False) and len(self.troop_skill) > skill:
                         skill = self.troop_skill[skill]
-                        action = self.skill[skill]["Action"].copy()
+                        action = self.skill[skill]["Action"].copy() + [skill]
                         if "Action" in action[0]:
                             action[0] += " " + str(0)  # use main hand by default for Action type animation skill
                     elif ("Leader" in command_action and self.unit_leader) and len(self.leader.skill) > skill:
                         skill = self.leader_skill[skill]
-                        action = self.skill[skill]["Action"].copy()
+                        action = self.skill[skill]["Action"].copy() + [skill]
                         if "Action" in action[0]:
                             action[0] += " " + str(0)  # use main hand by default for Action type animation skill
 

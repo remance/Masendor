@@ -37,7 +37,7 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
 
         if self.charging:  # change order when attacking will cause authority penalty
             self.leader[0].authority -= self.auth_penalty
-            self.auth_recal()
+            self.authority_recalculation()
 
     elif other_command == "Stop" and self.state != 10:  # Pause all action command except combat
         # if self.charging:

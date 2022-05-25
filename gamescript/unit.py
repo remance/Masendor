@@ -44,7 +44,8 @@ def change_unit_genre(self):
     Unit.set_subunit_target = unit_movement.set_subunit_target
     Unit.move_leader = unit_movement.move_leader
 
-    Unit.auth_recal = unit_update.auth_recal
+    Unit.state_reset_logic = unit_update.state_reset_logic
+    Unit.authority_recalculation = unit_update.authority_recalculation
     Unit.morale_check_logic = unit_update.morale_check_logic
 
     Unit.process_command = unit_command.process_command
@@ -83,13 +84,16 @@ class Unit(pygame.sprite.Sprite):
     def movement_logic(self): pass
     def set_subunit_target(self): pass
     def move_leader(self): pass
-    def auth_recal(self): pass
+    def state_reset_logic(self): pass
+    def authority_recalculation(self): pass
     def morale_check_logic(self): pass
     def setup_stat(self): pass
     def process_command(self): pass
 
-    def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle, start_hp=100, start_stamina=100, team=0):
-        """Unit object represent a group of subunit, each unit can contain a specific number of subunits depending on the genre setting"""
+    def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle,
+                 start_hp=100, start_stamina=100, team=0):
+        """Unit object represent a group of subunits, each unit can contain a specific number of subunits
+        depending on the genre setting"""
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon
         self.team_commander = None  # commander leader
@@ -239,7 +243,7 @@ class Unit(pygame.sprite.Sprite):
         self.ally_pos_list = self.battle.team_pos_list[self.team]
         self.enemy_pos_list = {key: value for key, value in self.battle.team_pos_list.items() if key != self.team and key != "alive"}
 
-        self.auth_recal()
+        self.authority_recalculation()
         self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
                              (self.leader[0].cav_command - 5) * 0.1]  # unit leader command buff
 
@@ -305,7 +309,6 @@ class Unit(pygame.sprite.Sprite):
                     self.input_delay -= dt
                     if self.input_delay < 0:
                         self.input_delay = 0
-                self.battle.team_troop_number[self.team] += self.troop_number
                 if self.timer >= 1:
                     self.setup_stat()
 
@@ -319,22 +322,13 @@ class Unit(pygame.sprite.Sprite):
                         self.near_target[n] = self.enemy_pos_list[n]  # change back near base_target list value to vector with sorted order
                     # ^ End find near base_target
 
-                    # v Check if any subunit still fighting, if not change to idle state
-                    if self.state == 10:
-                        stop_fight = True
-                        for subunit in self.subunits:
-                            if subunit.state == 10:
-                                stop_fight = False
-                                break
-                        if stop_fight:
-                            self.state = 0
-                    # ^ End check fighting
+                    self.state_reset_logic()
 
                     self.timer -= 1  # reset timer, not reset to 0 because higher speed can cause inconsistency in update timing
 
                 # v Recal stat involve leader if one destroyed
                 if self.leader_change:
-                    self.auth_recal()
+                    self.authority_recalculation()
                     self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
                                          (self.leader[0].cav_command - 5) * 0.1]
                     self.leader_change = False
@@ -350,7 +344,7 @@ class Unit(pygame.sprite.Sprite):
                     self.state = 95
                     if random.randint(0, 100) == 100 and self.leader[0].state < 90:  # chance to recover
                         self.leader[0].authority += 20
-                        self.auth_recal()
+                        self.authority_recalculation()
 
                 self.morale_check_logic()
 
@@ -391,7 +385,7 @@ class Unit(pygame.sprite.Sprite):
         self.leader[0].authority -= self.auth_penalty  # retreat reduce start_set leader authority
         if self.charging:  # change order when attacking will cause authority penalty
             self.leader[0].authority -= self.auth_penalty
-        self.auth_recal()
+        self.authority_recalculation()
         self.retreat_start = True  # start retreat process
         self.set_target(pos)
         self.revert_move()

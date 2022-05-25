@@ -349,7 +349,7 @@ def morale_logic(self, dt, parent_state):
 
         elif self.state == 98:
             if parent_state not in (98, 99):
-                self.subunit_health -= (dt * 100)  # Unit begin to desert if retreating but unit not retreat/broken
+                self.subunit_health -= (dt * 100)  # Unit begin to desert (die) if retreating but unit not retreat/broken
                 if self.morale_state > 0.2:
                     self.state = 0  # Reset state to 0 when exit retreat state
 

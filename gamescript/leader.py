@@ -83,7 +83,7 @@ class Leader(pygame.sprite.Sprite):
                 self.commander = True
                 self.original_commander = True
                 for key, value in self.skill:  # replace leader skill with commander skill version
-                    for key2, value2 in leader_data.commander_skill_list:
+                    for key2, value2 in leader_data.commander_skill_list.items():
                         if key in value2["Replace"]:
                             self.skill[key] = key2
 

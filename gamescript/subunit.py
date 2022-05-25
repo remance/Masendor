@@ -84,6 +84,7 @@ class Subunit(pygame.sprite.Sprite):
     find_nearby_subunit = common_subunit_update.find_nearby_subunit
     apply_map_status = common_subunit_update.apply_map_status
     status_to_friend = common_subunit_update.status_to_friend
+    troop_loss = common_subunit_update.troop_loss
     start_set = common_subunit_setup.start_set
     process_trait_skill = common_subunit_setup.process_trait_skill
     create_inspect_sprite = common_subunit_setup.create_inspect_sprite
@@ -411,7 +412,6 @@ class Subunit(pygame.sprite.Sprite):
         # ^ End weight cal
 
         self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat["Speed Bonus"]  # finalise base speed with weight and grade bonus
-        self.battle.start_troop_number[self.team] += self.troop_number  # add troop number to counter how many troop join battle
         self.description = stat["Description"]  # subunit description for inspect ui
         # if self.hidden
 
@@ -506,26 +506,6 @@ class Subunit(pygame.sprite.Sprite):
             pass
 
     def update(self, weather, dt, zoom, combat_timer, mouse_pos, mouse_left_up):
-        recreate_rect = False
-        if self.last_zoom != zoom:  # camera zoom is changed
-            self.last_zoom = zoom
-            self.zoom = zoom  # save scale
-            self.zoom_scale()  # update unit sprite according to new scale
-            recreate_rect = True
-
-        done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
-        # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
-        if self.state != 100 and ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
-                                  (done and "repeat" not in self.current_action) or
-                                  (self.idle_action and self.idle_action != self.command_action)):
-            self.reset_animation()
-            self.interrupt_animation = False
-            self.current_action = self.command_action  # continue next action when animation finish
-            self.pick_animation()
-            self.command_action = self.idle_action
-        if recreate_rect:
-            self.rect = self.image.get_rect(center=self.pos)
-
         if self.subunit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
@@ -560,11 +540,11 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.health_stamina_logic(dt)
 
-                if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
-                                               self.base_pos[1] <= 1 or self.base_pos[1] >= 999):  # remove when unit move pass map border
+                if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 1000 or
+                                               self.base_pos[1] <= 0 or self.base_pos[1] >= 1000):  # remove when unit move pass map border
                     self.state = 100  # enter dead state
                     self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
-                    self.troop_number = 0
+                    self.troop_loss(self.troop_number)
                     self.battle.battle_camera.remove(self)
 
             self.enemy_front = []  # reset collide
@@ -578,6 +558,30 @@ class Subunit(pygame.sprite.Sprite):
             if self.state != 100:  # enter dead state
                 self.state = 100  # enter dead state
                 self.die()
+
+        recreate_rect = False
+        if self.last_zoom != zoom:  # camera zoom is changed
+            self.last_zoom = zoom
+            self.zoom = zoom  # save scale
+            self.zoom_scale()  # update unit sprite according to new scale
+            recreate_rect = True
+
+        # animation and sprite system
+
+        done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
+        # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
+        if self.state != 100 and \
+                ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
+                 (done and "repeat" not in self.current_action) or
+                 (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
+                 (self.idle_action and self.idle_action != self.command_action)):  # condition to stop animation: get interrupt, finish, involve skill and
+            self.reset_animation()
+            self.interrupt_animation = False
+            self.current_action = self.command_action  # continue next action when animation finish
+            self.pick_animation()
+            self.command_action = self.idle_action
+        if recreate_rect:
+            self.rect = self.image.get_rect(center=self.pos)
 
     def delete(self, local=False):
         """delete all reference when the method is called"""

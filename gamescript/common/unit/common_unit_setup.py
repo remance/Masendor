@@ -114,11 +114,11 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     return subunit_game_id
 
 
-def setup_unit(self, all_team_unit, troop_list, specific_team=None):
+def setup_unit(self, team_unit_list, troop_list, specific_team=None):
     """
     Read unit battle data from unit_pos file
     :param self: Battle or Game object
-    :param all_team_unit: List of team unit group
+    :param team_unit_list: List of team unit group, can be list for preview or dict for battle
     :param troop_list: Troop_list from troop data
     :param specific_team: Assign the unit to which specific team
     """
@@ -153,12 +153,12 @@ def setup_unit(self, all_team_unit, troop_list, specific_team=None):
                     control = True
 
                 colour = team_colour[this_unit["Team"]]
-                if type(all_team_unit) == dict:
-                    if this_unit["Team"] not in all_team_unit:
-                        all_team_unit[this_unit["Team"]] = pygame.sprite.Group()
-                    which_team = all_team_unit[this_unit["Team"]]
+                if type(team_unit_list) == dict:
+                    if this_unit["Team"] not in team_unit_list:
+                        team_unit_list[this_unit["Team"]] = pygame.sprite.Group()
+                    which_team = team_unit_list[this_unit["Team"]]
                 else:  # for character selection
-                    which_team = all_team_unit
+                    which_team = team_unit_list
 
                 command = False  # Not commander unit by default
                 if len(which_team) == 0:  # First unit is commander
