@@ -3,6 +3,7 @@ import pygame.freetype
 
 from gamescript.common import utility
 
+
 class Lorebook(pygame.sprite.Sprite):
     concept_stat = None
     concept_lore = None
@@ -132,7 +133,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.current_subsection_row = 0  # reset subsection scroll to the top one
         this_list = list(self.stat_data.values())  # get list of subsection
         self.subsection_list = [name[0] if
-                                type(name) is list and "Name" != name[0] else name["Name"] for name in this_list]  # remove the header from subsection list
+                                type(name) is list and "Name" != name[0] else name["Name"] for name in
+                                this_list]  # remove the header from subsection list
         if "Name" in self.subsection_list:
             self.subsection_list.remove("Name")
         self.log_size = len(self.subsection_list)  # get size of subsection list
@@ -172,8 +174,8 @@ class Lorebook(pygame.sprite.Sprite):
                     center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
                 self.portrait.blit(text_image, text_rect)
 
-            self.portrait = pygame.transform.scale(self.portrait,
-                                                   (int(150 * self.screen_scale[0]), int(150 * self.screen_scale[1])))  # scale leader image to 150x150
+            self.portrait = pygame.transform.scale(self.portrait, (int(150 * self.screen_scale[0]),
+                                                                   int(150 * self.screen_scale[1])))  # scale leader image to 150x150
         elif self.section == self.troop_section:
             try:
                 self.portrait = self.preview_sprite_pool[self.subsection]["sprite"]
@@ -216,7 +218,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         if self.portrait is not None:
             portrait_rect = self.portrait.get_rect(
-                topleft=(int(30 * self.screen_scale[0]), int(90 * self.screen_scale[1])))
+                topleft=(int(25 * self.screen_scale[0]), int(90 * self.screen_scale[1])))
             self.image.blit(self.portrait, portrait_rect)
 
         description_surface = pygame.Surface((int(410 * self.screen_scale[0]), int(370 * self.screen_scale[1])), pygame.SRCALPHA)
@@ -317,19 +319,17 @@ class Lorebook(pygame.sprite.Sprite):
 
                                 elif "Weapon" in key:  # weapon text with quality
                                     quality_text = (
-                                    "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = key + ": " + quality_text[value[1]] + " " + \
-                                                  self.weapon_list[value[0]]["Name"]
+                                        "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+                                    create_text = key + ": " + quality_text[value[1]] + " " +  self.weapon_list[value[0]]["Name"]
 
                                 elif key == "Armour":  # armour text with quality
                                     quality_text = (
-                                    "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = key + ": " + quality_text[value[1]] + " " + \
-                                                  self.armour_list[value[0]]["Name"] \
+                                        "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
+                                    create_text = key + ": " + quality_text[value[1]] + " " + self.armour_list[value[0]]["Name"] \
                                         # + ", Base Armour: " + str( self.armour_list[text[0]][1])
 
                                 elif key == "Unit Type":
-                                    create_text = key + ": " + self.troop_class_list[text]["Name"]
+                                    create_text = key + ": " + self.troop_class_list[value]["Name"]
 
                                 elif key == "Race":
                                     create_text = key + ": " + self.race_list[value]["Name"]
@@ -372,7 +372,7 @@ class Lorebook(pygame.sprite.Sprite):
 
                             elif self.section == self.leader_section:  # leader section
                                 if key in (
-                                "Melee Command", "Range Command", "Cavalry Command", "Combat"):
+                                        "Melee Command", "Range Command", "Cavalry Command", "Combat"):
                                     create_text = key + ": " + self.leader_text[value]
 
                                 elif key == "Social Class":
@@ -477,6 +477,7 @@ class SubsectionName(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
+
 # class Selectionbox(pygame.sprite.Sprite):
 #     def __init__(self, pos, lorebook):
 #         self._layer = 13
@@ -508,8 +509,8 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                 if button in ui and button.rect.collidepoint(self.mouse_pos):  # click button
                     if button.event in range(0, 11):  # section button
                         self.encyclopedia.change_section(button.event, self.lore_name_list, self.subsection_name,
-                                                     self.lore_scroll,
-                                                     self.page_button, ui)  # change to section of that button
+                                                         self.lore_scroll,
+                                                         self.page_button, ui)  # change to section of that button
 
                     elif button.event == "close" or esc_press:  # Close button
                         close = True
@@ -531,7 +532,7 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
             self.encyclopedia.current_subsection_row = self.lore_scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
             self.encyclopedia.setup_subsection_list(self.lore_name_list,
-                                                self.subsection_name)  # update subsection name list
+                                                    self.subsection_name)  # update subsection name list
 
     elif mouse_scroll_up:
         if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list

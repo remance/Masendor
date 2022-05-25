@@ -3,8 +3,8 @@ import math
 import os
 import random
 import re
-import time
 import sys
+import time
 from pathlib import Path
 
 import pygame
@@ -13,10 +13,10 @@ from PIL import Image, ImageFilter, ImageEnhance
 from script import colour, listpopup, pool
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
-main_dir = current_dir[:current_dir.rfind("\\")+1]
+main_dir = current_dir[:current_dir.rfind("\\") + 1]
 sys.path.insert(1, main_dir)
 
-from gamescript import datastat, menu, battleui
+from gamescript import datastat, menu, battleui  # keep here as it need to get sys path insert
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -65,6 +65,7 @@ frame_property_list = ["hold", "p1_turret", "p2_turret", "p3_turret", "p4_turret
 
 anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
 
+
 # TODO: unique, lock?
 
 
@@ -105,7 +106,7 @@ def reload_animation(animation, char):
                     surface = surface.tobytes()
                     surface = pygame.image.fromstring(surface, frames[frame_index].get_size(), "RGBA")  # convert image back to a pygame surface
                     if "colour" in prop:
-                        colour = prop[prop.rfind("_")+1:]
+                        colour = prop[prop.rfind("_") + 1:]
                         colour = [int(this_colour) for this_colour in colour.split(".")]
                         surface = apply_colour(surface, colour)
                     frames[frame_index] = surface
@@ -186,7 +187,6 @@ race_accept = ["Human", "Horse"]  # for now accept only Human race
 generic_animation_pool, part_name_header = read_anim_data(direction_list, "generic", anim_column_header)
 skel_joint_list, weapon_joint_list = read_joint_data(direction_list, race_list, race_accept)
 
-
 with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
           mode="r") as edit_file:
     rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -230,10 +230,13 @@ for race in race_list:
                     if subsubfolder[-1] not in gen_armour_sprite_pool[race][subfolder[-1]]:
                         gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]] = {}
                     gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction] = {}
-                    body_subsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
+                    body_subsubfolder = Path(
+                        os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
                     body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
                     for body_folder in body_directories:
-                        imgs = load_textures(main_dir, ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]], scale=screen_scale)
+                        imgs = load_textures(main_dir,
+                                             ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]],
+                                             scale=screen_scale)
                         gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
         except FileNotFoundError:
             pass
@@ -429,7 +432,8 @@ class BodyHelper(pygame.sprite.Sprite):
                                    "effect_3": None, "effect_4": None, "dmg_effect_3": None, "dmg_effect_4": None}
             self.part_pos = {"special_1": (20, 15), "special_2": (20, 45), "special_3": (20, 75), "special_4": (20, 105), "special_5": (20, 135),
                              "effect_1": (20, 165), "effect_2": (20, 195), "dmg_effect_1": (20, 225), "dmg_effect_2": (20, 255),
-                             "special_6": (225, 15), "special_7": (225, 45), "special_8": (225, 75), "special_9": (225, 105), "special_10": (225, 135),
+                             "special_6": (225, 15), "special_7": (225, 45), "special_8": (225, 75), "special_9": (225, 105),
+                             "special_10": (225, 135),
                              "effect_3": (225, 165), "effect_4": (225, 195), "dmg_effect_3": (225, 225), "dmg_effect_4": (225, 255)}
 
         for key, item in self.part_pos.items():
@@ -512,17 +516,17 @@ class BodyHelper(pygame.sprite.Sprite):
                 if stat[0] in race_acro:
                     stat[0] = race_acro[race_list.index(stat[0])]
                 new_change = ["S", "F", "B", "CU", "CD"]
-                for index, change in enumerate(["side", "front", "back", "sideup", "sidedown"]):
-                    if stat[1] == index:
-                        stat[1] = new_change[index]
+                for index2, change in enumerate(["side", "front", "back", "sideup", "sidedown"]):
+                    if stat[1] == index2:
+                        stat[1] = new_change[index2]
                 stat[2] = str(stat[2])
                 if len(stat) > 3:
                     try:
                         stat[3] = str([[stat[3][0], stat[3][1]]])
                     except TypeError:
                         stat[3] = str([0, 0])
-                    for index, change in enumerate(["F", "FH", "FV", "FHV"]):
-                        if stat[5] == index:
+                    for index2, change in enumerate(["F", "FH", "FV", "FHV"]):
+                        if stat[5] == index2:
                             stat[5] = change
                     stat[4] = str(round(stat[4], 1))
                     stat[6] = "L" + str(int(stat[6]))
@@ -559,10 +563,12 @@ class BodyHelper(pygame.sprite.Sprite):
                         shift_x = 26 * screen_scale[0]
                     if self.part_pos[part][0] > self.image.get_width() / 2:
                         text_rect1 = text_surface1.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 15))
-                        text_rect2 = text_surface2.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 15 + self.font_size + 2))
+                        text_rect2 = text_surface2.get_rect(
+                            midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 15 + self.font_size + 2))
                     else:
                         text_rect1 = text_surface1.get_rect(midright=(self.part_pos[part][0] - shift_x, self.part_pos[part][1] - 15))
-                        text_rect2 = text_surface2.get_rect(midright=(self.part_pos[part][0] - shift_x, self.part_pos[part][1] - 15 + self.font_size + 2))
+                        text_rect2 = text_surface2.get_rect(
+                            midright=(self.part_pos[part][0] - shift_x, self.part_pos[part][1] - 15 + self.font_size + 2))
                 self.image.blit(text_surface1, text_rect1)
                 self.image.blit(text_surface2, text_rect2)
             # else:
@@ -648,8 +654,9 @@ class Model:
         self.part_selected = []
         self.p_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
-        skin_colour = skin_colour_list[skin]
-        self.p_hair_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in range(1, max_person + 1)}
+        # skin_colour = skin_colour_list[skin]
+        self.p_hair_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in
+                              range(1, max_person + 1)}
         self.p_eye_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in range(1, max_person + 1)}
         self.weapon = {}
         self.armour = {}
@@ -826,10 +833,10 @@ class Model:
                 name_check = name_check[3:]  # remove p*number*_
             if self.part_name_list[current_frame][layer] is not None and \
                     name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
-                for index, item in enumerate(
+                for index2, item in enumerate(
                         skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][name_check]):
                     joint_type = 0  # main
-                    if index > 0:
+                    if index2 > 0:
                         joint_type = 1
                     joint_pos = list(item.values())[0]
                     pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
@@ -856,9 +863,9 @@ class Model:
                 head_rect = head_sprite.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
                 head_sprite_surface.blit(head_sprite, head_rect)
                 face = [gen_body_sprite_pool[head_race][head_side]["eyebrow"][self.p_eyebrow[key]].copy(),
-                           self.grab_face_part(head_race, head_side, "eye", bodypart_list[key + "_eye"], self.p_any_eye[key]),
-                           gen_body_sprite_pool[head_race][head_side]["beard"][self.p_beard[key]].copy(),
-                           self.grab_face_part(head_race, head_side, "mouth", bodypart_list[key + "_mouth"], self.p_any_mouth[key])]
+                        self.grab_face_part(head_race, head_side, "eye", bodypart_list[key + "_eye"], self.p_any_eye[key]),
+                        gen_body_sprite_pool[head_race][head_side]["beard"][self.p_beard[key]].copy(),
+                        self.grab_face_part(head_race, head_side, "mouth", bodypart_list[key + "_mouth"], self.p_any_mouth[key])]
                 # if skin != "white":
                 #     face[0] = self.apply_colour(face[0], skin_colour)
                 face[0] = apply_colour(face[0], self.p_hair_colour[key])
@@ -893,7 +900,6 @@ class Model:
                 except UnboundLocalError:  # for when change animation
                     pass
 
-
         self.sprite_image = {key: None for key in self.rect_part_list.keys()}
         except_list = ["eye", "mouth", "head"]  # skip doing these
         for stuff in bodypart_list:  # create stat and image
@@ -921,9 +927,11 @@ class Model:
                         if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
                             try:
                                 armour = self.armour[stuff[0:2] + "_armour"].split("/")
-                                gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][bodypart_list[stuff][1]][part_name][
+                                gear_image = \
+                                gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][bodypart_list[stuff][1]][part_name][
                                     bodypart_list[stuff][2]].copy()
-                                rect = gear_image.get_rect(center=(self.sprite_image[stuff].get_width() / 2, self.sprite_image[stuff].get_height() / 2))
+                                rect = gear_image.get_rect(
+                                    center=(self.sprite_image[stuff].get_width() / 2, self.sprite_image[stuff].get_height() / 2))
                                 self.sprite_image[stuff].blit(gear_image, rect)
                             except KeyError:  # skip part that not exist
                                 pass
@@ -943,7 +951,7 @@ class Model:
                     main_joint_pos_list[part] = list(skel_joint_list[self.side][part_link][0].values())[0]
                     break
             if part in self.weapon and self.weapon[part] in weapon_joint_list[self.side]:  # weapon joint
-                    main_joint_pos_list[part] = list(weapon_joint_list[self.side][self.weapon[part]][0].values())[0]
+                main_joint_pos_list[part] = list(weapon_joint_list[self.side][self.weapon[part]][0].values())[0]
 
         return main_joint_pos_list
 
@@ -1010,14 +1018,14 @@ class Model:
                     self.part_name_list[current_frame][part] = copy_name[part].copy()
 
         elif "direction" in edit_type:
-            if self.part_selected != []:
+            if self.part_selected:
                 for part in self.part_selected:
                     try:
                         part_index = key_list[part]
                         sidechange = edit_type.split("_")[1]
                         self.bodypart_list[current_frame][part_index][1] = sidechange
                         self.part_name_list[current_frame][part_index][1] = sidechange
-                        main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                        self.generate_body(self.bodypart_list[current_frame])
                         self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
                     except IndexError:
                         pass
@@ -1044,7 +1052,7 @@ class Model:
                 self.bodypart_list[current_frame][edit_type[0:2] + "_eye"] = 1
             else:
                 self.bodypart_list[current_frame][edit_type[0:2] + "_eye"] = edit_type.split(edit_type[0:2] + "_eye_")[1]
-            main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+            self.generate_body(self.bodypart_list[current_frame])
             part = edit_type[0:2] + "_head"
             self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
@@ -1053,19 +1061,19 @@ class Model:
                 self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = 1
             else:
                 self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = edit_type.split(edit_type[0:2] + "_mouth_")[1]
-            main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+            self.generate_body(self.bodypart_list[current_frame])
             part = edit_type[0:2] + "_head"
             self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
 
         elif "part" in edit_type:
-            if self.part_selected != []:
+            if self.part_selected:
                 part = self.part_selected[-1]
                 part_index = key_list[part]
                 part_change = edit_type[5:]
                 self.bodypart_list[current_frame][part_index][2] = part_change
                 self.part_name_list[current_frame][part_index][2] = part_change
                 main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
-                if self.animation_part_list[current_frame][part_index] == []:
+                if not self.animation_part_list[current_frame][part_index]:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
                     if any(ext in part_index for ext in ("effect", "special")):
                         self.animation_part_list[current_frame][part_index][1] = "center"
@@ -1075,8 +1083,8 @@ class Model:
                         self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
                 self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
 
-        elif "race" in edit_type:
-            if self.part_selected != []:
+        elif "race" in edit_type:  # change race/base part type
+            if self.part_selected:
                 part = self.part_selected[-1]
                 part_index = key_list[part]
                 part_change = edit_type[5:]
@@ -1088,13 +1096,15 @@ class Model:
                     self.animation_part_list[current_frame][part_index] = []
                 self.bodypart_list[current_frame][part_index][0] = part_change
                 self.part_name_list[current_frame][part_index][0] = part_change
+                self.bodypart_list[current_frame][part_index][2] = self.part_name_list[current_frame][part_index][
+                    2]  # attempt to get part again in case the initial reading not found
                 try:
-                    main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                    self.generate_body(self.bodypart_list[current_frame])
                     self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
                 except IndexError:
                     pass
                 except KeyError:  # change side and not found part with same name
-                    self.part_name_list[current_frame][part_index][2] = ""
+                    pass
 
         elif "new" in edit_type:  # new animation
             self.animation_part_list = [{key: None for key in self.rect_part_list.keys()}] * 10
@@ -1107,7 +1117,7 @@ class Model:
             self.part_name_list = [{key: None for key in self.rect_part_list.keys()}] * 10
             self.part_selected = []
 
-        elif self.part_selected != []:
+        elif self.part_selected:
             for part in self.part_selected:
                 if part < len(key_list):  # can't edit part that not exist
                     part_index = key_list[part]
@@ -1301,7 +1311,6 @@ class Model:
         center = pygame.Vector2(part.get_width() / 2, part.get_height() / 2)
         new_target = target  # - pos_different  # find new center point
         # if "weapon" in list(self.rect_part_list.keys())[part_index] and main_joint_pos != "center":  # only weapon use joint to calculate position
-        #     print(main_joint_pos)
         #     pos_different = main_joint_pos - center  # find distance between image center and connect point main_joint_pos
         #     new_target = main_joint_pos + pos_different
         # if angle != 0:
@@ -1472,15 +1481,15 @@ joint_button = SwitchButton(["Joint:OFF", "Joint:ON"], image, (play_animation_bu
 grid_button = SwitchButton(["Grid:ON", "Grid:OFF"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 6,
                                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 all_copy_button = Button("Copy A", image, (play_animation_button.pos[0] - (play_animation_button.image.get_width() * 2),
-                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 all_paste_button = Button("Paste A", image, (play_animation_button.pos[0] - play_animation_button.image.get_width(),
-                                               filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+                                             filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 frame_copy_button = Button("Copy F", image, (play_animation_button.pos[0] + play_animation_button.image.get_width(),
                                              filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 frame_paste_button = Button("Paste F", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 2,
                                                filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 speed_button = Button("Speed: 1", image, (screen_size[1] / 2,
-                                           filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
+                                          filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 default_button = Button("Default", image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 3,
                                            filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)))
 point_edit_button = SwitchButton(["Center", "Joint"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 4,
@@ -1547,15 +1556,16 @@ confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
 colour_ui = menu.InputUI(screen_scale, load_image(current_dir, screen_scale, "colour.png", "animation_maker_ui"),
                          (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 colour_wheel = ColourWheel(load_image(main_dir, screen_scale, "rgb.png", ["sprite"]), (colour_ui.pos[0], colour_ui.pos[1] / 1.5))
-colour_input_box = menu.InputBox(screen_scale, (colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2), input_ui.image.get_width())  # user text input box
+colour_input_box = menu.InputBox(screen_scale, (colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2),
+                                 input_ui.image.get_width())  # user text input box
 
 colour_ok_button = menu.MenuButton(screen_scale, image_list, pos=(colour_ui.rect.midleft[0] + image_list[0].get_width(),
-                                                                 colour_ui.rect.midleft[1] + (image_list[0].get_height() * 2)),
-                                  text="Confirm", layer=31)
+                                                                  colour_ui.rect.midleft[1] + (image_list[0].get_height() * 2)),
+                                   text="Confirm", layer=31)
 colour_cancel_button = menu.MenuButton(screen_scale, image_list,
-                                      pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
-                                           colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
-                                      text="Cancel", layer=31)
+                                       pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
+                                            colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
+                                       text="Cancel", layer=31)
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(current_dir, screen_scale, "property_box.png", "animation_maker_ui")
@@ -1743,15 +1753,15 @@ while True:
                 model.edit_part(mouse_pos, "tilt_e")
             elif key_press[pygame.K_DELETE]:
                 keypress_delay = 0.1
-                if model.part_selected != []:
+                if model.part_selected:
                     model.edit_part(mouse_pos, "delete")
             elif key_press[pygame.K_PAGEUP]:
                 keypress_delay = 0.1
-                if model.part_selected != []:
+                if model.part_selected:
                     model.edit_part(mouse_pos, "layer_up")
             elif key_press[pygame.K_PAGEDOWN]:
                 keypress_delay = 0.1
-                if model.part_selected != []:
+                if model.part_selected:
                     model.edit_part(mouse_pos, "layer_down")
 
         if mouse_timer != 0:  # player click mouse once before
@@ -1772,7 +1782,7 @@ while True:
                         if name.rect.collidepoint(mouse_pos):
                             if popup_listbox.action == "part_side":
                                 direction_part_button.change_text(name.name)
-                                if model.part_selected != []:
+                                if model.part_selected:
                                     model.edit_part(mouse_pos, "direction_" + name.name)
                             elif popup_listbox.action == "part_select":
                                 model.edit_part(mouse_pos, "part_" + name.name)
@@ -1868,7 +1878,7 @@ while True:
                                    frame_prop_listbox, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
 
                 elif anim_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_listbox.rect.collidepoint(mouse_pos):
-                    namegroup = anim_prop_namegroup   # click on animation property list
+                    namegroup = anim_prop_namegroup  # click on animation property list
                     listbox = anim_prop_listbox
                     select_list = anim_property_select
                     namelist = listbox.namelist
@@ -1946,7 +1956,7 @@ while True:
                             copy_list.append(frame_item)
 
                     elif all_paste_button.rect.collidepoint(mouse_pos):
-                        if copy_list != []:
+                        if copy_list:
                             for frame_index, frame in enumerate(copy_list):
                                 model.frame_list[frame_index] = {key: value.copy() if type(value) == list else value for key, value in frame.items()}
                             model.read_animation(animation_name, old=True)
@@ -2080,17 +2090,19 @@ while True:
                                         armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif eye_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                                                       model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
                         popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif mouth_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                                                       model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
                         popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif race_part_button.rect.collidepoint(mouse_pos):
-                        if model.part_selected != []:
+                        if model.part_selected:
                             current_part = list(model.rect_part_list.keys())[model.part_selected[-1]]
                             if "weapon" in current_part:
                                 part_list = list(gen_weapon_sprite_pool)
@@ -2136,7 +2148,8 @@ while True:
                                 model.edit_part(mouse_pos, "change")
                                 current_frame_row = 0
                                 setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                           frame_prop_listbox, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])  # change frame property list
+                                           frame_prop_listbox, ui, screen_scale, layer=9,
+                                           old_list=frame_property_select[current_frame])  # change frame property list
                                 for index, helper in enumerate(helper_list):
                                     helper.select_part(None, False, False)
                                 if strip.activate:
@@ -2159,7 +2172,7 @@ while True:
                                 for index, helper in enumerate(helper_list):
                                     if helper != helper_click:
                                         helper.select_part(None, False, True)
-                            if helper_click.part_selected != []:
+                            if helper_click.part_selected:
                                 for part in helper_click.part_selected:
                                     model.click_part(mouse_pos, True, False, part)
 
@@ -2182,7 +2195,7 @@ while True:
                         model.edit_part(mouse_pos, "change")
 
                 elif part_copy_press:
-                    if model.part_selected != []:
+                    if model.part_selected:
                         copy_part = {key: (value[:].copy() if type(value) == list else value) for key, value in
                                      model.bodypart_list[current_frame].items()}
                         copy_animation = {key: (value[:].copy() if value is not None else value) for key, value in
@@ -2191,7 +2204,8 @@ while True:
                                      model.part_name_list[current_frame].items()}
 
                         # keep only selected one
-                        copy_part = {item: copy_part[item] for item in copy_part.keys() if item in model.rect_part_list and list(model.rect_part_list.keys()).index(item) in model.part_selected}
+                        copy_part = {item: copy_part[item] for item in copy_part.keys() if
+                                     item in model.rect_part_list and list(model.rect_part_list.keys()).index(item) in model.part_selected}
                         copy_animation = {item: copy_animation[item] for index, item in enumerate(copy_animation.keys()) if
                                           index in model.part_selected}
                         copy_name = {item: copy_name[item] for index, item in enumerate(copy_name.keys()) if index in model.part_selected}
@@ -2210,14 +2224,14 @@ while True:
                         current_history += 1
                         model.edit_part(None, "redo")
 
-                if showroom.rect.collidepoint(mouse_pos):  # mouse at show room
+                if showroom.rect.collidepoint(mouse_pos):  # mouse at showroom
                     new_mouse_pos = pygame.Vector2((mouse_pos[0] - showroom.rect.topleft[0]) / screen_size[0] * 500 * model.size,
                                                    (mouse_pos[1] - showroom.rect.topleft[1]) / screen_size[1] * 500 * model.size)
                     if mouse_left_up:  # left click on showroom
                         model.click_part(new_mouse_pos, shift_press, ctrl_press)
                         for index, helper in enumerate(helper_list):
                             helper.select_part(None, shift_press, ctrl_press)
-                            if model.part_selected != []:
+                            if model.part_selected:
                                 for part in model.part_selected:
                                     if list(model.rect_part_list.keys())[part] in helper.rect_part_list:
                                         helper.select_part(mouse_pos, shift_press, ctrl_press, list(model.rect_part_list.keys())[part])
@@ -2228,7 +2242,7 @@ while True:
                             model.edit_part(new_mouse_pos, "place")
                             keypress_delay = 0.1
 
-            if model.part_selected != []:
+            if model.part_selected:
                 part = model.part_selected[-1]
                 if model.animation_part_list[current_frame] is not None and \
                         list(model.rect_part_list.keys())[part] in list(model.animation_part_list[current_frame].keys()):
@@ -2324,7 +2338,8 @@ while True:
                 select_list = frame_property_select[current_frame]
                 property_to_pool_data("frame")
 
-            elif "_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]", input_box.text) is None):  # add property that need value
+            elif "_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]",
+                                                                                                                         input_box.text) is None):  # add property that need value
                 namegroup = anim_prop_namegroup  # click on animation property list
                 listbox = anim_prop_listbox
                 namelist = listbox.namelist
@@ -2348,7 +2363,7 @@ while True:
                         break
 
             elif "_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
-                colour_input_box.text.count(",") >= 2:  # add colour related property
+                    colour_input_box.text.count(",") >= 2:  # add colour related property
                 naming = "anim"
                 if "frame" in text_input_popup[1]:  # click on frame property list
                     naming = "frame"
