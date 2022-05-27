@@ -889,7 +889,7 @@ class WheelUI(pygame.sprite.Sprite):
 
             self.wheel_inactive_image_list = [image.copy() for image in self.wheel_image_list]  # wheel choice that not active
             for image in self.wheel_inactive_image_list:
-                image.fill(50, 50, 50, 150)
+                image.fill((50, 50, 50, 150))
             self.wheel_rect = (images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
                                images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
                                images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
