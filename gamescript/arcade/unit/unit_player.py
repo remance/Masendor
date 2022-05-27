@@ -11,7 +11,8 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
         self.range_combat_check = False
 
         new_pos = pygame.Vector2(self.leader_subunit.base_pos)
-        self.leader_subunit.new_angle = self.leader_subunit.set_rotate(cursor_pos)
+        if not self.leader_subunit.current_action:
+            self.leader_subunit.new_angle = self.leader_subunit.set_rotate(cursor_pos)
 
         if key_state is not None:
             if self.input_delay == 0:  # for input that need to have time delay to work properly

@@ -76,6 +76,7 @@ class Leader(pygame.sprite.Sprite):
         self.commander = False  # army commander
         self.original_commander = False  # the first army commander at the start of battle
 
+        self.leader_skill = self.skill.copy()
         self.skill = {value: leader_data.skill_list[value] for value in self.skill if value in leader_data.skill_list}
         if self.army_position == 0:
             self.bad_morale = (30, 50)  # general morale lost when destroyed

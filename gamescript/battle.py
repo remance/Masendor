@@ -212,7 +212,7 @@ class Battle:
         self.time_ui = main.time_ui
         self.time_number = main.time_number
 
-        self.scale_ui = main.scale_ui
+        self.battle_scale_ui = main.battle_scale_ui
 
         self.speed_number = main.speed_number
 
@@ -265,6 +265,8 @@ class Battle:
         self.col_split_button = main.col_split_button
         self.row_split_button = main.row_split_button
         self.unitstat_ui = main.unitstat_ui
+        self.eight_wheel_ui = main.eight_wheel_ui
+        self.four_wheel_ui = main.four_wheel_ui
 
         self.leader_level = main.leader_level
 
@@ -906,7 +908,7 @@ class Battle:
                     self.remove_unit_ui_check(mouse_left_up)
 
                     if self.ui_timer > 1:
-                        self.scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar
+                        self.battle_scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar
 
                     if self.combat_timer >= 0.5:  # reset combat timer every 0.5 seconds
                         self.combat_timer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing

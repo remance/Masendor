@@ -412,8 +412,8 @@ def skill_check_logic(self):
                         if "Action" in action[0]:
                             action[0] += " " + str(0)  # use main hand by default for Action type animation skill
                     elif ("Leader" in command_action and self.unit_leader) and len(self.leader.skill) > skill:
-                        skill = self.leader_skill[skill]
-                        action = self.skill[skill]["Action"].copy() + [skill]
+                        skill = self.leader.leader_skill[skill]
+                        action = self.leader.skill[skill]["Action"].copy() + [skill]
                         if "Action" in action[0]:
                             action[0] += " " + str(0)  # use main hand by default for Action type animation skill
 

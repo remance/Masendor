@@ -31,14 +31,14 @@
 30,"Keen Strike",0,0,1,3,55,10,10,0,75,90,250,,,,,,,,0,0,0,0,0,,,,0,0,0,0,0,0,"Action",2,
 31,"Graceful Evasion",1,0,1,30,300,10,10,0,80,10,,150,150,170,,,,,20,0,0,0,0,,,,0,0,0,0,0,0,"BuffSelf",2,"There is nothing more elegant than gracefully evading a blow from a brute."
 32,"Spear Schiltron",1,0,,,,,,,,,,,,,,,,,100,0,,,,,,,,,0,0,,0,"Action,hold,repeat,outward",0,
-33,"Spearwall",1,0,1,120,0,"0,1,3,10","0,1,3,10",0,35,0,120,110,90,50,,,,,100,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you are rushing at full speed, after all."
-34,"Spearguard",1,0,1,90,0,"0,1,3,10","0,1,3,10",0,50,0,110,115,,60,,,,,40,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
+33,"Spearwall",1,0,1,300,0,"0,10","0,1,3",0,35,0,120,110,90,50,,,,,100,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you are rushing at full speed, after all."
+34,"Spearguard",1,0,1,90,0,"0,10","0,1,3",0,50,0,110,115,,60,,,,,40,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
 35,"Angel Guardian",0,0,3,20,200,,,0,80,25,,,,,,,,,20,0,-1,0,0,,,,0,88,0,0,0,0,,2,
-36,"Shieldwall",1,0,1,120,0,"0,1,3,10","0,1,3,10",0,40,0,,130,120,50,,,,,50,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"What is the most common tactic used in the most disciplined troops by every world-conquering empire? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And a more experienced soldier make a more effective army."
-37,"Shield Turtle",1,0,1,120,0,"0,1,3,10","0,1,3,10",0,50,0,,130,160,20,,,,,30,0,-1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat,outward",0,"Defensive yet still mobile. This tactic is superb against approaching enemy armies that excel in range attacks."
-38,"Shield Dome",1,0,1,180,60,"0,10","0,10",,60,20,80,150,200,0,,,,,70,0,-1,15,0,,,,0,0,0,0,0,0,"Action,hold,repeat,outward",0,"The ultimate defence tactic. This shield dome leaves no vulnerable spot for an enemy to attack."
-39,"Shield Barrier",1,0,1,180,60,"0,10","0,10",,64,30,75,165,160,0,,,,,60,0,-1,25,0,,,,0,0,0,0,0,0,"Action,hold",0,
-40,"Shield Fortress",1,0,1,180,90,"0,10","0,10",,72,40,,175,200,0,,,,,100,0,-1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat,outward",0,
+36,"Shieldwall",1,0,1,300,0,"0,10","0,1,3",0,40,0,,130,120,50,,,,,50,0,-0.1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"What is the most common tactic used in the most disciplined troops by every world-conquering empire? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And a more experienced soldier make a more effective army."
+37,"Shield Turtle",1,0,1,300,0,"0,10","0,1,3",0,50,0,,130,160,20,,,,,30,0,-1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat,outward",0,"Defensive yet still mobile. This tactic is superb against approaching enemy armies that excel in range attacks."
+38,"Shield Dome",1,0,1,300,60,"0,10",0,,60,20,80,150,200,0,,,,,70,0,-1,15,0,,,,0,0,0,0,0,0,"Action,hold,repeat,outward",0,"The ultimate defence tactic. This shield dome leaves no vulnerable spot for an enemy to attack."
+39,"Shield Barrier",1,0,1,300,60,"0,10",0,,64,30,75,165,160,0,,,,,60,0,-1,25,0,,,,0,0,0,0,0,0,"Action,hold",0,
+40,"Shield Fortress",1,0,1,300,90,"0,10",0,,72,40,,175,200,0,,,,,100,0,-1,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat,outward",0,
 41,"Rapid Shots",0,0,1,120,300,11,11,,35,10,,,,,,,120,,0,0,-2,0,0,,,,0,0,0,0,0,0,"BuffSelf",0,"Opportunity to attack is of the essence, especially for archers on a battlefield. The more arrows remain in the quiver equate to the less enemy killed."
 42,"Rapid Defense",0,0,1,120,300,"1,2,3,4,10",10,,45,10,,110,,110,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,"BuffSelf",0,
 43,"Rapid Attack",0,0,1,120,300,"1,2,3,4,10","2,4,10",,50,10,110,,,110,,,,,0,0,-1.5,0,0,,,,0,0,0,0,0,0,"BuffSelf",0,"Strike fast enough, and the enemy will never know what hit them."
@@ -52,8 +52,8 @@
 51,"Ruthless Pursuit",0,0,1,120,60,"2,4","2,4",,30,15,,,,150,,,,130,,,,,,,,,,,,,,,,,
 52,"Cantabrian Circle",3,0,1,60,0,11,11,,50,25,,,135,,,,,,0,0,-1,0,0,,,,0,0,0,0,0,0,,0,"A manoeuvre that is only possible with the mastery of both equitation and archery. To attack even when moving is the pinnacle of warfare."
 53,"Hold Ground",0,0,1,30,300,1,10,,58,10,,125,125,,,,,,40,0,0,0,0,,,,0,0,0,0,0,0,,0,"""Hold your ground men! No enemy will pass through this place as long as we are here.""  "
-54,"Pikewall",1,0,1,30,0,"0,1,3","0,1,3",,45,20,,,,,,,,,200,0,-0.5,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"The deadly charge of cavalry was the domination tactic on the battlefield until the invention of the pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
-55,"Hidden Pike",1,0,1,30,5,2,0,,60,10,,,,,,,,,150,0,-0.7,0,0,,,,40,0,0,0,0,0,"Sneak,hold,repeat",0,"A nasty surprise. Who can expect a complete death trap in their charge to glory? Only fool fight a fair fight."
+54,"Pikewall",1,0,1,30,0,"0,10","0,1,3",,45,20,,,,,,,,,200,0,-0.5,0,0,,,,0,0,0,0,0,0,"Action,hold,repeat",0,"The deadly charge of cavalry was the domination tactic on the battlefield until the invention of the pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
+55,"Hidden Pike",1,0,1,30,5,"0,10",0,,60,10,,,,,,,,,150,0,-0.7,0,0,,,,40,0,0,0,0,0,"Sneak,hold,repeat",0,"A nasty surprise. Who can expect a complete death trap in their charge to glory? Only fool fight a fair fight."
 56,"Overdrive",0,0,1,60,900,10,10,,40,0,120,120,120,120,120,,120,120,20,0,0.5,0,20,,,,0,0,0,0,0,0,"BuffSelf",2,"The limit can be surpassed. But careful your life will not be extinguished by your own limitation."
 57,"Death Volunteer",0,0,1,300,600,10,10,,70,0,150,150,,,,,,150,0,-100,2,0,0,,150,,0,0,0,0,0,0,,2,"Volunteering to die is an act that surpasses natural instinct. To excess oneself to death for victory is either madness or complete devotion."
 58,"Warcry",0,0,3,1,60,10,10,,38,30,,,,,,,,,0,0,0,0,0,,,,0,0,0,6,0,0,"Shout",2,

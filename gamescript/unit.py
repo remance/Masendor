@@ -11,7 +11,7 @@ from gamescript.common.unit import common_unit_setup, common_unit_update
 
 rotation_xy = utility.rotation_xy
 
-team_colour = {0: (255, 255, 255), 1: (144, 167, 255), 2: (255, 114, 114)}  # team colour, Neutral, 1, 2
+team_colour = {0: (200, 200, 200), 1: (144, 167, 255), 2: (255, 114, 114)}  # team colour, Neutral, 1, 2
 
 
 def change_unit_genre(self):

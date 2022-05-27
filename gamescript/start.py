@@ -308,7 +308,7 @@ class Game:
         self.direction_arrows = pygame.sprite.Group()
         self.troop_number_sprite = pygame.sprite.Group()  # troop text number that appear next to unit sprite
 
-        self.button_ui = pygame.sprite.Group()  # buttons in battle group
+        self.button_ui = pygame.sprite.Group()  # ui button group in battle
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
 
         self.buttonname_popup = pygame.sprite.Group()  # button name pop up ui when mouse over button
@@ -557,22 +557,24 @@ class Game:
         # Battle ui
         battle_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"],
                                         load_order=False)
-        ui_dict = make_battle_ui(battle_ui_image, battle_icon_image)
-        self.time_ui = ui_dict["time_ui"]
-        self.time_number = ui_dict["time_number"]
-        self.speed_number = ui_dict["speed_number"]
-        self.scale_ui = ui_dict["scale_ui"]
-        self.time_button = ui_dict["time_button"]
+        battle_ui_dict = make_battle_ui(battle_ui_image, battle_icon_image, team_colour, self.screen_rect.size)
+        self.time_ui = battle_ui_dict["time_ui"]
+        self.time_number = battle_ui_dict["time_number"]
+        self.speed_number = battle_ui_dict["speed_number"]
+        self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
+        self.time_button = battle_ui_dict["time_button"]
         self.battle_ui_updater.add(self.time_ui, self.time_number, self.speed_number)
-        self.unit_selector = ui_dict["unit_selector"]
-        self.unit_selector_scroll = ui_dict["unit_selector_scroll"]
-        self.unitstat_ui = ui_dict["unitstat_ui"]
+        self.unit_selector = battle_ui_dict["unit_selector"]
+        self.unit_selector_scroll = battle_ui_dict["unit_selector_scroll"]
+        self.unitstat_ui = battle_ui_dict["unitstat_ui"]
         self.unitstat_ui.unit_state_text = unit_state_text
+        self.eight_wheel_ui = battle_ui_dict["eight_wheel_ui"]
+        self.four_wheel_ui = battle_ui_dict["four_wheel_ui"]
 
         # Unit editor
         editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
                                      load_image(self.main_dir, self.screen_scale, "name_list.png", "ui\\mapselect_ui"),
-                                     load_base_button(self.main_dir, self.screen_scale), self.scale_ui, team_colour,
+                                     load_base_button(self.main_dir, self.screen_scale), self.battle_scale_ui, team_colour,
                                      self.main_ui_updater)
         self.unit_listbox = editor_dict["unit_listbox"]
         self.unit_preset_name_scroll = editor_dict["unit_preset_name_scroll"]

@@ -819,11 +819,11 @@ class TimeUI(pygame.sprite.Sprite):
             speed_number.change_pos((self.rect.center[0] + int(self.rect.center[0] / 10), self.rect.center[1]))
 
 
-class ScaleUI(pygame.sprite.Sprite):
-    def __init__(self, image):
+class BattleScaleUI(pygame.sprite.Sprite):
+    def __init__(self, image, team_colour):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
-        self.team_colour = {0: (200, 200, 200), 1: (144, 167, 255), 2:(255, 114, 114)}
+        self.team_colour = team_colour
         self.font = pygame.font.SysFont("helvetica", 12)
         self.pos = (0, 0)
         self.image = image
@@ -851,26 +851,135 @@ class ScaleUI(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class SpeedNumber(pygame.sprite.Sprite):
-    def __init__(self, speed, text_size=20):
+class WheelUI(pygame.sprite.Sprite):
+    def __init__(self, images, selected_images, pos, screen_size, text_size=20):
+        """Wheel choice ui with text or image inside the choice.
+        Works similar to Fallout companion wheel and similar system"""
+        self._layer = 11
+        pygame.sprite.Sprite.__init__(self)
+        self.text_size = text_size
+        self.pos = pos
+        self.screen_size = screen_size
+
+        self.image_original = pygame.Surface((images[0].get_width() * 3.5, images[0].get_height() * 3.5), pygame.SRCALPHA)
+        self.rect = self.image_original.get_rect(center=self.pos)
+        image_center = (self.image_original.get_width() / 2, self.image_original.get_height() / 2)
+        if len(images) == 2:  # create 8 direction wheel ui
+            self.wheel_image_list = (images[0].copy(),  # top up left
+                                     images[1].copy(),  # top left
+                                     pygame.transform.flip(images[0], False, True),  # bottom down left
+                                     pygame.transform.flip(images[1], False, True),  # bottom left
+                                     pygame.transform.flip(images[0], True, False),  # top up right
+                                     pygame.transform.flip(images[1], True, False),  # top right
+                                     pygame.transform.flip(images[0], True, True),  # bottom down right
+                                     pygame.transform.flip(images[1], True, True)  # bottom right
+                                     )
+
+            self.wheel_selected_image_list = (selected_images[0].copy(),  # top up left
+                                              selected_images[1].copy(),  # top left
+                                              pygame.transform.flip(selected_images[0], False, True),
+                                              # bottom lower left
+                                              pygame.transform.flip(selected_images[1], False, True),  # bottom left
+                                              pygame.transform.flip(selected_images[0], True, False),  # top upper right
+                                              pygame.transform.flip(selected_images[1], True, False),  # top right
+                                              pygame.transform.flip(selected_images[0], True, True),
+                                              # bottom lower right
+                                              pygame.transform.flip(selected_images[1], True, True)  # bottom right
+                                              )
+
+            self.wheel_inactive_image_list = [image.copy() for image in self.wheel_image_list]  # wheel choice that not active
+            for image in self.wheel_inactive_image_list:
+                image.fill(50, 50, 50, 150)
+            self.wheel_rect = (images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
+                               images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
+                               images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
+                               images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 1.3)), # bottom left
+                               images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 0.36)), # top upper right
+                               images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 0.65)),  # top right
+                               images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 1.64)), # bottom lower right
+                               images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 1.3))  # bottom right
+                               )
+
+        elif len(images) == 1:  # create 4 direction wheel ui
+            self.wheel_image_list = (images[0].copy(),  # top left
+                                     pygame.transform.flip(images[0], False, True),  # bottom left
+                                     pygame.transform.flip(images[0], True, False),  # top right
+                                     pygame.transform.flip(images[0], True, True),  # bottom right
+                                     )
+
+            self.wheel_selected_image_list = (selected_images[0].copy(),  # top left
+                                              pygame.transform.flip(selected_images[0], False, True),  # bottom left
+                                              pygame.transform.flip(selected_images[0], True, False),  # top upper right
+                                              pygame.transform.flip(selected_images[0], True, True),  # bottom right
+                                              )
+            self.wheel_rect = (images[0].get_rect(center=(image_center[0] * 0.6, image_center[1] * 0.6)),  # top left
+                               images[0].get_rect(center=(image_center[0] * 0.6, image_center[1] * 1.4)),  # bottom left
+                               images[0].get_rect(center=(image_center[0] * 1.4, image_center[1] * 0.6)),  # top right
+                               images[0].get_rect(center=(image_center[0] * 1.4, image_center[1] * 1.4))  # bottom right
+                               )
+        self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
+        self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
+
+        self.image = self.image_original.copy()
+        for index, rect in enumerate(self.wheel_rect):
+            self.image.blit(self.wheel_image_with_stuff[index], rect)
+
+    def selection(self, mouse_pos):
+        closest_rect_distance = None
+        closest_rect = None
+        new_mouse_pos = pygame.Vector2(mouse_pos[0] / self.screen_size[0] * self.image.get_width(),
+                                       mouse_pos[1] / self.screen_size[1] * self.image.get_height())
+        for index, rect in enumerate(self.wheel_rect):
+            distance = pygame.Vector2(rect.center).distance_to(new_mouse_pos)
+            if closest_rect_distance is None or distance < closest_rect_distance:
+                closest_rect = index
+                closest_rect_distance = distance
+        self.image = self.image_original.copy()
+        for index, rect in enumerate(self.wheel_rect):
+            if index == closest_rect:
+                self.image.blit(self.wheel_selected_image_with_stuff[index], rect)
+            else:
+                self.image.blit(self.wheel_image_with_stuff[index], rect)
+
+    def change_text_icon(self, blit_list):
+        """Add icon or text to the wheel choice"""
+        self.image = self.image_original.copy()
+        self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
+        self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
+        for index, item in enumerate(blit_list):
+            if item is not None:  # Wheel choice with icon or text inside
+                if type(item) == str:  # text
+                    surface = self.font.render(item, True, (0, 0, 0))
+                    rect = surface.get_rect(center=self.wheel_rect[index].center)
+                self.wheel_image_with_stuff[index].blit(surface, rect)
+                self.wheel_selected_image_with_stuff[index].blit(surface, rect)
+                self.image.blit(self.wheel_image_with_stuff[index], self.wheel_rect[index])
+            else:  # inactive wheel choice
+                self.image.blit(self.wheel_inactive_image_list[index], self.wheel_rect[index])
+
+
+class TextSprite(pygame.sprite.Sprite):
+    def __init__(self, value, text_size=20):
+        """Sprite of text with transparent background.
+        The size of text should be static or as close as the original text as possible"""
         self._layer = 11
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = (0, 0)
-        self.image = pygame.Surface((50, 30), pygame.SRCALPHA)
+        self.value = str(value)
+        self.image = pygame.Surface((len(self.value) * (text_size + 4), text_size * 1.5), pygame.SRCALPHA)
         self.image_original = self.image.copy()
-        self.speed = speed
-        self.timer_surface = self.font.render(str(self.speed), True, (0, 0, 0))
-        self.timer_rect = self.timer_surface.get_rect(topleft=(3, 3))
-        self.image.blit(self.timer_surface, self.timer_rect)
+        text_surface = self.font.render(self.value, True, (0, 0, 0))
+        self.text_rect = text_surface.get_rect(topleft=(self.image.get_width() / 10, self.image.get_height() / 10))
+        self.image.blit(text_surface, self.text_rect)
         self.rect = self.image.get_rect(center=self.pos)
 
-    def speed_update(self, new_speed):
+    def speed_update(self, new_value):
         """change speed number text"""
         self.image = self.image_original.copy()
-        self.speed = new_speed
-        self.timer_surface = self.font.render(str(self.speed), True, (0, 0, 0))
-        self.image.blit(self.timer_surface, self.timer_rect)
+        self.value = new_value
+        text_surface = self.font.render(str(self.value), True, (0, 0, 0))
+        self.image.blit(text_surface, self.text_rect)
 
     def change_pos(self, pos):
         self.pos = pos

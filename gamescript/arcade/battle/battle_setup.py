@@ -20,9 +20,9 @@ def setup_battle_ui(self, change):
                                        (self.inspect_ui.rect.bottomleft[1] + self.troop_card_ui.image.get_height() / 2)))
 
 
-        self.scale_ui.change_pos(self.time_ui.rect.bottomleft)
-        self.test_button.change_pos((self.scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
-                                    self.scale_ui.rect.bottomleft[1] + (self.test_button.image.get_height() / 2)))
+        self.battle_scale_ui.change_pos(self.time_ui.rect.bottomleft)
+        self.test_button.change_pos((self.battle_scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
+                                     self.battle_scale_ui.rect.bottomleft[1] + (self.test_button.image.get_height() / 2)))
         self.warning_msg.change_pos(self.test_button.rect.bottomleft)
 
         # self.speed_number.change_pos(self.time_ui.rect.center)  # self speed number on the time ui
@@ -57,7 +57,7 @@ def setup_battle_ui(self, change):
         change_group(self.unit_selector, self.battle_ui_updater, change)
         change_group(self.unit_selector_scroll, self.battle_ui_updater, change)
 
-    change_group(self.scale_ui, self.battle_ui_updater, change)
+    change_group(self.battle_scale_ui, self.battle_ui_updater, change)
 
 
 def add_unit(subunit_list, position, game_id, colour, unit_leader, leader_stat, control, coa, command, start_angle, start_hp, start_stamina, team):
