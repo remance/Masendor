@@ -2268,20 +2268,22 @@ while True:
             colour_ok_button.event = False
 
             if text_input_popup[1] == "new_animation":
-                animation_name = input_box.text
-                animation_selector.change_name(animation_name)
-                current_frame = 0
-                model.edit_part(mouse_pos, "new")
-                change_animation(animation_name)
+                if input_box.text not in current_pool[0]:  # no existing name already
+                    animation_name = input_box.text
+                    animation_selector.change_name(animation_name)
+                    current_frame = 0
+                    model.edit_part(mouse_pos, "new")
+                    change_animation(animation_name)
 
             elif text_input_popup[1] == "save_animation":
                 anim_save_pool(current_pool, "generic", direction_list, anim_column_header)
 
             elif text_input_popup[1] == "new_name":
                 old_name = animation_name
-                animation_name = input_box.text
-                animation_selector.change_name(animation_name)
-                anim_to_pool(animation_name, current_pool, model, activate_list, activate_list, replace=old_name)
+                if input_box.text not in current_pool[0]:  # no existing name already
+                    animation_name = input_box.text
+                    animation_selector.change_name(animation_name)
+                    anim_to_pool(animation_name, current_pool, model, activate_list, activate_list, replace=old_name)
 
             elif text_input_popup[1] == "export_animation":
                 save_num = 1
