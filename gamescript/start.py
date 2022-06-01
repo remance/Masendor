@@ -103,6 +103,7 @@ def change_genre(self, genre):
     self.add_troop_number_sprite = genre_setting.add_troop_number_sprite
     self.dmg_include_leader = genre_setting.dmg_include_leader
     self.stat_use_troop_number = genre_setting.stat_use_troop_number
+    self.unit_behaviour_wheel = genre_setting.unit_behaviour_wheel
 
     # change genre for other objects
     subunit.change_subunit_genre(self)
@@ -310,6 +311,7 @@ class Game:
 
         self.button_ui = pygame.sprite.Group()  # ui button group in battle
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
+        self.wheel_ui = pygame.sprite.Group()
 
         self.buttonname_popup = pygame.sprite.Group()  # button name pop up ui when mouse over button
         self.leader_popup = pygame.sprite.Group()  # leader name pop up ui when mouse over leader image in command ui
@@ -350,6 +352,7 @@ class Game:
         battleui.UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
+        battleui.WheelUI.containers = self.wheel_ui
 
         popup.TextPopup.containers = self.buttonname_popup, self.leader_popup
         popup.EffectIconPopup.containers = self.effect_popup
@@ -705,7 +708,7 @@ class Game:
         self.start_menu_ui_only = *self.menu_button, self.profile_box, self.genre_change_box  # ui that only appear at the start menu
         self.main_ui_updater.add(*self.start_menu_ui_only)
         self.menu_state = "main_menu"
-        self.text_input_popup = (None, None)  # popup for text input state
+        self.input_popup = (None, None)  # popup for text input state
         self.choosing_faction = True  # swap list between faction and subunit, always start with choose faction first as true
 
         pygame.mouse.set_visible(True)  # set mouse as visible
@@ -911,10 +914,10 @@ class Game:
                         mouse_scroll_down = True
 
                 elif event.type == KEYDOWN:
-                    if self.text_input_popup[0] is not None:  # event update to input box
+                    if self.input_popup[0] is not None:  # event update to input box
                         if event.key == K_ESCAPE:
                             input_esc = True
-                        elif self.text_input_popup[0] == "text_input":
+                        elif self.input_popup[0] == "text_input":
                             self.input_box.player_input(event, key_press)
                     else:
                         if event.key == K_ESCAPE:
@@ -922,7 +925,7 @@ class Game:
 
                 if event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "main_menu"):
                     self.quit_button.event = False
-                    self.text_input_popup = ("confirm_input", "quit")
+                    self.input_popup = ("confirm_input", "quit")
                     self.confirm_ui.change_instruction("Quit Game?")
                     self.main_ui_updater.add(*self.confirm_ui_popup)
 
@@ -931,20 +934,20 @@ class Game:
 
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
-            if self.text_input_popup[0] is not None:  # currently, have input text pop up on screen, stop everything else until done
+            if self.input_popup[0] is not None:  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
                     button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
 
                 if self.input_ok_button.event or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
                     self.input_ok_button.event = False
 
-                    if self.text_input_popup[1] == "profile_name":
+                    if self.input_popup[1] == "profile_name":
                         self.profile_name = self.input_box.text
                         self.profile_box.change_text(self.profile_name)
 
                         edit_config("DEFAULT", "playername", self.profile_name, "configuration.ini", self.config)
 
-                    elif self.text_input_popup[1] == "quit":
+                    elif self.input_popup[1] == "quit":
                         pygame.time.wait(1000)
                         if pygame.mixer:
                             pygame.mixer.music.stop()
@@ -953,16 +956,16 @@ class Game:
                         sys.exit()
 
                     self.input_box.text_start("")
-                    self.text_input_popup = (None, None)
+                    self.input_popup = (None, None)
                     self.main_ui_updater.remove(*self.input_ui_popup)
 
                 elif self.input_cancel_button.event or input_esc:
                     self.input_cancel_button.event = False
                     self.input_box.text_start("")
-                    self.text_input_popup = (None, None)
+                    self.input_popup = (None, None)
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
 
-            elif self.text_input_popup == (None, None):
+            elif self.input_popup == (None, None):
                 self.menu_button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
                 if self.menu_state == "main_menu":
                     self.main_menu_process(mouse_left_up)

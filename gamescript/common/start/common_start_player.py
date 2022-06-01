@@ -85,7 +85,7 @@ def main_menu_process(self, mouse_left_up):
         self.lore_button.event = False
 
     elif mouse_left_up and self.profile_box.rect.collidepoint(self.mouse_pos):
-        self.text_input_popup = ("text_input", "profile_name")
+        self.input_popup = ("text_input", "profile_name")
         self.input_box.text_start(self.profile_name)
         self.input_ui.change_instruction("Profile Name:")
         self.main_ui_updater.add(self.input_ui_popup)

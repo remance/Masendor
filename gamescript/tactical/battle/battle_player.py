@@ -828,14 +828,14 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                 if self.unit_preset_name == "":
                     pass
                 else:
-                    self.text_input_popup = ("confirm_input", "delete_preset")
+                    self.input_popup = ("confirm_input", "delete_preset")
                     self.confirm_ui.change_instruction("Delete Selected Preset?")
                     self.battle_ui_updater.add(*self.confirm_ui_popup)
 
             elif self.unit_save_button.rect.collidepoint(self.mouse_pos) and mouse_left_up and \
                     self.unit_save_button in self.battle_ui_updater:  # save preset button
                 self.click_any = True
-                self.text_input_popup = ("text_input", "save_unit")
+                self.input_popup = ("text_input", "save_unit")
 
                 if self.unit_preset_name == "":
                     self.input_box.text_start("")
@@ -1194,3 +1194,7 @@ def remove_unit_ui_check(self, mouse_left_up):
         self.remove_unit_ui()
         if self.game_state == "editor" and self.slot_display_button.event == 0:  # add back ui again for when unit editor ui displayed
             self.battle_ui_updater.add(self.unit_setup_stuff, self.leader_now)
+
+
+def wheel_ui_process(self, choice):
+    pass

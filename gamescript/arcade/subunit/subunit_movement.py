@@ -51,16 +51,17 @@ def move_logic(self, dt, parent_state, collide_list):
 
             move = self.base_target - self.base_pos
             move_length = move.length()  # convert length
-
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
-
-                if parent_state in (1, 3, 5, 7):  # walking
+                self.state = parent_state
+                if move_length > 5 or parent_state == 99:  # use its own speed when catch up or broken
+                    if parent_state != 99:
+                        self.state = 2
+                    speed = self.speed / 2
+                    self.run = True
+                elif parent_state in (1, 3, 5, 7):  # walking
                     speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
-                elif parent_state in (10, 99):  # run with its own speed instead of uniformed run
-                    speed = self.speed / 5 # use its own speed when broken
-                    self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                     speed = self.unit.run_speed  # use run speed
                     self.run = True
@@ -68,7 +69,7 @@ def move_logic(self, dt, parent_state, collide_list):
                     speed = speed * self.charge_momentum / 8
                 if self.collide_penalty:  # reduce speed during moving through another unit
                     speed = speed / 2
-                self.state = parent_state
+
                 move = move * speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
@@ -83,10 +84,10 @@ def move_logic(self, dt, parent_state, collide_list):
                         self.new_angle = self.set_rotate(self.base_target)
                         if self.walk:
                             if self.stamina != infinity:
-                                self.stamina = self.stamina - (dt * 1.5)
+                                self.stamina = self.stamina - dt
                         elif self.run:
                             if self.stamina != infinity:
-                                self.stamina = self.stamina - (dt * 3)
+                                self.stamina = self.stamina - (dt * 2)
                     else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                         move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                         self.base_pos += move  # adjust base position according to movement

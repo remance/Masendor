@@ -12,6 +12,8 @@ add_troop_number_sprite = True  # add troop number sprite
 dmg_include_leader = False  # include leader in damage calculation
 stat_use_troop_number = True  # calculate troop number in damage calculation
 
+unit_behaviour_wheel = {}  # player unit behaviour control via wheel ui, not used in tactical mode as it use different control and ui
+
 event_log_top = "page up"
 event_log_bottom = "page down"
 increase_game_time = "keypad plus"

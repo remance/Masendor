@@ -64,7 +64,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         command = "end_battle"
 
                     elif button.text == "Desktop":  # quit self
-                        self.text_input_popup = ("confirm_input", "quit")
+                        self.input_popup = ("confirm_input", "quit")
                         self.confirm_ui.change_instruction("Quit Game?")
                         self.battle_ui_updater.add(*self.confirm_ui_popup)
                     break  # found clicked button, break loop

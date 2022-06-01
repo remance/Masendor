@@ -12,6 +12,20 @@ add_troop_number_sprite = False  # troop number sprite not use in arcade mode
 dmg_include_leader = False  # include leader in damage calculation, not used in arcade mode since leader is subunit itself
 stat_use_troop_number = False  # arcade mode count one subunit as one troop
 
+unit_behaviour_wheel = {"Main": ("Skill", "Shift Line", "Range Attack", "Behaviour",
+                                 "Command", "Formation", "Equipment", "Setting"),
+                        "Skill": ("Leader Skill 1", "Leader Skill 2", "Troop Skill 1", "Troop Skill 2"),
+                        "Shift Line": ("Front To Back", "Left To Right", "Back To Front", "Right To Left"),
+                        "Range Attack": ("Manual Aim", "Fire At Will", "Volley", "Manual Only"),
+                        "Behaviour": ("Hold", "Follow", "Free", "Retreat"),
+                        "Command": ("Offensive", "Defensive", "Skirmish", "Protect Me",
+                                    "Follow Unit", "Free", "Hold Location", ""),
+                        "Formation": ("Square", "Vert Line", "Circle", "Wedge", "Hori Line", "Original",
+                                      "Melee Front", "Range Front"),
+                        "Equipment": ("Equip Primary", "Equip Secondary", "Troop Primary", "Troop Secondary",
+                                      "Troop Melee", "Troop Range"),
+                        "Setting": ("Height Map", )}  # player unit behaviour control via wheel ui
+
 # Default keyboard binding
 up = "w"
 down = "s"

@@ -8,6 +8,7 @@ setup_list = utility.setup_list
 
 team_colour = unit.team_colour
 
+
 def battle_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state):
     if self.terrain_check in self.battle_ui_updater and (
             self.terrain_check.pos != self.mouse_pos or key_state[pygame.K_s] or key_state[pygame.K_w] or key_state[pygame.K_a] or key_state[pygame.K_d]):
@@ -59,103 +60,6 @@ def battle_state_mouse(self, mouse_left_up, mouse_right_up, double_mouse_right, 
 
     # v code that only run when any unit is selected
     if self.current_selected.state != 100:
-        if self.command_ui in self.battle_ui_updater:  # mouse position on command ui
-            if (mouse_left_up or mouse_right_up) and self.command_ui.rect.collidepoint(self.mouse_pos):
-                self.click_any = True
-            # and ( or key_press is not None)
-            if self.current_selected.control and mouse_left_up:
-                if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:
-                    if mouse_left_up or key_press == pygame.K_g:  # rotate skill condition when clicked
-                        self.current_selected.skill_cond += 1
-                        if self.current_selected.skill_cond > 3:
-                            self.current_selected.skill_cond = 0
-                        self.behaviour_switch_button[0].event = self.current_selected.skill_cond
-                    if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Free Skill Use", "Conserve 50% Stamina", "Conserve 25% stamina", "Forbid Skill")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[0].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                elif self.behaviour_switch_button[1].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_f:
-                    if mouse_left_up or key_press == pygame.K_f:  # rotate fire at will condition when clicked
-                        self.current_selected.fire_at_will += 1
-                        if self.current_selected.fire_at_will > 1:
-                            self.current_selected.fire_at_will = 0
-                        self.behaviour_switch_button[1].event = self.current_selected.fire_at_will
-                    if self.behaviour_switch_button[1].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Fire at will", "Hold fire until order")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[1].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                elif self.behaviour_switch_button[2].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_h:
-                    if mouse_left_up or key_press == pygame.K_h:  # rotate hold condition when clicked
-                        self.current_selected.hold += 1
-                        if self.current_selected.hold > 2:
-                            self.current_selected.hold = 0
-                        self.behaviour_switch_button[2].event = self.current_selected.hold
-                    if self.behaviour_switch_button[2].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Aggressive", "Skirmish/Scout", "Hold Ground")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[2].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                elif self.behaviour_switch_button[3].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
-                    if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
-                        self.current_selected.use_min_range += 1
-                        if self.current_selected.use_min_range > 1:
-                            self.current_selected.use_min_range = 0
-                        self.behaviour_switch_button[3].event = self.current_selected.use_min_range
-                    if self.behaviour_switch_button[3].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Minimum Shoot Range", "Maximum Shoot range")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[3].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                elif self.behaviour_switch_button[4].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
-                    if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
-                        self.current_selected.shoot_mode += 1
-                        if self.current_selected.shoot_mode > 2:
-                            self.current_selected.shoot_mode = 0
-                        self.behaviour_switch_button[4].event = self.current_selected.shoot_mode
-                    if self.behaviour_switch_button[4].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Both Arc and Direct Shot", "Only Arc Shot", "Only Direct Shot")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[4].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                elif self.behaviour_switch_button[5].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_j:
-                    if mouse_left_up or key_press == pygame.K_j:  # rotate min range condition when clicked
-                        self.current_selected.run_toggle += 1
-                        if self.current_selected.run_toggle > 1:
-                            self.current_selected.run_toggle = 0
-                        self.behaviour_switch_button[5].event = self.current_selected.run_toggle
-                    if self.behaviour_switch_button[5].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Toggle Walk", "Toggle Run")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[5].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                elif self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # or key_press == pygame.K_j
-                    if mouse_left_up:  # or key_press == pygame.K_j  # rotate min range condition when clicked
-                        self.current_selected.attack_mode += 1
-                        if self.current_selected.attack_mode > 2:
-                            self.current_selected.attack_mode = 0
-                        self.behaviour_switch_button[6].event = self.current_selected.attack_mode
-                    if self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # popup name when mouse over
-                        pop_text = ("Frontline Attack Only", "Keep Formation", "All Out Attack")
-                        self.button_name_popup.pop(self.mouse_pos, pop_text[self.behaviour_switch_button[6].event])
-                        self.battle_ui_updater.add(self.button_name_popup)
-
-                # elif self.button_ui[7].rect.collidepoint(self.mouse_pos):  # decimation effect
-                #     self.button_name_popup.pop(self.mouse_pos, "Decimation")
-                #     self.battle_ui.add(self.button_name_popup)
-                #     if mouse_left_up and self.current_selected.state == 0:
-                #         for subunit in self.current_selected.subunit_sprite:
-                #             subunit.status_effect[98] = self.troop_data.status_list[98].copy()
-                #             subunit.unit_health -= round(subunit.unit_health * 0.1)
-
-            if self.leader_mouse_over(mouse_right_up):
-                self.battle_ui_updater.remove(self.button_name_popup)
-                pass
-        else:
-            self.battle_ui_updater.remove(self.leader_popup)  # remove leader name popup if no mouseover on any button
-            self.battle_ui_updater.remove(self.button_name_popup)  # remove popup if no mouseover on any button
-
         if self.inspect:  # if inspect ui is open
             if mouse_left_up or mouse_right_up:
                 if self.inspect_ui.rect.collidepoint(self.mouse_pos):  # if mouse pos inside unit ui when click
@@ -727,14 +631,14 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
                 if self.unit_preset_name == "":
                     pass
                 else:
-                    self.text_input_popup = ("confirm_input", "delete_preset")
+                    self.input_popup = ("confirm_input", "delete_preset")
                     self.confirm_ui.change_instruction("Delete Selected Preset?")
                     self.battle_ui_updater.add(*self.confirm_ui_popup)
 
             elif self.unit_save_button.rect.collidepoint(self.mouse_pos) and mouse_left_up and \
                     self.unit_save_button in self.battle_ui_updater:  # save preset button
                 self.click_any = True
-                self.text_input_popup = ("text_input", "save_unit")
+                self.input_popup = ("text_input", "save_unit")
 
                 if self.unit_preset_name == "":
                     self.input_box.text_start("")
@@ -762,14 +666,10 @@ def editor_state_mouse(self, mouse_left_up, mouse_right_up, mouse_left_down, mou
 
 
 def battle_key_press(self, key_press):
-    if key_press == pygame.K_TAB:
-        self.map_mode += 1  # change height map mode
-        if self.map_mode > 2:
-            self.map_mode = 0
-        self.show_map.change_mode(self.map_mode)
-        self.show_map.change_scale(self.camera_zoom)
-
-    # elif key_press == pygame.K_o:  # Toggle unit number
+    if key_press == pygame.K_q:  # Open unit command wheel ui
+        self.battle_ui_updater.add(self.eight_wheel_ui)
+        self.player_input_ui = self.eight_wheel_ui
+        self.eight_wheel_ui.change_text_icon(tuple(self.unit_behaviour_wheel["Main"]))
 
     # elif key_press == pygame.K_p:  # Speed Pause/unpause Button
 
@@ -1003,25 +903,6 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
 
 def add_behaviour_ui(self, who_input, else_check=False):
-    if who_input.control:
-        # self.battle_ui.add(self.button_ui[7])  # add decimation button
-        self.battle_ui_updater.add(*self.behaviour_switch_button[0:7])  # add unit behaviour change button
-        self.behaviour_switch_button[0].event = who_input.skill_cond
-        self.behaviour_switch_button[1].event = who_input.fire_at_will
-        self.behaviour_switch_button[2].event = who_input.hold
-        self.behaviour_switch_button[3].event = who_input.use_min_range
-        self.behaviour_switch_button[4].event = who_input.shoot_mode
-        self.behaviour_switch_button[5].event = who_input.run_toggle
-        self.behaviour_switch_button[6].event = who_input.attack_mode
-        self.check_split(who_input)  # check if selected unit can split, if yes draw button
-    elif else_check:
-        if self.row_split_button in self.battle_ui_updater:
-            self.row_split_button.kill()
-        if self.col_split_button in self.battle_ui_updater:
-            self.col_split_button.kill()
-        # self.battle_ui.remove(self.button_ui[7])  # remove decimation button
-        self.battle_ui_updater.remove(*self.behaviour_switch_button[0:7])  # remove unit behaviour change button
-
     self.leader_now = who_input.leader
     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
     self.unitstat_ui.value_input(who=who_input)
@@ -1031,3 +912,29 @@ def add_behaviour_ui(self, who_input, else_check=False):
 def remove_unit_ui_check(self, *args):
     """No ui to remove in arcade mode"""
     pass
+
+
+def wheel_ui_process(self, choice):
+    if choice in self.unit_behaviour_wheel:  # click choice that has children choice
+        self.battle_ui_updater.remove(self.wheel_ui)  # remove current wheel first
+        self.player_input_ui = None
+        if len(self.unit_behaviour_wheel[choice]) > 4:
+            self.player_input_ui = self.eight_wheel_ui
+            self.eight_wheel_ui.change_text_icon(tuple(self.unit_behaviour_wheel[choice]))
+            self.battle_ui_updater.add(self.eight_wheel_ui)
+        elif len(self.unit_behaviour_wheel[choice]) <= 4:
+            self.player_input_ui = self.four_wheel_ui
+            self.four_wheel_ui.change_text_icon(tuple(self.unit_behaviour_wheel[choice]))
+            self.battle_ui_updater.add(self.four_wheel_ui)
+    else:  # click choice with game effect
+        if "Skill" in choice:
+            if "Troop" in choice:
+                self.player_char.unit.process_command(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
+            elif "Leader" in choice:
+                self.player_char.command_action = ("Leader Skill " + str(int(choice[-1]) - 1),)
+        if "Height Map" in choice:
+            self.map_mode += 1  # change height map mode
+            if self.map_mode > 2:
+                self.map_mode = 0
+            self.show_map.change_mode(self.map_mode)
+            self.show_map.change_scale(self.camera_zoom)

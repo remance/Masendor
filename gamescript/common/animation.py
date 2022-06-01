@@ -33,6 +33,22 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
     return done
 
 
+def sprite_fading(self, how, speed=5):
+    """
+    Fading sprite object in or out of camera, require alpha variable and
+    image_clear (original clear image before fading) in object to work properly
+    :param self: Any sprite object
+    :param how: "In" for fading in and "Out" for fading out
+    :param speed: How fast the fading
+    """
+    if how == "In":
+        self.image = self.image_clear.copy()  # fading in require using original alpha image to work
+        self.alpha = min(self.alpha + speed, 255)  # alpha should never be higher than 255.
+    elif how == "Out":
+        self.alpha = max(0, self.alpha - speed)  # alpha should never be < lower than 0.
+    self.image.fill((255, 255, 255, self.alpha), special_flags=pygame.BLEND_RGBA_MULT)
+
+
 def reset_animation(self):
     """
     Reset animation variable

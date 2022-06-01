@@ -569,12 +569,14 @@ class Subunit(pygame.sprite.Sprite):
         # animation and sprite system
 
         done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
-        # pick new animation if interrupt or playing idle action or finish playing current animation and not repeat
+        # Pick new animation, condition to stop animation: get interrupt,
+        # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
                 ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
+                 (not self.current_action and self.command_action) or
                  (done and "repeat" not in self.current_action) or
                  (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
-                 (self.idle_action and self.idle_action != self.command_action)):  # condition to stop animation: get interrupt, finish, involve skill and
+                 (self.idle_action and self.idle_action != self.command_action)):
             self.reset_animation()
             self.interrupt_animation = False
             self.current_action = self.command_action  # continue next action when animation finish

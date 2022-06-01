@@ -3,7 +3,7 @@ import datetime
 import pygame
 import pygame.freetype
 from gamescript import map
-from gamescript.common import utility
+from gamescript.common import utility, animation
 
 
 class UIButton(pygame.sprite.Sprite):
@@ -852,18 +852,22 @@ class BattleScaleUI(pygame.sprite.Sprite):
 
 
 class WheelUI(pygame.sprite.Sprite):
+    sprite_fading = animation.sprite_fading
+
     def __init__(self, images, selected_images, pos, screen_size, text_size=20):
         """Wheel choice ui with text or image inside the choice.
         Works similar to Fallout companion wheel and similar system"""
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self)
-        self.text_size = text_size
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
         self.screen_size = screen_size
+        self.choice_list = ()
 
-        self.image_original = pygame.Surface((images[0].get_width() * 3.5, images[0].get_height() * 3.5), pygame.SRCALPHA)
-        self.rect = self.image_original.get_rect(center=self.pos)
-        image_center = (self.image_original.get_width() / 2, self.image_original.get_height() / 2)
+        self.image_original2 = pygame.Surface((images[0].get_width() * 3.5,
+                                               images[0].get_height() * 3.5), pygame.SRCALPHA)  # empty image
+        self.rect = self.image_original2.get_rect(center=self.pos)
+        image_center = (self.image_original2.get_width() / 2, self.image_original2.get_height() / 2)
         if len(images) == 2:  # create 8 direction wheel ui
             self.wheel_image_list = (images[0].copy(),  # top up left
                                      images[1].copy(),  # top left
@@ -920,37 +924,45 @@ class WheelUI(pygame.sprite.Sprite):
         self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
         self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
 
-        self.image = self.image_original.copy()
+        self.image = self.image_original2.copy()
         for index, rect in enumerate(self.wheel_rect):
             self.image.blit(self.wheel_image_with_stuff[index], rect)
 
     def selection(self, mouse_pos):
         closest_rect_distance = None
-        closest_rect = None
+        closest_rect_index = None
         new_mouse_pos = pygame.Vector2(mouse_pos[0] / self.screen_size[0] * self.image.get_width(),
                                        mouse_pos[1] / self.screen_size[1] * self.image.get_height())
         for index, rect in enumerate(self.wheel_rect):
             distance = pygame.Vector2(rect.center).distance_to(new_mouse_pos)
             if closest_rect_distance is None or distance < closest_rect_distance:
-                closest_rect = index
+                closest_rect_index = index
                 closest_rect_distance = distance
-        self.image = self.image_original.copy()
+        self.image = self.image_original2.copy()
+
         for index, rect in enumerate(self.wheel_rect):
-            if index == closest_rect:
+            if index == closest_rect_index:
                 self.image.blit(self.wheel_selected_image_with_stuff[index], rect)
             else:
                 self.image.blit(self.wheel_image_with_stuff[index], rect)
+        if self.choice_list and closest_rect_index <= len(self.choice_list) - 1:
+            return self.choice_list[closest_rect_index]
 
     def change_text_icon(self, blit_list):
         """Add icon or text to the wheel choice"""
-        self.image = self.image_original.copy()
+        self.image = self.image_original2.copy()
         self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
         self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
+        self.choice_list = blit_list
         for index, item in enumerate(blit_list):
             if item is not None:  # Wheel choice with icon or text inside
                 if type(item) == str:  # text
                     surface = self.font.render(item, True, (0, 0, 0))
-                    rect = surface.get_rect(center=self.wheel_rect[index].center)
+
+                else:
+                    surface = item
+                rect = surface.get_rect(center=(self.wheel_image_with_stuff[index].get_width() / 2,
+                                                self.wheel_image_with_stuff[index].get_height() / 2))
                 self.wheel_image_with_stuff[index].blit(surface, rect)
                 self.wheel_selected_image_with_stuff[index].blit(surface, rect)
                 self.image.blit(self.wheel_image_with_stuff[index], self.wheel_rect[index])
