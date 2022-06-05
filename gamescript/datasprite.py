@@ -5,12 +5,9 @@ from pathlib import Path
 import pygame
 
 from gamescript.common import utility
-from gamescript.common.subunit import common_subunit_setup
 
 load_textures = utility.load_textures
 stat_convert = utility.stat_convert
-
-make_sprite = common_subunit_setup.make_sprite
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 

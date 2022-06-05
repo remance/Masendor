@@ -4,7 +4,6 @@ import random
 import pygame
 import pygame.freetype
 from gamescript.common import animation
-from gamescript.common.subunit import common_subunit_combat
 from pygame.transform import scale
 
 
@@ -32,7 +31,7 @@ class RangeAttack(pygame.sprite.Sprite):
         self.penetrate = self.shooter.range_penetrate
         if self.shooter.state in (12, 13) and self.shooter.agile_aim is False:
             self.accuracy -= 10  # accuracy penalty for shoot while moving
-        self.pass_who = None  # check which unit arrow passing through
+        self.pass_subunit = None  # check which subunit arrow passing through
         self.side = None  # side that arrow collided last
         if hit_cal:
             random_pos1 = random.randint(0, 1)  # for left or right random
@@ -125,25 +124,25 @@ class RangeAttack(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=self.pos)
         self.target = self.base_target * view_mode
 
-    def range_dmg_cal(self, who, target, target_side, side_percent=(1, 0.3, 0.3, 0)):
+    def range_dmg_cal(self, attacker, target, target_side, side_percent=(1, 0.3, 0.3, 0)):
         """Calculate hit_chance and defence chance, side_percent is more punishing than melee melee_attack"""
-        who_luck = random.randint(-20, 20)  # luck of the attacker subunit
+        attacker_luck = random.randint(-20, 20)  # luck of the attacker subunit
         target_luck = random.randint(-20, 20)  # luck of the defender subunit
 
         target_percent = side_percent[target_side]  # side penalty
         if target.full_def or target.temp_full_def:
             target_percent = 1  # no side penalty for all round defend
-        who_hit = float(self.accuracy) + who_luck  # calculate hit chance
-        if who_hit < 0:
-            who_hit = 0  # hit_chance cannot be negative
+        attacker_hit = float(self.accuracy) + attacker_luck  # calculate hit chance
+        if attacker_hit < 0:
+            attacker_hit = 0  # hit_chance cannot be negative
 
         target_def = float(target.range_def * target_percent) + target_luck  # calculate defence
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        who_dmg, who_morale_dmg, who_leader_dmg = common_subunit_combat.dmg_cal(who, target, who_hit, target_def, self)
-        target.subunit_health -= who_dmg
-        target.base_morale -= who_morale_dmg
+        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg = attacker.dmg_cal(target, attacker_hit, target_def, self)
+        target.subunit_health -= attacker_dmg
+        target.base_morale -= attacker_morale_dmg
 
         # v Add red corner to indicate melee_dmg
         if target.red_border is False:
@@ -151,11 +150,11 @@ class RangeAttack(pygame.sprite.Sprite):
             target.red_border = True
         # ^ End red corner
 
-        if who.elem_range not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
-            target.elem_count[who.elem_range - 1] += round(who_dmg * (100 - target.elem_res[who.elem_range - 1] / 100))
+        if attacker.elem_range not in (0, 5):  # apply element effect if atk has element, except 0 physical, 5 magic
+            target.elem_count[attacker.elem_range - 1] += round(attacker_dmg * (100 - target.elem_res[attacker.elem_range - 1] / 100))
 
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  # melee_dmg on leader
-            target.leader.health -= who_leader_dmg
+            target.leader.health -= attacker_leader_dmg
 
     def register_hit(self, subunit=None):
         """Calculate melee_dmg when arrow reach base_target"""
@@ -203,15 +202,9 @@ class RangeAttack(pygame.sprite.Sprite):
                         self.register_hit(subunit)
                         self.kill()
                     else:
-                        self.pass_who = subunit
+                        self.pass_subunit = subunit
                     break
 
         else:  # reach base_target
-            self.register_hit(self.pass_who)  # register hit whatever subunit the sprite land at
+            self.register_hit(self.pass_subunit)  # register hit whatever subunit the sprite land at
             self.kill()  # remove sprite
-
-    def delete(self):
-        """delete reference when the method is called"""
-        self.shooter = None
-        self.pass_who = None
-        self.target = None

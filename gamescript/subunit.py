@@ -1,54 +1,16 @@
 import math
+import os
 import random
 
 import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_subunit_combat, common_subunit_movement, \
-    common_subunit_update, common_subunit_setup, common_subunit_zoom
 
-rotation_list = common_subunit_movement.rotation_list
-rotation_name = common_subunit_movement.rotation_name
-rotation_dict = common_subunit_movement.rotation_dict
+rotation_list = (90, 120, 45, 0, -90, -45, -120, 180, -180)
+rotation_name = ("l_side", "l_sidedown", "l_sideup", "front", "r_side", "r_sideup", "r_sidedown", "back", "back")
+rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_list)}
 
 infinity = float("inf")
-
-
-def change_subunit_genre(self):
-    """
-    Change genre method to subunit class
-    :param self: Game object
-    """
-    import importlib
-
-    subunit_combat = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_combat")
-    subunit_setup = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_setup")
-    subunit_movement = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_movement")
-    subunit_update = importlib.import_module("gamescript." + self.genre + ".subunit.subunit_update")
-
-    Subunit.add_weapon_stat = subunit_setup.add_weapon_stat
-    Subunit.add_mount_stat = subunit_setup.add_mount_stat
-    Subunit.add_trait = subunit_setup.add_trait
-    Subunit.find_shooting_target = subunit_combat.find_shooting_target
-    Subunit.attack_logic = subunit_combat.attack_logic
-    Subunit.dead_subunit_leader_logic = subunit_combat.dead_subunit_leader_logic
-    Subunit.rotate_logic = subunit_movement.rotate_logic
-    Subunit.move_logic = subunit_movement.move_logic
-    Subunit.player_interact = subunit_update.player_interact
-    Subunit.status_update = subunit_update.status_update
-    Subunit.state_reset_logic = subunit_update.state_reset_logic
-    Subunit.morale_logic = subunit_update.morale_logic
-    Subunit.check_skill_condition = subunit_update.check_skill_condition
-    Subunit.skill_check_logic = subunit_update.skill_check_logic
-    Subunit.pick_animation = subunit_update.pick_animation
-    Subunit.health_stamina_logic = subunit_update.health_stamina_logic
-    Subunit.swap_weapon = subunit_update.swap_weapon
-    Subunit.charge_logic = subunit_update.charge_logic
-    Subunit.zoom_scale = common_subunit_zoom.zoom_scale
-    Subunit.change_pos_scale = common_subunit_zoom.change_pos_scale
-
-    Subunit.dmg_include_leader = self.dmg_include_leader
-    Subunit.stat_use_troop_number = self.stat_use_troop_number
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -71,43 +33,49 @@ class Subunit(pygame.sprite.Sprite):
     play_animation = animation.play_animation
     reset_animation = animation.reset_animation
     set_rotate = utility.set_rotate
-    use_skill = common_subunit_combat.use_skill
-    hit_register = common_subunit_combat.hit_register
-    die = common_subunit_combat.die
-    rotate = common_subunit_movement.rotate
-    combat_pathfind = common_subunit_movement.combat_pathfind
-    find_close_target = common_subunit_movement.find_close_target
-    make_front_pos = common_subunit_update.make_front_pos
-    make_pos_range = common_subunit_update.make_pos_range
-    threshold_count = common_subunit_update.threshold_count
-    temperature_cal = common_subunit_update.temperature_cal
-    find_nearby_subunit = common_subunit_update.find_nearby_subunit
-    apply_map_status = common_subunit_update.apply_map_status
-    status_to_friend = common_subunit_update.status_to_friend
-    troop_loss = common_subunit_update.troop_loss
-    start_set = common_subunit_setup.start_set
-    process_trait_skill = common_subunit_setup.process_trait_skill
-    create_inspect_sprite = common_subunit_setup.create_inspect_sprite
 
-    # methods that change based on genre
-    def add_weapon_stat(self): pass
-    def add_mount_stat(self): pass
-    def add_trait(self): pass
-    def find_shooting_target(self): pass
-    def attack_logic(self): pass
-    def dead_subunit_leader_logic(self): pass
-    def rotate_logic(self): pass
-    def move_logic(self): pass
-    def player_interact(self): pass
-    def status_update(self): pass
-    def state_reset_logic(self): pass
-    def morale_logic(self): pass
-    def health_stamina_logic(self): pass
-    def swap_weapon(self): pass
-    def charge_logic(self): pass
-    def check_skill_condition(self): pass
-    def skill_check_logic(self): pass
-    def pick_animation(self): pass
+    # Methods from either common or genre-specific
+    def use_skill(self, *args): pass
+    def hit_register(self, *args): pass
+    def die(self, *args): pass
+    def rotate(self, *args): pass
+    def combat_pathfind(self, *args): pass
+    def find_close_target(self, *args): pass
+    def make_front_pos(self, *args): pass
+    def make_pos_range(self, *args): pass
+    def element_threshold_count(self, *args): pass
+    def temperature_cal(self, *args): pass
+    def find_nearby_subunit(self, *args): pass
+    def apply_map_status(self, *args): pass
+    def apply_status_to_friend(self, *args): pass
+    def troop_loss(self, *args): pass
+    def start_set(self, *args): pass
+    def process_trait_skill(self, *args): pass
+    def create_inspect_sprite(self, *args): pass
+    def add_weapon_stat(self, *args): pass
+    def add_mount_stat(self, *args): pass
+    def add_trait(self, *args): pass
+    def find_shooting_target(self, *args): pass
+    def combat_logic(self, *args): pass
+    def gone_leader_process(self, *args): pass
+    def rotate_logic(self, *args): pass
+    def move_logic(self, *args): pass
+    def player_interact(self, *args): pass
+    def status_update(self, *args): pass
+    def state_reset_logic(self, *args): pass
+    def morale_logic(self, *args): pass
+    def health_stamina_logic(self, *args): pass
+    def swap_weapon(self, *args): pass
+    def charge_logic(self, *args): pass
+    def skill_check_logic(self, *args): pass
+    def pick_animation(self, *args): pass
+
+    script_dir = os.path.split(os.path.abspath(__file__))[0]
+    for entry in os.scandir(script_dir + "/common/subunit/"):  # load and replace modules from common.unit
+        if entry.is_file() and ".py" in entry.name:
+            file_name = entry.name[:-3]
+            exec(f"from common.subunit import " + file_name)
+            exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # genre specific variables
     dmg_include_leader = True
@@ -526,7 +494,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.state_reset_logic(parent_state)
 
-                parent_state, collide_list = self.attack_logic(dt, combat_timer, parent_state)
+                parent_state, collide_list = self.combat_logic(dt, combat_timer, parent_state)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
@@ -584,28 +552,6 @@ class Subunit(pygame.sprite.Sprite):
             self.command_action = self.idle_action
         if recreate_rect:
             self.rect = self.image.get_rect(center=self.pos)
-
-    def delete(self, local=False):
-        """delete all reference when the method is called"""
-        self.unit = None
-        self.leader = None
-        self.attack_target = None
-        self.attack_pos = None
-        self.melee_target = None
-        self.close_target = None
-        self.image = None
-        self.animation_pool = None
-        self.current_animation = None
-        self.animation_queue = None
-        self.enemy_front = None
-        self.enemy_side = None
-        self.friend_front = None
-        self.same_front = None
-        self.full_merge = None
-        if self in self.battle.combat_path_queue:
-            self.battle.combat_path_queue.remove(self)
-        if local:
-            print(locals())
 
 
 class EditorSubunit(Subunit):

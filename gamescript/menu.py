@@ -6,11 +6,11 @@ import pygame
 import pygame.freetype
 import pygame.freetype
 import pyperclip
-from gamescript import map
+from gamescript import battlemap
 from gamescript.common import utility
 
-terrain_colour = map.terrain_colour
-feature_colour = map.feature_colour
+terrain_colour = battlemap.terrain_colour
+feature_colour = battlemap.feature_colour
 
 
 class Cursor(pygame.sprite.Sprite):

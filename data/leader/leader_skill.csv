@@ -83,7 +83,7 @@
 "L82","Omen Of Victory",0,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L83","God Speed",0,0,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,
 "L84","March Of The Four Wind",0,60,4,30,1500,,,,115,115,400,,,,200,,120,,,25,,,,,,,,,,,,,,
-"L85","Bribery Betrayal",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"L85","Bribery Betrayal",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"No man can resist the temptation of wealth when they can grasp it. Loyalty can be bought with the right amount of bribe."
 "L86","Blazing Heart",0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L87","Precise Execution",,,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L88","Absolute Might",0,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,"Only those with might can truly rule. The strongs not only survive, they can exploit, dominate, and eradicate the weaks at will."

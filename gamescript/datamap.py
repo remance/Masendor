@@ -2,11 +2,9 @@ import csv
 import os
 
 import pygame
-from gamescript import weather, battleui, lorebook, menu, uniteditor, datastat, popup, map
+from gamescript import weather, battleui, lorebook, menu, uniteditor, datastat, popup, battlemap
 from gamescript.common import utility, animation
-from gamescript.common.subunit import common_subunit_setup
 
-make_sprite = common_subunit_setup.make_sprite
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
@@ -59,11 +57,11 @@ class BattleMapData:
         edit_file.close()
 
         # set up default
-        map.FeatureMap.feature_mod = self.feature_mod
+        battlemap.FeatureMap.feature_mod = self.feature_mod
 
-        map.BeautifulMap.texture_images = map_texture
-        map.BeautifulMap.load_texture_list = texture_folder
-        map.BeautifulMap.empty_texture = empty_image
+        battlemap.BeautifulMap.texture_images = map_texture
+        battlemap.BeautifulMap.load_texture_list = texture_folder
+        battlemap.BeautifulMap.empty_texture = empty_image
 
         self.weather_data = csv_read(main_dir, "weather.csv", ["data", "map", "weather"], header_key=True)
         weather_list = [item["Name"] for item in self.weather_data.values()]

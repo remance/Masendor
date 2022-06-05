@@ -75,8 +75,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.section_list = ()
 
         self.current_subsection_row = 0
-        self.max_subsection_show = 19
-        self.log_size = 0
+        self.max_row_show = 19
+        self.row_size = 0
         self.page = 0
         self.max_page = 0
         self.rect = self.image.get_rect(center=(self.screen_rect.width / 1.9, self.screen_rect.height / 1.9))
@@ -137,12 +137,12 @@ class Lorebook(pygame.sprite.Sprite):
                                 this_list]  # remove the header from subsection list
         if "Name" in self.subsection_list:
             self.subsection_list.remove("Name")
-        self.log_size = len(self.subsection_list)  # get size of subsection list
+        self.row_size = len(self.subsection_list)  # get size of subsection list
 
         self.change_subsection(self.subsection, page_button, main_ui)
         self.setup_subsection_list(list_surface, list_group)
 
-        lore_scroll.change_image(log_size=self.log_size)
+        lore_scroll.change_image(row_size=self.row_size)
         lore_scroll.change_image(new_row=self.current_subsection_row)
 
     def change_subsection(self, subsection, page_button, main_ui):
@@ -168,7 +168,7 @@ class Lorebook(pygame.sprite.Sprite):
                 self.portrait = self.leader_data.images[image_name].copy()  # get leader portrait based on subsection number
             except KeyError:
                 self.portrait = self.leader_data.images["9999999.png"].copy()  # Use Unknown leader image if there is none in list
-                font = pygame.font.SysFont("timesnewroman", 300)
+                font = pygame.font.SysFont("timesnewroman", int(100 * self.screen_scale[1]))
                 text_image = font.render(str(self.subsection), True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
                     center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
@@ -188,8 +188,8 @@ class Lorebook(pygame.sprite.Sprite):
         row = 15 * self.screen_scale[1]
         column = 15 * self.screen_scale[0]
         pos = list_surface.rect.topleft
-        if self.current_subsection_row > self.log_size - self.max_subsection_show:
-            self.current_subsection_row = self.log_size - self.max_subsection_show
+        if self.current_subsection_row > self.row_size - self.max_row_show:
+            self.current_subsection_row = self.row_size - self.max_row_show
 
         if len(list_group) > 0:  # remove previous subsection in the group before generate new one
             for stuff in list_group:
@@ -202,7 +202,7 @@ class Lorebook(pygame.sprite.Sprite):
                 list_group.add(
                     SubsectionName(self.screen_scale, (pos[0] + column, pos[1] + row), item, loop_list[index]))  # add new subsection sprite to group
                 row += (41 * self.screen_scale[1])  # next row
-                if len(list_group) > self.max_subsection_show:
+                if len(list_group) > self.max_row_show:
                     break  # will not generate more than space allowed
 
     def page_design(self):
@@ -445,11 +445,12 @@ class Lorebook(pygame.sprite.Sprite):
 
 
 class SubsectionList(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, image):
+    def __init__(self, pos, image):
         self._layer = 23
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = image
         self.rect = self.image.get_rect(topright=pos)
+        self.max_row_show = 19
 
 
 class SubsectionName(pygame.sprite.Sprite):
@@ -509,7 +510,7 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                 if button in ui and button.rect.collidepoint(self.mouse_pos):  # click button
                     if button.event in range(0, 11):  # section button
                         self.encyclopedia.change_section(button.event, self.lore_name_list, self.subsection_name,
-                                                         self.lore_scroll,
+                                                         self.lore_name_list.scroll,
                                                          self.page_button, ui)  # change to section of that button
 
                     elif button.event == "close" or esc_press:  # Close button
@@ -523,16 +524,17 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
 
                     break  # found clicked button, break loop
 
-            for name in self.subsection_name:
-                if name.rect.collidepoint(self.mouse_pos):  # click on subsection name
-                    self.encyclopedia.change_subsection(name.subsection, self.page_button, ui)  # change subsection
-                    break  # found clicked subsection, break loop
-
-        if self.lore_scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-            self.encyclopedia.current_subsection_row = self.lore_scroll.player_input(
+        if self.lore_name_list.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
+            self.encyclopedia.current_subsection_row = self.lore_name_list.scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
             self.encyclopedia.setup_subsection_list(self.lore_name_list,
                                                     self.subsection_name)  # update subsection name list
+        else:
+            if mouse_up:
+                for name in self.subsection_name:
+                    if name.rect.collidepoint(self.mouse_pos):  # click on subsection name
+                        self.encyclopedia.change_subsection(name.subsection, self.page_button, ui)  # change subsection
+                        break  # found clicked subsection, break loop
 
     elif mouse_scroll_up:
         if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
@@ -541,19 +543,19 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                 self.encyclopedia.current_subsection_row = 0
             else:
                 self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name)
-                self.lore_scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
+                self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
 
     elif mouse_scroll_down:
         if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
             self.encyclopedia.current_subsection_row += 1
-            if self.encyclopedia.current_subsection_row + self.encyclopedia.max_subsection_show - 1 < self.encyclopedia.log_size:
+            if self.encyclopedia.current_subsection_row + self.encyclopedia.max_row_show - 1 < self.encyclopedia.row_size:
                 self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name)
-                self.lore_scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
+                self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
             else:
                 self.encyclopedia.current_subsection_row -= 1
 
     if close or esc_press:
-        ui.remove(self.encyclopedia, *self.lore_button_ui, self.lore_scroll,
+        ui.remove(self.encyclopedia, *self.lore_button_ui, self.lore_name_list.scroll,
                   self.lore_name_list)  # remove encyclopedia related sprites
         for name in self.subsection_name:  # remove subsection name
             name.kill()

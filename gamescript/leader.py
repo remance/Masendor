@@ -1,20 +1,5 @@
-import sys
-
 import pygame
 import pygame.freetype
-
-
-def change_leader_genre(self):
-    """
-    Change genre method to leader class
-    :param self: Game object
-    """
-    import importlib
-
-    leader_combat = importlib.import_module("gamescript." + self.genre + ".leader.leader_combat")
-
-    Leader.pos_change_stat = leader_combat.pos_change_stat
-    Leader.gone = leader_combat.gone
 
 
 class Leader(pygame.sprite.Sprite):
@@ -22,10 +7,10 @@ class Leader(pygame.sprite.Sprite):
     leader_pos = None
 
     # method that change based on genre
-    pos_change_stat = None
-    gone = None
+    def leader_role_change(self, *args): pass
+    def gone(self, *args): pass
 
-    def __init__(self, leader_id, subunit_position, army_position, unit, leader_data):
+    def __init__(self, leader_id, subunit_position, role, unit, leader_data):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
@@ -55,8 +40,8 @@ class Leader(pygame.sprite.Sprite):
         self.team = self.unit.team
         self.subunit = None  # get assigned in start_set
         # self.mana = stat["Mana"]
-        self.army_position = army_position  # position in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
-        self.image_position = self.leader_pos[self.army_position]  # image position based on army_position in command ui
+        self.role = role  # role in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
+        self.image_position = self.leader_pos[self.role]  # image position based on role in command ui
 
         try:  # Put leader image into leader slot
             image_name = str(leader_id) + ".png"
@@ -78,7 +63,7 @@ class Leader(pygame.sprite.Sprite):
 
         self.leader_skill = self.skill.copy()
         self.skill = {value: leader_data.skill_list[value] for value in self.skill if value in leader_data.skill_list}
-        if self.army_position == 0:
+        if self.role == 0:
             self.bad_morale = (30, 50)  # general morale lost when destroyed
             if self.unit.commander:
                 self.commander = True
@@ -91,7 +76,7 @@ class Leader(pygame.sprite.Sprite):
     def start_set(self):
         self.subunit = self.unit.subunits[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
-        if self.army_position == 0:  # unit leader
+        if self.role == 0:  # unit leader
             self.unit.leader_subunit = self.subunit  # TODO add this to when change leader or leader move ot other subunit
             # self.unit.leader_subunit - self.unit.base_pos
             self.subunit.unit_leader = True
@@ -99,7 +84,6 @@ class Leader(pygame.sprite.Sprite):
             squad_penal = int(
                 (self.subunit_pos / len(self.unit.subunit_list[0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squad_penal / 100) / 2)
-
 
     def update(self):
         if self.state not in (96, 97, 98, 99, 100):
@@ -109,9 +93,3 @@ class Leader(pygame.sprite.Sprite):
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
                 self.gone()
 
-    def delete(self, local=False):
-        """delete reference when the method is called"""
-        self.unit = None
-        self.subunit = None
-        if local:
-            print(locals())

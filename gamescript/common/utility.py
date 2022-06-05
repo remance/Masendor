@@ -256,13 +256,13 @@ def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, c
             current_row = 0
         else:
             setup_list(screen_scale, menu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
-            scroll.change_image(new_row=current_row, log_size=len(name_list))
+            scroll.change_image(new_row=current_row, row_size=len(name_list))
 
     elif mouse_scroll_down:
         current_row += 1
         if current_row + box.max_row_show - 1 < len(name_list):
             setup_list(screen_scale, menu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
-            scroll.change_image(new_row=current_row, log_size=len(name_list))
+            scroll.change_image(new_row=current_row, row_size=len(name_list))
         else:
             current_row -= 1
     return current_row
@@ -282,27 +282,27 @@ def popout_lorebook(self, section, game_id):
 
 
 def popup_list_open(self, new_rect, new_list, ui_type):
-    """Move popup_listbox and scroll sprite to new location and create new name list baesd on type"""
+    """Move popup_listbox and scroll sprite to new location and create new name list based on type"""
     self.current_popup_row = 0
 
     if ui_type == "leader" or ui_type == "genre":
-        self.popup_listbox.rect = self.popup_listbox.image.get_rect(topleft=new_rect)
+        self.popup_list_box.rect = self.popup_list_box.image.get_rect(topleft=new_rect)
     else:
-        self.popup_listbox.rect = self.popup_listbox.image.get_rect(midbottom=new_rect)
+        self.popup_list_box.rect = self.popup_list_box.image.get_rect(midbottom=new_rect)
 
     setup_list(self.screen_scale, menu.NameList, 0, new_list, self.popup_namegroup,
-               self.popup_listbox, self.battle_ui_updater, layer=19)
+               self.popup_list_box, self.battle_ui_updater, layer=19)
 
-    self.popup_list_scroll.pos = self.popup_listbox.rect.topright  # change position variable
-    self.popup_list_scroll.rect = self.popup_list_scroll.image.get_rect(topleft=self.popup_listbox.rect.topright)  #
-    self.popup_list_scroll.change_image(new_row=0, log_size=len(new_list))
+    self.popup_list_box.scroll.pos = self.popup_list_box.rect.topright  # change position variable
+    self.popup_list_box.scroll.rect = self.popup_list_box.image.get_rect(topleft=self.popup_list_box.rect.topright)  #
+    self.popup_list_box.scroll.change_image(new_row=0, row_size=len(new_list))
 
     if ui_type == "genre":
-        self.main_ui_updater.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)
+        self.main_ui_updater.add(self.popup_list_box, *self.popup_namegroup, self.popup_list_box.scroll)
     else:
-        self.battle_ui_updater.add(self.popup_listbox, *self.popup_namegroup, self.popup_list_scroll)  # add the option list to screen
+        self.battle_ui_updater.add(self.popup_list_box, *self.popup_namegroup, self.popup_list_box.scroll)  # add the option list to screen
 
-    self.popup_listbox.type = ui_type
+    self.popup_list_box.type = ui_type
 
 
 def stat_convert(row, n, i, mod_column=(), list_column=(), tuple_column=(), int_column=(), float_column=(), boolean_column=()):
@@ -378,18 +378,21 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), tuple_column=(), int_
 
 def clean_group_object(groups):
     for group in groups:
-        if type(group) == pygame.sprite.Group or type(group) == list or type(group) == tuple:
-            for stuff in group:
-                stuff.kill()
-                stuff.delete()
-                del stuff
-        elif type(group) == dict:
-            for stuff in group.values():
-                for item in stuff:
-                    item.kill()
-                    item.delete()
-                    del item
-        else:
-            group.kill()
-            group.delete()
-            del group
+        if len(group) > 0:
+            if type(group) == pygame.sprite.Group or type(group) == list or type(group) == tuple:
+                for stuff in group:
+                    stuff.kill()
+                    for attribute in tuple(stuff.__dict__.keys()):
+                        stuff.__delattr__(attribute)
+                    del stuff
+            elif type(group) == dict:
+                for stuff in group.values():
+                    for item in stuff:
+                        item.kill()
+                        for attribute in tuple(stuff.__dict__.keys()):
+                            stuff.__delattr__(attribute)
+                        del item
+            else:
+                group.kill()
+                group.delete()
+                del group

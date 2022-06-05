@@ -2,7 +2,7 @@ import datetime
 
 import pygame
 import pygame.freetype
-from gamescript import map
+from gamescript import battlemap
 from gamescript.common import utility, animation
 
 
@@ -76,10 +76,10 @@ class InspectUI(pygame.sprite.Sprite):
 
 class TopBar(pygame.sprite.Sprite):
     def __init__(self, image, icon, text="", text_size=16):
-        from gamescript import start
-        self.unit_state_text = start.unit_state_text
-        self.morale_state_text = start.morale_state_text
-        self.stamina_state_text = start.stamina_state_text
+        from gamescript import game
+        self.unit_state_text = game.unit_state_text
+        self.morale_state_text = game.morale_state_text
+        self.stamina_state_text = game.stamina_state_text
 
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
@@ -141,12 +141,12 @@ class TopBar(pygame.sprite.Sprite):
 
 class TroopCard(pygame.sprite.Sprite):
     def __init__(self, image, font_size=16):
-        from gamescript import start
+        from gamescript import game
 
-        self.subunit_state_text = start.subunit_state_text
-        self.quality_text = start.quality_text
-        self.leader_state_text = start.leader_state_text
-        self.terrain_list = map.terrain_list
+        self.subunit_state_text = game.subunit_state_text
+        self.quality_text = game.quality_text
+        self.leader_state_text = game.leader_state_text
+        self.terrain_list = battlemap.terrain_list
 
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
@@ -492,7 +492,6 @@ class MiniMap(pygame.sprite.Sprite):
 
 class EventLog(pygame.sprite.Sprite):
     max_row_show = 9  # maximum 9 text rows can appear at once
-    log_scroll = None  # Link from battle after creation of both object
 
     def __init__(self, image, pos):
         self._layer = 10
@@ -510,6 +509,7 @@ class EventLog(pygame.sprite.Sprite):
         self.leader_log = []  # 2 leader
         self.subunit_log = []  # 3 subunit
         self.current_start_row = 0
+        self.scroll = None  # Link from battle after creation of the object
 
     def make_new_log(self):
         self.mode = 0  # 0=troop,1=army(subunit),2=leader,3=subunit(sub-subunit)
@@ -543,8 +543,8 @@ class EventLog(pygame.sprite.Sprite):
         self.current_start_row = 0
         if self.len_check > self.max_row_show:  # go to last row if there are more log than limit
             self.current_start_row = self.len_check - self.max_row_show
-        self.log_scroll.current_row = self.current_start_row
-        self.log_scroll.change_image(log_size=self.len_check)
+        self.scroll.current_row = self.current_start_row
+        self.scroll.change_image(row_size=self.len_check)
         self.recreate_image()
 
     def clear_tab(self, all_tab=False):
@@ -556,8 +556,8 @@ class EventLog(pygame.sprite.Sprite):
         if all_tab:  # Clear event from every mode
             for log in (self.battle_log, self.unit_log, self.leader_log, self.subunit_log):
                 log.clear()
-        self.log_scroll.current_row = self.current_start_row
-        self.log_scroll.change_image(log_size=self.len_check)
+        self.scroll.current_row = self.current_start_row
+        self.scroll.change_image(row_size=self.len_check)
         self.recreate_image()
 
     def recreate_image(self):
@@ -623,16 +623,26 @@ class EventLog(pygame.sprite.Sprite):
             self.len_check = len((self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode])
             if at_last_row and self.len_check > 9:
                 self.current_start_row = self.len_check - self.max_row_show
-                self.log_scroll.current_row = self.current_start_row
-            self.log_scroll.change_image(log_size=self.len_check)
+                self.scroll.current_row = self.current_start_row
+            self.scroll.change_image(row_size=self.len_check)
             self.recreate_image()
 
 
-class UIScroller(pygame.sprite.Sprite):
-    def __init__(self, pos, height_ui, max_row_show, layer=11):
-        self._layer = layer
+class UIScroll(pygame.sprite.Sprite):
+    def __init__(self, ui, pos):
+        """
+        Scroll for any applicable ui
+        :param ui: Any ui object, the ui must has max_row_show attribute, layer, and image surface
+        :param pos: Starting pos
+        :param layer: Surface layer value
+        """
+        self.ui = ui
+        self._layer = self.ui.layer + 2  # always 2 layer higher than the ui and its item
         pygame.sprite.Sprite.__init__(self)
-        self.height_ui = height_ui
+
+        self.ui.scroll = self
+        self.height_ui = self.ui.image.get_height()
+        self.max_row_show = self.ui.max_row_show
         self.pos = pos
         self.image = pygame.Surface((10, self.height_ui))
         self.image.fill((255, 255, 255))
@@ -641,59 +651,95 @@ class UIScroller(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, self.button_colour, (0, 0, self.image.get_width(), self.height_ui))
         self.rect = self.image.get_rect(topright=self.pos)
         self.current_row = 0
-        self.max_row_show = max_row_show
-        self.log_size = 0
+        self.row_size = 0
 
     def create_new_image(self):
         percent_row = 0
         max_row = 100
         self.image = self.image_original.copy()
-        if self.log_size > 0:
-            percent_row = self.current_row * 100 / self.log_size
-        # if self.current_row + self.max_row_show < self.log_size:
-        if self.log_size > 0:
-            max_row = (self.current_row + self.max_row_show) * 100 / self.log_size
+        if self.row_size > 0:
+            percent_row = self.current_row * 100 / self.row_size
+        if self.row_size > 0:
+            max_row = (self.current_row + self.max_row_show) * 100 / self.row_size
         max_row = max_row - percent_row
         pygame.draw.rect(self.image, self.button_colour,
                          (0, int(self.height_ui * percent_row / 100), self.image.get_width(), int(self.height_ui * max_row / 100)))
 
-    def change_image(self, new_row=None, log_size=None):
-        """New row is input of scrolling by user to new row, log_size is changing based on adding more log or clear"""
-        if log_size is not None and self.log_size != log_size:
-            self.log_size = log_size
+    def change_image(self, new_row=None, row_size=None):
+        """New row is input of scrolling by user to new row, row_size is changing based on adding more log or clear"""
+        if row_size is not None and self.row_size != row_size:
+            self.row_size = row_size
             self.create_new_image()
         if new_row is not None and self.current_row != new_row:  # accept from both wheeling scroll and drag scroll bar
             self.current_row = new_row
             self.create_new_image()
 
-    def player_input(self, mouse_pos):
-        """User input update"""
-        if self.rect.collidepoint(mouse_pos) and mouse_pos is not None:
+    def player_input(self, mouse_pos, mouse_scroll_up=False, mouse_scroll_down=False):
+        """Player input update via click or scrolling"""
+        if mouse_pos is not None and self.rect.collidepoint(mouse_pos):
             mouse_value = (mouse_pos[1] - self.pos[
                 1]) * 100 / self.height_ui  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
             if mouse_value > 100:
                 mouse_value = 100
             if mouse_value < 0:
                 mouse_value = 0
-            new_row = int(self.log_size * mouse_value / 100)
-            if self.log_size > self.max_row_show and new_row > self.log_size - self.max_row_show:
-                new_row = self.log_size - self.max_row_show
-            if self.log_size > self.max_row_show:  # only change scroll position in list longer than max length
+            new_row = int(self.row_size * mouse_value / 100)
+            if self.row_size > self.max_row_show and new_row > self.row_size - self.max_row_show:
+                new_row = self.row_size - self.max_row_show
+            if self.row_size > self.max_row_show:  # only change scroll position in list longer than max length
                 self.change_image(new_row)
             return self.current_row
 
 
 class UnitSelector(pygame.sprite.Sprite):
-    def __init__(self, pos, image):
+    def __init__(self, pos, image, icon_scale=1):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.icon_scale = icon_scale
         self.current_row = 0
         self.max_row_show = 2
         self.max_column_show = 6
-        self.log_size = 0
+        self.row_size = 0
+        self.scroll = None  # got add after create scroll object
+
+    def setup_unit_icon(self, unit_icon_group, unit_list):
+        """Setup unit selection list in unit selector ui top left of screen"""
+        current_index = int(self.current_row * self.max_column_show)  # the first index of current row
+        self.row_size = len(unit_list) / self.max_column_show
+
+        if self.row_size.is_integer() is False:
+            self.row_size = int(self.row_size) + 1
+
+        if self.current_row > self.row_size - 1:
+            self.current_row = self.row_size - 1
+            current_index = int(self.current_row * self.max_column_show)
+            self.scroll.change_image(new_row=self.current_row)
+
+        if len(unit_icon_group) > 0:  # remove all old icon first before making new list
+            for icon in unit_icon_group:
+                icon.kill()
+                del icon
+
+        if len(unit_list) > 0:
+            for index, unit in enumerate(unit_list):  # add unit icon for drawing according to appropriated current row
+                if index == 0:
+                    start_column = self.rect.topleft[0] + (unit.leader[0].image.get_width() / 1.5)
+                    column = start_column
+                    row = self.rect.topleft[1] + (unit.leader[0].image.get_height() / 1.5)
+                if index >= current_index:
+                    new_icon = UnitIcon((column, row), unit, (int(unit.leader[0].image.get_width() * self.icon_scale),
+                                                              int(unit.leader[0].image.get_height() * self.icon_scale)))
+                    unit_icon_group.add(new_icon)
+                    column += new_icon.image.get_width() * 1.2
+                    if column > self.rect.topright[0] - new_icon.image.get_width():
+                        row += new_icon.image.get_height() * 1.5
+                        column = start_column
+                    if row > self.rect.bottomright[1] - (new_icon.image.get_height() / 2):
+                        break  # do not draw for row that exceed the box
+        self.scroll.change_image(row_size=self.row_size)
 
 
 class UnitIcon(pygame.sprite.Sprite):
@@ -752,13 +798,6 @@ class UnitIcon(pygame.sprite.Sprite):
         else:
             self.selected = True
             self.image = self.selected_image
-
-    def delete(self, local=False):
-        """delete reference when del is called"""
-        if local:
-            print(locals())
-        else:
-            del self.unit
 
 
 class Timer(pygame.sprite.Sprite):
@@ -946,6 +985,16 @@ class WheelUI(pygame.sprite.Sprite):
             else:
                 self.image.blit(self.wheel_image_with_stuff[index], rect)
         if self.choice_list and closest_rect_index <= len(self.choice_list) - 1:
+            text_surface = self.font.render(self.choice_list[closest_rect_index], True, (0, 0, 0))
+            text_box = pygame.Surface((text_surface.get_width() * 1.2,
+                                       text_surface.get_height() * 1.2))  # empty image
+            text_box.fill((255, 255, 255))
+            text_rect = text_surface.get_rect(center=(text_box.get_width() / 2,
+                                                      text_box.get_height() / 2))
+            text_box.blit(text_surface, text_rect)
+            box_rect = text_surface.get_rect(center=(self.image.get_width() / 2,
+                                                     self.image.get_height() / 2.5))
+            self.image.blit(text_box, box_rect)  # blit text description at the center of wheel
             return self.choice_list[closest_rect_index]
 
     def change_text_icon(self, blit_list):
@@ -953,7 +1002,7 @@ class WheelUI(pygame.sprite.Sprite):
         self.image = self.image_original2.copy()
         self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
         self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
-        self.choice_list = blit_list
+        self.choice_list = tuple(blit_list.keys())
         for index, item in enumerate(blit_list):
             if item is not None:  # Wheel choice with icon or text inside
                 if type(item) == str:  # text
@@ -1011,11 +1060,6 @@ class InspectSubunit(pygame.sprite.Sprite):
         self.who = who
         self.image = self.who.block
         self.rect = self.image.get_rect(topleft=self.pos)
-
-    def delete(self, local=False):
-        self.who = None
-        if local:
-            print(locals())
 
 
 class BattleDone(pygame.sprite.Sprite):
@@ -1148,8 +1192,8 @@ class TroopNumber(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(topleft=self.pos)
 
         if self.who.state == 100:
+            self.who = None
             self.kill()
-            self.delete()
 
     def circle_points(self, r):
         """Calculate text point to add background"""
@@ -1193,9 +1237,3 @@ class TroopNumber(pygame.sprite.Sprite):
 
         return surface
 
-    def delete(self, local=False):
-        """delete reference when del is called"""
-        if local:
-            print(locals())
-        else:
-            del self.who

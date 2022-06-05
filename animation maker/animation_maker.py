@@ -135,7 +135,7 @@ def property_to_pool_data(which):
     if which == "anim":
         for frame in model.frame_list:
             frame["animation_property"] = select_list
-        if anim_prop_listbox.rect.collidepoint(mouse_pos):
+        if anim_prop_list_box.rect.collidepoint(mouse_pos):
             for direction in range(0, 5):
                 for frame in range(0, len(current_pool[direction][animation_name])):
                     current_pool[direction][animation_name][frame]["animation_property"] = select_list
@@ -149,9 +149,9 @@ def change_animation(new_name):
     global animation_name, current_frame, current_anim_row, current_frame_row, anim_property_select, frame_property_select
     current_frame = 0
     anim.show_frame = current_frame
-    anim_prop_listbox.namelist = anim_property_list + ["Custom"]  # reset property list
+    anim_prop_list_box.namelist = anim_property_list + ["Custom"]  # reset property list
     anim_property_select = []
-    frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
+    frame_prop_list_box.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
     frame_property_select = [[] for _ in range(10)]
     current_anim_row = 0
     current_frame_row = 0
@@ -159,8 +159,8 @@ def change_animation(new_name):
     animation_name = new_name
     animation_selector.change_name(new_name)
     reload_animation(anim, model)
-    anim_prop_list_scroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
-    frame_prop_list_scroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
+    anim_prop_list_box.scroll.change_image(new_row=0, row_size=len(anim_prop_list_box.namelist))
+    frame_prop_list_box.scroll.change_image(new_row=0, row_size=len(frame_prop_list_box.namelist[current_frame]))
 
 
 race_list = []
@@ -754,14 +754,14 @@ class Model:
                     elif "property" in part and pose[part] != [""]:
                         if "animation" in part:
                             for stuff in pose[part]:
-                                if stuff not in anim_prop_listbox.namelist:
-                                    anim_prop_listbox.namelist.insert(-1, stuff)
+                                if stuff not in anim_prop_list_box.namelist:
+                                    anim_prop_list_box.namelist.insert(-1, stuff)
                                 if stuff not in anim_property_select:
                                     anim_property_select.append(stuff)
                         elif "frame" in part and pose[part] != 0:
                             for stuff in pose[part]:
-                                if stuff not in frame_prop_listbox.namelist[index]:
-                                    frame_prop_listbox.namelist[index].insert(-1, stuff)
+                                if stuff not in frame_prop_list_box.namelist[index]:
+                                    frame_prop_list_box.namelist[index].insert(-1, stuff)
                                 if stuff not in frame_property_select[index]:
                                     frame_property_select[index].append(stuff)
                 self.bodypart_list[index] = bodypart_list
@@ -809,10 +809,10 @@ class Model:
                     break
 
         # recreate property list
-        setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                   anim_prop_listbox, ui, screen_scale, layer=9, old_list=anim_property_select)
-        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                   frame_prop_listbox, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
+        setup_list(menu.NameList, current_anim_row, anim_prop_list_box.namelist, anim_prop_namegroup,
+                   anim_prop_list_box, ui, screen_scale, layer=9, old_list=anim_property_select)
+        setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
+                   frame_prop_list_box, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
 
     def create_animation_film(self, pose_layer_list, frame, empty=False):
         image = pygame.Surface((default_sprite_size[0] * self.size, default_sprite_size[1] * self.size),
@@ -1438,7 +1438,7 @@ Filmstrip.containers = ui, filmstrips
 NameBox.containers = ui
 menu.MenuButton.containers = fake_group
 menu.NameList.containers = ui
-popup_listbox = pygame.sprite.Group()
+popup_list_box = pygame.sprite.Group()
 popup_namegroup = pygame.sprite.Group()
 anim_prop_namegroup = pygame.sprite.Group()
 frame_prop_namegroup = pygame.sprite.Group()
@@ -1571,33 +1571,24 @@ colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, 
 box_img = load_image(current_dir, screen_scale, "property_box.png", "animation_maker_ui")
 big_box_img = load_image(main_dir, screen_scale, "biglistbox.png", "ui\\mainmenu_ui")
 
-menu.ListBox.containers = popup_listbox
-popup_listbox = menu.ListBox(screen_scale, (0, 0), big_box_img, 16)  # popup box need to be in higher layer
-popup_list_scroll = battleui.UIScroller(popup_listbox.rect.topright,
-                                        popup_listbox.image.get_height(),
-                                        popup_listbox.max_row_show,
-                                        layer=18)
-anim_prop_listbox = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
-                                                (reset_button.image.get_height() * 1.5)), box_img, 8)
-anim_prop_listbox.namelist = anim_property_list + ["Custom"]
-frame_prop_listbox = menu.ListBox(screen_scale, (screen_size[0] - box_img.get_width(), filmstrip_list[0].rect.midbottom[1] +
+menu.ListBox.containers = popup_list_box
+popup_list_box = menu.ListBox(screen_scale, (0, 0), big_box_img, 16)  # popup box need to be in higher layer
+battleui.UIScroll(popup_list_box, popup_list_box.rect.topright) # create scroll for popup list box
+anim_prop_list_box = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
                                                  (reset_button.image.get_height() * 1.5)), box_img, 8)
-frame_prop_listbox.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
-anim_prop_list_scroll = battleui.UIScroller(anim_prop_listbox.rect.topright,
-                                            anim_prop_listbox.image.get_height(),
-                                            anim_prop_listbox.max_row_show,
-                                            layer=10)
-frame_prop_list_scroll = battleui.UIScroller(frame_prop_listbox.rect.topright,
-                                             frame_prop_listbox.image.get_height(),
-                                             frame_prop_listbox.max_row_show,
-                                             layer=10)
+anim_prop_list_box.namelist = anim_property_list + ["Custom"]
+frame_prop_list_box = menu.ListBox(screen_scale, (screen_size[0] - box_img.get_width(), filmstrip_list[0].rect.midbottom[1] +
+                                                  (reset_button.image.get_height() * 1.5)), box_img, 8)
+frame_prop_list_box.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
+battleui.UIScroll(anim_prop_list_box, anim_prop_list_box.rect.topright)  # create scroll for animation prop box
+battleui.UIScroll(frame_prop_list_box, frame_prop_list_box.rect.topright)  # create scroll for frame prop box
 current_anim_row = 0
 current_frame_row = 0
 frame_property_select = [[] for _ in range(10)]
 anim_property_select = []
-anim_prop_list_scroll.change_image(new_row=0, log_size=len(anim_prop_listbox.namelist))
-frame_prop_list_scroll.change_image(new_row=0, log_size=len(frame_prop_listbox.namelist[current_frame]))
-ui.add(anim_prop_listbox, frame_prop_listbox, anim_prop_list_scroll, frame_prop_list_scroll)
+anim_prop_list_box.scroll.change_image(new_row=0, row_size=len(anim_prop_list_box.namelist))
+frame_prop_list_box.scroll.change_image(new_row=0, row_size=len(frame_prop_list_box.namelist[current_frame]))
+ui.add(anim_prop_list_box, frame_prop_list_box, anim_prop_list_box.scroll, frame_prop_list_box.scroll)
 
 animation_selector = NameBox((400, image.get_height()), (screen_size[0] / 2, 0))
 part_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 4,
@@ -1683,23 +1674,23 @@ while True:
                     mouse_scroll_up = True
                 else:  # Mouse scroll down
                     mouse_scroll_down = True
-                if popup_listbox in ui and popup_listbox.rect.collidepoint(mouse_pos):
-                    current_popup_row = list_scroll(mouse_scroll_up, mouse_scroll_down, popup_list_scroll,
-                                                    popup_listbox, current_popup_row, popup_listbox.namelist,
+                if popup_list_box in ui and popup_list_box.rect.collidepoint(mouse_pos):
+                    current_popup_row = list_scroll(mouse_scroll_up, mouse_scroll_down,
+                                                    popup_list_box, current_popup_row, popup_list_box.namelist,
                                                     popup_namegroup, ui, screen_scale)
                 elif model.part_selected != [] and showroom.rect.collidepoint(mouse_pos):
                     if event.button == 4:  # Mouse scroll up
                         model.edit_part(mouse_pos, "scale_up")
                     else:  # Mouse scroll down
                         model.edit_part(mouse_pos, "scale_down")
-                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or anim_prop_list_scroll.rect.collidepoint(mouse_pos):
-                    current_anim_row = list_scroll(mouse_scroll_up, mouse_scroll_down, anim_prop_list_scroll,
-                                                   anim_prop_listbox, current_anim_row, anim_prop_listbox.namelist,
+                elif anim_prop_list_box.rect.collidepoint(mouse_pos) or anim_prop_list_box.scroll.rect.collidepoint(mouse_pos):
+                    current_anim_row = list_scroll(mouse_scroll_up, mouse_scroll_down,
+                                                   anim_prop_list_box, current_anim_row, anim_prop_list_box.namelist,
                                                    anim_prop_namegroup, ui, screen_scale, old_list=anim_property_select)
-                elif frame_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_list_scroll.rect.collidepoint(mouse_pos):
-                    current_frame_row = list_scroll(mouse_scroll_up, mouse_scroll_down, frame_prop_list_scroll,
-                                                    frame_prop_listbox, current_frame_row,
-                                                    frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
+                elif frame_prop_list_box.rect.collidepoint(mouse_pos) or frame_prop_list_box.scroll.rect.collidepoint(mouse_pos):
+                    current_frame_row = list_scroll(mouse_scroll_up, mouse_scroll_down,
+                                                    frame_prop_list_box, current_frame_row,
+                                                    frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
                                                     ui, screen_scale, old_list=frame_property_select[current_frame])
 
         elif event.type == pygame.KEYDOWN:
@@ -1775,35 +1766,35 @@ while True:
                 keypress_delay = 0
 
         if mouse_left_up:
-            if popup_listbox in ui:
-                if popup_listbox.rect.collidepoint(mouse_pos):
+            if popup_list_box in ui:
+                if popup_list_box.rect.collidepoint(mouse_pos):
                     popup_click = True
                     for index, name in enumerate(popup_namegroup):  # click on popup list
                         if name.rect.collidepoint(mouse_pos):
-                            if popup_listbox.action == "part_side":
+                            if popup_list_box.action == "part_side":
                                 direction_part_button.change_text(name.name)
                                 if model.part_selected:
                                     model.edit_part(mouse_pos, "direction_" + name.name)
-                            elif popup_listbox.action == "part_select":
+                            elif popup_list_box.action == "part_select":
                                 model.edit_part(mouse_pos, "part_" + name.name)
-                            elif popup_listbox.action == "race_select":
+                            elif popup_list_box.action == "race_select":
                                 model.edit_part(mouse_pos, "race_" + name.name)
-                            elif "person" in popup_listbox.action:
+                            elif "person" in popup_list_box.action:
                                 p_body_helper.change_p_type(name.name, player_change=True)
                                 p_selector.change_name(name.name)
-                            elif "armour" in popup_listbox.action:
-                                model.edit_part(mouse_pos, popup_listbox.action[0:3] + "armour_" + name.name)
+                            elif "armour" in popup_list_box.action:
+                                model.edit_part(mouse_pos, popup_list_box.action[0:3] + "armour_" + name.name)
                                 armour_selector.change_name(name.name)
-                            elif "eye" in popup_listbox.action:
+                            elif "eye" in popup_list_box.action:
                                 eye_selector.change_name("Eye: " + name.name)
-                                model.edit_part(mouse_pos, popup_listbox.action[0:3] + "eye_" + name.name)
-                            elif "mouth" in popup_listbox.action:
+                                model.edit_part(mouse_pos, popup_list_box.action[0:3] + "eye_" + name.name)
+                            elif "mouth" in popup_list_box.action:
                                 mouth_selector.change_name("Mouth: " + name.name)
-                                model.edit_part(mouse_pos, popup_listbox.action[0:3] + "mouth_" + name.name)
-                            elif popup_listbox.action == "animation_select":
+                                model.edit_part(mouse_pos, popup_list_box.action[0:3] + "mouth_" + name.name)
+                            elif popup_list_box.action == "animation_select":
                                 if animation_name != name.name:
                                     change_animation(name.name)
-                            elif popup_listbox.action == "animation_side":
+                            elif popup_list_box.action == "animation_side":
                                 direction_button.change_text(name.name)
                                 current_frame = 0
                                 anim.show_frame = current_frame
@@ -1813,22 +1804,22 @@ while True:
                             for this_name in popup_namegroup:  # remove name list
                                 this_name.kill()
                                 del this_name
-                            ui.remove(popup_listbox, popup_list_scroll)
+                            ui.remove(popup_list_box, popup_list_box.scroll)
                             current_popup_row = 0  # reset row
 
-                elif popup_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                elif popup_list_box.scroll.rect.collidepoint(mouse_pos):  # scrolling on list
                     popup_click = True
-                    new_row = popup_list_scroll.player_input(mouse_pos)
+                    new_row = popup_list_box.scroll.player_input(mouse_pos)
                     if new_row is not None:
                         current_popup_row = new_row
-                        setup_list(menu.NameList, current_popup_row, popup_listbox.namelist, popup_namegroup,
-                                   popup_listbox, ui, screen_scale, layer=19)
+                        setup_list(menu.NameList, current_popup_row, popup_list_box.namelist, popup_namegroup,
+                                   popup_list_box, ui, screen_scale, layer=19)
 
                 else:  # click other stuffs
                     for this_name in popup_namegroup:  # remove name list
                         this_name.kill()
                         del this_name
-                    ui.remove(popup_listbox, popup_list_scroll)
+                    ui.remove(popup_list_box, popup_list_box.scroll)
 
             if popup_click is False:  # button that can be clicked even when animation playing
                 if play_animation_button.rect.collidepoint(mouse_pos):
@@ -1863,31 +1854,31 @@ while True:
                         joint_button.change_option(0)
                         show_joint = False
 
-                elif anim_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = anim_prop_list_scroll.player_input(mouse_pos)
+                elif anim_prop_list_box.scroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                    new_row = anim_prop_list_box.scroll.player_input(mouse_pos)
                     if new_row is not None:
                         current_anim_row = new_row
-                        setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                                   anim_prop_listbox, ui, screen_scale, layer=9, old_list=anim_property_select)
+                        setup_list(menu.NameList, current_anim_row, anim_prop_list_box.namelist, anim_prop_namegroup,
+                                   anim_prop_list_box, ui, screen_scale, layer=9, old_list=anim_property_select)
 
-                elif frame_prop_list_scroll.rect.collidepoint(mouse_pos):  # scrolling on list
-                    new_row = frame_prop_list_scroll.player_input(mouse_pos)
+                elif frame_prop_list_box.scroll.rect.collidepoint(mouse_pos):  # scrolling on list
+                    new_row = frame_prop_list_box.scroll.player_input(mouse_pos)
                     if new_row is not None:
                         current_frame_row = new_row
-                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                   frame_prop_listbox, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
+                        setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
+                                   frame_prop_list_box, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
 
-                elif anim_prop_listbox.rect.collidepoint(mouse_pos) or frame_prop_listbox.rect.collidepoint(mouse_pos):
+                elif anim_prop_list_box.rect.collidepoint(mouse_pos) or frame_prop_list_box.rect.collidepoint(mouse_pos):
                     namegroup = anim_prop_namegroup  # click on animation property list
-                    listbox = anim_prop_listbox
+                    list_box = anim_prop_list_box
                     select_list = anim_property_select
-                    namelist = listbox.namelist
+                    namelist = list_box.namelist
                     naming = "anim"
-                    if frame_prop_listbox.rect.collidepoint(mouse_pos):  # click on frame property list
+                    if frame_prop_list_box.rect.collidepoint(mouse_pos):  # click on frame property list
                         namegroup = frame_prop_namegroup
-                        listbox = frame_prop_listbox
+                        list_box = frame_prop_list_box
                         select_list = frame_property_select[current_frame]
-                        namelist = listbox.namelist[current_frame]
+                        namelist = list_box.namelist[current_frame]
                         naming = "frame"
 
                     for index, name in enumerate(namegroup):
@@ -1909,7 +1900,7 @@ while True:
                                 elif name.selected is False:  # effect that no need input
                                     select_list.append(name.name)
                                     setup_list(menu.NameList, current_frame_row, namelist, namegroup,
-                                               listbox, ui, screen_scale, layer=9, old_list=select_list)
+                                               list_box, ui, screen_scale, layer=9, old_list=select_list)
                                     reload_animation(anim, model)
                                     property_to_pool_data(naming)
 
@@ -2049,12 +2040,12 @@ while True:
                         model.edit_part(mouse_pos, "reset")
 
                     elif direction_button.rect.collidepoint(mouse_pos):
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "animation_side",
+                        popup_list_open(popup_list_box, popup_namegroup, ui, "animation_side",
                                         direction_button.rect.bottomleft, direction_list, "top", screen_scale)
 
                     elif direction_part_button.rect.collidepoint(mouse_pos):
                         if race_part_button.text != "":
-                            popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "part_side",
+                            popup_list_open(popup_list_box, popup_namegroup, ui, "part_side",
                                             direction_part_button.rect.topleft, direction_list, "bottom", screen_scale)
 
                     elif part_selector.rect.collidepoint(mouse_pos):
@@ -2074,11 +2065,11 @@ while True:
                             except KeyError:  # look at weapon next
                                 selected_part = race_part_button.text
                                 part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
-                            popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui,
-                                            "part_select", part_selector.rect.topleft, part_list, "bottom", screen_scale)
+                            popup_list_open(popup_list_box, popup_namegroup, ui, "part_select",
+                                            part_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif p_selector.rect.collidepoint(mouse_pos):
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "person_select",
+                        popup_list_open(popup_list_box, popup_namegroup, ui, "person_select",
                                         p_selector.rect.topleft, p_list, "bottom", screen_scale)
                     elif armour_selector.rect.collidepoint(mouse_pos):
                         armour_part_list = []
@@ -2086,19 +2077,19 @@ while True:
                             for armour in gen_armour_sprite_pool[model.p_race[p_body_helper.ui_type]][item]:
                                 armour_part_list.append(item + "/" + armour)
                         part_list = ["None"] + armour_part_list
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_armour_select",
+                        popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_armour_select",
                                         armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif eye_selector.rect.collidepoint(mouse_pos):
                         part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
                                                        model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_eye_select",
+                        popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif mouth_selector.rect.collidepoint(mouse_pos):
                         part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
                                                        model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, p_body_helper.ui_type + "_mouth_select",
+                        popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif race_part_button.rect.collidepoint(mouse_pos):
@@ -2110,7 +2101,7 @@ while True:
                                 part_list = list(effect_sprite_pool)
                             else:
                                 part_list = list(gen_body_sprite_pool.keys())
-                            popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "race_select",
+                            popup_list_open(popup_list_box, popup_namegroup, ui, "race_select",
                                             race_part_button.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif new_button.rect.collidepoint(mouse_pos):
@@ -2134,7 +2125,7 @@ while True:
                         ui.add(input_ui_popup)
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
-                        popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui, "animation_select",
+                        popup_list_open(popup_list_box, popup_namegroup, ui, "animation_select",
                                         animation_selector.rect.bottomleft,
                                         [item for item in current_pool[direction]], "top", screen_scale,
                                         current_row=list(current_pool[direction].keys()).index(animation_name))
@@ -2147,8 +2138,8 @@ while True:
                                 anim.show_frame = current_frame
                                 model.edit_part(mouse_pos, "change")
                                 current_frame_row = 0
-                                setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                           frame_prop_listbox, ui, screen_scale, layer=9,
+                                setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
+                                           frame_prop_list_box, ui, screen_scale, layer=9,
                                            old_list=frame_property_select[current_frame])  # change frame property list
                                 for index, helper in enumerate(helper_list):
                                     helper.select_part(None, False, False)
@@ -2321,36 +2312,36 @@ while True:
                     anim.speed_ms = (500 / new_speed) / 1000
 
             elif text_input_popup[1] == "new_anim_prop":  # custom animation property
-                if input_box.text not in anim_prop_listbox.namelist:
-                    anim_prop_listbox.namelist.insert(-1, input_box.text)
+                if input_box.text not in anim_prop_list_box.namelist:
+                    anim_prop_list_box.namelist.insert(-1, input_box.text)
                 if input_box.text not in anim_property_select:
                     anim_property_select.append(input_box.text)
-                setup_list(menu.NameList, current_anim_row, anim_prop_listbox.namelist, anim_prop_namegroup,
-                           anim_prop_listbox, ui, screen_scale, layer=9, old_list=anim_property_select)
+                setup_list(menu.NameList, current_anim_row, anim_prop_list_box.namelist, anim_prop_namegroup,
+                           anim_prop_list_box, ui, screen_scale, layer=9, old_list=anim_property_select)
                 select_list = anim_property_select
                 property_to_pool_data("anim")
 
             elif text_input_popup[1] == "new_frame_prop":  # custom frame property
-                if input_box.text not in frame_prop_listbox.namelist:
-                    frame_prop_listbox.namelist[current_frame].insert(-1, input_box.text)
+                if input_box.text not in frame_prop_list_box.namelist:
+                    frame_prop_list_box.namelist[current_frame].insert(-1, input_box.text)
                 if input_box.text not in frame_property_select[current_frame]:
                     frame_property_select[current_frame].append(input_box.text)
-                setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                           frame_prop_listbox, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
+                setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
+                           frame_prop_list_box, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
                 select_list = frame_property_select[current_frame]
                 property_to_pool_data("frame")
 
             elif "_prop_num" in text_input_popup[1] and (input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]",
                                                                                                                          input_box.text) is None):  # add property that need value
                 namegroup = anim_prop_namegroup  # click on animation property list
-                listbox = anim_prop_listbox
-                namelist = listbox.namelist
+                list_box = anim_prop_list_box
+                namelist = list_box.namelist
                 select_list = anim_property_select
                 naming = "anim"
                 if "frame" in text_input_popup[1]:  # click on frame property list
                     namegroup = frame_prop_namegroup
-                    listbox = frame_prop_listbox
-                    namelist = listbox.namelist[current_frame]
+                    list_box = frame_prop_list_box
+                    namelist = list_box.namelist[current_frame]
                     select_list = frame_property_select[current_frame]
                     naming = "frame"
                 for name in namelist:
@@ -2359,7 +2350,7 @@ while True:
                         namelist[index] = name[0:name.rfind("_") + 1] + input_box.text
                         select_list.append(name[0:name.rfind("_") + 1] + input_box.text)
                         setup_list(menu.NameList, current_frame_row, namelist, namegroup,
-                                   listbox, ui, screen_scale, layer=9, old_list=select_list)
+                                   list_box, ui, screen_scale, layer=9, old_list=select_list)
                         reload_animation(anim, model)
                         property_to_pool_data(naming)
                         break
@@ -2371,13 +2362,13 @@ while True:
                     naming = "frame"
                 colour = colour_input_box.text.replace(" ", "")
                 colour = colour.replace(",", ".")
-                for name in frame_prop_listbox.namelist[current_frame]:
+                for name in frame_prop_list_box.namelist[current_frame]:
                     if name in (text_input_popup[1]):
-                        index = frame_prop_listbox.namelist[current_frame].index(name)
-                        frame_prop_listbox.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + colour
+                        index = frame_prop_list_box.namelist[current_frame].index(name)
+                        frame_prop_list_box.namelist[current_frame][index] = name[0:name.rfind("_") + 1] + colour
                         frame_property_select[current_frame].append(name[0:name.rfind("_") + 1] + colour)
-                        setup_list(menu.NameList, current_frame_row, frame_prop_listbox.namelist[current_frame], frame_prop_namegroup,
-                                   frame_prop_listbox, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
+                        setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
+                                   frame_prop_list_box, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
                         reload_animation(anim, model)
                         property_to_pool_data(naming)
                         break

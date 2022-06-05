@@ -2,13 +2,13 @@ import os.path
 import sys
 import traceback
 
-from gamescript import start
+from gamescript import game
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 if __name__ == "__main__":
     try:  # for printing error log when error exception happen
-        runmenu = start.Game(main_dir)
+        runmenu = game.Game(main_dir)
     except Exception:  # Save error output to txt file
         traceback.print_exc()
         f = open("error_report.txt", "w")

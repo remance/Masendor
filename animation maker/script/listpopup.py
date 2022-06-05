@@ -41,29 +41,26 @@ def setup_list(item_class, current_row, show_list, item_group, box, ui_class,
                 item.select()
 
 
-def list_scroll(mouse_scroll_up, mouse_scroll_down, scroll, listbox, current_row, name_list, name_group,
+def list_scroll(mouse_scroll_up, mouse_scroll_down, listbox, current_row, name_list, name_group,
                 ui_object, screen_scale, layer=19, old_list=None):
     if mouse_scroll_up:
         current_row -= 1
-        if current_row < 0:
-            current_row = 0
-        else:
-            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_object, screen_scale,
-                       layer=layer, old_list=old_list)
-            scroll.change_image(new_row=current_row, log_size=len(name_list))
-
     elif mouse_scroll_down:
         current_row += 1
-        if current_row + listbox.max_row_show - 1 < len(name_list):
-            setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_object, screen_scale, layer=layer,
-                       old_list=old_list)
-            scroll.change_image(new_row=current_row, log_size=len(name_list))
-        else:
-            current_row -= 1
+
+    if current_row < 0:
+        current_row = 0
+    elif current_row + listbox.max_row_show - 1 >= len(name_list):
+        current_row -= 1
+    else:
+        setup_list(menu.NameList, current_row, name_list, name_group, listbox, ui_object, screen_scale, layer=layer,
+                   old_list=old_list)
+        listbox.scroll.change_image(new_row=current_row, row_size=len(name_list))
+
     return current_row
 
 
-def popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui,
+def popup_list_open(popup_listbox, popup_namegroup, ui_class,
                     action, new_rect, new_list, ui_type, screen_scale, current_row=0):
     """Move popup_listbox and scroll sprite to new location and create new name list based on type"""
 
@@ -74,11 +71,11 @@ def popup_list_open(popup_listbox, popup_namegroup, popup_list_scroll, ui,
     popup_listbox.namelist = new_list
     popup_listbox.action = action
     setup_list(menu.NameList, current_row, new_list, popup_namegroup,
-               popup_listbox, ui, screen_scale, layer=21)
+               popup_listbox, ui_class, screen_scale, layer=21)
 
-    popup_list_scroll.pos = popup_listbox.rect.topright  # change position variable
-    popup_list_scroll.rect = popup_list_scroll.image.get_rect(topleft=popup_listbox.rect.topright)
-    popup_list_scroll.change_image(new_row=current_row, log_size=len(new_list))
-    ui.add(popup_listbox, *popup_namegroup, popup_list_scroll)
+    popup_listbox.scroll.pos = popup_listbox.rect.topright  # change position variable
+    popup_listbox.scroll.rect = popup_listbox.scroll.image.get_rect(topleft=popup_listbox.rect.topright)
+    popup_listbox.scroll.change_image(new_row=current_row, row_size=len(new_list))
+    ui_class.add(popup_listbox, *popup_namegroup, popup_listbox.scroll)
 
     popup_listbox.type = ui_type

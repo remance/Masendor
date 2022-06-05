@@ -8,10 +8,6 @@ import pygame
 import pygame.freetype
 from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor, datasprite
 from gamescript.common import utility
-from gamescript.common.uniteditor import common_uniteditor_editor
-from gamescript.common.battle import common_battle_setup, common_battle_update, common_battle_player
-from gamescript.common.ui import common_ui_escmenu
-from gamescript.common.unit import common_unit_setup
 
 direction_list = datasprite.direction_list
 
@@ -26,89 +22,59 @@ editconfig = utility.edit_config
 setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
 
-
-def change_battle_genre(self):
-    import importlib
-
-    battle_setup = importlib.import_module("gamescript." + self.genre + ".battle.battle_setup")
-    battle_player = importlib.import_module("gamescript." + self.genre + ".battle.battle_player")
-    uniteditor_convert = importlib.import_module("gamescript." + self.genre + ".uniteditor.uniteditor_convert")
-    unit_combat = importlib.import_module("gamescript." + self.genre + ".unit.unit_combat")
-    unit_setup = importlib.import_module("gamescript." + self.genre + ".unit.unit_setup")
-
-    # Method
-    Battle.setup_battle_ui = battle_setup.setup_battle_ui
-    Battle.change_state = battle_setup.change_state
-
-    Battle.battle_mouse_scrolling = battle_player.battle_mouse_scrolling
-    Battle.battle_key_press = battle_player.battle_key_press
-    Battle.battle_mouse = battle_player.battle_mouse
-    Battle.battle_state_mouse = battle_player.battle_state_mouse
-    Battle.editor_state_mouse = battle_player.editor_state_mouse
-    Battle.selected_unit_process = battle_player.selected_unit_process
-    Battle.add_behaviour_ui = battle_player.add_behaviour_ui
-    Battle.remove_unit_ui_check = battle_player.remove_unit_ui_check
-    Battle.wheel_ui_process = battle_player.wheel_ui_process
-
-    Battle.split_unit = unit_combat.split_unit
-    Battle.check_split = unit_combat.check_split
-
-    Battle.generate_unit = self.generate_unit
-
-    Battle.convert_edit_unit = uniteditor_convert.convert_edit_unit
-
-    # Variable
-    Battle.start_zoom = self.start_zoom
-    Battle.start_zoom_mode = self.start_zoom_mode
-    Battle.time_speed_scale = self.time_speed_scale
-    Battle.troop_size_adjustable = self.troop_size_adjustable
-    Battle.add_troop_number = self.troop_number_sprite
-    Battle.unit_behaviour_wheel = self.unit_behaviour_wheel
+script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 
 class Battle:
     popout_lorebook = utility.popout_lorebook
     popup_list_new_open = utility.popup_list_open
-    escmenu_process = common_ui_escmenu.escmenu_process
-    editor_map_change = common_uniteditor_editor.editor_map_change
-    save_preset = common_uniteditor_editor.save_preset
-    convert_slot_dict = common_uniteditor_editor.convert_slot_dict
-    preview_authority = common_uniteditor_editor.preview_authority
-    filter_troop_list = common_uniteditor_editor.filter_troop_list
-    trait_skill_blit = common_battle_update.trait_skill_blit
-    effect_icon_blit = common_battle_update.effect_icon_blit
-    countdown_skill_icon = common_battle_update.countdown_skill_icon
-    kill_effect_icon = common_battle_update.kill_effect_icon
-    ui_mouse_over = common_battle_player.ui_mouse_over
-    leader_mouse_over = common_battle_player.leader_mouse_over
-    effect_icon_mouse_over = common_battle_player.effect_icon_mouse_over
-    troop_card_button_click = common_battle_player.troop_card_button_click
-    camera_process = common_battle_player.camera_process
-    change_inspect_subunit = common_battle_player.change_inspect_subunit
-    generate_unit = common_unit_setup.generate_unit
-    setup_unit = common_unit_setup.setup_unit
 
-    # method that change based on genre
-    def split_unit(self): pass
-    def check_split(self): pass
-    def generate_unit(self): pass
-    def convert_edit_unit(self): pass
-    def setup_battle_ui(self): pass
-    def battle_mouse_scrolling(self): pass
-    def battle_key_press(self): pass
-    def battle_mouse(self): pass
-    def battle_state_mouse(self): pass
-    def editor_state_mouse(self): pass
-    def selected_unit_process(self): pass
-    def add_behaviour_ui(self): pass
-    def remove_unit_ui_check(self): pass
+    # Methods from either common or genre-specific, must contain every possible required method in all genres
+    def setup_battle_unit(self, *args): pass
+    def camera_process(self, *args): pass
+    def generate_unit(self, *args): pass
+    def escmenu_process(self, *args): pass
+    def editor_map_change(self, *args): pass
+    def save_custom_unit_preset(self, *args): pass
+    def convert_unit_slot_to_dict(self, *args): pass
+    def preview_authority(self, *args): pass
+    def filter_troop_list(self, *args): pass
+    def trait_skill_icon_blit(self, *args): pass
+    def effect_icon_blit(self, *args): pass
+    def countdown_skill_icon(self, *args): pass
+    def kill_effect_icon(self, *args): pass
+    def ui_mouse_click(self, *args): pass
+    def leader_command_ui_mouse_over(self, *args): pass
+    def effect_icon_mouse_over(self, *args): pass
+    def troop_card_button_click(self, *args): pass
+    def camera_process(self, *args): pass
+    def change_inspect_subunit(self, *args): pass
+    def generate_unit(self, *args): pass
+    def unit_editor_convert(self, *args): pass
+    def setup_battle_ui(self, *args): pass
+    def mouse_scrolling_process(self, *args): pass
+    def battle_keyboard_process(self, *args): pass
+    def mouse_process(self, *args): pass
+    def battle_mouse_process(self, *args): pass
+    def editor_mouse_process(self, *args): pass
+    def selected_unit_process(self, *args): pass
+    def add_behaviour_ui(self, *args): pass
+    def remove_unit_ui_check(self, *args): pass
+    def change_battle_state(self, *args): pass
+
+    for folder in ("battle", "ui"):
+        for entry in os.scandir(script_dir + "/common/" + folder + "/"):  # load and replace modules from common
+            if entry.is_file() and ".py" in entry.name:
+                file_name = entry.name[:-3]
+                exec(f"from common." + folder + " import " + file_name)
+                exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # variable that get changed based on genre
     start_zoom = 1
     start_zoom_mode = "Free"
     time_speed_scale = 1
     troop_size_adjustable = False
-    add_troop_number = False
+    add_troop_number_sprite = False
 
     def __init__(self, main, window_style):
         self.mode = None  # battle map mode can be "unit_editor" for unit editor or "battle" for self battle
@@ -148,7 +114,6 @@ class Battle:
 
         self.mini_map = main.mini_map
         self.event_log = main.event_log
-        self.log_scroll = main.log_scroll
         self.button_ui = main.button_ui
         self.inspect_selected_border = main.inspect_selected_border
         self.behaviour_switch_button = main.behaviour_switch_button
@@ -169,9 +134,9 @@ class Battle:
         self.battle_menu_button = main.battle_menu_button
         self.esc_option_menu_button = main.esc_option_menu_button
 
-        self.unit_delete_button = self.main.unit_delete_button
-        self.unit_save_button = self.main.unit_save_button
-        self.troop_listbox = main.troop_listbox
+        self.unit_delete_button = main.unit_delete_button
+        self.unit_save_button = main.unit_save_button
+        self.editor_troop_list_box = main.editor_troop_list_box
         self.troop_namegroup = main.troop_namegroup
         self.filter_box = main.filter_box
         self.filter_tick_box = main.filter_tick_box
@@ -179,7 +144,7 @@ class Battle:
         self.slot_display_button = main.slot_display_button
         self.test_button = main.test_button
         self.deploy_button = main.deploy_button
-        self.popup_listbox = main.popup_listbox
+        self.popup_list_box = main.popup_list_box
         self.popup_namegroup = main.popup_namegroup
         self.terrain_change_button = main.terrain_change_button
         self.feature_change_button = main.feature_change_button
@@ -191,11 +156,8 @@ class Battle:
         self.unitpreset_namegroup = main.unitpreset_namegroup
         self.preset_select_border = main.preset_select_border
         self.custom_unit_preset_list = main.custom_unit_preset_list
-        self.unit_listbox = main.unit_listbox
-        self.troop_scroll = main.troop_scroll
-        self.popup_list_scroll = main.popup_list_scroll
+        self.unit_preset_list_box = main.unit_preset_list_box
         self.team_coa = main.team_coa
-        self.unit_preset_name_scroll = main.unit_preset_name_scroll
         self.warning_msg = main.warning_msg
 
         self.input_button = main.input_button
@@ -209,7 +171,6 @@ class Battle:
 
         self.unit_selector = main.unit_selector
         self.unit_icon = main.unit_icon
-        self.unit_selector_scroll = main.unit_selector_scroll
 
         self.time_ui = main.time_ui
         self.time_number = main.time_number
@@ -224,7 +185,6 @@ class Battle:
         self.encyclopedia = main.encyclopedia
         self.lore_name_list = main.lore_name_list
         self.lore_button_ui = main.lore_button_ui
-        self.lore_scroll = main.lore_scroll
         self.subsection_name = main.subsection_name
         self.page_button = main.page_button
 
@@ -326,10 +286,9 @@ class Battle:
         self.alive_subunit_list = []  # list of all subunit alive in self, need to be in list for collision check
 
         self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
-                                 self.team_coa, self.troop_card_button, self.troop_listbox, self.troop_scroll,
-                                 self.troop_namegroup, self.unit_listbox, self.preset_select_border,
-                                 self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button,
-                                 self.unit_preset_name_scroll)
+                                 self.team_coa, self.troop_card_button, self.editor_troop_list_box,
+                                 self.troop_namegroup, self.unit_preset_list_box, self.preset_select_border,
+                                 self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button)
         self.filter_stuff = (self.filter_box, self.slot_display_button, self.team_change_button, self.deploy_button, self.terrain_change_button,
                              self.feature_change_button, self.weather_change_button, self.filter_tick_box)
 
@@ -485,7 +444,7 @@ class Battle:
         if self.mode == "battle":
             self.camera_zoom = self.start_zoom  # Camera zoom
             self.camera_mode = self.start_zoom_mode
-            self.setup_unit(self.all_team_unit, self.troop_data.troop_list)
+            self.setup_battle_unit(self.all_team_unit, self.troop_data.troop_list)
             self.team_troop_number = [1 for _ in self.all_team_unit]  # reset list of troop number in each team
             self.start_troop_number = [0 for _ in self.all_team_unit]
             self.wound_troop_number = [0 for _ in self.all_team_unit]
@@ -549,6 +508,7 @@ class Battle:
         self.input_popup = (None, None)  # no popup asking for user text input state
         self.leader_now = []  # list of showing leader in command ui
         self.current_weather = None
+        self.current_selected = None  # Which unit is currently selected
         self.drama_text.queue = []  # reset drama text popup queue
 
         if self.mode == "unit_editor":
@@ -560,9 +520,9 @@ class Battle:
             self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][1:]  # generate leader name list
 
             setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
-                       self.unitpreset_namegroup, self.unit_listbox, self.battle_ui_updater)  # setup preset army list
+                       self.unitpreset_namegroup, self.unit_preset_list_box, self.battle_ui_updater)  # setup preset army list
             setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.troop_list,
-                       self.troop_namegroup, self.troop_listbox, self.battle_ui_updater)  # setup troop name list
+                       self.troop_namegroup, self.editor_troop_list_box, self.battle_ui_updater)  # setup troop name list
 
             self.current_list_show = "troop"
             self.unit_preset_name = ""
@@ -574,11 +534,11 @@ class Battle:
             self.current_weather = weather.Weather(self.time_ui, self.weather_type, self.weather_strength, self.weather_data)
             self.subunit_in_card = None  # current sub-subunit showing in subunit card
 
-            self.main.make_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
-                                    team1_set_pos=(self.troop_listbox.rect.midleft[0] - int((300 * self.screen_scale[0]) / 2),
-                                                   self.troop_listbox.rect.midleft[1]))  # default faction select as all faction
+            self.main.create_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
+                                      team1_set_pos=(self.editor_troop_list_box.rect.midleft[0] - int((300 * self.screen_scale[0]) / 2),
+                                                     self.editor_troop_list_box.rect.midleft[1]))  # default faction select as all faction
 
-            self.troop_scroll.change_image(new_row=self.current_troop_row, log_size=len(self.troop_list))  # change troop scroll image
+            self.editor_troop_list_box.scroll.change_image(new_row=self.current_troop_row, row_size=len(self.troop_list))  # change troop scroll image
 
             for index, slot in enumerate(self.subunit_build):  # start with the first player subunit slot selected when enter
                 if index == 0:
@@ -593,14 +553,28 @@ class Battle:
 
             self.weather_playing = None  # remove weather schedule from editor test
 
-            self.change_state()
+            self.change_battle_state()
 
             for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
                 self.preset_select_border.change_pos(name.rect.topleft)
                 break
 
         else:  # normal battle
-            self.change_state()
+            self.change_battle_state()
+
+            if self.char_selected is not None:  # select player char by default if control only one
+                for unit in self.all_team_unit["alive"]:  # get player char
+                    if unit.game_id == self.char_selected:
+                        self.player_char = unit.leader[0].subunit
+                        self.current_selected = unit
+                        unit.just_selected = True
+                        unit.selected = True
+                        if self.camera_mode == "Follow":
+                            self.base_camera_pos = pygame.Vector2(self.player_char.base_pos[0] * self.screen_scale[0],
+                                                                  self.player_char.base_pos[1] * self.screen_scale[1])
+                            self.camera_pos = self.base_camera_pos * self.camera_zoom
+                            self.camera_fix()
+                        break
 
         self.map_scale_delay = 0  # delay for map zoom input
         self.mouse_timer = 0  # This is timer for checking double mouse click, use realtime
@@ -615,20 +589,7 @@ class Battle:
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
         self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
         self.inspect = False  # For checking if inspect ui is currently open or not
-        self.current_selected = None  # Which unit is currently selected
-        if self.char_selected is not None:  # select player char by default if control only one
-            for unit in self.all_team_unit["alive"]:  # get player char
-                if unit.game_id == self.char_selected:
-                    self.player_char = unit.leader[0].subunit
-                    self.current_selected = unit
-                    unit.just_selected = True
-                    unit.selected = True
-                    if self.camera_mode == "Follow":
-                        self.base_camera_pos = pygame.Vector2(self.player_char.base_pos[0] * self.screen_scale[0],
-                                                              self.player_char.base_pos[1] * self.screen_scale[1])
-                        self.camera_pos = self.base_camera_pos * self.camera_zoom
-                        self.camera_fix()
-                    break
+
         self.map_mode = 0  # default, another one show height map
         self.subunit_selected = None  # which subunit in inspect ui is selected in last update loop
         self.before_selected = None  # Which unit is selected before
@@ -715,14 +676,13 @@ class Battle:
                         esc_press = False  # reset esc press, so it not stops esc menu when open
 
                 if self.game_state in ("battle", "editor"):  # game in battle state
-                    if self.player_input_ui is None:
-                        # register user input during gameplay
+                    if self.player_input_ui is None:  # register user input during gameplay
                         if mouse_scroll_up or mouse_scroll_down:  # Mouse scroll
-                            self.battle_mouse_scrolling(mouse_scroll_up, mouse_scroll_down)
+                            self.mouse_scrolling_process(mouse_scroll_up, mouse_scroll_down)
 
                         # keyboard input
                         if key_press is not None:
-                            self.battle_key_press(key_press)
+                            self.battle_keyboard_process(key_press)
 
                         self.camera_process(key_state)
 
@@ -738,14 +698,15 @@ class Battle:
                                                                   self.battle_mouse_pos[1] / self.screen_scale[1])  # with screen scale
 
                         if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
-                            self.battle_mouse(mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state)
+                            self.mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
+                                               mouse_right_down, key_state)
 
                             if self.game_state == "battle":
-                                self.battle_state_mouse(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                        mouse_left_down, mouse_right_down, key_state, key_press)
+                                self.battle_mouse_process(mouse_left_up, mouse_right_up, double_mouse_right,
+                                                          mouse_left_down, mouse_right_down, key_state, key_press)
 
                             elif self.game_state == "editor":  # unit editor state
-                                self.editor_state_mouse(mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state, key_press)
+                                self.editor_mouse_process(mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state, key_press)
 
                         self.selected_unit_process(mouse_left_up, mouse_right_up, double_mouse_right,
                                                    mouse_left_down, mouse_right_down, key_state, key_press)
@@ -995,19 +956,19 @@ class Battle:
                     self.input_ok_button.event = False
 
                     if self.input_popup[1] == "save_unit":
-                        current_preset = self.convert_slot_dict(self.input_box.text)
+                        current_preset = self.convert_unit_slot_to_dict(self.input_box.text)
                         if current_preset is not None:
                             self.custom_unit_preset_list.update(current_preset)
 
                             self.unit_preset_name = self.input_box.text
                             setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
-                                       self.unitpreset_namegroup, self.unit_listbox, self.battle_ui_updater)  # setup preset unit list
+                                       self.unitpreset_namegroup, self.unit_preset_list_box, self.battle_ui_updater)  # setup preset unit list
                             for name in self.unitpreset_namegroup:  # loop to change selected border position to the last in preset list
                                 if name.name == self.unit_preset_name:
                                     self.preset_select_border.change_pos(name.rect.topleft)
                                     break
 
-                            self.save_preset()
+                            self.save_custom_unit_preset()
                         else:
                             self.warning_msg.warning([self.warning_msg.min_subunit_warn])
                             self.battle_ui_updater.add(self.warning_msg)
@@ -1016,12 +977,12 @@ class Battle:
                         del self.custom_unit_preset_list[self.unit_preset_name]
                         self.unit_preset_name = ""
                         setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
-                                   self.unitpreset_namegroup, self.unit_listbox, self.battle_ui_updater)  # setup preset unit list
+                                   self.unitpreset_namegroup, self.unit_preset_list_box, self.battle_ui_updater)  # setup preset unit list
                         for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
                             self.preset_select_border.change_pos(name.rect.topleft)
                             break
 
-                        self.save_preset()
+                        self.save_custom_unit_preset()
 
                     elif self.input_popup[1] == "quit":
                         self.battle_ui_updater.clear(self.screen, self.background)
@@ -1057,9 +1018,8 @@ class Battle:
         self.player_char = None
         for value in self.all_team_unit.values():  # empty all group in dict
             value.empty()
-
         clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
-                            self.troop_number_sprite, self.inspect_subunit, self.range_attacks, *self.inspect_subunit))
+                            self.troop_number_sprite, self.inspect_subunit, self.range_attacks))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None
@@ -1090,7 +1050,7 @@ class Battle:
             self.subunit_in_card = None
 
             self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
-                                          self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)
+                                          self.popup_list_box, self.popup_listbox_scroll, *self.popup_namegroup)
 
             for group in self.troop_namegroup, self.unit_edit_border, self.unitpreset_namegroup:
                 for item in group:  # remove name list

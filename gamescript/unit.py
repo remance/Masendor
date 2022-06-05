@@ -7,54 +7,12 @@ import numpy as np
 import pygame
 import pygame.freetype
 from gamescript.common import utility
-from gamescript.common.unit import common_unit_setup, common_unit_update
 
 rotation_xy = utility.rotation_xy
 
 team_colour = {0: (200, 200, 200), 1: (144, 167, 255), 2: (255, 114, 114)}  # team colour, Neutral, 1, 2
 
-
-def change_unit_genre(self):
-    """
-    Change genre method to unit class
-    :param self: Game object
-    """
-    import importlib
-
-    unit_combat = importlib.import_module("gamescript." + self.genre + ".unit.unit_combat")
-    unit_movement = importlib.import_module("gamescript." + self.genre + ".unit.unit_movement")
-    unit_player = importlib.import_module("gamescript." + self.genre + ".unit.unit_player")
-    unit_update = importlib.import_module("gamescript." + self.genre + ".unit.unit_update")
-    unit_command = importlib.import_module("gamescript." + self.genre + ".unit.unit_command")
-    unit_setup = importlib.import_module("gamescript." + self.genre + ".unit.unit_setup")
-
-    # Method
-    Unit.skirmish = unit_combat.skirmish
-    Unit.chase = unit_combat.chase
-    Unit.destroyed = unit_combat.destroyed  # destroyed script
-    Unit.retreat = unit_combat.retreat
-    Unit.switch_faction = unit_combat.switch_faction
-
-    Unit.player_input = unit_player.player_input
-
-    Unit.rotate_logic = unit_movement.rotate_logic
-    Unit.revert_move = unit_movement.revert_move
-    Unit.set_target = unit_movement.set_target
-    Unit.movement_logic = unit_movement.movement_logic
-    Unit.set_subunit_target = unit_movement.set_subunit_target
-    Unit.move_leader = unit_movement.move_leader
-
-    Unit.state_reset_logic = unit_update.state_reset_logic
-    Unit.authority_recalculation = unit_update.authority_recalculation
-    Unit.morale_check_logic = unit_update.morale_check_logic
-
-    Unit.process_command = unit_command.process_command
-
-    Unit.setup_stat = unit_update.setup_stat
-
-    # Variable
-
-    Unit.unit_size = self.unit_size
+script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 
 class Unit(pygame.sprite.Sprite):
@@ -65,30 +23,36 @@ class Unit(pygame.sprite.Sprite):
     battle_camera = None
 
     set_rotate = utility.set_rotate
-    setup_frontline = common_unit_setup.setup_frontline
-    selection = common_unit_update.selection
-    cal_unit_stat = common_unit_update.cal_unit_stat
 
     unit_size = None
 
-    # method that change based on genre
-    def skirmish(self): pass
-    def chase(self): pass
-    def destroyed(self): pass
-    def retreat(self): pass
-    def switch_faction(self): pass
-    def player_input(self): pass
-    def rotate_logic(self): pass
-    def revert_move(self): pass
-    def set_target(self): pass
-    def movement_logic(self): pass
-    def set_subunit_target(self): pass
-    def move_leader(self): pass
-    def state_reset_logic(self): pass
-    def authority_recalculation(self): pass
-    def morale_check_logic(self): pass
-    def setup_stat(self): pass
-    def process_command(self): pass
+    # Methods from either common or genre-specific
+    def setup_frontline(self, *args): pass
+    def selection(self, *args): pass
+    def cal_unit_stat(self, *args): pass
+    def set_target(self, *args): pass
+    def skirmish(self, *args): pass
+    def chase(self, *args): pass
+    def destroyed(self, *args): pass
+    def retreat(self, *args): pass
+    def switch_faction(self, *args): pass
+    def player_input(self, *args): pass
+    def rotate_logic(self, *args): pass
+    def revert_move(self, *args): pass
+    def movement_logic(self, *args): pass
+    def set_subunit_target(self, *args): pass
+    def reposition_leader(self, *args): pass
+    def state_reset_logic(self, *args): pass
+    def authority_recalculation(self, *args): pass
+    def morale_check_logic(self, *args): pass
+    def setup_stat(self, *args): pass
+    def process_command(self, *args): pass
+
+    for entry in os.scandir(script_dir + "/common/unit/"):  # load and replace modules from common.unit
+        if entry.is_file() and ".py" in entry.name:
+            file_name = entry.name[:-3]
+            exec(f"from common.unit import " + file_name)
+            exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle,
                  start_hp=100, start_stamina=100, team=0):
@@ -195,7 +159,9 @@ class Unit(pygame.sprite.Sprite):
         if np.array_split(self.subunit_list, 2, axis=1)[0].size > 10 and np.array_split(self.subunit_list, 2, axis=1)[1].size > 10:
             self.can_split_col = True
 
+        self.authority = 0
         self.auth_penalty = 0  # authority penalty
+
         self.tactic_effect = {}
         self.coa = coa  # coat of arm image
 
@@ -232,8 +198,9 @@ class Unit(pygame.sprite.Sprite):
         self.setup_frontline()
         self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
         self.leader_social = self.leader[0].social
+        self.authority = self.leader[0].authority  # will be recalculated again later
 
-        # v assign team leader commander to every unit in team if this is commander unit
+        # v Assign team leader commander to every unit in team if this is commander unit
         if self.commander:
             for this_unit in self.battle.all_team_unit[self.team]:
                 this_unit.team_commander = self.leader[0]
@@ -262,7 +229,7 @@ class Unit(pygame.sprite.Sprite):
         self.change_pos_scale()
 
     def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
-        # v Camera zoom change
+        # Camera zoom change
         if self.last_zoom != zoom:  # camera zoom is changed
             self.zoom_change = True
             self.zoom = 11 - zoom  # save scale
@@ -272,7 +239,6 @@ class Unit(pygame.sprite.Sprite):
                     if subunit.state != 100:
                         self.battle_camera.change_layer(subunit, 4)
             self.last_zoom = zoom
-        # ^ End zoom
 
         # v Setup frontline again when any subunit destroyed
         if self.dead_change:
@@ -283,7 +249,7 @@ class Unit(pygame.sprite.Sprite):
                     subunit.base_morale -= (30 * subunit.mental)
                 self.dead_change = False
 
-            # v remove when troop number reach 0
+            # Remove when troop number reach 0
             else:
                 self.stamina, self.morale, self.speed = 0, 0, 0
 
@@ -294,7 +260,6 @@ class Unit(pygame.sprite.Sprite):
                         leader.gone()
 
                 self.state = 100
-            # ^ End remove
         # ^ End setup frontline when subunit destroyed
 
         if self.state != 100:
@@ -425,21 +390,3 @@ class Unit(pygame.sprite.Sprite):
             subunit.rotate()
 
         self.process_command(self.base_pos, double_mouse_right, self.revert, self.base_target, 1)
-
-    def delete(self, local=False):
-        """delete reference when the method is called"""
-        self.icon = None
-        self.team_commander = None
-        self.start_where = None
-        self.subunits = None
-        self.near_target = None
-        self.leader = None
-        self.frontline_object = None
-        self.attack_target = None
-        self.leader_subunit = None
-        self.ally_pos_list = None
-        self.enemy_pos_list = None
-        self.subunit_list = None
-        self.subunits_array = None
-        if local:
-            print(locals())
