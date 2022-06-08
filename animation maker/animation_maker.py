@@ -142,7 +142,10 @@ def property_to_pool_data(which):
     elif which == "frame":
         model.frame_list[current_frame]["frame_property"] = select_list
         for direction in range(0, 5):
-            current_pool[direction][animation_name][current_frame]["frame_property"] = select_list
+            try:
+                current_pool[direction][animation_name][current_frame]["frame_property"] = select_list
+            except IndexError:  # frame not exist yet for other direction
+                pass
 
 
 def change_animation(new_name):
