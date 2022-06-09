@@ -1002,7 +1002,7 @@ class Battle:
         for value in self.all_team_unit.values():  # empty all group in dict
             value.empty()
         clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
-                            self.troop_number_sprite, self.inspect_subunit, self.range_attacks))
+                            self.troop_number_sprite, self.range_attacks))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None

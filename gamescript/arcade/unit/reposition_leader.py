@@ -22,19 +22,12 @@ def reposition_leader(self, how):
     new_unit_position = (leader_position[0][0] * 5) + leader_position[1][0]
 
     if leader_position != old_leader_position:
-        old_subunit = self.subunit_object_array[leader_position[0][0]][leader_position[1][0]]
-        self.subunit_object_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit
-        self.subunit_object_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
+        # old_subunit = self.subunit_object_array[leader_position[0][0]][leader_position[1][0]]
+        old_subunit = self.subunit_id_array[leader_position[0][0]][leader_position[1][0]]
+        # self.subunit_object_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit
+        # self.subunit_object_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
         self.subunit_id_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit.game_id
-
-        self.leader_subunit.unit_position = (self.subunit_position_list[new_unit_position][0] / 10,
-                                             self.subunit_position_list[new_unit_position][1] / 10)
-        if old_subunit is not None:
-            self.subunit_id_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit.game_id
-            old_subunit.unit_position = (self.subunit_position_list[old_unit_position][0] / 10,
-                                         self.subunit_position_list[old_unit_position][1] / 10)
-        else:  # previous now empty because new position has no previous subunit
-            self.subunit_id_array[old_leader_position[0][0]][old_leader_position[1][0]] = 0
+        self.subunit_id_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
 
         # old_subunit_list = self.subunit_list[~np.all(self.subunit_list == 0, axis=1)]  # remove whole empty column in subunit list
         # self.subunit_list = old_subunit_list[:, ~np.all(old_subunit_list == 0, axis=0)]  # remove whole empty row in subunit list

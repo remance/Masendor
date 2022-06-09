@@ -31,13 +31,13 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_F1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_F2:
-        self.drama_text.queue.append("Showcase: Leader unit position changing function")
-    # elif key_press == pygame.K_F3:
-    #     self.drama_text.queue.append("Before")
-    # elif key_press == pygame.K_F4:
-    #     self.drama_text.queue.append("Where the hell is blue team, can only see red")
-    # elif key_press == pygame.K_F5:
-    #     self.drama_text.queue.append("After")
+        self.drama_text.queue.append("Showcase: Update to arcade mode so far")
+    elif key_press == pygame.K_F3:
+        self.drama_text.queue.append("More animations and charge command")
+    elif key_press == pygame.K_F4:
+        self.drama_text.queue.append("Wheel ui sample")
+    elif key_press == pygame.K_F5:
+        self.drama_text.queue.append("Unit line shifting")
     # elif key_press == pygame.K_F6:
     #     self.drama_text.queue.append("Now much more clear")
     # elif key_press == pygame.K_n and self.current_selected is not None:
