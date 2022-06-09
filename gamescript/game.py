@@ -29,26 +29,26 @@ text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 
-# Module that get loads with common import after
+# Module that get loads with import in common.game.setup after
 
 
 def make_battle_list_data(*args): pass
-def make_lorebook(*args): pass
-def make_input_box(*args): pass
-def make_editor_ui(*args): pass
-def make_icon_data(*args): pass
-def make_faction_troop_leader_equipment_data(*args): pass
-def make_option_menu(*args): pass
-def make_event_log(*args): pass
-def make_esc_menu(*args): pass
-def make_popup_ui(*args): pass
 def make_battle_ui(*args): pass
+def make_editor_ui(*args): pass
+def make_esc_menu(*args): pass
+def make_event_log(*args): pass
+def make_faction_troop_leader_equipment_data(*args): pass
 def make_genre_specific_ui(*args): pass
+def make_icon_data(*args): pass
+def make_input_box(*args): pass
+def make_lorebook(*args): pass
+def make_option_menu(*args): pass
+def make_popup_ui(*args): pass
 
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
-for entry in os.scandir(script_dir + "/common/game/setup/"):  # load and replace modules from common.game
+for entry in os.scandir(script_dir + "/common/game/setup/"):  # load and replace modules from common.game.setup
     if entry.is_file() and ".py" in entry.name:
         file_name = entry.name[:-3]
         exec(f"from common.game.setup import " + file_name)
@@ -82,24 +82,27 @@ team_colour = unit.team_colour
 
 
 class Game:
+    # import from common.game
+    empty_method = utility.empty_method
+    back_mainmenu = empty_method
+    change_battle_source = empty_method
+    change_to_source_selection_menu = empty_method
+    char_select_menu_process = empty_method
+    create_preview_map = empty_method
+    create_sprite_pool = empty_method
+    create_team_coa = empty_method
+    create_unit_slot = empty_method
+    game_editor_menu_process = empty_method
+    main_menu_process = empty_method
+    map_select_menu_process = empty_method
+    option_menu_process = empty_method
+    read_battle_source = empty_method
+    read_selected_map_data = empty_method
+    start_battle = empty_method
+    team_select_menu_process = empty_method
 
-    def create_preview_map(self, *args): pass
-    def create_team_coa(self, *args): pass
-    def create_unit_slot(self, *args): pass
-
-    def back_mainmenu(self, *args): pass
-    def change_battle_source(self, *args): pass
-    def char_select_menu_process(self, *args): pass
-    def create_team_coa(self, *args): pass
-    def create_sprite_pool(self, *args): pass
-    def game_editor_menu_process(self, *args): pass
-    def leader_position_check(self, *args): pass
-    def main_menu_process(self, *args): pass
-    def map_select_menu_process(self, *args):pass
-    def option_menu_process(self, *args): pass
-    def read_battle_source(self, *args): pass
-    def read_selected_map_data(self, *args): pass
-    def team_select_menu_process(self, *args): pass
+    # import from *genre*.game
+    leader_position_check = empty_method
 
     generate_unit = generate_unit.generate_unit
     setup_battle_unit = setup_battle_unit.setup_battle_unit
@@ -126,14 +129,15 @@ class Game:
     troop_size_adjustable = False
     add_troop_number_sprite = False
 
-    def __init__(self, main_dir):
+    def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
 
         self.main_dir = main_dir
+        self.error_log = error_log
 
         lorebook.Lorebook.main_dir = self.main_dir
-        battlemap.FeatureMap.main_dir = main_dir
-        battlemap.BeautifulMap.main_dir = main_dir
+        battlemap.FeatureMap.main_dir = self.main_dir
+        battlemap.BeautifulMap.main_dir = self.main_dir
         uniteditor.PreviewBox.main_dir = self.main_dir
 
         # Read config file
@@ -768,7 +772,7 @@ class Game:
                     try:
                         new_folder = [this_file.name for this_file in os.scandir(directory + new_genre + "/" + folder)]
                     except FileNotFoundError:
-                        new_folder = []
+                        new_folder = ()
                     try:
                         for this_file in os.scandir(directory + old_genre + "/" + folder):
                             if this_file.is_file() and ".py" in this_file.name:

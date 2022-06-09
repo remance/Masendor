@@ -7,13 +7,13 @@ from gamescript import game
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 if __name__ == "__main__":
+    error_log = open("error_report.txt", "w")
     try:  # for printing error log when error exception happen
-        runmenu = game.Game(main_dir)
-    except Exception:  # Save error output to txt file
+        runmenu = game.Game(main_dir, error_log)
+    except Exception:  # Save error output to txt file for any exception
         traceback.print_exc()
-        f = open("error_report.txt", "w")
-        sys.stdout = f
+        sys.stdout = error_log
         exc_type, exc_value, exc_traceback = sys.exc_info()
         lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
         print("".join("!! " + line for line in lines))  # Log it or whatever here
-        f.close()
+    error_log.close()

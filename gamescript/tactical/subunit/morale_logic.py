@@ -27,7 +27,7 @@ def morale_logic(self, dt, parent_state):
                         self.command_target = self.base_target
                         self.new_angle = self.set_rotate()
 
-                    for subunit in self.unit.subunits:
+                    for subunit in self.unit.subunit_list:
                         subunit.base_morale -= (
                                 15 * subunit.mental)  # reduce morale of other subunit, creating panic when seeing friend panic and may cause mass panic
                 if self.morale < 0:

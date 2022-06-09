@@ -10,7 +10,7 @@ def setup_stat(self, battle_start=False):
     all_shoot_range = []  # list of shoot range, use to get the shortest and longest one
 
     # for checking row order and adjusting layer to show subunit closest to bottom of the screen first
-    pos_dict = {sprite: sprite.base_pos for sprite in self.subunits}
+    pos_dict = {sprite: sprite.base_pos for sprite in self.subunit_list}
     pos_dict = dict(sorted(pos_dict.items(), key=lambda x: x[1][1]))
 
     # Grab subunit stat

@@ -48,7 +48,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                         this_unit.delete()
                         this_unit.kill()
                         del this_unit
-                for this_subunit in self.current_selected.subunits:
+                for this_subunit in self.current_selected.subunit_list:
                     this_subunit.delete()
                     self.alive_subunit_list.remove(this_subunit)
                     this_subunit.kill()

@@ -26,27 +26,76 @@ class Unit(pygame.sprite.Sprite):
 
     unit_size = None
 
-    # Methods from either common or genre-specific
-    def setup_frontline(self, *args): pass
-    def selection(self, *args): pass
-    def cal_unit_stat(self, *args): pass
-    def set_target(self, *args): pass
-    def skirmish(self, *args): pass
-    def chase(self, *args): pass
-    def destroyed(self, *args): pass
-    def retreat(self, *args): pass
-    def switch_faction(self, *args): pass
-    def player_input(self, *args): pass
-    def rotate_logic(self, *args): pass
-    def revert_move(self, *args): pass
-    def movement_logic(self, *args): pass
-    def set_subunit_target(self, *args): pass
-    def reposition_leader(self, *args): pass
-    def state_reset_logic(self, *args): pass
-    def authority_recalculation(self, *args): pass
-    def morale_check_logic(self, *args): pass
-    def setup_stat(self, *args): pass
-    def process_command(self, *args): pass
+    # Import from common.unit
+    def assign_commander(self, *args):
+        pass
+
+    def cal_unit_stat(self, *args):
+        pass
+
+    def selection(self, *args):
+        pass
+
+    def set_target(self, *args):
+        pass
+
+    def setup_frontline(self, *args):
+        pass
+
+    # Import from *genre*.unit
+    def authority_recalculation(self, *args):
+        pass
+
+    def check_split(self, *args):
+        pass
+
+    def destroyed(self, *args):
+        pass
+
+    def morale_check_logic(self, *args):
+        pass
+
+    def movement_logic(self, *args):
+        pass
+
+    def player_input(self, *args):
+        pass
+
+    def process_command(self, *args):
+        pass
+
+    def retreat(self, *args):
+        pass
+
+    def reposition_leader(self, *args):
+        pass
+
+    def revert_move(self, *args):
+        pass
+
+    def rotate_logic(self, *args):
+        pass
+
+    def set_subunit_target(self, *args):
+        pass
+
+    def setup_stat(self, *args):
+        pass
+
+    def split_unit(self, *args):
+        pass
+
+    def state_reset_logic(self, *args):
+        pass
+
+    def switch_faction(self, *args):
+        pass
+
+    def transfer_leader(self, *args):
+        pass
+
+    def unit_ai(self, *args):
+        pass
 
     for entry in os.scandir(script_dir + "/common/unit/"):  # load and replace modules from common.unit
         if entry.is_file() and ".py" in entry.name:
@@ -62,8 +111,8 @@ class Unit(pygame.sprite.Sprite):
         self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon
         self.team_commander = None  # commander leader
         self.start_where = []
-        self.subunits = []
-        self.subunits_array = np.empty(self.unit_size, dtype=object)
+        self.subunit_list = []
+        self.subunit_object_array = np.empty(self.unit_size, dtype=object)
         self.leader = []
         self.leader_subunit = None  # subunit that the main unit leader is in, get added in leader first update
         self.near_target = {}  # list dict of nearby enemy unit, sorted by distance
@@ -71,15 +120,15 @@ class Unit(pygame.sprite.Sprite):
         self.control = control  # player control or not
         self.start_hp = start_hp  # starting hp percentage
         self.start_stamina = start_stamina  # starting stamina percentage
-        self.subunit_list = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit
+        self.subunit_id_array = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit, must not contain empty row or column unlike subunit_object_array
         self.colour = colour  # box colour according to team
         self.commander = commander  # True if commander unit
 
         self.zoom = 10  # start with the closest zoom
         self.last_zoom = 1  # zoom level without calculate with 11 - zoom for scale
 
-        self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, \
-                                                    len(self.subunit_list) * (self.image_size[1] + 2) / 20
+        self.base_width_box, self.base_height_box = len(self.subunit_id_array[0]) * (self.image_size[0] + 10) / 20, \
+                                                    len(self.subunit_id_array) * (self.image_size[1] + 2) / 20
 
         self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
         self.last_base_pos = self.base_pos
@@ -88,7 +137,8 @@ class Unit(pygame.sprite.Sprite):
         if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
             self.angle = 0
         self.new_angle = self.angle
-        self.radians_angle = math.radians(360 - start_angle)  # radians for apply angle to position (allsidepos and subunit)
+        self.radians_angle = math.radians(
+            360 - start_angle)  # radians for apply angle to position and subunit
         front_pos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
         self.front_pos = rotation_xy(self.base_pos, front_pos, self.radians_angle)
         self.movement_queue = []
@@ -150,13 +200,15 @@ class Unit(pygame.sprite.Sprite):
         self.rotate_speed = 1
         # ^ End default starting value
 
-        # check if can split unit
+        # check if unit can split
         self.can_split_row = False
-        if np.array_split(self.subunit_list, 2)[0].size > 10 and np.array_split(self.subunit_list, 2)[1].size > 10:
+        if np.array_split(self.subunit_id_array, 2)[0].size > 10 and np.array_split(self.subunit_id_array, 2)[
+            1].size > 10:
             self.can_split_row = True
 
         self.can_split_col = False
-        if np.array_split(self.subunit_list, 2, axis=1)[0].size > 10 and np.array_split(self.subunit_list, 2, axis=1)[1].size > 10:
+        if np.array_split(self.subunit_id_array, 2, axis=1)[0].size > 10 and \
+                np.array_split(self.subunit_id_array, 2, axis=1)[1].size > 10:
             self.can_split_col = True
 
         self.authority = 0
@@ -168,8 +220,10 @@ class Unit(pygame.sprite.Sprite):
         self.team = team  # team
 
         self.subunit_position_list = []
-        self.frontline = {0: [], 1: [], 2: [], 3: []}  # frontline keep list of subunit at the front of each side in combat, same list index as above
-        self.frontline_object = {0: [], 1: [], 2: [], 3: []}  # same as above but save object instead of index order:front, left, right, rear
+        self.frontline = {0: [], 1: [], 2: [],
+                          3: []}  # frontline keep list of subunit at the front of each side in combat, same list index as above
+        self.frontline_object = {0: [], 1: [], 2: [],
+                                 3: []}  # same as above but save object instead of index order:front, left, right, rear
 
         self.battle.all_team_unit["alive"].add(self)
         self.ally_pos_list = {}
@@ -178,11 +232,11 @@ class Unit(pygame.sprite.Sprite):
         # v Set up subunit position list for drawing
         width, height = 0, 0
         subunit_number = 0  # Number of subunit based on the position in row and column
-        for _ in self.subunits_array.flat:
+        for _ in self.subunit_object_array.flat:
             width += self.image_size[0]
             self.subunit_position_list.append((width, height))
             subunit_number += 1
-            if subunit_number >= len(self.subunit_list[0]):  # Reach the last subunit in the row, go to the next one
+            if subunit_number >= len(self.subunit_id_array[0]):  # Reach the last subunit in the row, go to the next one
                 width = 0
                 height += self.image_size[1]
                 subunit_number = 0
@@ -208,17 +262,19 @@ class Unit(pygame.sprite.Sprite):
 
         self.battle.all_team_unit["alive"].add(self)
         self.ally_pos_list = self.battle.team_pos_list[self.team]
-        self.enemy_pos_list = {key: value for key, value in self.battle.team_pos_list.items() if key != self.team and key != "alive"}
+        self.enemy_pos_list = {key: value for key, value in self.battle.team_pos_list.items() if
+                               key != self.team and key != "alive"}
 
         self.authority_recalculation()
         self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
                              (self.leader[0].cav_command - 5) * 0.1]  # unit leader command buff
 
-        self.subunit_list = self.subunit_list.astype(int)
+        self.subunit_id_array = self.subunit_id_array.astype(int)
 
         unit_top_left = pygame.Vector2(self.base_pos[0] - self.base_width_box,
-                                       self.base_pos[1] - self.base_height_box)  # get the top left corner of sprite to generate subunit position
-        for subunit in self.subunits:  # generate start position of each subunit
+                                       self.base_pos[
+                                           1] - self.base_height_box)  # get the top left corner of sprite to generate subunit position
+        for subunit in self.subunit_list:  # generate start position of each subunit
             subunit.base_pos = unit_top_left + subunit.unit_position
             subunit.base_pos = pygame.Vector2(rotation_xy(self.base_pos, subunit.base_pos, self.radians_angle))
             subunit.zoom_scale()
@@ -228,13 +284,15 @@ class Unit(pygame.sprite.Sprite):
 
         self.change_pos_scale()
 
+        self.original_subunit_id_array = self.subunit_id_array.copy()
+
     def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
         # Camera zoom change
         if self.last_zoom != zoom:  # camera zoom is changed
             self.zoom_change = True
             self.zoom = 11 - zoom  # save scale
             self.change_pos_scale()  # update unit sprite according to new scale
-            for subunit in self.subunits:
+            for subunit in self.subunit_list:
                 if self.zoom == 1:  # revert to default layer at other zoom
                     if subunit.state != 100:
                         self.battle_camera.change_layer(subunit, 4)
@@ -242,10 +300,11 @@ class Unit(pygame.sprite.Sprite):
 
         # v Setup frontline again when any subunit destroyed
         if self.dead_change:
-            if len(self.subunit_list) > 0 and (len(self.subunit_list) > 1 or any(subunit != 0 for subunit in self.subunit_list[0])):
+            if len(self.subunit_id_array) > 0 and (
+                    len(self.subunit_id_array) > 1 or any(subunit != 0 for subunit in self.subunit_id_array[0])):
                 self.setup_frontline()
 
-                for subunit in self.subunits:
+                for subunit in self.subunit_list:
                     subunit.base_morale -= (30 * subunit.mental)
                 self.dead_change = False
 
@@ -282,9 +341,11 @@ class Unit(pygame.sprite.Sprite):
                     for team in self.enemy_pos_list.values():
                         for n, enemy_pos in team.items():
                             self.near_target[n] = pygame.Vector2(enemy_pos).distance_to(self.base_pos)
-                    self.near_target = {k: v for k, v in sorted(self.near_target.items(), key=lambda item: item[1])}  # sort to the closest one
+                    self.near_target = {k: v for k, v in sorted(self.near_target.items(),
+                                                                key=lambda item: item[1])}  # sort to the closest one
                     for n in self.enemy_pos_list:
-                        self.near_target[n] = self.enemy_pos_list[n]  # change back near base_target list value to vector with sorted order
+                        self.near_target[n] = self.enemy_pos_list[
+                            n]  # change back near base_target list value to vector with sorted order
                     # ^ End find near base_target
 
                     self.state_reset_logic()
@@ -294,7 +355,8 @@ class Unit(pygame.sprite.Sprite):
                 # v Recal stat involve leader if one destroyed
                 if self.leader_change:
                     self.authority_recalculation()
-                    self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
+                    self.command_buff = [(self.leader[0].melee_command - 5) * 0.1,
+                                         (self.leader[0].range_command - 5) * 0.1,
                                          (self.leader[0].cav_command - 5) * 0.1]
                     self.leader_change = False
                 # ^ End recal stat when leader destroyed
@@ -302,8 +364,7 @@ class Unit(pygame.sprite.Sprite):
                 if self.range_combat_check:
                     self.state = 11  # can only shoot if range_combat_check is true
 
-                self.skirmish()
-                self.chase()
+                self.unit_ai()
                 # v Morale/authority state function
                 if self.authority <= 0:  # disobey
                     self.state = 95
@@ -323,12 +384,14 @@ class Unit(pygame.sprite.Sprite):
                     shoot_range = self.min_range
 
                 if self.state in (5, 6) and self.move_rotate is False and (
-                        (self.attack_target is not None and self.base_pos.distance_to(self.attack_target.base_pos) <= shoot_range)
+                        (self.attack_target is not None and self.base_pos.distance_to(
+                            self.attack_target.base_pos) <= shoot_range)
                         or self.base_pos.distance_to(self.base_attack_pos) <= shoot_range):  # in shoot range
                     self.set_target(self.front_pos)
                     self.range_combat_check = True  # set range combat check to start shooting
-                elif self.state == 11 and self.attack_target is not None and self.base_pos.distance_to(self.attack_target.base_pos) > shoot_range \
-                        and self.hold == 0 and self.collide is False:  # chase base_target if it go out of range and hold condition not hold
+                elif self.state == 11 and self.attack_target is not None and self.base_pos.distance_to(
+                        self.attack_target.base_pos) > shoot_range \
+                        and self.hold == 0 and self.collide is False:  # chase base_target if it goes out of range and hold condition not hold
                     self.state = self.command_state  # set state to melee_attack command state
                     self.range_combat_check = False  # stop range combat check
                     self.set_target(self.attack_target.base_pos)  # move to new base_target
@@ -341,7 +404,7 @@ class Unit(pygame.sprite.Sprite):
                 self.battle.event_log.add_log([0, str(self.leader[0].name) + "'s unit is destroyed"],
                                               [0, 1])  # put destroyed event in troop and army log
                 self.kill()
-                for subunit in self.subunits:
+                for subunit in self.subunit_list:
                     subunit.kill()
 
     def process_retreat(self, pos):
@@ -381,10 +444,11 @@ class Unit(pygame.sprite.Sprite):
                                       # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
 
-        for subunit in self.subunits:  # generate position of each subunit
+        for subunit in self.subunit_list:  # generate position of each subunit
             new_target = unit_topleft + subunit.unit_position
             subunit.base_pos = pygame.Vector2(
-                rotation_xy(self.base_pos, new_target, self.radians_angle))  # rotate according to sprite current rotation
+                rotation_xy(self.base_pos, new_target,
+                            self.radians_angle))  # rotate according to sprite current rotation
             subunit.zoom_scale()
             subunit.angle = self.angle
             subunit.rotate()

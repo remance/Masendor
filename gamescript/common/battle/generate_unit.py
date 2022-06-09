@@ -15,17 +15,16 @@ for dd in number_board:
 def generate_unit(self, which_team, setup_data, control, command, colour, coa, subunit_game_id, troop_list):
     """
     generate unit and their subunits
-    :param self: battle object
-    :param which_team: team group
-    :param setup_data: list of data for the unit
-    :param control: for checking whether player can control the unit
-    :param command: commander unit or not
-    :param colour: colour for their icon
-    :param coa: coat of arm image
-    :param subunit_game_id: starting game id for subunits
-    :param troop_list: troop data, use for checking troop size
-    :param add_number: add troop number sprite in battle or not
-    :return: latest subunit game id for other unit generation
+    :param self: Battle object
+    :param which_team: Team group
+    :param setup_data: List of data for the unit
+    :param control: For checking whether player can control the unit
+    :param command: Commander unit or not
+    :param colour: Colour for their icon
+    :param coa: Coat of arm image
+    :param subunit_game_id: Starting game id for subunits
+    :param troop_list: Troop data, use for checking troop size
+    :return: Latest subunit game id for other unit generation
     """
     from gamescript import battleui, subunit, unit, leader
     row_header = [header for header in setup_data if "Row " in header]
@@ -40,19 +39,19 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                           abs(360 - setup_data["Angle"]), setup_data["Start Health"], setup_data["Start Stamina"],
                           setup_data["Team"])
 
-    # add leader
+    # Add leader
     this_unit.leader = [leader.Leader(setup_data["Leader"][index], leader_position[index], index,
                                       this_unit, self.leader_data) for index, _ in enumerate(setup_data["Leader"])]
 
     which_team.add(this_unit)
     army_subunit_index = 0  # army_subunit_index is list index for subunit list in a specific army
 
-    # v Setup subunit in unit to subunit group
+    # Setup subunit in unit to subunit group
     unit_array = np.array([[0] * self.unit_size[0]] * self.unit_size[1])  # for unit size overlap check if genre has setting
-    new_subunit_list = np.array([[0] * len(this_unit.subunit_list[0])] * len(this_unit.subunit_list))
-    for row_index, row in enumerate(this_unit.subunit_list):
+    new_subunit_list = np.array([[0] * len(this_unit.subunit_id_array[0])] * len(this_unit.subunit_id_array))
+    for row_index, row in enumerate(this_unit.subunit_id_array):
         for col_index, col in enumerate(row):
-            this_unit.subunits_array[row_index][col_index] = None  # replace numpy None with python None
+            this_unit.subunit_object_array[row_index][col_index] = None  # replace numpy None with python None
             if col != "0" and (self.troop_size_adjustable is False or unit_array[row_index][col_index] == 0):
                 this_subunit_number = col
                 size = 1
@@ -72,12 +71,12 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                                                   this_unit.start_hp, this_unit.start_stamina, self.unit_scale)
                     add_subunit.board_pos = board_pos[army_subunit_index]
                     new_subunit_list[row_index][col_index] = add_subunit.game_id
-                    this_unit.subunits_array[row_index][col_index] = add_subunit
-                    this_unit.subunits.append(add_subunit)
+                    this_unit.subunit_object_array[row_index][col_index] = add_subunit
+                    this_unit.subunit_list.append(add_subunit)
                     subunit_game_id += 1
 
             army_subunit_index += 1
-    this_unit.subunit_list = new_subunit_list
+    this_unit.subunit_id_array = new_subunit_list
     if self.add_troop_number_sprite:
         self.troop_number_sprite.add(battleui.TroopNumber(self.screen_scale, this_unit))  # create troop number text sprite
     return subunit_game_id

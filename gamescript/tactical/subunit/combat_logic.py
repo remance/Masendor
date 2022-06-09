@@ -33,10 +33,10 @@ def combat_logic(self, dt, combat_timer, parent_state):
             if self.charge_momentum == 1 and (
                     self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1:  # attack to the nearest target instead
                 if self.melee_target is None and self.unit.attack_target is not None:
-                    self.melee_target = self.unit.attack_target.subunits[0]
+                    self.melee_target = self.unit.attack_target.subunit_list[0]
                 if self.melee_target is not None:
                     if self.close_target is None:  # movement queue is empty regenerate new one
-                        self.close_target = self.find_close_target(self.melee_target.unit.subunits)  # find new close target
+                        self.close_target = self.find_close_target(self.melee_target.unit.subunit_list)  # find new close target
 
                         if self.close_target is not None:  # found target to fight
                             if self not in self.battle.combat_path_queue:

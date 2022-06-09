@@ -4,7 +4,7 @@ def leader_role_change(self, leader):
     if leader.role == 0:  # if leader become unit commander
         try:
             squad_penal = int(
-                (leader.subunit_pos / len(leader.unit.subunit_list[
+                (leader.subunit_pos / len(leader.unit.subunit_id_array[
                                               0])) * 10)  # recalculate authority penalty based on subunit position
         except:
             squad_penal = 0

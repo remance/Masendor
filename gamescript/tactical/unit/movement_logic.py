@@ -2,7 +2,7 @@ def movement_logic(self):
     if self.state not in (0, 95) and self.front_pos.distance_to(
             self.command_target) < 1:  # reach destination and not in combat
         not_halt = False  # check if any subunit in combat
-        for subunit in self.subunits:
+        for subunit in self.subunit_list:
             if subunit.state == 10:
                 not_halt = True
             if subunit.unit_leader and subunit.state != 10:

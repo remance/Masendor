@@ -5,7 +5,7 @@ def gone_leader_process(self, *args):
     """All subunit enter broken state when leader gone in arcade mode"""
     if self.unit_leader:  # leader dead, all subunit enter broken state
         self.unit.state = 99
-        for subunit in self.unit.subunits:
+        for subunit in self.unit.subunit_list:
             subunit.state = 99  # Broken state
 
             corner_list = [[0, subunit.base_pos[1]], [1000, subunit.base_pos[1]], [subunit.base_pos[0], 0],

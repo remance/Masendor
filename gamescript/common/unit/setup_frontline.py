@@ -15,29 +15,29 @@ def setup_frontline(self):
     stop_loop = False
     while stop_loop is False:  # loop until no longer find completely empty row/col
         stop_loop = True
-        who_array = self.subunit_list
+        who_array = self.subunit_id_array
         full_who_array = [who_array, np.fliplr(who_array.swapaxes(0, 1)), np.rot90(who_array),
                           np.fliplr([who_array])[0]]  # rotate the array based on the side
         who_array = [who_array[0], full_who_array[1][0], full_who_array[2][0], full_who_array[3][0]]
         for index, who_frontline in enumerate(who_array):
             if any(subunit != 0 for subunit in who_frontline) is False:  # has completely empty outer row or column, remove them
                 if index == 0:  # front side
-                    self.subunit_list = self.subunit_list[1:]
-                    for subunit in self.subunits:
+                    self.subunit_id_array = self.subunit_id_array[1:]
+                    for subunit in self.subunit_list:
                         subunit.unit_position = (subunit.unit_position[0], subunit.unit_position[1] - (self.image_size[1] / 8))
                 elif index == 1:  # left side
-                    self.subunit_list = np.delete(self.subunit_list, 0, 1)
-                    for subunit in self.subunits:
+                    self.subunit_id_array = np.delete(self.subunit_id_array, 0, 1)
+                    for subunit in self.subunit_list:
                         subunit.unit_position = (subunit.unit_position[0] - (self.image_size[0] / 8), subunit.unit_position[1])
                 elif index == 2:  # right side
-                    self.subunit_list = np.delete(self.subunit_list, -1, 1)
+                    self.subunit_id_array = np.delete(self.subunit_id_array, -1, 1)
                 elif index == 3:  # rear side
-                    self.subunit_list = np.delete(self.subunit_list, -1, 0)
+                    self.subunit_id_array = np.delete(self.subunit_id_array, -1, 0)
 
-                if len(self.subunit_list) > 0:  # still has row left
+                if len(self.subunit_id_array) > 0:  # still has row left
                     old_width_box, old_height_box = self.base_width_box, self.base_height_box
-                    self.base_width_box, self.base_height_box = len(self.subunit_list[0]) * (self.image_size[0] + 10) / 20, \
-                                                                len(self.subunit_list) * (self.image_size[1] + 2) / 20
+                    self.base_width_box, self.base_height_box = len(self.subunit_id_array[0]) * (self.image_size[0] + 10) / 20, \
+                                                                len(self.subunit_id_array) * (self.image_size[1] + 2) / 20
 
                     number_pos = (self.base_pos[0] - self.base_width_box,
                                   (self.base_pos[1] + self.base_height_box))  # find position for number text
@@ -88,18 +88,18 @@ def setup_frontline(self):
     for array_index, who_frontline in enumerate(list(self.frontline.values())):
         self.frontline_object[array_index] = self.frontline_object[array_index].tolist()
         for index, stuff in enumerate(who_frontline):
-            for subunit in self.subunits:
+            for subunit in self.subunit_list:
                 if subunit.game_id == stuff:
                     self.frontline_object[array_index][index] = subunit
                     break
 
-    for subunit in self.subunits:  # assign frontline variable to subunit for only front side
+    for subunit in self.subunit_list:  # assign frontline variable to subunit for only front side
         subunit.frontline = False
         subunit.find_nearby_subunit()  # reset nearby subunit in the same unit
         if subunit in self.frontline_object[0]:
             subunit.frontline = True
 
     self.auth_penalty = 0
-    for subunit in self.subunits:
+    for subunit in self.subunit_list:
         if subunit.state != 100:
             self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit

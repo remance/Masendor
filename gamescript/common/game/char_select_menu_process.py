@@ -38,12 +38,12 @@ def char_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_
                 for other_icon in self.unit_icon:
                     if other_icon.selected:  # unselected all others first
                         other_icon.selection()
-                        self.main_ui_updater.remove(other_icon.unit.subunits)
+                        self.main_ui_updater.remove(other_icon.unit.subunit_list)
                 icon.selection()
                 self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
                 self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
 
-                self.main_ui_updater.add(icon.unit.subunits)
+                self.main_ui_updater.add(icon.unit.subunit_list)
 
                 self.char_selected = icon.unit.game_id
                 break
@@ -51,7 +51,7 @@ def char_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_
     elif self.char_stat["troop"].rect.collidepoint(self.mouse_pos):
         for icon in self.unit_icon:
             if icon.selected:
-                for subunit in icon.unit.subunits:
+                for subunit in icon.unit.subunit_list:
                     if subunit.rect.collidepoint(self.mouse_pos):
                         self.main_ui_updater.add(self.char_popup)
                         self.char_popup.pop(self.mouse_pos, subunit.name)

@@ -15,7 +15,7 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
     if self.state == 99:  # wounded inflict less morale penalty
         this_bad_morale = self.bad_morale[1]
 
-    for subunit in self.unit.subunits:
+    for subunit in self.unit.subunit_list:
         subunit.base_morale -= (this_bad_morale * subunit.mental)  # decrease all subunit morale when leader destroyed depending on position
         subunit.morale_regen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 
@@ -28,7 +28,7 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
             self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]], [0, 1, 2])
 
         for unit in self.battle.all_team_unit[self.unit.team]:
-            for subunit in unit.subunits:
+            for subunit in unit.subunit_list:
                 subunit.base_morale -= (200 * subunit.mental)  # all subunit morale -100 when commander destroyed
                 subunit.morale_regen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
 

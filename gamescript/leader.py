@@ -6,9 +6,9 @@ class Leader(pygame.sprite.Sprite):
     battle = None
     leader_pos = None
 
-    # method that change based on genre
-    def leader_role_change(self, *args): pass
+    # Import from *genre*.leader
     def gone(self, *args): pass
+    def leader_role_change(self, *args): pass
 
     def __init__(self, leader_id, subunit_position, role, unit, leader_data):
         self._layer = 15
@@ -74,7 +74,7 @@ class Leader(pygame.sprite.Sprite):
                             self.skill[key] = key2
 
     def start_set(self):
-        self.subunit = self.unit.subunits[self.subunit_pos]  # setup subunit that leader belong
+        self.subunit = self.unit.subunit_list[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
         if self.role == 0:  # unit leader
             self.unit.leader_subunit = self.subunit  # TODO add this to when change leader or leader move ot other subunit
@@ -82,7 +82,7 @@ class Leader(pygame.sprite.Sprite):
             self.subunit.unit_leader = True
 
             squad_penal = int(
-                (self.subunit_pos / len(self.unit.subunit_list[0])) * 10)  # Authority get reduced the further leader stay in the back line
+                (self.subunit_pos / len(self.unit.subunit_id_array[0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squad_penal / 100) / 2)
 
     def update(self):

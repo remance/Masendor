@@ -16,9 +16,13 @@ def wheel_ui_process(self, choice):
                 self.player_char.unit.process_command(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
             elif "Leader" in choice:
                 self.player_char.command_action = ("Leader Skill " + str(int(choice[-1]) - 1),)
-        if "Height Map" in choice:
+        elif "Height Map" in choice:
             self.map_mode += 1  # change height map mode
             if self.map_mode > 2:
                 self.map_mode = 0
             self.show_map.change_mode(self.map_mode)
             self.show_map.change_scale(self.camera_zoom)
+        elif " To " in choice:  # shift line
+            self.player_char.unit.shift_line(choice)
+
+

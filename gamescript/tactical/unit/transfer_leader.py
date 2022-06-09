@@ -17,9 +17,9 @@ def transfer_leader(this_leader, old_army_subunit, new_army_subunit, already_pic
     place_done = False  # finish finding slot to place yet
 
     while place_done is False:
-        if this_leader.subunit.unit.subunit_list.flat[new_row * new_place] != 0:
-            for this_subunit in this_leader.subunit.unit.subunits:
-                if this_subunit.game_id == this_leader.subunit.unit.subunit_list.flat[new_row * new_place]:
+        if this_leader.subunit.unit.subunit_id_array.flat[new_row * new_place] != 0:
+            for this_subunit in this_leader.subunit.unit.subunit_list:
+                if this_subunit.game_id == this_leader.subunit.unit.subunit_id_array.flat[new_row * new_place]:
                     if this_subunit.leader is not None or (new_row, new_place) in already_pick:
                         new_place += 1
                         if new_place > len(new_army_subunit[new_row]) - 1:  # find new column

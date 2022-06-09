@@ -29,38 +29,47 @@ class Battle:
     popout_lorebook = utility.popout_lorebook
     popup_list_new_open = utility.popup_list_open
 
-    # Methods from either common or genre-specific, must contain every possible required method in all genres
+    # Import from common.battle
+    def camera_fix(self, *args): pass
+    def camera_process(self, *args): pass
+    def generate_unit(self, *args): pass
+    def remove_unit_ui(self, *args): pass
     def setup_battle_unit(self, *args): pass
-    def camera_process(self, *args): pass
-    def generate_unit(self, *args): pass
-    def escmenu_process(self, *args): pass
-    def editor_map_change(self, *args): pass
-    def save_custom_unit_preset(self, *args): pass
-    def convert_unit_slot_to_dict(self, *args): pass
-    def preview_authority(self, *args): pass
-    def filter_troop_list(self, *args): pass
-    def trait_skill_icon_blit(self, *args): pass
-    def effect_icon_blit(self, *args): pass
-    def countdown_skill_icon(self, *args): pass
-    def kill_effect_icon(self, *args): pass
-    def ui_mouse_click(self, *args): pass
-    def leader_command_ui_mouse_over(self, *args): pass
-    def effect_icon_mouse_over(self, *args): pass
-    def troop_card_button_click(self, *args): pass
-    def camera_process(self, *args): pass
+
+    # Import common.ui
     def change_inspect_subunit(self, *args): pass
-    def generate_unit(self, *args): pass
+    def countdown_skill_icon(self, *args): pass
+    def effect_icon_blit(self, *args): pass
+    def effect_icon_mouse_over(self, *args): pass
+    def escmenu_process(self, *args): pass
+    def kill_effect_icon(self, *args): pass
+    def leader_command_ui_mouse_over(self, *args): pass
+    def trait_skill_icon_blit(self, *args): pass
+    def troop_card_button_click(self, *args): pass
+    def ui_mouse_click(self, *args): pass
+    def ui_icon_mouse_over(self, *args): pass
+
+    # import from common.battle.uniteditor
+    def convert_unit_slot_to_dict(self, *args): pass
+    def editor_map_change(self, *args): pass
+    def filter_troop_list(self, *args): pass
+    def preview_authority(self, *args): pass
+    def save_custom_unit_preset(self, *args): pass
+
+    # import from *genre*.battle.uniteditor
     def unit_editor_convert(self, *args): pass
-    def setup_battle_ui(self, *args): pass
-    def mouse_scrolling_process(self, *args): pass
-    def battle_keyboard_process(self, *args): pass
-    def mouse_process(self, *args): pass
-    def battle_mouse_process(self, *args): pass
-    def editor_mouse_process(self, *args): pass
-    def selected_unit_process(self, *args): pass
+
+    # import from *genre*.battle
     def add_behaviour_ui(self, *args): pass
-    def remove_unit_ui_check(self, *args): pass
+    def battle_keyboard_process(self, *args): pass
+    def battle_mouse_process(self, *args): pass
     def change_battle_state(self, *args): pass
+    def editor_mouse_process(self, *args): pass
+    def mouse_process(self, *args): pass
+    def mouse_scrolling_process(self, *args): pass
+    def remove_unit_ui_check(self, *args): pass
+    def selected_unit_process(self, *args): pass
+    def setup_battle_ui(self, *args): pass
 
     for folder in ("battle", "ui"):
         for entry in os.scandir(script_dir + "/common/" + folder + "/"):  # load and replace modules from common
@@ -473,32 +482,6 @@ class Battle:
 
             for this_leader in self.preview_leader:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
-
-    def remove_unit_ui(self):
-        self.troop_card_ui.option = 1  # reset subunit card option
-        self.inspect_subunit = []
-        self.battle_ui_updater.remove(self.inspect_ui, self.command_ui, self.troop_card_ui, self.troop_card_button, self.inspect_button, self.col_split_button,
-                                      self.row_split_button, self.unitstat_ui, *self.behaviour_switch_button)  # remove change behaviour button and inspect ui subunit
-        self.inspect = False  # inspect ui close
-        self.battle_ui_updater.remove(*self.leader_now)  # remove leader image from command ui
-        self.subunit_selected = None  # reset subunit selected
-        self.battle_ui_updater.remove(self.inspect_selected_border)  # remove subunit selected border sprite
-        self.leader_now = []  # clear leader list in command ui
-
-    def camera_fix(self):
-        if self.base_camera_pos[0] > self.max_camera[0]:  # camera cannot go further than 999 x
-            self.base_camera_pos[0] = self.max_camera[0]
-        elif self.base_camera_pos[0] < 0:  # camera cannot go less than 0 x
-            self.base_camera_pos[0] = 0
-
-        if self.base_camera_pos[1] > self.max_camera[1]:  # same for y
-            self.base_camera_pos[1] = self.max_camera[1]
-        elif self.base_camera_pos[1] < 0:
-            self.base_camera_pos[1] = 0
-
-        self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
-                                      self.camera_pos[1] - self.center_screen[
-                                          1])  # calculate top left corner of camera position
 
     def run_game(self):
         # v Create Starting Values

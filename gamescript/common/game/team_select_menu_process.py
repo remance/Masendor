@@ -117,13 +117,13 @@ def team_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_
         for index, unit in enumerate(self.preview_char):
             if index == 0:  # get for adding subunit to preview
                 get_unit = unit
-            for subunit in unit.subunits:  # change subunit pos to preview box
+            for subunit in unit.subunit_list:  # change subunit pos to preview box
                 subunit.pos = (self.char_stat["troop"].rect.topleft[0] + (subunit.unit_position[0] * subunit.image.get_width() / 5),
                                self.char_stat["troop"].rect.topleft[1] + ((subunit.unit_position[1] + 4) * subunit.image.get_height() / 5))
                 subunit.rect = subunit.image.get_rect(center=subunit.pos)
 
         self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,
-                                 list(self.char_stat.values()), *self.char_select_button, get_unit.subunits)
+                                 list(self.char_stat.values()), *self.char_select_button, get_unit.subunit_list)
         self.menu_button.add(*self.char_select_button)
 
 

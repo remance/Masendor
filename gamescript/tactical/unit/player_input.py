@@ -19,7 +19,7 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
             if self.state in (10, 96) and target is None:
                 self.process_retreat(cursor_pos)  # retreat
             else:
-                for subunit in self.subunits:
+                for subunit in self.subunit_list:
                     subunit.attacking = True
                 # if self.state == 10:
                 if key_state is not None:

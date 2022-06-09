@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 
+from gamescript import battleui
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -21,8 +22,8 @@ def split_unit(self, how):
     add_new_unit = add_new_unit.add_new_unit
 
     if how == 0:  # split by row
-        new_army_subunit = np.array_split(self.subunit_list, 2)[1]
-        self.subunit_list = np.array_split(self.subunit_list, 2)[0]
+        new_army_subunit = np.array_split(self.subunit_id_array, 2)[1]
+        self.subunit_id_array = np.array_split(self.subunit_id_array, 2)[0]
         new_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] + (self.base_height_box / 2))
         new_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)  # new unit pos (back)
         base_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] - (self.base_height_box / 2))
@@ -30,8 +31,8 @@ def split_unit(self, how):
         self.base_height_box /= 2
 
     else:  # split by column
-        new_army_subunit = np.array_split(self.subunit_list, 2, axis=1)[1]
-        self.subunit_list = np.array_split(self.subunit_list, 2, axis=1)[0]
+        new_army_subunit = np.array_split(self.subunit_id_array, 2, axis=1)[1]
+        self.subunit_id_array = np.array_split(self.subunit_id_array, 2, axis=1)[0]
         new_pos = pygame.Vector2(self.base_pos[0] + (self.base_width_box / 3.3), self.base_pos[1])  # 3.3 because 2 make new unit position overlap
         new_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)  # new unit pos (right)
         base_pos = pygame.Vector2(self.base_pos[0] - (self.base_width_box / 2), self.base_pos[1])
@@ -43,15 +44,15 @@ def split_unit(self, how):
 
     if self.leader[
         1].subunit.game_id not in new_army_subunit.flat:  # move the left sub-general leader subunit if it not in new one
-        self.subunit_list, new_army_subunit, new_position = move_leader_subunit(self.leader[1], self.subunit_list, new_army_subunit)
+        self.subunit_id_array, new_army_subunit, new_position = move_leader_subunit(self.leader[1], self.subunit_id_array, new_army_subunit)
         self.leader[1].subunit_pos = new_position[0] * new_position[1]
     self.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a start_set leader sub-unit
 
     already_pick = []
     for this_leader in (self.leader[0], self.leader[2], self.leader[3]):  # move other leader subunit to original one if they are in new one
-        if this_leader.subunit.game_id not in self.subunit_list:
-            new_army_subunit, self.subunit_list, new_position = move_leader_subunit(this_leader, new_army_subunit,
-                                                                                self.subunit_list, already_pick)
+        if this_leader.subunit.game_id not in self.subunit_id_array:
+            new_army_subunit, self.subunit_id_array, new_position = move_leader_subunit(this_leader, new_army_subunit,
+                                                                                        self.subunit_id_array, already_pick)
             this_leader.subunit_pos = new_position[0] * new_position[1]
             already_pick.append(new_position)
 
@@ -62,17 +63,17 @@ def split_unit(self, how):
 
     width, height = 0, 0
     subunit_number = 0  # Number of subunit based on the position in row and column
-    for this_subunit in self.subunit_list.flat:
+    for this_subunit in self.subunit_id_array.flat:
         width += self.image_size[0]
         self.subunit_position_list.append((width, height))
         subunit_number += 1
-        if subunit_number >= len(self.subunit_list[0]):  # Reach the last subunit in the row, go to the next one
+        if subunit_number >= len(self.subunit_id_array[0]):  # Reach the last subunit in the row, go to the next one
             width = 0
             height += self.image_size[1]
             subunit_number = 0
 
     # v Sort so the new leader subunit position match what set before
-    subunit_sprite = [this_subunit for this_subunit in self.subunits if
+    subunit_sprite = [this_subunit for this_subunit in self.subunit_list if
                       this_subunit.game_id in new_army_subunit.flat]  # new list of sprite not sorted yet
     new_subunit_sprite = []
     for this_id in new_army_subunit.flat:
@@ -80,23 +81,23 @@ def split_unit(self, how):
             if this_id == this_subunit.game_id:
                 new_subunit_sprite.append(this_subunit)
 
-    subunit_sprite = [this_subunit for this_subunit in self.subunits if
-                      this_subunit.game_id in self.subunit_list.flat]
-    self.subunits = []
-    for this_id in self.subunit_list.flat:
+    subunit_sprite = [this_subunit for this_subunit in self.subunit_list if
+                      this_subunit.game_id in self.subunit_id_array.flat]
+    self.subunit_list = []
+    for this_id in self.subunit_id_array.flat:
         for this_subunit in subunit_sprite:
             if this_id == this_subunit.game_id:
-                self.subunits.append(this_subunit)
+                self.subunit_list.append(this_subunit)
     # ^ End sort
 
     # v Reset position of subunit in inspect_ui for both old and new unit
-    for sprite in (self.subunits, new_subunit_sprite):
+    for sprite in (self.subunit_list, new_subunit_sprite):
         width, height = 0, 0
         subunit_number = 0
         for this_subunit in sprite:
             width += self.battle.icon_sprite_width
 
-            if subunit_number >= len(self.subunit_list[0]):
+            if subunit_number >= len(self.subunit_id_array[0]):
                 width = 0
                 width += self.battle.icon_sprite_width
                 height += self.battle.icon_sprite_height
@@ -129,9 +130,9 @@ def split_unit(self, how):
     self.battle.all_team_unit[self.team].add(new_unit)
     new_unit.team_commander = team_commander
     new_unit.leader = new_leader
-    new_unit.subunits = new_subunit_sprite
+    new_unit.subunit_list = new_subunit_sprite
 
-    for this_subunit in new_unit.subunits:
+    for this_subunit in new_unit.subunit_list:
         this_subunit.unit = new_unit
 
     for index, this_leader in enumerate(new_unit.leader):  # Change army position of all leader in new unit
@@ -142,3 +143,53 @@ def split_unit(self, how):
         this_leader.leader_role_change(this_leader)  # Change stat based on new army position
 
     add_new_unit(self, new_unit)
+
+
+def add_new_unit(self, who, add_unit_list=True):
+    """
+    Split the unit into two units
+    :param self: battle object
+    :param who: unit object
+    :param add_unit_list: unit list to add a new unit into
+    :return:
+    """
+    # generate subunit sprite array for inspect ui
+    who.subunit_object_array = np.empty((len(self.subunit_object_array[0]), len(self.subunit_object_array)), dtype=object)  # array of subunit object(not index)
+    found_count = 0  # for subunit_sprite index
+    found_count2 = 0  # for positioning
+    for row in range(0, len(who.subunit_id_array)):
+        for column in range(0, len(who.subunit_id_array[0])):
+            if who.subunit_id_array[row][column] != 0:
+                who.subunit_object_array[row][column] = who.subunit_list[found_count]
+                who.subunit_list[found_count].unit_position = (who.subunit_position_list[found_count2][0] / 10,
+                                                               who.subunit_position_list[found_count2][1] / 10)  # position in unit sprite
+                found_count += 1
+            else:
+                who.subunit_object_array[row][column] = None
+            found_count2 += 1
+    # ^ End generate subunit array
+
+    for index, this_subunit in enumerate(who.subunit_list):  # reset leader subunit_pos
+        if this_subunit.leader is not None:
+            this_subunit.leader.subunit_pos = index
+
+    who.zoom = 11 - self.camera_zoom
+    who.new_angle = who.angle
+
+    who.start_set(self.subunit_updater)
+    who.set_target(who.front_pos)
+
+    number_pos = (who.base_pos[0] - who.base_width_box,
+                  (who.base_pos[1] + who.base_height_box))
+    who.number_pos = who.rotation_xy(who.base_pos, number_pos, who.radians_angle)
+    who.change_pos_scale()  # find new position for troop number text
+
+    for this_subunit in who.subunit_list:
+        this_subunit.start_set(this_subunit.zoom, self.subunit_animation_pool)
+
+    if add_unit_list:
+        self.all_team_unit["alive"].append(who)
+
+    number_spite = battleui.TroopNumber(self.screen_scale, who)
+    self.troop_number_sprite.add(number_spite)
+

@@ -34,41 +34,47 @@ class Subunit(pygame.sprite.Sprite):
     reset_animation = animation.reset_animation
     set_rotate = utility.set_rotate
 
-    # Methods from either common or genre-specific
-    def use_skill(self, *args): pass
-    def hit_register(self, *args): pass
-    def die(self, *args): pass
-    def rotate(self, *args): pass
-    def combat_pathfind(self, *args): pass
-    def find_close_target(self, *args): pass
-    def make_front_pos(self, *args): pass
-    def make_pos_range(self, *args): pass
-    def element_threshold_count(self, *args): pass
-    def temperature_cal(self, *args): pass
-    def find_nearby_subunit(self, *args): pass
+    # Import from common.subunit
     def apply_map_status(self, *args): pass
     def apply_status_to_friend(self, *args): pass
-    def troop_loss(self, *args): pass
-    def start_set(self, *args): pass
-    def process_trait_skill(self, *args): pass
+    def combat_pathfind(self, *args): pass
     def create_inspect_sprite(self, *args): pass
-    def add_weapon_stat(self, *args): pass
+    def die(self, *args): pass
+    def dmg_cal(self, *args): pass
+    def element_threshold_count(self, *args): pass
+    def find_close_target(self, *args): pass
+    def find_nearby_subunit(self, *args): pass
+    def hit_register(self, *args): pass
+    def loss_cal(self, *args): pass
+    def make_front_pos(self, *args): pass
+    def make_pos_range(self, *args): pass
+    def make_sprite(self, *args): pass
+    def process_trait_skill(self, *args): pass
+    def rotate(self, *args): pass
+    def start_set(self, *args): pass
+    def temperature_cal(self, *args): pass
+    def troop_loss(self, *args): pass
+    def use_skill(self, *args): pass
+    def zoom_scale(self, *args): pass
+
+    # Import from *genre*.subunit
     def add_mount_stat(self, *args): pass
     def add_trait(self, *args): pass
-    def find_shooting_target(self, *args): pass
-    def combat_logic(self, *args): pass
-    def gone_leader_process(self, *args): pass
-    def rotate_logic(self, *args): pass
-    def move_logic(self, *args): pass
-    def player_interact(self, *args): pass
-    def status_update(self, *args): pass
-    def state_reset_logic(self, *args): pass
-    def morale_logic(self, *args): pass
-    def health_stamina_logic(self, *args): pass
-    def swap_weapon(self, *args): pass
+    def add_weapon_stat(self, *args): pass
     def charge_logic(self, *args): pass
-    def skill_check_logic(self, *args): pass
+    def combat_logic(self, *args): pass
+    def find_shooting_target(self, *args): pass
+    def gone_leader_process(self, *args): pass
+    def health_stamina_logic(self, *args): pass
+    def morale_logic(self, *args): pass
+    def move_logic(self, *args): pass
     def pick_animation(self, *args): pass
+    def player_interact(self, *args): pass
+    def rotate_logic(self, *args): pass
+    def skill_check_logic(self, *args): pass
+    def state_reset_logic(self, *args): pass
+    def status_update(self, *args): pass
+    def swap_weapon(self, *args): pass
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
     for entry in os.scandir(script_dir + "/common/subunit/"):  # load and replace modules from common.unit

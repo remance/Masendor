@@ -19,15 +19,15 @@ def process_command(self, target_pos, run_command=False, revert_move=False, enem
                 if "Charge" in other_command:  # also move when charge
                     self.state = 4
                     self.set_target(target_pos)
-                    for subunit in self.subunits:
+                    for subunit in self.subunit_list:
                         subunit.command_action = (other_command, )
                         subunit.state = 4
                 else:
-                    for subunit in self.subunits:
+                    for subunit in self.subunit_list:
                         subunit.command_action = (other_command, )
 
             if "Action" in other_command:  # for releasing attack after charging
-                for subunit in self.subunits:
+                for subunit in self.subunit_list:
                     subunit.command_action = (other_command, )
                     subunit.interrupt_animation = True
                     subunit.idle_action = ()
