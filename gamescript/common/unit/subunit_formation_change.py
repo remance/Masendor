@@ -1,8 +1,8 @@
 def subunit_formation_change(self):
     found_count = 0
     position_count = 0
-    for row in range(0, len(self.subunit_id_array)):
-        for column in range(0, len(self.subunit_id_array[0])):
+    for row in range(0, len(self.subunit_object_array)):
+        for column in range(0, len(self.subunit_object_array[0])):
             self.subunit_object_array[row][column] = None
             if found_count < len(self.subunit_list):
                 if self.subunit_id_array[row][column] != 0:

@@ -6,3 +6,5 @@ def change_inspect_subunit(self):
             self.battle_ui_updater.add(self.inspect_subunit[index])
             if self.subunit_selected is None:
                 self.subunit_selected = self.inspect_subunit[index]
+        else:
+            self.inspect_subunit[index].add_subunit(None)

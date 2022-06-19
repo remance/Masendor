@@ -10,6 +10,8 @@ def pick_animation(self):
                 equip = int(self.current_action[0][-1])
                 weapon = self.weapon_name[self.equipped_weapon][equip]
                 animation_name = self.race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
+            elif "Charge" in self.current_action[0]:
+                animation_name = self.race_name + "_" + self.current_action[0] + "/" + str(self.equipped_weapon)
             else:
                 animation_name = self.race_name + "_" + self.current_action[0]
         else:  # use state to pick animation
@@ -18,5 +20,5 @@ def pick_animation(self):
 
         self.current_animation = {key: value for key, value in self.animation_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
-    except:  # animation not found, use default
+    except KeyError:  # animation not found, use default
         self.current_animation = self.animation_pool[self.race_name + "_Default"]

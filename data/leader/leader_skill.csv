@@ -60,7 +60,7 @@
 "L59","Devout Submission",0,,,,,,,70,70,70,,10,,70,120,200,,,,100,100,,,-80,,,,,,,,"DebuffUnit",,
 "L60",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L61","Conqueror's Destiny",0,0,300,,,,,170,115,105,110,110,,110,150,30,,,,50,50,,,,,,,,,,,"BuffAll",,"The star aligns, and it is time for the dynasty to change. Some say the ruler's throne has a will of its own, and it will choose only those who deserve of it. No one can deny destiny. Not even the conqueror himself."
-"L62",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"L62","Wondrous Recovery",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L63","Chieftain's Guidance",0,0,5,,,,,120,,,110,,,,130,5,,,,30,,,,,,,,,,,,"BuffAll",,
 "L64","Land Supremacy",0,0,5,,,,,150,150,150,150,150,,150,150,60,60,,,100,,,,,,,,,,,,"BuffAll",,"Complete control over land is now established under the supreme leadership. The battle is simply as good as over."
 "L65","Commence The Hunt",0,0,300,120,600,,,115,70,60,140,200,150,200,140,20,-50,,,50,-15,150,,100,100,,,,,,,"BuffAll",,"The hunting party is commenced. All are nothing more than prey in the eyes of true hunters."
@@ -118,9 +118,9 @@
 "L117","Crisis Measurement",,,100,2400,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L118","Unwavering Faith",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L119","Military Masterpiece",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-"L120",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-"L121",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-"L122",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"L120","Miracle Fortuity",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"L121","Winning Move",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"L122","Torment Tempest",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L123",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L124",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "L125",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

@@ -4,6 +4,7 @@ and save them into dict for ingame use """
 import csv
 import os
 import re
+from pathlib import Path
 
 from gamescript.common import utility
 
@@ -351,6 +352,22 @@ class TroopData:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
                         self.mount_armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        # Unit formation dict
+        self.default_unit_formation_list = {}
+        part_folder = Path(os.path.join(main_dir, "data", "troop", "formation"))
+        subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir() is False]
+        for folder in subdirectories:
+            formation_name = folder[-1].replace(".csv", "")
+            self.default_unit_formation_list[formation_name] = []
+            with open(os.path.join(main_dir, "data", "troop", "formation", folder[-1]), encoding="utf-8", mode="r") as edit_file:
+                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+                rd = [row for row in rd]
+                for index, row in enumerate(rd):
+                    if any(re.search("[a-zA-Z]", i) is not None for i in row) is False:  # row does not contain any text, not header
+                        row = [int(item) if item != "" else 100 for item in row]  # replace empty item with high number for low priority
+                        self.default_unit_formation_list[formation_name].append(row)
         edit_file.close()
 
 

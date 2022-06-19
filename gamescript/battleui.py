@@ -1053,12 +1053,16 @@ class InspectSubunit(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
         self.who = None
-        self.image = pygame.Surface((1, 1))
+        self.image = pygame.Surface((0, 0))
+        self.image_original = self.image.copy()
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def add_subunit(self, who):
-        self.who = who
-        self.image = self.who.block
+        if who is not None:
+            self.who = who
+            self.image = self.who.block
+        else:
+            self.image = self.image_original.copy()
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
