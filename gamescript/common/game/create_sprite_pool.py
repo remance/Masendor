@@ -19,7 +19,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
             mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]
 
-            this_subunit["Size"] = self.troop_data.race_list[this_subunit["Race"]]["Size"]  # TODO add mount
+            this_subunit["Size"] = self.troop_data.race_list[this_subunit["Race"]]["Size"] / 10  # TODO add mount
 
             primary_main_weapon = this_subunit["Primary Main Weapon"][0]
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]

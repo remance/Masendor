@@ -59,7 +59,11 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                     this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
                     size = 1  # TODO change when there is way to check leader size
                 elif this_subunit_number != "0":
-                    size = int(troop_list[int(col)]["Size"])
+                    size = int(round(int(troop_list[int(col)]["Size"]) / 10, 0))
+                    if size == 0:
+                        size = 1
+                    elif size > 5:
+                        size = 5
 
                 if self.troop_size_adjustable is False or (row_index + size <= 5 and col_index + size <= 5):  # skip if subunit exceed unit size array
                     for row_number in range(row_index, row_index + size):

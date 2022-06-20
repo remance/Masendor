@@ -1,5 +1,11 @@
 def add_mount_stat(self):
     """Combine mount stat"""
+    race_id = [key for key, value in self.troop_data.race_list.items() if self.mount["Race"] in value["Name"]][0]
+    mount_size = self.troop_data.race_list[race_id]["Size"]
+    # self.race_name += "&" + self.troop_data.race_list[race_id]["Name"]
+    if mount_size > self.size:  # replace size if mount is larger
+        self.size = mount_size
+
     self.base_charge_def = 25  # charge defence only 25 for cav
     self.base_speed = (self.mount["Speed"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
     self.troop_health += (self.mount["Health Bonus"] * self.mount_grade["Health Effect"]) + \
@@ -12,3 +18,4 @@ def add_mount_stat(self):
     self.trait += self.mount["Trait"]  # Apply mount trait to subunit
     self.subunit_type = 2  # If subunit has a mount, count as cav for command buff
     self.feature_mod = "Cavalry"  # Use cavalry type for terrain bonus
+

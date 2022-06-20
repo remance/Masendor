@@ -35,6 +35,7 @@ class Subunit(pygame.sprite.Sprite):
     set_rotate = utility.set_rotate
 
     # Import from common.subunit
+    def add_mount_stat(self, *args): pass
     def apply_map_status(self, *args): pass
     def apply_status_to_friend(self, *args): pass
     def combat_pathfind(self, *args): pass
@@ -58,7 +59,6 @@ class Subunit(pygame.sprite.Sprite):
     def zoom_scale(self, *args): pass
 
     # Import from *genre*.subunit
-    def add_mount_stat(self, *args): pass
     def add_trait(self, *args): pass
     def add_weapon_stat(self, *args): pass
     def charge_logic(self, *args): pass
@@ -266,8 +266,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_skill = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.equipped_weapon = 0
 
-        self.original_speed = self.troop_data.race_list[stat["Race"]]["Speed"] * \
-                              self.troop_data.race_list[stat["Race"]]["Size"]  # use speed of race multiply by race size
+        self.original_speed = self.troop_data.race_list[stat["Race"]]["Speed"]  # use speed of race
         self.feature_mod = "Infantry"  # the starting column in terrain bonus of infantry
         self.authority = 100  # default start at 100
 
@@ -356,10 +355,6 @@ class Subunit(pygame.sprite.Sprite):
 
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
-            race_id = [key for key, value in self.troop_data.race_list.items() if self.mount["Race"] in value["Name"]][0]
-            # self.race_name += "&" + self.troop_data.race_list[race_id]["Name"]
-            if self.troop_data.race_list[race_id]["Size"] > self.size:  # replace size if mount is larger
-                self.size = self.troop_data.race_list[self.mount["Race"]]["Size"]
 
         self.swap_weapon()
         self.last_health_state = 4  # state start at full

@@ -15,13 +15,20 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                         "Command": {"Offensive": "Offensive", "Defensive": "Defensive", "Skirmish": "Skirmish",
                                     "Protect Me": "Protect Me", "Follow Unit": "Follow Unit", "Free": "Free",
                                     "Hold Location": "Hold Location"},
-                        "Formation": {"Square": "Square", "Vert Line": "Vert Line", "Circle": "Circle",
-                                      "Wedge": "Wedge", "Hori Line": "Hori Line", "Original": "Original",
+                        "Formation": {"Formation Style": "Formation Style",
+                                      "Formation List": "Formation List", "Original": "Original",
+                                      },
+                        "Formation Style": {"Skirmish Phase": "Skirmish Phase", "Melee Phase": "Melee Phase",
+                                            "Infantry Center": "Infantry Center", "Cavalry Center": "Cavalry Center",
+                                            "Infantry Outer": "Infantry Outer", "Cavalry Outer": "Cavalry Outer",},
+                        "Formation List": {"Square": "Square", "Line": "Line", "Circle": "Circle",
+                                      "Wedge": "Wedge", "Bar": "Bar", "Original": "Original",
                                       "Melee Front": "Melee Front", "Range Front": "Range Front"},
+
                         "Equipment": {"Equip Primary": "Equip Primary", "Equip Secondary": "Equip Secondary",
                                       "Troop Primary": "Troop Primary", "Troop Secondary": "Troop Secondary",
                                       "Troop Melee": "Troop Melee", "Troop Range": "Troop Range"},
-                        "Setting": {"Height Map": "Height Map"}}
+                        "Setting": {"Height Map": "Height Map", "UI Hide": "UI Hide", "UI Show": "UI Show"}}
 
 # Dict of variable that will get add into object in game, key use two items tuple for indication of adding
 # object is as implied will add variable to object with the name of first item, self-object will add to object in self,
