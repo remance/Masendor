@@ -16,7 +16,9 @@ def pick_animation(self):
                 animation_name = self.race_name + "_" + self.current_action[0]
         else:  # use state to pick animation
             state_name = self.subunit_state[self.state]
-            animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)  #TODO change when add change equip
+            animation_name = self.race_name + "_" + state_name
+            if animation_name not in self.animation_pool:  # use animation with weapon prefix
+                animation_name = self.race_name + "_" + self.action_list[self.weapon_name[0][0]]["Common"] + "_" + state_name + "/" + str(self.equipped_weapon)
 
         self.current_animation = {key: value for key, value in self.animation_pool.items() if animation_name in key}
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]

@@ -311,10 +311,10 @@
 310,"True Sight",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can always detect any hidden enemy and trap."
 311,"Third Eye",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,
 312,"True Aims",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops will These troops will always hit the enemy regardless of range and bypass obstacle defence by half. The cowardly enemy cannot hide behind their shield anymore.always hit enemy regardless of range and bypass obstacle defense by half.The cowardly enemy cannot hide behind their shield anymore."
-313,"Regenerating Limb",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can regenerate their lost limbs, making them able to completely become combat-ready again after resting."
-314,"Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can heal themselves in time without needing a medical assistant."
-315,"Fast Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can heal themselves even in battle as long as it is not attacked."
-316,"Limb Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops will not lose soldier count from injury after a battle."
+313,"Healing Aura",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops possess an aura that cause nearby friendly troops to be able to heal themselves."
+314,"Regeneration",1,,,,,0,,,,,,0,4,6,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can heal themselves in time without needing a medical assistant."
+315,"Fast Regeneration",1,,,,,0,,,,,,0,10,15,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can heal themselves even in battle as long as it is not attacked."
+316,"Limb Regeneration",1,,,,,0,,,,,,0,,,,,0,0,,,0,0,0,0,0,0,0,0,,,0,0,,,,2,"These troops can regenerate their lost limbs, making them able to completely become combat-ready again after resting."
 317,"Swift Swimmer",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,,0,
 318,"Landlubber",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,,0,
 319,"Immortal",1,,,,,,,,,,,,"inf",,,,,,,,,,,,,,,,,,,,,,,,"These troops are immortal and cannot be killed by any means. Not even magic can harm them."

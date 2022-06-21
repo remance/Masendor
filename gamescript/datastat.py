@@ -4,6 +4,7 @@ and save them into dict for ingame use """
 import csv
 import os
 import re
+import numpy as np
 from pathlib import Path
 
 from gamescript.common import utility
@@ -368,6 +369,7 @@ class TroopData:
                     if any(re.search("[a-zA-Z]", i) is not None for i in row) is False:  # row does not contain any text, not header
                         row = [int(item) if item != "" else 100 for item in row]  # replace empty item with high number for low priority
                         self.default_unit_formation_list[formation_name].append(row)
+            self.default_unit_formation_list[formation_name] = np.array(self.default_unit_formation_list[formation_name])
         edit_file.close()
 
 

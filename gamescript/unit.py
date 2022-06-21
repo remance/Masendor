@@ -24,8 +24,6 @@ class Unit(pygame.sprite.Sprite):
 
     set_rotate = utility.set_rotate
 
-    unit_size = None
-
     # Import from common.unit
     def assign_commander(self, *args):
         pass
@@ -103,6 +101,10 @@ class Unit(pygame.sprite.Sprite):
             exec(f"from common.unit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
+    # variable from *genre*.genre_setting
+    unit_size = None
+    order_to_place = None
+
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle,
                  start_hp=100, start_stamina=100, team=0):
         """Unit object represent a group of subunits, each unit can contain a specific number of subunits
@@ -150,6 +152,8 @@ class Unit(pygame.sprite.Sprite):
         self.change_pos_scale()
 
         # v Setup default behaviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
+        self.formation_phase = "Skirmish Phase"
+        self.formation_style = "Infantry Front"
         self.next_rotate = False
         self.selected = False  # for checking if it currently selected or not
         self.just_selected = False  # for light up subunit when click
@@ -226,6 +230,8 @@ class Unit(pygame.sprite.Sprite):
                                  3: []}  # same as above but save object instead of index order:front, left, right, rear
 
         self.battle.all_team_unit["alive"].add(self)
+        self.subunit_type_count = {0: 0, 1: 0,  # melee and range infantry
+                                   2: 0, 3: 0}  # melee and range cavalry
         self.ally_pos_list = {}
         self.enemy_pos_list = {}
 

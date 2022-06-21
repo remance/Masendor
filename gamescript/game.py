@@ -819,6 +819,16 @@ class Game:
                 else:  # any other type value
                     exec(f"" + how + "." + key + " = " + str(value))
 
+        # calculate order placement from unit size setting
+        center = (round(len(unit.unit_size[0]) / 2, 0),  # from column size
+                  round(len(unit.unit_size[1]) / 2, 0))  # from row size
+        order_to_place = [[center[0]], [center[1]]]
+        for index, line in enumerate(unit.unit_size):
+            for occurrence, _ in enumerate(range(center[index] + 1, line)):
+                order_to_place[index].append(center[index] - (occurrence + 1))
+                order_to_place[index].append(center[index] + (occurrence + 1))
+        unit.order_to_place = [(item1, item2) for item1 in order_to_place[0] for item2 in order_to_place[1]]
+
         self.genre = new_genre
         self.battle_game.genre = self.genre
 

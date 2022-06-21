@@ -103,5 +103,3 @@ def move_logic(self, dt, parent_state, collide_list):
                         self.unit.true_number_pos = self.unit.number_pos * (
                                 11 - self.unit.zoom)  # find new position for troop number text
 
-            else:  # Stopping subunit when reach base_target
-                self.state = 0  # idle

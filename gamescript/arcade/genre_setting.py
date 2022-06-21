@@ -15,15 +15,19 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                         "Command": {"Offensive": "Offensive", "Defensive": "Defensive", "Skirmish": "Skirmish",
                                     "Protect Me": "Protect Me", "Follow Unit": "Follow Unit", "Free": "Free",
                                     "Hold Location": "Hold Location"},
-                        "Formation": {"Formation Style": "Formation Style",
+                        "Formation": {"Formation Style": "Formation Style", "Formation Phase}": "Formation Phase",
                                       "Formation List": "Formation List", "Original": "Original",
                                       },
-                        "Formation Style": {"Skirmish Phase": "Skirmish Phase", "Melee Phase": "Melee Phase",
-                                            "Infantry Center": "Infantry Center", "Cavalry Center": "Cavalry Center",
-                                            "Infantry Outer": "Infantry Outer", "Cavalry Outer": "Cavalry Outer",},
+                        "Formation Phase": {"Skirmish Phase": "Skirmish Phase", "Melee Phase": "Melee Phase",
+                                            "Bombard Phase": "Bombard Phase", "Heroic Phase": "Heroic Phase"
+                                            },
+                        "Formation Style": {"Infantry Inner": "Infantry Inner", "Cavalry Inner": "Cavalry Inner",
+                                            "Infantry Front": "Infantry Front", "Cavalry Front": "Cavalry Front",
+                                            "Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank",
+                                            "Cluster": "Cluster",},
                         "Formation List": {"Square": "Square", "Line": "Line", "Circle": "Circle",
-                                      "Wedge": "Wedge", "Bar": "Bar", "Original": "Original",
-                                      "Melee Front": "Melee Front", "Range Front": "Range Front"},
+                                           "Wedge": "Wedge", "Bar": "Bar", "Original": "Original",
+                                           "Melee Front": "Melee Front", "Range Front": "Range Front"},
 
                         "Equipment": {"Equip Primary": "Equip Primary", "Equip Secondary": "Equip Secondary",
                                       "Troop Primary": "Troop Primary", "Troop Secondary": "Troop Secondary",
@@ -45,7 +49,7 @@ object_variable = {("self", "object"): {"char_select": True,  # include characte
                                                     "add_troop_number_sprite": False,  # troop number sprite not use in arcade mode
                                                     "unit_behaviour_wheel": unit_behaviour_wheel  # player unit behaviour control via wheel ui
                                                     },
-                   ("unit", "class"): {"unit_size": unit_size  # maximum array size unit can contain subunits
+                   ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
                                        },
                    ("subunit", "class"): {"dmg_include_leader": False,  # not include leader in damage calculation, leader is subunit
                                           "stat_use_troop_number": False  # arcade mode count one subunit as one troop

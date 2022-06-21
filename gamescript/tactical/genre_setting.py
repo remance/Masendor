@@ -17,7 +17,7 @@ object_variable = {("self", "object"): {"char_select": False,  # not include cha
                                                     "add_troop_number_sprite": True,  # troop number sprite
                                                     "unit_behaviour_wheel": unit_behaviour_wheel  # player unit behaviour control via wheel ui
                                                     },
-                   ("unit", "class"): {"unit_size": unit_size  # maximum array size unit can contain subunits
+                   ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
                                        },
                    ("subunit", "class"): {"dmg_include_leader": True,  # include leader in damage calculation
                                           "stat_use_troop_number": True  # calculate troop number in damage calculation

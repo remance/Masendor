@@ -11,6 +11,9 @@ def setup_frontline(self):
     :param self: unit object
     """
 
+    # reset subunit type count
+    self.subunit_type_count.update((value, 0) for value in self.subunit_type_count)
+
     # check if completely empty side row/col, then delete and re-adjust array
     stop_loop = False
     while stop_loop is False:  # loop until no longer find completely empty row/col
@@ -95,6 +98,7 @@ def setup_frontline(self):
 
     for subunit in self.subunit_list:  # assign frontline variable to subunit for only front side
         subunit.frontline = False
+        self.subunit_type_count[subunit.subunit_type] += 1
         subunit.find_nearby_subunit()  # reset nearby subunit in the same unit
         if subunit in self.frontline_object[0]:
             subunit.frontline = True
