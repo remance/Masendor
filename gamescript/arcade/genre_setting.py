@@ -15,7 +15,7 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                         "Command": {"Offensive": "Offensive", "Defensive": "Defensive", "Skirmish": "Skirmish",
                                     "Protect Me": "Protect Me", "Follow Unit": "Follow Unit", "Free": "Free",
                                     "Hold Location": "Hold Location"},
-                        "Formation": {"Formation Style": "Formation Style", "Formation Phase}": "Formation Phase",
+                        "Formation": {"Formation Style": "Formation Style", "Formation Phase": "Formation Phase",
                                       "Formation List": "Formation List", "Original": "Original",
                                       },
                         "Formation Phase": {"Skirmish Phase": "Skirmish Phase", "Melee Phase": "Melee Phase",

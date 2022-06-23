@@ -82,12 +82,14 @@ team_colour = unit.team_colour
 
 
 class Game:
-    # import from common.game
     empty_method = utility.empty_method
+
+    # import from common.game
     back_mainmenu = empty_method
     change_battle_source = empty_method
     change_to_source_selection_menu = empty_method
     char_select_menu_process = empty_method
+    convert_formation_preset_size = empty_method
     create_preview_map = empty_method
     create_sprite_pool = empty_method
     create_team_coa = empty_method
@@ -675,7 +677,6 @@ class Game:
         self.run()
 
     def change_ruleset(self):
-
         self.weapon_data, self.armour_data, self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_equipment_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
         subunit.Subunit.screen_scale = self.screen_scale
         subunit.Subunit.weapon_data = self.weapon_data
@@ -684,6 +685,9 @@ class Game:
         subunit.Subunit.leader_data = self.leader_data
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
+
+        self.convert_formation_preset_size()
+        unit.Unit.unit_formation_list = self.troop_data.unit_formation_list
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, \
         self.custom_map_folder = make_battle_list_data(self.main_dir, self.ruleset_folder)
@@ -820,10 +824,10 @@ class Game:
                     exec(f"" + how + "." + key + " = " + str(value))
 
         # calculate order placement from unit size setting
-        center = (round(len(unit.unit_size[0]) / 2, 0),  # from column size
-                  round(len(unit.unit_size[1]) / 2, 0))  # from row size
+        center = (int(round(self.unit_size[0] / 2, 0)),  # from column size
+                  int(round(self.unit_size[1] / 2, 0)))  # from row size
         order_to_place = [[center[0]], [center[1]]]
-        for index, line in enumerate(unit.unit_size):
+        for index, line in enumerate(self.unit_size):
             for occurrence, _ in enumerate(range(center[index] + 1, line)):
                 order_to_place[index].append(center[index] - (occurrence + 1))
                 order_to_place[index].append(center[index] + (occurrence + 1))

@@ -371,6 +371,7 @@ class TroopData:
                         self.default_unit_formation_list[formation_name].append(row)
             self.default_unit_formation_list[formation_name] = np.array(self.default_unit_formation_list[formation_name])
         edit_file.close()
+        self.unit_formation_list = {}  # list of unit formation after change size, get added later when change genre and ruleset
 
 
 class LeaderData:

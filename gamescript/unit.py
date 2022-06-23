@@ -101,9 +101,12 @@ class Unit(pygame.sprite.Sprite):
             exec(f"from common.unit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-    # variable from *genre*.genre_setting
+    # Variable from *genre*.genre_setting
     unit_size = None
     order_to_place = None
+
+    # Variable from troop_data that got added during change_ruleset function
+    unit_formation_list = {}
 
     def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle,
                  start_hp=100, start_stamina=100, team=0):
@@ -152,6 +155,7 @@ class Unit(pygame.sprite.Sprite):
         self.change_pos_scale()
 
         # v Setup default behaviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
+        self.formation = "Original"
         self.formation_phase = "Skirmish Phase"
         self.formation_style = "Infantry Front"
         self.next_rotate = False
