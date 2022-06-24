@@ -77,10 +77,10 @@ class Subunit(pygame.sprite.Sprite):
     def swap_weapon(self, *args): pass
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
-    for entry in os.scandir(script_dir + "/common/subunit/"):  # load and replace modules from common.unit
+    for entry in os.scandir(script_dir + "\\common\\subunit\\"):  # load and replace modules from common.unit
         if entry.is_file() and ".py" in entry.name:
             file_name = entry.name[:-3]
-            exec(f"from common.subunit import " + file_name)
+            exec(f"from gamescript.common.subunit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # genre specific variables

@@ -75,7 +75,7 @@ class Battle:
         for entry in os.scandir(script_dir + "/common/" + folder + "/"):  # load and replace modules from common
             if entry.is_file() and ".py" in entry.name:
                 file_name = entry.name[:-3]
-                exec(f"from common." + folder + " import " + file_name)
+                exec(f"from gamescript.common." + folder + " import " + file_name)
                 exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # variable that get changed based on genre

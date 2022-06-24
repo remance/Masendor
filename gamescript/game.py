@@ -51,7 +51,7 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 for entry in os.scandir(script_dir + "/common/game/setup/"):  # load and replace modules from common.game.setup
     if entry.is_file() and ".py" in entry.name:
         file_name = entry.name[:-3]
-        exec(f"from common.game.setup import " + file_name)
+        exec(f"from gamescript.common.game.setup import " + file_name)
         exec(f"" + file_name + " = " + file_name + "." + file_name)
 
 version_name = "Dream Decision"  # Game version name that will appear as game name
@@ -117,7 +117,7 @@ class Game:
     for entry in os.scandir(script_dir + "/common/game/"):  # load and replace modules from common.game
         if entry.is_file() and ".py" in entry.name:
             file_name = entry.name[:-3]
-            exec(f"from common.game import " + file_name)
+            exec(f"from gamescript.common.game import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # Will be changed in genre_change function depending on selected genre

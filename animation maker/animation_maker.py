@@ -667,7 +667,7 @@ class Model:
             self.weapon = self.weapon | {"p" + str(p) + "_main_weapon": "Sword", "p" + str(p) + "_sub_weapon": "Sword"}
             self.armour = self.armour | {"p" + str(p) + "_armour": "None"}
         self.empty_sprite_part = [0, pygame.Vector2(0, 0), [50, 50], 0, 0, 0, 1]
-        self.random_face()
+        self.get_face()
         self.size = 1  # size scale of sprite
         try:
             self.read_animation(list(generic_animation_pool[0].keys())[0])
@@ -680,17 +680,13 @@ class Model:
             self.default_body_part = {key: value for key, value in self.all_part_list.items()}
             self.default_part_name = {key: None for key in self.rect_part_list.keys()}
 
-    def random_face(self):
+    def get_face(self):
         for p in range(1, max_person + 1):
             this_p = "p" + str(p)
-            self.p_eyebrow = self.p_eyebrow | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eyebrow"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eyebrow"]) - 1)]}
-            self.p_any_eye = self.p_any_eye | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eye"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["eye"]) - 1)]}
-            self.p_any_mouth = self.p_any_mouth | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["mouth"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["mouth"]) - 1)]}
-            self.p_beard = self.p_beard | {this_p: list(gen_body_sprite_pool[self.p_race[this_p]]["side"]["beard"].keys())[
-                random.randint(0, len(gen_body_sprite_pool[self.p_race[this_p]]["side"]["beard"]) - 1)]}
+            self.p_eyebrow = self.p_eyebrow | {this_p: "normal_eyebrow"}
+            self.p_any_eye = self.p_any_eye | {this_p: "normal_eye"}
+            self.p_any_mouth = self.p_any_mouth | {this_p: "mouth"}
+            self.p_beard = self.p_beard | {this_p: "no_beard"}
 
     def make_layer_list(self, sprite_part):
         pose_layer_list = {k: v[5] for k, v in sprite_part.items() if v is not None and v != []}
@@ -743,7 +739,7 @@ class Model:
                             else:
                                 link_list[part] = [pose[part][3], pose[part][4]]
                                 bodypart_list[part] = [pose[part][0], pose[part][1], pose[part][2]]
-                        elif pose[part] != 0:
+                        elif pose[part] != 0:  # eye or mouth change
                             bodypart_list[part] = pose[part]
                             part_name = pose[part]
                             if part_name == 1:
@@ -846,13 +842,17 @@ class Model:
                            part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
                     Joint(joint_type, layer, name_check, (pos[0] / self.size, pos[1] / self.size), part[3])
 
-    def grab_face_part(self, race, side, part, part_check, part_default):
+    def grab_face_part(self, race, side, part, part_check, part_default=None):
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
-        if part_check == 1:  # any part
-            surface = gen_body_sprite_pool[race][side][part][part_default].copy()
-        else:
-            surface = gen_body_sprite_pool[race][side][part][part_check].copy()
-        return surface
+        try:
+            if part_check == 1:  # any part
+                surface = gen_body_sprite_pool[race][side][part][part_default].copy()
+            else:
+                surface = gen_body_sprite_pool[race][side][part][part_check].copy()
+            return surface
+        except KeyError:
+            return None
+
 
     def generate_body(self, bodypart_list):
         p_head_sprite_surface = {"p" + str(p): None for p in range(1, max_person + 1)}
@@ -860,14 +860,15 @@ class Model:
             head_sprite_surface = None
             try:
                 head_race = bodypart_list[key + "_head"][0]
+                self.p_race[key] = head_race
                 head_side = bodypart_list[key + "_head"][1]
                 head_sprite = gen_body_sprite_pool[head_race][head_side]["head"][bodypart_list[key + "_head"][2]].copy()
                 head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
                 head_rect = head_sprite.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
                 head_sprite_surface.blit(head_sprite, head_rect)
-                face = [gen_body_sprite_pool[head_race][head_side]["eyebrow"][self.p_eyebrow[key]].copy(),
+                face = [self.grab_face_part(head_race, head_side, "eyebrow", self.p_eyebrow[key]),
                         self.grab_face_part(head_race, head_side, "eye", bodypart_list[key + "_eye"], self.p_any_eye[key]),
-                        gen_body_sprite_pool[head_race][head_side]["beard"][self.p_beard[key]].copy(),
+                        self.grab_face_part(head_race, head_side, "beard", self.p_beard[key]),
                         self.grab_face_part(head_race, head_side, "mouth", bodypart_list[key + "_mouth"], self.p_any_mouth[key])]
                 # if skin != "white":
                 #     face[0] = self.apply_colour(face[0], skin_colour)
@@ -875,13 +876,14 @@ class Model:
                 face[2] = apply_colour(face[2], self.p_hair_colour[key])
                 face[1] = apply_colour(face[1], self.p_eye_colour[key])
 
-                head_sprite_surface = pygame.Surface((face[2].get_width(), face[2].get_height()), pygame.SRCALPHA)
+                head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
                 rect = head_sprite.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
                 head_sprite_surface.blit(head_sprite, rect)
 
                 for index, item in enumerate(face):  # add face to head sprite
-                    rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-                    head_sprite_surface.blit(item, rect)
+                    if item is not None:
+                        rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+                        head_sprite_surface.blit(item, rect)
 
             except KeyError:  # some head direction show no face
                 pass
@@ -1785,6 +1787,15 @@ while True:
                             elif "person" in popup_list_box.action:
                                 p_body_helper.change_p_type(name.name, player_change=True)
                                 p_selector.change_name(name.name)
+                                face = [model.bodypart_list[current_frame][p_body_helper.ui_type + "_eye"],
+                                        model.bodypart_list[current_frame][p_body_helper.ui_type + "_mouth"]]
+                                head_text = ["Eye: ", "Mouth: "]
+                                for index, selector in enumerate([eye_selector, mouth_selector]):
+                                    this_text = "Any"
+                                    if face[index] not in (0, 1):
+                                        this_text = face[index]
+                                    selector.change_name(head_text[index] + str(this_text))
+
                             elif "armour" in popup_list_box.action:
                                 model.edit_part(mouse_pos, popup_list_box.action[0:3] + "armour_" + name.name)
                                 armour_selector.change_name(name.name)
@@ -2090,9 +2101,9 @@ while True:
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif mouth_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
-                                                       model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
-                        popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_mouth_select",
+                        ui_type = p_body_helper.ui_type
+                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[ui_type]][model.bodypart_list[current_frame][ui_type + "_head"][1]]["mouth"].keys())
+                        popup_list_open(popup_list_box, popup_namegroup, ui, ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif race_part_button.rect.collidepoint(mouse_pos):

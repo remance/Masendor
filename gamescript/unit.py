@@ -98,7 +98,7 @@ class Unit(pygame.sprite.Sprite):
     for entry in os.scandir(script_dir + "/common/unit/"):  # load and replace modules from common.unit
         if entry.is_file() and ".py" in entry.name:
             file_name = entry.name[:-3]
-            exec(f"from common.unit import " + file_name)
+            exec(f"from gamescript.common.unit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # Variable from *genre*.genre_setting
