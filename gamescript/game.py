@@ -89,7 +89,7 @@ class Game:
     change_battle_source = empty_method
     change_to_source_selection_menu = empty_method
     char_select_menu_process = empty_method
-    convert_formation_preset_size = empty_method
+    convert_formation_preset = empty_method
     create_preview_map = empty_method
     create_sprite_pool = empty_method
     create_team_coa = empty_method
@@ -686,7 +686,7 @@ class Game:
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 
-        self.convert_formation_preset_size()
+        self.convert_formation_preset()
         unit.Unit.unit_formation_list = self.troop_data.unit_formation_list
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, \
@@ -824,15 +824,6 @@ class Game:
                     exec(f"" + how + "." + key + " = " + str(value))
 
         # calculate order placement from unit size setting
-        center = (int(round(self.unit_size[0] / 2, 0)),  # from column size
-                  int(round(self.unit_size[1] / 2, 0)))  # from row size
-        order_to_place = [[center[0]], [center[1]]]
-        for index, line in enumerate(self.unit_size):
-            for occurrence, _ in enumerate(range(center[index] + 1, line)):
-                order_to_place[index].append(center[index] - (occurrence + 1))
-                order_to_place[index].append(center[index] + (occurrence + 1))
-        unit.order_to_place = [(item1, item2) for item1 in order_to_place[0] for item2 in order_to_place[1]]
-
         self.genre = new_genre
         self.battle_game.genre = self.genre
 
