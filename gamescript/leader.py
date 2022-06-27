@@ -1,14 +1,18 @@
 import pygame
 import pygame.freetype
 
+from gamescript.common import utility
+
 
 class Leader(pygame.sprite.Sprite):
+    empty_method = utility.empty_method
+
     battle = None
     leader_pos = None
 
     # Import from *genre*.leader
-    def gone(self, *args): pass
-    def leader_role_change(self, *args): pass
+    gone = empty_method
+    leader_role_change = empty_method
 
     def __init__(self, leader_id, subunit_position, role, unit, leader_data):
         self._layer = 15

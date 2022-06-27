@@ -14,9 +14,7 @@ def change_formation(self, formation, dynamic=False):
         self.subunit_id_array = self.original_subunit_id_array.copy()
     else:
         if formation == "Original":  # original formation but change placement
-            new_formation = np.where(self.subunit_id_array == 0, -1, self.subunit_id_array)  # change empty to -1 temporarily
-            new_formation = np.where(self.subunit_id_array > 0, 0, new_formation)  # change all occupied to most important
-            new_formation = np.where(self.subunit_id_array == -1, 9, new_formation)  # change empty to lest important
+            new_formation = self.original_formation_score
         else:
             new_formation = self.unit_formation_list[formation]
 
@@ -28,16 +26,11 @@ def change_formation(self, formation, dynamic=False):
             placement_position = np.where(new_formation == placement_value)
             placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in enumerate(placement_position[0])]
 
-        priority_subunit_score = {}  # dict to keep placement priority score of subunit
+        priority_subunit_score = {"front": [], "rear": [], "flank": [], "outer": [], "inner": []}  # dict to keep placement priority score of subunit
         for this_subunit in temp_subunit_object_array:
             if this_subunit is not None:
                 # Formation style score, closer to front mean higher score
-                if "Front" in self.formation_style:
-                    if this_subunit.subunit_type < 2 and "Infantry" in self.formation_style:
-                        score += 1
-                    elif this_subunit.subunit_type >= 2 and "Cavalry" in self.formation_style:
-                        score += 1
-                elif "Inner" in self.formation_style:
+                if "Inner" in self.formation_style:
                     if this_subunit.subunit_type < 2 and "Infantry" in self.formation_style:
                         score += 2
                     elif this_subunit.subunit_type >= 2 and "Cavalry" in self.formation_style:
@@ -47,6 +40,7 @@ def change_formation(self, formation, dynamic=False):
                         score += 1
                     elif this_subunit.subunit_type < 2 and "Cavalry" in self.formation_style:
                         score += 1
+
                 # Formation phase score
                 if "Melee" in self.formation_phase:
                     if this_subunit.subunit_type in (0, 2):
@@ -84,5 +78,4 @@ def change_formation(self, formation, dynamic=False):
                         placement_count += 1
                         break
 
-        self.subunit_id_array = new_formation
     self.subunit_formation_change()

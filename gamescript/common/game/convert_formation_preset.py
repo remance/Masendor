@@ -10,9 +10,10 @@ def convert_formation_preset(self):
     Also change placement score to make position near center and front has higher score
     :param self: Game object
     """
+    self.troop_data.unit_formation_list = {}
+
     front_order_to_place, rear_order_to_place, flank_order_to_place, outer_order_to_place, inner_order_to_place = calculate_formation_priority(self)
 
-    self.troop_data.unit_formation_list = {}
     for key, value in self.troop_data.default_unit_formation_list.items():
         image = Image.fromarray(value)
         image = image.resize((self.unit_size[0], self.unit_size[1]))

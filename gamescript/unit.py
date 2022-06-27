@@ -16,6 +16,8 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 
 class Unit(pygame.sprite.Sprite):
+    empty_method = utility.empty_method
+
     max_zoom = 10  # max zoom allow
     battle = None
     form_change_timer = 10
@@ -25,75 +27,32 @@ class Unit(pygame.sprite.Sprite):
     set_rotate = utility.set_rotate
 
     # Import from common.unit
-    def assign_commander(self, *args):
-        pass
-
-    def cal_unit_stat(self, *args):
-        pass
-
-    def selection(self, *args):
-        pass
-
-    def set_target(self, *args):
-        pass
-
-    def setup_frontline(self, *args):
-        pass
+    assign_commander = empty_method
+    cal_unit_stat = empty_method
+    selection = empty_method
+    set_target = empty_method
+    setup_frontline = empty_method
 
     # Import from *genre*.unit
-    def authority_recalculation(self, *args):
-        pass
-
-    def check_split(self, *args):
-        pass
-
-    def destroyed(self, *args):
-        pass
-
-    def morale_check_logic(self, *args):
-        pass
-
-    def movement_logic(self, *args):
-        pass
-
-    def player_input(self, *args):
-        pass
-
-    def process_command(self, *args):
-        pass
-
-    def retreat(self, *args):
-        pass
-
-    def reposition_leader(self, *args):
-        pass
-
-    def revert_move(self, *args):
-        pass
-
-    def rotate_logic(self, *args):
-        pass
-
-    def set_subunit_target(self, *args):
-        pass
-
-    def setup_stat(self, *args):
-        pass
-
-    def split_unit(self, *args):
-        pass
-
-    def state_reset_logic(self, *args):
-        pass
-
-    def switch_faction(self, *args):
-        pass
-
-    def transfer_leader(self, *args):
-        pass
-
-    def unit_ai(self, *args):
-        pass
+    authority_recalculation = empty_method
+    change_pos_scale = empty_method
+    check_split = empty_method
+    destroyed = empty_method
+    morale_check_logic = empty_method
+    movement_logic = empty_method
+    player_input = empty_method
+    process_command = empty_method
+    retreat = empty_method
+    reposition_leader = empty_method
+    revert_move = empty_method
+    rotate_logic = empty_method
+    set_subunit_target = empty_method
+    setup_stat = empty_method
+    split_unit = empty_method
+    state_reset_logic = empty_method
+    switch_faction = empty_method
+    transfer_leader = empty_method
+    unit_ai = empty_method
 
     for entry in os.scandir(script_dir + "/common/unit/"):  # load and replace modules from common.unit
         if entry.is_file() and ".py" in entry.name:
@@ -157,7 +116,7 @@ class Unit(pygame.sprite.Sprite):
         # v Setup default behaviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
         self.formation = "Original"
         self.formation_phase = "Skirmish Phase"
-        self.formation_style = "Infantry Front"
+        self.formation_style = "Cavalry Flank"
         self.next_rotate = False
         self.selected = False  # for checking if it currently selected or not
         self.just_selected = False  # for light up subunit when click
@@ -252,10 +211,6 @@ class Unit(pygame.sprite.Sprite):
                 subunit_number = 0
         # ^ End subunit position list
 
-    def change_pos_scale(self):
-        """Change position variable to new camera scale"""
-        self.true_number_pos = self.number_pos * (11 - self.zoom)
-
     def start_set(self):
         """Setup various variables at the start of battle or when new unit spawn/split"""
         self.setup_stat(battle_start=True)
@@ -293,6 +248,16 @@ class Unit(pygame.sprite.Sprite):
             subunit.make_front_pos()
 
         self.change_pos_scale()
+
+        # create unit original formation positioning score
+        new_formation = np.where(self.subunit_object_array is None, 9,
+                                 self.subunit_object_array)  # change empty to lest important
+        new_formation = np.where(self.subunit_object_array is not None, 1, new_formation)  # change all occupied to most important
+        self.original_formation_score = {"front": self.battle.troop_data.unit_formation_list["Original"]["front"] * new_formation,
+                                         "rear": self.battle.troop_data.unit_formation_list["Original"]["rear"] * new_formation,
+                                         "flank": self.battle.troop_data.unit_formation_list["Original"]["flank"] * new_formation,
+                                         "outer": self.battle.troop_data.unit_formation_list["Original"]["outer"] * new_formation,
+                                         "inner": self.battle.troop_data.unit_formation_list["Original"]["inner"] * new_formation,}
 
         self.original_subunit_id_array = self.subunit_id_array.copy()
 

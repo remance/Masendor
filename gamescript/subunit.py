@@ -14,6 +14,8 @@ infinity = float("inf")
 
 
 class Subunit(pygame.sprite.Sprite):
+    empty_method = utility.empty_method
+
     unit_ui_images = []
     battle = None
     base_map = None  # base map
@@ -35,46 +37,46 @@ class Subunit(pygame.sprite.Sprite):
     set_rotate = utility.set_rotate
 
     # Import from common.subunit
-    def add_mount_stat(self, *args): pass
-    def apply_map_status(self, *args): pass
-    def apply_status_to_friend(self, *args): pass
-    def combat_pathfind(self, *args): pass
-    def create_inspect_sprite(self, *args): pass
-    def die(self, *args): pass
-    def dmg_cal(self, *args): pass
-    def element_threshold_count(self, *args): pass
-    def find_close_target(self, *args): pass
-    def find_nearby_subunit(self, *args): pass
-    def hit_register(self, *args): pass
-    def loss_cal(self, *args): pass
-    def make_front_pos(self, *args): pass
-    def make_pos_range(self, *args): pass
-    def make_sprite(self, *args): pass
-    def process_trait_skill(self, *args): pass
-    def rotate(self, *args): pass
-    def start_set(self, *args): pass
-    def temperature_cal(self, *args): pass
-    def troop_loss(self, *args): pass
-    def use_skill(self, *args): pass
-    def zoom_scale(self, *args): pass
+    add_mount_stat = empty_method
+    apply_map_status = empty_method
+    apply_status_to_friend = empty_method
+    combat_pathfind = empty_method
+    create_inspect_sprite = empty_method
+    die = empty_method
+    dmg_cal = empty_method
+    element_threshold_count = empty_method
+    find_close_target = empty_method
+    find_nearby_subunit = empty_method
+    hit_register = empty_method
+    loss_cal = empty_method
+    make_front_pos = empty_method
+    make_pos_range = empty_method
+    make_sprite = empty_method
+    process_trait_skill = empty_method
+    rotate = empty_method
+    start_set = empty_method
+    temperature_cal = empty_method
+    troop_loss = empty_method
+    use_skill = empty_method
+    zoom_scale = empty_method
 
     # Import from *genre*.subunit
-    def add_trait(self, *args): pass
-    def add_weapon_stat(self, *args): pass
-    def charge_logic(self, *args): pass
-    def combat_logic(self, *args): pass
-    def find_shooting_target(self, *args): pass
-    def gone_leader_process(self, *args): pass
-    def health_stamina_logic(self, *args): pass
-    def morale_logic(self, *args): pass
-    def move_logic(self, *args): pass
-    def pick_animation(self, *args): pass
-    def player_interact(self, *args): pass
-    def rotate_logic(self, *args): pass
-    def skill_check_logic(self, *args): pass
-    def state_reset_logic(self, *args): pass
-    def status_update(self, *args): pass
-    def swap_weapon(self, *args): pass
+    add_trait = empty_method
+    add_weapon_stat = empty_method
+    charge_logic = empty_method
+    combat_logic = empty_method
+    find_shooting_target = empty_method
+    gone_leader_process = empty_method
+    health_stamina_logic = empty_method
+    morale_logic = empty_method
+    move_logic = empty_method
+    pick_animation = empty_method
+    player_interact = empty_method
+    rotate_logic = empty_method
+    skill_check_logic = empty_method
+    state_reset_logic = empty_method
+    status_update = empty_method
+    swap_weapon = empty_method
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
     for entry in os.scandir(script_dir + "\\common\\subunit\\"):  # load and replace modules from common.unit

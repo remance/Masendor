@@ -22,9 +22,7 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                                             "Bombard Phase": "Bombard Phase", "Heroic Phase": "Heroic Phase"
                                             },
                         "Formation Style": {"Infantry Inner": "Infantry Inner", "Cavalry Inner": "Cavalry Inner",
-                                            "Infantry Front": "Infantry Front", "Cavalry Front": "Cavalry Front",
-                                            "Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank",
-                                            "Cluster": "Cluster",},
+                                            "Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank"},
                         "Formation List": {"Square": "Square", "Line": "Line", "Circle": "Circle",
                                            "Wedge": "Wedge", "Bar": "Bar", "Original": "Original",
                                            "Melee Front": "Melee Front", "Range Front": "Range Front"},
