@@ -71,7 +71,7 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                             unit_array[row_number][col_number] = 1
 
                     add_subunit = subunit.Subunit(this_subunit_number, subunit_game_id, this_unit,
-                                                  this_unit.subunit_position_list[army_subunit_index],
+                                                  this_unit.subunit_position_list[row_index][col_index],
                                                   this_unit.start_hp, this_unit.start_stamina, self.unit_scale)
                     add_subunit.board_pos = board_pos[army_subunit_index]
                     new_subunit_list[row_index][col_index] = add_subunit.game_id

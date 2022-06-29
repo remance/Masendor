@@ -29,9 +29,13 @@ class Unit(pygame.sprite.Sprite):
     # Import from common.unit
     assign_commander = empty_method
     cal_unit_stat = empty_method
+    change_formation = empty_method
     selection = empty_method
     set_target = empty_method
     setup_frontline = empty_method
+    shift_line = empty_method
+    setup_subunit_position_list = empty_method
+    subunit_formation_change = empty_method
 
     # Import from *genre*.unit
     authority_recalculation = empty_method
@@ -187,10 +191,8 @@ class Unit(pygame.sprite.Sprite):
         self.team = team  # team
 
         self.subunit_position_list = []
-        self.frontline = {0: [], 1: [], 2: [],
-                          3: []}  # frontline keep list of subunit at the front of each side in combat, same list index as above
         self.frontline_object = {0: [], 1: [], 2: [],
-                                 3: []}  # same as above but save object instead of index order:front, left, right, rear
+                                 3: []}  # rontline keep list of subunit at the front of each side in combat, order:front, left, right, rear
 
         self.battle.all_team_unit["alive"].add(self)
         self.subunit_type_count = {0: 0, 1: 0,  # melee and range infantry
@@ -198,18 +200,7 @@ class Unit(pygame.sprite.Sprite):
         self.ally_pos_list = {}
         self.enemy_pos_list = {}
 
-        # v Set up subunit position list for drawing
-        width, height = 0, 0
-        subunit_number = 0  # Number of subunit based on the position in row and column
-        for _ in self.subunit_object_array.flat:
-            width += self.image_size[0]
-            self.subunit_position_list.append((width, height))
-            subunit_number += 1
-            if subunit_number >= len(self.subunit_id_array[0]):  # Reach the last subunit in the row, go to the next one
-                width = 0
-                height += self.image_size[1]
-                subunit_number = 0
-        # ^ End subunit position list
+        self.setup_subunit_position_list()  # Set up subunit position list for subunit positioning
 
     def start_set(self):
         """Setup various variables at the start of battle or when new unit spawn/split"""
@@ -250,14 +241,10 @@ class Unit(pygame.sprite.Sprite):
         self.change_pos_scale()
 
         # create unit original formation positioning score
-        new_formation = np.where(self.subunit_object_array is None, 9,
-                                 self.subunit_object_array)  # change empty to lest important
+        new_formation = np.where(self.subunit_object_array is None, 20,
+                                 self.subunit_object_array)  # change empty to the least important
         new_formation = np.where(self.subunit_object_array is not None, 1, new_formation)  # change all occupied to most important
-        self.original_formation_score = {"front": self.battle.troop_data.unit_formation_list["Original"]["front"] * new_formation,
-                                         "rear": self.battle.troop_data.unit_formation_list["Original"]["rear"] * new_formation,
-                                         "flank": self.battle.troop_data.unit_formation_list["Original"]["flank"] * new_formation,
-                                         "outer": self.battle.troop_data.unit_formation_list["Original"]["outer"] * new_formation,
-                                         "inner": self.battle.troop_data.unit_formation_list["Original"]["inner"] * new_formation,}
+        self.original_formation_score = {key: value * new_formation for key, value in self.battle.troop_data.unit_formation_list["Original"].items()}
 
         self.original_subunit_id_array = self.subunit_id_array.copy()
 

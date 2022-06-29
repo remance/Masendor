@@ -61,16 +61,7 @@ def split_unit(self, how):
 
     self.subunit_position_list = []
 
-    width, height = 0, 0
-    subunit_number = 0  # Number of subunit based on the position in row and column
-    for this_subunit in self.subunit_id_array.flat:
-        width += self.image_size[0]
-        self.subunit_position_list.append((width, height))
-        subunit_number += 1
-        if subunit_number >= len(self.subunit_id_array[0]):  # Reach the last subunit in the row, go to the next one
-            width = 0
-            height += self.image_size[1]
-            subunit_number = 0
+    self.setup_subunit_position_list()
 
     # v Sort so the new leader subunit position match what set before
     subunit_sprite = [this_subunit for this_subunit in self.subunit_list if
@@ -156,17 +147,15 @@ def add_new_unit(self, who, add_unit_list=True):
     # generate subunit sprite array for inspect ui
     who.subunit_object_array = np.empty((len(self.subunit_object_array[0]), len(self.subunit_object_array)), dtype=object)  # array of subunit object(not index)
     found_count = 0  # for subunit_sprite index
-    found_count2 = 0  # for positioning
     for row in range(0, len(who.subunit_id_array)):
         for column in range(0, len(who.subunit_id_array[0])):
             if who.subunit_id_array[row][column] != 0:
                 who.subunit_object_array[row][column] = who.subunit_list[found_count]
-                who.subunit_list[found_count].unit_position = (who.subunit_position_list[found_count2][0] / 10,
-                                                               who.subunit_position_list[found_count2][1] / 10)  # position in unit sprite
+                who.subunit_list[found_count].unit_position = (who.subunit_position_list[row][column][0] / 10,
+                                                               who.subunit_position_list[row][column][1] / 10)  # position in unit sprite
                 found_count += 1
             else:
                 who.subunit_object_array[row][column] = None
-            found_count2 += 1
     # ^ End generate subunit array
 
     for index, this_subunit in enumerate(who.subunit_list):  # reset leader subunit_pos

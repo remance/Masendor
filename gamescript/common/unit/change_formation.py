@@ -14,68 +14,85 @@ def change_formation(self, formation, dynamic=False):
         self.subunit_id_array = self.original_subunit_id_array.copy()
     else:
         if formation == "Original":  # original formation but change placement
-            new_formation = self.original_formation_score
+            new_formation = self.original_formation_score.copy()
         else:
-            new_formation = self.unit_formation_list[formation]
+            new_formation = self.unit_formation_list[formation].copy()
 
-        self.subunit_id_array = np.where(self.subunit_id_array > 0, 0, self.subunit_id_array)  # change all to empty
-        temp_subunit_object_array = self.subunit_object_array.flat
+        self.subunit_id_array = np.zeros(self.unit_size, dtype=int)  # change all to empty
 
-        placement_order = []  # list of formation position placement order
-        for placement_value in tuple(set(new_formation.tolist())):
-            placement_position = np.where(new_formation == placement_value)
-            placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in enumerate(placement_position[0])]
-
-        priority_subunit_score = {"front": [], "rear": [], "flank": [], "outer": [], "inner": []}  # dict to keep placement priority score of subunit
-        for this_subunit in temp_subunit_object_array:
-            if this_subunit is not None:
-                # Formation style score, closer to front mean higher score
-                if "Inner" in self.formation_style:
-                    if this_subunit.subunit_type < 2 and "Infantry" in self.formation_style:
-                        score += 2
-                    elif this_subunit.subunit_type >= 2 and "Cavalry" in self.formation_style:
-                        score += 2
-                elif "Flank" in self.formation_style:
-                    if this_subunit.subunit_type >= 2 and "Infantry" in self.formation_style:
-                        score += 1
-                    elif this_subunit.subunit_type < 2 and "Cavalry" in self.formation_style:
-                        score += 1
-
-                # Formation phase score
-                if "Melee" in self.formation_phase:
-                    if this_subunit.subunit_type in (0, 2):
-                        score += 2
-                elif "Skirmish" in self.formation_phase:
-                    if this_subunit.subunit_type in (1, 3):
-                        score += 2
-                    elif this_subunit.subunit_type == 4:
-                        score += 1
+        priority_subunit_place = {"center-front": [], "center-rear": [], "flank-front": [],
+                                  "flank-rear": [], "inner-front": [], "inner-rear": [],
+                                  "outer-front": [], "outer-rear": []}  # dict to keep placement priority score of subunit
+        for this_subunit in self.subunit_object_array.flat:
+            if this_subunit is not None and this_subunit.state != 100:
+                if "Melee" in self.formation_phase:  # melee front
+                    if this_subunit.subunit_type in (0, 2):  # melee
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    else:  # range
+                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+                elif "Skirmish" in self.formation_phase:  # range front
+                    if this_subunit.subunit_type in (1, 3):  # range
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    elif this_subunit.subunit_type == 4:  # artillery
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    else:  # melee
+                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
                 elif "Bombard" in self.formation_phase:
-                    if this_subunit.subunit_type in (1, 3):
-                        score += 1
-                    elif this_subunit.subunit_type == 4:
-                        score += 2
+                    if this_subunit.subunit_type == 4:  # artillery
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    elif this_subunit.subunit_type in (1, 3):  # range
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    else:  # melee
+                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
                 elif "Heroic" in self.formation_phase:
-                    if this_subunit.subunit_type in (0, 2):
-                        score += 1
-                    elif this_subunit.leader is not None:
-                        score += 2
-                priority_subunit_score[this_subunit] = score + score
-        priority_subunit_score = sorted(priority_subunit_score.items(), key=lambda x: x[1])
+                    if this_subunit.leader is not None:  # leader
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    elif this_subunit.subunit_type in (0, 2):  # melee
+                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                    else:  # range
+                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+        priority_subunit_place = {key: value for key, value in priority_subunit_place.items() if len(value) > 0}
+        print(new_formation)
+        for key, value in priority_subunit_place.items():  # there should be no excess number of subunit
+            formation_sorted = []  # sorted from the lowest score to highest
+            formation_position = new_formation[key]
+            print(key, new_formation[key])
+            for placement_value in tuple(sorted(set(formation_position.flat))):
+                placement_position = np.where(formation_position == placement_value)
+                formation_sorted += [(placement_position[0][index], placement_position[1][index]) for index, _ in
+                                     enumerate(placement_position[0])]
+            print(formation_sorted)
 
-        print(self.formation_style, self.formation_phase)
-        print(placement_order)
-        print(priority_subunit_score)
-        placement_count = 0
-        while placement_count < len(temp_subunit_object_array):  # there should be no excess number of subunit
-            for position in enumerate(placement_order):
-                placement_scoring = (position[0], position[1])
-                for this_subunit, score in priority_subunit_score.items():
-                    if this_subunit.state != 100:
+            for this_subunit in value:
+                for position in formation_sorted:
+                    if self.subunit_id_array[position[0]][position[1]] == 0:  # replace empty position
                         self.subunit_id_array[position[0]][position[1]] = this_subunit.game_id
-                        temp_subunit_object_array.remove(this_subunit)
-                        priority_subunit_score.remove(this_subunit)
-                        placement_count += 1
                         break
+    print(self.subunit_id_array)
 
     self.subunit_formation_change()
+
+
+def formation_style_check(self, this_subunit, priority_subunit_place, side):
+    if "Inner" in self.formation_style:
+        if "Infantry" in self.formation_style:
+            if this_subunit.subunit_type < 2:  # infantry
+                priority_subunit_place["inner-" + side].append(this_subunit)
+            elif this_subunit.subunit_type >= 2:  # cavalry
+                priority_subunit_place["outer-" + side].append(this_subunit)
+        elif "Cavalry" in self.formation_style:
+            if this_subunit.subunit_type < 2:  # infantry
+                priority_subunit_place["outer-" + side].append(this_subunit)
+            elif this_subunit.subunit_type >= 2:  # cavalry
+                priority_subunit_place["inner-" + side].append(this_subunit)
+    elif "Flank" in self.formation_style:
+        if "Infantry" in self.formation_style:
+            if this_subunit.subunit_type < 2:  # infantry
+                priority_subunit_place["flank-" + side].append(this_subunit)
+            elif this_subunit.subunit_type >= 2:  # cavalry
+                priority_subunit_place["center-" + side].append(this_subunit)
+        elif "Cavalry" in self.formation_style:
+            if this_subunit.subunit_type < 2:  # infantry
+                priority_subunit_place["center-" + side].append(this_subunit)
+            elif this_subunit.subunit_type >= 2:  # cavalry
+                priority_subunit_place["flank-" + side].append(this_subunit)
